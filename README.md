@@ -80,6 +80,6 @@ npm run preview
 - Safari
 - Edge
 
-## 许可证
+## 许可协议
 
-[MIT](LICENSE) 
+[MIT](LICENSE)
