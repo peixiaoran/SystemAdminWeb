@@ -1,0 +1,166 @@
+/* 容器样式 */
+.conventional-table-container {
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 卡片样式 */
+.conventional-card {
+  --el-card-shadow: none;
+  --el-card-shadow-hover: none;
+  --el-card-padding: 8px;
+  border: 1px solid #eef2f7;
+  margin-bottom: 0px;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* 卡片头部样式 */
+.conventional-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+/* 过滤表单样式 */
+.conventional-filter-form {
+  margin-bottom: 5px;
+  padding-left: 10px;
+  padding-top: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.conventional-filter-form .el-form-item {
+  margin-bottom: 10px;
+  margin-right: 8px;
+}
+
+/* 右侧区域样式 */
+.conventional-form-right-area {
+  margin-left: auto;
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  margin-bottom: 10px;
+  margin-right: 8px;
+}
+
+/* 过滤表单按钮样式 */
+.conventional-filter-form-button {
+  margin-left: 15px;
+}
+
+/* 表单项标签样式 */
+.conventional-filter-form .el-form-item__label {
+  padding-right: 6px;
+}
+
+/* 日期选择器样式 */
+.conventional-filter-form .el-date-editor--daterange {
+  width: 240px;
+}
+
+/* 分页容器样式 */
+.conventional-pagination-container {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 内容区域样式 */
+.conventional-content {
+  padding: 5px 5px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 表格容器样式 */
+.conventional-table-container {
+  width: 100%;
+  overflow: auto;
+  flex: 1;
+}
+
+/* 状态单元格样式 */
+.conventional-status-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 表格样式 */
+.conventional-table {
+  --el-table-border-color: #eef2f7;
+  --el-table-header-bg-color: #f5f7fa;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.conventional-table th.el-table__cell {
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.conventional-table td.el-table__cell, 
+.conventional-table th.el-table__cell.is-leaf {
+  border-color: #f4f6f9;
+}
+
+.conventional-table--border::after, 
+.conventional-table--group::after, 
+.conventional-table::before {
+  background-color: #f4f6f9;
+}
+
+/* 表格滚动条样式 */
+.conventional-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar,
+.conventional-table--scrollable-y .el-table__body-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.conventional-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-thumb,
+.conventional-table--scrollable-y .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background-color: #dcdfe6;
+  border-radius: 4px;
+}
+
+.conventional-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar-track,
+.conventional-table--scrollable-y .el-table__body-wrapper::-webkit-scrollbar-track {
+  background-color: #f5f7fa;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .conventional-el-form-item {
+    margin-right: 0;
+    width: 100%;
+  }
+}
+
+/* 批量操作区域样式 */
+.conventional-batch-operation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.conventional-selected-count {
+  margin-left: 10px;
+  color: #606266;
+  font-size: 14px;
+} 

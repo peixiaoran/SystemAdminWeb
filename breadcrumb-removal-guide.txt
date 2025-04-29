@@ -1,0 +1,110 @@
+以下是需要从src/layout/index.vue文件中删除的面包屑相关代码:
+
+1. 移除模板中的面包屑导航部分:
+```html
+<!-- 修改：面包屑导航 - 使用key强制刷新 -->
+<div class="breadcrumb-container">
+  <el-breadcrumb separator="/" :key="'breadcrumb-' + route.path">
+    <el-breadcrumb-item @click="handleBreadcrumbHomeClick">首页</el-breadcrumb-item>
+    <el-breadcrumb-item v-if="currentSystem">{{ currentSystem }}</el-breadcrumb-item>
+    <el-breadcrumb-item v-if="currentPageTitle" :key="'crumb-' + currentPageTitle">{{ currentPageTitle }}</el-breadcrumb-item>
+  </el-breadcrumb>
+</div>
+```
+
+2. 删除相关变量:
+```js
+// 新增：当前页面对应的自定义标题
+const customPageTitle = ref('')
+
+// 新增：面包屑导航中显示的当前页面标题
+const currentPageTitle = computed(() => {
+  // 如果有自定义设置的标题，优先使用
+  if (customPageTitle.value) {
+    return customPageTitle.value
+  }
+  
+  // 否则使用getCurrentPageName函数获取当前页面名称
+  return getCurrentPageName()
+})
+
+// 面包屑锁定相关变量
+const breadcrumbLocked = ref(false)
+```
+
+3. 删除相关函数:
+```js
+// 优化强制更新函数
+const forceUpdateBreadcrumb = (title, lock = true) => {
+  // 整个函数体
+}
+
+// 更新面包屑导航 - 优化逻辑
+const updateBreadcrumb = () => {
+  // 整个函数体
+}
+```
+
+4. 删除面包屑相关的监听器:
+```js
+// 修改监听菜单数据变化的watch
+watch(() => menuData.value, (newMenuData) => {
+  if (Object.keys(newMenuData).length > 0 && newMenuData._rawMenuData) {
+    // 如果面包屑已锁定，不更新
+    if (breadcrumbLocked.value) return
+    
+    // 强制更新面包屑导航
+    nextTick(() => {
+      updateBreadcrumb()
+    })
+  }
+}, { deep: true, immediate: true })
+
+// 修改路由监听函数，避免覆盖手动设置的面包屑
+watch(() => route.path, (newPath, oldPath) => {
+  const pathParts = newPath.split('/')
+  const oldPathParts = oldPath?.split('/') || []
+  
+  // 只有当路由完全改变时（不是同一个路径的参数变化），才需要考虑更新面包屑
+  if (pathParts.length >= 4 && 
+      (pathParts[2] !== oldPathParts[2] || pathParts[3] !== oldPathParts[3])) {
+    
+    // 检查面包屑是否已锁定
+    if (!breadcrumbLocked.value) {
+      // 立即更新面包屑，避免延迟
+      updateBreadcrumb()
+    }
+  }
+}, { immediate: false })
+```
+
+5. 修改handleMenuSelect函数中关于面包屑的部分:
+从此函数中删除所有调用forceUpdateBreadcrumb的代码。
+
+6. 修改或替换handleBreadcrumbHomeClick函数:
+```js
+// 新增：处理面包屑首页点击
+const handleBreadcrumbHomeClick = () => {
+  clearVisitedViews()
+  router.push('/dashboard')
+}
+```
+改成:
+```js
+// 处理首页点击
+const handleHomeClick = () => {
+  clearVisitedViews()
+  router.push('/dashboard')
+}
+```
+并更新相应的模板引用。
+
+7. 删除CSS中的面包屑样式:
+```css
+/* 新增：面包屑导航样式 */
+.breadcrumb-container {
+  margin-right: 20px;
+}
+```
+
+以上修改完成后，您的导航将不再包含面包屑功能，相关代码也会被清理干净。 
