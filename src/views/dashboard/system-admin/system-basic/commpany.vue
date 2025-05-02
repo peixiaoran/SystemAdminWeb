@@ -5,12 +5,12 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-            <el-form-item label="程序编码">
-              <el-input v-model="filters.programCode" placeholder="请输入程序编码" style="width:180px" clearable />
+            <el-form-item label="网域编码">
+              <el-input v-model="filters.domainCode" placeholder="请输入网域编码" style="width:180px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item label="程序名称">
-              <el-input v-model="filters.programName" placeholder="请输入程序名称" style="width:180px" clearable />
+            <el-form-item label="网域名称">
+              <el-input v-model="filters.domainName" placeholder="请输入网域名称" style="width:180px" clearable />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -22,7 +22,7 @@
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleAdd">
-                新增程序
+                新增网域
               </el-button>
             </div>
           </el-form>
@@ -30,7 +30,7 @@
           <!-- 日志表格 -->
           <div class="conventional-table-container">
             <el-table 
-              :data="programList" 
+              :data="domainList" 
               style="width: 100%" 
               border 
               stripe
@@ -40,11 +40,11 @@
               class="conventional-table"
             >
               <el-table-column type="index" label="序号" width="60" align="center" fixed />
-              <el-table-column prop="menuCode" label="程序代码" align="left" min-width="240" />
-              <el-table-column prop="menuName" label="程序名称" align="left" min-width="200" />
+              <el-table-column prop="domainCode" label="网域代码" align="left" min-width="230" />
+              <el-table-column prop="domainName" label="网域名称" align="left" min-width="170" />
               <el-table-column prop="roleCode" label="权限标识" align="center" min-width="130" />
               <el-table-column prop="path" label="页面Path" align="left" min-width="230" />
-              <el-table-column prop="menuIcon" label="程序图标" align="center" min-width="120" />
+              <el-table-column prop="domainIcon" label="网域图标" align="center" min-width="120" />
               <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
                 <template #default="scope">
                   <div class="flex">
@@ -106,47 +106,27 @@
       >
         <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
           <div class="form-row">
-            <el-form-item label="程序代码">
-              <el-input v-model="editForm.menuCode" style="width:250px"/>
+            <el-form-item label="网域代码">
+              <el-input v-model="editForm.domainCode" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="程序名称" >
-              <el-input v-model="editForm.menuName" style="width:250px"/>
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item label="所属网域" >
-              <el-select v-model="editForm.domainId" style="width:250px" placeholder="请选择所属网域" clearable @change="handleDomainChange">
-                <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="所属模块" >
-              <el-select v-model="editForm.parentMenuId" style="width:250px" placeholder="请选择所属模块" clearable>
-                <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
-              </el-select>
+            <el-form-item label="网域名称" >
+              <el-input v-model="editForm.domainName" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="程序图标" >
-              <el-input v-model="editForm.menuIcon" style="width:250px"/>
+            <el-form-item label="网域图标" >
+              <el-input v-model="editForm.domainIcon" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="程序排序" >
-              <el-input v-model.number="editForm.sortOrder" type="number" style="width:250px"/>
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item label="页面Path" >
-              <el-input v-model="editForm.path" style="width:250px"/>
-            </el-form-item>
-            <el-form-item label="程序类型" >
-              <el-input v-model.number="editForm.menuType" type="number" style="width:250px"/>
+            <el-form-item label="网域排序" >
+              <el-input v-model="editForm.sortOrder" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item label="权限标识" >
               <el-input v-model="editForm.roleCode" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="AIP路由" >
-              <el-input v-model="editForm.routePath" style="width:250px"/>
+            <el-form-item label="页面Path" >
+              <el-input v-model="editForm.path" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
@@ -189,16 +169,14 @@
   
   <script setup>
   import { ref, reactive, onMounted } from 'vue'
-  import { post, sanitizeHtml } from '@/utils/request'
-  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/system-admin/system-mgmt/program'
+  import { post } from '@/utils/request'
+  import { GET_DOMAIN_PAGES_API, INSERST_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/system-admin/system-mgmt/domain'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { containsXssRisk } from '@/utils/xssUtils'
   
-  // 程序数据
-  const programList = ref([])
+  // 日志数据
+  const domainList = ref([])
   const loading = ref(false)
-  const domainDropList = ref([])
-  const moduleDropList = ref([])
+  const domainTypeList = ref([])
   
   // 分页信息
   const pagination = reactive({
@@ -209,9 +187,9 @@
   
   // 过滤条件
   const filters = reactive({
-    programCode: '',
-    programName: '',
-    programUrl: ''
+    domainCode: '',
+    domainName: '',
+    domainUrl: ''
   })
   
   // 对话框显示状态
@@ -219,104 +197,54 @@
   
   // 编辑表单
   const editForm = reactive({
-    menuId: '',
-    parentMenuId: '',
-    domainId: '',
-    menuCode: '',
-    menuName: '',
-    menuType: 1,
-    menuUrl: '',
-    menuIcon: '',
+    domainId: '0',
+    domainCode: '',
+    domainName: '',
+    domainIcon: '',
     sortOrder: 1,
     roleCode: '',
     isEnabled: true,
     isVisible: true,
     level: 1,
-    routePath: '',
     path: '',
     component: '',
     target: '',
     remarks: ''
   })
   // 对话框标题
-  const dialogTitle = ref('编辑程序信息')
+  const dialogTitle = ref('编辑网域信息')
   
   // 在组件挂载后获取日志数据
   onMounted(() => {
-     fetchProgramPages()
+     fetchDomainPages()
   })
   
-  // 获取网域类型
-  const fetchDomainDrop = async () => {
-    const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
-    // 对获取的数据进行XSS清洗
-    domainDropList.value = res.data || []
-    
-    // 如果是新增操作，默认选中第一个网域
-    if (dialogTitle.value === '新增程序' && domainDropList.value.length > 0) {
-      editForm.domainId = domainDropList.value[0].domainId
-      // 网域选择后联动获取模块数据
-      fetchModuleDrop()
-    }
-  }
-
-  // 获取模块下拉框
-  const fetchModuleDrop = async () => {
-    if (!editForm.domainId) {
-      moduleDropList.value = []
-      return
-    }
-    
+  // 获取网域实体数据
+  const fetchDomainEntity = async (domainId) => {
     const params = {
-      domainId: editForm.domainId
+      domainId: domainId
     }
-    const res = await post(GET_MODULE_DROP_API.GET_MODULE_TYPE, params)
-    // 对获取的数据进行XSS清洗
-    moduleDropList.value = res.data || []
-    
-    // 如果是新增操作且有模块数据，默认选中第一个模块
-    if (dialogTitle.value === '新增程序' && moduleDropList.value.length > 0) {
-      editForm.parentMenuId = moduleDropList.value[0].menuId
-    }
-  }
-  
-  // 获取程序实体数据
-  const fetchProgramEntity = async (menuId) => {
-    const params = {
-      menuId: menuId
-    }
-    const res = await post(GET_PROGRAM_ENTITY_API.GET_PROGRAM_ENTITY, params)
+    const res = await post(GET_DOMAIN_ENTITY_API.GET_DOMAIN_ENTITY, params)
     
     if (res && res.code === '200') {
-      // 对字符串类型字段进行额外的XSS清洗
-      editForm.menuId = res.data.menuId
-      editForm.menuCode = sanitizeHtml(res.data.menuCode || '')
-      editForm.menuName = sanitizeHtml(res.data.menuName || '')
-      editForm.parentMenuId = res.data.parentMenuId
       editForm.domainId = res.data.domainId
-      editForm.menuType = res.data.menuType
-      editForm.menuUrl = sanitizeHtml(res.data.menuUrl || '')
-      editForm.menuIcon = sanitizeHtml(res.data.menuIcon || '')
+      editForm.domainCode = res.data.domainCode
+      editForm.domainName = res.data.domainName
+      editForm.domainIcon = res.data.domainIcon
       editForm.sortOrder = res.data.sortOrder
-      editForm.roleCode = sanitizeHtml(res.data.roleCode || '')
-      editForm.path = sanitizeHtml(res.data.path || '')
-      editForm.component = sanitizeHtml(res.data.component || '')
-      editForm.target = sanitizeHtml(res.data.target || '')
-      editForm.remarks = sanitizeHtml(res.data.remarks || '')
+      editForm.roleCode = res.data.roleCode
+      editForm.path = res.data.path
+      editForm.component = res.data.component
+      editForm.target = res.data.target
+      editForm.remarks = res.data.remarks
       editForm.isEnabled = res.data.isEnabled
       editForm.isVisible = res.data.isVisible
       editForm.level = res.data.level
-      editForm.routePath = sanitizeHtml(res.data.routePath || '')
-
-      // 加载网域后，联动获取模块列表
-      if (editForm.domainId) {
-        fetchModuleDrop()
-      }
     }
   }
   
   // 获取域列表数据
-  const fetchProgramPages = async () => {
+  const fetchDomainPages = async () => {
     loading.value = true
     const params = {
       ...filters,
@@ -324,129 +252,112 @@
       pageSize: pagination.pageSize
     }
     
-    const res = await post(GET_PROGRAM_PAGES_API.GET_PROGRAM_PAGES, params)
+    const res = await post(GET_DOMAIN_PAGES_API.GET_DOMAIN_PAGES, params)
     
-    // 在设置数据前，确保使用sanitizeHtml清洗敏感字段
-    programList.value = res.data || []
-    pagination.total = res.totalNumber || 0
+    if (res && res.code === '200') {
+      domainList.value = res.data || []
+      pagination.total = res.totalNumber || 0
+    } else {
+      ElMessage.error(res.message)
+    }
     loading.value = false
   }
   
   // 处理搜索操作
   const handleSearch = () => {
     pagination.currentPage = 1
-    fetchProgramPages()
+    fetchDomainPages()
   }
   
   // 重置搜索条件
   const handleReset = () => {
-    filters.programCode = ''
-    filters.programName = ''
-    filters.programUrl = ''
+    filters.domainCode = ''
+    filters.domainName = ''
+    filters.domainUrl = ''
     pagination.currentPage = 1
-    fetchProgramPages()
+    fetchDomainPages()
   }
   
   // 处理页码变化
   const handlePageChange = (page) => {
     pagination.currentPage = page
-    fetchProgramPages()
+    fetchDomainPages()
   }
   
   // 处理每页记录数变化
   const handleSizeChange = (size) => {
     pagination.pageSize = size
     pagination.currentPage = 1
-    fetchProgramPages()
+    fetchDomainPages()
   }
   
   const resetForm = () => {
-    editForm.menuId = ''
-    editForm.parentMenuId = ''
-    editForm.menuCode = ''
-    editForm.menuName = ''
-    editForm.domainId = ''
-    editForm.menuType = 1
-    editForm.menuUrl = ''
     editForm.component = ''
     editForm.target = ''
     editForm.path = ''
     editForm.roleCode = ''
-    editForm.menuIcon = ''
+    editForm.domainIcon = ''
     editForm.sortOrder = 1
     editForm.isEnabled = true
     editForm.isVisible = true
-    editForm.level = 1
-    editForm.routePath = ''
-    editForm.remarks = ''
+    editForm.domainId = '0'
+    editForm.domainCode = ''
+    editForm.domainName = ''
   }
   
-  // 新增程序列表数据
-  const insertProgram = async () => {
-    // 检查必填字段
-    if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
-      return
-    }
-    
-    // 处理数值类型字段
-    const params = {
-      ...editForm,
-    }
-    const res = await post(INSERST_PROGRAM_API.INSERST_PROGRAM, params)
-    
-    if (res && res.code === '200') {
-      resetForm()
-      ElMessage.success(res.message)
-      fetchProgramPages()
-      dialogVisible.value = false
-    } else {
-      ElMessage.error(res.message)
-    }
-  }
-  
-  // 更新程序列表数据
-  const updateProgram = async () => {
-    // 检查必填字段
-    if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
-      return
-    }
-    
-    // 处理数值类型字段
+  // 新增域列表数据
+  const insertDomain = async () => {
     const params = {
       ...editForm
     }
-    console.log(params)
-    const res = await post(UPDATE_PROGRAM_API.UPDATE_PROGRAM, params)
-
+    
+    const res = await post(INSERST_DOMAIN_API.INSERST_DOMAIN, params)
+    
     if (res && res.code === '200') {
       resetForm()
       ElMessage.success(res.message)
       dialogVisible.value = false
-      fetchProgramPages()
+      fetchDomainPages()
+      
     } else {
       ElMessage.error(res.message)
     }
   }
   
-  // 删除程序列表数据
-  const deleteProgram = async (menuId) => {
+  // 更新域列表数据
+  const updateDomain = async () => {
     const params = {
-      menuId: menuId
+      ...editForm
     }
-
-    if (isNaN(params.menuId)) {
-      ElMessage.error('无效的程序 ID')
+    const res = await post(UPDATE_DOMAIN_API.UPDATE_DOMAIN, params)
+  
+    if (res && res.code === '200') {
+      resetForm()
+      ElMessage.success(res.message)
+      dialogVisible.value = false
+      fetchDomainPages()
+    } else {
+      ElMessage.error(res.message)
+    }
+  }
+  
+  // 删除域列表数据
+  const deleteDomain = async (domainId) => {
+    const params = {
+      domainId: domainId
+    }
+  
+    if (isNaN(params.domainId)) {
+      ElMessage.error('无效的域 ID')
       return
     }
     
-    const res = await post(DELETE_PROGRAM_API.DELETE_PROGRAM, params)
+    const res = await post(DELETE_DOMAIN_API.DELETE_DOMAIN, params)
     
     if (res && res.code === '200') {
       ElMessage.success(res.message)
       dialogVisible.value = false
-      fetchProgramPages()
+      fetchDomainPages()
     } else {
       ElMessage.error(res.message)
     }
@@ -456,20 +367,8 @@
   const handleAdd = () => {
     // 重置表单数据
     resetForm()
-    // 设置默认值
-    editForm.menuId = '0'
-    editForm.menuType = 1
-    editForm.sortOrder = 1
-    editForm.level = 1
-    editForm.isEnabled = true
-    editForm.isVisible = true
-    
     // 设置对话框标题
-    dialogTitle.value = '新增程序'
-    
-    // 获取网域类型
-    fetchDomainDrop()
-    
+    dialogTitle.value = '新增网域'
     // 显示对话框
     dialogVisible.value = true
   }
@@ -478,17 +377,12 @@
   const handleEdit = (index, row) => {
     // 重置表单数据
     resetForm()
-    
+    // 获取网域实体数据
+    fetchDomainEntity(row.domainId)
+  
     // 设置对话框标题
-    dialogTitle.value = '编辑程序信息'
+    dialogTitle.value = '编辑网域信息'
     
-    // 获取程序实体数据
-    fetchProgramEntity(row.menuId)
-    
-    // 获取网域类型
-    fetchDomainDrop()
-    
-    // 显示对话框
     dialogVisible.value = true
   }
   
@@ -504,9 +398,9 @@
         }
       )
       .then(() => {
-        deleteProgram(row.menuId)
+        deleteDomain(row.domainId)
         // 重新获取数据
-        fetchProgramPages()
+        fetchDomainPages()
       })
       .catch(() => {
         // 取消删除
@@ -515,61 +409,22 @@
   
   // 保存编辑结果
   const handleSave = () => {
-    if (!editForm.menuCode || !editForm.menuName) {
-      ElMessage.warning('请填写程序代码和程序名称')
+    if (!editForm.domainCode || !editForm.domainName) {
+      ElMessage.warning('请填写必要信息')
       return
     }
-
-    if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
-      return
-    }
-
-    if (!editForm.parentMenuId) {
-      ElMessage.warning('请选择所属模块')
-      return
-    }
-    
-    // 检查输入是否包含XSS风险
-    const inputFields = [
-      { name: '程序代码', value: editForm.menuCode },
-      { name: '程序名称', value: editForm.menuName },
-      { name: '程序URL', value: editForm.menuUrl },
-      { name: '权限标识', value: editForm.roleCode },
-      { name: '页面Path', value: editForm.path },
-      { name: 'AIP路由', value: editForm.routePath },
-      { name: '组件', value: editForm.component },
-      { name: '目标', value: editForm.target },
-      { name: '备注', value: editForm.remarks }
-    ]
-    
-    for (const field of inputFields) {
-      if (field.value && containsXssRisk(field.value)) {
-        ElMessage.error(`${field.name}中包含潜在的XSS攻击代码，请检查输入`)
-        return
-      }
-    }
-    
     // 判断是新增还是编辑
-    const isNewModule = !editForm.menuId || editForm.menuId === '' || editForm.menuId === '0'
+    const actionType = editForm.domainId === '0' ? '新增' : '编辑'
   
-    if (isNewModule) {
-       insertProgram()
+    if (actionType === '新增') {
+       insertDomain()
     } else {
-       updateProgram()
+       updateDomain()
     }
     dialogVisible.value = false
     
     // 重新获取数据
-     fetchProgramPages()
-  }
-  
-  // 处理网域变化事件
-  const handleDomainChange = () => {
-    // 清空模块选择
-    editForm.parentMenuId = ''
-    // 重新获取模块列表
-    fetchModuleDrop()
+     fetchDomainPages()
   }
   </script>
   

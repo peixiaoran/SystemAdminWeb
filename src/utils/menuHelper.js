@@ -33,23 +33,81 @@ export function transformMenuToRoutes(menuList, basePath = '') {
         path = path.substring(0, path.length - 4)
       }
       
-      // 如果path包含目录和文件名，只保留目录部分
+      // 处理形如 system-admin/system-mgmt 或 system-basic/commpany.vue 的路径
       if (path.includes('/')) {
         const pathParts = path.split('/')
-        if (pathParts[pathParts.length - 1] === 'index' || 
-            pathParts[pathParts.length - 1] === 'index.vue') {
-          path = pathParts.slice(0, -1).join('/')
+        
+        // 对于一级菜单，保留完整路径，如system-admin/system-mgmt
+        if (menu.level === 1 || (!menu.level && !basePath)) {
+          // 处理一级菜单逻辑
+          if (menu.menuType === 2) { // 一级菜单
+            // 对于system-admin/system-mgmt这样的一级菜单，使用第二部分作为实际路径
+            if (pathParts.length >= 2) {
+              // 存储完整路径以便后续使用
+              menu._fullPath = path;
+              
+              // 如果是system-admin/system-mgmt格式，保存路径信息
+              menu._isComplexPath = true;
+              menu._systemPath = pathParts[0];  // 存储系统路径，如system-admin
+              menu._subSystemPath = pathParts[1];  // 存储子系统路径，如system-mgmt
+              
+              // 保留完整路径
+              path = menu._fullPath;
+            } else {
+              path = pathParts[pathParts.length - 1]
+            }
+          } else {
+            // 对于非目录型一级菜单，如果包含.vue，则只保留文件名
+            const lastPart = pathParts[pathParts.length - 1]
+            if (lastPart.endsWith('.vue')) {
+              path = lastPart.replace('.vue', '')
+            }
+          }
+        } else {
+          // 对于二级菜单
+          // 检查父级菜单是否有复合路径标记
+          const hasParentWithComplexPath = menu._parentMenu && menu._parentMenu._isComplexPath;
+          
+          if (hasParentWithComplexPath) {
+            // 获取父级的复合路径信息
+            const parentSystemPath = menu._parentMenu._systemPath;
+            const parentSubSystemPath = menu._parentMenu._subSystemPath;
+            
+            // 获取当前菜单的文件部分
+            let fileName;
+            
+            // 如果当前path是完整路径
+            if (pathParts.length > 1) {
+              fileName = pathParts[pathParts.length - 1];
+            } else {
+              fileName = path;
+            }
+            
+            // 去掉.vue后缀
+            if (fileName.endsWith('.vue')) {
+              fileName = fileName.replace('.vue', '');
+            }
+            
+            // 构建完整路径: system-admin/system-mgmt/domain
+            path = `${parentSubSystemPath}/${fileName}`;
+            
+            // 存储原始文件名，方便后续使用
+            menu._fileName = fileName;
+          } else if (pathParts.length >= 2) {
+            // 处理常规二级菜单路径
+            const lastPart = pathParts[pathParts.length - 1]
+            // 如果最后一部分是index或index.vue，保留上一级目录
+            if (lastPart === 'index' || lastPart === 'index.vue' || lastPart === '') {
+              path = pathParts.slice(0, -1).join('/')
+            } else if (lastPart.endsWith('.vue')) {
+              // 否则如果以.vue结尾，提取文件名作为路径
+              path = lastPart.replace('.vue', '')
+            }
+          }
         }
       }
     } else {
       path = menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
-    }
-    
-    // 确保子菜单路径不包含父级路径
-    if (basePath && path.startsWith(basePath + '/')) {
-      path = path.substring(basePath.length + 1)
-    } else if (basePath && path.startsWith('/')) {
-      path = path.substring(1)
     }
     
     // 创建路由对象
@@ -58,16 +116,26 @@ export function transformMenuToRoutes(menuList, basePath = '') {
       name: menu.menuCode,
       meta: {
         title: menu.menuName,
-        icon: menu.menuIcon || 'Document'
+        icon: menu.menuIcon || 'Document',
+        isComplexPath: menu._isComplexPath || false,
+        systemPath: menu._systemPath,
+        subSystemPath: menu._subSystemPath,
+        fullPath: menu._fullPath,
+        fileName: menu._fileName
       }
     }
     
     // 处理子菜单
     if (menu.menuChildList && menu.menuChildList.length > 0) {
+      // 为子菜单添加父菜单引用
+      menu.menuChildList.forEach(child => {
+        child._parentMenu = menu;
+      });
+      
       // 不传递basePath，避免路径重复
       route.children = transformMenuToRoutes(menu.menuChildList, '')
     }
-    
+
     return route
   })
 }
@@ -84,10 +152,48 @@ export function getSystemMenu(menuList, systemCode) {
   }
   
   // 查找匹配的系统菜单
-  const systemMenu = menuList.find(menu => 
-    menu.menuCode.toLowerCase() === systemCode.toLowerCase() ||
-    menu.path === systemCode
-  )
+  const systemMenu = menuList.find(menu => {
+    // 处理路径或菜单代码
+    let menuPath = ''
+    
+    if (menu.path && menu.path.trim() !== '') {
+      menuPath = menu.path.toLowerCase()
+      
+      // 如果path以/开头，去掉第一个/
+      if (menuPath.startsWith('/')) {
+        menuPath = menuPath.substring(1)
+      }
+      
+      // 如果path包含文件名(如index.vue)，则去掉.vue后缀
+      if (menuPath.endsWith('.vue')) {
+        menuPath = menuPath.substring(0, menuPath.length - 4)
+      }
+      
+      // 如果path包含目录和文件名，如system-admin/system-mgmt
+      if (menuPath.includes('/')) {
+        const pathParts = menuPath.split('/')
+        // 对于一级菜单，使用最后一个部分进行匹配
+        if (pathParts.length > 1) {
+          // 如果最后一部分是index，则使用前面部分
+          if (pathParts[pathParts.length - 1] === 'index') {
+            menuPath = pathParts.slice(0, -1).join('/')
+          } else {
+            // 否则使用最后一部分
+            menuPath = pathParts[pathParts.length - 1]
+          }
+        }
+      }
+    } else {
+      menuPath = menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
+    }
+    
+    const isMatch = menuPath === systemCode || 
+                    menu.menuCode.toLowerCase() === systemCode.toLowerCase() ||
+                    menu.path === systemCode ||
+                    (menu.path && menu.path.toLowerCase().endsWith('/' + systemCode))
+    
+    return isMatch
+  })
   
   return systemMenu ? (systemMenu.menuChildList || []) : []
 } 

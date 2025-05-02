@@ -16,7 +16,7 @@
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleConfirm">
-                保存
+                更新绑定
               </el-button>
             </div>
           </el-form>
@@ -33,15 +33,17 @@
               v-loading="loading"
               class="conventional-table"
             >
-              <el-table-column type="index" label="序号" width="100" align="center" fixed />
-              <el-table-column prop="roleName" label="角色名称" align="left" min-width="170" />
-              <el-table-column prop="domainName" label="菜单名称" align="left" min-width="170" />
-              <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="120">
+              <el-table-column type="index" label="序号" width="60" align="center" fixed />
+              <el-table-column prop="roleName" label="角色名称" align="left" min-width="180" />
+              <el-table-column prop="domainName" label="网域名称" align="left" min-width="180" />
+              <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="90">
                 <template #default="scope">
-                  <el-checkbox v-model="scope.row.isChecked" />
+                  <div class="checkbox-wrapper">
+                    <el-checkbox v-model="scope.row.isChecked" />
+                  </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="remark" label="备注" min-width="400" />
+              <el-table-column prop="remark" label="备注" min-width="150" />
             </el-table>
           </div>
         </div>
@@ -149,8 +151,14 @@
       ElMessage.error(error.message)
     }
   }
+
+  // 处理标签点击事件
+  const handleTagClick = (row) => {
+    row.isChecked = !row.isChecked
+  }
   </script>
   
   <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
 </style> 

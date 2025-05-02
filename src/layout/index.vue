@@ -21,15 +21,19 @@
         text-color="#303133"
         active-text-color="#639af8"
         :collapse="isCollapse"
-        :unique-opened="true"
+        :unique-opened="false"
         router
         @select="(index, indexPath) => handleMenuSelect(index, indexPath)"
+        @open="handleSubMenuOpen"
+        @close="handleSubMenuClose"
       >
         <template v-for="route in routes" :key="route.path">
           <!-- 一级菜单 - 没有子菜单或子菜单为空 -->
           <el-menu-item 
             v-if="!route.children || route.children.length === 0" 
             :index="currentBasePath + (route.path ? '/' + route.path : '')"
+            :data-menu-name="route.meta ? route.meta.title : route.name"
+            :data-menu-icon="route.meta ? route.meta.icon : ''"
           >
             <el-icon v-if="route.meta && route.meta.icon">
               <component v-if="route.meta && route.meta.icon" :is="route.meta.icon" />
@@ -40,7 +44,12 @@
           </el-menu-item>
           
           <!-- 一级菜单 - 有子菜单 -->
-          <el-sub-menu v-else :index="currentBasePath + '/' + route.path">
+          <el-sub-menu 
+            v-else 
+            :index="currentBasePath + '/' + route.path"
+            :data-menu-name="route.meta ? route.meta.title : route.name"
+            :data-menu-icon="route.meta ? route.meta.icon : ''"
+          >
             <template #title>
               <el-icon v-if="route.meta && route.meta.icon">
                 <component v-if="route.meta && route.meta.icon" :is="route.meta.icon" />
@@ -50,10 +59,13 @@
             
             <!-- 二级菜单 -->
             <template v-for="child in route.children" :key="child.path">
-              <!-- 二级菜单 - 没有子菜单 -->
+              <!-- 处理复合路径的特殊情况 -->
               <el-menu-item 
-                v-if="!child.children || child.children.length === 0" 
+                v-if="(!child.children || child.children.length === 0) && !(route.meta && route.meta.isComplexPath && child.path.includes('/'))" 
                 :index="getMenuItemPath(route, child)"
+                :data-menu-name="child.meta ? child.meta.title : child.name"
+                :data-menu-icon="child.meta ? child.meta.icon : ''"
+                :data-path="child.path"
               >
                 <el-icon v-if="child.meta && child.meta.icon">
                   <component v-if="child.meta && child.meta.icon" :is="child.meta.icon" />
@@ -63,8 +75,49 @@
                 </template>
               </el-menu-item>
               
+              <!-- 复合路径的子系统处理 -->
+              <el-sub-menu 
+                v-else-if="route.meta && route.meta.isComplexPath && child.path.includes('/')" 
+                :index="currentBasePath + '/' + route.path + '/' + child.path"
+                :data-menu-name="child.meta ? child.meta.title : child.name"
+                :data-menu-icon="child.meta ? child.meta.icon : ''"
+                :data-path="child.path"
+              >
+                <template #title>
+                  <el-icon v-if="child.meta && child.meta.icon">
+                    <component v-if="child.meta && child.meta.icon" :is="child.meta.icon" />
+                  </el-icon>
+                  <span class="menu-title">{{ child.meta ? child.meta.title : child.name }}</span>
+                </template>
+                
+                <!-- 复合路径的子系统的子菜单 -->
+                <template v-if="child.children && child.children.length > 0">
+                  <el-menu-item 
+                    v-for="subChild in child.children" 
+                    :key="subChild.path" 
+                    :index="getMenuItemPath(child, subChild)"
+                    :data-menu-name="subChild.meta ? subChild.meta.title : subChild.name"
+                    :data-menu-icon="subChild.meta ? subChild.meta.icon : ''"
+                    :data-path="subChild.path"
+                  >
+                    <el-icon v-if="subChild.meta && subChild.meta.icon">
+                      <component v-if="subChild.meta && subChild.meta.icon" :is="subChild.meta.icon" />
+                    </el-icon>
+                    <template #title>
+                      <span class="menu-title">{{ subChild.meta ? subChild.meta.title : subChild.name }}</span>
+                    </template>
+                  </el-menu-item>
+                </template>
+              </el-sub-menu>
+              
               <!-- 二级菜单 - 有子菜单（三级菜单） -->
-              <el-sub-menu v-else :index="currentBasePath + '/' + route.path + '/' + child.path">
+              <el-sub-menu 
+                v-else
+                :index="currentBasePath + '/' + route.path + '/' + child.path"
+                :data-menu-name="child.meta ? child.meta.title : child.name"
+                :data-menu-icon="child.meta ? child.meta.icon : ''"
+                :data-path="child.path"
+              >
                 <template #title>
                   <el-icon v-if="child.meta && child.meta.icon">
                     <component v-if="child.meta && child.meta.icon" :is="child.meta.icon" />
@@ -77,6 +130,9 @@
                   v-for="grandChild in child.children" 
                   :key="grandChild.path" 
                   :index="currentBasePath + '/' + route.path + '/' + child.path + '/' + grandChild.path"
+                  :data-menu-name="grandChild.meta ? grandChild.meta.title : grandChild.name"
+                  :data-menu-icon="grandChild.meta ? grandChild.meta.icon : ''"
+                  :data-path="grandChild.path"
                 >
                   <el-icon v-if="grandChild.meta && grandChild.meta.icon">
                     <component v-if="grandChild.meta && grandChild.meta.icon" :is="grandChild.meta.icon" />
@@ -127,10 +183,11 @@
       <div class="tags-view-container">
         <div class="tags-view-wrapper">
           <div class="tags-view-item" 
-               v-for="tag in visitedViews" 
-               :key="tag.path"
-               :class="{ active: isActive(tag) }"
-               @click="goToPage(tag)">
+                v-for="tag in visitedViews" 
+                :key="tag.path"
+                :class="{ active: isActive(tag) }"
+                @click="goToPage(tag)"
+                @contextmenu.prevent="openTagMenu($event, tag)">
             <el-icon v-if="getTagIcon(tag)" size="14" class="tag-icon">
               <component v-if="getTagIcon(tag)" :is="getTagIcon(tag)" />
             </el-icon>
@@ -138,6 +195,16 @@
             <el-icon class="close-icon" @click.stop="closeTag(tag)"><Close /></el-icon>
           </div>
         </div>
+        
+        <!-- 标签右键菜单 -->
+        <ul v-show="visible" :style="{left: left+'px', top: top+'px'}" class="contextmenu" @click.stop>
+          <li @click.stop="refreshSelectedTag">刷新页面</li>
+          <li @click.stop="closeTag(selectedTag)">关闭当前</li>
+          <li @click.stop="closeOtherTags" class="divided">关闭其他</li>
+          <li @click.stop="closeAllTags">关闭所有</li>
+          <li @click.stop="closeLeftTags" :class="{ disabled: isFirstVisibleTag }">关闭左侧</li>
+          <li @click.stop="closeRightTags" :class="{ disabled: isLastVisibleTag }">关闭右侧</li>
+        </ul>
       </div>
       
       <!-- 内容区 -->
@@ -291,33 +358,268 @@ const findSubMenu = (mainMenu, subMenuPath, pathParts) => {
   return null
 }
 
-// 优化强制更新函数
-const forceUpdateBreadcrumb = (title, lock = true) => {
-  if (!title) return
-  
-  // 锁定逻辑
-  if (lock) {
-    breadcrumbLocked.value = true
-    
-    // 30秒后自动解锁
-    setTimeout(() => {
-      breadcrumbLocked.value = false
-    }, 30000)
+// 面包屑文本
+const breadcrumbText = ref('')
+
+// 强制更新面包屑文本
+const forceUpdateBreadcrumb = (text, immediate = false) => {
+  breadcrumbText.value = text
+  if (immediate) {
+    nextTick()
   }
+}
+
+// 获取当前页面的菜单名称
+const getMenuNameFromPath = (path) => {
+  if (!path) return ''
   
-  // 立即更新面包屑
-  customPageTitle.value = title
+  const pathParts = path.split('/')
+  if (pathParts.length < 4) return ''
   
-  // 使用 nextTick 确保 DOM 更新
-  nextTick(() => {
-    const breadcrumbItems = document.querySelectorAll('.el-breadcrumb__item')
-    if (breadcrumbItems.length >= 3) {
-      const titleSpan = breadcrumbItems[2].querySelector('.el-breadcrumb__inner')
-      if (titleSpan && titleSpan.textContent !== title) {
-        titleSpan.textContent = title
+  const systemName = pathParts[2]
+  const subMenuPath = pathParts[3]
+  const isSubPage = pathParts.length > 4
+  const subPageName = isSubPage ? pathParts[pathParts.length - 1] : ''
+  
+  // 使用原始菜单数据查找菜单信息
+  if (menuData.value._rawMenuData) {
+    const rawMenus = menuData.value._rawMenuData || []
+    
+    // 查找系统菜单
+    const systemMenu = rawMenus.find(menu => {
+      if (!menu.path) return false
+      const menuPath = menu.path.toLowerCase()
+      // 处理复合路径格式的菜单
+      if (menuPath.includes('/')) {
+        const parts = menuPath.split('/')
+        return parts[0] === systemName
+      }
+      return menuPath === systemName
+    })
+    
+    if (systemMenu) {
+      // 根据路径类型不同处理
+      if (isSubPage) {
+        // 如果是具体页面，尝试查找对应的子菜单
+        const subMenu = findSubMenuByPath(systemMenu, `${subMenuPath}/${subPageName}`)
+        if (subMenu) {
+          return subMenu.menuName
+        }
+      } else {
+        // 如果只点击了二级菜单（如system-admin/system-mgmt）
+        // 尝试查找匹配的二级菜单
+        const subMenu = findSubMenuByPath(systemMenu, subMenuPath)
+        if (subMenu) {
+          return subMenu.menuName
+        } else {
+          // 如果没找到匹配的子菜单，使用上级菜单的名称
+          return systemMenu.menuName
+        }
       }
     }
-  })
+  }
+  
+  // 如果没有找到标题，使用路径部分作为标题
+  return isSubPage ? 
+    subPageName.charAt(0).toUpperCase() + subPageName.slice(1).replace(/-/g, ' ') :
+    subMenuPath.charAt(0).toUpperCase() + subMenuPath.slice(1).replace(/-/g, ' ')
+}
+
+// 修改getMenuItemPath函数确保路径正确
+const getMenuItemPath = (route, child) => {
+  // 获取基础路径
+  const basePath = currentBasePath.value
+  
+  // 检查父级路由是否是复合路径
+  const isParentComplexPath = route.meta && route.meta.isComplexPath
+  
+  // 获取子菜单路径
+  let childPath = child.path
+  
+  // 如果有子菜单自己的复合路径设置，则直接使用它
+  if (child.meta && child.meta.fullPath) {
+    return `${basePath}/${child.meta.fullPath}`
+  }
+  
+  // 检查父级是否有复合路径信息，并且子菜单不是完整路径
+  if (isParentComplexPath && route.meta && route.meta.subSystemPath) {
+    // 移除子路径中的.vue后缀
+    if (childPath.endsWith('.vue')) {
+      childPath = childPath.replace('.vue', '')
+    }
+    
+    // 移除路径开头的斜杠（如果有）
+    if (childPath.startsWith('/')) {
+      childPath = childPath.substring(1)
+    }
+    
+    // 检查子菜单路径是否已包含子系统路径
+    const subSystemPath = route.meta.subSystemPath
+    if (childPath.startsWith(subSystemPath + '/')) {
+      // 子菜单路径已包含子系统路径，直接使用
+      return `${basePath}/${childPath}`
+    }
+    
+    // 构建使用父级子系统路径的完整路径: /dashboard/system-admin/system-mgmt/domain
+    return `${basePath}/${route.meta.subSystemPath}/${childPath}`
+  }
+  
+  // 处理常规路径
+  // 检查子菜单路径是否包含文件路径
+  if (childPath.includes('/')) {
+    // 如果包含斜杠，可能是文件路径，取第一部分作为路由路径
+    const pathParts = childPath.split('/')
+    
+    // 如果最后一部分是index或index.vue，则使用前面的部分
+    if (pathParts[pathParts.length - 1] === 'index' || 
+        pathParts[pathParts.length - 1] === 'index.vue') {
+      childPath = pathParts.slice(0, -1).join('/')
+    }
+  }
+  
+  // 如果路径以/开头，去掉第一个/
+  if (childPath.startsWith('/')) {
+    childPath = childPath.substring(1)
+  }
+  
+  // 移除子路径中的.vue后缀
+  if (childPath.endsWith('.vue')) {
+    childPath = childPath.replace('.vue', '')
+  }
+  
+  // 构建完整路径 - 直接使用基础路径 + 子菜单路径
+  const fullPath = `${basePath}/${childPath}`
+  
+  return fullPath
+}
+
+// 添加一个辅助函数，确保标签数据使用菜单名称
+const createTagFromMenuData = (path, defaultTitle = '') => {
+  // 检查路径是否有效
+  if (!path) return null
+  
+  const tag = {
+    path: path,
+    title: defaultTitle,
+    icon: 'Document'
+  }
+  
+  const pathParts = path.split('/')
+  if (pathParts.length < 4) return tag
+  
+  // 尝试从菜单数据中获取真实信息
+  // 系统和子系统路径
+  const systemName = pathParts[2]
+  const subMenuPath = pathParts[3]
+  const isSubPage = pathParts.length > 4
+  const subPageName = isSubPage ? pathParts[pathParts.length - 1] : ''
+  
+  if (menuData.value && menuData.value._rawMenuData) {
+    const rawMenus = menuData.value._rawMenuData
+    
+    // 查找一级菜单
+    for (const menu of rawMenus) {
+      if (!menu.path) continue
+      
+      const menuPath = menu.path.toLowerCase()
+      if (menuPath.startsWith(systemName) || menuPath.includes('/' + systemName) || menuPath === systemName) {
+        // 查找二级菜单
+        if (menu.menuChildList && menu.menuChildList.length > 0) {
+          let matched = false
+          
+          for (const childMenu of menu.menuChildList) {
+            if (!childMenu.path) continue
+            
+            // 处理路径
+            let childPath = childMenu.path.toLowerCase()
+            if (childPath.startsWith('/')) {
+              childPath = childPath.substring(1)
+            }
+            if (childPath.endsWith('.vue')) {
+              childPath = childPath.substring(0, childPath.length - 4)
+            }
+            
+            // 检查路径最后部分
+            const childPathParts = childPath.split('/')
+            const lastPart = childPathParts[childPathParts.length - 1]
+            
+            // 匹配逻辑
+            if ((childPath === subMenuPath || childPath.endsWith('/' + subMenuPath) || lastPart === subMenuPath) ||
+                (isSubPage && (childPath.endsWith('/' + subPageName) || lastPart === subPageName))) {
+              // 匹配成功，使用真实菜单名称
+              tag.title = childMenu.menuName
+              tag.icon = childMenu.menuIcon || 'Document'
+              matched = true
+              break
+            }
+          }
+          
+          // 如果找到匹配，退出循环
+          if (matched) break
+        }
+      }
+    }
+  }
+  
+  // 如果未找到菜单名称，尝试从DOM元素获取
+  if (!tag.title) {
+    const menuItem = document.querySelector(`.el-menu-item[index="${path}"]`)
+    if (menuItem) {
+      // 优先使用data属性中的名称
+      const menuName = menuItem.getAttribute('data-menu-name')
+      if (menuName) {
+        tag.title = menuName
+      }
+      
+      // 获取图标
+      const iconAttr = menuItem.getAttribute('data-menu-icon')
+      if (iconAttr) {
+        tag.icon = iconAttr
+      }
+    }
+  }
+  
+  // 如果仍然没有标题，使用默认值或路径部分
+  if (!tag.title) {
+    if (defaultTitle) {
+      tag.title = defaultTitle
+    } else {
+      tag.title = isSubPage ? 
+        subPageName.charAt(0).toUpperCase() + subPageName.slice(1).replace(/-/g, ' ') :
+        subMenuPath.charAt(0).toUpperCase() + subMenuPath.slice(1).replace(/-/g, ' ')
+    }
+  }
+  
+  return tag
+}
+
+// 添加访问标签 - 修改此函数
+const addVisitedView = (view) => {
+  // 确保视图对象格式正确
+  if (!view) return
+  
+  // 如果只提供了路径，尝试从菜单数据中获取完整信息
+  if (view.path && !view.title) {
+    const tagData = createTagFromMenuData(view.path, '')
+    if (tagData) {
+      view = { ...view, ...tagData }
+    }
+  }
+  
+  // 检查是否已存在相同路径的标签
+  const existingTagIndex = visitedViews.value.findIndex(v => v.path === view.path)
+  if (existingTagIndex === -1) {
+    // 如果不存在，添加新标签
+    visitedViews.value.push(view)
+  } else {
+    // 如果已存在，更新其标题和图标
+    visitedViews.value[existingTagIndex] = {
+      ...visitedViews.value[existingTagIndex],
+      title: view.title || visitedViews.value[existingTagIndex].title,
+      icon: view.icon || visitedViews.value[existingTagIndex].icon
+    }
+  }
+  saveVisitedViews()
 }
 
 // 更新面包屑导航 - 优化逻辑
@@ -424,33 +726,114 @@ const routes = computed(() => {
   // 返回对应系统的菜单数据，如果没有则返回空数组
   const menuRoutes = menuData.value[systemName] || []
   
-  // 如果没有找到菜单数据，尝试使用menuCode转换后的路径查找
-  if (menuRoutes.length === 0 && menuData.value._rawMenuData) {
+  // 如果已经处理过的菜单数据，直接返回
+  if (menuRoutes.length > 0) {
+    return menuRoutes
+  }
+  
+  // 如果没有找到菜单数据，尝试使用原始菜单数据处理
+  if (menuData.value._rawMenuData) {
     const rawMenus = menuData.value._rawMenuData || []
     
-    // 查找匹配的菜单
-    const matchedMenu = rawMenus.find(menu => {
-      const menuPath = menu.path && menu.path.trim() !== '' 
-        ? menu.path.toLowerCase() 
-        : menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
+    // 查找所有对应系统的菜单（支持system-admin/system-mgmt格式）
+    const systemMenus = rawMenus.filter(menu => {
+      // 处理菜单路径
+      let menuPath = ''
+      
+      if (menu.path && menu.path.trim() !== '') {
+        menuPath = menu.path.toLowerCase()
+        
+        // 去掉开头的斜杠
+        if (menuPath.startsWith('/')) {
+          menuPath = menuPath.substring(1)
+        }
+        
+        // 检查是否是复合路径（如system-admin/system-mgmt）
+        if (menuPath.includes('/')) {
+          // 取复合路径的第一部分作为系统名称
+          const parts = menuPath.split('/')
+          menuPath = parts[0]
+        }
+      } else {
+        menuPath = menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
+      }
       
       return menuPath === systemName
     })
     
-    if (matchedMenu) {
+    // 如果找到了匹配的菜单
+    if (systemMenus.length > 0) {
+      const allComplexMenus = []
       
-      // 创建一个主路由，包含子菜单
-      const mainRoute = {
-        path: systemName,
-        name: matchedMenu.menuCode,
-        meta: {
-          title: matchedMenu.menuName,
-          icon: matchedMenu.menuIcon || 'Document'
-        },
-        children: transformMenuToRoutes(matchedMenu.menuChildList || [], systemName)
+      // 处理每个复合路径菜单
+      systemMenus.forEach(menu => {
+        // 检查是否是复合路径菜单
+        const isComplexPath = menu.path && menu.path.includes('/')
+        
+        if (isComplexPath) {
+          // 提取原始路径中的子系统部分
+          const pathParts = menu.path.split('/')
+          if (pathParts.length >= 2) {
+            // 创建子系统菜单
+            const subSystemPath = pathParts[1]
+            const subSystemMenu = {
+              path: `${systemName}/${subSystemPath}`,
+              name: `${menu.menuCode}_${subSystemPath}`,
+              meta: {
+                title: menu.menuName || (subSystemPath.charAt(0).toUpperCase() + subSystemPath.slice(1).replace(/-/g, ' ')),
+                icon: menu.menuIcon || 'Document',
+                isComplexPath: true,
+                subSystemPath: subSystemPath
+              },
+              children: []
+            }
+            
+            // 处理该子系统下的所有子菜单
+            if (menu.menuChildList && menu.menuChildList.length > 0) {
+              // 查找属于这个子系统的子菜单
+              const subMenus = menu.menuChildList.filter(childMenu => {
+                return childMenu.path && childMenu.path.endsWith('.vue')
+              })
+              
+              // 处理子菜单
+              if (subMenus.length > 0) {
+                // 标记父级信息
+                subMenus.forEach(subMenu => {
+                  subMenu._parentMenu = {
+                    _isComplexPath: true,
+                    _systemPath: systemName,
+                    _subSystemPath: subSystemPath,
+                    _fullPath: menu.path
+                  }
+                })
+                
+                // 转换为路由格式
+                subSystemMenu.children = transformMenuToRoutes(subMenus, '')
+              }
+            }
+            
+            // 添加到结果中
+            allComplexMenus.push(subSystemMenu)
+          }
+        } else {
+          // 处理常规菜单
+          const mainRoute = {
+            path: systemName,
+            name: menu.menuCode,
+            meta: {
+              title: menu.menuName,
+              icon: menu.menuIcon || 'Document'
+            },
+            children: transformMenuToRoutes(menu.menuChildList || [], systemName)
+          }
+          allComplexMenus.push(mainRoute)
+        }
+      })
+      
+      // 返回所有处理后的菜单
+      if (allComplexMenus.length > 0) {
+        return allComplexMenus
       }
-      
-      return [mainRoute]
     }
   }
   
@@ -495,7 +878,6 @@ const fetchMenuData = async () => {
     
     const res = await post(MENU_API.GET_MENU, params)
     
-    
     if (res.code === '200') {
       if (!res.data || !Array.isArray(res.data)) {
         ElMessage.warning('未获取到菜单数据，请联系管理员')
@@ -515,15 +897,19 @@ const fetchMenuData = async () => {
         _rawMenuData: allMenus
       }
       
+      // 收集所有复合路径一级菜单
+      const complexPathMenus = {}
+      
       // 遍历所有系统模块（一级菜单）
       allMenus.forEach(menu => {
-        
         if (!menu.menuCode) {
           return
         }
         
         // 使用path字段作为路由路径，如果没有则使用menuCode转换
         let systemPath = ''
+        let isComplexPath = false
+        
         if (menu.path && menu.path.trim() !== '') {
           systemPath = menu.path.toLowerCase()
           
@@ -532,16 +918,47 @@ const fetchMenuData = async () => {
             systemPath = systemPath.substring(1)
           }
           
-          // 如果path包含文件名(如index.vue)，则去掉.vue后缀
-          if (systemPath.endsWith('.vue')) {
-            systemPath = systemPath.substring(0, systemPath.length - 4)
-          }
-          
-          // 如果path包含目录和文件名，只保留目录部分
+          // 检查是否是复合路径（如system-admin/system-mgmt）
           if (systemPath.includes('/')) {
+            isComplexPath = true
+            
+            // 对于复合路径，使用第一部分作为系统路径
             const pathParts = systemPath.split('/')
-            if (pathParts[pathParts.length - 1] === 'index') {
-              systemPath = pathParts.slice(0, -1).join('/')
+            // 保存完整路径，以便后续使用
+            const fullPath = systemPath
+            
+            // 使用第一部分作为systemPath
+            const mainSystemPath = pathParts[0]
+            const subSystemPath = pathParts[1]
+            
+            // 保存子系统路径
+            menu._isComplexPath = true
+            menu._fullPath = fullPath
+            menu._systemPath = mainSystemPath
+            menu._subSystemPath = subSystemPath
+            
+            // 将菜单按系统分组
+            if (!complexPathMenus[mainSystemPath]) {
+              complexPathMenus[mainSystemPath] = []
+            }
+            
+            // 添加到复合路径菜单集合
+            complexPathMenus[mainSystemPath].push(menu)
+            
+            // 对于复合路径菜单，我们将在后面统一处理
+            return
+          } else {
+            // 如果path包含文件名(如index.vue)，则去掉.vue后缀
+            if (systemPath.endsWith('.vue')) {
+              systemPath = systemPath.substring(0, systemPath.length - 4)
+            }
+            
+            // 如果path包含目录和文件名，只保留目录部分
+            if (systemPath.includes('/')) {
+              const pathParts = systemPath.split('/')
+              if (pathParts[pathParts.length - 1] === 'index') {
+                systemPath = pathParts.slice(0, -1).join('/')
+              }
             }
           }
         } else {
@@ -559,17 +976,16 @@ const fetchMenuData = async () => {
           name: menu.menuCode,
           meta: {
             title: menu.menuName,
-            icon: menu.menuIcon || 'Document'
+            icon: menu.menuIcon || 'Document',
+            isComplexPath: isComplexPath
           },
           children: []
         }
         
         // 处理二级菜单
         if (menu.menuChildList && menu.menuChildList.length > 0) {
-          
           // 预处理子菜单的path字段
           menu.menuChildList.forEach(childMenu => {
-            
             // 如果子菜单的path包含文件路径，需要特殊处理
             if (childMenu.path && childMenu.path.includes('/')) {
               const pathParts = childMenu.path.split('/')
@@ -585,14 +1001,87 @@ const fetchMenuData = async () => {
           mainRoute.children = transformMenuToRoutes(menu.menuChildList, '')
         }
         
-        // 存储到menuData中 - 只存储一个包含children的主路由
-        menuDataObj[systemPath] = [mainRoute]
+        // 存储到menuData中
+        if (!menuDataObj[systemPath]) {
+          menuDataObj[systemPath] = []
+        }
+        menuDataObj[systemPath].push(mainRoute)
+      })
+      
+      // 处理复合路径菜单
+      Object.keys(complexPathMenus).forEach(systemKey => {
+        const systemMenus = complexPathMenus[systemKey]
+        
+        // 为每个子系统创建一个菜单项
+        const subSystemMenus = []
+        
+        // 将同一子系统路径的菜单合并
+        const subSystemMap = {}
+        
+        // 先按子系统分组
+        systemMenus.forEach(menu => {
+          const subSystemPath = menu._subSystemPath
+          if (!subSystemMap[subSystemPath]) {
+            subSystemMap[subSystemPath] = {
+              path: `${systemKey}/${subSystemPath}`,
+              name: `${systemKey}_${subSystemPath}`,
+              meta: {
+                title: menu.menuName || subSystemPath.charAt(0).toUpperCase() + subSystemPath.slice(1).replace(/-/g, ' '),
+                icon: menu.menuIcon || 'Document',
+                isComplexPath: true,
+                subSystemPath: subSystemPath
+              },
+              children: [],
+              menuChildItems: [] // 临时存储所有子菜单
+            }
+          }
+          
+          // 收集该子系统下的所有子菜单
+          if (menu.menuChildList && menu.menuChildList.length > 0) {
+            menu.menuChildList.forEach(childMenu => {
+              // 标记父级信息
+              childMenu._parentMenu = {
+                _isComplexPath: true,
+                _systemPath: systemKey,
+                _subSystemPath: subSystemPath,
+                _fullPath: menu._fullPath
+              }
+              
+              // 添加到该子系统的菜单集合中
+              subSystemMap[subSystemPath].menuChildItems.push(childMenu)
+            })
+          }
+        })
+        
+        // 转换每个子系统的子菜单为路由格式
+        Object.keys(subSystemMap).forEach(subSystemPath => {
+          const subSystem = subSystemMap[subSystemPath]
+          
+          // 转换子菜单为路由格式
+          if (subSystem.menuChildItems.length > 0) {
+            subSystem.children = transformMenuToRoutes(subSystem.menuChildItems, '')
+            delete subSystem.menuChildItems // 删除临时存储
+          }
+          
+          // 添加到子系统菜单列表
+          subSystemMenus.push(subSystem)
+        })
+        
+        // 如果有处理后的子系统菜单，则将其添加到menuData中
+        if (subSystemMenus.length > 0) {
+          menuDataObj[systemKey] = subSystemMenus
+        }
       })
       
       menuData.value = menuDataObj
     } else {
+      // 错误处理
+      ElMessage.error(res.message || '获取菜单数据失败')
     }
   } catch (error) {
+    // 错误处理
+    console.error('获取菜单数据异常', error)
+    ElMessage.error('获取菜单数据异常')
   } finally {
     menuLoading.value = false
   }
@@ -646,8 +1135,18 @@ onMounted(() => {
   // 添加 MutationObserver 监听弹出菜单
   setupMenuObserver()
   
-  // 添加DOM事件监听，在路由跳转前先设置标题
+  // 初始化菜单展开状态
   setTimeout(() => {
+    // 如果路径中有子菜单部分，自动展开该菜单
+    const pathParts = route.path.split('/')
+    if (pathParts.length >= 4) {
+      const basePath = `/${pathParts[1]}/${pathParts[2]}`
+      if (!openedMenus.value.includes(basePath)) {
+        openedMenus.value.push(basePath)
+      }
+      restoreMenuOpenState()
+    }
+    
     // 直接获取所有菜单项元素
     const menuItems = document.querySelectorAll('.el-menu-item')
     const subMenuTitles = document.querySelectorAll('.el-sub-menu__title')
@@ -664,7 +1163,7 @@ onMounted(() => {
       }, true) // 使用捕获阶段，确保我们的代码先于Element UI的代码执行
     })
     
-    // 同样为子菜单标题添加点击事件，虽然子菜单标题本身没有跳转，但保险起见
+    // 同样为子菜单标题添加点击事件监听，虽然子菜单标题本身没有跳转，但保险起见
     subMenuTitles.forEach(title => {
       title.addEventListener('click', (e) => {
         const subMenu = title.parentElement
@@ -676,7 +1175,19 @@ onMounted(() => {
         }
       }, true)
     })
-  }, 500) // 延迟一点执行，确保DOM已经渲染完成
+  }, 300) // 延迟一点执行，确保DOM已经渲染完成
+
+  // 添加点击事件监听器，用于关闭右键菜单
+  document.addEventListener('click', handleDocumentClick)
+  
+  // 调试标签右键菜单功能
+  console.log('初始化标签右键菜单', { visible: visible.value })
+})
+
+onBeforeUnmount(() => {
+  // 移除点击事件监听器
+  document.removeEventListener('click', handleDocumentClick)
+  console.log('移除标签右键菜单事件监听')
 })
 
 // 设置 MutationObserver 监听弹出菜单
@@ -1026,8 +1537,25 @@ const goToPage = (view) => {
   // 保持固定标题
   document.title = 'SystemsAdmin管理系统'
   
+  // 保存当前选中的标签
+  const currentActiveMenuIndex = document.querySelector('.el-menu-item.is-active')?.getAttribute('index') || ''
+  
   // 然后再跳转页面
-  router.push(view.path)
+  router.push(view.path).then(() => {
+    // 恢复菜单展开状态，确保不会折叠已展开的菜单
+    nextTick(() => {
+      // 如果路由跳转改变了选中的菜单项，恢复原来的展开状态
+      const newActiveMenuIndex = document.querySelector('.el-menu-item.is-active')?.getAttribute('index') || ''
+      
+      // 恢复菜单展开状态
+      restoreMenuOpenState()
+      
+      // 如果切换到了不同的标签页但菜单选中项变化了，需要保持菜单展开状态
+      if (currentActiveMenuIndex !== newActiveMenuIndex) {
+        console.log('菜单项发生变化，从', currentActiveMenuIndex, '变为', newActiveMenuIndex)
+      }
+    })
+  })
 }
 
 // 修改处理菜单点击函数 - 优化逻辑
@@ -1039,89 +1567,86 @@ const handleMenuSelect = async (index, indexPath) => {
     return
   }
 
-  // 获取当前菜单项的标题和图标
+  // 获取路径信息
   const pathParts = index.split('/')
+  // 确保路径至少包含：/dashboard/system-admin/system-mgmt
   if (pathParts.length < 4) {
     return
   }
   
-  const systemName = pathParts[2]
-  const subMenuPath = pathParts[3]
+  console.log('菜单点击路径:', index)
   
-  // 从菜单数据中获取标题
+  // 尝试直接从DOM元素获取菜单名称
   let menuTitle = ''
-  let menuIcon = 'Document'
+  let menuItem = document.querySelector(`.el-menu-item[index="${index}"]`)
   
-  // 查找一级菜单
-  const mainMenu = findMainMenu(systemName)
-  if (mainMenu) {
-    // 查找二级菜单
-    const subMenu = findSubMenu(mainMenu, subMenuPath, pathParts)
-    
-    if (subMenu) {
-      menuTitle = subMenu.menuName
-      menuIcon = subMenu.menuIcon || 'Document'
-      
-      // 立即更新面包屑，并等待更新完成
-      await new Promise(resolve => {
-        forceUpdateBreadcrumb(menuTitle, true)
-        nextTick(() => {
-          resolve()
-        })
-      })
-    }
+  if (menuItem) {
+    menuTitle = menuItem.getAttribute('data-menu-name')
+    console.log('从DOM获取菜单名称:', menuTitle)
   }
   
-  // 如果从菜单数据中未找到标题，尝试从DOM中获取
-  if (!menuTitle) {
-    const menuItem = document.querySelector(`.el-menu-item[index="${index}"]`)
-    if (menuItem) {
-      const titleSpan = menuItem.querySelector('.menu-title')
-      if (titleSpan) {
-        menuTitle = titleSpan.textContent.trim()
-        // 立即更新面包屑，并等待更新完成
-        await new Promise(resolve => {
-          forceUpdateBreadcrumb(menuTitle, true)
-          nextTick(() => {
-            resolve()
-          })
-        })
+  // 使用辅助函数创建带有菜单名称的标签
+  const tagData = createTagFromMenuData(index, menuTitle)
+  console.log('创建的标签数据:', tagData)
+  
+  if (tagData) {
+    // 添加标签
+    addVisitedView(tagData)
+    
+    // 更新面包屑文本
+    forceUpdateBreadcrumb(tagData.title)
+  }
+  
+  // 跳转到页面
+  router.push(index).then(() => {
+    // 确保菜单保持展开状态
+    nextTick(() => {
+      restoreMenuOpenState()
+    })
+  })
+}
+
+// 辅助函数：在菜单中查找子菜单
+const findSubMenuByPath = (menu, targetPath) => {
+  if (!menu || !menu.menuChildList) return null
+  
+  // 尝试查找匹配的子菜单
+  return menu.menuChildList.find(child => {
+    if (!child.path) return false
+    
+    // 处理子菜单路径
+    let childPath = child.path.toLowerCase()
+    
+    // 如果path以/开头，去掉开头的/
+    if (childPath.startsWith('/')) {
+      childPath = childPath.substring(1)
+    }
+    
+    // 如果包含完整路径 (如system-admin/system-mgmt/domain.vue)
+    if (childPath.includes('/')) {
+      const parts = childPath.split('/')
+      // 如果长度大于2，可能是system-admin/system-mgmt/domain.vue格式
+      if (parts.length > 2) {
+        // 使用子系统+页面部分进行匹配
+        const subSystemPlusPage = parts.slice(1).join('/')
+        // 去掉.vue后缀
+        return subSystemPlusPage.replace('.vue', '') === targetPath
+      }
+      
+      // 如果是二级路径如system-mgmt/domain.vue
+      const lastPart = parts[parts.length - 1]
+      if (lastPart.endsWith('.vue')) {
+        return lastPart.replace('.vue', '') === targetPath
       }
     }
-  }
-  
-  // 如果还是没有标题，使用当前页面名称
-  menuTitle = menuTitle || getCurrentPageName()
-  
-  // 创建新的标签页
-  const newView = {
-    path: index,
-    title: menuTitle,
-    name: route.name,
-    icon: menuIcon
-  }
-  
-  // 检查是否已存在相同路径的标签
-  const existingTagIndex = visitedViews.value.findIndex(v => v.path === index)
-  if (existingTagIndex === -1) {
-    // 如果不存在，添加新标签
-    visitedViews.value.push(newView)
-  } else {
-    // 如果已存在，更新其标题和图标
-    visitedViews.value[existingTagIndex] = {
-      ...visitedViews.value[existingTagIndex],
-      title: menuTitle,
-      icon: menuIcon
+    
+    // 处理简单的文件名如domain.vue
+    if (childPath.endsWith('.vue')) {
+      return childPath.replace('.vue', '') === targetPath
     }
-  }
-  saveVisitedViews()
-  
-  // 确保面包屑更新完成后再进行路由跳转
-  await nextTick()
-  router.push(index)
-  
-  // 使用固定标题
-  document.title = 'SystemsAdmin管理系统'
+    
+    return childPath === targetPath
+  })
 }
 
 // 关闭标签
@@ -1147,38 +1672,6 @@ const closeTag = (view) => {
   }
 }
 
-// 获取菜单项的路径
-const getMenuItemPath = (route, child) => {
-  // 获取基础路径
-  const basePath = currentBasePath.value
-  
-  // 获取子菜单路径
-  let childPath = child.path
-  
-  // 检查子菜单路径是否包含文件路径
-  if (childPath.includes('/')) {
-    // 如果包含斜杠，可能是文件路径，取第一部分作为路由路径
-    const pathParts = childPath.split('/')
-    
-    // 如果最后一部分是index或index.vue，则使用前面的部分
-    if (pathParts[pathParts.length - 1] === 'index' || 
-        pathParts[pathParts.length - 1] === 'index.vue') {
-      childPath = pathParts.slice(0, -1).join('/')
-    }
-    
-  }
-  
-  // 如果路径以/开头，去掉第一个/
-  if (childPath.startsWith('/')) {
-    childPath = childPath.substring(1)
-  }
-  
-  // 构建完整路径 - 直接使用基础路径 + 子菜单路径，避免重复添加父级路径
-  const fullPath = `${basePath}/${childPath}`
-  
-  return fullPath
-}
-
 // 修改监听当前系统名称的watch
 watch(() => currentSystem.value, (system) => {
   // 不再更新标题，因为已经在main.js中统一设置
@@ -1202,6 +1695,173 @@ const handleCollapsedMenuStyle = () => {
 const handleHomeClick = () => {
   clearVisitedViews()
   router.push('/dashboard')
+}
+
+// 标签右键菜单相关变量
+const visible = ref(false)
+const top = ref(0)
+const left = ref(0)
+const selectedTag = ref(null)
+const isFirstVisibleTag = computed(() => {
+  if (!selectedTag.value || visitedViews.value.length === 0) return true
+  return visitedViews.value[0].path === selectedTag.value.path
+})
+const isLastVisibleTag = computed(() => {
+  if (!selectedTag.value || visitedViews.value.length === 0) return true
+  return visitedViews.value[visitedViews.value.length - 1].path === selectedTag.value.path
+})
+
+// 打开标签右键菜单
+const openTagMenu = (e, tag) => {
+  // 阻止事件冒泡，防止立即被document的点击事件关闭菜单
+  e.stopPropagation()
+  
+  // 计算菜单显示位置
+  const menuMinWidth = 105
+  const offsetLeft = e.clientX
+  const offsetWidth = document.documentElement.clientWidth
+  const maxLeft = offsetWidth - menuMinWidth
+  left.value = offsetLeft > maxLeft ? maxLeft : offsetLeft
+
+  // 设置菜单顶部位置，加上一点偏移量
+  top.value = e.clientY + 2
+  
+  // 更新选中的标签
+  selectedTag.value = tag
+  
+  // 显示菜单
+  visible.value = true
+  
+  // 调试日志
+  console.log('打开标签右键菜单', {
+    tag,
+    position: { left: left.value, top: top.value },
+    visible: visible.value
+  })
+  
+  // 添加点击事件监听，以便在点击其他位置时自动关闭菜单
+  document.addEventListener('click', handleDocumentClick)
+}
+
+// 全局点击事件处理函数 - 关闭右键菜单
+const handleDocumentClick = () => {
+  if (visible.value) {
+    console.log('关闭标签右键菜单')
+    visible.value = false
+  }
+}
+
+// 关闭所有标签
+const closeAllTags = () => {
+  console.log('关闭所有标签')
+  visitedViews.value = []
+  saveVisitedViews()
+  router.push('/dashboard')
+  visible.value = false
+}
+
+// 关闭其他标签
+const closeOtherTags = () => {
+  if (!selectedTag.value) return
+  console.log('关闭其他标签', selectedTag.value)
+  visitedViews.value = visitedViews.value.filter(tag => tag.path === selectedTag.value.path)
+  saveVisitedViews()
+  router.push(selectedTag.value.path)
+  visible.value = false
+}
+
+// 关闭左侧标签
+const closeLeftTags = () => {
+  if (!selectedTag.value) return
+  if (isFirstVisibleTag.value) return
+  
+  console.log('关闭左侧标签', selectedTag.value)
+  const selectedIndex = visitedViews.value.findIndex(tag => tag.path === selectedTag.value.path)
+  if (selectedIndex > 0) {
+    visitedViews.value = visitedViews.value.slice(selectedIndex)
+    saveVisitedViews()
+  }
+  visible.value = false
+}
+
+// 关闭右侧标签
+const closeRightTags = () => {
+  if (!selectedTag.value) return
+  if (isLastVisibleTag.value) return
+  
+  console.log('关闭右侧标签', selectedTag.value)
+  const selectedIndex = visitedViews.value.findIndex(tag => tag.path === selectedTag.value.path)
+  if (selectedIndex < visitedViews.value.length - 1) {
+    visitedViews.value = visitedViews.value.slice(0, selectedIndex + 1)
+    saveVisitedViews()
+  }
+  visible.value = false
+}
+
+// 刷新页面
+const refreshSelectedTag = () => {
+  if (!selectedTag.value) return
+  
+  console.log('刷新页面:', selectedTag.value)
+  
+  // 关闭菜单
+  visible.value = false
+  
+  // 刷新当前路由页面的方法
+  const { fullPath } = router.resolve(selectedTag.value.path)
+  
+  // 方法1：使用router.replace强制刷新
+  router.replace({
+    path: '/redirect' + fullPath
+  }).catch(err => {
+    // 如果路由不存在，尝试方法2
+    console.log('重定向方法失败，尝试替代方法:', err)
+    
+    // 方法2：先跳转到一个临时页面，然后再返回
+    const currentPath = selectedTag.value.path
+    router.replace('/dashboard').then(() => {
+      nextTick(() => {
+        router.replace(currentPath)
+      })
+    })
+  })
+}
+
+// 添加一个变量追踪菜单展开状态
+const openedMenus = ref([])
+
+// 菜单展开状态变化事件处理
+const handleSubMenuOpen = (index) => {
+  if (!openedMenus.value.includes(index)) {
+    openedMenus.value.push(index)
+  }
+  console.log('打开的子菜单:', openedMenus.value)
+}
+
+// 菜单关闭状态变化事件处理
+const handleSubMenuClose = (index) => {
+  const i = openedMenus.value.indexOf(index)
+  if (i !== -1) {
+    openedMenus.value.splice(i, 1)
+  }
+  console.log('关闭后的子菜单:', openedMenus.value)
+}
+
+// 恢复菜单展开状态
+const restoreMenuOpenState = () => {
+  nextTick(() => {
+    // 对于每个需要保持展开的菜单，找到对应的DOM元素并模拟点击
+    openedMenus.value.forEach(index => {
+      const subMenu = document.querySelector(`.el-sub-menu[index="${index}"]`)
+      if (subMenu && !subMenu.classList.contains('is-opened')) {
+        // 查找菜单标题元素并模拟点击
+        const titleEl = subMenu.querySelector('.el-sub-menu__title')
+        if (titleEl) {
+          titleEl.click()
+        }
+      }
+    })
+  })
 }
 </script>
 
@@ -1290,7 +1950,7 @@ const handleHomeClick = () => {
 }
 
 .navbar {
-  height: 46px;  /* 原来是50px，减小高度 */
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1302,17 +1962,6 @@ const handleHomeClick = () => {
   position: relative;
 }
 
-/* 删除navbar底部的线条 */
-/* .navbar::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  height: 1px;
-  background-color: #eef2f7;
-} */
-
 .left-menu {
   display: flex;
   align-items: center;
@@ -1321,30 +1970,6 @@ const handleHomeClick = () => {
 .hamburger-container {
   cursor: pointer;
   margin-right: 15px;
-}
-
-/* 新增：面包屑导航样式 */
-.breadcrumb-container {
-  margin-right: 20px;
-}
-
-/* 新增：搜索框样式 */
-.search-container {
-  margin-right: 20px;
-}
-
-.search-input {
-  width: 200px;
-}
-
-/* 新增：通知图标样式 */
-.notification-container {
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.notification-badge :deep(.el-badge__content) {
-  background-color: #f56c6c;
 }
 
 .right-menu {
@@ -1380,8 +2005,88 @@ const handleHomeClick = () => {
   font-weight: 500;
 }
 
+/* 标签样式 */
+.tags-view-item {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  height: 30px;
+  line-height: 24px;
+  border: 1.5px solid #dcdfe6;
+  color: #606266;
+  background: #fff;
+  padding: 0 8px;
+  font-size: 12px;
+  margin-left: 5px;
+  margin-top: 0;
+  border-radius: 3px;
+  transition: color .3s, background-color .3s, border-color .3s;
+  box-sizing: border-box;
+}
+
+.tags-view-item:first-of-type {
+  margin-left: 0;
+}
+
+.tags-view-item .tag-icon {
+  margin-right: 4px;
+  color: #606266;
+  transition: color .3s;
+}
+
+.tags-view-item.active {
+  background-color: #ecf5ff;
+  color: #409eff;
+  border-color: #409eff;
+  border-width: 1.5px;
+}
+
+.tags-view-item.active .tag-icon {
+  color: #409eff;
+}
+
+.tags-view-item:hover {
+  color: #409eff;
+  border-color: #409eff;
+  background-color: #ecf5ff;
+}
+
+.tags-view-item:hover .tag-icon {
+  color: #409eff;
+}
+
+.tags-view-item .close-icon {
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  border-radius: 50%;
+  text-align: center;
+  transition: all .3s;
+  transform-origin: 100% 50%;
+  margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #606266;
+}
+
+.tags-view-item .close-icon:hover {
+  background-color: #409eff;
+  color: #fff;
+}
+
+.tags-view-item.active .close-icon {
+  color: #409eff;
+}
+
+.tags-view-item.active .close-icon:hover {
+  background-color: #409eff;
+  color: #fff;
+}
+
 .tags-view-container {
-  height: 28px;
+  height: 30px;
   width: 100%;
   background: transparent;
   border-radius: 0;
@@ -1391,13 +2096,14 @@ const handleHomeClick = () => {
   overflow-x: hidden;
   white-space: nowrap;
   margin: 0 18px;
-  margin-top: 10px;  /* 原来是25px，减小上边距 */
-  margin-bottom: 10px; /* 原来是10px，减小下边距 */
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 0;
   position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
+  will-change: contents;
 }
 
 .tags-view-wrapper {
@@ -1408,67 +2114,7 @@ const handleHomeClick = () => {
   margin-left: 0;
   flex-wrap: nowrap;
   overflow: hidden;
-}
-
-.tags-view-item {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  cursor: pointer;
-  height: 26px;  /* 原来是26px，减小高度 */
-  line-height: 24px;  /* 原来是26px，与高度保持一致 */
-  border: 1px solid #e8eef7; /* 原来是#d8dce5，调整为更浅的颜色 */
-  color: #495060;
-  background: #fff;
-  padding: 0 8px;
-  font-size: 12px;
-  margin-left: 5px;
-  margin-top: 0;
-  border-radius: 3px;
-}
-
-.tags-view-item:first-of-type {
-  margin-left: 0;
-}
-
-.tags-view-item .tag-icon {
-  margin-right: 4px;
-}
-
-.tags-view-item.active {
-  background-color: #409EFF;
-  color: #fff;
-  border-color: #409EFF;
-}
-
-.tags-view-item.active::before {
-  content: '';
-  background: #fff;
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  position: relative;
-  margin-right: 4px;
-}
-
-.tags-view-item .close-icon {
-  width: 14px;
-  height: 14px;
-  line-height: 14px;
-  border-radius: 50%;
-  text-align: center;
-  transition: all .3s cubic-bezier(.645, .045, .355, 1);
-  transform-origin: 100% 50%;
-  margin-left: 5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tags-view-item .close-icon:hover {
-  background-color: #b4bccc;
-  color: #fff;
+  will-change: contents;
 }
 
 .app-main {
@@ -1894,5 +2540,65 @@ body .el-popper.is-pure .el-menu--popup::-webkit-scrollbar-thumb {
 body .el-popper.is-pure .el-menu::-webkit-scrollbar-track,
 body .el-popper.is-pure .el-menu--popup::-webkit-scrollbar-track {
   background: transparent !important;
+}
+
+/* 修复标签点击时的晃动问题 */
+.tags-view-item {
+  box-sizing: border-box !important;
+  border-width: 1.5px !important;
+  transition: color .3s, background-color .3s, border-color .3s !important;
+}
+
+.tags-view-item.active {
+  border-width: 1.5px !important;
+}
+</style>
+
+<style>
+/* 标签右键菜单样式 */
+.contextmenu {
+  margin: 0;
+  padding: 5px 0;
+  background: #fff;
+  position: fixed; /* 使用fixed而不是absolute，避免滚动时位置变化 */
+  z-index: 3000; /* 提高z-index，确保在其他元素之上 */
+  list-style-type: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  min-width: 120px; /* 设置最小宽度 */
+  border: 1px solid #ebeef5;
+}
+
+.contextmenu li {
+  margin: 0;
+  padding: 8px 16px;
+  cursor: pointer;
+  line-height: 1.5;
+  transition: all 0.2s;
+}
+
+.contextmenu li:hover {
+  background: #ecf5ff;
+  color: #409eff;
+}
+
+.contextmenu li.disabled {
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+.contextmenu li.disabled:hover {
+  background: transparent;
+  color: #bbb;
+}
+
+/* 菜单项分割线 */
+.contextmenu li.divided {
+  border-top: 1px solid #ebeef5;
+  margin-top: 5px;
+  padding-top: 5px;
 }
 </style> 

@@ -42,7 +42,7 @@
               <el-table-column type="index" label="序号" width="60" align="center" fixed />
               <el-table-column prop="roleCode" label="角色代码" align="left" min-width="240" />
               <el-table-column prop="roleName" label="角色名称" align="left" min-width="200" />
-              <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
+              <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="80">
                 <template #default="scope">
                   <div class="flex">
                     <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">

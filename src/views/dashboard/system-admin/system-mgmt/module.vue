@@ -211,7 +211,7 @@
   // 编辑表单
   const editForm = reactive({
     menuId: '',
-    parentId: '0',
+    parentMenuId: '0',
     domainId: '',
     menuCode: '',
     menuName: '',
@@ -258,7 +258,7 @@
       editForm.menuId = res.data.menuId
       editForm.menuCode = res.data.menuCode
       editForm.menuName = res.data.menuName
-      editForm.parentId = res.data.parentId
+      editForm.parentMenuId = res.data.parentMenuId
       editForm.domainId = res.data.domainId
       editForm.menuType = res.data.menuType
       editForm.menuUrl = res.data.menuUrl
@@ -320,7 +320,7 @@
   
   const resetForm = () => {
     editForm.menuId = ''
-    editForm.parentId = '0'
+    editForm.parentMenuId = '0'
     editForm.menuCode = ''
     editForm.menuName = ''
     editForm.domainId = ''
@@ -414,7 +414,7 @@
     resetForm()
     // 设置默认值
     editForm.menuId = '0'
-    editForm.parentId = '0'
+    editForm.parentMenuId = '0'
     editForm.menuType = 1
     editForm.sortOrder = 1
     editForm.level = 1

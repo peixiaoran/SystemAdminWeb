@@ -31,6 +31,19 @@ const baseRoutes = [
     path: '/dashboard',
     redirect: ROUTE_CONFIG.BASE.HOME
   },
+  // 添加重定向路由，用于刷新页面
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('../views/redirect/index.vue'),
+        meta: { title: '重定向', noCache: true }
+      }
+    ]
+  },
   {
     path: ROUTE_CONFIG.BASE.HOME,
     name: 'ModuleSelect',
@@ -104,6 +117,9 @@ function generateDashboardRoutes() {
   Object.keys(MODULE_MAP).forEach(moduleName => {
     const moduleConfig = MODULE_MAP[moduleName]
     
+    // 支持复合路径格式，如system-admin/system-mgmt
+    const moduleKeys = Object.keys(MODULE_MAP);
+    
     // 创建模块路由
     const moduleRoute = {
       path: `/dashboard/${moduleName}`,
@@ -131,13 +147,37 @@ function generateDashboardRoutes() {
 
     // 动态添加子路由
     Object.keys(modules).forEach(key => {
-      const matchPath = key.match(new RegExp(`../views/dashboard/${moduleName}/(.+)\\.vue$`))
+      // 支持system-admin/system-mgmt和system-admin两种路径格式
+      const mainPathRegex = new RegExp(`../views/dashboard/${moduleName}/(.+)\\.vue$`);
+      const nestedPathRegex = new RegExp(`../views/dashboard/${moduleName}/([-\\w]+)/([-\\w]+)\\.vue$`);
+      
+      const matchPath = key.match(mainPathRegex);
+      const matchNestedPath = key.match(nestedPathRegex);
       
       if (matchPath) {
         const routeConfig = processRoutePath(matchPath[1], moduleName)
         if (routeConfig) {
           moduleRoute.children.push(routeConfig)
         }
+      }
+      
+      // 特殊处理system-admin/system-mgmt子路径
+      if (moduleName === 'system-admin' && matchNestedPath) {
+        const subFolder = matchNestedPath[1]; // system-mgmt
+        const fileName = matchNestedPath[2];  // domain
+        
+        const subRouteConfig = {
+          path: `${subFolder}/${fileName}`,
+          name: `SystemAdmin${toPascalCase(subFolder)}${toPascalCase(fileName)}`,
+          component: modules[key],
+          meta: { 
+            title: formatFileName(fileName), 
+            icon: getFileIcon('system-admin', subFolder, fileName),
+            [ROUTE_CONFIG.META.AUTH]: true
+          }
+        };
+        
+        moduleRoute.children.push(subRouteConfig);
       }
     })
 

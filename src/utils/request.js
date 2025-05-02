@@ -17,15 +17,6 @@ const handleLogout = () => {
   window.location.href = '/#/login'
 }
 
-// 统一消息提示
-const showMessage = (message, type = 'error', duration = 5 * 1000) => {
-  ElMessage({
-    message,
-    type,
-    duration
-  })
-}
-
 // 请求拦截器
 service.interceptors.request.use(
   config => {
@@ -75,26 +66,7 @@ service.interceptors.response.use(
     return sanitizeData(response.data)
   },
   error => {
-    if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          // 重定向到登录页面
-          handleLogout()
-          return Promise.reject(error)
-        case 403:
-          // 显示权限不足提示并跳转到登录页面
-          ElMessage.error('您没有对应权限')
-          handleLogout()
-          return Promise.reject(error)
-        case 500:
-          // 只显示500错误的提示
-          ElMessage.error(error.response.data.message || '服务器内部错误')
-          return Promise.reject(error)
-        default:
-          // 其他错误直接reject，不显示提示
-          return Promise.reject(error)
-      }
-    }
+    // 直接返回错误，让具体的请求处理函数处理错误
     return Promise.reject(error)
   }
 )
@@ -109,34 +81,30 @@ const createRequest = (method) => async (url, data) => {
     })
     return response
   } catch (error) {
-    // 如果是403错误，直接返回空响应对象，不显示额外提示
-    if (error.response?.status === 403) {
-      return { 
-        code: 200,
-        data: null,
-        message: '',
-        success: true
+    // 处理特定状态码
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          handleLogout()
+          break
+        case 403:
+          handleLogout()
+          break
+        default:
+          // 处理业务错误
+          if (error.response.data?.code && error.response.data.code !== 200) {
+            return {
+              code: error.response.data.code,
+              data: null,
+              message: error.response.data.message,
+              success: false
+            }
+          }
       }
     }
     
-    // 处理业务错误
-    if (error.response?.data?.code && error.response.data.code !== 200) {
-      // 这里可以添加特定的业务错误处理逻辑
-      return {
-        code: error.response.data.code,
-        data: null,
-        message: error.response.data.message,
-        success: false
-      }
-    }
-    
-    // 其他错误直接返回错误信息
-    return {
-      code: error.response?.status || 500,
-      data: null,
-      message: error.response?.data?.message,
-      success: false
-    }
+    // 阻止后续处理
+    return new Promise(() => {})
   }
 }
 

@@ -110,6 +110,10 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
+.conventional-table .el-table__row {
+  height: 40px;
+}
+
 .conventional-table th.el-table__cell {
   background-color: #f5f7fa;
   border-bottom: 1px solid #eef2f7;
@@ -164,3 +168,17 @@
   color: #606266;
   font-size: 14px;
 } 
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+}
+
+:deep(.el-checkbox) {
+  margin-right: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
