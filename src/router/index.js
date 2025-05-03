@@ -505,8 +505,8 @@ router.beforeEach(async (to, from, next) => {
     return false;
   };
   
-  // 设置页面标题
-  document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
+  // 设置页面标题 - 始终使用固定标题
+  document.title = ROUTE_CONFIG.META.TITLE;
 
   // 白名单页面直接通过
   if (WHITE_LIST.includes(to.path)) {

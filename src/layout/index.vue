@@ -1350,7 +1350,8 @@ const isActive = (tag) => {
 
 // 修改通过路径设置文档标题的函数
 const setDocumentTitleByPath = (path) => {
-  // 不再设置标题，因为已经在main.js中统一设置
+  // 始终设置固定标题
+  document.title = 'SystemsAdmin管理系统'
   return true
 }
 
@@ -1358,7 +1359,8 @@ const setDocumentTitleByPath = (path) => {
 onBeforeMount(() => {
   // 拦截路由导航
   router.beforeEach((to, from, next) => {
-    // 不再在这里设置标题，因为已经在main.js中统一设置
+    // 始终设置固定标题
+    document.title = 'SystemsAdmin管理系统'
     
     // 继续导航
     next()
@@ -1369,7 +1371,8 @@ onBeforeMount(() => {
   
   // 重写 router.push 方法
   router.push = function(to) {
-    // 不再在这里设置标题，因为已经在main.js中统一设置
+    // 始终设置固定标题
+    document.title = 'SystemsAdmin管理系统'
     
     // 调用原始导航方法
     return originalPush.apply(this, arguments)
