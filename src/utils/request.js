@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import router from '@/router'
 import { BASE_API_URL, API_TIMEOUT, IS_DEV, LOGIN_API } from '@/config/api/login/api'
 import { sanitizeData, sanitizeHtml } from './xssUtils'
 

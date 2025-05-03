@@ -226,21 +226,39 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeMount, nextTick, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { post } from '@/utils/request'
 import SidebarItem from './components/SidebarItem.vue'
 import { ArrowDown, Close, Fold, Expand, Search, Bell, Loading } from '@element-plus/icons-vue'
-import { MENU_API, IS_DEV, BASE_API_URL } from '@/config/api/login/api'
+import { IS_DEV, BASE_API_URL } from '@/config/api/login/api'
 import { transformMenuToRoutes, getSystemMenu } from '@/utils/menuHelper'
 import { ElMessage } from 'element-plus'
+import { useMenuStore, useUserStore } from '@/stores'
 
 const router = useRouter()
 const route = useRoute()
 const isCollapse = ref(false)
 const visitedViews = ref([])
 
-// 菜单数据
-const menuData = ref({})
-const menuLoading = ref(false)
+// 使用pinia store
+const menuStore = useMenuStore()
+const userStore = useUserStore()
+
+// 菜单数据 - 增加处理原始菜单数据的计算属性
+const menuData = computed(() => {
+  const menuList = menuStore.menuList
+  if (!menuList || menuList.length === 0) return {}
+  
+  // 初始化菜单数据对象，保存原始菜单数据
+  const menuDataObj = {
+    _rawMenuData: menuList
+  }
+  
+  // 处理菜单数据的逻辑保持不变
+  // ... 如果需要原有的处理逻辑，可以在这里添加 ...
+  
+  return menuDataObj
+})
+
+const menuLoading = computed(() => menuStore.isMenuLoading)
 
 // 新增：用户头像
 const userAvatar = ref('https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png')
@@ -890,330 +908,148 @@ const backToModuleSelect = () => {
 
 // 退出登录
 const logout = () => {
-  localStorage.removeItem('token')
-  router.push('/login')
+  userStore.logout() // 使用store的登出方法
 }
 
-// 获取菜单数据
+// 修改菜单获取方法
 const fetchMenuData = async () => {
   try {
-    menuLoading.value = true
+    console.log('开始获取菜单数据')
     
-    // 使用字符串形式的数字字面量，避免JavaScript处理大整数时的精度问题
-    const currentDomainId = '1350161679034934501'
-    
-    // 直接使用字符串形式的domainId
-    const params = { domainId: currentDomainId }
-    
-    const res = await post(MENU_API.GET_MENU, params)
-    
-    if (res.code === '200') {
-      if (!res.data || !Array.isArray(res.data)) {
-        ElMessage.warning('未获取到菜单数据，请联系管理员')
-        return
+    // 先检查store中是否已有菜单数据
+    if (menuStore.menuData && menuStore.menuData.length > 0) {
+      console.log('Store中已有菜单数据，无需重新获取')
+      
+      // 确保路由已生成
+      if (router && !menuStore.hasPermission) {
+        console.log('生成路由...')
+        menuStore.generateRoutes(menuStore.menuData, router)
       }
-      
-      if (res.data.length === 0) {
-        return
-      }
-      
-      // 处理菜单数据
-      const allMenus = res.data
-      
-      // 初始化菜单数据对象
-      const menuDataObj = {
-        // 保存原始菜单数据，以便后续使用
-        _rawMenuData: allMenus
-      }
-      
-      // 收集所有复合路径一级菜单
-      const complexPathMenus = {}
-      
-      // 遍历所有系统模块（一级菜单）
-      allMenus.forEach(menu => {
-        if (!menu.menuCode) {
-          return
-        }
-        
-        // 使用path字段作为路由路径，如果没有则使用menuCode转换
-        let systemPath = ''
-        let isComplexPath = false
-        
-        if (menu.path && menu.path.trim() !== '') {
-          systemPath = menu.path.toLowerCase()
-          
-          // 如果path以/开头，去掉第一个/
-          if (systemPath.startsWith('/')) {
-            systemPath = systemPath.substring(1)
-          }
-          
-          // 检查是否是复合路径（如system-admin/system-mgmt）
-          if (systemPath.includes('/')) {
-            isComplexPath = true
-            
-            // 对于复合路径，使用第一部分作为系统路径
-            const pathParts = systemPath.split('/')
-            // 保存完整路径，以便后续使用
-            const fullPath = systemPath
-            
-            // 使用第一部分作为systemPath
-            const mainSystemPath = pathParts[0]
-            const subSystemPath = pathParts[1]
-            
-            // 保存子系统路径
-            menu._isComplexPath = true
-            menu._fullPath = fullPath
-            menu._systemPath = mainSystemPath
-            menu._subSystemPath = subSystemPath
-            
-            // 将菜单按系统分组
-            if (!complexPathMenus[mainSystemPath]) {
-              complexPathMenus[mainSystemPath] = []
-            }
-            
-            // 添加到复合路径菜单集合
-            complexPathMenus[mainSystemPath].push(menu)
-            
-            // 对于复合路径菜单，我们将在后面统一处理
-            return
-          } else {
-            // 如果path包含文件名(如index.vue)，则去掉.vue后缀
-            if (systemPath.endsWith('.vue')) {
-              systemPath = systemPath.substring(0, systemPath.length - 4)
-            }
-            
-            // 如果path包含目录和文件名，只保留目录部分
-            if (systemPath.includes('/')) {
-              const pathParts = systemPath.split('/')
-              if (pathParts[pathParts.length - 1] === 'index') {
-                systemPath = pathParts.slice(0, -1).join('/')
-              }
-            }
-          }
-        } else {
-          systemPath = menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
-        }
-        
-        // 检查子菜单
-        if (!menu.menuChildList || !Array.isArray(menu.menuChildList)) {
-          menu.menuChildList = []
-        }
-        
-        // 不直接转换子菜单为路由，而是将一级菜单作为路由，子菜单作为其children
-        const mainRoute = {
-          path: systemPath,
-          name: menu.menuCode,
-          meta: {
-            title: menu.menuName,
-            icon: menu.menuIcon || 'Document',
-            isComplexPath: isComplexPath
-          },
-          children: []
-        }
-        
-        // 处理二级菜单
-        if (menu.menuChildList && menu.menuChildList.length > 0) {
-          // 预处理子菜单的path字段
-          menu.menuChildList.forEach(childMenu => {
-            // 如果子菜单的path包含文件路径，需要特殊处理
-            if (childMenu.path && childMenu.path.includes('/')) {
-              const pathParts = childMenu.path.split('/')
-              if (pathParts[pathParts.length - 1] === 'index.vue' || 
-                  pathParts[pathParts.length - 1] === 'index') {
-                // 如果是index.vue，使用目录名作为路径
-                childMenu._processedPath = pathParts.slice(0, -1).join('/')
-              }
-            }
-          })
-          
-          // 转换子菜单为路由格式
-          mainRoute.children = transformMenuToRoutes(menu.menuChildList, '')
-        }
-        
-        // 存储到menuData中
-        if (!menuDataObj[systemPath]) {
-          menuDataObj[systemPath] = []
-        }
-        menuDataObj[systemPath].push(mainRoute)
-      })
-      
-      // 处理复合路径菜单
-      Object.keys(complexPathMenus).forEach(systemKey => {
-        const systemMenus = complexPathMenus[systemKey]
-        
-        // 为每个子系统创建一个菜单项
-        const subSystemMenus = []
-        
-        // 将同一子系统路径的菜单合并
-        const subSystemMap = {}
-        
-        // 先按子系统分组
-        systemMenus.forEach(menu => {
-          const subSystemPath = menu._subSystemPath
-          if (!subSystemMap[subSystemPath]) {
-            subSystemMap[subSystemPath] = {
-              path: `${systemKey}/${subSystemPath}`,
-              name: `${systemKey}_${subSystemPath}`,
-              meta: {
-                title: menu.menuName || subSystemPath.charAt(0).toUpperCase() + subSystemPath.slice(1).replace(/-/g, ' '),
-                icon: menu.menuIcon || 'Document',
-                isComplexPath: true,
-                subSystemPath: subSystemPath
-              },
-              children: [],
-              menuChildItems: [] // 临时存储所有子菜单
-            }
-          }
-          
-          // 收集该子系统下的所有子菜单
-          if (menu.menuChildList && menu.menuChildList.length > 0) {
-            menu.menuChildList.forEach(childMenu => {
-              // 标记父级信息
-              childMenu._parentMenu = {
-                _isComplexPath: true,
-                _systemPath: systemKey,
-                _subSystemPath: subSystemPath,
-                _fullPath: menu._fullPath
-              }
-              
-              // 添加到该子系统的菜单集合中
-              subSystemMap[subSystemPath].menuChildItems.push(childMenu)
-            })
-          }
-        })
-        
-        // 转换每个子系统的子菜单为路由格式
-        Object.keys(subSystemMap).forEach(subSystemPath => {
-          const subSystem = subSystemMap[subSystemPath]
-          
-          // 转换子菜单为路由格式
-          if (subSystem.menuChildItems.length > 0) {
-            subSystem.children = transformMenuToRoutes(subSystem.menuChildItems, '')
-            delete subSystem.menuChildItems // 删除临时存储
-          }
-          
-          // 添加到子系统菜单列表
-          subSystemMenus.push(subSystem)
-        })
-        
-        // 如果有处理后的子系统菜单，则将其添加到menuData中
-        if (subSystemMenus.length > 0) {
-          menuDataObj[systemKey] = subSystemMenus
-        }
-      })
-      
-      menuData.value = menuDataObj
-    } else {
-      // 错误处理
-      ElMessage.error(res.message || '获取菜单数据失败')
+      return menuStore.menuData
     }
+    
+    // 使用pinia store获取菜单数据
+    console.log('通过API获取菜单数据')
+    const menuData = await menuStore.fetchMenuData()
+    
+    // 确保获取到了菜单数据
+    if (menuData && menuData.length > 0) {
+      // 将路由实例传递给store，生成路由
+      console.log('获取到菜单数据，生成路由...')
+      menuStore.generateRoutes(menuData, router)
+    } else {
+      console.warn('未获取到菜单数据或菜单数据为空')
+    }
+    
+    return menuData
   } catch (error) {
-    // 错误处理
     console.error('获取菜单数据异常', error)
     ElMessage.error('获取菜单数据异常')
-  } finally {
-    menuLoading.value = false
+    throw error
   }
 }
 
 // 组件挂载时获取菜单数据
 onMounted(() => {
-  fetchMenuData()
-  
-  // 从本地存储恢复标签页状态
-  restoreVisitedViews()
-  
-  // 如果有已访问标签，直接跳转到第一个标签页面
-  if (visitedViews.value && visitedViews.value.length > 0) {
-    const firstTag = visitedViews.value[0]
-    console.log('尝试跳转到第一个标签页面:', firstTag.path)
-    if (firstTag.path && firstTag.path !== route.path) {
-      router.push(firstTag.path)
-    }
-  }
-  
-  // 如果当前路由不是首页，且不在已访问标签中，则添加当前页面到标签
-  const currentPath = route.path
-  if (currentPath !== '/dashboard' && currentPath.split('/').length >= 4) {
-    const pathParts = currentPath.split('/')
-    const systemName = pathParts[2]
-    const subMenuPath = pathParts[3]
+  // 先触发获取菜单数据，确保路由已生成
+  fetchMenuData().then(() => {
+    // 恢复标签页状态
+    restoreVisitedViews()
     
-    // 查找一级菜单
-    const mainMenu = findMainMenu(systemName)
-    if (mainMenu) {
-      // 查找二级菜单
-      const subMenu = findSubMenu(mainMenu, subMenuPath, pathParts)
+    // 如果有已访问标签，直接跳转到第一个标签页面
+    if (visitedViews.value && visitedViews.value.length > 0) {
+      const firstTag = visitedViews.value[0]
+      console.log('尝试跳转到第一个标签页面:', firstTag.path)
+      if (firstTag.path && firstTag.path !== route.path) {
+        router.push(firstTag.path)
+      }
+    }
+    
+    // 如果当前路由不是首页，且不在已访问标签中，则添加当前页面到标签
+    const currentPath = route.path
+    if (currentPath !== '/dashboard' && currentPath.split('/').length >= 4) {
+      const pathParts = currentPath.split('/')
+      const systemName = pathParts[2]
+      const subMenuPath = pathParts[3]
       
-      if (subMenu) {
-        // 立即设置面包屑文本，不等待菜单数据加载完成
-        forceUpdateBreadcrumb(subMenu.menuName, true)
+      // 查找一级菜单
+      const mainMenu = findMainMenu(systemName)
+      if (mainMenu) {
+        // 查找二级菜单
+        const subMenu = findSubMenu(mainMenu, subMenuPath, pathParts)
         
-        const newView = {
-          path: currentPath,
-          title: subMenu.menuName,
-          name: route.name,
-          icon: subMenu.menuIcon || 'Document'
-        }
-        
-        // 检查是否已存在相同路径的标签
-        const existingTagIndex = visitedViews.value.findIndex(v => v.path === currentPath)
-        if (existingTagIndex === -1) {
-          // 如果不存在，添加新标签
-          visitedViews.value.push(newView)
-          saveVisitedViews()
-        }
-      }
-    }
-  }
-  
-  // 应用折叠菜单样式
-  handleCollapsedMenuStyle()
-  
-  // 添加 MutationObserver 监听弹出菜单
-  setupMenuObserver()
-  
-  // 初始化菜单展开状态
-  setTimeout(() => {
-    // 如果路径中有子菜单部分，自动展开该菜单
-    const pathParts = route.path.split('/')
-    if (pathParts.length >= 4) {
-      const basePath = `/${pathParts[1]}/${pathParts[2]}`
-      if (!openedMenus.value.includes(basePath)) {
-        openedMenus.value.push(basePath)
-      }
-      restoreMenuOpenState()
-    }
-    
-    // 直接获取所有菜单项元素
-    const menuItems = document.querySelectorAll('.el-menu-item')
-    const subMenuTitles = document.querySelectorAll('.el-sub-menu__title')
-    
-    // 为每个菜单项添加点击事件监听
-    menuItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        // 获取菜单项的index属性值，也就是路由路径
-        const path = item.getAttribute('index')
-        if (path) {
-          // 预先设置标题
-          setDocumentTitleByPath(path)
-        }
-      }, true) // 使用捕获阶段，确保我们的代码先于Element UI的代码执行
-    })
-    
-    // 同样为子菜单标题添加点击事件监听，虽然子菜单标题本身没有跳转，但保险起见
-    subMenuTitles.forEach(title => {
-      title.addEventListener('click', (e) => {
-        const subMenu = title.parentElement
         if (subMenu) {
-          const path = subMenu.getAttribute('index')
-          if (path) {
-            setDocumentTitleByPath(path)
+          // 立即设置面包屑文本，不等待菜单数据加载完成
+          forceUpdateBreadcrumb(subMenu.menuName, true)
+          
+          const newView = {
+            path: currentPath,
+            title: subMenu.menuName,
+            name: route.name,
+            icon: subMenu.menuIcon || 'Document'
+          }
+          
+          // 检查是否已存在相同路径的标签
+          const existingTagIndex = visitedViews.value.findIndex(v => v.path === currentPath)
+          if (existingTagIndex === -1) {
+            // 如果不存在，添加新标签
+            visitedViews.value.push(newView)
+            saveVisitedViews()
           }
         }
-      }, true)
-    })
-  }, 300) // 延迟一点执行，确保DOM已经渲染完成
+      }
+    }
+    
+    // 应用折叠菜单样式
+    handleCollapsedMenuStyle()
+    
+    // 添加 MutationObserver 监听弹出菜单
+    setupMenuObserver()
+    
+    // 初始化菜单展开状态
+    setTimeout(() => {
+      // 如果路径中有子菜单部分，自动展开该菜单
+      const pathParts = route.path.split('/')
+      if (pathParts.length >= 4) {
+        const basePath = `/${pathParts[1]}/${pathParts[2]}`
+        if (!openedMenus.value.includes(basePath)) {
+          openedMenus.value.push(basePath)
+        }
+        restoreMenuOpenState()
+      }
+      
+      // 直接获取所有菜单项元素
+      const menuItems = document.querySelectorAll('.el-menu-item')
+      const subMenuTitles = document.querySelectorAll('.el-sub-menu__title')
+      
+      // 为每个菜单项添加点击事件监听
+      menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          // 获取菜单项的index属性值，也就是路由路径
+          const path = item.getAttribute('index')
+          if (path) {
+            // 预先设置标题
+            setDocumentTitleByPath(path)
+          }
+        }, true) // 使用捕获阶段，确保我们的代码先于Element UI的代码执行
+      })
+      
+      // 同样为子菜单标题添加点击事件监听，虽然子菜单标题本身没有跳转，但保险起见
+      subMenuTitles.forEach(title => {
+        title.addEventListener('click', (e) => {
+          const subMenu = title.parentElement
+          if (subMenu) {
+            const path = subMenu.getAttribute('index')
+            if (path) {
+              setDocumentTitleByPath(path)
+            }
+          }
+        }, true)
+      })
+    }, 300) // 延迟一点执行，确保DOM已经渲染完成
+  }).catch(error => {
+    console.error('菜单初始化失败:', error)
+  })
 
   // 添加点击事件监听器，用于关闭右键菜单
   document.addEventListener('click', handleDocumentClick)
@@ -1436,57 +1272,8 @@ const getTagIcon = (tag) => {
   }
 }
 
-// 监听路由变化，添加标签页
-watch(() => route.path, (newPath) => {
-  if (document.referrer === '' && newPath !== '/dashboard' && newPath.split('/').length >= 4) {
-    const pathParts = newPath.split('/')
-    const systemName = pathParts[2]
-    const subMenuPath = pathParts[3]
-    
-    if (menuData.value._rawMenuData) {
-      const rawMenus = menuData.value._rawMenuData
-      
-      // 查找一级菜单
-      const mainMenu = rawMenus.find(menu => {
-        const menuPath = menu.path && menu.path.trim() !== '' 
-          ? menu.path.toLowerCase() 
-          : menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
-        
-        return menuPath === systemName
-      })
-      
-      if (mainMenu && mainMenu.menuChildList) {
-        // 查找二级菜单
-        const subMenu = mainMenu.menuChildList.find(menu => {
-          let menuPath = ''
-          if (menu.path && menu.path.trim() !== '') {
-            menuPath = menu.path.toLowerCase()
-            if (menuPath.startsWith('/')) {
-              menuPath = menuPath.substring(1)
-            }
-            if (menuPath.endsWith('.vue')) {
-              menuPath = menuPath.substring(0, menuPath.length - 4)
-            }
-            if (menuPath.includes('/')) {
-              const parts = menuPath.split('/')
-              if (parts[parts.length - 1] === 'index') {
-                menuPath = parts.slice(0, -1).join('/')
-              }
-            }
-          } else {
-            menuPath = menu.menuCode.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase()
-          }
-          
-          return menuPath === subMenuPath || menu._processedPath === subMenuPath
-        })
-        
-        if (subMenu) {
-          // 这里可以添加刷新页面时的特殊处理逻辑
-        }
-      }
-    }
-  }
-}, { immediate: false }) // 不立即触发
+// 添加一个新变量来锁定面包屑，防止被其他逻辑修改
+const breadcrumbLocked = ref(false)
 
 // 修改监听菜单数据变化的watch
 watch(() => menuData.value, (newMenuData) => {
@@ -1518,15 +1305,54 @@ watch(() => route.path, (newPath, oldPath) => {
   }
 }, { immediate: false })
 
-// 添加一个新变量来锁定面包屑，防止被其他逻辑修改
-const breadcrumbLocked = ref(false)
-
-// 监听菜单折叠状态变化
-watch(() => isCollapse.value, (isCollapsed) => {
-  // 延迟执行，确保DOM已更新
-  setTimeout(() => {
-    handleCollapsedMenuStyle()
-  }, 50)
+// 监听路由变化，添加标签页
+watch(() => route.path, (newPath, oldPath) => {
+  // 如果路径没有改变或是简单路径，则不处理
+  if (newPath === oldPath || newPath === '/dashboard' || newPath.split('/').length < 4) {
+    return
+  }
+  
+  // 解析路径
+  const pathParts = newPath.split('/')
+  const systemName = pathParts[2]
+  const subMenuPath = pathParts[3]
+  
+  // 创建一个标签对象
+  let tag = null
+  
+  // 首先尝试从菜单数据中获取标签信息
+  if (menuData.value._rawMenuData) {
+    const matchingTag = createTagFromMenuData(newPath, '')
+    if (matchingTag) {
+      tag = matchingTag
+    }
+  }
+  
+  // 如果未能从菜单数据中创建标签，则从路由信息中创建
+  if (!tag) {
+    // 找到匹配的路由
+    const matchedRoute = router.resolve(newPath)
+    if (matchedRoute) {
+      // 从路由元数据中获取标题
+      const title = matchedRoute.meta?.title || pathParts[pathParts.length - 1]
+      
+      tag = {
+        path: newPath,
+        title: title,
+        icon: 'Document'
+      }
+    }
+  }
+  
+  // 如果成功创建了标签，添加到访问历史
+  if (tag) {
+    addVisitedView(tag)
+    
+    // 更新面包屑
+    if (tag.title) {
+      forceUpdateBreadcrumb(tag.title)
+    }
+  }
 }, { immediate: true })
 
 // 判断标签是否激活
@@ -1942,6 +1768,14 @@ const restoreMenuOpenState = () => {
     })
   })
 }
+
+// 监听菜单折叠状态变化
+watch(() => isCollapse.value, (isCollapsed) => {
+  // 延迟执行，确保DOM已更新
+  setTimeout(() => {
+    handleCollapsedMenuStyle()
+  }, 50)
+}, { immediate: true })
 </script>
 
 <style scoped>

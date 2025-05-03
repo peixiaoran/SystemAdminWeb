@@ -1,11 +1,11 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 import { vSafeHtml } from './utils/xssUtils'
+import pinia from './stores'
 
 // 设置固定标题
 document.title = 'SystemsAdmin管理系统'
@@ -14,7 +14,7 @@ document.title = 'SystemsAdmin管理系统'
 const app = createApp(App)
 
 // 基础插件注册
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(ElementPlus, { size: 'default', zIndex: 3000 })
 

@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../layout/index.vue'
 import { ElMessage } from 'element-plus'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 // 自动导入所有views下的路由模块
 const modules = import.meta.glob('../views/**/*.vue')
@@ -106,6 +108,44 @@ const MODULE_MAP = {
   'message-admin': { 
     title: '消息中心', 
     icon: 'Message' 
+  }
+}
+
+// 白名单路径，不需要权限验证
+const WHITE_LIST = [
+  '/login', 
+  '/404', 
+  '/403', 
+  '/dashboard', 
+  '/module-select'
+]
+
+// 系统首页白名单，需要登录但不需要特定权限
+const SYSTEM_HOME_WHITELIST = [
+  '/dashboard/system-admin',
+  '/dashboard/user-admin',
+  '/dashboard/content-admin',
+  '/dashboard/order-admin',
+  '/dashboard/data-admin',
+  '/dashboard/message-admin'
+]
+
+// 添加调试信息以帮助排查问题
+function logRouteInfo(prefix, to, extra = {}) {
+  if (import.meta.env.DEV) {
+    console.group(`🔍 ${prefix}`)
+    console.log('Target path:', to.path)
+    console.log('Route name:', to.name)
+    console.log('Route params:', to.params)
+    console.log('Route query:', to.query)
+    console.log('Route meta:', to.meta)
+    
+    if (Object.keys(extra).length > 0) {
+      Object.entries(extra).forEach(([key, value]) => {
+        console.log(`${key}:`, value)
+      })
+    }
+    console.groupEnd()
   }
 }
 
@@ -419,22 +459,200 @@ function getLogModuleIcon(subModule) {
 
 // 创建路由实例
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
-  routes: [
-    ...baseRoutes,
-    ...generateDashboardRoutes(),
-    ...errorRoutes
-  ]
+  history: createWebHashHistory(),
+  routes: [...baseRoutes, ...generateDashboardRoutes(), ...errorRoutes],
+  scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
-// 全局前置守卫
-router.beforeEach((to, from, next) => {
-  // 检查是否需要登录权限
-  if (to.meta[ROUTE_CONFIG.META.AUTH] && !localStorage.getItem('token')) {
-    next(ROUTE_CONFIG.BASE.LOGIN)
-  } else {
-    next()
+// 延迟加载pinia store以避免循环依赖
+let userStore = null
+let menuStore = null
+
+const setupStores = async () => {
+  if (!userStore || !menuStore) {
+    // 延迟导入pinia store
+    const { useUserStore, useMenuStore } = await import('../stores')
+    const pinia = (await import('../stores')).default
+    userStore = useUserStore(pinia)
+    menuStore = useMenuStore(pinia)
   }
+  return { userStore, menuStore }
+}
+
+// 路由前置守卫
+router.beforeEach(async (to, from, next) => {
+  // 开始显示进度条
+  NProgress.start()
+  
+  // 添加详细日志
+  if (import.meta.env.DEV) {
+    logRouteInfo('路由导航请求', to, { from: from.path })
+  }
+  
+  // 设置页面标题
+  document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
+
+  // 白名单页面直接通过
+  if (WHITE_LIST.includes(to.path)) {
+    if (import.meta.env.DEV) console.log('✅ 白名单路径，直接通过:', to.path)
+    return next()
+  }
+
+  // 延迟获取store
+  const { userStore, menuStore } = await setupStores()
+
+  // 判断是否已登录
+  const hasToken = userStore.token
+
+  // 未登录，跳转到登录页面
+  if (!hasToken) {
+    ElMessage.warning('请先登录')
+    return next(`/login?redirect=${to.path}`)
+  }
+
+  // 系统首页白名单，登录后可直接访问
+  if (SYSTEM_HOME_WHITELIST.includes(to.path)) {
+    if (import.meta.env.DEV) console.log('✅ 系统首页白名单，直接通过:', to.path)
+    return next()
+  }
+  
+  // 直接处理system-admin的index.vue的情况
+  if (to.path === '/dashboard/system-admin' || to.path === '/dashboard/system-admin/index' || to.path === '/dashboard/system-admin/') {
+    if (import.meta.env.DEV) console.log('✅ system-admin首页特殊处理，直接通过:', to.path)
+    return next()
+  }
+
+  // 已登录 - 获取菜单数据并添加路由
+  if (!menuStore.menuData.length) {
+    try {
+      if (import.meta.env.DEV) console.log('🔄 加载菜单数据...')
+      // 加载菜单数据
+      await menuStore.fetchMenuData()
+      
+      // 生成并添加路由 - 将router传入
+      menuStore.generateRoutes(menuStore.menuData, router)
+      
+      if (import.meta.env.DEV) console.log('✅ 菜单数据加载完成，重新导航:', to.path)
+      // 确保路由已加载完成，重新导航到目标页面
+      next({ ...to, replace: true })
+      NProgress.done()
+    } catch (error) {
+      console.error('❌ 加载菜单数据失败:', error)
+      // 出错时，清空token并跳转到登录页
+      userStore.resetState()
+      ElMessage.error('获取权限信息失败，请重新登录')
+      next(`/login?redirect=${to.path}`)
+      NProgress.done()
+    }
+  } else {
+    // 菜单数据已存在 - 进行权限验证
+    const hasPermission = menuStore.hasRoutePermission(to.path, router)
+    
+    if (import.meta.env.DEV) {
+      console.log(`🔐 权限检查 ${to.path}: ${hasPermission ? '有权限' : '无权限'}`)
+    }
+    
+    if (hasPermission) {
+      // 有权限访问
+      next()
+    } else {
+      // 检查是否存在该路由
+      const isRouteExists = router.hasRoute(to.name) || 
+                          router.getRoutes().some(route => route.path === to.path);
+      
+      if (import.meta.env.DEV) {
+        console.log(`🧭 路由存在检查 ${to.path}: ${isRouteExists ? '存在' : '不存在'}`)
+      }
+      
+      if (isRouteExists) {
+        // 检查是否是特殊处理的复合路径系统页面
+        const pathParts = to.path.split('/')
+        if (pathParts.length >= 5 && 
+            pathParts[1] === 'dashboard' && 
+            pathParts[2] === 'system-admin' && 
+            pathParts[3] === 'system-mgmt') {
+          
+          // 特殊处理system-admin/system-mgmt下的页面
+          const pageName = pathParts[4]
+          
+          // 从menuStore中获取菜单数据
+          const menuData = menuStore.menuData
+          if (menuData && menuData.length > 0) {
+            // 查找system-admin/system-mgmt菜单
+            const systemMenu = menuData.find(menu => 
+              menu.path && menu.path.toLowerCase() === 'system-admin/system-mgmt'
+            )
+            
+            if (systemMenu && systemMenu.menuChildList) {
+              // 检查是否有对应子页面的权限
+              const hasPagePermission = systemMenu.menuChildList.some(child => {
+                if (child.path) {
+                  const childPath = child.path.toLowerCase()
+                  return childPath === `${pageName}.vue` || childPath === pageName
+                }
+                return false
+              })
+              
+              if (hasPagePermission) {
+                if (import.meta.env.DEV) {
+                  console.log(`✅ 特殊处理: 有权限访问子系统页面 ${to.path}`)
+                }
+                next()
+                return
+              }
+            }
+          }
+        }
+        
+        // 路由存在但无权限访问
+        if (import.meta.env.DEV) console.log('❌ 路由存在但无权限，跳转到403:', to.path)
+        next('/403')
+      } else if (to.path.startsWith('/dashboard/')) {
+        // 尝试处理动态URL访问的系统子页面
+        const pathParts = to.path.split('/')
+        
+        if (pathParts.length >= 4) {
+          // 检查是否有访问此系统模块的权限
+          const systemPath = `/${pathParts[1]}/${pathParts[2]}`
+          
+          // 验证系统路由和权限
+          const systemRouteExists = router.getRoutes().some(route => route.path === systemPath)
+          const hasSystemPermission = menuStore.hasSystemPermission(pathParts[2])
+          
+          if (import.meta.env.DEV) {
+            console.log(`🔍 系统路径检查 ${systemPath}:`, { 
+              systemRouteExists, 
+              hasSystemPermission 
+            })
+          }
+          
+          if (systemRouteExists && hasSystemPermission) {
+            // 允许访问系统下的页面，但记录警告日志
+            console.warn('访问未在菜单中注册的页面:', to.path)
+            next()
+          } else {
+            // 无系统访问权限
+            if (import.meta.env.DEV) console.log('❌ 无系统访问权限，跳转到403:', to.path)
+            next('/403')
+          }
+        } else {
+          // 路径格式不正确
+          if (import.meta.env.DEV) console.log('❌ 路径格式不正确，跳转到404:', to.path)
+          next('/404')
+        }
+      } else {
+        // 路由不存在
+        if (import.meta.env.DEV) console.log('❌ 路由不存在，跳转到404:', to.path)
+        next('/404')
+      }
+    }
+  }
+})
+
+// 路由后置守卫
+router.afterEach(() => {
+  // 结束进度条
+  NProgress.done()
 })
 
 export default router
