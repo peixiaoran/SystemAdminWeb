@@ -24,7 +24,7 @@
               <h3>系统模块</h3>
             </div>
           </template>
-          <div class="module-grid">
+          <div v-loading="loading" class="module-grid">
             <div 
               v-for="module in modules" 
               :key="module.id" 
@@ -32,7 +32,7 @@
               @click="navigateToModule(module.path)"
             >
               <el-icon :size="30" :class="`module-icon module-${module.id}`">
-                <component :is="module.icon" />
+                <component :is="getIconByName(module.name)" />
               </el-icon>
               <div class="module-name">{{ module.name }}</div>
             </div>
@@ -77,64 +77,68 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { 
-  Setting, 
-  User, 
-  Document, 
-  ShoppingCart, 
-  DataAnalysis, 
-  Message 
-} from '@element-plus/icons-vue';
+import { get } from '@/utils/request';
+import { MODULE_API } from '@/config/api/login/api';
 
 const router = useRouter();
 const currentTime = ref(new Date().toLocaleString());
 const browserInfo = ref('');
+const modules = ref([]);
+const loading = ref(false);
 
-// 模块列表
-const modules = [
-  { 
-    id: 'user', 
-    name: '用户管理', 
-    icon: 'User', 
-    path: '/dashboard/user-admin'
-  },
-  { 
-    id: 'content', 
-    name: '内容管理', 
-    icon: 'Document', 
-    path: '/dashboard/content-admin'
-  },
-  { 
-    id: 'order', 
-    name: '订单管理', 
-    icon: 'ShoppingCart', 
-    path: '/dashboard/order-admin'
-  },
-  { 
-    id: 'data', 
-    name: '数据分析', 
-    icon: 'DataAnalysis', 
-    path: '/dashboard/data-admin'
-  },
-  { 
-    id: 'system', 
-    name: '系统设置', 
-    icon: 'Setting', 
-    path: '/dashboard/system-admin'
-  },
-  { 
-    id: 'message', 
-    name: '消息中心', 
-    icon: 'Message', 
-    path: '/dashboard/message-admin'
-  },
-  { 
-    id: 'basic', 
-    name: '基础模块', 
-    icon: 'Setting', 
-    path: '/dashboard/system-basic'
+// 获取模块列表
+const fetchModules = async () => {
+  loading.value = true;
+  try {
+    const res = await get(MODULE_API.GET_MODULES);
+    if (res && res.success) {
+      modules.value = res.data.map(item => ({
+        id: item.id || item.domainId || item.code,
+        name: item.name || item.domainName,
+        path: item.path || `/dashboard/${item.code}-admin` || `/dashboard/${item.id}-admin`,
+      }));
+    } else {
+      console.error('获取模块列表失败:', res?.message || '未知错误');
+      // 加载失败时显示默认模块
+      setDefaultModules();
+    }
+  } catch (error) {
+    console.error('获取模块列表异常:', error);
+    // 异常时显示默认模块
+    setDefaultModules();
+  } finally {
+    loading.value = false;
   }
-];
+};
+
+// 设置默认模块(当接口出错时使用)
+const setDefaultModules = () => {
+  modules.value = [
+    { id: 'user', name: '用户管理', path: '/dashboard/user-admin' },
+    { id: 'content', name: '内容管理', path: '/dashboard/content-admin' },
+    { id: 'order', name: '订单管理', path: '/dashboard/order-admin' },
+    { id: 'data', name: '数据分析', path: '/dashboard/data-admin' },
+    { id: 'system', name: '系统设置', path: '/dashboard/system-admin' },
+    { id: 'message', name: '消息中心', path: '/dashboard/message-admin' },
+    { id: 'basic', name: '基础模块', path: '/dashboard/system-basic' }
+  ];
+};
+
+// 根据模块名称获取对应图标
+const getIconByName = (name) => {
+  const iconMap = {
+    '用户管理': 'User',
+    '内容管理': 'Document',
+    '订单管理': 'ShoppingCart',
+    '数据分析': 'DataAnalysis',
+    '系统设置': 'Setting',
+    '消息中心': 'Message',
+    '基础模块': 'Setting'
+  };
+  
+  // 尝试根据名称匹配图标，如果没有匹配项，则返回默认图标
+  return iconMap[name] || 'Setting';
+};
 
 // 跳转到模块
 const navigateToModule = (path) => {
@@ -170,6 +174,9 @@ const getBrowserInfo = () => {
 
 onMounted(() => {
   browserInfo.value = getBrowserInfo();
+  
+  // 获取模块列表
+  fetchModules();
   
   // 更新当前时间
   setInterval(() => {
