@@ -368,7 +368,7 @@
       ...editForm,
     }
     
-    console.log('params', params)
+    
     const res = await post(INSERST_MODULE_API.INSERST_MODULE, params)
     
     if (res && res.code === '200') {

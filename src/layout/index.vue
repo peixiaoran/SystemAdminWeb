@@ -7,14 +7,14 @@
         <h1 class="logo-title">{{ currentSystem }}</h1>
       </div>
       
-      <!-- 加载状态 -->
-      <div v-if="menuLoading" class="menu-loading">
+      <!-- 加载状态 - 使用绝对定位覆盖在菜单上，而不是替换菜单 -->
+      <div v-if="menuLoading" class="menu-loading-overlay">
         <el-icon class="loading-icon"><Loading /></el-icon>
         <span>加载菜单中...</span>
       </div>
       
+      <!-- 菜单始终显示，加载时可能为空 -->
       <el-menu
-        v-else
         :default-active="activeMenu"
         class="sidebar-menu"
         background-color="#ffffff"
@@ -516,8 +516,6 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
   // 检查路径是否有效
   if (!path) return null
   
-  console.log('尝试从路径创建标签:', path, '默认标题:', defaultTitle)
-  
   const tag = {
     path: path,
     title: defaultTitle,
@@ -534,8 +532,6 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
   const isSubPage = pathParts.length > 4
   const subPageName = isSubPage ? pathParts[pathParts.length - 1] : ''
   
-  console.log('解析路径:', { systemName, subMenuPath, isSubPage, subPageName })
-  
   if (menuData.value && menuData.value._rawMenuData) {
     const rawMenus = menuData.value._rawMenuData
     
@@ -545,8 +541,6 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
       
       const menuPath = menu.path.toLowerCase()
       if (menuPath.startsWith(systemName) || menuPath.includes('/' + systemName) || menuPath === systemName) {
-        console.log('找到匹配的一级菜单:', menu.menuName)
-        
         // 查找二级菜单
         if (menu.menuChildList && menu.menuChildList.length > 0) {
           let matched = false
@@ -573,8 +567,6 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
             
             if (isMatchSubMenu || isMatchSubPage) {
               // 匹配成功，使用真实菜单名称
-              console.log('找到匹配的二级菜单:', childMenu.menuName, '匹配方式:', 
-                          isMatchSubMenu ? '二级菜单匹配' : '子页面匹配')
               tag.title = childMenu.menuName
               tag.icon = childMenu.menuIcon || 'Document'
               matched = true
@@ -584,51 +576,14 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
           
           // 如果找到匹配，退出循环
           if (matched) break
-          else {
-            console.log('在菜单:', menu.menuName, '中未找到匹配的二级菜单')
-          }
         }
       }
     }
   }
   
-  console.log('最终创建的标签:', tag)
-  
   // 如果没有找到标题，返回null表示未找到匹配
   if (!tag.title || tag.title === '') {
-    console.log('未能找到有效的菜单标题，返回null')
     return null
-  }
-  
-  return tag
-  
-  // 如果未找到菜单名称，尝试从DOM元素获取
-  if (!tag.title) {
-    const menuItem = document.querySelector(`.el-menu-item[index="${path}"]`)
-    if (menuItem) {
-      // 优先使用data属性中的名称
-      const menuName = menuItem.getAttribute('data-menu-name')
-      if (menuName) {
-        tag.title = menuName
-      }
-      
-      // 获取图标
-      const iconAttr = menuItem.getAttribute('data-menu-icon')
-      if (iconAttr) {
-        tag.icon = iconAttr
-      }
-    }
-  }
-  
-  // 如果仍然没有标题，使用默认值或路径部分
-  if (!tag.title) {
-    if (defaultTitle) {
-      tag.title = defaultTitle
-    } else {
-      tag.title = isSubPage ? 
-        subPageName.charAt(0).toUpperCase() + subPageName.slice(1).replace(/-/g, ' ') :
-        subMenuPath.charAt(0).toUpperCase() + subMenuPath.slice(1).replace(/-/g, ' ')
-    }
   }
   
   return tag
@@ -641,7 +596,6 @@ const addVisitedView = (view) => {
   
   // 跳过404页面
   if (view.path && (view.path.includes('/404') || view.path.includes('/not-found'))) {
-    console.log('跳过添加404页面到标签:', view.path)
     return
   }
   
@@ -914,24 +868,17 @@ const logout = () => {
 // 修改菜单获取方法
 const fetchMenuData = async () => {
   try {
-    console.log('开始获取菜单数据')
-    
     // 始终从API获取最新的菜单数据
-    console.log('通过API获取菜单数据')
     const menuData = await menuStore.fetchMenuData()
     
     // 确保获取到了菜单数据
     if (menuData && menuData.length > 0) {
       // 将路由实例传递给store，生成路由
-      console.log('获取到菜单数据，生成路由...')
       menuStore.generateRoutes(menuData, router)
-    } else {
-      console.warn('未获取到菜单数据或菜单数据为空')
     }
     
     return menuData
   } catch (error) {
-    console.error('获取菜单数据异常', error)
     ElMessage.error('获取菜单数据异常')
     throw error
   }
@@ -947,7 +894,6 @@ onMounted(() => {
     // 如果有已访问标签，直接跳转到第一个标签页面
     if (visitedViews.value && visitedViews.value.length > 0) {
       const firstTag = visitedViews.value[0]
-      console.log('尝试跳转到第一个标签页面:', firstTag.path)
       if (firstTag.path && firstTag.path !== route.path) {
         router.push(firstTag.path)
       }
@@ -1036,20 +982,16 @@ onMounted(() => {
       })
     }, 300) // 延迟一点执行，确保DOM已经渲染完成
   }).catch(error => {
-    console.error('菜单初始化失败:', error)
+    ElMessage.error('菜单初始化失败')
   })
 
   // 添加点击事件监听器，用于关闭右键菜单
   document.addEventListener('click', handleDocumentClick)
-  
-  // 调试标签右键菜单功能
-  console.log('初始化标签右键菜单', { visible: visible.value })
 })
 
 onBeforeUnmount(() => {
   // 移除点击事件监听器
   document.removeEventListener('click', handleDocumentClick)
-  console.log('移除标签右键菜单事件监听')
 })
 
 // 设置 MutationObserver 监听弹出菜单
@@ -1140,12 +1082,10 @@ const restoreVisitedViews = () => {
     const storedViews = localStorage.getItem('visitedViews')
     if (storedViews) {
       visitedViews.value = JSON.parse(storedViews)
-      console.log('恢复标签页成功，共', visitedViews.value.length, '个标签')
-    } else {
-      console.log('没有找到保存的标签页数据')
     }
   } catch (error) {
-    console.error('恢复标签页出错:', error)
+    // 处理解析错误，确保视图不为空
+    visitedViews.value = []
   }
 }
 
@@ -1405,7 +1345,8 @@ const goToPage = (view) => {
     
     // 如果都是同一个系统的页面，使用路由替换模式而不是导航
     if (routeParts.length >= 3 && viewParts.length >= 3 && routeParts[2] === viewParts[2]) {
-      console.log('同系统内标签导航，使用替换模式:', view.path);
+      // 启用过渡保护，防止布局闪烁
+      document.body.classList.add('nprogress-busy')
       
       // 使用router.replace代替router.push以减少历史堆栈
       router.replace(view.path).then(() => {
@@ -1422,11 +1363,20 @@ const goToPage = (view) => {
         }
         
         // 恢复菜单展开状态
-        nextTick(() => restoreMenuOpenState());
+        nextTick(() => {
+          restoreMenuOpenState()
+          // 移除过渡保护
+          setTimeout(() => {
+            document.body.classList.remove('nprogress-busy')
+          }, 100)
+        });
       });
       return;
     }
   }
+  
+  // 启用过渡保护
+  document.body.classList.add('nprogress-busy')
   
   // 如果是不同系统的导航，使用正常的router.push
   router.push(view.path).then(() => {
@@ -1438,10 +1388,10 @@ const goToPage = (view) => {
       // 恢复菜单展开状态
       restoreMenuOpenState()
       
-      // 如果切换到了不同的标签页但菜单选中项变化了，需要保持菜单展开状态
-      if (currentActiveMenuIndex !== newActiveMenuIndex) {
-        console.log('菜单项发生变化，从', currentActiveMenuIndex, '变为', newActiveMenuIndex)
-      }
+      // 移除过渡保护
+      setTimeout(() => {
+        document.body.classList.remove('nprogress-busy')
+      }, 100)
     })
   })
 }
@@ -1462,25 +1412,20 @@ const handleMenuSelect = async (index, indexPath) => {
     return
   }
   
-  console.log('菜单点击路径:', index)
-  
   // 尝试直接从DOM元素获取菜单名称
   let menuTitle = ''
   let menuItem = document.querySelector(`.el-menu-item[index="${index}"]`)
   
   if (menuItem) {
     menuTitle = menuItem.getAttribute('data-menu-name')
-    console.log('从DOM获取菜单名称:', menuTitle)
   }
   
   // 使用辅助函数创建带有菜单名称的标签
   const tagData = createTagFromMenuData(index, menuTitle)
-  console.log('创建的标签数据:', tagData)
   
   if (tagData) {
     // 检查是否能正确找到菜单标题，如果没找到则不添加标签
     if (!tagData.title || tagData.title === '') {
-      console.log('未找到菜单标题，不添加到标签列表:', index)
       router.push(index).then(() => {
         nextTick(() => restoreMenuOpenState())
       })
@@ -1513,9 +1458,6 @@ const handleMenuSelect = async (index, indexPath) => {
 // 辅助函数：在菜单中查找子菜单
 const findSubMenuByPath = (menu, targetPath) => {
   if (!menu || !menu.menuChildList) return null
-  
-  // 记录查找过程信息
-  console.log('查找子菜单:', targetPath, '在父级菜单:', menu.menuName || menu.menuCode)
   
   // 尝试查找匹配的子菜单
   const foundMenu = menu.menuChildList.find(child => {
@@ -1553,15 +1495,8 @@ const findSubMenuByPath = (menu, targetPath) => {
     }
     
     const isMatch = childPath === targetPath
-    if (isMatch) {
-      console.log('找到匹配的子菜单:', child.menuName || child.menuCode)
-    }
     return isMatch
   })
-  
-  if (!foundMenu) {
-    console.log('未找到匹配的子菜单:', targetPath)
-  }
   
   return foundMenu
 }
@@ -1649,13 +1584,6 @@ const openTagMenu = (e, tag) => {
   // 显示菜单
   visible.value = true
   
-  // 调试日志
-  console.log('打开标签右键菜单', {
-    tag,
-    position: { left: left.value, top: top.value },
-    visible: visible.value
-  })
-  
   // 添加点击事件监听，以便在点击其他位置时自动关闭菜单
   document.addEventListener('click', handleDocumentClick)
 }
@@ -1663,15 +1591,12 @@ const openTagMenu = (e, tag) => {
 // 全局点击事件处理函数 - 关闭右键菜单
 const handleDocumentClick = () => {
   if (visible.value) {
-    console.log('关闭标签右键菜单')
     visible.value = false
   }
 }
 
 // 关闭所有标签
 const closeAllTags = () => {
-  console.log('关闭所有标签')
-  
   // 获取当前模块的路径
   const currentPath = route.path
   const pathParts = currentPath.split('/')
@@ -1681,7 +1606,6 @@ const closeAllTags = () => {
   if (pathParts.length >= 3) {
     // 构建模块首页路径（系统级别路径）
     targetPath = `/${pathParts[1]}/${pathParts[2]}`
-    console.log('返回到模块首页:', targetPath)
   }
   
   // 清空标签并保存
@@ -1696,7 +1620,6 @@ const closeAllTags = () => {
 // 关闭其他标签
 const closeOtherTags = () => {
   if (!selectedTag.value) return
-  console.log('关闭其他标签', selectedTag.value)
   visitedViews.value = visitedViews.value.filter(tag => tag.path === selectedTag.value.path)
   saveVisitedViews()
   router.push(selectedTag.value.path)
@@ -1708,7 +1631,6 @@ const closeLeftTags = () => {
   if (!selectedTag.value) return
   if (isFirstVisibleTag.value) return
   
-  console.log('关闭左侧标签', selectedTag.value)
   const selectedIndex = visitedViews.value.findIndex(tag => tag.path === selectedTag.value.path)
   if (selectedIndex > 0) {
     visitedViews.value = visitedViews.value.slice(selectedIndex)
@@ -1722,7 +1644,6 @@ const closeRightTags = () => {
   if (!selectedTag.value) return
   if (isLastVisibleTag.value) return
   
-  console.log('关闭右侧标签', selectedTag.value)
   const selectedIndex = visitedViews.value.findIndex(tag => tag.path === selectedTag.value.path)
   if (selectedIndex < visitedViews.value.length - 1) {
     visitedViews.value = visitedViews.value.slice(0, selectedIndex + 1)
@@ -1735,8 +1656,6 @@ const closeRightTags = () => {
 const refreshSelectedTag = () => {
   if (!selectedTag.value) return
   
-  console.log('刷新页面:', selectedTag.value)
-  
   // 关闭菜单
   visible.value = false
   
@@ -1748,8 +1667,6 @@ const refreshSelectedTag = () => {
     path: '/redirect' + fullPath
   }).catch(err => {
     // 如果路由不存在，尝试方法2
-    console.log('重定向方法失败，尝试替代方法:', err)
-    
     // 方法2：先跳转到一个临时页面，然后再返回
     const currentPath = selectedTag.value.path
     router.replace('/dashboard').then(() => {
@@ -1768,7 +1685,6 @@ const handleSubMenuOpen = (index) => {
   if (!openedMenus.value.includes(index)) {
     openedMenus.value.push(index)
   }
-  console.log('打开的子菜单:', openedMenus.value)
 }
 
 // 菜单关闭状态变化事件处理
@@ -1777,7 +1693,6 @@ const handleSubMenuClose = (index) => {
   if (i !== -1) {
     openedMenus.value.splice(i, 1)
   }
-  console.log('关闭后的子菜单:', openedMenus.value)
 }
 
 // 恢复菜单展开状态
@@ -1832,7 +1747,9 @@ watch(() => isCollapse.value, (isCollapsed) => {
 .app-wrapper {
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
 .sidebar-container {
@@ -1843,7 +1760,10 @@ watch(() => isCollapse.value, (isCollapsed) => {
   overflow: hidden;
   box-shadow: 1px 0 6px rgba(0, 0, 0, 0.05);
   border-right: none;
-  position: relative;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
   z-index: 10;
 }
 
@@ -1888,6 +1808,12 @@ watch(() => isCollapse.value, (isCollapsed) => {
   flex-direction: column;
   overflow: hidden;
   border-left: none;
+  margin-left: 220px;
+  transition: margin-left 0.28s;
+}
+
+.is-collapse + .main-container {
+  margin-left: 64px;
 }
 
 .navbar {
@@ -2293,12 +2219,30 @@ watch(() => isCollapse.value, (isCollapsed) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: calc(100% - 60px);
+  flex-direction: column;
   padding: 20px;
+  color: #409eff;
+  font-size: 14px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
 }
 
 .loading-icon {
-  margin-right: 10px;
+  margin-bottom: 10px;
+  font-size: 24px;
+  animation: rotating 2s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 优化二级或更深层级的弹出菜单定位 */
@@ -2541,5 +2485,36 @@ body .el-popper.is-pure .el-menu--popup::-webkit-scrollbar-track {
   border-top: 1px solid #ebeef5;
   margin-top: 5px;
   padding-top: 5px;
+}
+
+.menu-loading-overlay {
+  position: absolute;
+  top: 60px; /* 从logo下方开始 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 100;
+  color: #409eff;
+  font-size: 14px;
+}
+
+.loading-icon {
+  margin-bottom: 10px;
+  font-size: 24px;
+  animation: rotating 2s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style> 

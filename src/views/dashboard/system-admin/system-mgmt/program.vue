@@ -448,7 +448,7 @@
     const params = {
       ...editForm
     }
-    console.log(params)
+    
     const res = await post(UPDATE_PROGRAM_API.UPDATE_PROGRAM, params)
 
     if (res && res.code === '200') {

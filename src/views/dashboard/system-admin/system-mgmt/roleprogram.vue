@@ -165,7 +165,7 @@ const fetchModuleDropdown = async () => {
 
 // 获取角色程序列表数据
 const fetchRoleProgramList = async () => {
-    console.log(1)
+    
   if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) return
   
   loading.value = true

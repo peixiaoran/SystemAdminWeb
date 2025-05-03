@@ -75,7 +75,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API, IS_DEV } from '@/config/api/login/api'
@@ -99,7 +99,6 @@ const fetchModules = async () => {
       ElMessage.error(res?.message || '获取模块数据失败')
     }
   } catch (error) {
-    console.error('获取模块数据失败:', error)
     ElMessage.error('获取模块数据失败，请稍后重试')
   } finally {
     loading.value = false
@@ -128,14 +127,24 @@ const enterModule = (module) => {
 }
 
 // 退出登录
-const logout = () => {
+const logout = async () => {
   try {
-    localStorage.removeItem('token')
+    // 确认对话框
+    await ElMessageBox.confirm('确定要退出登录吗?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    // 调用退出登录接口
+    await userStore.logout()
+    
+    // 跳转到登录页
     router.push('/login')
-    ElMessage.success('已退出登录')
   } catch (error) {
-    console.error('退出登录失败:', error)
-    ElMessage.error('退出登录失败，请重试')
+    if (error !== 'cancel') {
+      ElMessage.error('退出登录失败')
+    }
   }
 }
 </script>

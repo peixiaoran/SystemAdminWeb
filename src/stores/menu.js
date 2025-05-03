@@ -28,8 +28,8 @@ export const useMenuStore = defineStore('menu', {
       try {
         this.menuLoading = true
         
-        // 使用与layout/index.vue相同的接口
-        const currentDomainId = '1350161679034934501'
+        // 从localStorage获取当前选择的domainId
+        const currentDomainId = localStorage.getItem('currentDomainId')
         const params = { domainId: currentDomainId }
         
         // 始终从API获取最新的菜单数据
@@ -44,16 +44,26 @@ export const useMenuStore = defineStore('menu', {
           this.routes = []
           this.addRoutes = []
           
+          // 添加延迟以防止UI闪烁，确保菜单加载状态持续足够长时间
+          await new Promise(resolve => setTimeout(resolve, 300))
+          
           return this.menuData
         } else {
-          console.error('获取菜单数据失败:', res.message)
           return []
         }
       } catch (error) {
-        console.error('获取菜单数据异常:', error)
         return []
       } finally {
-        this.menuLoading = false
+        // 确保状态一定会被重置
+        try {
+          // 在下一个宏任务中设置加载状态，避免同步执行时的闪烁
+          setTimeout(() => {
+            this.menuLoading = false
+          }, 100)
+        } catch (err) {
+          // 如果出错，直接同步设置
+          this.menuLoading = false
+        }
       }
     },
     
@@ -72,7 +82,6 @@ export const useMenuStore = defineStore('menu', {
       menuData.forEach(menu => {
         // 确保菜单有路径
         if (!menu.path) {
-          console.warn('菜单缺少路径:', menu)
           return
         }
         
@@ -120,7 +129,6 @@ export const useMenuStore = defineStore('menu', {
           menu.menuChildList.forEach(child => {
             // 确保子菜单有路径
             if (!child.path) {
-              console.warn('子菜单缺少路径:', child)
               return
             }
             
@@ -194,7 +202,6 @@ export const useMenuStore = defineStore('menu', {
       if (path === '/dashboard/system-admin' || 
           path === '/dashboard/system-admin/' || 
           path === '/dashboard/system-admin/index') {
-        if (import.meta.env.DEV) console.log('✅ 特殊处理: system-admin首页路径直接放行')
         return true
       }
       
@@ -237,19 +244,10 @@ export const useMenuStore = defineStore('menu', {
                 return this.checkSubSystemPagePermission(pathParts)
               }
               
-              // 在开发模式下记录日志，便于调试
-              if (import.meta.env.DEV) {
-                console.log('允许访问系统页面:', path)
-              }
               return true
             }
           }
         }
-      }
-      
-      // 开发环境下日志
-      if (import.meta.env.DEV) {
-        console.warn('无权限访问路径:', path)
       }
       
       return false
@@ -262,15 +260,6 @@ export const useMenuStore = defineStore('menu', {
       const subSystemName = pathParts[3]    // 例如: system-mgmt
       const pageName = pathParts[4]         // 例如: program
       const fullPath = `${systemName}/${subSystemName}`
-      
-      if (import.meta.env.DEV) {
-        console.log(`🔍 检查子系统页面权限:`, {
-          系统: systemName,
-          子系统: subSystemName,
-          页面: pageName,
-          完整路径: fullPath
-        })
-      }
       
       // 检查菜单数据中是否包含此页面
       if (this.menuData && this.menuData.length > 0) {
@@ -291,14 +280,8 @@ export const useMenuStore = defineStore('menu', {
           })
           
           if (hasPagePermission) {
-            if (import.meta.env.DEV) {
-              console.log(`✅ 子系统页面权限验证通过: ${pathParts.join('/')}`)
-            }
             return true
           } else {
-            if (import.meta.env.DEV) {
-              console.warn(`❌ 子系统页面无权限: ${pathParts.join('/')}`)
-            }
             return false
           }
         }
@@ -306,7 +289,6 @@ export const useMenuStore = defineStore('menu', {
       
       // 如果找不到菜单或子系统，开发环境下允许访问
       if (import.meta.env.DEV) {
-        console.warn(`⚠️ 开发环境下允许访问未找到的子系统页面: ${pathParts.join('/')}`)
         return true
       }
       
@@ -319,14 +301,12 @@ export const useMenuStore = defineStore('menu', {
       
       // 特殊处理: system-admin 特别放行（确保首页可以访问）
       if (systemName === 'system-admin') {
-        if (import.meta.env.DEV) console.log('✅ 特殊系统：system-admin 直接放行')
         return true
       }
       
       // 基础系统模块白名单，登录后即可访问
       const baseSystemWhitelist = ['system-admin', 'user-admin', 'content-admin', 'order-admin', 'data-admin', 'message-admin']
       if (baseSystemWhitelist.includes(systemName.toLowerCase())) {
-        if (import.meta.env.DEV) console.log('✅ 系统白名单放行:', systemName)
         return true
       }
       
@@ -349,14 +329,12 @@ export const useMenuStore = defineStore('menu', {
         })
         
         if (systemMenu) {
-          if (import.meta.env.DEV) console.log('✅ 从菜单数据验证通过:', systemName)
           return true
         }
       }
       
       // 开发环境下允许访问所有系统(开发便利性)
       if (import.meta.env.DEV) {
-        console.warn('⚠️ 开发环境下允许访问系统:', systemName)
         return true
       }
       

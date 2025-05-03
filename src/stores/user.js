@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -18,35 +19,27 @@ export const useUserStore = defineStore('user', {
   
   actions: {
     // 登录
-    async login(loginData) {
+    async login(credentials) {
       try {
-        // 实际登录请求应在此处实现
-        // const res = await post(LOGIN_API.USER_LOGIN, loginData)
-        
-        // 模拟登录成功
-        const token = 'mock-token-' + Date.now()
-        const userInfo = {
-          userId: '1',
-          userName: 'admin',
-          roles: ['admin']
+        const { username, password } = credentials
+        const result = await post(LOGIN_API.LOGIN, {
+          userName: username,
+          userPwd: password
+        })
+
+        if (result.code === '200' && result.data) {
+          this.token = result.data.accessToken
+          this.userInfo = result.data
+          localStorage.setItem(TOKEN_KEY, this.token)
+          localStorage.setItem(USER_INFO_KEY, JSON.stringify(this.userInfo))
+          return true
+        } else {
+          ElMessage.error(result.message || '登录失败')
+          return false
         }
-        
-        // 保存用户信息
-        this.setToken(token)
-        this.setUserInfo(userInfo)
-        this.setRoles(userInfo.roles)
-        
-        // 使用延迟导入menuStore避免循环依赖
-        const { useMenuStore } = await import('./menu')
-        const menuStore = useMenuStore()
-        
-        // 加载菜单数据
-        await menuStore.fetchMenuData()
-        
-        return { success: true }
       } catch (error) {
-        console.error('登录失败:', error)
-        return { success: false, message: error.message || '登录失败' }
+        ElMessage.error('登录服务异常')
+        return false
       }
     },
     

@@ -4,6 +4,16 @@ import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
+// 配置NProgress
+NProgress.configure({ 
+  easing: 'ease',
+  speed: 500,
+  showSpinner: false,
+  trickleSpeed: 200,
+  minimum: 0.3,
+  parent: 'body' // 确保进度条添加到body元素
+})
+
 // 自动导入所有views下的路由模块
 const modules = import.meta.glob('../views/**/*.vue')
 
@@ -133,19 +143,7 @@ const SYSTEM_HOME_WHITELIST = [
 // 添加调试信息以帮助排查问题
 function logRouteInfo(prefix, to, extra = {}) {
   if (import.meta.env.DEV) {
-    console.group(`🔍 ${prefix}`)
-    console.log('Target path:', to.path)
-    console.log('Route name:', to.name)
-    console.log('Route params:', to.params)
-    console.log('Route query:', to.query)
-    console.log('Route meta:', to.meta)
-    
-    if (Object.keys(extra).length > 0) {
-      Object.entries(extra).forEach(([key, value]) => {
-        console.log(`${key}:`, value)
-      })
-    }
-    console.groupEnd()
+    // 移除所有console.log语句
   }
 }
 
@@ -498,7 +496,6 @@ router.beforeEach(async (to, from, next) => {
       
       // 检查系统部分是否相同 (例如：都是 system-admin)
       if (fromParts.length >= 3 && toParts.length >= 3 && fromParts[2] === toParts[2]) {
-        if (import.meta.env.DEV) console.log('✅ 同一系统内的导航，跳过菜单重载:', to.path);
         return true;
       }
     }
@@ -510,8 +507,8 @@ router.beforeEach(async (to, from, next) => {
 
   // 白名单页面直接通过
   if (WHITE_LIST.includes(to.path)) {
-    if (import.meta.env.DEV) console.log('✅ 白名单路径，直接通过:', to.path)
-    return next()
+    next()
+    return
   }
 
   // 延迟获取store
@@ -523,19 +520,20 @@ router.beforeEach(async (to, from, next) => {
   // 未登录，跳转到登录页面
   if (!hasToken) {
     ElMessage.warning('请先登录')
-    return next(`/login?redirect=${to.path}`)
+    next(`/login?redirect=${to.path}`)
+    return
   }
 
   // 系统首页白名单，登录后可直接访问
   if (SYSTEM_HOME_WHITELIST.includes(to.path)) {
-    if (import.meta.env.DEV) console.log('✅ 系统首页白名单，直接通过:', to.path)
-    return next()
+    next()
+    return
   }
   
   // 直接处理system-admin的index.vue的情况
   if (to.path === '/dashboard/system-admin' || to.path === '/dashboard/system-admin/index' || to.path === '/dashboard/system-admin/') {
-    if (import.meta.env.DEV) console.log('✅ system-admin首页特殊处理，直接通过:', to.path)
-    return next()
+    next()
+    return
   }
 
   // 检查是否已经有菜单数据且是系统内导航
@@ -545,12 +543,9 @@ router.beforeEach(async (to, from, next) => {
   if (skipMenuReload) {
     const hasPermission = menuStore.hasRoutePermission(to.path, router);
     
-    if (import.meta.env.DEV) {
-      console.log(`🔐 权限检查 ${to.path}: ${hasPermission ? '有权限' : '无权限'}`);
-    }
-    
     if (hasPermission) {
-      return next();
+      next();
+      return;
     }
     
     // 无权限时，检查是否是复合路径
@@ -563,36 +558,27 @@ router.beforeEach(async (to, from, next) => {
       const hasPagePermission = menuStore.checkSubSystemPagePermission(pathParts);
       
       if (hasPagePermission) {
-        if (import.meta.env.DEV) {
-          console.log(`✅ 同系统导航 - 有权限访问子系统页面: ${to.path}`);
-        }
-        return next();
+        next();
+        return;
       }
     }
     
     // 无权限时，返回403
-    if (import.meta.env.DEV) console.log('❌ 路由存在但无权限，跳转到403:', to.path);
-    return next('/403');
+    next('/403');
+    return;
   }
 
   // 已登录 - 获取菜单数据并添加路由
   // 强制每次都重新获取菜单数据
   try {
-    if (import.meta.env.DEV) console.log('🔄 加载菜单数据...')
     // 加载菜单数据
     await menuStore.fetchMenuData()
     
     // 生成并添加路由 - 将router传入
     menuStore.generateRoutes(menuStore.menuData, router)
     
-    if (import.meta.env.DEV) console.log('✅ 菜单数据加载完成，进行权限检查:', to.path)
-    
     // 进行权限验证
     const hasPermission = menuStore.hasRoutePermission(to.path, router)
-    
-    if (import.meta.env.DEV) {
-      console.log(`🔐 权限检查 ${to.path}: ${hasPermission ? '有权限' : '无权限'}`)
-    }
     
     if (hasPermission) {
       // 有权限访问
@@ -601,10 +587,6 @@ router.beforeEach(async (to, from, next) => {
       // 检查是否存在该路由
       const isRouteExists = router.hasRoute(to.name) || 
                            router.getRoutes().some(route => route.path === to.path);
-      
-      if (import.meta.env.DEV) {
-        console.log(`🧭 路由存在检查 ${to.path}: ${isRouteExists ? '存在' : '不存在'}`)
-      }
       
       if (isRouteExists) {
         // 检查是否是特殊处理的复合路径系统页面
@@ -637,9 +619,6 @@ router.beforeEach(async (to, from, next) => {
               })
               
               if (hasPagePermission) {
-                if (import.meta.env.DEV) {
-                  console.log(`✅ 特殊处理: 有权限访问子系统页面 ${to.path}`)
-                }
                 next()
                 return
               }
@@ -648,7 +627,6 @@ router.beforeEach(async (to, from, next) => {
         }
         
         // 路由存在但无权限访问
-        if (import.meta.env.DEV) console.log('❌ 路由存在但无权限，跳转到403:', to.path)
         next('/403')
       } else if (to.path.startsWith('/dashboard/')) {
         // 尝试处理动态URL访问的系统子页面
@@ -662,35 +640,23 @@ router.beforeEach(async (to, from, next) => {
           const systemRouteExists = router.getRoutes().some(route => route.path === systemPath)
           const hasSystemPermission = menuStore.hasSystemPermission(pathParts[2])
           
-          if (import.meta.env.DEV) {
-            console.log(`🔍 系统路径检查 ${systemPath}:`, { 
-              systemRouteExists, 
-              hasSystemPermission 
-            })
-          }
-          
           if (systemRouteExists && hasSystemPermission) {
-            // 允许访问系统下的页面，但记录警告日志
-            console.warn('访问未在菜单中注册的页面:', to.path)
+            // 允许访问系统下的页面
             next()
           } else {
             // 无系统访问权限
-            if (import.meta.env.DEV) console.log('❌ 无系统访问权限，跳转到403:', to.path)
             next('/403')
           }
         } else {
           // 路径格式不正确
-          if (import.meta.env.DEV) console.log('❌ 路径格式不正确，跳转到404:', to.path)
           next('/404')
         }
       } else {
         // 路由不存在
-        if (import.meta.env.DEV) console.log('❌ 路由不存在，跳转到404:', to.path)
         next('/404')
       }
     }
   } catch (error) {
-    console.error('❌ 加载菜单数据失败:', error)
     // 出错时，清空token并跳转到登录页
     userStore.resetState()
     ElMessage.error('获取权限信息失败，请重新登录')
@@ -699,9 +665,15 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-// 路由后置守卫
-router.afterEach(() => {
+// 路由后置守卫 - 确保在所有路由跳转完成时结束进度条
+router.afterEach((to, from) => {
   // 结束进度条
+  NProgress.done()
+})
+
+// 添加路由错误处理，确保在导航出错时也能结束进度条
+router.onError((error) => {
+  // 确保在导航出错时结束进度条
   NProgress.done()
 })
 
