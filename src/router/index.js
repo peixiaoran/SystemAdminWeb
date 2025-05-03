@@ -155,7 +155,6 @@ function generateDashboardRoutes() {
   Object.keys(MODULE_MAP).forEach(moduleName => {
     const moduleConfig = MODULE_MAP[moduleName]
     
-    // 支持复合路径格式，如system-admin/system-mgmt
     const moduleKeys = Object.keys(MODULE_MAP);
     
     // 创建模块路由
@@ -185,7 +184,6 @@ function generateDashboardRoutes() {
 
     // 动态添加子路由
     Object.keys(modules).forEach(key => {
-      // 支持system-admin/system-mgmt和system-admin两种路径格式
       const mainPathRegex = new RegExp(`../views/dashboard/${moduleName}/(.+)\\.vue$`);
       const nestedPathRegex = new RegExp(`../views/dashboard/${moduleName}/([-\\w]+)/([-\\w]+)\\.vue$`);
       
@@ -199,10 +197,9 @@ function generateDashboardRoutes() {
         }
       }
       
-      // 特殊处理system-admin/system-mgmt子路径
       if (moduleName === 'system-admin' && matchNestedPath) {
-        const subFolder = matchNestedPath[1]; // system-mgmt
-        const fileName = matchNestedPath[2];  // domain
+        const subFolder = matchNestedPath[1];
+        const fileName = matchNestedPath[2];
         
         const subRouteConfig = {
           path: `${subFolder}/${fileName}`,
@@ -402,7 +399,7 @@ function getNestedFileTitle(moduleName, pathSegments, fileName) {
 function getNestedFileIcon(moduleName, pathSegments, fileName) {
   const lastSegment = pathSegments[pathSegments.length - 1]
   
-  if (moduleName === 'system-admin' && pathSegments[0] === 'SysMgetModule') {
+  if (moduleName === 'system-admin') {
     return getLogModuleIcon(lastSegment)
   }
   
@@ -494,7 +491,6 @@ router.beforeEach(async (to, from, next) => {
       const fromParts = from.path.split('/');
       const toParts = to.path.split('/');
       
-      // 检查系统部分是否相同 (例如：都是 system-admin)
       if (fromParts.length >= 3 && toParts.length >= 3 && fromParts[2] === toParts[2]) {
         return true;
       }
@@ -530,7 +526,6 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   
-  // 直接处理system-admin的index.vue的情况
   if (to.path === '/dashboard/system-admin' || to.path === '/dashboard/system-admin/index' || to.path === '/dashboard/system-admin/') {
     next()
     return
@@ -595,9 +590,9 @@ router.beforeEach(async (to, from, next) => {
             pathParts[1] === 'dashboard') {
           
           // 动态处理任意子系统下的页面
-          const systemName = pathParts[2]     // 例如: system-admin
-          const subSystemName = pathParts[3]  // 例如: system-mgmt
-          const pageName = pathParts[4]       // 例如: program
+          const systemName = pathParts[2]
+          const subSystemName = pathParts[3]
+          const pageName = pathParts[4]
           const fullPath = `${systemName}/${subSystemName}`
           
           // 从menuStore中获取菜单数据

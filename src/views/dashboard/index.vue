@@ -104,24 +104,10 @@ const fetchModules = async () => {
     }
   } catch (error) {
     console.error('获取模块列表异常:', error);
-    // 异常时显示默认模块
-    setDefaultModules();
+    
   } finally {
     loading.value = false;
   }
-};
-
-// 设置默认模块(当接口出错时使用)
-const setDefaultModules = () => {
-  modules.value = [
-    { id: 'user', name: '用户管理', path: '/dashboard/user-admin' },
-    { id: 'content', name: '内容管理', path: '/dashboard/content-admin' },
-    { id: 'order', name: '订单管理', path: '/dashboard/order-admin' },
-    { id: 'data', name: '数据分析', path: '/dashboard/data-admin' },
-    { id: 'system', name: '系统设置', path: '/dashboard/system-admin' },
-    { id: 'message', name: '消息中心', path: '/dashboard/message-admin' },
-    { id: 'basic', name: '基础模块', path: '/dashboard/system-basic' }
-  ];
 };
 
 // 根据模块名称获取对应图标

@@ -255,10 +255,9 @@ export const useMenuStore = defineStore('menu', {
     
     // 检查子系统页面权限 - 新增方法
     checkSubSystemPagePermission(pathParts) {
-      // 构建完整的子系统路径，例如: system-admin/system-mgmt
-      const systemName = pathParts[2]       // 例如: system-admin
-      const subSystemName = pathParts[3]    // 例如: system-mgmt
-      const pageName = pathParts[4]         // 例如: program
+      const systemName = pathParts[2]
+      const subSystemName = pathParts[3]
+      const pageName = pathParts[4]
       const fullPath = `${systemName}/${subSystemName}`
       
       // 检查菜单数据中是否包含此页面
