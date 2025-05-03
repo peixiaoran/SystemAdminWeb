@@ -32,47 +32,17 @@ export const useMenuStore = defineStore('menu', {
         const currentDomainId = '1350161679034934501'
         const params = { domainId: currentDomainId }
         
+        // 始终从API获取最新的菜单数据
         const res = await post(MENU_API.GET_MENU, params)
         
         if (res.code === '200') {
+          // 清空旧数据，使用新获取的数据
           this.menuData = res.data || []
           
-          // 如果有测试数据，可以使用示例数据进行测试
-          if (!this.menuData || this.menuData.length === 0) {
-            // 使用示例数据
-            this.menuData = [
-              {
-                "menuId": "1917998505360756736",
-                "menuCode": "BasicDataModule",
-                "menuName": "基本資料模組",
-                "path": "system-admin/system-basic",
-                "menuChildList": [
-                  {
-                    "menuId": "1918006061000953856",
-                    "menuCode": "CompanyBasicInformation",
-                    "menuName": "公司資料維護",
-                    "path": "commpany.vue",
-                    "menuChildList": []
-                  }
-                ]
-              },
-              {
-                "menuId": "1350161962451534507",
-                "menuCode": "SysSettingModule",
-                "menuName": "系統管理模組",
-                "path": "system-admin/system-mgmt",
-                "menuChildList": [
-                  {
-                    "menuId": "1917611361962168320",
-                    "menuCode": "CharacterProgramRigging",
-                    "menuName": "角色程式綁定",
-                    "path": "roleprogram.vue",
-                    "menuChildList": []
-                  }
-                ]
-              }
-            ]
-          }
+          // 重置路由状态
+          this.hasPermission = false
+          this.routes = []
+          this.addRoutes = []
           
           return this.menuData
         } else {
@@ -261,39 +231,10 @@ export const useMenuStore = defineStore('menu', {
             
             // 如果系统路由存在，检查用户是否有该系统的权限
             if (systemRoute && this.hasSystemPermission(pathParts[2])) {
-              // 特殊处理：验证子系统页面权限
-              if (pathParts.length >= 5 && pathParts[2] === 'system-admin' && pathParts[3] === 'system-mgmt') {
-                // 检查菜单数据中是否包含此页面
-                if (this.menuData && this.menuData.length > 0) {
-                  const systemAdminMenu = this.menuData.find(menu => 
-                    menu.path && menu.path.toLowerCase() === 'system-admin/system-mgmt'
-                  )
-                  
-                  if (systemAdminMenu && systemAdminMenu.menuChildList) {
-                    // 查找子菜单中是否包含此页面
-                    const pageName = pathParts[4] // 例如: program
-                    const hasPagePermission = systemAdminMenu.menuChildList.some(child => {
-                      // 检查path是否匹配，例如program.vue
-                      if (child.path) {
-                        const childPath = child.path.toLowerCase()
-                        return childPath === `${pageName}.vue` || childPath === pageName
-                      }
-                      return false
-                    })
-                    
-                    if (hasPagePermission) {
-                      if (import.meta.env.DEV) {
-                        console.log(`✅ 子系统页面权限验证通过: ${path}`)
-                      }
-                      return true
-                    } else {
-                      if (import.meta.env.DEV) {
-                        console.warn(`❌ 子系统页面无权限: ${path}`)
-                      }
-                      return false
-                    }
-                  }
-                }
+              // 特殊处理：验证子系统页面权限 - 路径格式: /dashboard/system-xxx/subsystem-xxx/page
+              if (pathParts.length >= 5) {
+                // 处理子系统页面权限检查
+                return this.checkSubSystemPagePermission(pathParts)
               }
               
               // 在开发模式下记录日志，便于调试
@@ -309,6 +250,64 @@ export const useMenuStore = defineStore('menu', {
       // 开发环境下日志
       if (import.meta.env.DEV) {
         console.warn('无权限访问路径:', path)
+      }
+      
+      return false
+    },
+    
+    // 检查子系统页面权限 - 新增方法
+    checkSubSystemPagePermission(pathParts) {
+      // 构建完整的子系统路径，例如: system-admin/system-mgmt
+      const systemName = pathParts[2]       // 例如: system-admin
+      const subSystemName = pathParts[3]    // 例如: system-mgmt
+      const pageName = pathParts[4]         // 例如: program
+      const fullPath = `${systemName}/${subSystemName}`
+      
+      if (import.meta.env.DEV) {
+        console.log(`🔍 检查子系统页面权限:`, {
+          系统: systemName,
+          子系统: subSystemName,
+          页面: pageName,
+          完整路径: fullPath
+        })
+      }
+      
+      // 检查菜单数据中是否包含此页面
+      if (this.menuData && this.menuData.length > 0) {
+        // 查找匹配的系统菜单
+        const systemMenu = this.menuData.find(menu => 
+          menu.path && menu.path.toLowerCase() === fullPath
+        )
+        
+        if (systemMenu && systemMenu.menuChildList) {
+          // 查找子菜单中是否包含此页面
+          const hasPagePermission = systemMenu.menuChildList.some(child => {
+            // 检查path是否匹配，例如program.vue或program
+            if (child.path) {
+              const childPath = child.path.toLowerCase()
+              return childPath === `${pageName}.vue` || childPath === pageName
+            }
+            return false
+          })
+          
+          if (hasPagePermission) {
+            if (import.meta.env.DEV) {
+              console.log(`✅ 子系统页面权限验证通过: ${pathParts.join('/')}`)
+            }
+            return true
+          } else {
+            if (import.meta.env.DEV) {
+              console.warn(`❌ 子系统页面无权限: ${pathParts.join('/')}`)
+            }
+            return false
+          }
+        }
+      }
+      
+      // 如果找不到菜单或子系统，开发环境下允许访问
+      if (import.meta.env.DEV) {
+        console.warn(`⚠️ 开发环境下允许访问未找到的子系统页面: ${pathParts.join('/')}`)
+        return true
       }
       
       return false

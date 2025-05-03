@@ -489,6 +489,22 @@ router.beforeEach(async (to, from, next) => {
     logRouteInfo('路由导航请求', to, { from: from.path })
   }
   
+  // 判断是否是相同系统内的菜单跳转（无需重新获取菜单数据）
+  const isSameSystemNavigation = () => {
+    // 如果源路径和目标路径都是dashboard下的路径
+    if (from.path.startsWith('/dashboard/') && to.path.startsWith('/dashboard/')) {
+      const fromParts = from.path.split('/');
+      const toParts = to.path.split('/');
+      
+      // 检查系统部分是否相同 (例如：都是 system-admin)
+      if (fromParts.length >= 3 && toParts.length >= 3 && fromParts[2] === toParts[2]) {
+        if (import.meta.env.DEV) console.log('✅ 同一系统内的导航，跳过菜单重载:', to.path);
+        return true;
+      }
+    }
+    return false;
+  };
+  
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
 
@@ -522,30 +538,56 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
-  // 已登录 - 获取菜单数据并添加路由
-  if (!menuStore.menuData.length) {
-    try {
-      if (import.meta.env.DEV) console.log('🔄 加载菜单数据...')
-      // 加载菜单数据
-      await menuStore.fetchMenuData()
-      
-      // 生成并添加路由 - 将router传入
-      menuStore.generateRoutes(menuStore.menuData, router)
-      
-      if (import.meta.env.DEV) console.log('✅ 菜单数据加载完成，重新导航:', to.path)
-      // 确保路由已加载完成，重新导航到目标页面
-      next({ ...to, replace: true })
-      NProgress.done()
-    } catch (error) {
-      console.error('❌ 加载菜单数据失败:', error)
-      // 出错时，清空token并跳转到登录页
-      userStore.resetState()
-      ElMessage.error('获取权限信息失败，请重新登录')
-      next(`/login?redirect=${to.path}`)
-      NProgress.done()
+  // 检查是否已经有菜单数据且是系统内导航
+  const skipMenuReload = menuStore.hasPermission && isSameSystemNavigation();
+  
+  // 如果需要跳过菜单重载，直接进行权限检查
+  if (skipMenuReload) {
+    const hasPermission = menuStore.hasRoutePermission(to.path, router);
+    
+    if (import.meta.env.DEV) {
+      console.log(`🔐 权限检查 ${to.path}: ${hasPermission ? '有权限' : '无权限'}`);
     }
-  } else {
-    // 菜单数据已存在 - 进行权限验证
+    
+    if (hasPermission) {
+      return next();
+    }
+    
+    // 无权限时，检查是否是复合路径
+    if (to.path.includes('/dashboard/') && to.path.split('/').length >= 5) {
+      const pathParts = to.path.split('/');
+      const fullPath = `${pathParts[2]}/${pathParts[3]}`;
+      const pageName = pathParts[4];
+      
+      // 检查是否有此页面权限
+      const hasPagePermission = menuStore.checkSubSystemPagePermission(pathParts);
+      
+      if (hasPagePermission) {
+        if (import.meta.env.DEV) {
+          console.log(`✅ 同系统导航 - 有权限访问子系统页面: ${to.path}`);
+        }
+        return next();
+      }
+    }
+    
+    // 无权限时，返回403
+    if (import.meta.env.DEV) console.log('❌ 路由存在但无权限，跳转到403:', to.path);
+    return next('/403');
+  }
+
+  // 已登录 - 获取菜单数据并添加路由
+  // 强制每次都重新获取菜单数据
+  try {
+    if (import.meta.env.DEV) console.log('🔄 加载菜单数据...')
+    // 加载菜单数据
+    await menuStore.fetchMenuData()
+    
+    // 生成并添加路由 - 将router传入
+    menuStore.generateRoutes(menuStore.menuData, router)
+    
+    if (import.meta.env.DEV) console.log('✅ 菜单数据加载完成，进行权限检查:', to.path)
+    
+    // 进行权限验证
     const hasPermission = menuStore.hasRoutePermission(to.path, router)
     
     if (import.meta.env.DEV) {
@@ -558,7 +600,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 检查是否存在该路由
       const isRouteExists = router.hasRoute(to.name) || 
-                          router.getRoutes().some(route => route.path === to.path);
+                           router.getRoutes().some(route => route.path === to.path);
       
       if (import.meta.env.DEV) {
         console.log(`🧭 路由存在检查 ${to.path}: ${isRouteExists ? '存在' : '不存在'}`)
@@ -568,19 +610,20 @@ router.beforeEach(async (to, from, next) => {
         // 检查是否是特殊处理的复合路径系统页面
         const pathParts = to.path.split('/')
         if (pathParts.length >= 5 && 
-            pathParts[1] === 'dashboard' && 
-            pathParts[2] === 'system-admin' && 
-            pathParts[3] === 'system-mgmt') {
+            pathParts[1] === 'dashboard') {
           
-          // 特殊处理system-admin/system-mgmt下的页面
-          const pageName = pathParts[4]
+          // 动态处理任意子系统下的页面
+          const systemName = pathParts[2]     // 例如: system-admin
+          const subSystemName = pathParts[3]  // 例如: system-mgmt
+          const pageName = pathParts[4]       // 例如: program
+          const fullPath = `${systemName}/${subSystemName}`
           
           // 从menuStore中获取菜单数据
           const menuData = menuStore.menuData
           if (menuData && menuData.length > 0) {
-            // 查找system-admin/system-mgmt菜单
+            // 查找匹配的子系统菜单
             const systemMenu = menuData.find(menu => 
-              menu.path && menu.path.toLowerCase() === 'system-admin/system-mgmt'
+              menu.path && menu.path.toLowerCase() === fullPath
             )
             
             if (systemMenu && systemMenu.menuChildList) {
@@ -646,6 +689,13 @@ router.beforeEach(async (to, from, next) => {
         next('/404')
       }
     }
+  } catch (error) {
+    console.error('❌ 加载菜单数据失败:', error)
+    // 出错时，清空token并跳转到登录页
+    userStore.resetState()
+    ElMessage.error('获取权限信息失败，请重新登录')
+    next(`/login?redirect=${to.path}`)
+    NProgress.done()
   }
 })
 

@@ -916,19 +916,7 @@ const fetchMenuData = async () => {
   try {
     console.log('开始获取菜单数据')
     
-    // 先检查store中是否已有菜单数据
-    if (menuStore.menuData && menuStore.menuData.length > 0) {
-      console.log('Store中已有菜单数据，无需重新获取')
-      
-      // 确保路由已生成
-      if (router && !menuStore.hasPermission) {
-        console.log('生成路由...')
-        menuStore.generateRoutes(menuStore.menuData, router)
-      }
-      return menuStore.menuData
-    }
-    
-    // 使用pinia store获取菜单数据
+    // 始终从API获取最新的菜单数据
     console.log('通过API获取菜单数据')
     const menuData = await menuStore.fetchMenuData()
     
@@ -1407,7 +1395,37 @@ const goToPage = (view) => {
   // 保存当前选中的标签
   const currentActiveMenuIndex = document.querySelector('.el-menu-item.is-active')?.getAttribute('index') || ''
   
-  // 然后再跳转页面
+  // 检查是否是在同一个系统内导航（如果是，直接更改当前路由状态而不是使用router.push）
+  if (route.path.startsWith('/dashboard/') && view.path.startsWith('/dashboard/')) {
+    const routeParts = route.path.split('/');
+    const viewParts = view.path.split('/');
+    
+    // 如果都是同一个系统的页面，使用路由替换模式而不是导航
+    if (routeParts.length >= 3 && viewParts.length >= 3 && routeParts[2] === viewParts[2]) {
+      console.log('同系统内标签导航，使用替换模式:', view.path);
+      
+      // 使用router.replace代替router.push以减少历史堆栈
+      router.replace(view.path).then(() => {
+        // 更新活动菜单项
+        const menuItem = document.querySelector(`.el-menu-item[index="${view.path}"]`);
+        if (menuItem) {
+          // 找到所有菜单项并移除活动类
+          document.querySelectorAll('.el-menu-item').forEach(item => {
+            item.classList.remove('is-active');
+          });
+          
+          // 为当前菜单项添加活动类
+          menuItem.classList.add('is-active');
+        }
+        
+        // 恢复菜单展开状态
+        nextTick(() => restoreMenuOpenState());
+      });
+      return;
+    }
+  }
+  
+  // 如果是不同系统的导航，使用正常的router.push
   router.push(view.path).then(() => {
     // 恢复菜单展开状态，确保不会折叠已展开的菜单
     nextTick(() => {
@@ -1473,13 +1491,20 @@ const handleMenuSelect = async (index, indexPath) => {
     forceUpdateBreadcrumb(tagData.title)
   }
   
-  // 跳转到页面
-  router.push(index).then(() => {
-    // 确保菜单保持展开状态
-    nextTick(() => {
-      restoreMenuOpenState()
+  // 查找现有标签
+  const existingTag = visitedViews.value.find(t => t.path === index)
+  if (existingTag) {
+    // 使用goToPage方法导航到标签，这样避免重新加载
+    goToPage(existingTag)
+  } else {
+    // 如果标签不存在，才使用路由跳转
+    router.push(index).then(() => {
+      // 确保菜单保持展开状态
+      nextTick(() => {
+        restoreMenuOpenState()
+      })
     })
-  })
+  }
 }
 
 // 辅助函数：在菜单中查找子菜单
