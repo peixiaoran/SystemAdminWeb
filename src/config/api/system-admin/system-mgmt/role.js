@@ -19,25 +19,25 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 角色实体API
 export const GET_ROLE_ENTITY_API = {
-    GET_ROLE_ENTITY: 'SysBasic/SysManagement/RoleControllers/GetSysRoleEntity'
+    GET_ROLE_ENTITY: 'SysBasic/SysManagement/Role/GetSysRoleEntity'
 }
 
 // 角色分页API
 export const GET_ROLE_PAGES_API = {
-  GET_ROLE_PAGES: 'SysBasic/SysManagement/RoleControllers/GetSysRolePagesList'
+  GET_ROLE_PAGES: 'SysBasic/SysManagement/Role/GetSysRolePagesList'
 }
 
 // 角色新增理API
 export const INSERT_ROLE_API = {
-  INSERST_ROLE: 'SysBasic/SysManagement/RoleControllers/InsertSysRole'
+  INSERST_ROLE: 'SysBasic/SysManagement/Role/InsertSysRole'
 }
 
 // 角色删除API
 export const DELETE_ROLE_API = {
-  DELETE_ROLE: 'SysBasic/SysManagement/RoleControllers/DeleteSysRole'
+  DELETE_ROLE: 'SysBasic/SysManagement/Role/DeleteSysRole'
 }
 
 // 角色更新API
 export const UPDATE_ROLE_API = {
-  UPDATE_ROLE: 'SysBasic/SysManagement/RoleControllers/UpdateSysRole'
+  UPDATE_ROLE: 'SysBasic/SysManagement/Role/UpdateSysRole'
 }

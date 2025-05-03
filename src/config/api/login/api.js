@@ -19,33 +19,15 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 登录相关API
 export const LOGIN_API = {
-  USER_LOGIN: 'SysBasic/SysBasics/SysLoginControllers/UserLogin'
+  USER_LOGIN: 'SysBasic/SysLogin/SysLogin/UserLogin'
 }
 
 // 模块相关API
 export const MODULE_API = {
-  GET_MODULES: 'SysBasic/SysBasics/SysLoginControllers/GetSysDomainList'
+  GET_MODULES: 'SysBasic/SysAction/SysAction/GetSysDomainList'
 }
 
 // 菜单相关API
 export const MENU_API = {
-  GET_MENU: 'SysBasic/SysBasics/SysLoginControllers/GetSysModuleTreeList'
+  GET_MENU: 'SysBasic/SysAction/SysAction/GetSysModuleTreeList'
 }
-
-// 网域新增理API
-export const INSERST_DOMAIN_API = {
-  INSERST_DOMAIN: 'SysBasic/SysBasics/DomainControllers/InsertSysDomain'
-}
-
-// 网域删除API
-export const DELETE_DOMAIN_API = {
-  DELETE_DOMAIN: 'SysBasic/SysBasics/DomainControllers/DeleteSysDomain'
-}
-
-// 网域类型API
-export const GET_DOMAIN_TYPE_API = {
-  GET_DOMAIN_TYPE: 'SysBasic/SysBasics/DomainControllers/GetDomainTypeList'
-}
-
-
-// 可以根据模块添加更多API

@@ -19,30 +19,30 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 模块分页API
 export const GET_MODULE_ENTITY_API = {
-    GET_MODULE_ENTITY: 'SysBasic/SysManagement/ModuleControllers/GetSysModuleEntity'
+    GET_MODULE_ENTITY: 'SysBasic/SysManagement/Module/GetSysModuleEntity'
 }
 
 // 模块分页API
 export const GET_MODULE_PAGES_API = {
-  GET_MODULE_PAGES: 'SysBasic/SysManagement/ModuleControllers/GetSysModulePagesList'
+  GET_MODULE_PAGES: 'SysBasic/SysManagement/Module/GetSysModulePagesList'
 }
 
 // 模块新增理API
 export const INSERST_MODULE_API = {
-  INSERST_MODULE: 'SysBasic/SysManagement/ModuleControllers/InsertSysModule'
+  INSERST_MODULE: 'SysBasic/SysManagement/Module/InsertSysModule'
 }
 
 // 模块删除API
 export const DELETE_MODULE_API = {
-  DELETE_MODULE: 'SysBasic/SysManagement/ModuleControllers/DeleteSysModule'
+  DELETE_MODULE: 'SysBasic/SysManagement/Module/DeleteSysModule'
 }
 
 // 网域下拉框
 export const GET_DOMAIN_DROP_API = {
-  GET_DOMAIN_TYPE: 'SysBasic/SysManagement/ModuleControllers/GetDomainDropDown'
+  GET_DOMAIN_TYPE: 'SysBasic/SysManagement/Module/GetDomainDropDown'
 }
 
 // 模块更新API
 export const UPDATE_MODULE_API = {
-  UPDATE_MODULE: 'SysBasic/SysManagement/ModuleControllers/UpdateSysModule'
+  UPDATE_MODULE: 'SysBasic/SysManagement/Module/UpdateSysModule'
 }

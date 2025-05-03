@@ -6,11 +6,11 @@
         <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form">
           <el-form-item label="网域编码">
-            <el-input v-model="filters.domainCode" placeholder="请输入网域编码" style="width:180px" clearable />
+            <el-input v-model="filters.domainCode" placeholder="请输入网域编码" style="width:170px" clearable />
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item label="网域名称">
-            <el-input v-model="filters.domainName" placeholder="请输入网域名称" style="width:180px" clearable />
+            <el-input v-model="filters.domainName" placeholder="请输入网域名称" style="width:170px" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>

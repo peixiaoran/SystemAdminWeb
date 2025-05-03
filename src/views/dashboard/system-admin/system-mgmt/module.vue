@@ -5,13 +5,20 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
+            <el-form-item label="所属网域">
+              <el-select v-model="filters.domainId" placeholder="请选择网域" style="width:170px" clearable>
+                <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+              </el-select>
+            </el-form-item>
+            <el-form-item></el-form-item>
             <el-form-item label="模块编码">
-              <el-input v-model="filters.menuCode" placeholder="请输入模块编码" style="width:180px" clearable />
+              <el-input v-model="filters.menuCode" placeholder="请输入模块编码" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
             <el-form-item label="模块名称">
-              <el-input v-model="filters.menuName" placeholder="请输入模块名称" style="width:180px" clearable />
+              <el-input v-model="filters.menuName" placeholder="请输入模块名称" style="width:170px" clearable />
             </el-form-item>
+            <el-form-item></el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
                 查询
@@ -202,7 +209,8 @@
   const filters = reactive({
     menuCode: '',
     menuName: '',
-    menuUrl: ''
+    menuUrl: '',
+    domainId: ''
   })
   
   // 对话框显示状态
@@ -233,7 +241,7 @@
   
   // 在组件挂载后获取日志数据
   onMounted(() => {
-     fetchModulePages()
+     fetchDomainDrop() // 先获取网域，设置默认值后再查询数据
   })
   
   // 获取网域类型
@@ -241,10 +249,18 @@
     const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
     domainDropList.value = res.data || []
     
+    // 默认选中第一个网域
+    if (domainDropList.value.length > 0) {
+      filters.domainId = domainDropList.value[0].domainId
+    }
+    
     // 如果是新增操作，默认选中第一个模块
     if (dialogTitle.value === '新增模块' && domainDropList.value.length > 0) {
       editForm.domainId = domainDropList.value[0].domainId
     }
+    
+    // 应用默认值进行初始查询
+    fetchModulePages()
   }
   
   // 获取模块实体数据
@@ -301,6 +317,7 @@
     filters.menuCode = ''
     filters.menuName = ''
     filters.menuUrl = ''
+    filters.domainId = ''
     pagination.currentPage = 1
     fetchModulePages()
   }

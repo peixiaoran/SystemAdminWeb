@@ -6,12 +6,25 @@
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
             <el-form-item label="程序编码">
-              <el-input v-model="filters.programCode" placeholder="请输入程序编码" style="width:180px" clearable />
+              <el-input v-model="filters.programCode" placeholder="请输入程序编码" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
             <el-form-item label="程序名称">
-              <el-input v-model="filters.programName" placeholder="请输入程序名称" style="width:180px" clearable />
+              <el-input v-model="filters.programName" placeholder="请输入程序名称" style="width:170px" clearable />
             </el-form-item>
+            <el-form-item></el-form-item>
+            <el-form-item label="所属网域">
+              <el-select v-model="filters.domainId" placeholder="请选择网域" style="width:170px" clearable @change="handleFilterDomainChange">
+                <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+              </el-select>
+            </el-form-item>
+            <el-form-item></el-form-item>
+            <el-form-item label="所属模块">
+              <el-select v-model="filters.parentMenuId" placeholder="请选择模块" style="width:170px" clearable>
+                <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
+              </el-select>
+            </el-form-item>
+            <el-form-item></el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
                 查询
@@ -211,8 +224,13 @@
   const filters = reactive({
     programCode: '',
     programName: '',
-    programUrl: ''
+    programUrl: '',
+    domainId: '',
+    parentMenuId: ''
   })
+  
+  // 过滤用模块列表
+  const filterModuleList = ref([])
   
   // 对话框显示状态
   const dialogVisible = ref(false)
@@ -243,7 +261,7 @@
   
   // 在组件挂载后获取日志数据
   onMounted(() => {
-     fetchProgramPages()
+     fetchDomainDrop() // 先获取网域和模块，设置默认值后再查询数据
   })
   
   // 获取网域类型
@@ -252,12 +270,22 @@
     // 对获取的数据进行XSS清洗
     domainDropList.value = res.data || []
     
+    // 默认选中第一个网域（用于查询表单）
+    if (domainDropList.value.length > 0) {
+      filters.domainId = domainDropList.value[0].domainId
+      // 获取对应的模块列表
+      await fetchFilterModuleDrop()
+    }
+    
     // 如果是新增操作，默认选中第一个网域
     if (dialogTitle.value === '新增程序' && domainDropList.value.length > 0) {
       editForm.domainId = domainDropList.value[0].domainId
       // 网域选择后联动获取模块数据
       fetchModuleDrop()
     }
+    
+    // 应用默认值进行初始查询
+    fetchProgramPages()
   }
 
   // 获取模块下拉框
@@ -343,6 +371,9 @@
     filters.programCode = ''
     filters.programName = ''
     filters.programUrl = ''
+    filters.domainId = ''
+    filters.parentMenuId = ''
+    filterModuleList.value = []
     pagination.currentPage = 1
     fetchProgramPages()
   }
@@ -570,6 +601,33 @@
     editForm.parentMenuId = ''
     // 重新获取模块列表
     fetchModuleDrop()
+  }
+  
+  // 处理查询表单中网域变化
+  const handleFilterDomainChange = () => {
+    // 清空模块选择
+    filters.parentMenuId = ''
+    // 重新获取模块列表
+    fetchFilterModuleDrop()
+  }
+  
+  // 获取查询表单中的模块下拉框数据
+  const fetchFilterModuleDrop = async () => {
+    if (!filters.domainId) {
+      filterModuleList.value = []
+      return
+    }
+    
+    const params = {
+      domainId: filters.domainId
+    }
+    const res = await post(GET_MODULE_DROP_API.GET_MODULE_TYPE, params)
+    filterModuleList.value = res.data || []
+    
+    // 默认选中第一个模块
+    if (filterModuleList.value.length > 0) {
+      filters.parentMenuId = filterModuleList.value[0].menuId
+    }
   }
   </script>
   

@@ -19,27 +19,27 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 网域分页API
 export const GET_DOMAIN_ENTITY_API = {
-    GET_DOMAIN_ENTITY: 'SysBasic/SysManagement/DomainControllers/GetSysDomainEntity'
+    GET_DOMAIN_ENTITY: 'SysBasic/SysManagement/Domain/GetSysDomainEntity'
   }
 
 // 网域分页API
 export const GET_DOMAIN_PAGES_API = {
-  GET_DOMAIN_PAGES: 'SysBasic/SysManagement/DomainControllers/GetSysDomainPagesList'
+  GET_DOMAIN_PAGES: 'SysBasic/SysManagement/Domain/GetSysDomainPagesList'
 }
 
 // 网域新增理API
 export const INSERST_DOMAIN_API = {
-  INSERST_DOMAIN: 'SysBasic/SysManagement/DomainControllers/InsertSysDomain'
+  INSERST_DOMAIN: 'SysBasic/SysManagement/Domain/InsertSysDomain'
 }
 
 // 网域删除API
 export const DELETE_DOMAIN_API = {
-  DELETE_DOMAIN: 'SysBasic/SysManagement/DomainControllers/DeleteSysDomain'
+  DELETE_DOMAIN: 'SysBasic/SysManagement/Domain/DeleteSysDomain'
 }
 
 // 网域更新API
 export const UPDATE_DOMAIN_API = {
-  UPDATE_DOMAIN: 'SysBasic/SysManagement/DomainControllers/UpdateSysDomain'
+  UPDATE_DOMAIN: 'SysBasic/SysManagement/Domain/UpdateSysDomain'
 }
 
 

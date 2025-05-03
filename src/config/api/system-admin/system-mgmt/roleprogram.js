@@ -19,25 +19,25 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 更新角色程序分页API
 export const UPDATE_ROLE_PROGRAM_API = {
-  UPDATE_ROLE_PROGRAM: 'SysBasic/SysManagement/RoleProgramControllers/UpdateRoleProgram'
+  UPDATE_ROLE_PROGRAM: 'SysBasic/SysManagement/RoleProgram/UpdateRoleProgram'
 }
 
 // 获取角色程序列表API
 export const GET_ROLE_PROGRAM_API = {
-  GET_ROLE_PROGRAM: 'SysBasic/SysManagement/RoleProgramControllers/GetRoleProgramList'
+  GET_ROLE_PROGRAM: 'SysBasic/SysManagement/RoleProgram/GetRoleProgramList'
 }
 
 // 获取角色下拉列表API
 export const GET_ROLE_DROPDOWN_API = {
-    GET_ROLE_DROPDOWN: 'SysBasic/SysManagement/RoleProgramControllers/GetRoleDropDown'
+    GET_ROLE_DROPDOWN: 'SysBasic/SysManagement/RoleProgram/GetRoleDropDown'
 }
 
 // 获取网域下拉列表API
 export const GET_DOMAIN_DROPDOWN_API = {
-    GET_DOMAIN_DROPDOWN: 'SysBasic/SysManagement/RoleProgramControllers/GetDomainDropDown'
+    GET_DOMAIN_DROPDOWN: 'SysBasic/SysManagement/RoleProgram/GetDomainDropDown'
 }
 
 // 获取模块下拉列表API
 export const GET_MODULE_DROPDOWN_API = {
-    GET_MODULE_DROPDOWN: 'SysBasic/SysManagement/RoleProgramControllers/GetModuleDropDown'
+    GET_MODULE_DROPDOWN: 'SysBasic/SysManagement/RoleProgram/GetModuleDropDown'
 }

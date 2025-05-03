@@ -19,35 +19,35 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 程序实体API
 export const GET_PROGRAM_ENTITY_API = {
-    GET_PROGRAM_ENTITY: 'SysBasic/SysManagement/ProgramControllers/GetSysProgramEntity'
+    GET_PROGRAM_ENTITY: 'SysBasic/SysManagement/Program/GetSysProgramEntity'
 }
 
 // 程序分页API
 export const GET_PROGRAM_PAGES_API = {
-  GET_PROGRAM_PAGES: 'SysBasic/SysManagement/ProgramControllers/GetSysProgramPagesList'
+  GET_PROGRAM_PAGES: 'SysBasic/SysManagement/Program/GetSysProgramPagesList'
 }
 
 // 程序新增理API
 export const INSERST_PROGRAM_API = {
-  INSERST_PROGRAM: 'SysBasic/SysManagement/ProgramControllers/InsertSysProgram'
+  INSERST_PROGRAM: 'SysBasic/SysManagement/Program/InsertSysProgram'
 }
 
 // 程序删除API
 export const DELETE_PROGRAM_API = {
-  DELETE_PROGRAM: 'SysBasic/SysManagement/ProgramControllers/DeleteSysProgram'
+  DELETE_PROGRAM: 'SysBasic/SysManagement/Program/DeleteSysProgram'
 }
 
 // 网域下拉框
 export const GET_DOMAIN_DROP_API = {
-  GET_DOMAIN_TYPE: 'SysBasic/SysManagement/ProgramControllers/GetDomainDropDown'
+  GET_DOMAIN_TYPE: 'SysBasic/SysManagement/Program/GetDomainDropDown'
 }
 
 // 模块下拉框
 export const GET_MODULE_DROP_API = {
-    GET_MODULE_TYPE: 'SysBasic/SysManagement/ProgramControllers/GetModuleDropDown'
+    GET_MODULE_TYPE: 'SysBasic/SysManagement/Program/GetModuleDropDown'
   }
 
 // 程序更新API
 export const UPDATE_PROGRAM_API = {
-  UPDATE_PROGRAM: 'SysBasic/SysManagement/ProgramControllers/UpdateSysProgram'
+  UPDATE_PROGRAM: 'SysBasic/SysManagement/Program/UpdateSysProgram'
 }

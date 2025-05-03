@@ -498,6 +498,8 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
   // 检查路径是否有效
   if (!path) return null
   
+  console.log('尝试从路径创建标签:', path, '默认标题:', defaultTitle)
+  
   const tag = {
     path: path,
     title: defaultTitle,
@@ -514,6 +516,8 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
   const isSubPage = pathParts.length > 4
   const subPageName = isSubPage ? pathParts[pathParts.length - 1] : ''
   
+  console.log('解析路径:', { systemName, subMenuPath, isSubPage, subPageName })
+  
   if (menuData.value && menuData.value._rawMenuData) {
     const rawMenus = menuData.value._rawMenuData
     
@@ -523,6 +527,8 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
       
       const menuPath = menu.path.toLowerCase()
       if (menuPath.startsWith(systemName) || menuPath.includes('/' + systemName) || menuPath === systemName) {
+        console.log('找到匹配的一级菜单:', menu.menuName)
+        
         // 查找二级菜单
         if (menu.menuChildList && menu.menuChildList.length > 0) {
           let matched = false
@@ -544,9 +550,13 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
             const lastPart = childPathParts[childPathParts.length - 1]
             
             // 匹配逻辑
-            if ((childPath === subMenuPath || childPath.endsWith('/' + subMenuPath) || lastPart === subMenuPath) ||
-                (isSubPage && (childPath.endsWith('/' + subPageName) || lastPart === subPageName))) {
+            const isMatchSubMenu = childPath === subMenuPath || childPath.endsWith('/' + subMenuPath) || lastPart === subMenuPath;
+            const isMatchSubPage = isSubPage && (childPath.endsWith('/' + subPageName) || lastPart === subPageName);
+            
+            if (isMatchSubMenu || isMatchSubPage) {
               // 匹配成功，使用真实菜单名称
+              console.log('找到匹配的二级菜单:', childMenu.menuName, '匹配方式:', 
+                          isMatchSubMenu ? '二级菜单匹配' : '子页面匹配')
               tag.title = childMenu.menuName
               tag.icon = childMenu.menuIcon || 'Document'
               matched = true
@@ -556,10 +566,23 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
           
           // 如果找到匹配，退出循环
           if (matched) break
+          else {
+            console.log('在菜单:', menu.menuName, '中未找到匹配的二级菜单')
+          }
         }
       }
     }
   }
+  
+  console.log('最终创建的标签:', tag)
+  
+  // 如果没有找到标题，返回null表示未找到匹配
+  if (!tag.title || tag.title === '') {
+    console.log('未能找到有效的菜单标题，返回null')
+    return null
+  }
+  
+  return tag
   
   // 如果未找到菜单名称，尝试从DOM元素获取
   if (!tag.title) {
@@ -597,6 +620,12 @@ const createTagFromMenuData = (path, defaultTitle = '') => {
 const addVisitedView = (view) => {
   // 确保视图对象格式正确
   if (!view) return
+  
+  // 跳过404页面
+  if (view.path && (view.path.includes('/404') || view.path.includes('/not-found'))) {
+    console.log('跳过添加404页面到标签:', view.path)
+    return
+  }
   
   // 如果只提供了路径，尝试从菜单数据中获取完整信息
   if (view.path && !view.title) {
@@ -1094,6 +1123,15 @@ onMounted(() => {
   // 从本地存储恢复标签页状态
   restoreVisitedViews()
   
+  // 如果有已访问标签，直接跳转到第一个标签页面
+  if (visitedViews.value && visitedViews.value.length > 0) {
+    const firstTag = visitedViews.value[0]
+    console.log('尝试跳转到第一个标签页面:', firstTag.path)
+    if (firstTag.path && firstTag.path !== route.path) {
+      router.push(firstTag.path)
+    }
+  }
+  
   // 如果当前路由不是首页，且不在已访问标签中，则添加当前页面到标签
   const currentPath = route.path
   if (currentPath !== '/dashboard' && currentPath.split('/').length >= 4) {
@@ -1278,9 +1316,12 @@ const restoreVisitedViews = () => {
     const storedViews = localStorage.getItem('visitedViews')
     if (storedViews) {
       visitedViews.value = JSON.parse(storedViews)
+      console.log('恢复标签页成功，共', visitedViews.value.length, '个标签')
     } else {
+      console.log('没有找到保存的标签页数据')
     }
   } catch (error) {
+    console.error('恢复标签页出错:', error)
   }
 }
 
@@ -1590,6 +1631,15 @@ const handleMenuSelect = async (index, indexPath) => {
   console.log('创建的标签数据:', tagData)
   
   if (tagData) {
+    // 检查是否能正确找到菜单标题，如果没找到则不添加标签
+    if (!tagData.title || tagData.title === '') {
+      console.log('未找到菜单标题，不添加到标签列表:', index)
+      router.push(index).then(() => {
+        nextTick(() => restoreMenuOpenState())
+      })
+      return
+    }
+    
     // 添加标签
     addVisitedView(tagData)
     
@@ -1610,8 +1660,11 @@ const handleMenuSelect = async (index, indexPath) => {
 const findSubMenuByPath = (menu, targetPath) => {
   if (!menu || !menu.menuChildList) return null
   
+  // 记录查找过程信息
+  console.log('查找子菜单:', targetPath, '在父级菜单:', menu.menuName || menu.menuCode)
+  
   // 尝试查找匹配的子菜单
-  return menu.menuChildList.find(child => {
+  const foundMenu = menu.menuChildList.find(child => {
     if (!child.path) return false
     
     // 处理子菜单路径
@@ -1645,8 +1698,18 @@ const findSubMenuByPath = (menu, targetPath) => {
       return childPath.replace('.vue', '') === targetPath
     }
     
-    return childPath === targetPath
+    const isMatch = childPath === targetPath
+    if (isMatch) {
+      console.log('找到匹配的子菜单:', child.menuName || child.menuCode)
+    }
+    return isMatch
   })
+  
+  if (!foundMenu) {
+    console.log('未找到匹配的子菜单:', targetPath)
+  }
+  
+  return foundMenu
 }
 
 // 关闭标签
@@ -1754,9 +1817,25 @@ const handleDocumentClick = () => {
 // 关闭所有标签
 const closeAllTags = () => {
   console.log('关闭所有标签')
+  
+  // 获取当前模块的路径
+  const currentPath = route.path
+  const pathParts = currentPath.split('/')
+  
+  // 如果路径至少包含到系统级别（如/dashboard/system-admin）
+  let targetPath = '/dashboard'
+  if (pathParts.length >= 3) {
+    // 构建模块首页路径（系统级别路径）
+    targetPath = `/${pathParts[1]}/${pathParts[2]}`
+    console.log('返回到模块首页:', targetPath)
+  }
+  
+  // 清空标签并保存
   visitedViews.value = []
   saveVisitedViews()
-  router.push('/dashboard')
+  
+  // 跳转到模块首页
+  router.push(targetPath)
   visible.value = false
 }
 
