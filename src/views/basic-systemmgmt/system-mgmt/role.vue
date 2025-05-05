@@ -28,59 +28,60 @@
           </el-form>
           
           <!-- 日志表格 -->
-          <div class="conventional-table-container">
-            <el-table 
-              :data="roleList" 
-              style="width: 100%" 
-              border 
-              stripe
-              height="600"
-              :header-cell-style="{ background: '#f5f7fa' }"
-              v-loading="loading"
-              class="conventional-table"
-            >
-              <el-table-column type="index" label="序号" width="60" align="center" fixed />
-              <el-table-column prop="roleCode" label="角色代码" align="left" min-width="240" />
-              <el-table-column prop="roleName" label="角色名称" align="left" min-width="200" />
-              <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="80">
-                <template #default="scope">
-                  <div class="flex">
-                    <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                      {{ scope.row.isEnabled ? '启用' : '禁用' }}
-                    </el-tag>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="createdName" label="创建人" min-width="120" />
-              <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-              <el-table-column label="操作" min-width="150" fixed="right">
+          <div class="table-pagination-container">
+            <div class="table-wrapper">
+              <el-table 
+                :data="roleList" 
+                style="width: 100%" 
+                border 
+                stripe
+                max-height="calc(100vh - 240px)"
+                :header-cell-style="{ background: '#f5f7fa' }"
+                v-loading="loading"
+                class="conventional-table"
+              >
+                <el-table-column type="index" label="序号" width="60" align="center" fixed />
+                <el-table-column prop="roleCode" label="角色代码" align="left" min-width="240" />
+                <el-table-column prop="roleName" label="角色名称" align="left" min-width="200" />
+                <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="80">
                   <template #default="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                      >编辑</el-button
-                    >
-                    <el-button
-                      size="small"
-                      type="danger"
-                      @click="handleDelete(scope.$index, scope.row)"
-                      >删除</el-button
-                    >
+                    <div class="flex">
+                      <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
+                        {{ scope.row.isEnabled ? '启用' : '禁用' }}
+                      </el-tag>
+                    </div>
                   </template>
-              </el-table-column>
-            </el-table>
+                </el-table-column>
+                <el-table-column prop="createdName" label="创建人" min-width="120" />
+                <el-table-column prop="createdDate" label="创建时间" min-width="180" />
+                <el-table-column label="操作" min-width="150" fixed="right">
+                    <template #default="scope">
+                      <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                        >编辑</el-button
+                      >
+                      <el-button
+                        size="small"
+                        type="danger"
+                        @click="handleDelete(scope.$index, scope.row)"
+                        >删除</el-button
+                      >
+                    </template>
+                </el-table-column>
+              </el-table>
+            </div>
             
-          </div>
-          
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="pagination.currentPage"
-              v-model:page-size="pagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="pagination.total"
-              @size-change="handleSizeChange"
-              @current-change="handlePageChange"
-            />
+            <!-- 分页 -->
+            <div class="pagination-wrapper">
+              <el-pagination
+                v-model:current-page="pagination.currentPage"
+                v-model:page-size="pagination.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total"
+                @size-change="handleSizeChange"
+                @current-change="handlePageChange"
+              />
+            </div>
           </div>
         </div>
       </el-card>
@@ -130,7 +131,6 @@
   import { post, sanitizeHtml } from '@/utils/request'
   import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/system-admin/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { containsXssRisk } from '@/utils/xssUtils'
   
   // 角色数据
   const roleList = ref([])
@@ -360,21 +360,6 @@
     if (!editForm.roleCode || !editForm.roleName) {
       ElMessage.warning('请填写角色代码和角色名称')
       return
-    }
-    
-    // 检查输入是否包含XSS风险
-    const inputFields = [
-      { name: '角色代码', value: editForm.roleCode },
-      { name: '角色名称', value: editForm.roleName },
-      { name: '角色描述', value: editForm.description },
-      { name: '备注', value: editForm.remarks }
-    ]
-    
-    for (const field of inputFields) {
-      if (field.value && containsXssRisk(field.value)) {
-        ElMessage.error(`${field.name}中包含潜在的XSS攻击代码，请检查输入`)
-        return
-      }
     }
     
     // 判断是新增还是编辑

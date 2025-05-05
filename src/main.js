@@ -4,11 +4,23 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
-import { vSafeHtml } from './utils/xssUtils'
 import pinia from './stores'
+import NProgress from 'nprogress'
 
 // 设置固定标题
 document.title = 'SystemsAdmin管理系统'
+
+// 监听页面刷新事件
+window.addEventListener('beforeunload', () => {
+  NProgress.start()
+})
+
+window.addEventListener('load', () => {
+  // 确保页面加载完成后结束进度条
+  setTimeout(() => {
+    NProgress.done()
+  }, 200) // 短暂延迟确保DOM完全加载
+})
 
 // 创建应用实例
 const app = createApp(App)
@@ -17,9 +29,6 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(ElementPlus, { size: 'default', zIndex: 3000 })
-
-// 注册全局指令
-app.directive('safe-html', vSafeHtml)
 
 // 导入所有图标并注册
 // 放到最后避免循环依赖问题

@@ -41,71 +41,72 @@
           </el-form>
           
           <!-- 日志表格 -->
-          <div class="conventional-table-container">
-            <el-table 
-              :data="programList" 
-              style="width: 100%" 
-              border 
-              stripe
-              height="600"
-              :header-cell-style="{ background: '#f5f7fa' }"
-              v-loading="loading"
-              class="conventional-table"
-            >
-              <el-table-column type="index" label="序号" width="60" align="center" fixed />
-              <el-table-column prop="menuCode" label="程序代码" align="left" min-width="240" />
-              <el-table-column prop="menuName" label="程序名称" align="left" min-width="200" />
-              <el-table-column prop="roleCode" label="权限标识" align="center" min-width="130" />
-              <el-table-column prop="path" label="页面Path" align="left" min-width="230" />
-              <el-table-column prop="menuIcon" label="程序图标" align="center" min-width="120" />
-              <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
-                <template #default="scope">
-                  <div class="flex">
-                    <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                      {{ scope.row.isEnabled ? '启用' : '禁用' }}
-                    </el-tag>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="isVisible" label="是否显示" align="center" min-width="90">
-                <template #default="scope">
-                  <div class="flex">
-                    <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                      {{ scope.row.isVisible ? '显示' : '隐藏' }}
-                    </el-tag>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="createdName" label="创建人" min-width="120" />
-              <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-              <el-table-column label="操作" min-width="150" fixed="right">
+          <div class="table-pagination-container">
+            <div class="table-wrapper">
+              <el-table 
+                :data="programList" 
+                style="width: 100%" 
+                border 
+                stripe
+                max-height="calc(100vh - 240px)"
+                :header-cell-style="{ background: '#f5f7fa' }"
+                v-loading="loading"
+                class="conventional-table"
+              >
+                <el-table-column type="index" label="序号" width="60" align="center" fixed />
+                <el-table-column prop="menuCode" label="程序代码" align="left" min-width="240" />
+                <el-table-column prop="menuName" label="程序名称" align="left" min-width="200" />
+                <el-table-column prop="roleCode" label="权限标识" align="center" min-width="130" />
+                <el-table-column prop="path" label="页面Path" align="left" min-width="230" />
+                <el-table-column prop="menuIcon" label="程序图标" align="center" min-width="120" />
+                <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
                   <template #default="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                      >编辑</el-button
-                    >
-                    <el-button
-                      size="small"
-                      type="danger"
-                      @click="handleDelete(scope.$index, scope.row)"
-                      >删除</el-button
-                    >
+                    <div class="flex">
+                      <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
+                        {{ scope.row.isEnabled ? '启用' : '禁用' }}
+                      </el-tag>
+                    </div>
                   </template>
-              </el-table-column>
-            </el-table>
+                </el-table-column>
+                <el-table-column prop="isVisible" label="是否显示" align="center" min-width="90">
+                  <template #default="scope">
+                    <div class="flex">
+                      <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
+                        {{ scope.row.isVisible ? '显示' : '隐藏' }}
+                      </el-tag>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="createdName" label="创建人" min-width="120" />
+                <el-table-column prop="createdDate" label="创建时间" min-width="180" />
+                <el-table-column label="操作" min-width="150" fixed="right">
+                    <template #default="scope">
+                      <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                        >编辑</el-button
+                      >
+                      <el-button
+                        size="small"
+                        type="danger"
+                        @click="handleDelete(scope.$index, scope.row)"
+                        >删除</el-button
+                      >
+                    </template>
+                </el-table-column>
+              </el-table>
+            </div>
             
-          </div>
-          
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="pagination.currentPage"
-              v-model:page-size="pagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="pagination.total"
-              @size-change="handleSizeChange"
-              @current-change="handlePageChange"
-            />
+            <!-- 分页 -->
+            <div class="pagination-wrapper">
+              <el-pagination
+                v-model:current-page="pagination.currentPage"
+                v-model:page-size="pagination.pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total"
+                @size-change="handleSizeChange"
+                @current-change="handlePageChange"
+              />
+            </div>
           </div>
         </div>
       </el-card>
@@ -205,7 +206,6 @@
   import { post, sanitizeHtml } from '@/utils/request'
   import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/system-admin/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { containsXssRisk } from '@/utils/xssUtils'
   
   // 程序数据
   const programList = ref([])
@@ -559,26 +559,6 @@
     if (!editForm.parentMenuId) {
       ElMessage.warning('请选择所属模块')
       return
-    }
-    
-    // 检查输入是否包含XSS风险
-    const inputFields = [
-      { name: '程序代码', value: editForm.menuCode },
-      { name: '程序名称', value: editForm.menuName },
-      { name: '程序URL', value: editForm.menuUrl },
-      { name: '权限标识', value: editForm.roleCode },
-      { name: '页面Path', value: editForm.path },
-      { name: 'AIP路由', value: editForm.routePath },
-      { name: '组件', value: editForm.component },
-      { name: '目标', value: editForm.target },
-      { name: '备注', value: editForm.remarks }
-    ]
-    
-    for (const field of inputFields) {
-      if (field.value && containsXssRisk(field.value)) {
-        ElMessage.error(`${field.name}中包含潜在的XSS攻击代码，请检查输入`)
-        return
-      }
     }
     
     // 判断是新增还是编辑

@@ -94,6 +94,9 @@
   width: 100%;
   overflow: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
 }
 
 /* 状态单元格样式 */
@@ -108,6 +111,8 @@
   --el-table-border-color: #eef2f7;
   --el-table-header-bg-color: #f5f7fa;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  flex: 1;
+  min-height: 550px;
 }
 
 .conventional-table .el-table__row {
@@ -181,4 +186,43 @@
   height: 34px;
   display: flex;
   align-items: center;
+}
+
+/* 表格和分页的整体容器 - 优化样式 */
+.table-pagination-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* 表格包装器 - 优化样式 */
+.table-wrapper {
+  flex: 1;
+  overflow: auto;
+  min-height: 200px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 分页包装器 - 优化样式 */
+.pagination-wrapper {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px 0;
+  background-color: #fff;
+  border-top: none;
+  z-index: 10;
+  margin-top: auto;
 }

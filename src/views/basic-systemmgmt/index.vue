@@ -298,6 +298,15 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 添加router-view，用于显示子路由内容 -->
+    <router-view v-slot="{ Component }">
+      <transition name="fade-transform" mode="out-in">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
+    </router-view>
   </div>
 </template>
 

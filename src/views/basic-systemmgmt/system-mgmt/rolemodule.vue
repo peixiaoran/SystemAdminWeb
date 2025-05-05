@@ -16,12 +16,6 @@
               <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
             </el-select>
           </el-form-item>
-          <el-form-item></el-form-item>
-          <el-form-item label="模块">
-            <el-select v-model="filters.parmentMenuId" placeholder="请选择模块" style="width:180px" clearable @change="handleModuleChange">
-              <el-option v-for="item in moduleOptions" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
-            </el-select>
-          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
               查询
@@ -35,30 +29,44 @@
         </el-form>
         
         <!-- 日志表格 -->
-        <div class="conventional-table-container">
-          <el-table 
-            :data="roleProgramList" 
-            style="width: 100%" 
-            border 
-            stripe
-            height="600"
-            :header-cell-style="{ background: '#f5f7fa' }"
-            v-loading="loading"
-            class="conventional-table"
-          >
-            <el-table-column type="index" label="序号" width="60" align="center" fixed />
-            <el-table-column prop="roleName" label="角色名称" align="left" min-width="180" />
-            <el-table-column prop="menuName" label="模块名称" align="left" min-width="180" />
-            <el-table-column prop="programName" label="程序名称" align="left" min-width="180" />
-            <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="90">
-              <template #default="scope">
-                <div class="checkbox-wrapper">
-                  <el-checkbox v-model="scope.row.isChecked" />
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column prop="remark" label="备注" min-width="150" />
-          </el-table>
+        <div class="table-pagination-container">
+          <div class="table-wrapper">
+            <el-table 
+              :data="roleModuleList" 
+              style="width: 100%" 
+              border 
+              stripe
+              max-height="calc(100vh - 240px)"
+              :header-cell-style="{ background: '#f5f7fa' }"
+              v-loading="loading"
+              class="conventional-table"
+            >
+              <el-table-column type="index" label="序号" width="60" align="center" fixed />
+              <el-table-column prop="roleName" label="角色名称" align="left" min-width="180" />
+              <el-table-column prop="menuName" label="模块名称" align="left" min-width="180" />
+              <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="90">
+                <template #default="scope">
+                    <div class="checkbox-wrapper">
+                      <el-checkbox v-model="scope.row.isChecked" />
+                    </div>
+                  </template>
+              </el-table-column>
+              <el-table-column prop="remark" label="备注" min-width="150" />
+            </el-table>
+          </div>
+          
+          <!-- 分页 -->
+          <div class="pagination-wrapper">
+            <el-pagination
+              v-model:current-page="pagination.currentPage"
+              v-model:page-size="pagination.pageSize"
+              :page-sizes="[10, 20, 50, 100]"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pagination.total"
+              @size-change="handleSizeChange"
+              @current-change="handlePageChange"
+            />
+          </div>
         </div>
       </div>
     </el-card>
@@ -70,25 +78,29 @@ import { ref, reactive, onMounted } from 'vue'
 import { post } from '@/utils/request'
 import { ElMessage } from 'element-plus'
 import { 
-  GET_ROLE_PROGRAM_API, 
+  GET_ROLE_MODULE_API, 
   GET_ROLE_DROPDOWN_API, 
   GET_DOMAIN_DROPDOWN_API,
-  GET_MODULE_DROPDOWN_API,
-  UPDATE_ROLE_PROGRAM_API 
-} from '@/config/api/system-admin/system-mgmt/roleprogram'
+  UPDATE_ROLE_MODULE_API 
+} from '@/config/api/system-admin/system-mgmt/rolemodule'
 
-// 角色程序数据
-const roleProgramList = ref([])
+// 角色网域数据
+const roleModuleList = ref([])
 const roleOptions = ref([])
 const domainOptions = ref([])
-const moduleOptions = ref([])
 const loading = ref(false)
 
 // 过滤条件
 const filters = reactive({
   roleId: '',
-  domainId: '',
-  parmentMenuId: ''
+  domainId: ''
+})
+
+// 添加分页信息
+const pagination = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0
 })
 
 // 在组件挂载后获取角色和网域数据
@@ -105,7 +117,7 @@ const fetchRoleDropdown = async () => {
       roleOptions.value = res.data || []
       if (roleOptions.value.length > 0) {
         filters.roleId = roleOptions.value[0].roleId
-        fetchRoleProgramList()
+        fetchRoleModuleList()
       }
     } else {
       ElMessage.error(res.message)
@@ -123,7 +135,7 @@ const fetchDomainDropdown = async () => {
       domainOptions.value = res.data || []
       if (domainOptions.value.length > 0) {
         filters.domainId = domainOptions.value[0].domainId
-        fetchModuleDropdown()
+        fetchRoleModuleList()
       }
     } else {
       ElMessage.error(res.message)
@@ -133,52 +145,22 @@ const fetchDomainDropdown = async () => {
   }
 }
 
-// 获取模块下拉列表
-const fetchModuleDropdown = async () => {
-  if (!filters.domainId) {
-    moduleOptions.value = []
-    filters.parmentMenuId = ''
-    return
-  }
-  
-  try {
-    const params = {
-      DomainId: filters.domainId
-    }
-    const res = await post(GET_MODULE_DROPDOWN_API.GET_MODULE_DROPDOWN, params)
-    if (res && res.code === '200') {
-      moduleOptions.value = res.data || []
-      if (moduleOptions.value.length > 0) {
-        filters.parmentMenuId = moduleOptions.value[0].menuId
-        fetchRoleProgramList()
-      } else {
-        filters.parmentMenuId = ''
-        roleProgramList.value = []
-      }
-    } else {
-      ElMessage.error(res.message)
-    }
-  } catch (error) {
-    ElMessage.error(error.message)
-  }
-}
-
-// 获取角色程序列表数据
-const fetchRoleProgramList = async () => {
-    
-  if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) return
+// 获取角色网域列表数据
+const fetchRoleModuleList = async () => {
+  if (!filters.roleId || !filters.domainId) return
   
   loading.value = true
   const params = {
     roleId: filters.roleId,
-    domainId: filters.domainId,
-    parmentMenuId: filters.parmentMenuId
+    domainId: filters.domainId
   }
   
   try {
-    const res = await post(GET_ROLE_PROGRAM_API.GET_ROLE_PROGRAM, params)
+    const res = await post(GET_ROLE_MODULE_API.GET_ROLE_MODULE, params)
     if (res && res.code === '200') {
-      roleProgramList.value = res.data || []
+      roleModuleList.value = res.data || []
+      // 设置总记录数
+      pagination.total = res.data?.length || 0
     } else {
       ElMessage.error(res.message)
     }
@@ -191,32 +173,31 @@ const fetchRoleProgramList = async () => {
 
 // 处理搜索操作
 const handleSearch = () => {
-  fetchRoleProgramList()
+  fetchRoleModuleList()
 }
 
 // 处理确认操作
 const handleConfirm = async () => {
-  if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) {
-    ElMessage.warning('请先选择角色、网域和模块')
+  if (!filters.roleId || !filters.domainId) {
+    ElMessage.warning('请先选择角色和网域')
     return
   }
   
-  const roleProgramUpserts = roleProgramList.value.map(item => ({
+  const roleModuleUpserts = roleModuleList.value.map(item => ({
     roleId: item.roleId,
-    programId: item.programId,
-    domainId: item.domainId,
     menuId: item.menuId,
+    domainId: item.domainId,
     isChecked: item.isChecked
   }))
   
   try {
-    const res = await post(UPDATE_ROLE_PROGRAM_API.UPDATE_ROLE_PROGRAM, {
-      roleProgramUpserts
+    const res = await post(UPDATE_ROLE_MODULE_API.UPDATE_ROLE_MODULE, {
+      roleModuleUpserts
     })
     
     if (res && res.code === '200') {
       ElMessage.success(res.message)
-      fetchRoleProgramList()
+      fetchRoleModuleList()
     } else {
       ElMessage.error(res.message)
     }
@@ -227,26 +208,26 @@ const handleConfirm = async () => {
 
 // 处理角色变化
 const handleRoleChange = () => {
-  fetchRoleProgramList()
+  fetchRoleModuleList()
 }
 
 // 处理网域变化
 const handleDomainChange = () => {
-  moduleOptions.value = []
-  filters.parmentMenuId = ''
-  if (filters.domainId) {
-    fetchModuleDropdown()
-  } else {
-    roleProgramList.value = []
-  }
+  fetchRoleModuleList()
 }
 
-// 处理模块变化
-const handleModuleChange = () => {
-  fetchRoleProgramList()
+// 添加缺失的分页处理方法
+const handleSizeChange = (size) => {
+  pagination.pageSize = size
+  fetchRoleModuleList()
+}
+
+const handlePageChange = (page) => {
+  pagination.currentPage = page
+  fetchRoleModuleList()
 }
 </script>
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-</style> 
+</style>

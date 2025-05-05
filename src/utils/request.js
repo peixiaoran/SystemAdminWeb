@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT, IS_DEV, LOGIN_API } from '@/config/api/login/api'
-import { sanitizeData, sanitizeHtml } from './xssUtils'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -61,8 +60,8 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    // 对响应数据进行XSS清洗
-    return sanitizeData(response.data)
+    // 移除XSS清洗，直接返回数据
+    return response.data
   },
   error => {
     // 直接返回错误，让具体的请求处理函数处理错误
@@ -113,7 +112,7 @@ export const post = createRequest('post')
 export const put = createRequest('put')
 export const del = createRequest('delete')
 
-// 导出XSS处理函数，供组件内使用
-export { sanitizeHtml } from './xssUtils'
+// 提供一个空的sanitizeHtml函数以保持兼容性
+export const sanitizeHtml = (html) => html
 
 export default service 

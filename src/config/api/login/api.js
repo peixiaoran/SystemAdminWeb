@@ -17,17 +17,22 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 登录相关API
+// 用户登录
 export const LOGIN_API = {
   USER_LOGIN: 'SysBasic/SysLogin/SysLogin/UserLogin'
 }
 
-// 模块相关API
+// 查询系统路由
+export const ROUTER_API = {
+  GET_ROUTER: 'SysBasic/SysAction/SysAction/GetRouterTree'
+}
+
+// 查询模块列表
 export const MODULE_API = {
   GET_MODULES: 'SysBasic/SysAction/SysAction/GetSysDomainList'
 }
 
-// 菜单相关API
+// 查询菜单树结构
 export const MENU_API = {
   GET_MENU: 'SysBasic/SysAction/SysAction/GetSysModuleTreeList'
 }

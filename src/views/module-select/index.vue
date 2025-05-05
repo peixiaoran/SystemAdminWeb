@@ -79,11 +79,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API, IS_DEV } from '@/config/api/login/api'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const username = ref('管理员')
 const modules = ref([])
 const loading = ref(true)
+const userStore = useUserStore()
 
 // 获取模块数据
 const fetchModules = async () => {
@@ -95,6 +97,12 @@ const fetchModules = async () => {
     
     if (res && res.code === '200') {
       modules.value = res.data || []
+      // 提取所有模块路径
+      const modulePaths = modules.value.map(module => ({
+        domainId: module.domainId,
+        domainName: module.domainName,
+        path: module.path
+      }))
     } else {
       ElMessage.error(res?.message || '获取模块数据失败')
     }
@@ -116,6 +124,8 @@ const enterModule = (module) => {
     ElMessage.error('模块信息不完整')
     return
   }
+  // 检查路径格式
+  const formattedPath = module.path.startsWith('/') ? module.path : '/' + module.path
   
   // 保存当前选择的domainId到localStorage
   localStorage.setItem('currentDomainId', String(module.domainId))
@@ -123,7 +133,11 @@ const enterModule = (module) => {
   // 保存模块名称到localStorage，以便layout组件可以读取
   localStorage.setItem('currentSystemName', module.domainName)
   
-  router.push(module.path)
+  // 保存模块路径到localStorage，用于菜单路径构建
+  localStorage.setItem('currentSystemPath', formattedPath)
+  
+  // 跳转到系统首页
+  router.push('/index')
 }
 
 // 退出登录
