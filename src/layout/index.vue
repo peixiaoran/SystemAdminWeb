@@ -260,7 +260,7 @@ const logout = async () => {
 }
 
 // 添加标签
-const addTab = (menu) => {
+const addTab = async (menu) => {
   const { menuName, path, menuIcon } = menu
   
   if (!path) {
@@ -284,28 +284,45 @@ const addTab = (menu) => {
     return
   }
   
-  // 检查是否已存在相同路径的标签
-  const isExist = visitedTabs.value.some(tab => tab.path === formattedPath)
-  if (!isExist) {
-    visitedTabs.value.push({
-      title: menuName,
-      path: formattedPath,
-      icon: menuIcon || 'Document',
-      name: formattedPath.replace(/\//g, '-')
-    })
+  // 检查路由是否有空重定向标记
+  try {
+    // 获取匹配的路由
+    const matchedRoute = router.resolve(formattedPath)
     
-    // 添加到缓存列表
-    if (!cachedTabs.value.includes(formattedPath.replace(/\//g, '-'))) {
-      cachedTabs.value.push(formattedPath.replace(/\//g, '-'))
+    // 如果路由有emptyRedirect标记，则不添加标签，也不跳转
+    if (matchedRoute && matchedRoute.matched && matchedRoute.matched.some(record => record.redirect === '')) {
+      // 结束进度条
+      NProgress.done()
+      return
     }
-  }
-  
-  activeTabName.value = formattedPath
-  activeMenu.value = formattedPath
-  router.push(formattedPath).then(() => {
-    // 确保路由跳转完成后结束进度条
+    
+    // 检查是否已存在相同路径的标签
+    const isExist = visitedTabs.value.some(tab => tab.path === formattedPath)
+    if (!isExist) {
+      visitedTabs.value.push({
+        title: menuName,
+        path: formattedPath,
+        icon: menuIcon || 'Document',
+        name: formattedPath.replace(/\//g, '-')
+      })
+      
+      // 添加到缓存列表
+      if (!cachedTabs.value.includes(formattedPath.replace(/\//g, '-'))) {
+        cachedTabs.value.push(formattedPath.replace(/\//g, '-'))
+      }
+    }
+    
+    activeTabName.value = formattedPath
+    activeMenu.value = formattedPath
+    router.push(formattedPath).then(() => {
+      // 确保路由跳转完成后结束进度条
+      NProgress.done()
+    })
+  } catch (error) {
+    // 处理错误，结束进度条
     NProgress.done()
-  })
+    console.error('添加标签失败:', error)
+  }
 }
 
 // 处理标签点击

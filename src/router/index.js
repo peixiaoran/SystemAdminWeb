@@ -69,24 +69,24 @@ const routes = [
           [ROUTE_CONFIG.META.AUTH]: true 
         }
       },
-      // 系统基础模块相关路由
+      // 系統基本管理相关路由
       {
         path: 'basic-systemmgmt',
-        name: 'Basic-SystemMgmt',
-        component: () => import('../views/index.vue'),
+        name: 'BasicSystemMgmt',
+        component: () => import('../views/basic-systemmgmt/index.vue'),
         meta: { 
-          title: '系统基础模块', 
+          title: '系統基本管理', 
           [ROUTE_CONFIG.META.AUTH]: true 
         }
       },
-      // 基本资料模块
+      // 基本資料模組
       {
         path: 'basic-systemmgmt/system-basic',
         name: 'SystemBasic',
-        redirect: '/basic-systemmgmt/system-basic',
+        redirect: '',
         meta: { 
           title: '基本資料模組', 
-          [ROUTE_CONFIG.META.AUTH]: true 
+          [ROUTE_CONFIG.META.AUTH]: true
         }
       },
       // 公司资料维护
@@ -214,6 +214,13 @@ router.beforeEach((to, from, next) => {
   
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
+  
+  // 检查当前路由是否有空重定向
+  if (to.matched.some(record => record.redirect === '')) {
+    // 如果有空重定向，则取消导航
+    NProgress.done()
+    return next(false)
+  }
   
   // 继续导航
   next()

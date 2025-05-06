@@ -19,20 +19,20 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 用户登录
 export const LOGIN_API = {
-  USER_LOGIN: 'SysBasic/SysLogin/SysLogin/UserLogin'
+  USER_LOGIN: 'SysBasic/SysBasics/SysLogin/UserLogin'
 }
 
 // 查询系统路由
 export const ROUTER_API = {
-  GET_ROUTER: 'SysBasic/SysAction/SysAction/GetRouterTree'
+  GET_ROUTER: 'SysBasic/SysBasics/SysDomainMenu/GetRouterTree'
 }
 
 // 查询模块列表
 export const MODULE_API = {
-  GET_MODULES: 'SysBasic/SysAction/SysAction/GetSysDomainList'
+  GET_MODULES: 'SysBasic/SysBasics/SysDomainMenu/GetSysDomainList'
 }
 
 // 查询菜单树结构
 export const MENU_API = {
-  GET_MENU: 'SysBasic/SysAction/SysAction/GetSysModuleTreeList'
+  GET_MENU: 'SysBasic/SysBasics/SysDomainMenu/GetSysModuleTreeList'
 }
