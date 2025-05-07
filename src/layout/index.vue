@@ -138,11 +138,11 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
-import { MENU_API } from '@/config/api/login/api'
+import { MENU_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import NProgress from 'nprogress'

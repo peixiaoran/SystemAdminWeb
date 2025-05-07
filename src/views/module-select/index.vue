@@ -78,7 +78,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { MODULE_API, IS_DEV } from '@/config/api/login/api'
+import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()

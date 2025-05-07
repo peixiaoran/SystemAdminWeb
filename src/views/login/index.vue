@@ -88,9 +88,8 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { LOGIN_API, IS_DEV, BASE_API_URL } from '@/config/api/login/api'
+import { LOGIN_API } from '@/config/api/login/api'
 
 const router = useRouter()
 const loginFormRef = ref(null)

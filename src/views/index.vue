@@ -121,7 +121,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { get } from '@/utils/request';
-import { MODULE_API } from '@/config/api/login/api';
+import { MODULE_API } from '@/config/api/domainmenu/menu';
 import { 
   Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
   Monitor, Connection, Lock, User, Warning, Notification, 

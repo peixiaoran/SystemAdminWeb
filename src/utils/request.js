@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
-import { BASE_API_URL, API_TIMEOUT, IS_DEV, LOGIN_API } from '@/config/api/login/api'
+import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
