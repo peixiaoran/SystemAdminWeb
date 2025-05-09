@@ -28,8 +28,8 @@ const ROUTE_CONFIG = {
   }
 }
 
-// 基础路由配置
-const routes = [
+// 定义基础路由 - 这些路由在登录前就可以访问
+const constantRoutes = [
   {
     path: ROUTE_CONFIG.BASE.LOGIN,
     name: 'Login',
@@ -50,6 +50,27 @@ const routes = [
     path: '/',
     redirect: ROUTE_CONFIG.BASE.HOME
   },
+  // 错误页面路由
+  {
+    path: ROUTE_CONFIG.BASE.ERROR_403,
+    name: 'Forbidden',
+    component: () => import('../views/error/403.vue'),
+    meta: { title: '403' }
+  },
+  {
+    path: ROUTE_CONFIG.BASE.ERROR_404,
+    name: 'NotFound',
+    component: () => import('../views/error/404.vue'),
+    meta: { title: '404' }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: ROUTE_CONFIG.BASE.ERROR_404
+  }
+]
+
+// 定义动态路由 - 这些路由需要在用户登录后才能访问
+const asyncRoutes = [
   // Layout布局路由
   {
     path: '/',
@@ -180,32 +201,32 @@ const routes = [
         }
       }
     ]
-  },
-  // 错误页面路由
-  {
-    path: ROUTE_CONFIG.BASE.ERROR_403,
-    name: 'Forbidden',
-    component: () => import('../views/error/403.vue'),
-    meta: { title: '403' }
-  },
-  {
-    path: ROUTE_CONFIG.BASE.ERROR_404,
-    name: 'NotFound',
-    component: () => import('../views/error/404.vue'),
-    meta: { title: '404' }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: ROUTE_CONFIG.BASE.ERROR_404
   }
 ]
 
-// 创建路由实例
+// 创建路由实例，初始只包含基础路由
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes: constantRoutes,
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
+
+// 动态添加路由的方法
+export function addRoutes() {
+  asyncRoutes.forEach(route => {
+    router.addRoute(route)
+  })
+}
+
+// 重置路由
+export function resetRouter() {
+  // 移除所有动态添加的路由
+  asyncRoutes.forEach(route => {
+    if (route.name) {
+      router.removeRoute(route.name)
+    }
+  })
+}
 
 // 设置路由守卫以设置页面标题和进度条
 router.beforeEach((to, from, next) => {
@@ -222,8 +243,23 @@ router.beforeEach((to, from, next) => {
     return next(false)
   }
   
-  // 继续导航
-  next()
+  // 检查是否需要鉴权
+  if (to.matched.some(record => record.meta[ROUTE_CONFIG.META.AUTH])) {
+    // 检查是否已登录
+    const token = localStorage.getItem('token')
+    if (token) {
+      next()
+    } else {
+      // 未登录则重定向到登录页
+      next({
+        path: ROUTE_CONFIG.BASE.LOGIN,
+        query: { redirect: to.fullPath }
+      })
+    }
+  } else {
+    // 不需要鉴权的页面直接放行
+    next()
+  }
 })
 
 router.afterEach(() => {

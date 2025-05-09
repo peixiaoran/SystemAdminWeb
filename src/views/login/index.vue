@@ -90,6 +90,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
+import { addRoutes } from '@/router'
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -135,6 +136,8 @@ const handleLogin = () => {
             localStorage.setItem('token', res.data)
             // 设置固定标题
             document.title = 'SystemsAdmin管理系统'
+            // 登录成功后添加动态路由
+            addRoutes()
             ElMessage.success(res.message || '登录成功')
             router.push('/module-select')
           } else {
