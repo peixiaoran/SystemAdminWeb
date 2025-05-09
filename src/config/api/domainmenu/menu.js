@@ -19,7 +19,7 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 查询模块列表
 export const MODULE_API = {
-    GET_MODULES: 'SysBasic/SysBasics/SysDomainMenu/GetDynamicRoutes'
+    GET_MODULES: 'SysBasic/SysBasics/SysDomainMenu/GetSysDomainList'
 }
   
   // 查询菜单树结构
