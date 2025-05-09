@@ -5,7 +5,7 @@
       <div class="logo-container">
         <div class="logo-content" v-if="!isCollapse">
           <img src="/favicon.svg" alt="Logo" class="logo-icon" />
-          <h1 class="logo-text">Systems管理系统</h1>
+          <h1 class="logo-text">System Admin</h1>
         </div>
         <img src="/favicon.svg" alt="Logo" class="logo-mini" v-else />
       </div>
@@ -493,13 +493,14 @@ onMounted(async () => {
 
 .logo-container {
   position: relative;
-  padding: 13px;
+  padding: 8px 13px;
   overflow: hidden;
   background-color: #fff;
   height: 35px;
   display: flex;
   align-items: center;
   border-bottom: none;
+  margin-top: -3px;
 }
 
 .logo-content {
@@ -518,6 +519,7 @@ onMounted(async () => {
   font-weight: bold;
   color: #303133;
   margin: 0;
+  margin-top: -2px;
 }
 
 .logo-mini {
@@ -540,7 +542,7 @@ onMounted(async () => {
 .el-menu-vertical:deep(.el-menu-item) {
   height: 40px;
   line-height: 40px;
-  padding: 0 16px;
+  padding: 0 14px;
   margin: 0;
   border-radius: 6px;
 }
@@ -552,7 +554,7 @@ onMounted(async () => {
 .el-menu-vertical:deep(.el-sub-menu__title) {
   height: 40px;
   line-height: 40px;
-  padding: 0 16px;
+  padding: 0 14px;
   margin: 0;
   border-radius: 6px;
   position: relative;
@@ -781,6 +783,7 @@ onMounted(async () => {
 :deep(.el-sub-menu__title) {
   display: flex;
   align-items: center;
+  padding-left: 16px !important;
 }
 
 :deep(.el-menu-item i),
