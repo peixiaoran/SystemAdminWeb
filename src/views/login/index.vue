@@ -14,13 +14,20 @@
           :rules="loginRules"
           class="login-form"
           size="large"
+          autocomplete="off"
         >
+          <!-- 添加隐藏的用户名和密码字段，用于迷惑浏览器的自动填充 -->
+          <input type="text" style="display:none" />
+          <input type="password" style="display:none" />
+          
           <el-form-item prop="loginNo" label="用户名">
             <el-input
               v-model="loginForm.loginNo"
               placeholder="请输入用户名"
               clearable
-              autocomplete="new-password"
+              :name="'username_' + randomStr"
+              autocomplete="off"
+              data-lpignore="true"
             />
           </el-form-item>
           
@@ -30,7 +37,9 @@
               type="password"
               placeholder="请输入密码"
               show-password
-              autocomplete="new-password"
+              :name="'password_' + randomStr"
+              autocomplete="off"
+              data-lpignore="true"
               @keyup.enter="handleLogin"
             />
           </el-form-item>
@@ -85,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
@@ -95,12 +104,27 @@ import { addRoutes } from '@/router'
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
+// 生成随机字符串，用于每次页面加载时创建不同的input name
+const randomStr = ref(Math.random().toString(36).substring(2, 15))
 
 const loginForm = reactive({
   loginNo: '',
   passWrod: '',
   factory: 'ETW', // 默认设置为乙盛台灣
   language: 'zh-CN' // 默认设置为中文简体
+})
+
+// 在组件挂载后清除表单内容
+onMounted(() => {
+  // 确保表单清空，防止浏览器填充
+  loginForm.loginNo = ''
+  loginForm.passWrod = ''
+  
+  // 延迟后再次清空，以防止某些浏览器在页面加载后延迟填充
+  setTimeout(() => {
+    loginForm.loginNo = ''
+    loginForm.passWrod = ''
+  }, 100)
 })
 
 const loginRules = {

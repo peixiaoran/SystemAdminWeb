@@ -80,6 +80,7 @@ import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@el
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
+import { addRoutes } from '@/router'
 
 const router = useRouter()
 const username = ref('管理员')
@@ -135,6 +136,9 @@ const enterModule = (module) => {
   
   // 保存模块路径到localStorage，用于菜单路径构建
   localStorage.setItem('currentSystemPath', formattedPath)
+  
+  // 确保添加动态路由
+  addRoutes()
   
   // 跳转到系统首页
   router.push('/index')

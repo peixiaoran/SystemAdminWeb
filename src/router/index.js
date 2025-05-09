@@ -80,24 +80,26 @@ const asyncRoutes = [
       [ROUTE_CONFIG.META.AUTH]: true 
     },
     children: [
-      // 默认首页
+      // 首页路由
       {
         path: 'index',
-        name: 'DashboardIndex',
-        component: () => import('../views/index.vue'),
+        name: 'Index',
+        component: () => import('../views/basic-systemmgmt/index.vue'),
         meta: { 
           title: '系统首页', 
-          [ROUTE_CONFIG.META.AUTH]: true 
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true // 标记不需要添加标签
         }
       },
-      // 系統基本管理相关路由
+      // 为每个模块创建index路由
       {
-        path: 'basic-systemmgmt',
-        name: 'BasicSystemMgmt',
+        path: 'basic-systemmgmt/index',
+        name: 'BasicSystemMgmtIndex',
         component: () => import('../views/basic-systemmgmt/index.vue'),
         meta: { 
           title: '系統基本管理', 
-          [ROUTE_CONFIG.META.AUTH]: true 
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true // 标记不需要添加标签
         }
       },
       // 基本資料模組
