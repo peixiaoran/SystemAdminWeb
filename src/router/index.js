@@ -84,7 +84,7 @@ const asyncRoutes = [
       {
         path: 'index',
         name: 'Index',
-        component: () => import('../views/basic-systemmgmt/index.vue'),
+        component: () => import('../views/systemBasicmgmt/index.vue'),
         meta: { 
           title: '系统首页', 
           [ROUTE_CONFIG.META.AUTH]: true,
@@ -93,9 +93,9 @@ const asyncRoutes = [
       },
       // 为每个模块创建index路由
       {
-        path: 'basic-systemmgmt/index',
-        name: 'BasicSystemMgmtIndex',
-        component: () => import('../views/basic-systemmgmt/index.vue'),
+        path: 'index',
+        name: 'index',
+        component: () => import('../views/systemBasicmgmt/index.vue'),
         meta: { 
           title: '系統基本管理', 
           [ROUTE_CONFIG.META.AUTH]: true,
@@ -104,7 +104,7 @@ const asyncRoutes = [
       },
       // 基本資料模組
       {
-        path: 'basic-systemmgmt/system-basic',
+        path: 'SystemBasicmgmt/system-basic',
         name: 'SystemBasic',
         redirect: '',
         meta: { 
@@ -114,9 +114,9 @@ const asyncRoutes = [
       },
       // 公司资料维护
       {
-        path: 'basic-systemmgmt/system-basic/commpany',
+        path: 'systemBasicmgmt/system-basic/commpany',
         name: 'SystemBasicCompany',
-        component: () => import('../views/basic-systemmgmt/system-basic/commpany.vue'),
+        component: () => import('../views/systemBasicmgmt/system-basicdata/commpany.vue'),
         meta: { 
           title: '公司資料維護', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -124,9 +124,9 @@ const asyncRoutes = [
       },
       // 系统管理模块
       {
-        path: 'basic-systemmgmt/system-mgmt',
+        path: 'systemBasicmgmt/system-mgmt',
         name: 'SystemMgmt',
-        redirect: '/basic-systemmgmt/system-mgmt',
+        redirect: '/systemBasicmgmt/system-mgmt',
         meta: { 
           title: '系統管理模組', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -134,9 +134,9 @@ const asyncRoutes = [
       },
       // 域名管理页面
       {
-        path: 'basic-systemmgmt/system-mgmt/domain',
+        path: 'systemBasicmgmt/system-mgmt/domain',
         name: 'SystemMgmtDomain',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/domain.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/domain.vue'),
         meta: { 
           title: '網域資料維護', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -144,9 +144,9 @@ const asyncRoutes = [
       },
       // 模块管理页面
       {
-        path: 'basic-systemmgmt/system-mgmt/module',
+        path: 'systemBasicmgmt/system-mgmt/module',
         name: 'SystemMgmtModule',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/module.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/module.vue'),
         meta: { 
           title: '模塊資料維護', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -154,9 +154,9 @@ const asyncRoutes = [
       },
       // 程序管理页面
       {
-        path: 'basic-systemmgmt/system-mgmt/program',
+        path: 'systemBasicmgmt/system-mgmt/program',
         name: 'SystemMgmtProgram',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/program.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/program.vue'),
         meta: { 
           title: '程式資料維護', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -164,9 +164,9 @@ const asyncRoutes = [
       },
       // 角色管理页面
       {
-        path: 'basic-systemmgmt/system-mgmt/role',
+        path: 'systemBasicmgmt/system-mgmt/role',
         name: 'SystemMgmtRole',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/role.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/role.vue'),
         meta: { 
           title: '角色資料維護', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -174,9 +174,9 @@ const asyncRoutes = [
       },
       // 角色網域資料維護
       {
-        path: 'basic-systemmgmt/system-mgmt/roledomain',
+        path: 'systemBasicmgmt/system-mgmt/roledomain',
         name: 'SystemMgmtRoleDomain',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/roledomain.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/roledomain.vue'),
         meta: { 
           title: '角色網域綁定', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -184,9 +184,9 @@ const asyncRoutes = [
       },
       // 角色模塊資料維護
       {
-        path: 'basic-systemmgmt/system-mgmt/rolemodule',
+        path: 'systemBasicmgmt/system-mgmt/rolemodule',
         name: 'SystemMgmtRoleModule',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/rolemodule.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/rolemodule.vue'),
         meta: { 
           title: '角色模組綁定', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -194,9 +194,9 @@ const asyncRoutes = [
       },
       // 角色程式資料維護
       {
-        path: 'basic-systemmgmt/system-mgmt/roleprogram',
+        path: 'systemBasicmgmt/system-mgmt/roleprogram',
         name: 'SystemMgmtRoleProgram',
-        component: () => import('../views/basic-systemmgmt/system-mgmt/roleprogram.vue'),
+        component: () => import('../views/systemBasicmgmt/system-mgmt/roleprogram.vue'),
         meta: { 
           title: '角色程式綁定', 
           [ROUTE_CONFIG.META.AUTH]: true 
