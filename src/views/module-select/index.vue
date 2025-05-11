@@ -64,11 +64,6 @@
         </template>
       </el-empty>
     </div>
-
-    <!-- 底部版权信息 -->
-    <div class="footer">
-      <p>© 2023 SystemsAdmin管理系统 · 技术支持</p>
-    </div>
   </div>
 </template>
 
@@ -255,10 +250,13 @@ const logout = async () => {
   margin: 60px auto 0;
   padding: 20px 0;
   flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .el-row {
   margin: 0 -15px;
+  width: 100%;
 }
 
 .el-col {
@@ -277,6 +275,13 @@ const logout = async () => {
   overflow: hidden;
   cursor: pointer;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.module-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(59, 130, 246, 0.1);
+  border-color: #d0e1fd;
 }
 
 .module-icon {
@@ -287,6 +292,12 @@ const logout = async () => {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   color: #3b82f6;
   padding: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.module-card:hover .module-icon {
+  background: linear-gradient(135deg, #e0f2fe 0%, #c7e8ff 100%);
+  color: #2563eb;
 }
 
 .module-info {
@@ -295,6 +306,11 @@ const logout = async () => {
   background-color: #fff;
   text-align: center;
   border-top: 1px solid #ebeef5;
+  transition: all 0.3s ease;
+}
+
+.module-card:hover .module-info {
+  background-color: #fafcff;
 }
 
 .module-info h2 {
@@ -302,6 +318,11 @@ const logout = async () => {
   margin: 0 0 16px 0;
   color: #303133;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.module-card:hover .module-info h2 {
+  color: #3b82f6;
 }
 
 .module-info p {
@@ -318,13 +339,30 @@ const logout = async () => {
 }
 
 .module-footer {
-  padding: 0 20px 15px;
   display: flex;
   justify-content: center;
+  padding: 0 0 20px 0;
+  transition: all 0.3s ease;
+}
+
+.module-footer .el-button {
+  border-radius: 20px;
+  padding: 8px 20px;
+  transition: all 0.3s ease;
+}
+
+.module-card:hover .module-footer .el-button {
+  background-color: #3b82f6;
+  color: white;
 }
 
 .enter-icon {
   margin-left: 4px;
+  transition: transform 0.3s ease;
+}
+
+.module-card:hover .enter-icon {
+  transform: translateX(3px);
 }
 
 .loading-container {
@@ -348,13 +386,6 @@ const logout = async () => {
 @keyframes rotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-.footer {
-  margin-top: 30px;
-  text-align: center;
-  color: #94a3b8;
-  font-size: 13px;
 }
 
 /* 响应式调整 */
@@ -390,6 +421,12 @@ const logout = async () => {
   .module-card {
     height: auto;
     min-height: 280px;
+  }
+  
+  /* 确保在小屏幕上单个模块卡片也有合适的宽度 */
+  .el-col.el-col-24.el-col-sm-12.el-col-md-8.el-col-lg-6 {
+    max-width: 320px;
+    margin: 0 auto 20px;
   }
 }
 
