@@ -71,5 +71,17 @@ export const useUserStore = defineStore('user', {
         return false
       }
     }
+  },
+  
+  // 启用持久化
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'user-store',
+        storage: localStorage,
+        paths: ['token', 'username', 'userId', 'roles', 'permissions']
+      }
+    ]
   }
 }) 

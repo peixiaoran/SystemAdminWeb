@@ -19,20 +19,20 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 更新角色模块分页API
 export const UPDATE_ROLE_MODULE_API = {
-  UPDATE_ROLE_MODULE: 'SysBasic/SysManagement/RoleModule/UpdateRoleModule'
+  UPDATE_ROLE_MODULE: 'SystemBasicMgmt/SystemMgmt/RoleModule/UpdateRoleModule'
 }
 
 // 获取角色网域列表API
 export const GET_ROLE_MODULE_API = {
-  GET_ROLE_MODULE: 'SysBasic/SysManagement/RoleModule/GetRoleModuleList'
+  GET_ROLE_MODULE: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetRoleModuleList'
 }
 
 // 获取角色下拉列表API
 export const GET_ROLE_DROPDOWN_API = {
-    GET_ROLE_DROPDOWN: 'SysBasic/SysManagement/RoleModule/GetRoleDropDown'
+    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetRoleDropDown'
 }
 
 // 获取网域下拉列表API
 export const GET_DOMAIN_DROPDOWN_API = {
-    GET_DOMAIN_DROPDOWN: 'SysBasic/SysManagement/RoleModule/GetDomainDropDown'
+    GET_DOMAIN_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetDomainDropDown'
 }

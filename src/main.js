@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
-import router from './router'
+import router, { addRoutes } from './router'
 import './assets/main.css'
 import pinia from './stores'
 import NProgress from 'nprogress'
@@ -21,6 +21,13 @@ window.addEventListener('load', () => {
     NProgress.done()
   }, 200) // 短暂延迟确保DOM完全加载
 })
+
+// 检查用户是否已登录，如果已登录则添加动态路由
+const token = localStorage.getItem('token')
+if (token) {
+  // 初始化时添加动态路由
+  addRoutes()
+}
 
 // 创建应用实例
 const app = createApp(App)

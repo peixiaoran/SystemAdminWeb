@@ -144,6 +144,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { MENU_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
+import { useModuleStore } from '@/stores/module'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import NProgress from 'nprogress'
 
@@ -151,11 +152,11 @@ import NProgress from 'nprogress'
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const moduleStore = useModuleStore()
 const isCollapse = ref(false)
 const menuList = ref([])
 const username = ref('管理员')
 const currentSystemName = ref('')
-const currentDomainId = ref('')
 
 // 格式化路径辅助函数
 const getFormattedPath = (path) => {
@@ -202,22 +203,16 @@ const tagRightClicked = ref(null)
 // 获取菜单数据
 const fetchMenuData = async () => {
   try {
-    // 从localStorage获取当前选择的domainId
-    const domainId = localStorage.getItem('currentDomainId')
+    // 从moduleStore获取当前选择的domainId
+    const domainId = moduleStore.currentDomainId
     if (!domainId) {
       ElMessage.warning('未选择系统模块，请先选择一个模块')
       router.push('/module-select')
       return
     }
     
-    // 保存当前domainId
-    currentDomainId.value = domainId
-    
-    // 从localStorage获取当前选择的系统名称
-    const systemName = localStorage.getItem('currentSystemName')
-    if (systemName) {
-      currentSystemName.value = systemName
-    }
+    // 更新当前系统名称
+    currentSystemName.value = moduleStore.currentSystemName
     
     // 请求菜单数据
     const res = await post(MENU_API.GET_MENU, { domainId })
@@ -228,7 +223,7 @@ const fetchMenuData = async () => {
       
       // 如果当前没有打开的标签页，则默认跳转到首页
       if (visitedTabs.value.length === 0) {
-        router.push('/index')
+        router.push(moduleStore.moduleIndexPath)
       }
     } else {
       ElMessage.error(res?.message || '获取菜单数据失败')
@@ -273,23 +268,28 @@ const addTab = async (menu) => {
   
   const formattedPath = getFormattedPath(path);
   
-  // 首页路径不添加标签
-  if (formattedPath === '/index') {
-    activeTabName.value = formattedPath
-    activeMenu.value = formattedPath
-    router.push(formattedPath).then(() => {
-      // 确保路由跳转完成后结束进度条
-      NProgress.done()
-    })
-    return
-  }
-  
-  // 检查路由是否有空重定向标记
   try {
     // 获取匹配的路由
     const matchedRoute = router.resolve(formattedPath)
     
-    // 如果路由有emptyRedirect标记，则不添加标签，也不跳转
+    // 检查路由是否有noTag标记
+    const hasNoTagMark = matchedRoute && matchedRoute.meta && matchedRoute.meta.noTag
+    
+    // 如果路由有noTag标记，则不添加标签
+    if (hasNoTagMark) {
+      activeTabName.value = formattedPath
+      activeMenu.value = formattedPath
+      router.push(formattedPath).then(() => {
+        // 确保路由跳转完成后结束进度条
+        NProgress.done()
+      }).catch(error => {
+        console.error('路由跳转失败:', error)
+        NProgress.done()
+      })
+      return
+    }
+    
+    // 如果路由有空重定向标记，则不添加标签，也不跳转
     if (matchedRoute && matchedRoute.matched && matchedRoute.matched.some(record => record.redirect === '')) {
       // 结束进度条
       NProgress.done()
@@ -316,6 +316,9 @@ const addTab = async (menu) => {
     activeMenu.value = formattedPath
     router.push(formattedPath).then(() => {
       // 确保路由跳转完成后结束进度条
+      NProgress.done()
+    }).catch(error => {
+      console.error('路由跳转失败:', error)
       NProgress.done()
     })
   } catch (error) {
@@ -350,9 +353,15 @@ const removeTab = (targetPath) => {
           activeTabName.value = nextTab.path
           router.push(nextTab.path)
         } else {
-          // 如果没有其他标签，跳转到首页
-          activeTabName.value = '/index'
-          router.push('/index')
+          // 如果没有其他标签，跳转到当前模块的index首页
+          const moduleIndexPath = moduleStore.moduleIndexPath
+          if (moduleIndexPath !== '/module-select') {
+            activeTabName.value = moduleIndexPath
+            router.push(moduleIndexPath)
+          } else {
+            // 如果没有模块信息，则跳转到模块选择页面
+            router.push('/module-select')
+          }
         }
       }
     })
@@ -365,6 +374,17 @@ const removeTab = (targetPath) => {
   const index = cachedTabs.value.indexOf(targetPath.replace(/\//g, '-'))
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
+  }
+  
+  // 如果移除后没有标签了，也跳转到模块首页
+  if (visitedTabs.value.length === 0) {
+    const moduleIndexPath = moduleStore.moduleIndexPath
+    if (moduleIndexPath !== '/module-select') {
+      activeTabName.value = moduleIndexPath
+      router.push(moduleIndexPath)
+    } else {
+      router.push('/module-select')
+    }
   }
 }
 
@@ -432,6 +452,7 @@ const closeOthersTags = () => {
   cachedTabs.value = cachedTabs.value.filter(name => name === path.replace(/\//g, '-'))
   
   // 跳转到当前选中的标签
+  activeTabName.value = path
   router.push(path)
 }
 
@@ -439,7 +460,16 @@ const closeOthersTags = () => {
 const closeAllTags = () => {
   visitedTabs.value = []
   cachedTabs.value = []
-  router.push('/index')
+  
+  // 跳转到当前模块的首页
+  const moduleIndexPath = moduleStore.moduleIndexPath
+  if (moduleIndexPath !== '/module-select') {
+    activeTabName.value = moduleIndexPath
+    router.push(moduleIndexPath)
+  } else {
+    // 如果没有模块信息，则跳转到模块选择页面
+    router.push('/module-select')
+  }
 }
 
 // 返回首页

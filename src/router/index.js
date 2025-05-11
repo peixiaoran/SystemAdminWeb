@@ -80,21 +80,21 @@ const asyncRoutes = [
       [ROUTE_CONFIG.META.AUTH]: true 
     },
     children: [
-      // 首页路由
+      // 为每个模块创建index路由
       {
-        path: 'index',
-        name: 'Index',
-        component: () => import('../views/systemBasicmgmt/index.vue'),
+        path: "eForm/index",
+        name: "eForm",
+        component: () => import('../views/eForm/index.vue'),
         meta: { 
-          title: '系统首页', 
+          title: '表单管理', 
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true // 标记不需要添加标签
         }
       },
       // 为每个模块创建index路由
       {
-        path: 'index',
-        name: 'index',
+        path: "systemBasicmgmt/index",
+        name: "SystemBasicMgmt",
         component: () => import('../views/systemBasicmgmt/index.vue'),
         meta: { 
           title: '系統基本管理', 
@@ -104,7 +104,7 @@ const asyncRoutes = [
       },
       // 基本資料模組
       {
-        path: 'SystemBasicmgmt/system-basic',
+        path: '/SystemBasicmgmt/system-basic',
         name: 'SystemBasic',
         redirect: '',
         meta: { 
@@ -124,9 +124,9 @@ const asyncRoutes = [
       },
       // 系统管理模块
       {
-        path: 'systemBasicmgmt/system-mgmt',
+        path: '/systemBasicmgmt/system-mgmt',
         name: 'SystemMgmt',
-        redirect: '/systemBasicmgmt/system-mgmt',
+        redirect: '',
         meta: { 
           title: '系統管理模組', 
           [ROUTE_CONFIG.META.AUTH]: true 
@@ -244,12 +244,32 @@ router.beforeEach((to, from, next) => {
     NProgress.done()
     return next(false)
   }
-  
+
   // 检查是否需要鉴权
   if (to.matched.some(record => record.meta[ROUTE_CONFIG.META.AUTH])) {
     // 检查是否已登录
     const token = localStorage.getItem('token')
     if (token) {
+      // 处理页面刷新时路由丢失的问题
+      if (to.matched.length === 0) {
+        // 重新添加动态路由
+        addRoutes()
+        // 如果是以/index结尾的路径，可能是模块首页
+        if (to.path.endsWith('/index')) {
+          // 重定向到相同的路由，此时路由已经被重新添加
+          return next({ ...to, replace: true })
+        }
+        // 对于其他路径，也重新导航
+        return next({ ...to, replace: true })
+      }
+      
+      // 处理模块index页面的访问
+      const path = to.path
+      if (path.includes('/index')) {
+        // 如果是模块的index页面，直接放行
+        next()
+        return
+      }
       next()
     } else {
       // 未登录则重定向到登录页

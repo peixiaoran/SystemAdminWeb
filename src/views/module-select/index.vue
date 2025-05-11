@@ -80,6 +80,7 @@ import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@el
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
+import { useModuleStore } from '@/stores/module'
 import { addRoutes } from '@/router'
 
 const router = useRouter()
@@ -87,6 +88,7 @@ const username = ref('管理员')
 const modules = ref([])
 const loading = ref(true)
 const userStore = useUserStore()
+const moduleStore = useModuleStore()
 
 // 获取模块数据
 const fetchModules = async () => {
@@ -125,23 +127,22 @@ const enterModule = (module) => {
     ElMessage.error('模块信息不完整')
     return
   }
-  // 检查路径格式
-  const formattedPath = module.path.startsWith('/') ? module.path : '/' + module.path
   
-  // 保存当前选择的domainId到localStorage
-  localStorage.setItem('currentDomainId', String(module.domainId))
+  // 获取模块标识符（用于构建路由路径）
+  const moduleIdentifier = module.path.split('/').filter(Boolean)[0] // 提取模块标识符
   
-  // 保存模块名称到localStorage，以便layout组件可以读取
-  localStorage.setItem('currentSystemName', module.domainName)
-  
-  // 保存模块路径到localStorage，用于菜单路径构建
-  localStorage.setItem('currentSystemPath', formattedPath)
+  // 使用新的模块存储来保存模块信息
+  moduleStore.setCurrentModule(
+    String(module.domainId), 
+    module.domainName, 
+    moduleIdentifier
+  )
   
   // 确保添加动态路由
   addRoutes()
   
-  // 跳转到系统首页
-  router.push('/index')
+  // 跳转到对应模块的index首页
+  router.push(`/${moduleIdentifier}/index`)
 }
 
 // 退出登录
