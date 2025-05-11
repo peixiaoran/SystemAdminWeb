@@ -25,8 +25,18 @@ window.addEventListener('load', () => {
 // 检查用户是否已登录，如果已登录则添加动态路由
 const token = localStorage.getItem('token')
 if (token) {
-  // 初始化时添加动态路由
-  addRoutes()
+  // 初始化时添加动态路由，并确保异步加载完成
+  try {
+    addRoutes().then(success => {
+      if (!success) {
+        console.warn('动态路由加载可能不完整，某些路由可能无法访问')
+      }
+    }).catch(error => {
+      console.warn('动态路由加载失败，将使用基础路由')
+    })
+  } catch (error) {
+    console.warn('路由初始化异常，将使用基础路由')
+  }
 }
 
 // 创建应用实例

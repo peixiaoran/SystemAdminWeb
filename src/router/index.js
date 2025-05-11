@@ -140,7 +140,10 @@ function saveRoutesToStorage(routes) {
       dynamicRoutesLoaded: true,
       lastUpdated: now
     }
+    // 保存到route-store键，用于Pinia的持久化存储和路由恢复
     localStorage.setItem('route-store', JSON.stringify(data))
+    
+    // 更新内存缓存
     cachedRoutes = routes
     cachedRoutesTimestamp = now
   } catch (e) {
@@ -208,44 +211,82 @@ export async function addDynamicRoutes() {
     }
     
     // 最后尝试从API获取
-    const res = await post(ROUTER_API.GET_ROUTER)
-    
-    if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
-      // 验证API返回的数据格式是否正确
-      const firstRoute = res.data[0]
-      if (!firstRoute || !firstRoute.path || !Array.isArray(firstRoute.children)) {
-        addStaticRoutes()
-        return false
-      }
+    try {
+      const res = await post(ROUTER_API.GET_ROUTER)
       
-      try {
-        // 获取到动态路由数据，解析并添加到路由中
-        const dynamicRoutes = parseRouteData(res.data)
-        
-        // 将Layout作为根路由
-        const layoutRoute = {
-          path: '/',
-          name: 'LayoutContainer', // 修改名称避免重复
-          component: Layout,
-          meta: { 
-            [ROUTE_CONFIG.META.AUTH]: true 
-          },
-          children: dynamicRoutes
+      if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
+        // 验证API返回的数据格式是否正确
+        const firstRoute = res.data[0]
+        if (!firstRoute || !firstRoute.path || !Array.isArray(firstRoute.children)) {
+          addStaticRoutes()
+          return false
         }
         
-        // 添加到路由
-        router.addRoute(layoutRoute)
-        
-        // 保存到缓存
-        saveRoutesToStorage(res.data)
-        
-        return true
-      } catch (error) {
+        try {
+          // 获取到动态路由数据，解析并添加到路由中
+          const dynamicRoutes = parseRouteData(res.data)
+          
+          // 将Layout作为根路由
+          const layoutRoute = {
+            path: '/',
+            name: 'LayoutContainer', // 修改名称避免重复
+            component: Layout,
+            meta: { 
+              [ROUTE_CONFIG.META.AUTH]: true 
+            },
+            children: dynamicRoutes
+          }
+          
+          // 添加到路由
+          router.addRoute(layoutRoute)
+          
+          // 保存到缓存
+          saveRoutesToStorage(res.data)
+          
+          return true
+        } catch (error) {
+          addStaticRoutes()
+          return false
+        }
+      } else {
+        // 如果接口请求失败，退回使用静态路由
         addStaticRoutes()
         return false
       }
-    } else {
-      // 如果接口请求失败，退回使用静态路由
+    } catch (error) {
+      // 如果API请求出错，尝试使用route-store中的数据作为备份
+      try {
+        const routeStoreData = localStorage.getItem('route-store')
+        if (routeStoreData) {
+          const parsedData = JSON.parse(routeStoreData)
+          if (parsedData && parsedData.routes && Array.isArray(parsedData.routes) && parsedData.routes.length > 0) {
+            const dynamicRoutes = parseRouteData(parsedData.routes)
+            
+            // 将Layout作为根路由
+            const layoutRoute = {
+              path: '/',
+              name: 'LayoutContainer', // 修改名称避免重复
+              component: Layout,
+              meta: { 
+                [ROUTE_CONFIG.META.AUTH]: true 
+              },
+              children: dynamicRoutes
+            }
+            
+            // 添加到路由
+            router.addRoute(layoutRoute)
+            
+            // 更新内存缓存
+            cachedRoutes = parsedData.routes
+            
+            return true
+          }
+        }
+      } catch (backupError) {
+        // 如果备份恢复也失败，使用静态路由
+      }
+      
+      // 最后使用静态路由
       addStaticRoutes()
       return false
     }
@@ -377,10 +418,28 @@ router.beforeEach(async (to, from, next) => {
             // 再次检查路由匹配
             const matchedRoute = router.resolve(to.path)
             if (matchedRoute && matchedRoute.matched && matchedRoute.matched.length > 0) {
-              // 路由存在，可以直接进入
-              return next()
+              // 路由存在，可以直接进入，使用replace:true确保不留下重复历史记录
+              return next({ path: to.fullPath, replace: true })
             } else {
-              // 路由不存在，清除缓存并重定向到登录页面
+              // 尝试特殊处理：可能是缓存的路由数据不完整，尝试从API刷新
+              try {
+                // 清除路由缓存（但不清除用户数据）
+                clearRoutesCache()
+                // 尝试从API强制刷新路由
+                const refreshSuccess = await refreshRoutesFromAPI()
+                if (refreshSuccess) {
+                  // 再次检查路由
+                  const refreshedMatch = router.resolve(to.path)
+                  if (refreshedMatch && refreshedMatch.matched && refreshedMatch.matched.length > 0) {
+                    // 路由存在，可以进入
+                    return next({ path: to.fullPath, replace: true })
+                  }
+                }
+              } catch (refreshError) {
+                // 刷新失败，回退到登录
+              }
+              
+              // 如果特殊处理也无效，则清除缓存并重定向到登录页面
               clearUserDataAndCache()
               return next({ 
                 path: ROUTE_CONFIG.BASE.LOGIN
@@ -457,4 +516,51 @@ function clearUserDataAndCache() {
 
 // 导出适配老代码的方法名
 export { addDynamicRoutes as addRoutes }
+
+// 从API强制刷新路由数据
+export async function refreshRoutesFromAPI() {
+  try {
+    // 请求新的路由数据
+    const res = await post(ROUTER_API.GET_ROUTER)
+    
+    if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
+      // 先重置路由
+      resetRouter()
+      
+      // 解析并添加新路由
+      const dynamicRoutes = parseRouteData(res.data)
+      
+      // 将Layout作为根路由
+      const layoutRoute = {
+        path: '/',
+        name: 'LayoutContainer',
+        component: Layout,
+        meta: { 
+          [ROUTE_CONFIG.META.AUTH]: true 
+        },
+        children: dynamicRoutes
+      }
+      
+      // 添加到路由
+      router.addRoute(layoutRoute)
+      
+      // 保存到缓存
+      saveRoutesToStorage(res.data)
+      
+      // 更新Pinia store
+      try {
+        const routeStore = useRouteStore()
+        routeStore.setRoutes(res.data)
+      } catch (storeError) {
+        // Pinia store可能还未初始化
+      }
+      
+      return true
+    }
+    return false
+  } catch (error) {
+    return false
+  }
+}
+
 export default router

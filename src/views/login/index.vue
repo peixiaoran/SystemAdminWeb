@@ -101,6 +101,7 @@ import { post } from '@/utils/request'
 import { LOGIN_API, ROUTER_API } from '@/config/api/login/api'
 import { addDynamicRoutes, clearRoutesCache } from '@/router'
 import { useUserStore } from '@/stores/user'
+import { useRouteStore } from '@/stores/route'
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -173,6 +174,16 @@ const handleLogin = () => {
             
             // 登录成功后添加动态路由
             addDynamicRoutes().then(success => {
+              if (success) {
+                // 确保路由加载成功
+                const routeStore = useRouteStore()
+                // 强制更新路由状态
+                if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+                  routeStore.setRoutes(res.data)
+                }
+              } else {
+                ElMessage.warning('路由加载出现问题，使用默认配置')
+              }
               router.push('/module-select')
             }).catch(error => {
               ElMessage.warning('路由加载出现问题，使用默认配置')
