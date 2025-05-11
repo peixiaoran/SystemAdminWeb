@@ -38,7 +38,11 @@ export const useRouteStore = defineStore('route', {
       try {
         const res = await post(ROUTER_API.GET_ROUTER)
         
-        if (res && res.code === '200' && res.data) {
+        if (res.code !== '200') {
+          return null
+        }
+        
+        if (res && res.data) {
           // 更新路由状态
           this.setRoutes(res.data)
           return {
@@ -46,18 +50,10 @@ export const useRouteStore = defineStore('route', {
             data: res.data
           }
         } else {
-          console.warn('获取路由配置失败:', res?.message)
-          return {
-            success: false,
-            error: res?.message || '获取路由配置失败'
-          }
+          return null
         }
       } catch (error) {
-        console.error('获取路由配置出错:', error)
-        return {
-          success: false,
-          error: error.message || '获取路由配置出错'
-        }
+        return null
       }
     }
   },

@@ -202,37 +202,41 @@ const saveTabsToStorage = () => {
     }
     localStorage.setItem('tabs-store', JSON.stringify(tabsData))
   } catch (error) {
-    console.error('保存标签数据失败:', error)
   }
 }
 
-// 从本地存储恢复标签
-const restoreTabsFromStorage = () => {
-  try {
-    const tabsData = localStorage.getItem('tabs-store')
-    if (tabsData) {
-      const { visitedTabs: storedTabs, activeTabName: storedActiveName, cachedTabs: storedCachedTabs } = JSON.parse(tabsData)
-      
-      if (Array.isArray(storedTabs) && storedTabs.length > 0) {
-        visitedTabs.value = storedTabs
-        console.log('恢复标签数据成功', storedTabs.length, '个标签')
-      }
-      
-      if (storedActiveName) {
-        activeTabName.value = storedActiveName
-      }
-      
-      if (Array.isArray(storedCachedTabs) && storedCachedTabs.length > 0) {
-        cachedTabs.value = storedCachedTabs
-      }
-      
-      return true
+// 监听路由变化，保持菜单激活状态和标签选中状态同步
+watch(() => route.path, (newPath) => {
+  // 更新活动菜单
+  activeMenu.value = newPath;
+  
+  // 处理模块首页的特殊情况，强制选中第一个标签
+  if ((newPath === moduleStore.moduleIndexPath || newPath === '/') && visitedTabs.value.length > 0) {
+    // 在模块首页，选中第一个标签并导航到对应页面
+    activeTabName.value = visitedTabs.value[0].path;
+    
+    // 如果当前路径不是第一个标签的路径，则导航到该路径
+    if (newPath !== visitedTabs.value[0].path) {
+      setTimeout(() => {
+        router.push(visitedTabs.value[0].path);
+      }, 100);
     }
-  } catch (error) {
-    console.error('恢复标签数据失败:', error)
+    return;
   }
-  return false
-}
+  
+  // 如果有标签且当前路径不是标签中的活动项，则更新活动标签
+  if (visitedTabs.value.length > 0) {
+    // 检查当前路径是否在标签中
+    const isPathInTabs = visitedTabs.value.some(tab => tab.path === newPath);
+    if (isPathInTabs) {
+      // 如果在标签中，更新活动标签
+      activeTabName.value = newPath;
+    } else if (activeTabName.value === '') {
+      // 如果当前没有活动标签，选择第一个标签
+      activeTabName.value = visitedTabs.value[0].path;
+    }
+  }
+}, { immediate: true });
 
 // 右键菜单相关
 const contextMenuVisible = ref(false)
@@ -261,12 +265,9 @@ const fetchMenuData = async () => {
     
     if (res && res.code === '200') {
       menuList.value = res.data || []
-      console.log('菜单数据:', menuList.value)
       
-      // 如果当前没有打开的标签页，则默认跳转到首页
-      if (visitedTabs.value.length === 0) {
-        router.push(moduleStore.moduleIndexPath)
-      }
+      // 移除自动选中第一个菜单项的逻辑
+      // 系统将依赖onMounted中的标签恢复逻辑来处理
     } else {
       ElMessage.error(res?.message || '获取菜单数据失败')
     }
@@ -328,7 +329,6 @@ const addTab = async (menu) => {
         // 确保路由跳转完成后结束进度条
         NProgress.done()
       }).catch(error => {
-        console.error('路由跳转失败:', error)
         NProgress.done()
       })
       return
@@ -366,18 +366,16 @@ const addTab = async (menu) => {
       // 确保路由跳转完成后结束进度条
       NProgress.done()
     }).catch(error => {
-      console.error('路由跳转失败:', error)
       NProgress.done()
     })
   } catch (error) {
     // 处理错误，结束进度条
     NProgress.done()
-    console.error('添加标签失败:', error)
   }
 }
 
 // 处理标签点击
-const handleTabClick = (tab) => {
+const handleTabClick = async (tab) => {
   const path = tab.props.name;
   activeMenu.value = path;
   activeTabName.value = path;
@@ -388,10 +386,10 @@ const handleTabClick = (tab) => {
   // 在标签点击时显示进度条
   NProgress.start();
   
-  router.push(path).then(() => {
-    // 确保路由跳转完成后结束进度条
-    NProgress.done()
-  })
+  try {
+    await router.push(path)
+  } catch (error) {
+  }
 }
 
 // 移除标签
@@ -551,10 +549,45 @@ onMounted(async () => {
   // 尝试从本地存储恢复标签
   const hasRestoredTabs = restoreTabsFromStorage()
   
-  // 如果没有恢复到标签，且当前路由需要添加标签，则添加当前路由标签
-  if (!hasRestoredTabs && route.name && route.meta.title) {
+  // 如果恢复了标签，确保标签被选中
+  if (hasRestoredTabs) {
+    // 如果是模块首页并且有标签，强制选中第一个标签
+    if ((route.path === moduleStore.moduleIndexPath || route.path === '/') && visitedTabs.value.length > 0) {
+      activeTabName.value = visitedTabs.value[0].path;
+      activeMenu.value = visitedTabs.value[0].path;
+      
+      // 导航到第一个标签对应的页面
+      if (route.path !== visitedTabs.value[0].path) {
+        setTimeout(() => {
+          router.push(visitedTabs.value[0].path);
+        }, 100);
+      }
+      return;
+    }
+    
+    // 如果活动标签为空但有标签，选中第一个标签
+    if (!activeTabName.value && visitedTabs.value.length > 0) {
+      activeTabName.value = visitedTabs.value[0].path;
+      activeMenu.value = visitedTabs.value[0].path;
+    }
+    
+    // 如果当前路径在标签中，确保它被选中
+    const currentPath = route.path;
+    const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath);
+    if (isCurrentPathInTabs) {
+      activeTabName.value = currentPath;
+      activeMenu.value = currentPath;
+    }
+    
+    return;
+  }
+  
+  // 如果没有恢复标签，但当前路由有效，则添加该路由标签
+  if (!hasRestoredTabs && route.name && route.meta.title && 
+      route.path !== moduleStore.moduleIndexPath && 
+      !route.path.includes('/module-select')) {
     // 先检查是否有noTag标记
-    const hasNoTagMark = route.meta && route.meta.noTag
+    const hasNoTagMark = route.meta && route.meta.noTag;
     
     // 如果没有noTag标记才添加标签
     if (!hasNoTagMark) {
@@ -562,29 +595,53 @@ onMounted(async () => {
         menuName: route.meta.title,
         path: route.path,
         menuIcon: route.meta.icon
-      })
+      });
     } else {
       // 如果有noTag标记，仅设置激活的菜单项
-      activeMenu.value = route.path
-      activeTabName.value = route.path
-    }
-  } else if (hasRestoredTabs) {
-    // 如果已恢复标签，但当前路径不在标签中，可能需要额外处理
-    const currentPath = route.path
-    const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
-    
-    if (!isCurrentPathInTabs) {
-      // 路径不在标签中，重定向到激活的标签
-      if (activeTabName.value && activeTabName.value !== currentPath) {
-        router.push(activeTabName.value)
-      }
-    } else {
-      // 当前路径在标签中，确保它是激活的
-      activeTabName.value = currentPath
-      activeMenu.value = currentPath
+      activeMenu.value = route.path;
+      activeTabName.value = route.path;
     }
   }
 })
+
+// 在恢复标签时，确保选中正序第一个标签
+const restoreTabsFromStorage = () => {
+  try {
+    const tabsData = localStorage.getItem('tabs-store')
+    if (tabsData) {
+      const { visitedTabs: storedTabs, activeTabName: storedActiveName, cachedTabs: storedCachedTabs } = JSON.parse(tabsData)
+      
+      // 恢复标签
+      if (Array.isArray(storedTabs) && storedTabs.length > 0) {
+        visitedTabs.value = storedTabs
+        
+        // 在模块首页始终选中第一个标签
+        if (route.path === moduleStore.moduleIndexPath || route.path === '/') {
+          // 如果是模块首页，始终选中第一个标签
+          activeTabName.value = storedTabs[0].path;
+          activeMenu.value = storedTabs[0].path;
+        } else if (storedActiveName) {
+          // 不是模块首页且有存储的活动标签，则使用它
+          activeTabName.value = storedActiveName;
+          activeMenu.value = storedActiveName;
+        } else {
+          // 否则默认选中第一个标签
+          activeTabName.value = storedTabs[0].path;
+          activeMenu.value = storedTabs[0].path;
+        }
+      }
+      
+      // 恢复缓存的组件
+      if (Array.isArray(storedCachedTabs) && storedCachedTabs.length > 0) {
+        cachedTabs.value = storedCachedTabs
+      }
+      
+      return true
+    }
+  } catch (error) {
+  }
+  return false
+}
 </script>
 
 <style scoped>

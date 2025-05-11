@@ -73,10 +73,22 @@ export const useUserStore = defineStore('user', {
         
         return true
       } catch (error) {
-        console.error('登出失败:', error)
-        ElMessage.error('登出失败，请稍后重试')
+        ElMessage.error('登出失败，请重试')
         return false
+      } finally {
+        // 确保状态被重置，即使出错也执行
+        this.resetState()
       }
+    },
+    
+    // 重置状态
+    resetState() {
+      this.token = ''
+      this.userId = ''
+      this.username = ''
+      this.avatar = ''
+      this.roles = []
+      this.permissions = []
     }
   },
   

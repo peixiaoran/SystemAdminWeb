@@ -5,6 +5,7 @@ import 'nprogress/nprogress.css'
 import { post } from '@/utils/request'
 import { ROUTER_API } from '@/config/api/router/router'
 import { useRouteStore } from '@/stores/route'
+import { ElMessage } from 'element-plus'
 
 // 配置NProgress
 NProgress.configure({ 
@@ -68,7 +69,14 @@ const constantRoutes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: ROUTE_CONFIG.BASE.ERROR_404
+    redirect: to => {
+      // 将所有未匹配的路由重定向到登录页面，并清空缓存
+      clearUserDataAndCache();
+      return { 
+        path: ROUTE_CONFIG.BASE.LOGIN,
+        query: { redirect: to.fullPath }
+      }
+    }
   }
 ]
 
@@ -100,15 +108,12 @@ function hasCachedRoutes() {
         // 检查第一个路由对象，确保格式正确
         const firstRoute = parsed.routes[0]
         if (firstRoute && firstRoute.path && firstRoute.children && Array.isArray(firstRoute.children)) {
-          console.log('本地缓存路由数据有效')
           return true
         }
       }
     }
   } catch (e) {
-    console.error('读取缓存路由数据失败', e)
   }
-  console.log('本地缓存路由数据无效或不存在')
   return false
 }
 
@@ -123,7 +128,6 @@ function getRoutesFromStorage() {
       }
     }
   } catch (e) {
-    console.error('解析缓存路由数据失败', e)
   }
   return null
 }
@@ -141,7 +145,6 @@ function saveRoutesToStorage(routes) {
     cachedRoutes = routes
     cachedRoutesTimestamp = now
   } catch (e) {
-    console.error('保存路由数据失败', e)
   }
 }
 
@@ -153,7 +156,6 @@ export async function addDynamicRoutes() {
     
     // 首先尝试从缓存中获取路由数据
     if (cachedRoutes) {
-      console.log('使用内存中的路由缓存')
       const dynamicRoutes = parseRouteData(cachedRoutes)
       
       // 将Layout作为根路由
@@ -169,13 +171,11 @@ export async function addDynamicRoutes() {
       
       // 添加到路由
       router.addRoute(layoutRoute)
-      console.log('动态路由加载成功(内存缓存)')
       return true
     }
     
     // 其次尝试从localStorage获取
     if (hasCachedRoutes()) {
-      console.log('使用localStorage中的路由缓存')
       const storedRoutes = getRoutesFromStorage()
       
       if (storedRoutes && storedRoutes.length > 0) {
@@ -199,10 +199,8 @@ export async function addDynamicRoutes() {
           // 更新内存缓存
           cachedRoutes = storedRoutes
           
-          console.log('动态路由加载成功(localStorage缓存)')
           return true
         } catch (error) {
-          console.error('解析localStorage缓存的路由数据失败，将尝试从API获取', error)
           // 清除无效的缓存数据
           clearRoutesCache()
           // 继续执行，从API获取
@@ -211,14 +209,12 @@ export async function addDynamicRoutes() {
     }
     
     // 最后尝试从API获取
-    console.log('从API获取路由数据')
     const res = await post(ROUTER_API.GET_ROUTER)
     
     if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
       // 验证API返回的数据格式是否正确
       const firstRoute = res.data[0]
       if (!firstRoute || !firstRoute.path || !Array.isArray(firstRoute.children)) {
-        console.error('API返回的路由数据格式不正确，使用静态路由')
         addStaticRoutes()
         return false
       }
@@ -244,21 +240,17 @@ export async function addDynamicRoutes() {
         // 保存到缓存
         saveRoutesToStorage(res.data)
         
-        console.log('动态路由加载成功(API)')
         return true
       } catch (error) {
-        console.error('解析API返回的路由数据失败，使用静态路由', error)
         addStaticRoutes()
         return false
       }
     } else {
       // 如果接口请求失败，退回使用静态路由
-      console.warn('获取动态路由失败或数据为空，使用静态路由')
       addStaticRoutes()
       return false
     }
   } catch (error) {
-    console.error('加载动态路由出错，使用静态路由', error)
     addStaticRoutes()
     return false
   }
@@ -271,7 +263,6 @@ export function clearRoutesCache() {
     cachedRoutes = null
     cachedRoutesTimestamp = null
   } catch (e) {
-    console.error('清除路由缓存失败', e)
   }
 }
 
@@ -307,13 +298,22 @@ function parseRouteData(routeData) {
             // 使用@vite-ignore注释告诉Vite不要分析这个动态导入
             return import(/* @vite-ignore */ `../views/${route.component}`)
           } catch (error) {
-            console.error(`加载组件 ${route.component} 失败:`, error)
-            // 返回一个错误页面组件
-            return import('../views/error/404.vue')
+            // 返回一个空组件，它会自动重定向到登录页面
+            return {
+              render() {
+                // 清除用户数据和缓存
+                clearUserDataAndCache();
+                // 在组件渲染时重定向到登录页面
+                router.replace({
+                  path: ROUTE_CONFIG.BASE.LOGIN,
+                  query: { redirect: route.path }
+                });
+                return null;
+              }
+            };
           }
         }
       } catch (error) {
-        console.error(`设置组件 ${route.component} 失败:`, error)
       }
     }
     
@@ -376,28 +376,34 @@ router.beforeEach(async (to, from, next) => {
           const routesAdded = await addDynamicRoutes()
           
           if (routesAdded) {
-            console.log('刷新页面：动态路由添加成功')
-            
             // 再次检查路由匹配
             const matchedRoute = router.resolve(to.path)
             if (matchedRoute && matchedRoute.matched && matchedRoute.matched.length > 0) {
-              // 路由已添加成功，重定向到原始路径
-              return next({ ...to, replace: true })
+              // 路由存在，可以直接进入
+              return next()
             } else {
-              // 路由添加成功但目标路由不存在
-              console.warn('目标路由不存在，重定向到首页')
-              return next({ path: '/', replace: true })
+              // 路由不存在，清除缓存并重定向到登录页面
+              clearUserDataAndCache()
+              return next({ 
+                path: ROUTE_CONFIG.BASE.LOGIN,
+                query: { redirect: to.fullPath }
+              })
             }
           } else {
-            // 如果动态路由添加失败，使用静态路由
-            console.warn('动态路由添加失败，使用静态路由')
-            addStaticRoutes()
-            return next({ ...to, replace: true })
+            // 动态路由添加失败，清除缓存并重定向到登录页面
+            clearUserDataAndCache()
+            return next({ 
+              path: ROUTE_CONFIG.BASE.LOGIN,
+              query: { redirect: to.fullPath }
+            })
           }
         } catch (error) {
-          console.error('处理路由刷新时出错', error)
-          // 出错时重定向到首页
-          return next({ path: '/', replace: true })
+          // 出错时清除缓存并重定向到登录页面
+          clearUserDataAndCache()
+          return next({ 
+            path: ROUTE_CONFIG.BASE.LOGIN,
+            query: { redirect: to.fullPath }
+          })
         }
       } else {
         // 处理模块index页面的访问
@@ -432,6 +438,28 @@ router.onError(() => {
   // 确保发生错误时也结束进度条
   NProgress.done()
 })
+
+// 清除用户数据和缓存的函数
+function clearUserDataAndCache() {
+  // 清除token
+  localStorage.removeItem('token')
+  
+  // 清除用户信息
+  localStorage.removeItem('username')
+  localStorage.removeItem('user-store')
+  
+  // 清除路由缓存
+  clearRoutesCache()
+  
+  // 清除模块信息
+  localStorage.removeItem('currentDomainId')
+  localStorage.removeItem('currentSystemName')
+  localStorage.removeItem('currentSystemPath')
+  localStorage.removeItem('module-store')
+  
+  // 清除标签缓存
+  localStorage.removeItem('tabs-store')
+}
 
 // 导出适配老代码的方法名
 export { addDynamicRoutes as addRoutes }

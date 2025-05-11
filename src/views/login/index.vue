@@ -180,7 +180,6 @@ const handleLogin = () => {
               }
               router.push('/module-select')
             }).catch(error => {
-              console.error('路由加载失败:', error)
               ElMessage.warning('路由加载出现问题，使用默认配置')
               router.push('/module-select')
             })
