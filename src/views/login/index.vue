@@ -98,8 +98,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { LOGIN_API } from '@/config/api/login/api'
-import { addRoutes } from '@/router'
+import { LOGIN_API, ROUTER_API } from '@/config/api/login/api'
+import { addDynamicRoutes, clearRoutesCache } from '@/router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -157,13 +158,32 @@ const handleLogin = () => {
         .then(res => {
           
           if (res.code === '200') {
+            // 保存token
             localStorage.setItem('token', res.data)
             // 设置固定标题
             document.title = 'SystemsAdmin管理系统'
+            
+            // 获取用户store
+            const userStore = useUserStore()
+            // 设置token
+            userStore.setToken(res.data)
+            
+            // 清除现有路由缓存
+            clearRoutesCache()
+            
             // 登录成功后添加动态路由
-            addRoutes()
-            ElMessage.success(res.message || '登录成功')
-            router.push('/module-select')
+            addDynamicRoutes().then(success => {
+              if (success) {
+                ElMessage.success('登录成功，动态路由加载完成')
+              } else {
+                ElMessage.warning('登录成功，使用默认路由配置')
+              }
+              router.push('/module-select')
+            }).catch(error => {
+              console.error('路由加载失败:', error)
+              ElMessage.warning('路由加载出现问题，使用默认配置')
+              router.push('/module-select')
+            })
           } else {
             ElMessage.error(res.message || '登录失败')
           }

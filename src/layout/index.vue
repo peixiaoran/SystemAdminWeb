@@ -192,6 +192,48 @@ const activeTabName = ref('')
 const visitedTabs = ref([])
 const cachedTabs = ref([])
 
+// 保存标签到本地存储
+const saveTabsToStorage = () => {
+  try {
+    const tabsData = {
+      visitedTabs: visitedTabs.value,
+      activeTabName: activeTabName.value,
+      cachedTabs: cachedTabs.value
+    }
+    localStorage.setItem('tabs-store', JSON.stringify(tabsData))
+  } catch (error) {
+    console.error('保存标签数据失败:', error)
+  }
+}
+
+// 从本地存储恢复标签
+const restoreTabsFromStorage = () => {
+  try {
+    const tabsData = localStorage.getItem('tabs-store')
+    if (tabsData) {
+      const { visitedTabs: storedTabs, activeTabName: storedActiveName, cachedTabs: storedCachedTabs } = JSON.parse(tabsData)
+      
+      if (Array.isArray(storedTabs) && storedTabs.length > 0) {
+        visitedTabs.value = storedTabs
+        console.log('恢复标签数据成功', storedTabs.length, '个标签')
+      }
+      
+      if (storedActiveName) {
+        activeTabName.value = storedActiveName
+      }
+      
+      if (Array.isArray(storedCachedTabs) && storedCachedTabs.length > 0) {
+        cachedTabs.value = storedCachedTabs
+      }
+      
+      return true
+    }
+  } catch (error) {
+    console.error('恢复标签数据失败:', error)
+  }
+  return false
+}
+
 // 右键菜单相关
 const contextMenuVisible = ref(false)
 const contextMenuStyle = reactive({
@@ -246,6 +288,9 @@ const logout = async () => {
       cancelButtonText: '取消',
       type: 'warning'
     })
+    
+    // 清除标签缓存
+    localStorage.removeItem('tabs-store')
     
     await userStore.logout()
     router.push('/login')
@@ -310,6 +355,9 @@ const addTab = async (menu) => {
       if (!cachedTabs.value.includes(formattedPath.replace(/\//g, '-'))) {
         cachedTabs.value.push(formattedPath.replace(/\//g, '-'))
       }
+      
+      // 保存标签状态到本地存储
+      saveTabsToStorage()
     }
     
     activeTabName.value = formattedPath
@@ -332,6 +380,10 @@ const addTab = async (menu) => {
 const handleTabClick = (tab) => {
   const path = tab.props.name;
   activeMenu.value = path;
+  activeTabName.value = path;
+  
+  // 保存当前活动标签
+  saveTabsToStorage()
   
   // 在标签点击时显示进度条
   NProgress.start();
@@ -375,6 +427,9 @@ const removeTab = (targetPath) => {
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
   }
+  
+  // 保存标签状态到本地存储
+  saveTabsToStorage()
   
   // 如果移除后没有标签了，也跳转到模块首页
   if (visitedTabs.value.length === 0) {
@@ -451,6 +506,9 @@ const closeOthersTags = () => {
   visitedTabs.value = visitedTabs.value.filter(tab => tab.path === path)
   cachedTabs.value = cachedTabs.value.filter(name => name === path.replace(/\//g, '-'))
   
+  // 保存标签状态到本地存储
+  saveTabsToStorage()
+  
   // 跳转到当前选中的标签
   activeTabName.value = path
   router.push(path)
@@ -460,6 +518,9 @@ const closeOthersTags = () => {
 const closeAllTags = () => {
   visitedTabs.value = []
   cachedTabs.value = []
+  
+  // 保存标签状态到本地存储
+  saveTabsToStorage()
   
   // 跳转到当前模块的首页
   const moduleIndexPath = moduleStore.moduleIndexPath
@@ -487,13 +548,41 @@ onMounted(async () => {
   // 获取菜单数据
   await fetchMenuData()
   
-  // 添加当前路由对应的标签
-  if (route.name && route.meta.title) {
-    addTab({
-      menuName: route.meta.title,
-      path: route.path,
-      menuIcon: route.meta.icon
-    })
+  // 尝试从本地存储恢复标签
+  const hasRestoredTabs = restoreTabsFromStorage()
+  
+  // 如果没有恢复到标签，且当前路由需要添加标签，则添加当前路由标签
+  if (!hasRestoredTabs && route.name && route.meta.title) {
+    // 先检查是否有noTag标记
+    const hasNoTagMark = route.meta && route.meta.noTag
+    
+    // 如果没有noTag标记才添加标签
+    if (!hasNoTagMark) {
+      addTab({
+        menuName: route.meta.title,
+        path: route.path,
+        menuIcon: route.meta.icon
+      })
+    } else {
+      // 如果有noTag标记，仅设置激活的菜单项
+      activeMenu.value = route.path
+      activeTabName.value = route.path
+    }
+  } else if (hasRestoredTabs) {
+    // 如果已恢复标签，但当前路径不在标签中，可能需要额外处理
+    const currentPath = route.path
+    const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
+    
+    if (!isCurrentPathInTabs) {
+      // 路径不在标签中，重定向到激活的标签
+      if (activeTabName.value && activeTabName.value !== currentPath) {
+        router.push(activeTabName.value)
+      }
+    } else {
+      // 当前路径在标签中，确保它是激活的
+      activeTabName.value = currentPath
+      activeMenu.value = currentPath
+    }
   }
 })
 </script>

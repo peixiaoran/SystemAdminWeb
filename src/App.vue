@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-// App组件逻辑
+// App.vue中不进行缓存清除，保持路由数据的持久性
 </script>
 
 <style>

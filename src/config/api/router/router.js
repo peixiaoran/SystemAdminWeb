@@ -19,5 +19,5 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 查询路由
 export const ROUTER_API = {
-    GET_ROUTER: 'SysBasic/SysBasics/SysRouter/GetDynamicRoutes'
+    GET_ROUTER: 'SystemBasicMgmt/SystemBasic/SysRouter/GenerateRouteConfig'
 }
