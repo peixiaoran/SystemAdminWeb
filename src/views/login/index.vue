@@ -173,11 +173,6 @@ const handleLogin = () => {
             
             // 登录成功后添加动态路由
             addDynamicRoutes().then(success => {
-              if (success) {
-                ElMessage.success('登录成功，动态路由加载完成')
-              } else {
-                ElMessage.warning('登录成功，使用默认路由配置')
-              }
               router.push('/module-select')
             }).catch(error => {
               ElMessage.warning('路由加载出现问题，使用默认配置')

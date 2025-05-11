@@ -73,8 +73,7 @@ const constantRoutes = [
       // 将所有未匹配的路由重定向到登录页面，并清空缓存
       clearUserDataAndCache();
       return { 
-        path: ROUTE_CONFIG.BASE.LOGIN,
-        query: { redirect: to.fullPath }
+        path: ROUTE_CONFIG.BASE.LOGIN
       }
     }
   }
@@ -305,8 +304,7 @@ function parseRouteData(routeData) {
                 clearUserDataAndCache();
                 // 在组件渲染时重定向到登录页面
                 router.replace({
-                  path: ROUTE_CONFIG.BASE.LOGIN,
-                  query: { redirect: route.path }
+                  path: ROUTE_CONFIG.BASE.LOGIN
                 });
                 return null;
               }
@@ -385,24 +383,21 @@ router.beforeEach(async (to, from, next) => {
               // 路由不存在，清除缓存并重定向到登录页面
               clearUserDataAndCache()
               return next({ 
-                path: ROUTE_CONFIG.BASE.LOGIN,
-                query: { redirect: to.fullPath }
+                path: ROUTE_CONFIG.BASE.LOGIN
               })
             }
           } else {
             // 动态路由添加失败，清除缓存并重定向到登录页面
             clearUserDataAndCache()
             return next({ 
-              path: ROUTE_CONFIG.BASE.LOGIN,
-              query: { redirect: to.fullPath }
+              path: ROUTE_CONFIG.BASE.LOGIN
             })
           }
         } catch (error) {
           // 出错时清除缓存并重定向到登录页面
           clearUserDataAndCache()
           return next({ 
-            path: ROUTE_CONFIG.BASE.LOGIN,
-            query: { redirect: to.fullPath }
+            path: ROUTE_CONFIG.BASE.LOGIN
           })
         }
       } else {
@@ -418,8 +413,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 未登录则重定向到登录页
       next({
-        path: ROUTE_CONFIG.BASE.LOGIN,
-        query: { redirect: to.fullPath }
+        path: ROUTE_CONFIG.BASE.LOGIN
       })
     }
   } else {
