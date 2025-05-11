@@ -192,12 +192,12 @@
 .table-pagination-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 195px);
   min-height: 500px;
   position: relative;
   overflow: hidden;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 /* 表格包装器 - 优化样式 */
@@ -220,7 +220,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 8px 0;
+  padding: 0px 0px 25px 0px;
   background-color: #fff;
   border-top: none;
   z-index: 10;

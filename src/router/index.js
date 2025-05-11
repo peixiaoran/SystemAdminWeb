@@ -497,10 +497,6 @@ function clearUserDataAndCache() {
   // 清除token
   localStorage.removeItem('token')
   
-  // 清除用户信息
-  localStorage.removeItem('username')
-  localStorage.removeItem('user-store')
-  
   // 清除路由缓存
   clearRoutesCache()
   
