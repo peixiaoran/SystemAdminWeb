@@ -5,7 +5,6 @@ import 'nprogress/nprogress.css'
 import { post } from '@/utils/request'
 import { ROUTER_API } from '@/config/api/router/router'
 import { useRouteStore } from '@/stores/route'
-import { ElMessage } from 'element-plus'
 
 // 配置NProgress
 NProgress.configure({ 
