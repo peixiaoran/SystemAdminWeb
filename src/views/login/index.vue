@@ -50,6 +50,7 @@
               placeholder="请选择厂区"
               class="factory-select"
             >
+              <el-option label="昆山乙盛" value="ESK" />
               <el-option label="乙盛台灣" value="ETW" />
               <el-option label="無錫欣冠" value="ESW" />
               <el-option label="東莞乙宏" value="ESD" />
@@ -112,7 +113,7 @@ const randomStr = ref(Math.random().toString(36).substring(2, 15))
 const loginForm = reactive({
   loginNo: '',
   passWrod: '',
-  factory: 'ETW', // 默认设置为乙盛台灣
+  factory: 'ESK', // 默认设置为昆山乙盛
   language: 'zh-CN' // 默认设置为中文简体
 })
 
@@ -154,7 +155,7 @@ const handleLogin = () => {
       post(LOGIN_API.USER_LOGIN, {
         ...loginForm,
         language: loginForm.language || 'zh-CN', // 确保有默认值
-        factory: loginForm.factory || 'ETW' // 确保有默认值
+        factory: loginForm.factory || 'ESK' // 确保有默认值
       })
         .then(res => {
           

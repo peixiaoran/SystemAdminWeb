@@ -213,17 +213,26 @@ export async function addDynamicRoutes() {
     try {
       const res = await post(ROUTER_API.GET_ROUTER)
       
-      if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
-        // 验证API返回的数据格式是否正确
-        const firstRoute = res.data[0]
-        if (!firstRoute || !firstRoute.path || !Array.isArray(firstRoute.children)) {
+      if (res && res.code === '200') {
+        // 适应新格式：API现在返回的是 { data: {路由对象}, code: "200", message: "" }
+        // 而不是直接返回路由数组
+        let routeData = null
+        
+        // 检查响应格式
+        if (res.data && res.data.children && Array.isArray(res.data.children)) {
+          // 新格式：使用res.data中的路由对象
+          routeData = res.data.children
+        } else if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          // 旧格式：直接使用res.data数组（兼容旧版本）
+          routeData = res.data
+        } else {
           addStaticRoutes()
           return false
         }
         
         try {
           // 获取到动态路由数据，解析并添加到路由中
-          const dynamicRoutes = parseRouteData(res.data)
+          const dynamicRoutes = parseRouteData(routeData)
           
           // 将Layout作为根路由
           const layoutRoute = {
@@ -240,7 +249,7 @@ export async function addDynamicRoutes() {
           router.addRoute(layoutRoute)
           
           // 保存到缓存
-          saveRoutesToStorage(res.data)
+          saveRoutesToStorage(routeData)
           
           return true
         } catch (error) {
@@ -318,7 +327,9 @@ function parseRouteData(routeData) {
       meta: {
         ...route.meta, // 首先复制所有原始meta属性
         title: route.meta?.title || route.name,
-        [ROUTE_CONFIG.META.AUTH]: true
+        [ROUTE_CONFIG.META.AUTH]: true,
+        // 确保noTag字段被正确处理
+        noTag: route.meta?.noTag !== undefined ? route.meta.noTag : null
       }
     }
     
@@ -518,12 +529,27 @@ export async function refreshRoutesFromAPI() {
     // 请求新的路由数据
     const res = await post(ROUTER_API.GET_ROUTER)
     
-    if (res && res.code === '200' && res.data && Array.isArray(res.data) && res.data.length > 0) {
+    if (res && res.code === '200') {
+      // 适应新格式：API现在返回的是 { data: {路由对象}, code: "200", message: "" }
+      // 而不是直接返回路由数组
+      let routeData = null
+      
+      // 检查响应格式
+      if (res.data && res.data.children && Array.isArray(res.data.children)) {
+        // 新格式：使用res.data中的路由对象
+        routeData = res.data.children
+      } else if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        // 旧格式：直接使用res.data数组（兼容旧版本）
+        routeData = res.data
+      } else {
+        return false
+      }
+      
       // 先重置路由
       resetRouter()
       
       // 解析并添加新路由
-      const dynamicRoutes = parseRouteData(res.data)
+      const dynamicRoutes = parseRouteData(routeData)
       
       // 将Layout作为根路由
       const layoutRoute = {
@@ -539,13 +565,13 @@ export async function refreshRoutesFromAPI() {
       // 添加到路由
       router.addRoute(layoutRoute)
       
-      // 保存到缓存
-      saveRoutesToStorage(res.data)
+      // 保存到缓存 - 保存children数组或原始数据
+      saveRoutesToStorage(routeData)
       
       // 更新Pinia store
       try {
         const routeStore = useRouteStore()
-        routeStore.setRoutes(res.data)
+        routeStore.setRoutes(routeData)
       } catch (storeError) {
         // Pinia store可能还未初始化
       }
