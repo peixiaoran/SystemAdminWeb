@@ -82,7 +82,7 @@ import {
   GET_ROLE_DROPDOWN_API, 
   GET_DOMAIN_DROPDOWN_API,
   UPDATE_ROLE_MODULE_API 
-} from '@/config/api/system-admin/system-mgmt/rolemodule'
+} from '@/config/api/systemBasicmgmt/system-mgmt/rolemodule'
 
 // 角色网域数据
 const roleModuleList = ref([])

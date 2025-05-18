@@ -204,7 +204,7 @@
   <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post, sanitizeHtml } from '@/utils/request'
-  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/system-admin/system-mgmt/program'
+  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
   
   // 程序数据

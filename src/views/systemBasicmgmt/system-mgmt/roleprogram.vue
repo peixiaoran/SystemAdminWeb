@@ -90,7 +90,7 @@ import {
   GET_DOMAIN_DROPDOWN_API,
   GET_MODULE_DROPDOWN_API,
   UPDATE_ROLE_PROGRAM_API 
-} from '@/config/api/system-admin/system-mgmt/roleprogram'
+} from '@/config/api/systemBasicmgmt/system-mgmt/roleprogram'
 
 // 角色程序数据
 const roleProgramList = ref([])

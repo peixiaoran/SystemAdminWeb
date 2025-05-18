@@ -171,7 +171,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { post } from '@/utils/request'
-import { GET_DOMAIN_PAGES_API, INSERST_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/system-admin/system-mgmt/domain'
+import { GET_DOMAIN_PAGES_API, INSERST_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/domain'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 日志数据

@@ -129,7 +129,7 @@
   <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post, sanitizeHtml } from '@/utils/request'
-  import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/system-admin/system-mgmt/role'
+  import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systemBasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
   
   // 角色数据

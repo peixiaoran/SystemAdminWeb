@@ -191,7 +191,7 @@
   <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API } from '@/config/api/system-admin/system-mgmt/module'
+  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   
   // 模块数据

@@ -42,12 +42,12 @@
               class="conventional-table"
             >
               <el-table-column type="index" label="序号" width="60" align="center" fixed />
-              <el-table-column prop="companyNameCh" label="中文名称" align="left" min-width="230" />
-              <el-table-column prop="companyNameEn" label="英文名称" align="left" min-width="230" />
+              <el-table-column prop="companyNameCh" label="中文名称" align="left" min-width="350" />
+              <el-table-column prop="companyNameEn" label="英文名称" align="left" min-width="350" />
               <el-table-column prop="companyiPhone" label="公司电话" align="center" min-width="130" />
-              <el-table-column prop="companyFax" label="公司传真" align="center" min-width="130" />
+              <el-table-column prop="companyFax" label="公司传真" align="center" min-width="300" />
               <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-              <el-table-column prop="remark" label="备注" align="left" min-width="180" />
+              <el-table-column prop="remark" label="备注" align="left" min-width="450" />
               <el-table-column label="操作" min-width="150" fixed="right">
                   <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
@@ -173,8 +173,9 @@ onMounted(() => {
 // 获取公司实体数据
 const fetchCompanyEntity = async (companyId) => {
   const params = {
-    CompanyId: companyId
+    companyId: companyId
   }
+  console.log(params)
   const res = await post(GET_COMPANY_ENTITY_API.GET_COMPANY_ENTITY, params)
   
   if (res && res.code === '200') {
@@ -362,9 +363,4 @@ const handleSave = () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-
-.form-row {
-  display: flex;
-  margin-bottom: 18px;
-}
 </style> 

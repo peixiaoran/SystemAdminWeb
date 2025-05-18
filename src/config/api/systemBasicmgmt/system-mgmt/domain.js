@@ -41,6 +41,3 @@ export const DELETE_DOMAIN_API = {
 export const UPDATE_DOMAIN_API = {
   UPDATE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/Domain/UpdateSysDomain'
 }
-
-
-// 可以根据模块添加更多API
