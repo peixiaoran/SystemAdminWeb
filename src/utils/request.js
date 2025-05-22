@@ -30,24 +30,14 @@ service.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${token}`
     }
 
-    // 添加语言参数
+    // 添加语言参数到请求头
     const language = localStorage.getItem('language') || 'zh-CN'
-    // 添加厂区参数
+    // 添加厂区参数到请求头
     const factory = localStorage.getItem('factory') || 'ETW'
     
-    if (config.method === 'post' || config.method === 'put') {
-      config.data = {
-        ...config.data,
-        language,
-        factory
-      }
-    } else if (config.method === 'get' || config.method === 'delete') {
-      config.params = {
-        ...config.params,
-        language,
-        factory
-      }
-    }
+    // 设置请求头
+    config.headers['Accept-Language'] = language
+    config.headers['Factory'] = factory
     
     return config
   },

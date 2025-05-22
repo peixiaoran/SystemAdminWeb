@@ -153,9 +153,8 @@ const handleLogin = () => {
 
       // 使用封装的post方法，它会使用环境变量中的API基础URL
       post(LOGIN_API.USER_LOGIN, {
-        ...loginForm,
-        language: loginForm.language || 'zh-CN', // 确保有默认值
-        factory: loginForm.factory || 'ESK' // 确保有默认值
+        loginNo: loginForm.loginNo,
+        passWrod: loginForm.passWrod
       })
         .then(res => {
           
@@ -183,12 +182,11 @@ const handleLogin = () => {
                   routeStore.setRoutes(res.data)
                 }
               } else {
-                ElMessage.warning('路由加载出现问题，使用默认配置')
+                console.log('路由加载出现问题')
               }
               router.push('/module-select')
             }).catch(error => {
-              ElMessage.warning('路由加载出现问题，使用默认配置')
-              router.push('/module-select')
+              console.log(error)
             })
           } else {
             ElMessage.error(res.message || '登录失败')
