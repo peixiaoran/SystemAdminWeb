@@ -2,13 +2,20 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
-import router, { addRoutes } from './router'
+import router, { addDynamicRoutes } from './router'
 import './assets/main.css'
 import pinia from './stores'
 import NProgress from 'nprogress'
+import i18n from './i18n'
 
-// 设置固定标题
-document.title = 'SystemsAdmin管理系统'
+// 获取存储的语言
+const language = localStorage.getItem('language') || 'zh-CN'
+
+// 根据当前语言设置标题
+const setDocumentTitle = () => {
+  const title = i18n.global.t('common.systemTitle')
+  document.title = title
+}
 
 // 监听页面刷新事件
 window.addEventListener('beforeunload', () => {
@@ -27,7 +34,7 @@ const token = localStorage.getItem('token')
 if (token) {
   // 初始化时添加动态路由，并确保异步加载完成
   try {
-    addRoutes().then(success => {
+    addDynamicRoutes().then(success => {
       if (!success) {
         console.warn('动态路由加载可能不完整，某些路由可能无法访问')
       }
@@ -45,6 +52,7 @@ const app = createApp(App)
 // 基础插件注册
 app.use(pinia)
 app.use(router)
+app.use(i18n) // 注册i18n
 app.use(ElementPlus, { size: 'default', zIndex: 3000 })
 
 // 导入所有图标并注册
@@ -53,6 +61,9 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
+// 设置标题
+setDocumentTitle()
 
 // 挂载应用
 app.mount('#app') 

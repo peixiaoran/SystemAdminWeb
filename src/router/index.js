@@ -5,6 +5,7 @@ import 'nprogress/nprogress.css'
 import { post } from '@/utils/request'
 import { ROUTER_API } from '@/config/api/router/router'
 import { useRouteStore } from '@/stores/route'
+import { markRaw } from 'vue'
 
 // 配置NProgress
 NProgress.configure({ 
@@ -36,13 +37,13 @@ const constantRoutes = [
   {
     path: ROUTE_CONFIG.BASE.LOGIN,
     name: 'Login',
-    component: () => import('../views/login/index.vue'),
+    component: markRaw(() => import('../views/login/index.vue')),
     meta: { title: '登录' }
   },
   {
     path: ROUTE_CONFIG.BASE.HOME,
     name: 'ModuleSelect',
-    component: () => import('../views/module-select/index.vue'),
+    component: markRaw(() => import('../views/module-select/index.vue')),
     meta: { 
       title: '系统模块', 
       [ROUTE_CONFIG.META.AUTH]: true 
@@ -57,13 +58,13 @@ const constantRoutes = [
   {
     path: ROUTE_CONFIG.BASE.ERROR_403,
     name: 'Forbidden',
-    component: () => import('../views/error/403.vue'),
+    component: markRaw(() => import('../views/error/403.vue')),
     meta: { title: '403' }
   },
   {
     path: ROUTE_CONFIG.BASE.ERROR_404,
     name: 'NotFound',
-    component: () => import('../views/error/404.vue'),
+    component: markRaw(() => import('../views/error/404.vue')),
     meta: { title: '404' }
   },
   {
@@ -163,7 +164,7 @@ export async function addDynamicRoutes() {
       const layoutRoute = {
         path: '/',
         name: 'LayoutContainer', // 修改名称避免重复
-        component: Layout,
+        component: markRaw(Layout),
         meta: { 
           [ROUTE_CONFIG.META.AUTH]: true 
         },
@@ -187,7 +188,7 @@ export async function addDynamicRoutes() {
           const layoutRoute = {
             path: '/',
             name: 'LayoutContainer', // 修改名称避免重复
-            component: Layout,
+            component: markRaw(Layout),
             meta: { 
               [ROUTE_CONFIG.META.AUTH]: true 
             },
@@ -238,7 +239,7 @@ export async function addDynamicRoutes() {
           const layoutRoute = {
             path: '/',
             name: 'LayoutContainer', // 修改名称避免重复
-            component: Layout,
+            component: markRaw(Layout),
             meta: { 
               [ROUTE_CONFIG.META.AUTH]: true 
             },
@@ -274,7 +275,7 @@ export async function addDynamicRoutes() {
             const layoutRoute = {
               path: '/',
               name: 'LayoutContainer', // 修改名称避免重复
-              component: Layout,
+              component: markRaw(Layout),
               meta: { 
                 [ROUTE_CONFIG.META.AUTH]: true 
               },
@@ -341,28 +342,25 @@ function parseRouteData(routeData) {
     // 处理组件
     if (route.component) {
       try {
-        // 使用@vite-ignore注释忽略Vite的动态导入警告
-        routeConfig.component = () => {
-          // 添加错误处理逻辑
-          try {
-            // 使用@vite-ignore注释告诉Vite不要分析这个动态导入
-            return import(/* @vite-ignore */ `../views/${route.component}`)
-          } catch (error) {
-            // 返回一个空组件，它会自动重定向到登录页面
-            return {
-              render() {
-                // 清除用户数据和缓存
-                clearUserDataAndCache();
-                // 在组件渲染时重定向到登录页面
-                router.replace({
-                  path: ROUTE_CONFIG.BASE.LOGIN
-                });
-                return null;
-              }
-            };
-          }
-        }
+        // 使用动态导入并应用markRaw
+        const componentPath = route.component;
+        routeConfig.component = markRaw(() => {
+          // 使用@vite-ignore注释忽略Vite的动态导入警告
+          return import(/* @vite-ignore */ `../views/${componentPath}`);
+        });
       } catch (error) {
+        // 返回一个空组件，它会自动重定向到登录页面
+        routeConfig.component = markRaw({
+          render() {
+            // 清除用户数据和缓存
+            clearUserDataAndCache();
+            // 在组件渲染时重定向到登录页面
+            router.replace({
+              path: ROUTE_CONFIG.BASE.LOGIN
+            });
+            return null;
+          }
+        });
       }
     }
     
@@ -555,7 +553,7 @@ export async function refreshRoutesFromAPI() {
       const layoutRoute = {
         path: '/',
         name: 'LayoutContainer',
-        component: Layout,
+        component: markRaw(Layout),
         meta: { 
           [ROUTE_CONFIG.META.AUTH]: true 
         },

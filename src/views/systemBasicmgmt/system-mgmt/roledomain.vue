@@ -4,19 +4,19 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-            <el-form-item label="角色">
-              <el-select v-model="filters.roleId" placeholder="请选择角色" style="width:180px" clearable @change="handleRoleChange">
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleDomain.role')">
+              <el-select v-model="filters.roleId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder')" style="width:180px" clearable @change="handleRoleChange">
                 <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
               </el-select>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-                查询
+                {{ $t('common.search') }}
               </el-button>
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleConfirm">
-                更新绑定
+                {{ $t('systemBasicmgmt.systemMgmt.updateBindings') }}
               </el-button>
             </div>
           </el-form>
@@ -34,17 +34,17 @@
                 v-loading="loading"
                 class="conventional-table"
               >
-                <el-table-column type="index" label="序号" width="60" align="center" fixed />
-                <el-table-column prop="roleName" label="角色名称" align="left" min-width="180" />
-                <el-table-column prop="domainName" label="网域名称" align="left" min-width="180" />
-                <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="90">
+                <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
+                <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.roleDomain.role')" align="left" min-width="180" />
+                <el-table-column prop="domainName" :label="$t('systemBasicmgmt.systemMgmt.roleDomain.domain')" align="left" min-width="180" />
+                <el-table-column prop="isChecked" :label="$t('systemBasicmgmt.systemMgmt.roleDomain.isBinding')" align="center" min-width="90">
                   <template #default="scope">
                     <div class="checkbox-wrapper">
                       <el-checkbox v-model="scope.row.isChecked" />
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注" min-width="150" />
+                <el-table-column prop="remark" :label="$t('systemBasicmgmt.systemMgmt.remark')" min-width="150" />
               </el-table>
             </div>
             
@@ -71,6 +71,10 @@
   import { post } from '@/utils/request'
   import { ElMessage } from 'element-plus'
   import { GET_ROLE_DOMAIN_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/roledomian'
+  import { useI18n } from 'vue-i18n'
+  
+  // 使用i18n
+  const { t } = useI18n()
   
   // 角色菜单数据
   const roleDomainList = ref([])
@@ -150,7 +154,7 @@
   // 处理确认操作
   const handleConfirm = async () => {
     if (!filters.roleId) {
-      ElMessage.warning('请先选择角色')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.roleDomain.pleaseSelectRole'))
       return
     }
     
@@ -166,7 +170,7 @@
       })
       
       if (res && res.code === '200') {
-        ElMessage.success(res.message)
+        ElMessage.success(t('systemBasicmgmt.systemMgmt.roleDomain.updateBindingsSuccess'))
         fetchRoleDomainList()
       } else {
         ElMessage.error(res.message)
@@ -195,5 +199,4 @@
   
   <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-
 </style> 

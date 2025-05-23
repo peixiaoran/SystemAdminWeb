@@ -1,0 +1,345 @@
+export default {
+  // 通用
+  common: {
+    systemTitle: 'SystemsAdmin管理系統',
+    confirm: '確定',
+    cancel: '取消',
+    save: '保存',
+    delete: '刪除',
+    edit: '編輯',
+    add: '添加',
+    search: '搜索',
+    reset: '重置',
+    success: '成功',
+    failed: '失敗',
+    loading: '加載中...',
+    noData: '暫無數據',
+    logout: '退出登錄',
+    confirmLogout: '確定要退出登錄嗎?',
+    tip: '提示',
+    warning: '警告',
+    enter: '進入',
+  },
+  
+  // 登录页
+  login: {
+    title: 'Vue Admin管理系統',
+    username: '用戶名',
+    password: '密碼',
+    factory: '廠區',
+    language: '語言',
+    loginButton: '登錄',
+    usernamePlaceholder: '請輸入用戶名',
+    passwordPlaceholder: '請輸入密碼',
+    factoryPlaceholder: '請選擇廠區',
+    languagePlaceholder: '請選擇語言',
+    usernameRequired: '請輸入用戶名',
+    passwordRequired: '請輸入密碼',
+    factoryRequired: '請選擇廠區',
+    loginFailed: '登錄失敗',
+    loginFailedTip: '登錄請求失敗，請稍後重試',
+    factories: {
+      ESK: '昆山乙盛',
+      ETW: '乙盛台灣',
+      ESW: '無錫欣冠',
+      ESD: '東莞乙宏',
+      ESC: '煙台正乙',
+      EMY: '馬來西亞',
+      EMJ: '馬來西亞',
+      ESV: '越南廠',
+      EST: '墨西哥MUSG',
+      ESH: '新加坡ESONSG',
+      ESM: '蒙特雷',
+      MTY: '新加坡ESONSG'
+    },
+    languages: {
+      'zh-CN': '中文簡體',
+      'zh-TW': '中文繁體',
+      'en-US': 'English',
+      'vi-VN': 'Việt Nam'
+    }
+  },
+  
+  // 模块选择页面
+  moduleSelect: {
+    userInfo: '個人信息',
+    accountSettings: '賬號設置',
+    moduleLoading: '正在加載數據...',
+    moduleError: '獲取模塊數據失敗',
+    moduleErrorRetry: '獲取模塊數據失敗，請稍後重試',
+    moduleIncomplete: '模塊信息不完整'
+  },
+  
+  // 系統基礎管理
+  systemBasicmgmt: {
+    // 系統狀態卡片
+    systemStatus: {
+      cpuUsage: 'CPU使用率',
+      memoryUsage: '內存使用率',
+      diskUsage: '磁盤使用率',
+      systemLoad: '系統負載',
+      normal: '正常',
+      warning: '注意',
+      danger: '危險',
+      cores: '核心',
+      threads: '線程',
+      lastMinutes: '最近15分鐘'
+    },
+    // 資源使用趨勢
+    resourceTrend: {
+      title: '資源使用趨勢',
+      hour: '1小時',
+      day: '24小時',
+      week: '7天',
+      month: '30天',
+      placeholder: '資源使用趨勢圖表（這裡放實際的圖表組件）'
+    },
+    // 系統信息
+    systemInfo: {
+      title: '系統信息',
+      refresh: '刷新',
+      os: '操作系統',
+      serverIp: '服務器IP',
+      systemTime: '系統時間',
+      uptime: '運行時間',
+      cpuModel: 'CPU型號',
+      memoryCapacity: '內存容量',
+      diskSpace: '磁盤空間',
+      systemVersion: '系統版本'
+    },
+    // 服務狀態
+    serviceStatus: {
+      title: '服務狀態',
+      refresh: '刷新',
+      restartAll: '全部重啟',
+      running: '運行中',
+      stopped: '已停止',
+      warning: '警告',
+      stop: '停止',
+      start: '啟動',
+      restart: '重啟'
+    },
+    // 系統日誌
+    systemLog: {
+      title: '系統日誌',
+      time: '時間',
+      level: '級別',
+      module: '模塊',
+      content: '內容',
+      operation: '操作',
+      details: '詳情',
+      viewMore: '查看更多',
+      logType: '日誌類型',
+      all: '全部',
+      error: '錯誤',
+      warning: '警告',
+      info: '信息'
+    },
+    // 備份記錄
+    backupRecord: {
+      title: '備份記錄',
+      backupNow: '立即備份',
+      restore: '恢復',
+      delete: '刪除'
+    },
+    // 系統通知
+    systemNotice: {
+      title: '系統通知',
+      publish: '發布通知',
+      noticeTitle: '標題',
+      type: '類型',
+      publisher: '發布人',
+      publishTime: '發布時間',
+      operation: '操作',
+      view: '查看',
+      delete: '刪除',
+      maintenance: '維護',
+      update: '更新',
+      security: '安全',
+      announcement: '公告'
+    },
+    // 快捷操作
+    quickAction: {
+      title: '快捷操作'
+    },
+    // 公司信息
+    companyInfo: {
+      title: '公司信息',
+      companyNameCh: '中文名稱',
+      companyNameEn: '英文名稱',
+      companyPhone: '公司電話',
+      companyFax: '公司傳真',
+      createdTime: '創建時間',
+      remark: '備註',
+      operation: '操作',
+      addCompany: '新增公司',
+      editCompany: '編輯公司信息',
+      deleteConfirm: '確定要刪除該條記錄嗎？',
+      pleaseInputNameCh: '請輸入中文名稱',
+      pleaseInputNameEn: '請輸入英文名稱',
+      index: '序號',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗'
+    },
+    // 用戶信息
+    userInfo: {
+      title: '用戶信息',
+      companyNameCh: '中文名稱',
+      companyNameEn: '英文名稱',
+      companyPhone: '公司電話',
+      companyFax: '公司傳真',
+      createdTime: '創建時間',
+      remark: '備註',
+      operation: '操作',
+      addUser: '新增用戶',
+      editUser: '編輯用戶信息',
+      deleteConfirm: '確定要刪除該條記錄嗎？',
+      pleaseInputNameCh: '請輸入中文名稱',
+      pleaseInputNameEn: '請輸入英文名稱',
+      index: '序號',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗'
+    },
+    // 系統管理
+    systemMgmt: {
+      // 通用項
+      index: '序號',
+      operation: '操作',
+      remark: '備註',
+      remarks: '備註',
+      isEnabled: '是否啟用',
+      isVisible: '是否顯示',
+      enabled: '啟用',
+      disabled: '禁用',
+      visible: '顯示',
+      hidden: '隱藏',
+      createdBy: '創建人',
+      createdTime: '創建時間',
+      updateBindings: '更新綁定',
+      selectPlaceholder: '請選擇',
+      inputPlaceholder: '請輸入',
+      fillRequiredInfo: '請填寫必要信息',
+      invalidId: '無效的ID',
+      
+      // 網域管理
+      domain: {
+        title: '網域管理',
+        domainCode: '網域編碼',
+        domainName: '網域名稱',
+        domainIcon: '網域圖標',
+        sortOrder: '網域排序',
+        roleCode: '權限標識',
+        pagePath: '頁面Path',
+        component: '組件',
+        target: '目標',
+        addDomain: '新增網域',
+        editDomain: '編輯網域信息',
+        deleteConfirm: '確定要刪除該條記錄嗎？',
+        pleaseInputDomainCode: '請輸入網域編碼',
+        pleaseInputDomainName: '請輸入網域名稱'
+      },
+      
+      // 模塊管理
+      module: {
+        title: '模塊管理',
+        domain: '所屬網域',
+        menuCode: '模塊編碼',
+        menuName: '模塊名稱',
+        menuIcon: '模塊圖標',
+        sortOrder: '模塊排序',
+        menuUrl: '模塊URL',
+        level: '模塊等級',
+        roleCode: '權限標識',
+        pagePath: '頁面Path',
+        component: '組件',
+        target: '目標',
+        addModule: '新增模塊',
+        editModule: '編輯模塊信息',
+        deleteConfirm: '確定要刪除該條記錄嗎？',
+        pleaseSelectDomain: '請選擇所屬網域',
+        pleaseInputMenuCode: '請輸入模塊編碼',
+        pleaseInputMenuName: '請輸入模塊名稱'
+      },
+      
+      // 程序管理
+      program: {
+        title: '程序管理',
+        programCode: '程序編碼',
+        programName: '程序名稱',
+        domain: '所屬網域',
+        module: '所屬模塊',
+        programIcon: '程序圖標',
+        sortOrder: '程序排序',
+        pagePath: '頁面Path',
+        programType: '程序類型',
+        roleCode: '權限標識',
+        apiRoute: 'AIP路由',
+        component: '組件',
+        target: '目標',
+        addProgram: '新增程序',
+        editProgram: '編輯程序信息',
+        deleteConfirm: '確定要刪除該條記錄嗎？',
+        pleaseInputProgramCode: '請輸入程序編碼',
+        pleaseInputProgramName: '請輸入程序名稱',
+        pleaseSelectDomain: '請選擇所屬網域',
+        pleaseSelectModule: '請選擇所屬模塊'
+      },
+      
+      // 角色管理
+      role: {
+        title: '角色管理',
+        roleCode: '角色編碼',
+        roleName: '角色名稱',
+        description: '描述',
+        addRole: '新增角色',
+        editRole: '編輯角色信息',
+        deleteConfirm: '確定要刪除該條記錄嗎？',
+        pleaseInputRoleCode: '請輸入角色代碼',
+        pleaseInputRoleName: '請輸入角色名稱'
+      },
+      
+      // 角色網域
+      roleDomain: {
+        title: '角色網域管理',
+        role: '角色',
+        domain: '網域',
+        isBinding: '是否綁定',
+        pleaseSelectRole: '請先選擇角色',
+        pleaseSelectDomain: '請先選擇網域',
+        updateBindingsSuccess: '更新綁定成功'
+      },
+      
+      // 角色模塊
+      roleModule: {
+        title: '角色模塊管理',
+        role: '角色',
+        domain: '網域',
+        module: '模塊',
+        isBinding: '是否綁定',
+        pleaseSelectRole: '請先選擇角色',
+        pleaseSelectDomain: '請先選擇網域',
+        updateBindingsSuccess: '更新綁定成功'
+      },
+      
+      // 角色程序
+      roleProgram: {
+        title: '角色程序管理',
+        role: '角色',
+        domain: '網域',
+        module: '模塊',
+        program: '程序',
+        isBinding: '是否綁定',
+        pleaseSelectRole: '請先選擇角色',
+        pleaseSelectDomain: '請先選擇網域',
+        pleaseSelectModule: '請先選擇模塊',
+        updateBindingsSuccess: '更新綁定成功'
+      }
+    }
+  }
+} 

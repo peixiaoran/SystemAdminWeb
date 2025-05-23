@@ -5,24 +5,24 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-            <el-form-item label="角色编码">
-              <el-input v-model="filters.roleCode" placeholder="请输入角色编码" style="width:180px" clearable />
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
+              <el-input v-model="filters.roleCode" :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleCode')" style="width:180px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item label="角色名称">
-              <el-input v-model="filters.roleName" placeholder="请输入角色名称" style="width:180px" clearable />
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')">
+              <el-input v-model="filters.roleName" :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleName')" style="width:180px" clearable />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-                查询
+                {{ $t('common.search') }}
               </el-button>
               <el-button @click="handleReset">
-                重置
+                {{ $t('common.reset') }}
               </el-button>
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleAdd">
-                新增角色
+                {{ $t('systemBasicmgmt.systemMgmt.role.addRole') }}
               </el-button>
             </div>
           </el-form>
@@ -40,30 +40,30 @@
                 v-loading="loading"
                 class="conventional-table"
               >
-                <el-table-column type="index" label="序号" width="60" align="center" fixed />
-                <el-table-column prop="roleCode" label="角色代码" align="left" min-width="240" />
-                <el-table-column prop="roleName" label="角色名称" align="left" min-width="200" />
-                <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="80">
+                <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
+                <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')" align="left" min-width="240" />
+                <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.role.roleName')" align="left" min-width="200" />
+                <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="80">
                   <template #default="scope">
                     <div class="flex">
                       <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                        {{ scope.row.isEnabled ? '启用' : '禁用' }}
+                        {{ scope.row.isEnabled ? $t('systemBasicmgmt.systemMgmt.enabled') : $t('systemBasicmgmt.systemMgmt.disabled') }}
                       </el-tag>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="createdName" label="创建人" min-width="120" />
-                <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-                <el-table-column label="操作" min-width="150" fixed="right">
+                <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
+                <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
+                <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="150" fixed="right">
                     <template #default="scope">
                       <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                        >编辑</el-button
+                        >{{ $t('common.edit') }}</el-button
                       >
                       <el-button
                         size="small"
                         type="danger"
                         @click="handleDelete(scope.$index, scope.row)"
-                        >删除</el-button
+                        >{{ $t('common.delete') }}</el-button
                       >
                     </template>
                 </el-table-column>
@@ -95,31 +95,33 @@
       >
         <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
           <div class="form-row">
-            <el-form-item label="角色代码">
-              <el-input v-model="editForm.roleCode" style="width:250px"/>
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
+              <el-input v-model="editForm.roleCode" style="width:100%"/>
             </el-form-item>
-            <el-form-item label="角色名称" >
-              <el-input v-model="editForm.roleName" style="width:250px"/>
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')" >
+              <el-input v-model="editForm.roleName" style="width:100%"/>
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')" >
+              <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="备注" >
-              <el-input v-model="editForm.remarks" style="width:632px" type="textarea"/>
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item label="是否启用" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" >
               <el-switch
                 v-model="editForm.isEnabled"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
+            <el-form-item> <!-- 空占位，保持布局对称 -->
+            </el-form-item>
           </div>
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="handleSave">确定</el-button>
+            <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
           </span>
         </template>
       </el-dialog>
@@ -131,6 +133,10 @@
   import { post, sanitizeHtml } from '@/utils/request'
   import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systemBasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  
+  // 使用i18n
+  const { t } = useI18n()
   
   // 角色数据
   const roleList = ref([])
@@ -162,7 +168,7 @@
     remarks: ''
   })
   // 对话框标题
-  const dialogTitle = ref('编辑角色信息')
+  const dialogTitle = ref(t('systemBasicmgmt.systemMgmt.role.editRole'))
   
   // 在组件挂载后获取角色数据
   onMounted(() => {
@@ -289,7 +295,7 @@
     }
 
     if (isNaN(params.roleId)) {
-      ElMessage.error('无效的角色 ID')
+      ElMessage.error(t('systemBasicmgmt.systemMgmt.invalidId'))
       return
     }
     
@@ -313,7 +319,7 @@
     editForm.isEnabled = true
     
     // 设置对话框标题
-    dialogTitle.value = '新增角色信息'
+    dialogTitle.value = t('systemBasicmgmt.systemMgmt.role.addRole')
     
     // 显示对话框
     dialogVisible.value = true
@@ -325,7 +331,7 @@
     resetForm()
     
     // 设置对话框标题
-    dialogTitle.value = '编辑角色信息'
+    dialogTitle.value = t('systemBasicmgmt.systemMgmt.role.editRole')
     
     // 获取角色实体数据
     fetchRoleEntity(row.roleId)
@@ -337,11 +343,11 @@
   // 处理删除操作
   const handleDelete = (index, row) => {
     ElMessageBox.confirm(
-        '确定要删除该条记录吗？',
-        '提示',
+        t('systemBasicmgmt.systemMgmt.role.deleteConfirm'),
+        t('common.tip'),
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
           type: 'warning',
         }
       )
@@ -358,7 +364,7 @@
   // 保存编辑结果
   const handleSave = () => {
     if (!editForm.roleCode || !editForm.roleName) {
-      ElMessage.warning('请填写角色代码和角色名称')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
       return
     }
     

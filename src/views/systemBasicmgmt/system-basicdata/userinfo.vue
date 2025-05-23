@@ -5,24 +5,24 @@
       <div class="conventional-content">
         <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form">
-          <el-form-item label="中文名称">
-            <el-input v-model="filters.companyNameCh" placeholder="请输入中文名称" style="width:170px" clearable />
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCh')">
+            <el-input v-model="filters.companyNameCh" :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputNameCh')" style="width:170px" clearable />
           </el-form-item>
           <el-form-item></el-form-item>
-          <el-form-item label="英文名称">
-            <el-input v-model="filters.companyNameEn" placeholder="请输入英文名称" style="width:170px" clearable />
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameEn')">
+            <el-input v-model="filters.companyNameEn" :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputNameEn')" style="width:170px" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-              查询
+              {{ $t('common.search') }}
             </el-button>
             <el-button @click="handleReset">
-              重置
+              {{ $t('common.reset') }}
             </el-button>
           </el-form-item>
           <div class="conventional-form-right-area">
             <el-button type="primary" @click="handleAdd">
-              新增公司
+              {{ $t('systemBasicmgmt.userInfo.addUser') }}
             </el-button>
           </div>
         </el-form>
@@ -41,23 +41,23 @@
               v-loading="loading"
               class="conventional-table"
             >
-              <el-table-column type="index" label="序号" width="60" align="center" fixed />
-              <el-table-column prop="companyNameCh" label="中文名称" align="left" min-width="230" />
-              <el-table-column prop="companyNameEn" label="英文名称" align="left" min-width="230" />
-              <el-table-column prop="companyiPhone" label="公司电话" align="center" min-width="130" />
-              <el-table-column prop="companyFax" label="公司传真" align="center" min-width="130" />
-              <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-              <el-table-column prop="remark" label="备注" align="left" min-width="180" />
-              <el-table-column label="操作" min-width="150" fixed="right">
+              <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
+              <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.userInfo.companyNameCh')" align="left" min-width="230" />
+              <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.userInfo.companyNameEn')" align="left" min-width="230" />
+              <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.userInfo.companyPhone')" align="center" min-width="130" />
+              <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.userInfo.companyFax')" align="center" min-width="130" />
+              <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.userInfo.createdTime')" min-width="180" />
+              <el-table-column prop="remark" :label="$t('systemBasicmgmt.userInfo.remark')" align="left" min-width="180" />
+              <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="150" fixed="right">
                   <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                      >编辑</el-button
+                      >{{ $t('common.edit') }}</el-button
                     >
                     <el-button
                       size="small"
                       type="danger"
                       @click="handleDelete(scope.$index, scope.row)"
-                      >删除</el-button
+                      >{{ $t('common.delete') }}</el-button
                     >
                   </template>
               </el-table-column>
@@ -89,31 +89,31 @@
     >
       <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
         <div class="form-row">
-          <el-form-item label="中文名称">
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCh')">
             <el-input v-model="editForm.companyNameCh" style="width:250px"/>
           </el-form-item>
-          <el-form-item label="英文名称" >
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameEn')" >
             <el-input v-model="editForm.companyNameEn" style="width:250px"/>
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item label="公司电话" >
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyPhone')" >
             <el-input v-model="editForm.companyiPhone" style="width:250px"/>
           </el-form-item>
-          <el-form-item label="公司传真" >
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.companyFax')" >
             <el-input v-model="editForm.companyFax" style="width:250px"/>
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item label="备注" >
+          <el-form-item :label="$t('systemBasicmgmt.userInfo.remark')" >
             <el-input v-model="editForm.remark" style="width:632px" type="textarea"/>
           </el-form-item>
         </div>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSave">确定</el-button>
+          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -125,6 +125,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { post } from '@/utils/request'
 import { GET_COMPANY_PAGES_API, INSERST_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systemBasicmgmt/system-basic/company'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 // 公司数据
 const companyList = ref([])
@@ -163,7 +167,7 @@ const editForm = reactive({
 })
 
 // 对话框标题
-const dialogTitle = ref('编辑公司信息')
+const dialogTitle = ref(t('systemBasicmgmt.userInfo.editUser'))
 
 // 在组件挂载后获取公司数据
 onMounted(() => {
@@ -207,7 +211,7 @@ const fetchCompanyPages = async () => {
     companyList.value = res.data || []
     pagination.total = res.totalNumber || 0
   } else {
-    ElMessage.error(res.message || '获取数据失败')
+    ElMessage.error(res.message || t('systemBasicmgmt.userInfo.getFailed'))
   }
   loading.value = false
 }
@@ -262,11 +266,11 @@ const insertCompany = async () => {
   
   if (res && res.code === '200') {
     resetForm()
-    ElMessage.success(res.message || '新增成功')
+    ElMessage.success(res.message || t('systemBasicmgmt.userInfo.saveSuccess'))
     dialogVisible.value = false
     fetchCompanyPages()
   } else {
-    ElMessage.error(res.message || '操作失败')
+    ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
   }
 }
 
@@ -279,11 +283,11 @@ const updateCompany = async () => {
 
   if (res && res.code === '200') {
     resetForm()
-    ElMessage.success(res.message || '更新成功')
+    ElMessage.success(res.message || t('systemBasicmgmt.userInfo.updateSuccess'))
     dialogVisible.value = false
     fetchCompanyPages()
   } else {
-    ElMessage.error(res.message || '操作失败')
+    ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
   }
 }
 
@@ -296,10 +300,10 @@ const deleteCompany = async (companyId) => {
   const res = await post(DELETE_COMPANY_API.DELETE_COMPANY, params)
   
   if (res && res.code === '200') {
-    ElMessage.success(res.message || '删除成功')
+    ElMessage.success(res.message || t('systemBasicmgmt.userInfo.deleteSuccess'))
     fetchCompanyPages()
   } else {
-    ElMessage.error(res.message || '操作失败')
+    ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
   }
 }
 
@@ -308,7 +312,7 @@ const handleAdd = () => {
   // 重置表单数据
   resetForm()
   // 设置对话框标题
-  dialogTitle.value = '新增公司'
+  dialogTitle.value = t('systemBasicmgmt.userInfo.addUser')
   // 显示对话框
   dialogVisible.value = true
 }
@@ -320,7 +324,7 @@ const handleEdit = (index, row) => {
   // 获取公司实体数据
   fetchCompanyEntity(row.companyId)
   // 设置对话框标题
-  dialogTitle.value = '编辑公司信息'
+  dialogTitle.value = t('systemBasicmgmt.userInfo.editUser')
   // 显示对话框
   dialogVisible.value = true
 }
@@ -328,11 +332,11 @@ const handleEdit = (index, row) => {
 // 处理删除操作
 const handleDelete = (index, row) => {
   ElMessageBox.confirm(
-      '确定要删除该条记录吗？',
-      '提示',
+      t('systemBasicmgmt.userInfo.deleteConfirm'),
+      t('common.tip'),
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning',
       }
     )
@@ -347,7 +351,7 @@ const handleDelete = (index, row) => {
 // 保存编辑结果
 const handleSave = () => {
   if (!editForm.companyNameCh) {
-    ElMessage.warning('请填写公司中文名称')
+    ElMessage.warning(t('systemBasicmgmt.userInfo.pleaseInputNameCh'))
     return
   }
   
@@ -362,9 +366,4 @@ const handleSave = () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-
-.form-row {
-  display: flex;
-  margin-bottom: 18px;
-}
 </style> 

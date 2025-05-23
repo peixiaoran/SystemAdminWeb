@@ -128,7 +128,7 @@
         <router-view v-slot="{ Component }">
           <transition name="page-slide" mode="out-in">
             <keep-alive :include="cachedTabs">
-              <component :is="Component" />
+              <component :is="markRaw(Component)" />
             </keep-alive>
           </transition>
         </router-view>
@@ -138,7 +138,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
@@ -217,9 +217,9 @@ watch(() => route.path, (newPath) => {
     
     // 如果当前路径不是第一个标签的路径，则导航到该路径
     if (newPath !== visitedTabs.value[0].path) {
-      setTimeout(() => {
+      nextTick(() => {
         router.push(visitedTabs.value[0].path);
-      }, 100);
+      });
     }
     return;
   }
@@ -407,10 +407,16 @@ const removeTab = (targetPath) => {
           const moduleIndexPath = moduleStore.moduleIndexPath
           if (moduleIndexPath !== '/module-select') {
             activeTabName.value = moduleIndexPath
-            router.push(moduleIndexPath)
+            // 使用nextTick确保DOM更新后再跳转
+            nextTick(() => {
+              router.push(moduleIndexPath)
+            })
           } else {
             // 如果没有模块信息，则跳转到模块选择页面
-            router.push('/module-select')
+            // 使用nextTick确保DOM更新后再跳转
+            nextTick(() => {
+              router.push('/module-select')
+            })
           }
         }
       }
@@ -434,9 +440,15 @@ const removeTab = (targetPath) => {
     const moduleIndexPath = moduleStore.moduleIndexPath
     if (moduleIndexPath !== '/module-select') {
       activeTabName.value = moduleIndexPath
-      router.push(moduleIndexPath)
+      // 使用nextTick确保DOM更新后再跳转
+      nextTick(() => {
+        router.push(moduleIndexPath)
+      })
     } else {
-      router.push('/module-select')
+      // 使用nextTick确保DOM更新后再跳转
+      nextTick(() => {
+        router.push('/module-select')
+      })
     }
   }
 }
@@ -509,7 +521,10 @@ const closeOthersTags = () => {
   
   // 跳转到当前选中的标签
   activeTabName.value = path
-  router.push(path)
+  // 使用nextTick确保DOM更新后再跳转
+  nextTick(() => {
+    router.push(path)
+  })
 }
 
 // 关闭所有标签
@@ -524,16 +539,24 @@ const closeAllTags = () => {
   const moduleIndexPath = moduleStore.moduleIndexPath
   if (moduleIndexPath !== '/module-select') {
     activeTabName.value = moduleIndexPath
-    router.push(moduleIndexPath)
+    // 使用nextTick确保DOM更新后再跳转
+    nextTick(() => {
+      router.push(moduleIndexPath)
+    })
   } else {
-    // 如果没有模块信息，则跳转到模块选择页面
-    router.push('/module-select')
+    // 使用nextTick确保DOM更新后再跳转
+    nextTick(() => {
+      router.push('/module-select')
+    })
   }
 }
 
 // 返回首页
 const returnToModuleSelect = () => {
-  router.push('/module-select')
+  // 使用nextTick确保DOM更新后再跳转
+  nextTick(() => {
+    router.push('/module-select')
+  })
 }
 
 // 监听路由变化，保持菜单激活状态同步
@@ -558,9 +581,9 @@ onMounted(async () => {
       
       // 导航到第一个标签对应的页面
       if (route.path !== visitedTabs.value[0].path) {
-        setTimeout(() => {
+        nextTick(() => {
           router.push(visitedTabs.value[0].path);
-        }, 100);
+        });
       }
       return;
     }

@@ -1,6 +1,8 @@
 <template>
   <div class="module-select-container">
-    <div class="user-info">
+    <div class="header-actions">
+      <language-switcher class="language-switcher" />
+      <div class="user-info">
         <el-dropdown trigger="click">
           <div class="user-avatar-wrapper">
             <div class="user-avatar">
@@ -16,21 +18,21 @@
             <el-dropdown-menu>
               <el-dropdown-item>
                 <el-icon><User /></el-icon>
-                <span>个人信息</span>
+                <span>{{ $t('moduleSelect.userInfo') }}</span>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-icon><Setting /></el-icon>
-                <span>账号设置</span>
+                <span>{{ $t('moduleSelect.accountSettings') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided @click="logout">
                 <el-icon><SwitchButton /></el-icon>
-                <span>退出登录</span>
+                <span>{{ $t('common.logout') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
-
+    </div>
 
     <div class="module-grid">
       <el-row :gutter="30">
@@ -47,7 +49,7 @@
             </div>
             <div class="module-footer">
               <el-button type="primary" text>
-                <span>进入</span>
+                <span>{{ $t('common.enter') }}</span>
                 <el-icon class="enter-icon"><ArrowRight /></el-icon>
               </el-button>
             </div>
@@ -58,7 +60,7 @@
     
     <!-- 添加加载状态 -->
     <div v-if="loading" class="loading-container">
-      <el-empty description="正在加载数据..." :image-size="100">
+      <el-empty :description="$t('moduleSelect.moduleLoading')" :image-size="100">
         <template #image>
           <el-icon :size="60" class="rotating-icon"><Loading /></el-icon>
         </template>
@@ -77,7 +79,10 @@ import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
 import { useModuleStore } from '@/stores/module'
 import { addRoutes } from '@/router'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const username = ref('管理员')
 const modules = ref([])
@@ -102,10 +107,10 @@ const fetchModules = async () => {
         path: module.path
       }))
     } else {
-      ElMessage.error(res?.message || '获取模块数据失败')
+      ElMessage.error(res?.message || t('moduleSelect.moduleError'))
     }
   } catch (error) {
-    ElMessage.error('获取模块数据失败，请稍后重试')
+    ElMessage.error(t('moduleSelect.moduleErrorRetry'))
   } finally {
     loading.value = false
   }
@@ -119,7 +124,7 @@ onMounted(() => {
 // 进入模块
 const enterModule = (module) => {
   if (!module || !module.domainId || !module.path) {
-    ElMessage.error('模块信息不完整')
+    ElMessage.error(t('moduleSelect.moduleIncomplete'))
     return
   }
   
@@ -144,9 +149,9 @@ const enterModule = (module) => {
 const logout = async () => {
   try {
     // 确认对话框
-    await ElMessageBox.confirm('确定要退出登录吗?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('common.confirmLogout'), t('common.tip'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning'
     })
     
@@ -157,7 +162,7 @@ const logout = async () => {
     router.push('/login')
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('退出登录失败')
+      ElMessage.error(t('common.failed'))
     }
   }
 }
@@ -173,76 +178,57 @@ const logout = async () => {
   flex-direction: column;
 }
 
-.header {
+.header-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 40px;
-  padding: 25px 30px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
   background-color: transparent;
 }
 
-.welcome h1 {
-  font-size: 28px;
-  color: #303133;
-  margin: 0 0 12px 0;
-  font-weight: 600;
-  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.welcome p {
-  font-size: 16px;
-  color: #606266;
-  margin: 0;
+.language-switcher {
+  margin-right: 20px;
 }
 
 .user-info {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  z-index: 1;
+  display: flex;
+  align-items: center;
 }
 
 .user-avatar-wrapper {
-  position: relative;
+  cursor: pointer;
 }
 
 .user-avatar {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 12px;
-  background-color: #fff;
-  border: 1px solid #ebeef5;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.user-avatar:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .user-details {
-  display: flex;
-  flex-direction: column;
-  margin-left: 12px;
+  margin: 0 10px;
 }
 
 .username {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #303133;
 }
 
-.role-tag {
+.dropdown-icon {
+  color: #909399;
   font-size: 12px;
-  color: #64748b;
-  margin-top: 2px;
 }
 
-.dropdown-icon {
-  margin-left: 8px;
-  font-size: 12px;
-  color: #64748b;
+.module-grid {
+  margin-top: 20px;
 }
 
 .module-grid {

@@ -3,7 +3,7 @@
     <div class="login-box">
       <div class="login-header">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" class="logo" alt="Logo" />
-        <h1 class="title">Vue Admin管理系统</h1>
+        <h1 class="title">{{ $t('login.title') }}</h1>
       </div>
       
       <div class="login-form-container">
@@ -20,10 +20,10 @@
           <input type="text" style="display:none" />
           <input type="password" style="display:none" />
           
-          <el-form-item prop="loginNo" label="用户名">
+          <el-form-item prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
-              placeholder="请输入用户名"
+              :placeholder="$t('login.usernamePlaceholder')"
               clearable
               :name="'username_' + randomStr"
               autocomplete="off"
@@ -31,11 +31,11 @@
             />
           </el-form-item>
           
-          <el-form-item prop="passWrod" label="密码">
+          <el-form-item prop="passWrod">
             <el-input
               v-model="loginForm.passWrod"
               type="password"
-              placeholder="请输入密码"
+              :placeholder="$t('login.passwordPlaceholder')"
               show-password
               :name="'password_' + randomStr"
               autocomplete="off"
@@ -44,37 +44,24 @@
             />
           </el-form-item>
           
-          <el-form-item prop="factory" label="厂区">
+          <el-form-item prop="factory">
             <el-select 
               v-model="loginForm.factory" 
-              placeholder="请选择厂区"
+              :placeholder="$t('login.factoryPlaceholder')"
               class="factory-select"
             >
-              <el-option label="昆山乙盛" value="ESK" />
-              <el-option label="乙盛台灣" value="ETW" />
-              <el-option label="無錫欣冠" value="ESW" />
-              <el-option label="東莞乙宏" value="ESD" />
-              <el-option label="煙台正乙" value="ESC" />
-              <el-option label="馬來西亞" value="EMY" />
-              <el-option label="馬來西亞" value="EMJ" />
-              <el-option label="越南厂" value="ESV" />
-              <el-option label="墨西哥MUSG" value="EST" />
-              <el-option label="新加坡ESONSG" value="ESH" />
-              <el-option label="蒙特雷" value="ESM" />
-              <el-option label="新加坡ESONSG" value="MTY" />
+              <el-option v-for="(label, value) in factories" :key="value" :label="label" :value="value" />
             </el-select>
           </el-form-item>
           
-          <el-form-item prop="language" label="语言">
+          <el-form-item prop="language">
             <el-select 
               v-model="loginForm.language" 
-              placeholder="请选择语言"
+              :placeholder="$t('login.languagePlaceholder')"
               class="language-select"
+              @change="handleLanguageChange"
             >
-              <el-option label="中文简体" value="zh-CN" />
-              <el-option label="中文繁体" value="zh-TW" />
-              <el-option label="English" value="en-US" />
-              <el-option label="Việt Nam" value="vi-VN" />
+              <el-option v-for="(label, value) in languages" :key="value" :label="label" :value="value" />
             </el-select>
           </el-form-item>
           
@@ -85,7 +72,7 @@
               class="login-button"
               @click="handleLogin"
             >
-              登录
+              {{ $t('login.loginButton') }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -95,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
@@ -103,7 +90,9 @@ import { LOGIN_API } from '@/config/api/login/api'
 import { addDynamicRoutes, clearRoutesCache } from '@/router'
 import { useUserStore } from '@/stores/user'
 import { useRouteStore } from '@/stores/route'
+import { useI18n } from 'vue-i18n'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
@@ -114,7 +103,7 @@ const loginForm = reactive({
   loginNo: '',
   passWrod: '',
   factory: 'ESK', // 默认设置为昆山乙盛
-  language: 'zh-CN' // 默认设置为中文简体
+  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
 // 在组件挂载后清除表单内容
@@ -130,16 +119,54 @@ onMounted(() => {
   }, 100)
 })
 
-const loginRules = {
-  loginNo: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
-  ],
-  passWrod: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
-  ],
-  factory: [
-    { required: true, message: '请选择厂区', trigger: 'change' }
-  ]
+// 使用计算属性获取翻译后的选项
+const factories = computed(() => {
+  return {
+    ESK: t('login.factories.ESK'),
+    ETW: t('login.factories.ETW'),
+    ESW: t('login.factories.ESW'),
+    ESD: t('login.factories.ESD'),
+    ESC: t('login.factories.ESC'),
+    EMY: t('login.factories.EMY'),
+    EMJ: t('login.factories.EMJ'),
+    ESV: t('login.factories.ESV'),
+    EST: t('login.factories.EST'),
+    ESH: t('login.factories.ESH'),
+    ESM: t('login.factories.ESM'),
+    MTY: t('login.factories.MTY')
+  }
+})
+
+const languages = computed(() => {
+  return {
+    'zh-CN': t('login.languages.zh-CN'),
+    'zh-TW': t('login.languages.zh-TW'),
+    'en-US': t('login.languages.en-US'),
+    'vi-VN': t('login.languages.vi-VN')
+  }
+})
+
+// 登录表单验证规则
+const loginRules = computed(() => {
+  return {
+    loginNo: [
+      { required: true, message: t('login.usernameRequired'), trigger: 'blur' }
+    ],
+    passWrod: [
+      { required: true, message: t('login.passwordRequired'), trigger: 'blur' }
+    ],
+    factory: [
+      { required: true, message: t('login.factoryRequired'), trigger: 'change' }
+    ]
+  }
+})
+
+// 语言切换处理
+const handleLanguageChange = (value) => {
+  locale.value = value
+  localStorage.setItem('language', value)
+  // 更新document标题
+  document.title = t('common.systemTitle')
 }
 
 const handleLogin = () => {
@@ -161,8 +188,8 @@ const handleLogin = () => {
           if (res.code === '200') {
             // 保存token
             localStorage.setItem('token', res.data)
-            // 设置固定标题
-            document.title = 'SystemsAdmin管理系统'
+            // 设置标题
+            document.title = t('common.systemTitle')
             
             // 获取用户store
             const userStore = useUserStore()
@@ -189,11 +216,11 @@ const handleLogin = () => {
               console.log(error)
             })
           } else {
-            ElMessage.error(res.message || '登录失败')
+            ElMessage.error(res.message || t('login.loginFailed'))
           }
         })
         .catch(error => {
-          ElMessage.error('登录请求失败，请稍后重试')
+          ElMessage.error(t('login.loginFailedTip'))
         })
         .finally(() => {
           loading.value = false
@@ -263,9 +290,9 @@ const handleLogin = () => {
 }
 
 .logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 20px;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 18px;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
   animation: pulse 2s infinite;
 }
@@ -283,7 +310,7 @@ const handleLogin = () => {
 }
 
 .title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
   color: white;
   margin: 0;
@@ -292,21 +319,24 @@ const handleLogin = () => {
 }
 
 .login-form-container {
-  padding: 45px 50px;
+  padding: 50px 40px;
   background-color: #f5f7fa;
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .login-form {
   width: 100%;
+  max-width: 400px;
+  margin-top: -10px;
 }
 
 .login-form :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px rgba(220, 223, 230, 0.6) inset;
+  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
   padding: 0 15px;
-  height: 38px;
+  height: 44px;
   border-radius: 4px;
   transition: all 0.3s;
   display: flex;
@@ -314,11 +344,11 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.3) inset;
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
 }
 
 .login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.3) inset;
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
 }
 
 .login-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -357,13 +387,21 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-select .el-input__wrapper) {
-  box-shadow: 0 0 0 1px rgba(220, 223, 230, 0.6) inset;
+  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
   padding: 0 15px;
-  height: 38px;
+  height: 44px;
   border-radius: 4px;
   transition: all 0.3s;
   display: flex;
   align-items: center;
+}
+
+.login-form :deep(.el-select .el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+}
+
+.login-form :deep(.el-select .el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
 }
 
 .login-form :deep(.el-select .el-input__inner) {
@@ -378,7 +416,7 @@ const handleLogin = () => {
   line-height: 45px;
   height: 45px;
   padding-right: 12px;
-  width: 60px;
+  width: 80px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -391,18 +429,19 @@ const handleLogin = () => {
   display: flex;
   align-items: center;
   flex: 1;
+  justify-content: center;
 }
 
 .login-button {
-  width: 75%;
-  height: 38px;
+  width: 100%;
+  height: 44px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.5px;
   background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
   border: none;
-  margin-left: 60px;
+  margin-left: 0;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
 }
 
@@ -420,11 +459,15 @@ const handleLogin = () => {
 @media screen and (max-width: 576px) {
   .login-box {
     width: 90%;
-    max-width: 450px;
+    max-width: 420px;
   }
   
   .login-form-container {
-    padding: 30px 35px;
+    padding: 25px 20px;
+  }
+  
+  .login-form {
+    max-width: 380px;
   }
 }
 
@@ -462,6 +505,10 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-form-item) {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.login-form :deep(.el-form-item:first-child) {
+  margin-top: -5px;
 }
 </style> 

@@ -5,7 +5,7 @@
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">CPU使用率</div>
+            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.cpuUsage') }}</div>
             <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -13,15 +13,15 @@
             <el-progress :percentage="32" :show-text="false" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">正常</span>
-            <span class="compare-text">4核心 / 8线程</span>
+            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
+            <span class="compare-text">4 {{ $t('systemBasicmgmt.systemStatus.cores') }} / 8 {{ $t('systemBasicmgmt.systemStatus.threads') }}</span>
           </div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">内存使用率</div>
+            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.memoryUsage') }}</div>
             <el-icon :size="24" color="#67C23A"><Connection /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -29,7 +29,7 @@
             <el-progress :percentage="65" :show-text="false" color="#67C23A" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">正常</span>
+            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
             <span class="compare-text">8GB / 16GB</span>
           </div>
         </el-card>
@@ -37,7 +37,7 @@
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">磁盘使用率</div>
+            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.diskUsage') }}</div>
             <el-icon :size="24" color="#E6A23C"><DataAnalysis /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -45,7 +45,7 @@
             <el-progress :percentage="78" :show-text="false" color="#E6A23C" />
           </div>
           <div class="card-footer">
-            <span class="status-warning">注意</span>
+            <span class="status-warning">{{ $t('systemBasicmgmt.systemStatus.warning') }}</span>
             <span class="compare-text">780GB / 1TB</span>
           </div>
         </el-card>
@@ -53,7 +53,7 @@
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">系统负载</div>
+            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.systemLoad') }}</div>
             <el-icon :size="24" color="#F56C6C"><Loading /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -61,8 +61,8 @@
             <el-progress :percentage="47" :show-text="false" color="#F56C6C" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">正常</span>
-            <span class="compare-text">最近15分钟</span>
+            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
+            <span class="compare-text">{{ $t('systemBasicmgmt.systemStatus.lastMinutes') }}</span>
           </div>
         </el-card>
       </el-col>
@@ -74,20 +74,20 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="card-header-with-tabs">
-              <div class="card-header-title">资源使用趋势</div>
+              <div class="card-header-title">{{ $t('systemBasicmgmt.resourceTrend.title') }}</div>
               <div class="card-header-tabs">
                 <el-radio-group v-model="resourceTimeRange" size="small">
-                  <el-radio-button value="hour">1小时</el-radio-button>
-                  <el-radio-button value="day">24小时</el-radio-button>
-                  <el-radio-button value="week">7天</el-radio-button>
-                  <el-radio-button value="month">30天</el-radio-button>
+                  <el-radio-button value="hour">{{ $t('systemBasicmgmt.resourceTrend.hour') }}</el-radio-button>
+                  <el-radio-button value="day">{{ $t('systemBasicmgmt.resourceTrend.day') }}</el-radio-button>
+                  <el-radio-button value="week">{{ $t('systemBasicmgmt.resourceTrend.week') }}</el-radio-button>
+                  <el-radio-button value="month">{{ $t('systemBasicmgmt.resourceTrend.month') }}</el-radio-button>
                 </el-radio-group>
               </div>
             </div>
           </template>
           <div class="resource-chart">
             <!-- 这里可以放资源趋势图表组件 -->
-            <div class="chart-placeholder">资源使用趋势图表（这里放实际的图表组件）</div>
+            <div class="chart-placeholder">{{ $t('systemBasicmgmt.resourceTrend.placeholder') }}</div>
           </div>
         </el-card>
       </el-col>
@@ -99,19 +99,19 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-info-header">
-              <span>系统信息</span>
-              <el-button type="primary" size="small" plain>刷新</el-button>
+              <span>{{ $t('systemBasicmgmt.systemInfo.title') }}</span>
+              <el-button type="primary" size="small" plain>{{ $t('systemBasicmgmt.systemInfo.refresh') }}</el-button>
             </div>
           </template>
           <el-descriptions :column="1" border class="descriptions-block">
-            <el-descriptions-item label="操作系统">CentOS 8.4.2105</el-descriptions-item>
-            <el-descriptions-item label="服务器IP">192.168.1.100</el-descriptions-item>
-            <el-descriptions-item label="系统时间">2023-05-15 15:30:45</el-descriptions-item>
-            <el-descriptions-item label="运行时间">23天 5小时 16分钟</el-descriptions-item>
-            <el-descriptions-item label="CPU型号">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
-            <el-descriptions-item label="内存容量">16 GB</el-descriptions-item>
-            <el-descriptions-item label="磁盘空间">1 TB</el-descriptions-item>
-            <el-descriptions-item label="系统版本">v2.5.3 (build 20230510)</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.os')">CentOS 8.4.2105</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.serverIp')">192.168.1.100</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.systemTime')">2023-05-15 15:30:45</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.uptime')">23天 5小时 16分钟</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.cpuModel')">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.memoryCapacity')">16 GB</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.diskSpace')">1 TB</el-descriptions-item>
+            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.systemVersion')">v2.5.3 (build 20230510)</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
@@ -120,10 +120,10 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="service-status-header">
-              <span>服务状态</span>
+              <span>{{ $t('systemBasicmgmt.serviceStatus.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="RefreshRight">刷新</el-button>
-                <el-button type="success" size="small" plain>全部重启</el-button>
+                <el-button type="primary" size="small" plain icon="RefreshRight">{{ $t('systemBasicmgmt.serviceStatus.refresh') }}</el-button>
+                <el-button type="success" size="small" plain>{{ $t('systemBasicmgmt.serviceStatus.restartAll') }}</el-button>
               </div>
             </div>
           </template>
@@ -134,18 +134,18 @@
                 <div class="service-desc">{{ service.description }}</div>
               </div>
               <div class="service-actions">
-                <el-tag :type="service.status === '运行中' ? 'success' : service.status === '已停止' ? 'danger' : 'warning'">
+                <el-tag :type="service.status === $t('systemBasicmgmt.serviceStatus.running') ? 'success' : service.status === $t('systemBasicmgmt.serviceStatus.stopped') ? 'danger' : 'warning'">
                   {{ service.status }}
                 </el-tag>
                 <div class="action-buttons">
                   <el-button 
                     size="small" 
-                    :type="service.status === '运行中' ? 'danger' : 'success'"
+                    :type="service.status === $t('systemBasicmgmt.serviceStatus.running') ? 'danger' : 'success'"
                     plain
                   >
-                    {{ service.status === '运行中' ? '停止' : '启动' }}
+                    {{ service.status === $t('systemBasicmgmt.serviceStatus.running') ? $t('systemBasicmgmt.serviceStatus.stop') : $t('systemBasicmgmt.serviceStatus.start') }}
                   </el-button>
-                  <el-button size="small" type="primary" plain>重启</el-button>
+                  <el-button size="small" type="primary" plain>{{ $t('systemBasicmgmt.serviceStatus.restart') }}</el-button>
                 </div>
               </div>
             </div>
@@ -160,21 +160,21 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-log-header">
-              <span>系统日志</span>
+              <span>{{ $t('systemBasicmgmt.systemLog.title') }}</span>
               <div class="log-actions">
                 <el-select v-model="logType" placeholder="日志类型" size="small" style="width: 120px; margin-right: 10px;">
-                  <el-option label="全部" value="all" />
-                  <el-option label="错误" value="error" />
-                  <el-option label="警告" value="warning" />
-                  <el-option label="信息" value="info" />
+                  <el-option :label="$t('systemBasicmgmt.systemLog.all')" value="all" />
+                  <el-option :label="$t('systemBasicmgmt.systemLog.error')" value="error" />
+                  <el-option :label="$t('systemBasicmgmt.systemLog.warning')" value="warning" />
+                  <el-option :label="$t('systemBasicmgmt.systemLog.info')" value="info" />
                 </el-select>
-                <el-button type="primary" size="small" plain>查看更多</el-button>
+                <el-button type="primary" size="small" plain>{{ $t('systemBasicmgmt.systemLog.viewMore') }}</el-button>
               </div>
             </div>
           </template>
           <el-table :data="systemLogs" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="time" label="时间" width="180" />
-            <el-table-column prop="level" label="级别" width="100">
+            <el-table-column prop="time" :label="$t('systemBasicmgmt.systemLog.time')" width="180" />
+            <el-table-column prop="level" :label="$t('systemBasicmgmt.systemLog.level')" width="100">
               <template #default="scope">
                 <el-tag 
                   :type="scope.row.level === 'ERROR' ? 'danger' : scope.row.level === 'WARNING' ? 'warning' : 'info'"
@@ -184,11 +184,11 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="module" label="模块" width="120" />
-            <el-table-column prop="message" label="内容" show-overflow-tooltip />
-            <el-table-column label="操作" width="120" fixed="right">
+            <el-table-column prop="module" :label="$t('systemBasicmgmt.systemLog.module')" width="120" />
+            <el-table-column prop="message" :label="$t('systemBasicmgmt.systemLog.content')" show-overflow-tooltip />
+            <el-table-column :label="$t('systemBasicmgmt.systemLog.operation')" width="120" fixed="right">
               <template #default>
-                <el-button size="small" type="primary" plain>详情</el-button>
+                <el-button size="small" type="primary" plain>{{ $t('systemBasicmgmt.systemLog.details') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -208,9 +208,9 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="backup-header">
-              <span>备份记录</span>
+              <span>{{ $t('systemBasicmgmt.backupRecord.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" icon="Plus">立即备份</el-button>
+                <el-button type="primary" size="small" icon="Plus">{{ $t('systemBasicmgmt.backupRecord.backupNow') }}</el-button>
               </div>
             </div>
           </template>
@@ -225,8 +225,8 @@
                   </div>
                 </div>
                 <div class="backup-actions">
-                  <el-button size="small" type="primary" plain icon="Download">恢复</el-button>
-                  <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
+                  <el-button size="small" type="primary" plain icon="Download">{{ $t('systemBasicmgmt.backupRecord.restore') }}</el-button>
+                  <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.backupRecord.delete') }}</el-button>
                 </div>
               </div>
             </div>
@@ -241,25 +241,25 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-notice-header">
-              <span>系统通知</span>
+              <span>{{ $t('systemBasicmgmt.systemNotice.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="Plus">发布通知</el-button>
+                <el-button type="primary" size="small" plain icon="Plus">{{ $t('systemBasicmgmt.systemNotice.publish') }}</el-button>
               </div>
             </div>
           </template>
           <el-table :data="systemNotices" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="type" label="类型" width="120">
+            <el-table-column prop="title" :label="$t('systemBasicmgmt.systemNotice.noticeTitle')" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="type" :label="$t('systemBasicmgmt.systemNotice.type')" width="120">
               <template #default="scope">
                 <el-tag :type="getNoticeType(scope.row.type)">{{ scope.row.type }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="publisher" label="发布人" width="120" />
-            <el-table-column prop="time" label="发布时间" width="180" />
-            <el-table-column label="操作" width="180" fixed="right">
+            <el-table-column prop="publisher" :label="$t('systemBasicmgmt.systemNotice.publisher')" width="120" />
+            <el-table-column prop="time" :label="$t('systemBasicmgmt.systemNotice.publishTime')" width="180" />
+            <el-table-column :label="$t('systemBasicmgmt.systemNotice.operation')" width="180" fixed="right">
               <template #default>
-                <el-button size="small" type="primary" plain icon="View">查看</el-button>
-                <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
+                <el-button size="small" type="primary" plain icon="View">{{ $t('systemBasicmgmt.systemNotice.view') }}</el-button>
+                <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.systemNotice.delete') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -282,7 +282,7 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="quick-action-header">
-              <span>快捷操作</span>
+              <span>{{ $t('systemBasicmgmt.quickAction.title') }}</span>
             </div>
           </template>
           <div class="quick-action-list">
@@ -312,11 +312,15 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { 
   Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
   Monitor, Connection, Lock, User, Warning, Notification, 
   Document, Folder, Tools, Upload, Cpu, DataAnalysis, Loading
 } from '@element-plus/icons-vue'
+
+// 初始化i18n
+const { t } = useI18n()
 
 // 资源趋势图时间范围
 const resourceTimeRange = ref('day')
@@ -397,105 +401,126 @@ const systemLogs = reactive([
     module: '文件存储',
     message: '磁盘空间不足，剩余空间低于20%'
   },
+])
+
+// 系统通知
+const systemNotices = reactive([
   {
-    time: '2023-05-15 14:55:20',
-    level: 'ERROR',
-    module: 'API服务',
-    message: 'API请求超时：/api/data/report'
+    title: '系统维护通知：将于5月20日进行系统更新',
+    type: '维护',
+    publisher: 'Admin',
+    time: '2023-05-15 10:30:00'
+  },
+  {
+    title: '安全更新：已修复关键安全漏洞，请及时更新',
+    type: '安全',
+    publisher: 'SecurityTeam',
+    time: '2023-05-14 16:45:20'
+  },
+  {
+    title: '功能更新：新增数据分析模块',
+    type: '更新',
+    publisher: 'Admin',
+    time: '2023-05-12 09:15:30'
+  },
+  {
+    title: '服务器升级完成公告',
+    type: '公告',
+    publisher: 'SystemAdmin',
+    time: '2023-05-10 14:20:00'
+  },
+  {
+    title: '年度系统安全审计将于下周开始',
+    type: '安全',
+    publisher: 'SecurityTeam',
+    time: '2023-05-08 11:30:45'
   }
 ])
 
 // 备份记录
 const backupRecords = reactive([
   {
-    name: '完整备份_20230515',
+    name: '系统完整备份_20230515',
     time: '2023-05-15 03:00:00',
-    size: '2.5 GB'
+    size: '4.2 GB'
   },
   {
-    name: '完整备份_20230514',
+    name: '数据库备份_20230514',
     time: '2023-05-14 03:00:00',
-    size: '2.4 GB'
+    size: '1.8 GB'
   },
   {
-    name: '完整备份_20230513',
+    name: '配置文件备份_20230513',
     time: '2023-05-13 03:00:00',
-    size: '2.4 GB'
+    size: '156 MB'
   },
   {
-    name: '完整备份_20230512',
-    time: '2023-05-12 03:00:00',
-    size: '2.3 GB'
-  },
-  {
-    name: '完整备份_20230511',
-    time: '2023-05-11 03:00:00',
-    size: '2.3 GB'
-  },
-  {
-    name: '手动备份_20230510',
-    time: '2023-05-10 15:30:00',
-    size: '2.3 GB'
-  },
-  {
-    name: '完整备份_20230510',
+    name: '系统完整备份_20230510',
     time: '2023-05-10 03:00:00',
-    size: '2.2 GB'
-  }
-])
-
-// 系统通知
-const systemNotices = reactive([
-  {
-    title: '系统将于2023年5月20日凌晨2:00-4:00进行升级维护',
-    type: '维护通知',
-    publisher: '系统管理员',
-    time: '2023-05-15 14:00:00'
+    size: '4.1 GB'
   },
   {
-    title: '新版本v2.5.3已发布，新增多项功能和优化',
-    type: '版本更新',
-    publisher: '技术团队',
-    time: '2023-05-10 10:30:00'
+    name: '数据库备份_20230507',
+    time: '2023-05-07 03:00:00',
+    size: '1.7 GB'
   },
   {
-    title: '安全漏洞修复公告：请及时更新系统',
-    type: '安全公告',
-    publisher: '安全团队',
-    time: '2023-05-05 16:45:00'
-  },
-  {
-    title: '服务器迁移完成公告',
-    type: '系统公告',
-    publisher: '运维团队',
-    time: '2023-04-28 09:15:00'
+    name: '系统完整备份_20230501',
+    time: '2023-05-01 03:00:00',
+    size: '4.0 GB'
   }
 ])
 
 // 快捷操作
 const quickActions = reactive([
-  { name: '系统监控', icon: 'Monitor' },
-  { name: '网络设置', icon: 'Connection' },
-  { name: '安全设置', icon: 'Lock' },
-  { name: '用户管理', icon: 'User' },
-  { name: '告警设置', icon: 'Warning' },
-  { name: '消息通知', icon: 'Notification' },
-  { name: '日志管理', icon: 'Document' },
-  { name: '存储管理', icon: 'Folder' },
-  { name: '系统维护', icon: 'Tools' },
-  { name: '系统升级', icon: 'Upload' }
+  {
+    name: '系统设置',
+    icon: Setting
+  },
+  {
+    name: '用户管理',
+    icon: User
+  },
+  {
+    name: '安全配置',
+    icon: Lock
+  },
+  {
+    name: '系统监控',
+    icon: Monitor
+  },
+  {
+    name: '备份恢复',
+    icon: Upload
+  },
+  {
+    name: '日志分析',
+    icon: Document
+  },
+  {
+    name: '存储管理',
+    icon: Folder
+  },
+  {
+    name: '工具箱',
+    icon: Tools
+  }
 ])
 
-// 获取通知类型对应的标签类型
+// 获取通知类型
 const getNoticeType = (type) => {
   switch (type) {
-    case '维护通知':
+    case '维护':
+    case 'Maintenance':
       return 'warning'
-    case '版本更新':
-      return 'success'
-    case '安全公告':
+    case '安全':
+    case 'Security':
       return 'danger'
-    case '系统公告':
+    case '更新':
+    case 'Update':
+      return 'success'
+    case '公告':
+    case 'Announcement':
       return 'info'
     default:
       return 'info'
