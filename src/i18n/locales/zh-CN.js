@@ -19,6 +19,20 @@ export default {
     tip: '提示',
     warning: '警告',
     enter: '进入',
+    language: '语言',
+  },
+  
+  // 布局
+  layout: {
+    home: '首页',
+    returnHome: '返回首页',
+    personalInfo: '个人信息',
+    changePassword: '修改密码',
+    logout: '退出登录',
+    refreshPage: '刷新页面',
+    closeCurrentTab: '关闭当前标签',
+    closeOtherTabs: '关闭其他标签',
+    closeAllTabs: '关闭所有标签',
   },
   
   // 登录页

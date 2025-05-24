@@ -366,4 +366,9 @@ const handleSave = () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.form-row {
+  display: flex;
+  margin-bottom: 18px;
+}
 </style> 

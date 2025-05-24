@@ -350,7 +350,7 @@ function parseRouteData(routeData) {
         });
       } catch (error) {
         // 返回一个空组件，它会自动重定向到登录页面
-        routeConfig.component = markRaw({
+        routeConfig.component = markRaw(() => ({
           render() {
             // 清除用户数据和缓存
             clearUserDataAndCache();
@@ -360,7 +360,7 @@ function parseRouteData(routeData) {
             });
             return null;
           }
-        });
+        }));
       }
     }
     
