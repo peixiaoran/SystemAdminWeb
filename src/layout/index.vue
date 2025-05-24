@@ -210,7 +210,31 @@ const currentLanguageLabel = computed(() => {
 const handleLanguageChange = (lang) => {
   locale.value = lang
   localStorage.setItem('language', lang)
-  ElMessage.success(t('common.success'))
+  
+  // 刷新当前页面
+  const currentPath = route.path
+  const index = cachedTabs.value.indexOf(currentPath.replace(/\//g, '-'))
+  if (index > -1) {
+    cachedTabs.value.splice(index, 1)
+  }
+  
+  // 启动进度条
+  NProgress.start()
+  
+  nextTick(() => {
+    router.replace('/').then(() => {
+      nextTick(() => {
+        router.replace(currentPath).then(() => {
+          // 完成进度条
+          NProgress.done()
+        }).catch(() => {
+          NProgress.done()
+        })
+      })
+    }).catch(() => {
+      NProgress.done()
+    })
+  })
 }
 
 const getFormattedPath = (path) => {
