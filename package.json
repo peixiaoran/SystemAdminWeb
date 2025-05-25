@@ -17,7 +17,6 @@
     "cors-anywhere": "^0.4.4",
     "dompurify": "^3.0.6",
     "element-plus": "^2.4.3",
-    "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
     "vue": "^3.3.9",

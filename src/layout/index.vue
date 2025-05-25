@@ -185,7 +185,6 @@ import { useUserStore } from '@/stores/user'
 import { useModuleStore } from '@/stores/module'
 import { Fold, Expand, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
-import NProgress from 'nprogress'
 
 const router = useRouter()
 const route = useRoute()
@@ -218,21 +217,15 @@ const handleLanguageChange = (lang) => {
     cachedTabs.value.splice(index, 1)
   }
   
-  // 启动进度条
-  NProgress.start()
-  
   nextTick(() => {
     router.replace('/').then(() => {
       nextTick(() => {
         router.replace(currentPath).then(() => {
           // 完成进度条
-          NProgress.done()
         }).catch(() => {
-          NProgress.done()
         })
       })
     }).catch(() => {
-      NProgress.done()
     })
   })
 }
@@ -358,8 +351,6 @@ const addTab = async (menu) => {
     return
   }
 
-  NProgress.start()
-
   const formattedPath = getFormattedPath(path)
 
   try {
@@ -370,16 +361,11 @@ const addTab = async (menu) => {
     if (hasNoTagMark) {
       activeTabName.value = formattedPath
       activeMenu.value = formattedPath
-      router.push(formattedPath).then(() => {
-        NProgress.done()
-      }).catch(error => {
-        NProgress.done()
-      })
+      router.push(formattedPath)
       return
     }
 
     if (matchedRoute && matchedRoute.matched && matchedRoute.matched.some(record => record.redirect === '')) {
-      NProgress.done()
       return
     }
 
@@ -403,13 +389,9 @@ const addTab = async (menu) => {
 
     activeTabName.value = formattedPath
     activeMenu.value = formattedPath
-    router.push(formattedPath).then(() => {
-      NProgress.done()
-    }).catch(error => {
-      NProgress.done()
-    })
+    router.push(formattedPath)
   } catch (error) {
-    NProgress.done()
+    // 处理导航错误
   }
 }
 
@@ -420,7 +402,6 @@ const handleTabClick = async (tab) => {
 
   saveTabsToStorage()
 
-  NProgress.start()
   await router.push(path)
 }
 
@@ -506,7 +487,7 @@ const refreshSelectedTag = () => {
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
   }
-
+  
   nextTick(() => {
     const currentPath = path
     router.replace('/').then(() => {

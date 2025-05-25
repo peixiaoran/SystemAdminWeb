@@ -1,20 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../layout/index.vue'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
 import { post } from '@/utils/request'
 import { ROUTER_API } from '@/config/api/router/router'
 import { useRouteStore } from '@/stores/route'
 import { markRaw } from 'vue'
-
-// 配置NProgress
-NProgress.configure({ 
-  easing: 'ease', 
-  speed: 500, 
-  showSpinner: false, 
-  trickleSpeed: 200, 
-  minimum: 0.3 
-})
 
 // 路由配置常量
 const ROUTE_CONFIG = {
@@ -396,18 +385,14 @@ export function resetRouter() {
   })
 }
 
-// 设置路由守卫以设置页面标题和进度条
+// 设置路由守卫以设置页面标题
 router.beforeEach(async (to, from, next) => {
-  // 启动进度条
-  NProgress.start()
-  
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
   
   // 检查当前路由是否有空重定向
   if (to.matched.some(record => record.redirect === '')) {
     // 如果有空重定向，则取消导航
-    NProgress.done()
     return next(false)
   }
 
@@ -490,14 +475,12 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach(() => {
-  // 结束进度条
-  NProgress.done()
+  // 路由跳转完成
 })
 
 // 添加错误处理
 router.onError(() => {
-  // 确保发生错误时也结束进度条
-  NProgress.done()
+  // 路由错误处理
 })
 
 // 清除用户数据和缓存的函数
