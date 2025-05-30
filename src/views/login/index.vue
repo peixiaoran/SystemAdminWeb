@@ -164,10 +164,26 @@ const handleLogin = () => {
             const userStore = useUserStore()
             userStore.setToken(res.data)
             
+            // 先清除路由缓存，确保加载最新路由
             clearRoutesCache()
+            
+            // 加载动态路由并跳转
+            console.log('登录成功，开始加载动态路由')
             addDynamicRoutes()
-              .then(() => router.push('/module-select'))
-              .catch(error => console.error(error))
+              .then(success => {
+                if (success) {
+                  console.log('动态路由加载成功，跳转到模块选择页')
+                } else {
+                  console.warn('动态路由加载失败，但仍然继续')
+                }
+                // 无论成功失败，都跳转到模块选择页
+                router.push('/module-select')
+              })
+              .catch(error => {
+                console.error('动态路由加载出错:', error)
+                // 出错仍然跳转
+                router.push('/module-select')
+              })
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }

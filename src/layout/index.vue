@@ -274,19 +274,25 @@ const saveTabsToStorage = () => {
   } catch (error) {}
 }
 
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath, oldPath) => {
   activeMenu.value = newPath
 
-  if ((newPath === moduleStore.moduleIndexPath || newPath === '/') && visitedTabs.value.length > 0) {
-    activeTabName.value = visitedTabs.value[0].path
-    if (newPath !== visitedTabs.value[0].path) {
-      nextTick(() => {
-        router.push(visitedTabs.value[0].path)
-      })
+  // 处理直接导航到模块选择或首页的情况
+  if ((newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select')) {
+    // 如果有保存的标签页，并且是从正常页面导航过来的(非刷新)，才自动跳转到第一个标签页
+    if (visitedTabs.value.length > 0 && oldPath && oldPath !== '/' && oldPath !== '/login') {
+      activeTabName.value = visitedTabs.value[0].path
+      // 只有在非刷新的导航中才自动跳转
+      if (newPath !== visitedTabs.value[0].path) {
+        nextTick(() => {
+          router.push(visitedTabs.value[0].path)
+        })
+      }
     }
     return
   }
 
+  // 正常的路径变化处理
   if (visitedTabs.value.length > 0) {
     const isPathInTabs = visitedTabs.value.some(tab => tab.path === newPath)
     if (isPathInTabs) {
@@ -555,33 +561,40 @@ onMounted(async () => {
   const hasRestoredTabs = restoreTabsFromStorage()
 
   if (hasRestoredTabs) {
-    if ((route.path === moduleStore.moduleIndexPath || route.path === '/') && visitedTabs.value.length > 0) {
+    // 修改逻辑：当前路径不在标签页中，且是系统首页或模块首页时，才自动跳转到第一个标签页
+    const currentPath = route.path
+    const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
+    
+    if (!isCurrentPathInTabs && 
+        (currentPath === moduleStore.moduleIndexPath || 
+         currentPath === '/' || 
+         currentPath === '/module-select') && 
+        visitedTabs.value.length > 0) {
+      // 当前在首页并且没有匹配到标签页，才自动跳转到第一个标签页
       activeTabName.value = visitedTabs.value[0].path
       activeMenu.value = visitedTabs.value[0].path
 
-      if (route.path !== visitedTabs.value[0].path) {
-        nextTick(() => {
-          router.push(visitedTabs.value[0].path)
-        })
-      }
+      nextTick(() => {
+        router.push(visitedTabs.value[0].path)
+      })
       return
     }
 
-    if (!activeTabName.value && visitedTabs.value.length > 0) {
-      activeTabName.value = visitedTabs.value[0].path
-      activeMenu.value = visitedTabs.value[0].path
-    }
-
-    const currentPath = route.path
-    const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
+    // 当前路径已在标签页列表中，直接激活该标签
     if (isCurrentPathInTabs) {
       activeTabName.value = currentPath
       activeMenu.value = currentPath
+    } 
+    // 没有活动标签但有标签页，设置第一个标签为活动标签（但不跳转）
+    else if (!activeTabName.value && visitedTabs.value.length > 0) {
+      activeTabName.value = visitedTabs.value[0].path
+      activeMenu.value = visitedTabs.value[0].path
     }
 
     return
   }
 
+  // 未恢复标签页的情况
   if (route.name && route.meta.title &&
     route.path !== moduleStore.moduleIndexPath &&
     !route.path.includes('/module-select')) {
@@ -618,13 +631,45 @@ const restoreTabsFromStorage = () => {
           return tab
         })
 
-        if (route.path === moduleStore.moduleIndexPath || route.path === '/') {
-          activeTabName.value = storedTabs[0].path
-          activeMenu.value = storedTabs[0].path
+        // 如果当前URL有明确的路径（非首页或模块选择页），优先使用URL的路径
+        const currentPath = route.path
+        const isNotHomePage = currentPath !== '/' && 
+                              currentPath !== '/module-select' && 
+                              currentPath !== moduleStore.moduleIndexPath
+        
+        // 检查当前路径是否在标签页中
+        const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
+        
+        if (isCurrentPathInTabs) {
+          // 当前URL路径在标签页中，优先使用当前路径
+          activeTabName.value = currentPath
+          activeMenu.value = currentPath
+        } else if (isNotHomePage) {
+          // 当前有特定路径但不在标签页中，可能是动态页面
+          // 尝试从路径前缀匹配标签页
+          const matchingTab = visitedTabs.value.find(tab => 
+            currentPath.startsWith(tab.path + '/') || 
+            tab.path.startsWith(currentPath + '/')
+          )
+          
+          if (matchingTab) {
+            activeTabName.value = matchingTab.path
+            activeMenu.value = currentPath // 保持菜单高亮正确
+          } else if (storedActiveName) {
+            // 没有匹配到，使用存储的活动标签
+            activeTabName.value = storedActiveName
+            activeMenu.value = storedActiveName
+          } else {
+            // 都没有匹配到，使用第一个标签
+            activeTabName.value = storedTabs[0].path
+            activeMenu.value = storedTabs[0].path
+          }
         } else if (storedActiveName) {
+          // 在首页或模块选择页，使用存储的活动标签
           activeTabName.value = storedActiveName
           activeMenu.value = storedActiveName
         } else {
+          // 使用第一个标签
           activeTabName.value = storedTabs[0].path
           activeMenu.value = storedTabs[0].path
         }
@@ -636,7 +681,9 @@ const restoreTabsFromStorage = () => {
 
       return true
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error('恢复标签页出错:', error)
+  }
   return false
 }
 
