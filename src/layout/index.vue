@@ -5,7 +5,7 @@
       <div class="logo-container">
         <div class="logo-content" v-if="!isCollapse">
           <img src="/favicon.svg" alt="Logo" class="logo-icon" />
-          <h1 class="logo-text">System Admin</h1>
+          <h1 class="logo-text">Vue Admin</h1>
         </div>
         <img src="/favicon.svg" alt="Logo" class="logo-mini" v-else />
       </div>
@@ -60,7 +60,7 @@
           </div>
           
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
             <el-breadcrumb-item v-if="currentSystemName">{{ currentSystemName }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -104,9 +104,9 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>个人信息</el-dropdown-item>
-                <el-dropdown-item>修改密码</el-dropdown-item>
-                <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
+                <el-dropdown-item>{{ $t('common.personalInfo') }}</el-dropdown-item>
+                <el-dropdown-item>{{ $t('common.changePassword') }}</el-dropdown-item>
+                <el-dropdown-item divided @click="logout">{{ $t('common.logout') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -140,10 +140,10 @@
         
         <!-- 右键菜单 -->
         <div v-show="contextMenuVisible" :style="contextMenuStyle" class="context-menu">
-          <div class="context-menu-item" @click="refreshSelectedTag">刷新页面</div>
-          <div class="context-menu-item" @click="closeSelectedTag">关闭当前标签</div>
-          <div class="context-menu-item" @click="closeOthersTags">关闭其他标签</div>
-          <div class="context-menu-item" @click="closeAllTags">关闭所有标签</div>
+          <div class="context-menu-item" @click="refreshSelectedTag">{{ $t('common.refreshPage') }}</div>
+          <div class="context-menu-item" @click="closeSelectedTag">{{ $t('common.closeCurrentTab') }}</div>
+          <div class="context-menu-item" @click="closeOthersTags">{{ $t('common.closeOtherTabs') }}</div>
+          <div class="context-menu-item" @click="closeAllTags">{{ $t('common.closeAllTabs') }}</div>
         </div>
       </div>
       
@@ -180,8 +180,28 @@ const moduleStore = useModuleStore()
 const { t, locale } = useI18n()
 const isCollapse = ref(false)
 const menuList = ref([])
-const username = ref('管理员')
+const username = ref('')
 const currentSystemName = ref('')
+
+// 标签相关状态
+const activeTabName = ref('')
+const visitedTabs = ref([])
+const cachedTabs = ref([])
+
+// 监听语言变化，更新标签标题
+watch(() => locale.value, () => {
+  // 更新所有标签的标题
+  visitedTabs.value.forEach((tab, index) => {
+    if (tab.titleKey && tab.titleKey.startsWith('route.')) {
+      visitedTabs.value[index].title = t(tab.titleKey)
+    }
+  })
+  // 更新页面标题
+  const currentRoute = router.currentRoute.value
+  if (currentRoute.meta.title) {
+    document.title = t(currentRoute.meta.title) + ' - ' + t('common.systemTitle')
+  }
+}, { immediate: true })
 
 const currentLanguageLabel = computed(() => {
   const languageMap = {
@@ -240,12 +260,57 @@ const isMenuActive = (menuPath) => {
 // 处理菜单选择
 const handleMenuSelect = (index, indexPath) => {
   activeMenu.value = index;
+  
+  // 检查点击的菜单路径是否对应一个标签
+  const isPathInTabs = visitedTabs.value.some(tab => tab.path === index);
+  
+  if (isPathInTabs) {
+    // 如果菜单路径已存在标签，更新活动标签
+    activeTabName.value = index;
+    
+    // 保存当前活动标签到本地存储
+    saveTabsToStorage();
+  } else {
+    // 如果不存在对应标签，尝试获取路由信息
+    const matchedRoute = router.resolve(index);
+    
+    // 检查是否是有效路由且没有noTag标记
+    if (matchedRoute && matchedRoute.matched && matchedRoute.matched.length > 0) {
+      const hasNoTagMark = matchedRoute.meta && matchedRoute.meta.noTag;
+      
+      // 如果路由不应该有标签，则不处理
+      if (hasNoTagMark) {
+        return;
+      }
+      
+      // 获取路由标题和图标
+      const routeTitleKey = matchedRoute.meta?.title || '未命名页面';
+      const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey;
+      const routeIcon = matchedRoute.meta?.icon || 'Document';
+      
+      // 添加新标签
+      visitedTabs.value.push({
+        title: routeTitle,
+        titleKey: routeTitleKey,
+        path: index,
+        icon: routeIcon,
+        name: index.replace(/\//g, '-')
+      });
+      
+      // 添加到缓存列表
+      const componentName = index.replace(/\//g, '-');
+      if (!cachedTabs.value.includes(componentName)) {
+        cachedTabs.value.push(componentName);
+      }
+      
+      // 更新活动标签
+      activeTabName.value = index;
+      
+      // 保存标签状态
+      saveTabsToStorage();
+    }
+  }
 }
-
-// 标签相关状态
-const activeTabName = ref('')
-const visitedTabs = ref([])
-const cachedTabs = ref([])
 
 // 保存标签到本地存储
 const saveTabsToStorage = () => {
@@ -264,6 +329,11 @@ const saveTabsToStorage = () => {
 watch(() => route.path, (newPath, oldPath) => {
   // 始终更新激活的菜单项
   activeMenu.value = newPath
+  
+  // 确保展开对应的菜单
+  nextTick(() => {
+    openMenuForPath(newPath)
+  })
   
   // 处理特殊路径：模块选择或首页
   if (newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select' || newPath === '/login') {
@@ -294,12 +364,14 @@ watch(() => route.path, (newPath, oldPath) => {
       }
       
       // 尝试从路由元数据中获取标题和图标
-      const routeTitle = matchedRoute.meta?.title || '未命名页面'
+      const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
+      const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
       const routeIcon = matchedRoute.meta?.icon || 'Document'
       
       // 添加新标签
       visitedTabs.value.push({
         title: routeTitle,
+        titleKey: routeTitleKey,
         path: newPath,
         icon: routeIcon,
         name: newPath.replace(/\//g, '-')
@@ -394,9 +466,9 @@ const toggleCollapse = () => {
 // 退出登录
 const logout = async () => {
   try {
-    await ElMessageBox.confirm('确定要退出登录吗?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('common.confirmLogout'), t('common.tip'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning'
     })
     
@@ -447,8 +519,9 @@ const addTab = async (menu) => {
       return
     }
     
-    // 从路由元数据中获取标题和图标
-    const routeTitle = matchedRoute.meta?.title || menuName
+    // 从路由元数据中获取标题和图标，并使用i18n翻译
+    const routeTitleKey = matchedRoute.meta?.title || menuName
+    const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : menuName
     const routeIcon = matchedRoute.meta?.icon || menuIcon || 'Document'
     
     // 检查是否已存在相同路径的标签
@@ -457,6 +530,7 @@ const addTab = async (menu) => {
       // 添加新标签
       const newTab = {
         title: routeTitle,
+        titleKey: routeTitleKey,
         path: formattedPath,
         icon: routeIcon,
         name: formattedPath.replace(/\//g, '-')
@@ -469,14 +543,20 @@ const addTab = async (menu) => {
       if (!cachedTabs.value.includes(componentName)) {
         cachedTabs.value.push(componentName)
       }
-      
-      // 保存标签状态到本地存储
-      saveTabsToStorage()
+    } else {
+      // 如果标签已存在，更新标题（可能是因为语言变化）
+      const existingTabIndex = visitedTabs.value.findIndex(tab => tab.path === formattedPath)
+      if (existingTabIndex !== -1) {
+        visitedTabs.value[existingTabIndex].title = routeTitle
+      }
     }
     
     // 设置当前活动标签和菜单
     activeTabName.value = formattedPath
     activeMenu.value = formattedPath
+    
+    // 无论是否是新标签，都保存标签状态到本地存储
+    saveTabsToStorage()
     
     // 跳转到对应路由
     router.push(formattedPath)
@@ -667,10 +747,17 @@ const returnToModuleSelect = () => {
 
 // 在组件挂载后执行
 onMounted(async () => {
-  // 从本地存储获取用户名
-  const storedUsername = localStorage.getItem('username')
-  if (storedUsername) {
-    username.value = storedUsername
+  // 从用户存储或本地存储获取用户名
+  if (userStore.username) {
+    username.value = userStore.username;
+  } else {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      username.value = storedUsername;
+    } else {
+      // 默认用户名
+      username.value = t('moduleSelect.userInfo');
+    }
   }
   
   // 获取当前路径
@@ -683,6 +770,18 @@ onMounted(async () => {
       const { visitedTabs: storedTabs, activeTabName: storedActiveTab, cachedTabs: storedCachedTabs } = JSON.parse(tabsData)
       
       if (Array.isArray(storedTabs) && storedTabs.length > 0) {
+        // 处理存储的标签，确保翻译标题
+        storedTabs.forEach(tab => {
+          // 如果存在titleKey且以route.开头，使用翻译函数处理
+          if (tab.titleKey && tab.titleKey.startsWith('route.')) {
+            tab.title = t(tab.titleKey)
+          } else if (tab.title && typeof tab.title === 'string' && tab.title.startsWith('route.')) {
+            // 对于没有titleKey但title是以route.开头的情况
+            tab.titleKey = tab.title
+            tab.title = t(tab.title)
+          }
+        })
+        
         visitedTabs.value = storedTabs
       }
       
@@ -696,10 +795,12 @@ onMounted(async () => {
         } else if (storedActiveTab) {
           // 当前路径不在标签中，使用存储的活动标签
           activeTabName.value = storedActiveTab
+          activeMenu.value = storedActiveTab
         }
       } else if (storedActiveTab) {
         // 对于特殊路径，使用存储的活动标签
         activeTabName.value = storedActiveTab
+        activeMenu.value = storedActiveTab
       }
       
       if (Array.isArray(storedCachedTabs) && storedCachedTabs.length > 0) {
@@ -720,20 +821,35 @@ onMounted(async () => {
     // 检查当前路径是否在标签中
     const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
     
+    // 获取匹配的路由
+    const matchedRoute = router.resolve(currentPath)
+    
+    // 检查是否有noTag标记
+    const hasNoTagMark = matchedRoute && matchedRoute.meta && matchedRoute.meta.noTag
+    
+    // 如果路由有noTag标记，则不添加标签，只设置活动菜单
+    if (hasNoTagMark) {
+      activeTabName.value = currentPath
+      activeMenu.value = currentPath
+      return
+    }
+    
     if (!isCurrentPathInTabs && activeTabName.value && activeTabName.value !== currentPath) {
       // 当前路径不在标签中，跳转到激活的标签
       router.push(activeTabName.value)
     } else if (!isCurrentPathInTabs) {
       // 如果当前路径不在标签中，且没有激活标签，添加当前路径到标签
-      const matchedRoute = router.resolve(currentPath)
       if (matchedRoute && matchedRoute.name) {
         // 尝试从路由元数据中获取标题和图标
-        const routeTitle = matchedRoute.meta?.title || '未命名页面'
+        const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
+        // 如果标题键以route.开头，使用翻译函数
+        const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
         const routeIcon = matchedRoute.meta?.icon || 'Document'
         
         // 添加新标签
         visitedTabs.value.push({
           title: routeTitle,
+          titleKey: routeTitleKey,
           path: currentPath,
           icon: routeIcon,
           name: currentPath.replace(/\//g, '-')
@@ -753,7 +869,50 @@ onMounted(async () => {
       activeMenu.value = currentPath
     }
   }
+  
+  // 确保在初始化时展开对应的菜单
+  nextTick(() => {
+    openMenuForPath(activeMenu.value)
+  })
 })
+
+// 确保打开对应路径的菜单
+const openMenuForPath = (path) => {
+  if (!path) return;
+  
+  // 尝试找到匹配的菜单项
+  const findAndOpenParentMenu = (items, targetPath) => {
+    for (const item of items) {
+      // 如果当前菜单项有子菜单
+      if (item.menuChildList && item.menuChildList.length > 0) {
+        // 检查子菜单中是否有匹配的路径
+        const hasMatchingChild = item.menuChildList.some(child => 
+          getFormattedPath(child.path) === targetPath ||
+          targetPath.startsWith(getFormattedPath(child.path) + '/')
+        );
+        
+        // 如果在子菜单中找到匹配项，则打开当前菜单
+        if (hasMatchingChild) {
+          // 这里我们仅需要设置activeMenu，el-menu会根据default-active属性自动展开
+          return true;
+        }
+        
+        // 递归检查子菜单
+        if (findAndOpenParentMenu(item.menuChildList, targetPath)) {
+          return true;
+        }
+      } else if (getFormattedPath(item.path) === targetPath) {
+        // 如果当前菜单项路径匹配
+        return true;
+      }
+    }
+    
+    return false;
+  };
+  
+  // 对所有顶级菜单项执行查找
+  findAndOpenParentMenu(menuList.value, path);
+}
 </script>
 
 <style scoped>

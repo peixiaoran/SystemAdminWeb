@@ -20,6 +20,13 @@ export default {
     warning: '警告',
     enter: '进入',
     backToHome: '返回首页',
+    home: '首页',
+    personalInfo: '个人信息',
+    changePassword: '修改密码',
+    refreshPage: '刷新页面',
+    closeCurrentTab: '关闭当前标签',
+    closeOtherTabs: '关闭其他标签',
+    closeAllTabs: '关闭所有标签',
   },
   
   // 登录页
@@ -69,6 +76,26 @@ export default {
     moduleError: '获取模块数据失败',
     moduleErrorRetry: '获取模块数据失败，请稍后重试',
     moduleIncomplete: '模块信息不完整'
+  },
+  
+  // 路由标题
+  route: {
+    login: '登录',
+    moduleSelect: '系统模块',
+    notFound: '404',
+    forbidden: '403',
+    systemBasicmgmt: '系统基础管理',
+    systemMgmt: '系统管理模块',
+    role: '角色资料维护',
+    domain: '网域资料维护',
+    module: '模块资料维护',
+    program: '程序资料维护',
+    roleDomain: '角色网域绑定',
+    roleModule: '角色模块绑定',
+    roleProgram: '角色程序绑定',
+    systemBasicData: '基本资料模块',
+    userInfo: '员工资讯维护',
+    companyInfo: '公司资料维护'
   },
   
   // 系统基础管理

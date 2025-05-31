@@ -5,31 +5,31 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-            <el-form-item label="所属网域">
-              <el-select v-model="filters.domainId" placeholder="请选择网域" style="width:170px" clearable>
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.domain')">
+              <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.domain')" style="width:170px" clearable>
                 <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
               </el-select>
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item label="模块编码">
-              <el-input v-model="filters.menuCode" placeholder="请输入模块编码" style="width:170px" clearable />
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')">
+              <el-input v-model="filters.menuCode" :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.menuCode')" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item label="模块名称">
-              <el-input v-model="filters.menuName" placeholder="请输入模块名称" style="width:170px" clearable />
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuName')">
+              <el-input v-model="filters.menuName" :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.menuName')" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-                查询
+                {{ $t('common.search') }}
               </el-button>
               <el-button @click="handleReset">
-                重置
+                {{ $t('common.reset') }}
               </el-button>
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleAdd">
-                新增模块
+                {{ $t('systemBasicmgmt.systemMgmt.module.addModule') }}
               </el-button>
             </div>
           </el-form>
@@ -47,42 +47,42 @@
                 v-loading="loading"
                 class="conventional-table"
               >
-                <el-table-column type="index" label="序号" width="60" align="center" fixed />
-                <el-table-column prop="menuCode" label="模块代码" align="left" min-width="200" />
-                <el-table-column prop="menuName" label="模块名称" align="left" min-width="170" />
-                <el-table-column prop="roleCode" label="权限标识" align="center" min-width="130" />
-                <el-table-column prop="path" label="页面Path" align="left" min-width="230" />
-                <el-table-column prop="menuIcon" label="模块图标" align="center" min-width="120" />
-                <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
+                <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
+                <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" align="left" min-width="200" />
+                <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.module.menuName')" align="left" min-width="170" />
+                <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" align="center" min-width="130" />
+                <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.module.pagePath')" align="left" min-width="230" />
+                <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')" align="center" min-width="120" />
+                <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="90">
                   <template #default="scope">
                     <div class="flex">
                       <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                        {{ scope.row.isEnabled ? '启用' : '禁用' }}
+                        {{ scope.row.isEnabled ? $t('systemBasicmgmt.systemMgmt.enabled') : $t('systemBasicmgmt.systemMgmt.disabled') }}
                       </el-tag>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="isVisible" label="是否显示" align="center" min-width="90">
+                <el-table-column prop="isVisible" :label="$t('systemBasicmgmt.systemMgmt.isVisible')" align="center" min-width="90">
                   <template #default="scope">
                     <div class="flex">
                       <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                        {{ scope.row.isVisible ? '显示' : '隐藏' }}
+                        {{ scope.row.isVisible ? $t('systemBasicmgmt.systemMgmt.visible') : $t('systemBasicmgmt.systemMgmt.hidden') }}
                       </el-tag>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="createdName" label="创建人" min-width="120" />
-                <el-table-column prop="createdDate" label="创建时间" min-width="180" />
-                <el-table-column label="操作" min-width="150" fixed="right">
+                <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
+                <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
+                <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="150" fixed="right">
                     <template #default="scope">
                       <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                        >编辑</el-button
+                        >{{ $t('common.edit') }}</el-button
                       >
                       <el-button
                         size="small"
                         type="danger"
                         @click="handleDelete(scope.$index, scope.row)"
-                        >删除</el-button
+                        >{{ $t('common.delete') }}</el-button
                       >
                     </template>
                 </el-table-column>
@@ -114,63 +114,63 @@
       >
         <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
           <div class="form-row">
-            <el-form-item label="模块代码">
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')">
               <el-input v-model="editForm.menuCode" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="模块名称" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuName')" >
               <el-input v-model="editForm.menuName" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="所属网域" >
-              <el-select v-model="editForm.domainId" style="width:250px" placeholder="请选择所属网域" clearable>
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.domain')" >
+              <el-select v-model="editForm.domainId" style="width:250px" :placeholder="$t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain')" clearable>
                 <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
               </el-select>
             </el-form-item>
-            <el-form-item label="模块图标" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')" >
               <el-input v-model="editForm.menuIcon" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="模块排序" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.sortOrder')" >
               <el-input v-model.number="editForm.sortOrder" type="number" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="模块URL" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuUrl')" >
               <el-input v-model="editForm.path" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="模块等级" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.level')" >
               <el-input v-model.number="editForm.level" type="number" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="权限标识" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" >
               <el-input v-model="editForm.roleCode" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="页面Path" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.pagePath')" >
               <el-input v-model="editForm.path" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="组件" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.component')" >
               <el-input v-model="editForm.component" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="目标" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.target')" >
               <el-input v-model="editForm.target" style="width:250px"/>
             </el-form-item>
-            <el-form-item label="备注" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')" >
               <el-input v-model="editForm.remarks" style="width:250px" type="textarea"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="是否启用" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" >
               <el-switch
                 v-model="editForm.isEnabled"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
-            <el-form-item label="是否显示" >
+            <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isVisible')" >
               <el-switch
                 v-model="editForm.isVisible"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
@@ -180,8 +180,8 @@
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="handleSave">确定</el-button>
+            <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
           </span>
         </template>
       </el-dialog>
@@ -193,6 +193,9 @@
   import { post } from '@/utils/request'
   import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  
+  const { t } = useI18n()
   
   // 模块数据
   const moduleList = ref([])
@@ -238,7 +241,7 @@
     remarks: ''
   })
   // 对话框标题
-  const dialogTitle = ref('编辑网域信息')
+  const dialogTitle = ref('')
   
   // 在组件挂载后获取日志数据
   onMounted(() => {
@@ -256,7 +259,7 @@
     }
     
     // 如果是新增操作，默认选中第一个模块
-    if (dialogTitle.value === '新增模块' && domainDropList.value.length > 0) {
+    if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.module.addModule') && domainDropList.value.length > 0) {
       editForm.domainId = domainDropList.value[0].domainId
     }
     
@@ -360,7 +363,7 @@
   const insertModule = async () => {
     // 检查必填字段
     if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain'))
       return
     }
     
@@ -374,6 +377,7 @@
     
     if (res && res.code === '200') {
       resetForm()
+      ElMessage.success(res.message)
       fetchModulePages()
     } else {
       ElMessage.error(res.message)
@@ -384,7 +388,7 @@
   const updateModule = async () => {
     // 检查必填字段
     if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain'))
       return
     }
     
@@ -411,7 +415,7 @@
     }
 
     if (isNaN(params.menuId)) {
-      ElMessage.error('无效的模块 ID')
+      ElMessage.error(t('systemBasicmgmt.systemMgmt.invalidId'))
       return
     }
     
@@ -440,7 +444,7 @@
     editForm.isVisible = true
     
     // 设置对话框标题
-    dialogTitle.value = '新增模块'
+    dialogTitle.value = t('systemBasicmgmt.systemMgmt.module.addModule')
     
     // 获取网域类型
     fetchDomainDrop()
@@ -454,7 +458,7 @@
     resetForm()
     
     // 设置对话框标题
-    dialogTitle.value = '编辑网域信息'
+    dialogTitle.value = t('systemBasicmgmt.systemMgmt.module.editModule')
     
     // 获取网域类型
     fetchDomainDrop()
@@ -469,11 +473,11 @@
   // 处理删除操作
   const handleDelete = (index, row) => {
     ElMessageBox.confirm(
-        '确定要删除该条记录吗？',
-        '提示',
+        t('systemBasicmgmt.systemMgmt.module.deleteConfirm'),
+        t('common.tip'),
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
           type: 'warning',
         }
       )
@@ -490,12 +494,12 @@
   // 保存编辑结果
   const handleSave = () => {
     if (!editForm.menuCode || !editForm.menuName) {
-      ElMessage.warning('请填写模块代码和模块名称')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuCode') + ' ' + t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuName'))
       return
     }
 
     if (!editForm.domainId) {
-      ElMessage.warning('请选择所属网域')
+      ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain'))
       return
     }
     

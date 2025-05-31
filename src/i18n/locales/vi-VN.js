@@ -19,6 +19,14 @@ export default {
     tip: 'Mẹo',
     warning: 'Cảnh báo',
     enter: 'Vào',
+    backToHome: 'Trở về trang chủ',
+    home: 'Trang chủ',
+    personalInfo: 'Thông tin cá nhân',
+    changePassword: 'Đổi mật khẩu',
+    refreshPage: 'Làm mới trang',
+    closeCurrentTab: 'Đóng tab hiện tại',
+    closeOtherTabs: 'Đóng các tab khác',
+    closeAllTabs: 'Đóng tất cả tab',
   },
   
   // Trang đăng nhập
@@ -68,6 +76,26 @@ export default {
     moduleError: 'Không thể lấy dữ liệu mô-đun',
     moduleErrorRetry: 'Không thể lấy dữ liệu mô-đun, vui lòng thử lại sau',
     moduleIncomplete: 'Thông tin mô-đun không đầy đủ'
+  },
+  
+  // Tiêu đề định tuyến
+  route: {
+    login: 'Đăng nhập',
+    moduleSelect: 'Mô-đun hệ thống',
+    notFound: '404',
+    forbidden: '403',
+    systemBasicmgmt: 'Quản lý cơ bản hệ thống',
+    systemMgmt: 'Mô-đun quản lý hệ thống',
+    role: 'Quản lý vai trò',
+    domain: 'Quản lý miền',
+    module: 'Quản lý mô-đun',
+    program: 'Quản lý chương trình',
+    roleDomain: 'Liên kết vai trò - miền',
+    roleModule: 'Liên kết vai trò - mô-đun',
+    roleProgram: 'Liên kết vai trò - chương trình',
+    systemBasicData: 'Mô-đun dữ liệu cơ bản',
+    userInfo: 'Quản lý thông tin nhân viên',
+    companyInfo: 'Quản lý thông tin công ty'
   },
   
   // Quản lý cơ bản hệ thống

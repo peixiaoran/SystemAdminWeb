@@ -20,6 +20,13 @@ export default {
     warning: 'Warning',
     enter: 'Enter',
     backToHome: 'Back to Home',
+    home: 'Home',
+    personalInfo: 'Personal Info',
+    changePassword: 'Change Password',
+    refreshPage: 'Refresh Page',
+    closeCurrentTab: 'Close Current Tab',
+    closeOtherTabs: 'Close Other Tabs',
+    closeAllTabs: 'Close All Tabs',
   },
   
   // Login page
@@ -37,7 +44,7 @@ export default {
     usernameRequired: 'Please input username',
     passwordRequired: 'Please input password',
     factoryRequired: 'Please select factory',
-    loginFailed: 'Login failed',
+    loginFailed: 'Login Failed',
     loginFailedTip: 'Login request failed, please try again later',
     factories: {
       ESK: 'Kunshan Yisheng',
@@ -54,14 +61,14 @@ export default {
       MTY: 'Singapore ESONSG'
     },
     languages: {
-      'zh-CN': 'Simplified Chinese',
-      'zh-TW': 'Traditional Chinese',
+      'zh-CN': '中文简体',
+      'zh-TW': '中文繁体',
       'en-US': 'English',
-      'vi-VN': 'Vietnamese'
+      'vi-VN': 'Tiếng Việt'
     }
   },
   
-  // Module selection page
+  // Module select page
   moduleSelect: {
     userInfo: 'Personal Info',
     accountSettings: 'Account Settings',
@@ -69,6 +76,26 @@ export default {
     moduleError: 'Failed to get module data',
     moduleErrorRetry: 'Failed to get module data, please try again later',
     moduleIncomplete: 'Module information is incomplete'
+  },
+  
+  // Route titles
+  route: {
+    login: 'Login',
+    moduleSelect: 'System Modules',
+    notFound: '404',
+    forbidden: '403',
+    systemBasicmgmt: 'System Basic Management',
+    systemMgmt: 'System Management Module',
+    role: 'Role Management',
+    domain: 'Domain Management',
+    module: 'Module Management',
+    program: 'Program Management',
+    roleDomain: 'Role Domain Binding',
+    roleModule: 'Role Module Binding',
+    roleProgram: 'Role Program Binding',
+    systemBasicData: 'Basic Data Module',
+    userInfo: 'User Information',
+    companyInfo: 'Company Information'
   },
   
   // System Basic Management
@@ -82,9 +109,9 @@ export default {
       normal: 'Normal',
       warning: 'Warning',
       danger: 'Danger',
-      cores: 'cores',
-      threads: 'threads',
-      lastMinutes: 'last 15 minutes'
+      cores: 'Cores',
+      threads: 'Threads',
+      lastMinutes: 'Last 15 minutes'
     },
     // Resource Usage Trend
     resourceTrend: {
@@ -93,7 +120,7 @@ export default {
       day: '24 Hours',
       week: '7 Days',
       month: '30 Days',
-      placeholder: 'Resource usage trend chart (actual chart component here)'
+      placeholder: 'Resource usage trend chart (chart component here)'
     },
     // System Information
     systemInfo: {

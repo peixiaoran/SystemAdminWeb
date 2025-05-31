@@ -1,6 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../layout/index.vue'
 import { markRaw } from 'vue'
+import i18n from '../i18n'
+
+// 获取翻译函数
+const { t } = i18n.global
 
 // 路由配置常量
 const ROUTE_CONFIG = {
@@ -13,7 +17,7 @@ const ROUTE_CONFIG = {
   },
   // 路由元信息
   META: {
-    TITLE: 'SystemsAdmin管理系统',
+    TITLE: t('common.systemTitle'),
     AUTH: 'requiresAuth'
   }
 }
@@ -24,14 +28,14 @@ const constantRoutes = [
     path: ROUTE_CONFIG.BASE.LOGIN,
     name: 'Login',
     component: markRaw(() => import('../views/login/index.vue')),
-    meta: { title: '登录' }
+    meta: { title: 'route.login' }
   },
   {
     path: ROUTE_CONFIG.BASE.HOME,
     name: 'ModuleSelect',
     component: markRaw(() => import('../views/module-select/index.vue')),
     meta: { 
-      title: '系统模块', 
+      title: 'route.moduleSelect', 
       [ROUTE_CONFIG.META.AUTH]: true 
     }
   },
@@ -45,13 +49,13 @@ const constantRoutes = [
     path: ROUTE_CONFIG.BASE.ERROR_403,
     name: 'Forbidden',
     component: markRaw(() => import('../views/error/403.vue')),
-    meta: { title: '403' }
+    meta: { title: 'route.forbidden' }
   },
   {
     path: ROUTE_CONFIG.BASE.ERROR_404,
     name: 'NotFound',
     component: markRaw(() => import('../views/error/404.vue')),
-    meta: { title: '404' }
+    meta: { title: 'route.notFound' }
   },
   // 通配符路由
   {
@@ -73,9 +77,10 @@ const moduleRoutes = [
         name: 'SystemBasicmgmtIndex',
         component: markRaw(() => import('../views/systemBasicmgmt/index.vue')),
         meta: { 
-          title: '系统基础管理', 
+          title: 'route.systemBasicmgmt', 
           icon: 'Setting',
-          [ROUTE_CONFIG.META.AUTH]: true
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
         }
       },
       // 系统管理子模块 - 使用嵌套结构
@@ -84,9 +89,10 @@ const moduleRoutes = [
         name: 'SystemMgmt',
         redirect: '/systemBasicmgmt/system-mgmt/role',
         meta: { 
-          title: '系统管理', 
+          title: 'route.systemMgmt', 
           icon: 'Setting',
-          [ROUTE_CONFIG.META.AUTH]: true 
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
         },
         children: [
           {
@@ -94,9 +100,10 @@ const moduleRoutes = [
             name: 'SystemRole',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/role.vue')),
             meta: { 
-              title: '角色管理', 
-              icon: 'User',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.role', 
+              icon: 'Avatar',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -104,9 +111,10 @@ const moduleRoutes = [
             name: 'SystemDomain',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/domain.vue')),
             meta: { 
-              title: '领域管理', 
+              title: 'route.domain', 
               icon: 'Menu',
-              [ROUTE_CONFIG.META.AUTH]: true
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -114,9 +122,10 @@ const moduleRoutes = [
             name: 'SystemModule',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/module.vue')),
             meta: { 
-              title: '模块管理', 
-              icon: 'Monitor',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.module', 
+              icon: 'Operation',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -124,9 +133,10 @@ const moduleRoutes = [
             name: 'SystemProgram',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/program.vue')),
             meta: { 
-              title: '程序管理', 
-              icon: 'Document',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.program', 
+              icon: 'Share',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -134,9 +144,10 @@ const moduleRoutes = [
             name: 'SystemRoleDomain',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/roledomain.vue')),
             meta: { 
-              title: '角色领域关系', 
-              icon: 'Connection',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.roleDomain', 
+              icon: 'MoreFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -144,9 +155,10 @@ const moduleRoutes = [
             name: 'SystemRoleModule',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/rolemodule.vue')),
             meta: { 
-              title: '角色模块关系', 
-              icon: 'Connection',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.roleModule', 
+              icon: 'MoreFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -154,9 +166,10 @@ const moduleRoutes = [
             name: 'SystemRoleProgram',
             component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/roleprogram.vue')),
             meta: { 
-              title: '角色程序关系', 
-              icon: 'Connection',
-              [ROUTE_CONFIG.META.AUTH]: true
+              title: 'route.roleProgram', 
+              icon: 'MoreFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           }
         ]
@@ -167,9 +180,10 @@ const moduleRoutes = [
         name: 'SystemBasicData',
         redirect: '/systemBasicmgmt/system-basicdata/userinfo',
         meta: { 
-          title: '基础数据管理',
-          icon: 'DataAnalysis',
-          [ROUTE_CONFIG.META.AUTH]: true 
+          title: 'route.systemBasicData',
+          icon: 'List',
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
         },
         children: [
           {
@@ -177,9 +191,10 @@ const moduleRoutes = [
             name: 'SystemUserInfo',
             component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue')),
             meta: { 
-              title: '用户信息', 
+              title: 'route.userInfo', 
               icon: 'UserFilled',
-              [ROUTE_CONFIG.META.AUTH]: true
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           },
           {
@@ -187,9 +202,10 @@ const moduleRoutes = [
             name: 'SystemCompanyInfo',
             component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/companyinfo.vue')),
             meta: { 
-              title: '公司信息', 
+              title: 'route.companyInfo', 
               icon: 'Discount',
-              [ROUTE_CONFIG.META.AUTH]: true
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
             }
           }
         ]
@@ -209,7 +225,8 @@ const router = createRouter({
 // 设置路由守卫
 router.beforeEach((to, from, next) => {
   // 设置页面标题
-  document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
+  const translatedTitle = to.meta.title ? t(to.meta.title) : '';
+  document.title = translatedTitle ? `${translatedTitle} - ${t('common.systemTitle')}` : t('common.systemTitle');
   
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {

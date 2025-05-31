@@ -8,7 +8,7 @@ export default {
     delete: '刪除',
     edit: '編輯',
     add: '添加',
-    search: '搜索',
+    search: '搜尋',
     reset: '重置',
     success: '成功',
     failed: '失敗',
@@ -19,6 +19,14 @@ export default {
     tip: '提示',
     warning: '警告',
     enter: '進入',
+    backToHome: '返回首頁',
+    home: '首頁',
+    personalInfo: '個人信息',
+    changePassword: '修改密碼',
+    refreshPage: '刷新頁面',
+    closeCurrentTab: '關閉當前標籤',
+    closeOtherTabs: '關閉其他標籤',
+    closeAllTabs: '關閉所有標籤',
   },
   
   // 登录页
@@ -68,6 +76,26 @@ export default {
     moduleError: '獲取模塊數據失敗',
     moduleErrorRetry: '獲取模塊數據失敗，請稍後重試',
     moduleIncomplete: '模塊信息不完整'
+  },
+  
+  // 路由標題
+  route: {
+    login: '登錄',
+    moduleSelect: '系統模塊',
+    notFound: '404',
+    forbidden: '403',
+    systemBasicmgmt: '系統基礎管理',
+    systemMgmt: '系統管理模組',
+    role: '角色資料維護',
+    domain: '網域資料維護',
+    module: '模塊資料維護',
+    program: '程式資料維護',
+    roleDomain: '角色網域綁定',
+    roleModule: '角色模組綁定',
+    roleProgram: '角色程式綁定',
+    systemBasicData: '基本資料模組',
+    userInfo: '員工資訊維護',
+    companyInfo: '公司資料維護'
   },
   
   // 系統基礎管理

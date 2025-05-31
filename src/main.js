@@ -6,6 +6,7 @@ import router from './router'
 import './assets/main.css'
 import pinia from './stores'
 import i18n from './i18n'
+import { updateRouteTitle } from './utils/updateRouteTitle'
 
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-CN'
@@ -26,12 +27,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-// 根据当前语言设置标题 - 确保在i18n初始化后调用
-const setDocumentTitle = () => {
-  const title = i18n.global.t('common.systemTitle')
-  document.title = title
-}
-
 // 检查用户是否已登录，如果已登录则添加动态路由
 const token = localStorage.getItem('token')
 if (token) {
@@ -39,8 +34,11 @@ if (token) {
   console.log('检测到用户已登录')
 }
 
-// 设置标题 - 确保在i18n初始化后调用
-setDocumentTitle()
-
-// 挂载应用
-app.mount('#app') 
+// 等待路由就绪后初始化标题
+router.isReady().then(() => {
+  // 初始化标题
+  updateRouteTitle()
+  
+  // 挂载应用
+  app.mount('#app')
+}) 

@@ -21,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { updateRouteTitle } from '@/utils/updateRouteTitle'
 
 const { t, locale } = useI18n()
 
@@ -45,8 +46,8 @@ const handleCommand = (command) => {
     locale.value = command
     localStorage.setItem('language', command)
     
-    // 更新标题
-    document.title = t('common.systemTitle')
+    // 更新路由标题
+    updateRouteTitle()
   }
 }
 </script>
