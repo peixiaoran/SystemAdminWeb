@@ -38,7 +38,7 @@ const constantRoutes = [
       [ROUTE_CONFIG.META.AUTH]: true 
     }
   },
-  // 添加重定向路由，确保/路径指向模块选择页面
+  // 根路由重定向 - 仅用于正常导航，不干扰刷新时的路由恢复
   {
     path: '/',
     redirect: ROUTE_CONFIG.BASE.HOME
@@ -58,11 +58,14 @@ const constantRoutes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: to => {
-      // 将所有未匹配的路由重定向到登录页面，并清空缓存
-      clearUserDataAndCache();
-      return { 
-        path: ROUTE_CONFIG.BASE.LOGIN
+    redirect: () => {
+      // 简化通配符路由的重定向逻辑
+      const token = localStorage.getItem('token')
+      if (token) {
+        return { path: ROUTE_CONFIG.BASE.HOME }
+      } else {
+        clearUserDataAndCache();
+        return { path: ROUTE_CONFIG.BASE.LOGIN }
       }
     }
   }
@@ -71,9 +74,11 @@ const constantRoutes = [
 // 定义动态路由 - 这些路由需要在用户登录后才能访问
 // 这个是备用的静态路由，在动态路由加载失败时使用
 const asyncRoutes = [
-  
-  
+  // 这里可以添加一些备用路由
 ]
+
+// 检查是否为刷新操作的标志
+let isPageRefresh = true;
 
 // 创建路由实例，初始只包含基础路由
 const router = createRouter({
@@ -101,6 +106,7 @@ function hasCachedRoutes() {
       }
     }
   } catch (e) {
+    console.error('Error checking cached routes:', e)
   }
   return false
 }
@@ -116,6 +122,7 @@ function getRoutesFromStorage() {
       }
     }
   } catch (e) {
+    console.error('Error getting routes from storage:', e)
   }
   return null
 }
@@ -135,7 +142,12 @@ function saveRoutesToStorage(routes) {
     // 更新内存缓存
     cachedRoutes = routes
     cachedRoutesTimestamp = now
+    
+    // 更新Pinia store
+    const routeStore = useRouteStore()
+    routeStore.setRoutes(routes)
   } catch (e) {
+    console.error('Error saving routes to storage:', e)
   }
 }
 
@@ -145,143 +157,84 @@ export async function addDynamicRoutes() {
     // 首先移除所有已添加的动态路由，防止重复
     resetRouter()
     
-    // 首先尝试从缓存中获取路由数据
+    // 尝试从内存缓存中获取路由数据
     if (cachedRoutes) {
       const dynamicRoutes = parseRouteData(cachedRoutes)
-      
-      // 将Layout作为根路由
-      const layoutRoute = {
-        path: '/',
-        name: 'LayoutContainer', // 修改名称避免重复
-        component: markRaw(Layout),
-        meta: { 
-          [ROUTE_CONFIG.META.AUTH]: true 
-        },
-        children: dynamicRoutes
-      }
-      
-      // 添加到路由
-      router.addRoute(layoutRoute)
+      addLayoutRouteWithChildren(dynamicRoutes)
       return true
     }
     
-    // 其次尝试从localStorage获取
+    // 尝试从localStorage获取
     if (hasCachedRoutes()) {
       const storedRoutes = getRoutesFromStorage()
-      
       if (storedRoutes && storedRoutes.length > 0) {
         try {
           const dynamicRoutes = parseRouteData(storedRoutes)
-          
-          // 将Layout作为根路由
-          const layoutRoute = {
-            path: '/',
-            name: 'LayoutContainer', // 修改名称避免重复
-            component: markRaw(Layout),
-            meta: { 
-              [ROUTE_CONFIG.META.AUTH]: true 
-            },
-            children: dynamicRoutes
-          }
-          
-          // 添加到路由
-          router.addRoute(layoutRoute)
+          addLayoutRouteWithChildren(dynamicRoutes)
           
           // 更新内存缓存
           cachedRoutes = storedRoutes
-          
           return true
         } catch (error) {
-          // 清除无效的缓存数据
+          console.error('Error parsing stored routes:', error)
           clearRoutesCache()
-          // 继续执行，从API获取
         }
       }
     }
     
-    // 最后尝试从API获取
+    // 从API获取
     try {
       const res = await post(ROUTER_API.GET_ROUTER)
       
       if (res && res.code === '200') {
-        // 适应新格式：API现在返回的是 { data: {路由对象}, code: "200", message: "" }
-        // 而不是直接返回路由数组
         let routeData = null
         
-        // 检查响应格式
         if (res.data && res.data.children && Array.isArray(res.data.children)) {
-          // 新格式：使用res.data中的路由对象
           routeData = res.data.children
         } else if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-          // 旧格式：直接使用res.data数组（兼容旧版本）
           routeData = res.data
         } else {
+          console.warn('API returned invalid route data structure')
           addStaticRoutes()
           return false
         }
         
         try {
-          // 获取到动态路由数据，解析并添加到路由中
           const dynamicRoutes = parseRouteData(routeData)
-          
-          // 将Layout作为根路由
-          const layoutRoute = {
-            path: '/',
-            name: 'LayoutContainer', // 修改名称避免重复
-            component: markRaw(Layout),
-            meta: { 
-              [ROUTE_CONFIG.META.AUTH]: true 
-            },
-            children: dynamicRoutes
-          }
-          
-          // 添加到路由
-          router.addRoute(layoutRoute)
+          addLayoutRouteWithChildren(dynamicRoutes)
           
           // 保存到缓存
           saveRoutesToStorage(routeData)
-          
           return true
         } catch (error) {
+          console.error('Error parsing API route data:', error)
           addStaticRoutes()
           return false
         }
       } else {
-        // 如果接口请求失败，退回使用静态路由
+        console.error('API returned non-200 code:', res?.code)
         addStaticRoutes()
         return false
       }
     } catch (error) {
-      // 如果API请求出错，尝试使用route-store中的数据作为备份
+      console.error('API request failed:', error)
+      
+      // 尝试使用route-store中的数据作为备份
       try {
         const routeStoreData = localStorage.getItem('route-store')
         if (routeStoreData) {
           const parsedData = JSON.parse(routeStoreData)
-          if (parsedData && parsedData.routes && Array.isArray(parsedData.routes) && parsedData.routes.length > 0) {
+          if (parsedData && parsedData.routes) {
             const dynamicRoutes = parseRouteData(parsedData.routes)
-            
-            // 将Layout作为根路由
-            const layoutRoute = {
-              path: '/',
-              name: 'LayoutContainer', // 修改名称避免重复
-              component: markRaw(Layout),
-              meta: { 
-                [ROUTE_CONFIG.META.AUTH]: true 
-              },
-              children: dynamicRoutes
-            }
-            
-            // 添加到路由
-            router.addRoute(layoutRoute)
+            addLayoutRouteWithChildren(dynamicRoutes)
             
             // 更新内存缓存
             cachedRoutes = parsedData.routes
-            
             return true
           }
         }
       } catch (backupError) {
-        // 如果备份恢复也失败，使用静态路由
+        console.error('Backup route recovery failed:', backupError)
       }
       
       // 最后使用静态路由
@@ -289,9 +242,25 @@ export async function addDynamicRoutes() {
       return false
     }
   } catch (error) {
+    console.error('Unexpected error in addDynamicRoutes:', error)
     addStaticRoutes()
     return false
   }
+}
+
+// 添加带有Layout父路由的路由
+function addLayoutRouteWithChildren(childrenRoutes) {
+  const layoutRoute = {
+    path: '/',
+    name: 'LayoutContainer',
+    component: markRaw(Layout),
+    meta: { 
+      [ROUTE_CONFIG.META.AUTH]: true 
+    },
+    children: childrenRoutes
+  }
+  
+  router.addRoute(layoutRoute)
 }
 
 // 清除路由缓存
@@ -300,60 +269,44 @@ export function clearRoutesCache() {
     localStorage.removeItem('route-store')
     cachedRoutes = null
     cachedRoutesTimestamp = null
+    
+    // 更新Pinia store
+    const routeStore = useRouteStore()
+    routeStore.clearRoutes()
   } catch (e) {
+    console.error('Error clearing route cache:', e)
   }
 }
 
 // 解析路由数据函数
 function parseRouteData(routeData) {
   return routeData.map(route => {
-    // 检查路由名称是否已经存在，如果存在则添加前缀避免冲突
-    const routeName = route.name || '';
-    
-    // 构建路由对象
     const routeConfig = {
       path: route.path,
-      name: routeName ? `dynamic_${routeName}` : undefined, // 添加前缀避免冲突
+      name: route.name ? `dynamic_${route.name}` : undefined,
       meta: {
-        ...route.meta, // 首先复制所有原始meta属性
+        ...route.meta,
         title: route.meta?.title || route.name,
         [ROUTE_CONFIG.META.AUTH]: true,
-        // 确保noTag字段被正确处理
         noTag: route.meta?.noTag !== undefined ? route.meta.noTag : null
       }
     }
     
-    // 处理重定向
     if (route.redirect) {
       routeConfig.redirect = route.redirect
     }
     
-    // 处理组件
     if (route.component) {
       try {
-        // 使用动态导入并应用markRaw
-        const componentPath = route.component;
-        routeConfig.component = markRaw(() => {
-          // 使用@vite-ignore注释忽略Vite的动态导入警告
-          return import(/* @vite-ignore */ `../views/${componentPath}`);
-        });
+        routeConfig.component = markRaw(() => import(/* @vite-ignore */ `../views/${route.component}`))
       } catch (error) {
-        // 返回一个空组件，它会自动重定向到登录页面
+        console.error(`Error loading component for route ${route.path}:`, error)
         routeConfig.component = markRaw({
-          render() {
-            // 清除用户数据和缓存
-            clearUserDataAndCache();
-            // 在组件渲染时重定向到登录页面
-            router.replace({
-              path: ROUTE_CONFIG.BASE.LOGIN
-            });
-            return null;
-          }
-        });
+          template: '<div>Component load error</div>'
+        })
       }
     }
     
-    // 递归处理子路由
     if (route.children && route.children.length > 0) {
       routeConfig.children = parseRouteData(route.children)
     }
@@ -362,9 +315,8 @@ function parseRouteData(routeData) {
   })
 }
 
-// 添加静态路由的方法（原方法，作为备用）
+// 添加静态路由的方法
 export function addStaticRoutes() {
-  // 移除所有已添加的动态路由，防止重复
   resetRouter()
   
   asyncRoutes.forEach(route => {
@@ -374,9 +326,13 @@ export function addStaticRoutes() {
 
 // 重置路由
 export function resetRouter() {
+  // 获取当前所有路由
+  const currentRoutes = router.getRoutes()
+  
   // 移除所有动态添加的路由
-  router.getRoutes().forEach(route => {
-    if (route.name && route.name !== 'Login' && 
+  currentRoutes.forEach(route => {
+    if (route.name && 
+        route.name !== 'Login' && 
         route.name !== 'ModuleSelect' && 
         route.name !== 'Forbidden' && 
         route.name !== 'NotFound') {
@@ -385,92 +341,113 @@ export function resetRouter() {
   })
 }
 
-// 设置路由守卫以设置页面标题和进度条
+// 设置路由守卫
 router.beforeEach(async (to, from, next) => {
+  // 检查是否是刷新操作（from路径为空表示刷新）
+  const isRefresh = from.path === '';
+  
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - ${ROUTE_CONFIG.META.TITLE}` : ROUTE_CONFIG.META.TITLE
   
-  // 检查当前路由是否有空重定向
-  if (to.matched.some(record => record.redirect === '')) {
-    // 如果有空重定向，则取消导航
-    return next(false)
-  }
-
-  // 检查是否需要鉴权
-  if (to.matched.some(record => record.meta[ROUTE_CONFIG.META.AUTH])) {
+  // 如果当前是页面首次加载或刷新
+  if (isPageRefresh) {
+    // 重置刷新标志，以便后续导航不被视为刷新
+    isPageRefresh = false;
+    
+    // 保存原始访问路径，将用于后续恢复
+    const originalPath = to.fullPath || to.path;
+    
     // 检查是否已登录
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
     if (token) {
-      // 处理页面刷新时路由丢失的问题
-      if (to.matched.length === 0) {
+      // 尝试恢复标签页和路由状态
+      console.log('检测到页面刷新，尝试恢复路由状态，原始路径:', originalPath);
+      
+      // 如果是刷新到module-select页面，先检查是否有保存的标签页
+      if (to.path === '/module-select' || to.path === '/') {
+        // 尝试从localStorage获取上次访问的页面
         try {
-          // 尝试重新添加动态路由
-          const routesAdded = await addDynamicRoutes()
-          
-          if (routesAdded) {
-            // 再次检查路由匹配
-            const matchedRoute = router.resolve(to.path)
-            if (matchedRoute && matchedRoute.matched && matchedRoute.matched.length > 0) {
-              // 路由存在，可以直接进入，使用replace:true确保不留下重复历史记录
-              return next({ path: to.fullPath, replace: true })
-            } else {
-              // 尝试特殊处理：可能是缓存的路由数据不完整，尝试从API刷新
-              try {
-                // 清除路由缓存（但不清除用户数据）
-                clearRoutesCache()
-                // 尝试从API强制刷新路由
-                const refreshSuccess = await refreshRoutesFromAPI()
-                if (refreshSuccess) {
-                  // 再次检查路由
-                  const refreshedMatch = router.resolve(to.path)
-                  if (refreshedMatch && refreshedMatch.matched && refreshedMatch.matched.length > 0) {
-                    // 路由存在，可以进入
-                    return next({ path: to.fullPath, replace: true })
-                  }
-                }
-              } catch (refreshError) {
-                // 刷新失败，回退到登录
-              }
+          const tabsStore = localStorage.getItem('tabs-store');
+          if (tabsStore) {
+            const tabsData = JSON.parse(tabsStore);
+            // 如果有保存的活动标签且不是module-select
+            if (tabsData && tabsData.activeTabName && 
+                tabsData.activeTabName !== '/module-select' && 
+                tabsData.visitedTabs && 
+                tabsData.visitedTabs.length > 0) {
               
-              // 如果特殊处理也无效，则清除缓存并重定向到登录页面
-              clearUserDataAndCache()
-              return next({ 
-                path: ROUTE_CONFIG.BASE.LOGIN
-              })
+              // 先添加动态路由
+              await addDynamicRoutes();
+              
+              // 然后导航到保存的标签页
+              console.log('检测到保存的标签页，尝试恢复到:', tabsData.activeTabName);
+              return next({ path: tabsData.activeTabName, replace: true });
             }
-          } else {
-            // 动态路由添加失败，清除缓存并重定向到登录页面
-            clearUserDataAndCache()
-            return next({ 
-              path: ROUTE_CONFIG.BASE.LOGIN
-            })
           }
-        } catch (error) {
-          // 出错时清除缓存并重定向到登录页面
-          clearUserDataAndCache()
-          return next({ 
-            path: ROUTE_CONFIG.BASE.LOGIN
-          })
+        } catch (e) {
+          console.error('恢复标签页出错:', e);
         }
-      } else {
-        // 处理模块index页面的访问
-        const path = to.path
-        if (path.includes('/index')) {
-          // 如果是模块的index页面，直接放行
-          next()
-          return
+      }
+      
+      // 尝试添加动态路由
+      try {
+        console.log('尝试恢复动态路由');
+        const routesAdded = await addDynamicRoutes();
+        
+        if (routesAdded) {
+          // 动态路由添加成功
+          console.log('动态路由恢复成功，继续导航');
+          return next();
+        } else {
+          // 动态路由添加失败，但仍然尝试继续导航
+          console.warn('动态路由恢复失败，但仍继续导航');
+          return next();
         }
-        next()
+      } catch (error) {
+        console.error('动态路由恢复错误:', error);
+        return next();
       }
     } else {
-      // 未登录则重定向到登录页
-      next({
-        path: ROUTE_CONFIG.BASE.LOGIN
-      })
+      // 未登录且需要鉴权的页面，重定向到登录页
+      if (to.matched.some(record => record.meta[ROUTE_CONFIG.META.AUTH])) {
+        return next({ path: ROUTE_CONFIG.BASE.LOGIN, replace: true });
+      }
+      // 其他情况继续导航
+      return next();
+    }
+  }
+  
+  // 非刷新导航的处理 (正常的路由切换)
+  if (to.matched.some(record => record.meta[ROUTE_CONFIG.META.AUTH])) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // 已登录，检查路由是否存在
+      if (to.matched.length === 0) {
+        console.log('路由不存在，尝试添加动态路由');
+        try {
+          const routesAdded = await addDynamicRoutes();
+          if (routesAdded) {
+            // 重新导航（会再次触发路由守卫）
+            return next({ path: to.fullPath, replace: true });
+          } else {
+            console.warn('动态路由添加失败，导航到模块选择页');
+            return next({ path: ROUTE_CONFIG.BASE.HOME, replace: true });
+          }
+        } catch (error) {
+          console.error('动态路由添加出错:', error);
+          return next({ path: ROUTE_CONFIG.BASE.HOME, replace: true });
+        }
+      } else {
+        // 路由存在，直接导航
+        return next();
+      }
+    } else {
+      // 未登录，重定向到登录页
+      return next({ path: ROUTE_CONFIG.BASE.LOGIN, replace: true });
     }
   } else {
     // 不需要鉴权的页面直接放行
-    next()
+    return next();
   }
 })
 
@@ -485,19 +462,12 @@ router.onError(() => {
 
 // 清除用户数据和缓存的函数
 function clearUserDataAndCache() {
-  // 清除token
   localStorage.removeItem('token')
-  
-  // 清除路由缓存
   clearRoutesCache()
-  
-  // 清除模块信息
   localStorage.removeItem('currentDomainId')
   localStorage.removeItem('currentSystemName')
   localStorage.removeItem('currentSystemPath')
   localStorage.removeItem('module-store')
-  
-  // 清除标签缓存
   localStorage.removeItem('tabs-store')
 }
 
@@ -507,60 +477,35 @@ export { addDynamicRoutes as addRoutes }
 // 从API强制刷新路由数据
 export async function refreshRoutesFromAPI() {
   try {
-    // 请求新的路由数据
     const res = await post(ROUTER_API.GET_ROUTER)
     
     if (res && res.code === '200') {
-      // 适应新格式：API现在返回的是 { data: {路由对象}, code: "200", message: "" }
-      // 而不是直接返回路由数组
       let routeData = null
       
-      // 检查响应格式
       if (res.data && res.data.children && Array.isArray(res.data.children)) {
-        // 新格式：使用res.data中的路由对象
         routeData = res.data.children
       } else if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-        // 旧格式：直接使用res.data数组（兼容旧版本）
         routeData = res.data
       } else {
         return false
       }
       
-      // 先重置路由
+      // 重置路由
       resetRouter()
       
-      // 解析并添加新路由
       const dynamicRoutes = parseRouteData(routeData)
       
-      // 将Layout作为根路由
-      const layoutRoute = {
-        path: '/',
-        name: 'LayoutContainer',
-        component: markRaw(Layout),
-        meta: { 
-          [ROUTE_CONFIG.META.AUTH]: true 
-        },
-        children: dynamicRoutes
-      }
+      // 创建并添加Layout父路由
+      addLayoutRouteWithChildren(dynamicRoutes)
       
-      // 添加到路由
-      router.addRoute(layoutRoute)
-      
-      // 保存到缓存 - 保存children数组或原始数据
+      // 保存到缓存
       saveRoutesToStorage(routeData)
-      
-      // 更新Pinia store
-      try {
-        const routeStore = useRouteStore()
-        routeStore.setRoutes(routeData)
-      } catch (storeError) {
-        // Pinia store可能还未初始化
-      }
       
       return true
     }
     return false
   } catch (error) {
+    console.error('Error refreshing routes from API:', error)
     return false
   }
 }

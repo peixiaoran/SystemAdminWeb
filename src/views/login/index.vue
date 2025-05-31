@@ -196,25 +196,26 @@ const handleLogin = () => {
             // 设置token
             userStore.setToken(res.data)
             
-            // 清除现有路由缓存
+            // 先清除路由缓存，确保加载最新路由
             clearRoutesCache()
             
-            // 登录成功后添加动态路由
-            addDynamicRoutes().then(success => {
-              if (success) {
-                // 确保路由加载成功
-                const routeStore = useRouteStore()
-                // 强制更新路由状态
-                if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-                  routeStore.setRoutes(res.data)
+            // 加载动态路由并跳转
+            console.log('登录成功，开始加载动态路由')
+            addDynamicRoutes()
+              .then(success => {
+                if (success) {
+                  console.log('动态路由加载成功，跳转到模块选择页')
+                } else {
+                  console.warn('动态路由加载失败，但仍然继续')
                 }
-              } else {
-                console.log('路由加载出现问题')
-              }
-              router.push('/module-select')
-            }).catch(error => {
-              console.log(error)
-            })
+                // 无论成功失败，都跳转到模块选择页
+                router.push('/module-select')
+              })
+              .catch(error => {
+                console.error('动态路由加载出错:', error)
+                // 出错仍然跳转
+                router.push('/module-select')
+              })
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }

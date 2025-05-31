@@ -35,7 +35,12 @@ export default defineConfig(({ command, mode }) => {
       terserOptions: {
         compress: {
           drop_console: env.PROD === 'true', // 生产环境删除console
-          drop_debugger: env.PROD === 'true' // 生产环境删除debugger
+          drop_debugger: env.PROD === 'true', // 生产环境删除debugger
+          pure_funcs: env.PROD === 'true' ? ['console.log'] : [] // 生产环境删除console.log
+        },
+        mangle: {
+          // 防止i18n相关变量名被混淆
+          reserved: ['$t', 'i18n', 't', 'locale']
         }
       },
       // CSS相关优化
@@ -65,6 +70,11 @@ export default defineConfig(({ command, mode }) => {
               // element-plus和图标库整体打包在一起
               if (id.includes('element-plus') || id.includes('@element-plus')) {
                 return 'element-plus';
+              }
+              
+              // i18n单独打包确保不被错误优化
+              if (id.includes('vue-i18n')) {
+                return 'i18n';
               }
               
               // axios
