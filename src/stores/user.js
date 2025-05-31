@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { resetRouter, clearRoutesCache } from '@/router'
 
 // 用户信息存储
 export const useUserStore = defineStore('user', {
@@ -47,14 +46,7 @@ export const useUserStore = defineStore('user', {
     // 登出
     async logout() {
       try {
-        // 清除路由缓存
-        clearRoutesCache()
-        
-        // 重置路由
-        resetRouter()
-        
-        // 这里可以添加登出API调用
-        // const res = await post('logout')
+        // 路由现在是静态的，不需要清除路由缓存和重置路由
         
         // 清除本地存储
         localStorage.removeItem('token')

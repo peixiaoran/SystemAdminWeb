@@ -78,7 +78,6 @@ import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
 import { useModuleStore } from '@/stores/module'
-import { addRoutes } from '@/router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
@@ -131,15 +130,15 @@ const enterModule = (module) => {
   // 获取模块标识符（用于构建路由路径）
   const moduleIdentifier = module.path.split('/').filter(Boolean)[0] // 提取模块标识符
   
-  // 使用新的模块存储来保存模块信息
+  // 使用模块存储来保存模块信息
   moduleStore.setCurrentModule(
     String(module.domainId), 
     module.domainName, 
     moduleIdentifier
   )
   
-  // 确保添加动态路由
-  addRoutes()
+  // 所有路由都已静态定义，直接跳转
+  console.log('进入模块:', moduleIdentifier)
   
   // 跳转到对应模块的index首页
   router.push(`/${moduleIdentifier}/index`)

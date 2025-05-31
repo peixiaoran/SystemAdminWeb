@@ -1,0 +1,73 @@
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #409eff;
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+/* 解决侧边栏上方进度条消失问题 */
+.el-aside .nprogress-bar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 1031;
+}
+
+.el-aside .nprogress-bar-container .nprogress-bar {
+  background: #409eff;
+  height: 100%;
+  width: 0;
+  transition: width 0.2s ease;
+}
+
+/* 主内容区域的进度条 */
+.main-container .nprogress-bar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 1031;
+}
+
+.main-container .nprogress-bar-container .nprogress-bar {
+  background: #409eff;
+  height: 100%;
+  width: 0;
+  transition: width 0.2s ease;
+}
+
+/* 消除NProgress原有的模糊效果 */
+#nprogress .peg {
+  display: none;
+}
+
+/* 进度条容器 */
+.nprogress-container {
+  position: relative;
+  width: 100%;
+}
+
+/* 修复布局中的进度条显示 */
+.app-container {
+  position: relative;
+}
+
+/* 确保所有区域的进度条都在固定位置 */
+.el-aside, .el-main, .el-header {
+  position: relative;
+}
+
+.el-header .nprogress-bar-container {
+  bottom: 0;
+  top: auto;
+} 

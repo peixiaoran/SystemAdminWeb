@@ -2,8 +2,9 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
-import router, { addDynamicRoutes } from './router'
+import router from './router'
 import './assets/main.css'
+import './assets/nprogress.css'  // 引入自定义NProgress样式
 import pinia from './stores'
 import i18n from './i18n'
 
@@ -35,19 +36,8 @@ const setDocumentTitle = () => {
 // 检查用户是否已登录，如果已登录则添加动态路由
 const token = localStorage.getItem('token')
 if (token) {
-  // 使用最简单的方式加载路由，避免任何复杂的嵌套
-  console.log('检测到用户已登录，开始加载动态路由')
-  addDynamicRoutes()
-    .then(success => {
-      if (success) {
-        console.log('动态路由加载成功')
-      } else {
-        console.warn('动态路由加载失败，使用静态路由')
-      }
-    })
-    .catch(error => {
-      console.error('路由加载出错:', error)
-    })
+  // 简单记录用户已登录状态，所有路由都已在router/index.js中静态定义
+  console.log('检测到用户已登录')
 }
 
 // 设置标题 - 确保在i18n初始化后调用

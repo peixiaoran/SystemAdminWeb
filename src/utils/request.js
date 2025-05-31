@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
+import { startProgress, endProgress } from '../plugins/nprogress'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -17,6 +18,9 @@ const handleLogout = () => {
 // 请求拦截器
 service.interceptors.request.use(
   config => {
+    // 开始进度条
+    startProgress()
+    
     // 获取当前请求的URL路径
     const requestPath = config.url
     
@@ -42,6 +46,8 @@ service.interceptors.request.use(
     return config
   },
   error => {
+    // 结束进度条
+    endProgress()
     return Promise.reject(error)
   }
 )
@@ -49,10 +55,16 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
+    // 结束进度条
+    endProgress()
+    
     // 移除XSS清洗，直接返回数据
     return response.data
   },
   error => {
+    // 结束进度条
+    endProgress()
+    
     // 直接返回错误，让具体的请求处理函数处理错误
     return Promise.reject(error)
   }
