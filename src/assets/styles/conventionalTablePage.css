@@ -188,42 +188,49 @@
   align-items: center;
 }
 
-/* 表格和分页的整体容器 - 优化样式 */
-.table-pagination-container {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 225px);
-  min-height: 500px;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  margin-top: 10px;
-}
-
 /* 表格包装器 - 优化样式 */
 .table-wrapper {
-  flex: 1;
-  overflow: auto;
-  min-height: 200px;
+  height: calc(100vh - 310px);
+  min-height: 300px;
   position: relative;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  overflow: auto;
+}
+
+/* 表格组件样式 */
+.table-wrapper .el-table {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-wrapper .el-table__inner-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-wrapper .el-table__body-wrapper {
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* 分页包装器 - 优化样式 */
 .pagination-wrapper {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 35px;
+  position: relative;
+  height: 50px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   background-color: #fff;
-  border-top: none;
   z-index: 10;
-  margin-top: auto;
+  padding-right: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
 }
 
 /* 表单布局样式 */
