@@ -96,15 +96,15 @@
         <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
           <div class="form-row">
             <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
-              <el-input v-model="editForm.roleCode" style="width:250px"/>
+              <el-input v-model="editForm.roleCode" style="width:100%"/>
             </el-form-item>
             <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')" >
-              <el-input v-model="editForm.roleName" style="width:250px"/>
+              <el-input v-model="editForm.roleName" style="width:100%"/>
             </el-form-item>
           </div>
-          <div class="form-row">
+          <div class="form-row full-width">
             <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')" >
-              <el-input v-model="editForm.remarks" style="width:632px" type="textarea"/>
+              <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3"/>
             </el-form-item>
           </div>
           <div class="form-row">
@@ -113,6 +113,8 @@
                 v-model="editForm.isEnabled"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
+            </el-form-item>
+            <el-form-item> <!-- 空占位，保持布局对称 -->
             </el-form-item>
           </div>
         </el-form>

@@ -6,7 +6,7 @@
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
             <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.cpuUsage') }}</div>
-            <el-icon :size="24" color="#409EFF"><component :is="getComponentIcon(Cpu)" /></el-icon>
+            <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
           </div>
           <div class="card-value-with-progress">
             <span class="value">32%</span>
@@ -22,7 +22,7 @@
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
             <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.memoryUsage') }}</div>
-            <el-icon :size="24" color="#67C23A"><component :is="getComponentIcon(Connection)" /></el-icon>
+            <el-icon :size="24" color="#67C23A"><Connection /></el-icon>
           </div>
           <div class="card-value-with-progress">
             <span class="value">65%</span>
@@ -38,7 +38,7 @@
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
             <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.diskUsage') }}</div>
-            <el-icon :size="24" color="#E6A23C"><component :is="getComponentIcon(DataAnalysis)" /></el-icon>
+            <el-icon :size="24" color="#E6A23C"><DataAnalysis /></el-icon>
           </div>
           <div class="card-value-with-progress">
             <span class="value">78%</span>
@@ -54,7 +54,7 @@
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
             <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.systemLoad') }}</div>
-            <el-icon :size="24" color="#F56C6C"><component :is="getComponentIcon(Loading)" /></el-icon>
+            <el-icon :size="24" color="#F56C6C"><Loading /></el-icon>
           </div>
           <div class="card-value-with-progress">
             <span class="value">2.35</span>
@@ -122,7 +122,7 @@
             <div class="service-status-header">
               <span>{{ $t('systemBasicmgmt.serviceStatus.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" plain :icon="markRaw(RefreshRight)">{{ $t('systemBasicmgmt.serviceStatus.refresh') }}</el-button>
+                <el-button type="primary" size="small" plain icon="RefreshRight">{{ $t('systemBasicmgmt.serviceStatus.refresh') }}</el-button>
                 <el-button type="success" size="small" plain>{{ $t('systemBasicmgmt.serviceStatus.restartAll') }}</el-button>
               </div>
             </div>
@@ -210,7 +210,7 @@
             <div class="backup-header">
               <span>{{ $t('systemBasicmgmt.backupRecord.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" :icon="markRaw(Plus)">{{ $t('systemBasicmgmt.backupRecord.backupNow') }}</el-button>
+                <el-button type="primary" size="small" icon="Plus">{{ $t('systemBasicmgmt.backupRecord.backupNow') }}</el-button>
               </div>
             </div>
           </template>
@@ -225,8 +225,8 @@
                   </div>
                 </div>
                 <div class="backup-actions">
-                  <el-button size="small" type="primary" plain :icon="markRaw(Download)">{{ $t('systemBasicmgmt.backupRecord.restore') }}</el-button>
-                  <el-button size="small" type="danger" plain :icon="markRaw(Delete)">{{ $t('systemBasicmgmt.backupRecord.delete') }}</el-button>
+                  <el-button size="small" type="primary" plain icon="Download">{{ $t('systemBasicmgmt.backupRecord.restore') }}</el-button>
+                  <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.backupRecord.delete') }}</el-button>
                 </div>
               </div>
             </div>
@@ -243,7 +243,7 @@
             <div class="system-notice-header">
               <span>{{ $t('systemBasicmgmt.systemNotice.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" :icon="markRaw(Plus)">{{ $t('systemBasicmgmt.systemNotice.publish') }}</el-button>
+                <el-button type="primary" size="small" plain icon="Plus">{{ $t('systemBasicmgmt.systemNotice.publish') }}</el-button>
               </div>
             </div>
           </template>
@@ -258,8 +258,8 @@
             <el-table-column prop="time" :label="$t('systemBasicmgmt.systemNotice.publishTime')" width="180" />
             <el-table-column :label="$t('systemBasicmgmt.systemNotice.operation')" width="180" fixed="right">
               <template #default>
-                <el-button size="small" type="primary" plain :icon="markRaw(View)">{{ $t('systemBasicmgmt.systemNotice.view') }}</el-button>
-                <el-button size="small" type="danger" plain :icon="markRaw(Delete)">{{ $t('systemBasicmgmt.systemNotice.delete') }}</el-button>
+                <el-button size="small" type="primary" plain icon="View">{{ $t('systemBasicmgmt.systemNotice.view') }}</el-button>
+                <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.systemNotice.delete') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -303,7 +303,7 @@
     <router-view v-slot="{ Component }">
       <transition name="fade-transform" mode="out-in">
         <keep-alive>
-          <component :is="getRouterComponent(Component)" />
+          <component :is="Component" />
         </keep-alive>
       </transition>
     </router-view>
@@ -311,7 +311,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, markRaw } from 'vue'
+import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { 
   Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
@@ -475,35 +475,35 @@ const backupRecords = reactive([
 const quickActions = reactive([
   {
     name: '系统设置',
-    icon: markRaw(Setting)
+    icon: Setting
   },
   {
     name: '用户管理',
-    icon: markRaw(User)
+    icon: User
   },
   {
     name: '安全配置',
-    icon: markRaw(Lock)
+    icon: Lock
   },
   {
     name: '系统监控',
-    icon: markRaw(Monitor)
+    icon: Monitor
   },
   {
     name: '备份恢复',
-    icon: markRaw(Upload)
+    icon: Upload
   },
   {
     name: '日志分析',
-    icon: markRaw(Document)
+    icon: Document
   },
   {
     name: '存储管理',
-    icon: markRaw(Folder)
+    icon: Folder
   },
   {
     name: '工具箱',
-    icon: markRaw(Tools)
+    icon: Tools
   }
 ])
 
@@ -525,20 +525,6 @@ const getNoticeType = (type) => {
     default:
       return 'info'
   }
-}
-
-// 处理路由组件的特殊函数
-const getRouterComponent = (Component) => {
-  // 检查组件是否为undefined或null
-  if (!Component) return null;
-  
-  // 使用markRaw防止组件变为响应式
-  return markRaw(Component);
-}
-
-// 处理内联图标组件
-const getComponentIcon = (component) => {
-  return markRaw(component);
 }
 </script>
 

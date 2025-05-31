@@ -44,11 +44,11 @@
               <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
               <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" align="left" min-width="350" />
               <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="350" />
-              <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="230" />
+              <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="130" />
               <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
               <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
               <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />
-              <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="180" fixed="right">
+              <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="150" fixed="right">
                   <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
                       >{{ $t('common.edit') }}</el-button
@@ -106,7 +106,7 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systemBasicmgmt.companyInfo.remark')" >
-            <el-input v-model="editForm.remark" style="width:250px" type="textarea"/>
+            <el-input v-model="editForm.remark" style="width:632px" type="textarea"/>
           </el-form-item>
         </div>
       </el-form>

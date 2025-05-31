@@ -5,37 +5,37 @@
         <div class="conventional-content">
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programCode')">
-              <el-input v-model="filters.programCode" :placeholder="t('systemBasicmgmt.systemMgmt.inputPlaceholder') + t('systemBasicmgmt.systemMgmt.program.programCode')" style="width:170px" clearable />
+            <el-form-item label="程序编码">
+              <el-input v-model="filters.programCode" placeholder="请输入程序编码" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programName')">
-              <el-input v-model="filters.programName" :placeholder="t('systemBasicmgmt.systemMgmt.inputPlaceholder') + t('systemBasicmgmt.systemMgmt.program.programName')" style="width:170px" clearable />
+            <el-form-item label="程序名称">
+              <el-input v-model="filters.programName" placeholder="请输入程序名称" style="width:170px" clearable />
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.domain')">
-              <el-select v-model="filters.domainId" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.program.domain')" style="width:170px" clearable @change="handleFilterDomainChange">
+            <el-form-item label="所属网域">
+              <el-select v-model="filters.domainId" placeholder="请选择网域" style="width:170px" clearable @change="handleFilterDomainChange">
                 <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
               </el-select>
             </el-form-item>
             <el-form-item></el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.module')">
-              <el-select v-model="filters.parentMenuId" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.program.module')" style="width:170px" clearable>
+            <el-form-item label="所属模块">
+              <el-select v-model="filters.parentMenuId" placeholder="请选择模块" style="width:170px" clearable>
                 <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
               </el-select>
             </el-form-item>
             <el-form-item></el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-                {{ t('common.search') }}
+                查询
               </el-button>
               <el-button @click="handleReset">
-                {{ t('common.reset') }}
+                重置
               </el-button>
             </el-form-item>
             <div class="conventional-form-right-area">
               <el-button type="primary" @click="handleAdd">
-                {{ t('systemBasicmgmt.systemMgmt.program.addProgram') }}
+                新增程序
               </el-button>
             </div>
           </el-form>
@@ -53,42 +53,42 @@
                 v-loading="loading"
                 class="conventional-table"
               >
-                <el-table-column type="index" :label="t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                <el-table-column prop="menuCode" :label="t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="240" />
-                <el-table-column prop="menuName" :label="t('systemBasicmgmt.systemMgmt.program.programName')" align="left" min-width="200" />
-                <el-table-column prop="roleCode" :label="t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
-                <el-table-column prop="path" :label="t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
-                <el-table-column prop="menuIcon" :label="t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="120" />
-                <el-table-column prop="isEnabled" :label="t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="90">
+                <el-table-column type="index" label="序号" width="60" align="center" fixed />
+                <el-table-column prop="menuCode" label="程序代码" align="left" min-width="240" />
+                <el-table-column prop="menuName" label="程序名称" align="left" min-width="200" />
+                <el-table-column prop="roleCode" label="权限标识" align="center" min-width="130" />
+                <el-table-column prop="path" label="页面Path" align="left" min-width="230" />
+                <el-table-column prop="menuIcon" label="程序图标" align="center" min-width="120" />
+                <el-table-column prop="isEnabled" label="是否启用" align="center" min-width="90">
                   <template #default="scope">
                     <div class="flex">
                       <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                        {{ scope.row.isEnabled ? t('systemBasicmgmt.systemMgmt.enabled') : t('systemBasicmgmt.systemMgmt.disabled') }}
+                        {{ scope.row.isEnabled ? '启用' : '禁用' }}
                       </el-tag>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="isVisible" :label="t('systemBasicmgmt.systemMgmt.isVisible')" align="center" min-width="90">
+                <el-table-column prop="isVisible" label="是否显示" align="center" min-width="90">
                   <template #default="scope">
                     <div class="flex">
                       <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                        {{ scope.row.isVisible ? t('systemBasicmgmt.systemMgmt.visible') : t('systemBasicmgmt.systemMgmt.hidden') }}
+                        {{ scope.row.isVisible ? '显示' : '隐藏' }}
                       </el-tag>
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="createdName" :label="t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
-                <el-table-column prop="createdDate" :label="t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                <el-table-column :label="t('systemBasicmgmt.systemMgmt.operation')" min-width="150" fixed="right">
+                <el-table-column prop="createdName" label="创建人" min-width="120" />
+                <el-table-column prop="createdDate" label="创建时间" min-width="180" />
+                <el-table-column label="操作" min-width="150" fixed="right">
                     <template #default="scope">
                       <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-                        >{{ t('common.edit') }}</el-button
+                        >编辑</el-button
                       >
                       <el-button
                         size="small"
                         type="danger"
                         @click="handleDelete(scope.$index, scope.row)"
-                        >{{ t('common.delete') }}</el-button
+                        >删除</el-button
                       >
                     </template>
                 </el-table-column>
@@ -120,70 +120,70 @@
       >
         <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programCode')">
+            <el-form-item label="程序代码">
               <el-input v-model="editForm.menuCode" style="width:250px"/>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programName')" >
+            <el-form-item label="程序名称" >
               <el-input v-model="editForm.menuName" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.domain')" >
-              <el-select v-model="editForm.domainId" style="width:250px" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.program.domain')" clearable @change="handleDomainChange">
+            <el-form-item label="所属网域" >
+              <el-select v-model="editForm.domainId" style="width:250px" placeholder="请选择所属网域" clearable @change="handleDomainChange">
                 <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
               </el-select>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.module')" >
-              <el-select v-model="editForm.parentMenuId" style="width:250px" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.program.module')" clearable>
+            <el-form-item label="所属模块" >
+              <el-select v-model="editForm.parentMenuId" style="width:250px" placeholder="请选择所属模块" clearable>
                 <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
               </el-select>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programIcon')" >
+            <el-form-item label="程序图标" >
               <el-input v-model="editForm.menuIcon" style="width:250px"/>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.sortOrder')" >
+            <el-form-item label="程序排序" >
               <el-input v-model.number="editForm.sortOrder" type="number" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.pagePath')" >
+            <el-form-item label="页面Path" >
               <el-input v-model="editForm.path" style="width:250px"/>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.programType')" >
+            <el-form-item label="程序类型" >
               <el-input v-model.number="editForm.menuType" type="number" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.roleCode')" >
+            <el-form-item label="权限标识" >
               <el-input v-model="editForm.roleCode" style="width:250px"/>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.apiRoute')" >
+            <el-form-item label="AIP路由" >
               <el-input v-model="editForm.routePath" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.component')" >
+            <el-form-item label="组件" >
               <el-input v-model="editForm.component" style="width:250px"/>
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.program.target')" >
+            <el-form-item label="目标" >
               <el-input v-model="editForm.target" style="width:250px"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.remarks')" >
+            <el-form-item label="备注" >
               <el-input v-model="editForm.remarks" style="width:632px" type="textarea"/>
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.isEnabled')" >
+            <el-form-item label="是否启用" >
               <el-switch
                 v-model="editForm.isEnabled"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
-            <el-form-item :label="t('systemBasicmgmt.systemMgmt.isVisible')" >
+            <el-form-item label="是否显示" >
               <el-switch
                 v-model="editForm.isVisible"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
@@ -193,8 +193,8 @@
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
-            <el-button type="primary" @click="handleSave">{{ t('common.confirm') }}</el-button>
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="handleSave">确定</el-button>
           </span>
         </template>
       </el-dialog>
@@ -206,10 +206,6 @@
   import { post, sanitizeHtml } from '@/utils/request'
   import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
-  
-  // 引入国际化
-  const { t } = useI18n()
   
   // 程序数据
   const programList = ref([])
@@ -261,7 +257,7 @@
     remarks: ''
   })
   // 对话框标题
-  const dialogTitle = ref('')
+  const dialogTitle = ref('编辑程序信息')
   
   // 在组件挂载后获取日志数据
   onMounted(() => {
@@ -282,7 +278,7 @@
     }
     
     // 如果是新增操作，默认选中第一个网域
-    if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && domainDropList.value.length > 0) {
+    if (dialogTitle.value === '新增程序' && domainDropList.value.length > 0) {
       editForm.domainId = domainDropList.value[0].domainId
       // 网域选择后联动获取模块数据
       fetchModuleDrop()
@@ -307,7 +303,7 @@
     moduleDropList.value = res.data || []
     
     // 如果是新增操作且有模块数据，默认选中第一个模块
-    if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && moduleDropList.value.length > 0) {
+    if (dialogTitle.value === '新增程序' && moduleDropList.value.length > 0) {
       editForm.parentMenuId = moduleDropList.value[0].menuId
     }
   }
@@ -420,7 +416,7 @@
   const insertProgram = async () => {
     // 检查必填字段
     if (!editForm.domainId) {
-      ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'))
+      ElMessage.warning('请选择所属网域')
       return
     }
     
@@ -444,7 +440,7 @@
   const updateProgram = async () => {
     // 检查必填字段
     if (!editForm.domainId) {
-      ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'))
+      ElMessage.warning('请选择所属网域')
       return
     }
     
@@ -472,7 +468,7 @@
     }
 
     if (isNaN(params.menuId)) {
-      ElMessage.error(t('systemBasicmgmt.systemMgmt.invalidId'))
+      ElMessage.error('无效的程序 ID')
       return
     }
     
@@ -500,7 +496,7 @@
     editForm.isVisible = true
     
     // 设置对话框标题
-    dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.addProgram')
+    dialogTitle.value = '新增程序'
     
     // 获取网域类型
     fetchDomainDrop()
@@ -515,7 +511,7 @@
     resetForm()
     
     // 设置对话框标题
-    dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.editProgram')
+    dialogTitle.value = '编辑程序信息'
     
     // 获取程序实体数据
     fetchProgramEntity(row.menuId)
@@ -530,11 +526,11 @@
   // 处理删除操作
   const handleDelete = (index, row) => {
     ElMessageBox.confirm(
-        t('systemBasicmgmt.systemMgmt.program.deleteConfirm'),
-        t('common.tip'),
+        '确定要删除该条记录吗？',
+        '提示',
         {
-          confirmButtonText: t('common.confirm'),
-          cancelButtonText: t('common.cancel'),
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           type: 'warning',
         }
       )
@@ -551,17 +547,17 @@
   // 保存编辑结果
   const handleSave = () => {
     if (!editForm.menuCode || !editForm.menuName) {
-      ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramCode') + t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramName'))
+      ElMessage.warning('请填写程序代码和程序名称')
       return
     }
 
     if (!editForm.domainId) {
-      ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'))
+      ElMessage.warning('请选择所属网域')
       return
     }
 
     if (!editForm.parentMenuId) {
-      ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule'))
+      ElMessage.warning('请选择所属模块')
       return
     }
     

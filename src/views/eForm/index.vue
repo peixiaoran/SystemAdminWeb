@@ -311,7 +311,7 @@
   </template>
   
   <script setup>
-  import { ref, reactive, markRaw } from 'vue'
+  import { ref, reactive } from 'vue'
   import { 
     Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
     Monitor, Connection, Lock, User, Warning, Notification, 
@@ -474,16 +474,16 @@
   
   // 快捷操作
   const quickActions = reactive([
-    { name: '系统监控', icon: markRaw(Monitor) },
-    { name: '网络设置', icon: markRaw(Connection) },
-    { name: '安全设置', icon: markRaw(Lock) },
-    { name: '用户管理', icon: markRaw(User) },
-    { name: '告警设置', icon: markRaw(Warning) },
-    { name: '消息通知', icon: markRaw(Notification) },
-    { name: '日志管理', icon: markRaw(Document) },
-    { name: '存储管理', icon: markRaw(Folder) },
-    { name: '系统维护', icon: markRaw(Tools) },
-    { name: '系统升级', icon: markRaw(Upload) }
+    { name: '系统监控', icon: 'Monitor' },
+    { name: '网络设置', icon: 'Connection' },
+    { name: '安全设置', icon: 'Lock' },
+    { name: '用户管理', icon: 'User' },
+    { name: '告警设置', icon: 'Warning' },
+    { name: '消息通知', icon: 'Notification' },
+    { name: '日志管理', icon: 'Document' },
+    { name: '存储管理', icon: 'Folder' },
+    { name: '系统维护', icon: 'Tools' },
+    { name: '系统升级', icon: 'Upload' }
   ])
   
   // 获取通知类型对应的标签类型

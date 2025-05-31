@@ -7,21 +7,26 @@
       </div>
       
       <div class="login-form-container">
+        
         <el-form
           ref="loginFormRef"
           :model="loginForm"
           :rules="loginRules"
           class="login-form"
           size="large"
-          @submit.prevent="handleLogin"
+          autocomplete="off"
         >
+          <!-- 添加隐藏的用户名和密码字段，用于迷惑浏览器的自动填充 -->
+          <input type="text" style="display:none" />
+          <input type="password" style="display:none" />
+          
           <el-form-item prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
               :name="'username_' + randomStr"
-              autocomplete="new-password"
+              autocomplete="off"
               data-lpignore="true"
             />
           </el-form-item>
@@ -33,7 +38,7 @@
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
               :name="'password_' + randomStr"
-              autocomplete="new-password"
+              autocomplete="off"
               data-lpignore="true"
               @keyup.enter="handleLogin"
             />
@@ -65,7 +70,7 @@
               type="primary"
               :loading="loading"
               class="login-button"
-              native-type="submit"
+              @click="handleLogin"
             >
               {{ $t('login.loginButton') }}
             </el-button>
@@ -91,58 +96,76 @@ const { t, locale } = useI18n()
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
+// 生成随机字符串，用于每次页面加载时创建不同的input name
 const randomStr = ref(Math.random().toString(36).substring(2, 15))
 
 const loginForm = reactive({
   loginNo: '',
   passWrod: '',
-  factory: 'ESK',
-  language: localStorage.getItem('language') || 'zh-CN'
+  factory: 'ESK', // 默认设置为昆山乙盛
+  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
-// 初始化清空表单
+// 在组件挂载后清除表单内容
 onMounted(() => {
+  // 确保表单清空，防止浏览器填充
   loginForm.loginNo = ''
   loginForm.passWrod = ''
+  
+  // 延迟后再次清空，以防止某些浏览器在页面加载后延迟填充
+  setTimeout(() => {
+    loginForm.loginNo = ''
+    loginForm.passWrod = ''
+  }, 100)
 })
 
-const factories = computed(() => ({
-  ESK: t('login.factories.ESK'),
-  ETW: t('login.factories.ETW'),
-  ESW: t('login.factories.ESW'),
-  ESD: t('login.factories.ESD'),
-  ESC: t('login.factories.ESC'),
-  EMY: t('login.factories.EMY'),
-  EMJ: t('login.factories.EMJ'),
-  ESV: t('login.factories.ESV'),
-  EST: t('login.factories.EST'),
-  ESH: t('login.factories.ESH'),
-  ESM: t('login.factories.ESM'),
-  MTY: t('login.factories.MTY')
-}))
+// 使用计算属性获取翻译后的选项
+const factories = computed(() => {
+  return {
+    ESK: t('login.factories.ESK'),
+    ETW: t('login.factories.ETW'),
+    ESW: t('login.factories.ESW'),
+    ESD: t('login.factories.ESD'),
+    ESC: t('login.factories.ESC'),
+    EMY: t('login.factories.EMY'),
+    EMJ: t('login.factories.EMJ'),
+    ESV: t('login.factories.ESV'),
+    EST: t('login.factories.EST'),
+    ESH: t('login.factories.ESH'),
+    ESM: t('login.factories.ESM'),
+    MTY: t('login.factories.MTY')
+  }
+})
 
-const languages = computed(() => ({
-  'zh-CN': t('login.languages.zh-CN'),
-  'zh-TW': t('login.languages.zh-TW'),
-  'en-US': t('login.languages.en-US'),
-  'vi-VN': t('login.languages.vi-VN')
-}))
+const languages = computed(() => {
+  return {
+    'zh-CN': t('login.languages.zh-CN'),
+    'zh-TW': t('login.languages.zh-TW'),
+    'en-US': t('login.languages.en-US'),
+    'vi-VN': t('login.languages.vi-VN')
+  }
+})
 
-const loginRules = computed(() => ({
-  loginNo: [
-    { required: true, message: t('login.usernameRequired'), trigger: 'blur' }
-  ],
-  passWrod: [
-    { required: true, message: t('login.passwordRequired'), trigger: 'blur' }
-  ],
-  factory: [
-    { required: true, message: t('login.factoryRequired'), trigger: 'change' }
-  ]
-}))
+// 登录表单验证规则
+const loginRules = computed(() => {
+  return {
+    loginNo: [
+      { required: true, message: t('login.usernameRequired'), trigger: 'blur' }
+    ],
+    passWrod: [
+      { required: true, message: t('login.passwordRequired'), trigger: 'blur' }
+    ],
+    factory: [
+      { required: true, message: t('login.factoryRequired'), trigger: 'change' }
+    ]
+  }
+})
 
+// 语言切换处理
 const handleLanguageChange = (value) => {
   locale.value = value
   localStorage.setItem('language', value)
+  // 更新document标题
   document.title = t('common.systemTitle')
 }
 
@@ -150,30 +173,58 @@ const handleLogin = () => {
   loginFormRef.value.validate(valid => {
     if (valid) {
       loading.value = true
+
+      // 保存语言和厂区选择到localStorage
       localStorage.setItem('language', loginForm.language)
       localStorage.setItem('factory', loginForm.factory)
 
+      // 使用封装的post方法，它会使用环境变量中的API基础URL
       post(LOGIN_API.USER_LOGIN, {
         loginNo: loginForm.loginNo,
         passWrod: loginForm.passWrod
       })
         .then(res => {
+          
           if (res.code === '200') {
+            // 保存token
             localStorage.setItem('token', res.data)
+            // 设置标题
             document.title = t('common.systemTitle')
+            
+            // 获取用户store
             const userStore = useUserStore()
+            // 设置token
             userStore.setToken(res.data)
             
+            // 清除现有路由缓存
             clearRoutesCache()
-            addDynamicRoutes()
-              .then(() => router.push('/module-select'))
-              .catch(error => console.error(error))
+            
+            // 登录成功后添加动态路由
+            addDynamicRoutes().then(success => {
+              if (success) {
+                // 确保路由加载成功
+                const routeStore = useRouteStore()
+                // 强制更新路由状态
+                if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+                  routeStore.setRoutes(res.data)
+                }
+              } else {
+                console.log('路由加载出现问题')
+              }
+              router.push('/module-select')
+            }).catch(error => {
+              console.log(error)
+            })
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }
         })
-        .catch(error => ElMessage.error(t('login.loginFailedTip')))
-        .finally(() => loading.value = false)
+        .catch(error => {
+          ElMessage.error(t('login.loginFailedTip'))
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
@@ -186,57 +237,278 @@ const handleLogin = () => {
   align-items: center;
   height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2px;
+  flex: 1;
+  width: 100%;
+}
+
+.login-container::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  right: -50px;
+  bottom: -50px;
+  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23bdc3c7' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  z-index: 0;
+  animation: backgroundMove 60s linear infinite;
+}
+
+@keyframes backgroundMove {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(20px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
 }
 
 .login-box {
   width: 500px;
+  padding: 0;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(50, 50, 93, 0.1);
+  box-shadow: 0 20px 40px rgba(50, 50, 93, 0.1), 0 8px 20px rgba(0, 0, 0, 0.07);
   overflow: hidden;
+  backdrop-filter: blur(5px);
+  z-index: 1;
+  border: 1px solid #ebeef5;
 }
 
 .login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 30px 0;
   background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
   color: white;
-  text-align: center;
 }
 
 .logo {
   width: 70px;
   height: 70px;
   margin-bottom: 18px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
+  color: white;
   margin: 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-form-container {
   padding: 50px 40px;
   background-color: #f5f7fa;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .login-form {
   width: 100%;
+  max-width: 400px;
+  margin-top: -10px;
+}
+
+.login-form :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
+  padding: 0 15px;
+  height: 44px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+}
+
+.login-form :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+}
+
+.login-form :deep(.el-form-item.is-error .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset !important;
+}
+
+.login-form :deep(.el-form-item.is-error .el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px #f56c6c inset !important;
+}
+
+.login-form :deep(.el-form-item.is-error .el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px #f56c6c inset !important;
+}
+
+.login-form :deep(.el-input__inner) {
+  line-height: 38px;
+  height: 38px;
+  padding: 0;
+  flex: 1;
+}
+
+.login-form :deep(.el-input__prefix) {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.login-form :deep(.el-input__suffix) {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.login-form :deep(.el-select) {
+  width: 100%;
+}
+
+.login-form :deep(.el-select .el-input__wrapper) {
+  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
+  padding: 0 15px;
+  height: 44px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.login-form :deep(.el-select .el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+}
+
+.login-form :deep(.el-select .el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+}
+
+.login-form :deep(.el-select .el-input__inner) {
+  line-height: 38px;
+  height: 38px;
+  padding: 0;
+  flex: 1;
+}
+
+.login-form :deep(.el-form-item__label) {
+  text-align: left;
+  line-height: 45px;
+  height: 45px;
+  padding-right: 12px;
+  width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  color: #606266;
+}
+
+.login-form :deep(.el-form-item__content) {
+  line-height: 45px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
 }
 
 .login-button {
   width: 100%;
   height: 44px;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
+  border: none;
+  margin-left: 0;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
 }
 
+.login-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(50, 50, 93, 0.15);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);
+}
+
+/* 响应式调整 */
 @media screen and (max-width: 576px) {
   .login-box {
     width: 90%;
+    max-width: 420px;
   }
+  
   .login-form-container {
     padding: 25px 20px;
   }
+  
+  .login-form {
+    max-width: 380px;
+  }
 }
-</style>
+
+.language-select {
+  width: 100%;
+}
+
+/* 移除必填标记 */
+.login-form :deep(.el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before) {
+  content: '';
+}
+
+/* 自定义表格滚动条样式 */
+:deep(.el-scrollbar__bar) {
+  width: 8px;
+  height: 8px;
+}
+
+:deep(.el-scrollbar__thumb) {
+  background-color: #dcdfe6;
+  border-radius: 4px;
+}
+
+:deep(.el-scrollbar__track) {
+  background-color: #f5f7fa;
+}
+
+/* router-view-container 样式 */
+:deep(.router-view-container) {
+  padding: 15px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form :deep(.el-form-item) {
+  margin-bottom: 25px;
+}
+
+.login-form :deep(.el-form-item:first-child) {
+  margin-top: -5px;
+}
+</style> 

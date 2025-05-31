@@ -5,25 +5,25 @@
       <div class="conventional-content">
         <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form">
-          <el-form-item :label="t('systemBasicmgmt.systemMgmt.roleModule.role')">
-            <el-select v-model="filters.roleId" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.roleModule.role')" style="width:180px" clearable @change="handleRoleChange">
+          <el-form-item label="角色">
+            <el-select v-model="filters.roleId" placeholder="请选择角色" style="width:180px" clearable @change="handleRoleChange">
               <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
             </el-select>
           </el-form-item>
           <el-form-item></el-form-item>
-          <el-form-item :label="t('systemBasicmgmt.systemMgmt.roleModule.domain')">
-            <el-select v-model="filters.domainId" :placeholder="t('systemBasicmgmt.systemMgmt.selectPlaceholder') + t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" clearable @change="handleDomainChange">
+          <el-form-item label="网域">
+            <el-select v-model="filters.domainId" placeholder="请选择网域" style="width:180px" clearable @change="handleDomainChange">
               <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
             </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-              {{ t('common.search') }}
+              查询
             </el-button>
           </el-form-item>
           <div class="conventional-form-right-area">
             <el-button type="primary" @click="handleConfirm">
-              {{ t('systemBasicmgmt.systemMgmt.updateBindings') }}
+              更新绑定
             </el-button>
           </div>
         </el-form>
@@ -41,17 +41,17 @@
               v-loading="loading"
               class="conventional-table"
             >
-              <el-table-column type="index" :label="t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-              <el-table-column prop="roleName" :label="t('systemBasicmgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
-              <el-table-column prop="menuName" :label="t('systemBasicmgmt.systemMgmt.module.menuName')" align="left" min-width="180" />
-              <el-table-column prop="isChecked" :label="t('systemBasicmgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">
+              <el-table-column type="index" label="序号" width="60" align="center" fixed />
+              <el-table-column prop="roleName" label="角色名称" align="left" min-width="180" />
+              <el-table-column prop="menuName" label="模块名称" align="left" min-width="180" />
+              <el-table-column prop="isChecked" label="是否绑定" align="center" min-width="90">
                 <template #default="scope">
                     <div class="checkbox-wrapper">
                       <el-checkbox v-model="scope.row.isChecked" />
                     </div>
                   </template>
               </el-table-column>
-              <el-table-column prop="remark" :label="t('systemBasicmgmt.systemMgmt.remark')" min-width="150" />
+              <el-table-column prop="remark" label="备注" min-width="150" />
             </el-table>
           </div>
           
@@ -83,10 +83,6 @@ import {
   GET_DOMAIN_DROPDOWN_API,
   UPDATE_ROLE_MODULE_API 
 } from '@/config/api/systemBasicmgmt/system-mgmt/rolemodule'
-import { useI18n } from 'vue-i18n'
-
-// 引入国际化
-const { t } = useI18n()
 
 // 角色网域数据
 const roleModuleList = ref([])
@@ -183,7 +179,7 @@ const handleSearch = () => {
 // 处理确认操作
 const handleConfirm = async () => {
   if (!filters.roleId || !filters.domainId) {
-    ElMessage.warning(t('systemBasicmgmt.systemMgmt.roleModule.pleaseSelectRole') + t('systemBasicmgmt.systemMgmt.roleModule.pleaseSelectDomain'))
+    ElMessage.warning('请先选择角色和网域')
     return
   }
   
@@ -200,7 +196,7 @@ const handleConfirm = async () => {
     })
     
     if (res && res.code === '200') {
-      ElMessage.success(t('systemBasicmgmt.systemMgmt.roleModule.updateBindingsSuccess'))
+      ElMessage.success(res.message)
       fetchRoleModuleList()
     } else {
       ElMessage.error(res.message)

@@ -199,5 +199,4 @@
   
   <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-
 </style> 

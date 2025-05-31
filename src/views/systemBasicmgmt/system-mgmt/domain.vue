@@ -108,39 +108,39 @@
       <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
         <div class="form-row">
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')">
-            <el-input v-model="editForm.domainCode" style="width:250px"/>
+            <el-input v-model="editForm.domainCode" style="width:100%"/>
           </el-form-item>
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainName')" >
-            <el-input v-model="editForm.domainName" style="width:250px"/>
+            <el-input v-model="editForm.domainName" style="width:100%"/>
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')" >
-            <el-input v-model="editForm.domainIcon" style="width:250px"/>
+            <el-input v-model="editForm.domainIcon" style="width:100%"/>
           </el-form-item>
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.sortOrder')" >
-            <el-input v-model="editForm.sortOrder" style="width:250px"/>
+            <el-input v-model="editForm.sortOrder" style="width:100%"/>
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')" >
-            <el-input v-model="editForm.roleCode" style="width:250px"/>
+            <el-input v-model="editForm.roleCode" style="width:100%"/>
           </el-form-item>
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')" >
-            <el-input v-model="editForm.path" style="width:250px"/>
+            <el-input v-model="editForm.path" style="width:100%"/>
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.component')" >
-            <el-input v-model="editForm.component" style="width:250px"/>
+            <el-input v-model="editForm.component" style="width:100%"/>
           </el-form-item>
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.target')" >
-            <el-input v-model="editForm.target" style="width:250px"/>
+            <el-input v-model="editForm.target" style="width:100%"/>
           </el-form-item>
         </div>
-        <div class="form-row">
+        <div class="form-row full-width">
           <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')" >
-            <el-input v-model="editForm.remarks" style="width:632px" type="textarea"/>
+            <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3"/>
           </el-form-item>
         </div>
         <div class="form-row">

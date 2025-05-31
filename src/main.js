@@ -5,7 +5,6 @@ import App from './App.vue'
 import router, { addDynamicRoutes } from './router'
 import './assets/main.css'
 import pinia from './stores'
-import NProgress from 'nprogress'
 import i18n from './i18n'
 
 // 获取存储的语言
@@ -16,18 +15,6 @@ const setDocumentTitle = () => {
   const title = i18n.global.t('common.systemTitle')
   document.title = title
 }
-
-// 监听页面刷新事件
-window.addEventListener('beforeunload', () => {
-  NProgress.start()
-})
-
-window.addEventListener('load', () => {
-  // 确保页面加载完成后结束进度条
-  setTimeout(() => {
-    NProgress.done()
-  }, 200) // 短暂延迟确保DOM完全加载
-})
 
 // 检查用户是否已登录，如果已登录则添加动态路由
 const token = localStorage.getItem('token')

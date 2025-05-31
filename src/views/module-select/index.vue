@@ -1,8 +1,42 @@
 <template>
   <div class="module-select-container">
+    <div class="header-actions">
+      <language-switcher class="language-switcher" />
+      <div class="user-info">
+        <el-dropdown trigger="click">
+          <div class="user-avatar-wrapper">
+            <div class="user-avatar">
+              <el-avatar :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+              <div class="user-details">
+                <span class="username">{{ username }}</span>
+                <span class="role-tag"></span>
+              </div>
+              <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+            </div>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>
+                <el-icon><User /></el-icon>
+                <span>{{ $t('moduleSelect.userInfo') }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-icon><Setting /></el-icon>
+                <span>{{ $t('moduleSelect.accountSettings') }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="logout">
+                <el-icon><SwitchButton /></el-icon>
+                <span>{{ $t('common.logout') }}</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+    </div>
+
     <div class="module-grid">
       <el-row :gutter="30">
-        <el-col :span="24" v-for="module in modules" :key="module.domainId">
+        <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="module in modules" :key="module.domainId">
           <div class="module-card" @click="enterModule(module)">
             <div class="module-icon">
               <el-icon :size="54">
@@ -23,7 +57,8 @@
         </el-col>
       </el-row>
     </div>
-
+    
+    <!-- 添加加载状态 -->
     <div v-if="loading" class="loading-container">
       <el-empty :description="$t('moduleSelect.moduleLoading')" :image-size="100">
         <template #image>
@@ -38,27 +73,39 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Loading, ArrowRight } from '@element-plus/icons-vue'
+import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
 import { useModuleStore } from '@/stores/module'
 import { addRoutes } from '@/router'
 import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const username = ref('管理员')
 const modules = ref([])
 const loading = ref(true)
 const userStore = useUserStore()
 const moduleStore = useModuleStore()
 
+// 获取模块数据
 const fetchModules = async () => {
   try {
     loading.value = true
+    
+    // 使用post方法请求模块数据，不需要请求参数
     const res = await post(MODULE_API.GET_MODULES)
+    
     if (res && res.code === '200') {
       modules.value = res.data || []
+      // 提取所有模块路径
+      const modulePaths = modules.value.map(module => ({
+        domainId: module.domainId,
+        domainName: module.domainName,
+        path: module.path
+      }))
     } else {
       ElMessage.error(res?.message || t('moduleSelect.moduleError'))
     }
@@ -69,19 +116,55 @@ const fetchModules = async () => {
   }
 }
 
+// 组件挂载时获取模块数据
 onMounted(() => {
   fetchModules()
 })
 
+// 进入模块
 const enterModule = (module) => {
   if (!module || !module.domainId || !module.path) {
     ElMessage.error(t('moduleSelect.moduleIncomplete'))
     return
   }
-  const moduleIdentifier = module.path.split('/').filter(Boolean)[0]
-  moduleStore.setCurrentModule(String(module.domainId), module.domainName, moduleIdentifier)
+  
+  // 获取模块标识符（用于构建路由路径）
+  const moduleIdentifier = module.path.split('/').filter(Boolean)[0] // 提取模块标识符
+  
+  // 使用新的模块存储来保存模块信息
+  moduleStore.setCurrentModule(
+    String(module.domainId), 
+    module.domainName, 
+    moduleIdentifier
+  )
+  
+  // 确保添加动态路由
   addRoutes()
+  
+  // 跳转到对应模块的index首页
   router.push(`/${moduleIdentifier}/index`)
+}
+
+// 退出登录
+const logout = async () => {
+  try {
+    // 确认对话框
+    await ElMessageBox.confirm(t('common.confirmLogout'), t('common.tip'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+      type: 'warning'
+    })
+    
+    // 调用退出登录接口
+    await userStore.logout()
+    
+    // 跳转到登录页
+    router.push('/login')
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(t('common.failed'))
+    }
+  }
 }
 </script>
 
@@ -95,8 +178,66 @@ const enterModule = (module) => {
   flex-direction: column;
 }
 
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: transparent;
+}
+
+.language-switcher {
+  margin-right: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar-wrapper {
+  cursor: pointer;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.user-avatar:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.user-details {
+  margin: 0 10px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.dropdown-icon {
+  color: #909399;
+  font-size: 12px;
+}
+
 .module-grid {
   margin-top: 20px;
+}
+
+.module-grid {
+  max-width: 1280px;
+  margin: 60px auto 0;
+  padding: 20px 0;
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .el-row {
@@ -106,11 +247,10 @@ const enterModule = (module) => {
 
 .el-col {
   padding: 0 15px;
+  margin-bottom: 30px;
 }
 
 .module-card {
-  width: 100%;
-  max-width: 320px;
   height: 320px;
   background-color: #fff;
   border-radius: 16px;
@@ -122,7 +262,6 @@ const enterModule = (module) => {
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease;
-  margin: 0 auto 30px;
 }
 
 .module-card:hover {
@@ -237,17 +376,74 @@ const enterModule = (module) => {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .welcome {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .user-avatar {
+    margin: 0 auto;
+  }
+  
   .module-grid {
+    margin-top: 40px;
     padding: 10px;
   }
-
+  
+  .el-row {
+    margin: 0 -10px;
+  }
+  
   .el-col {
     padding: 0 10px;
+    margin-bottom: 20px;
   }
-
+  
   .module-card {
     height: auto;
     min-height: 280px;
   }
+  
+  /* 确保在小屏幕上单个模块卡片也有合适的宽度 */
+  .el-col.el-col-24.el-col-sm-12.el-col-md-8.el-col-lg-6 {
+    max-width: 320px;
+    margin: 0 auto 20px;
+  }
 }
-</style>
+
+/* 修改Element Plus下拉菜单的样式 */
+:deep(.el-dropdown-menu) {
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ebeef5;
+  min-width: 160px;
+}
+
+:deep(.el-dropdown-menu__item) {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #606266;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.el-dropdown-menu__item i) {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #909399;
+}
+
+:deep(.el-dropdown-menu__item--divided) {
+  border-top: 1px solid #ebeef5;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+</style> 
