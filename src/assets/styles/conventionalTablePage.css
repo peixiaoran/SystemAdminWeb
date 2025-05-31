@@ -192,7 +192,7 @@
 .table-pagination-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 195px);
+  height: calc(100vh - 225px);
   min-height: 500px;
   position: relative;
   overflow: hidden;
@@ -216,11 +216,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50px;
+  height: 35px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0px 0px 25px 0px;
   background-color: #fff;
   border-top: none;
   z-index: 10;
