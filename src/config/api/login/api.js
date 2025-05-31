@@ -22,11 +22,6 @@ export const LOGIN_API = {
   USER_LOGIN: 'SystemBasicMgmt/SystemBasic/SysLogin/UserLogin'
 }
 
-// 查询系统路由
-export const ROUTER_API = {
-  GET_ROUTER: 'SystemBasicMgmt/SystemBasic/SysDomainMenu/GetRouterTree'
-}
-
 // 查询模块列表
 export const MODULE_API = {
   GET_MODULES: 'SystemBasicMgmt/SystemBasic/SysDomainMenu/GetSysDomainList'

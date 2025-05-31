@@ -2,11 +2,6 @@
   <div class="app-container">
     <!-- 侧边菜单 -->
     <el-aside :width="isCollapse ? '64px' : '220px'" class="aside-container">
-      <!-- 侧边栏进度条容器 -->
-      <div class="nprogress-bar-container">
-        <div class="nprogress-bar" ref="sidebarProgress"></div>
-      </div>
-      
       <div class="logo-container">
         <div class="logo-content" v-if="!isCollapse">
           <img src="/favicon.svg" alt="Logo" class="logo-icon" />
@@ -56,11 +51,6 @@
     
     <!-- 主要内容区 -->
     <el-container class="main-container">
-      <!-- 内容区域进度条容器 -->
-      <div class="nprogress-bar-container">
-        <div class="nprogress-bar" ref="mainProgress"></div>
-      </div>
-      
       <!-- 顶部导航栏 -->
       <el-header class="header">
         <div class="breadcrumb">
@@ -181,7 +171,6 @@ import { useUserStore } from '@/stores/user'
 import { useModuleStore } from '@/stores/module'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
-import NProgress from '../plugins/nprogress'
 
 // 状态
 const router = useRouter()
@@ -250,24 +239,7 @@ const isMenuActive = (menuPath) => {
 
 // 处理菜单选择
 const handleMenuSelect = (index, indexPath) => {
-  // 开始加载进度条
-  NProgress.start()
-  
   activeMenu.value = index;
-  
-  // 确保侧边栏的进度条正确显示
-  if (sidebarProgress.value) {
-    sidebarProgress.value.style.transition = 'width 0.2s ease'
-    sidebarProgress.value.style.width = '100%'
-    
-    // 延迟重置，避免闪烁
-    setTimeout(() => {
-      if (sidebarProgress.value) {
-        sidebarProgress.value.style.transition = 'none'
-        sidebarProgress.value.style.width = '0'
-      }
-    }, 500)
-  }
 }
 
 // 标签相关状态
@@ -290,36 +262,59 @@ const saveTabsToStorage = () => {
 
 // 监听路由变化，保持菜单激活状态和标签选中状态同步
 watch(() => route.path, (newPath, oldPath) => {
+  // 始终更新激活的菜单项
   activeMenu.value = newPath
-  console.log('路由变化:', oldPath, '->', newPath)
-
-  // 处理直接导航到模块选择或首页的情况
-  if ((newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select')) {
-    // 如果有保存的标签页，并且是从正常页面导航过来的(非刷新)，才自动跳转到第一个标签页
-    if (visitedTabs.value.length > 0 && oldPath && oldPath !== '/' && oldPath !== '/login') {
-      activeTabName.value = visitedTabs.value[0].path
-      // 只有在非刷新的导航中才自动跳转
-      if (newPath !== visitedTabs.value[0].path) {
-        nextTick(() => {
-          router.push(visitedTabs.value[0].path)
-        })
-      }
-    }
+  
+  // 处理特殊路径：模块选择或首页
+  if (newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select' || newPath === '/login') {
+    // 特殊路径不处理标签逻辑
     return;
   }
-
-  // 正常的路径变化处理
-  if (visitedTabs.value.length > 0) {
-    // 检查当前路径是否在标签中
-    const isPathInTabs = visitedTabs.value.some(tab => tab.path === newPath);
-    if (isPathInTabs) {
-      // 如果在标签中，更新活动标签
-      console.log('更新活动标签为当前路径:', newPath)
-      activeTabName.value = newPath;
-    } else if (activeTabName.value === '') {
-      // 如果当前没有活动标签，选择第一个标签
-      console.log('无活动标签，选择第一个标签')
-      activeTabName.value = visitedTabs.value[0].path;
+  
+  // 检查新路径是否在现有标签中
+  const isPathInTabs = visitedTabs.value.some(tab => tab.path === newPath);
+  
+  // 如果新路径在标签中，直接更新活动标签
+  if (isPathInTabs) {
+    activeTabName.value = newPath;
+    return;
+  }
+  
+  // 如果新路径不在标签中，但是不是由刷新引起的路由变化（oldPath存在），尝试添加新标签
+  if (oldPath && oldPath !== '/' && oldPath !== '/login') {
+    // 尝试获取路由信息以添加新标签
+    const matchedRoute = router.resolve(newPath)
+    if (matchedRoute && matchedRoute.name) {
+      // 检查是否有noTag标记
+      const hasNoTagMark = matchedRoute.meta && matchedRoute.meta.noTag
+      if (hasNoTagMark) {
+        // 有noTag标记，不添加标签但更新活动标签
+        activeTabName.value = newPath
+        return
+      }
+      
+      // 尝试从路由元数据中获取标题和图标
+      const routeTitle = matchedRoute.meta?.title || '未命名页面'
+      const routeIcon = matchedRoute.meta?.icon || 'Document'
+      
+      // 添加新标签
+      visitedTabs.value.push({
+        title: routeTitle,
+        path: newPath,
+        icon: routeIcon,
+        name: newPath.replace(/\//g, '-')
+      })
+      
+      // 添加到缓存列表
+      if (!cachedTabs.value.includes(newPath.replace(/\//g, '-'))) {
+        cachedTabs.value.push(newPath.replace(/\//g, '-'))
+      }
+      
+      // 设置为活动标签
+      activeTabName.value = newPath
+      
+      // 保存标签状态
+      saveTabsToStorage()
     }
   }
 }, { immediate: true });
@@ -335,15 +330,11 @@ const tagRightClicked = ref(null)
 // 获取菜单数据
 const fetchMenuData = async () => {
   try {
-    // 开始加载进度条
-    NProgress.start()
-    
     // 从moduleStore获取当前选择的domainId
     const domainId = moduleStore.currentDomainId
     if (!domainId) {
       ElMessage.warning('未选择系统模块，请先选择一个模块')
       router.push('/module-select')
-      NProgress.done() // 结束进度条
       return
     }
     
@@ -354,22 +345,45 @@ const fetchMenuData = async () => {
     const res = await post(MENU_API.GET_MENU, { domainId })
     
     if (res && res.code === '200') {
-      menuList.value = res.data || []
-      
-      // 移除自动选中第一个菜单项的逻辑
-      // 系统将依赖onMounted中的标签恢复逻辑来处理
+      // 处理菜单数据，将其与路由数据对应起来
+      menuList.value = processMenuData(res.data || [])
     } else {
       ElMessage.error(res?.message || '获取菜单数据失败')
     }
-    
-    // 延迟结束进度条，确保DOM更新完成
-    setTimeout(() => {
-      NProgress.done()
-    }, 200)
   } catch (error) {
     ElMessage.error('获取菜单数据失败，请稍后重试')
-    NProgress.done() // 确保错误时也结束进度条
   }
+}
+
+// 处理菜单数据，将API返回的菜单与路由匹配
+const processMenuData = (menuData) => {
+  // 获取当前路由器中的所有路由
+  const routes = router.getRoutes()
+  
+  // 处理菜单数据，确保menuIcon属性存在
+  return menuData.map(menu => {
+    // 尝试查找匹配的路由，优先匹配name
+    const matchedRoute = routes.find(route => 
+      route.name === menu.menuId || 
+      route.path === getFormattedPath(menu.path)
+    )
+    
+    // 如果找到匹配的路由，使用路由的meta信息补充菜单数据
+    if (matchedRoute && matchedRoute.meta) {
+      menu.menuIcon = menu.menuIcon || matchedRoute.meta.icon || 'Document'
+      // 可以在这里添加更多路由信息到菜单
+    } else {
+      // 如果没有匹配的路由，设置默认图标
+      menu.menuIcon = menu.menuIcon || 'Document'
+    }
+    
+    // 如果有子菜单，递归处理
+    if (menu.menuChildList && menu.menuChildList.length > 0) {
+      menu.menuChildList = processMenuData(menu.menuChildList)
+    }
+    
+    return menu
+  })
 }
 
 // 切换菜单折叠状态
@@ -411,8 +425,14 @@ const addTab = async (menu) => {
     // 获取匹配的路由
     const matchedRoute = router.resolve(formattedPath)
     
+    // 如果路由不存在，显示警告并返回
+    if (!matchedRoute || !matchedRoute.matched || matchedRoute.matched.length === 0) {
+      ElMessage.warning(`路由 ${formattedPath} 不存在`)
+      return
+    }
+    
     // 检查路由是否有noTag标记
-    const hasNoTagMark = matchedRoute && matchedRoute.meta && matchedRoute.meta.noTag
+    const hasNoTagMark = matchedRoute.meta && matchedRoute.meta.noTag
     
     // 如果路由有noTag标记，则不添加标签
     if (hasNoTagMark) {
@@ -422,43 +442,53 @@ const addTab = async (menu) => {
       return
     }
     
-    // 如果路由有空重定向标记，则不添加标签，也不跳转
-    if (matchedRoute && matchedRoute.matched && matchedRoute.matched.some(record => record.redirect === '')) {
+    // 如果路由有重定向，且重定向到空路径，则不添加标签，也不跳转
+    if (matchedRoute.redirectedFrom === '') {
       return
     }
+    
+    // 从路由元数据中获取标题和图标
+    const routeTitle = matchedRoute.meta?.title || menuName
+    const routeIcon = matchedRoute.meta?.icon || menuIcon || 'Document'
     
     // 检查是否已存在相同路径的标签
     const isExist = visitedTabs.value.some(tab => tab.path === formattedPath)
     if (!isExist) {
-      visitedTabs.value.push({
-        title: menuName,
+      // 添加新标签
+      const newTab = {
+        title: routeTitle,
         path: formattedPath,
-        icon: menuIcon || 'Document',
+        icon: routeIcon,
         name: formattedPath.replace(/\//g, '-')
-      })
+      }
+      
+      visitedTabs.value.push(newTab)
       
       // 添加到缓存列表
-      if (!cachedTabs.value.includes(formattedPath.replace(/\//g, '-'))) {
-        cachedTabs.value.push(formattedPath.replace(/\//g, '-'))
+      const componentName = formattedPath.replace(/\//g, '-')
+      if (!cachedTabs.value.includes(componentName)) {
+        cachedTabs.value.push(componentName)
       }
       
       // 保存标签状态到本地存储
       saveTabsToStorage()
     }
     
+    // 设置当前活动标签和菜单
     activeTabName.value = formattedPath
     activeMenu.value = formattedPath
+    
+    // 跳转到对应路由
     router.push(formattedPath)
   } catch (error) {
     // 处理导航错误
+    console.error('导航错误:', error)
+    ElMessage.error('导航失败，请检查路由配置')
   }
 }
 
 // 处理标签点击
 const handleTabClick = async (tab) => {
-  // 开始加载进度条
-  NProgress.start()
-  
   const path = tab.props.name;
   activeMenu.value = path;
   activeTabName.value = path;
@@ -466,18 +496,7 @@ const handleTabClick = async (tab) => {
   // 保存当前活动标签
   saveTabsToStorage()
 
-  // 添加进度条显示逻辑
-  if (mainProgress.value) {
-    mainProgress.value.style.transition = 'width 0.2s ease'
-    mainProgress.value.style.width = '70%'
-  }
-
   await router.push(path)
-  
-  // 结束进度条
-  setTimeout(() => {
-    NProgress.done()
-  }, 200)
 }
 
 // 移除标签
@@ -648,14 +667,14 @@ const returnToModuleSelect = () => {
 
 // 在组件挂载后执行
 onMounted(async () => {
-  // 开始进度条
-  NProgress.start()
-  
   // 从本地存储获取用户名
   const storedUsername = localStorage.getItem('username')
   if (storedUsername) {
     username.value = storedUsername
   }
+  
+  // 获取当前路径
+  const currentPath = route.path
   
   // 尝试从本地存储恢复标签状态
   try {
@@ -667,7 +686,19 @@ onMounted(async () => {
         visitedTabs.value = storedTabs
       }
       
-      if (storedActiveTab) {
+      // 优先使用当前路径作为活动标签，避免闪烁
+      if (currentPath !== '/' && currentPath !== '/module-select' && currentPath !== '/login') {
+        const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
+        if (isCurrentPathInTabs) {
+          // 当前路径在标签中，直接设置为活动标签
+          activeTabName.value = currentPath
+          activeMenu.value = currentPath
+        } else if (storedActiveTab) {
+          // 当前路径不在标签中，使用存储的活动标签
+          activeTabName.value = storedActiveTab
+        }
+      } else if (storedActiveTab) {
+        // 对于特殊路径，使用存储的活动标签
         activeTabName.value = storedActiveTab
       }
       
@@ -683,64 +714,44 @@ onMounted(async () => {
   await fetchMenuData()
   
   // 处理初始路由
-  const currentPath = route.path
-  
-  if (currentPath === '/' || currentPath === '/module-select') {
+  if (currentPath === '/' || currentPath === '/module-select' || currentPath === '/login') {
     // 对于根路径或模块选择页，不进行特殊处理
-  } else if (visitedTabs.value.length > 0) {
-    // 如果有保存的标签并且当前路径不是标签中的路径，自动跳转到最后一个激活的标签
+  } else {
+    // 检查当前路径是否在标签中
     const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
     
-    if (!isCurrentPathInTabs && activeTabName.value) {
+    if (!isCurrentPathInTabs && activeTabName.value && activeTabName.value !== currentPath) {
       // 当前路径不在标签中，跳转到激活的标签
       router.push(activeTabName.value)
-    } else if (isCurrentPathInTabs) {
-      // 当前路径在标签中，更新激活的标签
+    } else if (!isCurrentPathInTabs) {
+      // 如果当前路径不在标签中，且没有激活标签，添加当前路径到标签
+      const matchedRoute = router.resolve(currentPath)
+      if (matchedRoute && matchedRoute.name) {
+        // 尝试从路由元数据中获取标题和图标
+        const routeTitle = matchedRoute.meta?.title || '未命名页面'
+        const routeIcon = matchedRoute.meta?.icon || 'Document'
+        
+        // 添加新标签
+        visitedTabs.value.push({
+          title: routeTitle,
+          path: currentPath,
+          icon: routeIcon,
+          name: currentPath.replace(/\//g, '-')
+        })
+        
+        // 添加到缓存列表
+        if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
+          cachedTabs.value.push(currentPath.replace(/\//g, '-'))
+        }
+        
+        // 保存标签状态
+        saveTabsToStorage()
+      }
+      
+      // 设置当前路径为活动标签
       activeTabName.value = currentPath
+      activeMenu.value = currentPath
     }
-  }
-  
-  // 结束进度条
-  setTimeout(() => {
-    NProgress.done()
-    
-    // 初始化自定义进度条状态
-    if (sidebarProgress.value && mainProgress.value) {
-      sidebarProgress.value.style.transition = 'none'
-      sidebarProgress.value.style.width = '0'
-      mainProgress.value.style.transition = 'none'
-      mainProgress.value.style.width = '0'
-    }
-  }, 300)
-})
-
-// NProgress相关
-const sidebarProgress = ref(null)
-const mainProgress = ref(null)
-
-// 同步NProgress进度到自定义进度条
-watch(() => NProgress.status, (newStatus) => {
-  if (newStatus && sidebarProgress.value && mainProgress.value) {
-    const progressWidth = (newStatus.n * 100) + '%'
-    sidebarProgress.value.style.width = progressWidth
-    mainProgress.value.style.width = progressWidth
-  }
-}, { deep: true })
-
-// 当路由变化时，确保进度条正确显示
-watch(() => route.path, () => {
-  if (sidebarProgress.value && mainProgress.value) {
-    // 确保侧边栏的进度条正确显示
-    setTimeout(() => {
-      if (sidebarProgress.value) {
-        sidebarProgress.value.style.transition = 'width 0.2s ease'
-        sidebarProgress.value.style.width = '0'
-      }
-      if (mainProgress.value) {
-        mainProgress.value.style.transition = 'width 0.2s ease'
-        mainProgress.value.style.width = '0'
-      }
-    }, 300)
   }
 })
 </script>

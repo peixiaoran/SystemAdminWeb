@@ -35,8 +35,16 @@
     </div>
 
     <div class="module-grid">
-      <el-row :gutter="30">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="module in modules" :key="module.domainId">
+      <el-row :gutter="30" justify="center">
+        <el-col 
+          :xs="24" 
+          :sm="modules.length === 1 ? 16 : 12" 
+          :md="modules.length === 1 ? 12 : 8" 
+          :lg="modules.length === 1 ? 10 : 6" 
+          :xl="modules.length === 1 ? 8 : 4" 
+          v-for="module in modules" 
+          :key="module.domainId"
+        >
           <div class="module-card" @click="enterModule(module)">
             <div class="module-icon">
               <el-icon :size="54">
@@ -130,7 +138,7 @@ const enterModule = (module) => {
   // 获取模块标识符（用于构建路由路径）
   const moduleIdentifier = module.path.split('/').filter(Boolean)[0] // 提取模块标识符
   
-  // 使用模块存储来保存模块信息
+  // 使用新的模块存储来保存模块信息
   moduleStore.setCurrentModule(
     String(module.domainId), 
     module.domainName, 
@@ -231,7 +239,7 @@ const logout = async () => {
 }
 
 .module-grid {
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 60px auto 0;
   padding: 20px 0;
   flex: 1;
@@ -242,14 +250,20 @@ const logout = async () => {
 .el-row {
   margin: 0 -15px;
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .el-col {
   padding: 0 15px;
   margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .module-card {
+  width: 100%;
+  min-width: 260px;
   height: 320px;
   background-color: #fff;
   border-radius: 16px;
@@ -264,8 +278,8 @@ const logout = async () => {
 }
 
 .module-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(59, 130, 246, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
   border-color: #d0e1fd;
 }
 
@@ -299,7 +313,7 @@ const logout = async () => {
 }
 
 .module-info h2 {
-  font-size: 20px;
+  font-size: 22px;
   margin: 0 0 16px 0;
   color: #303133;
   font-weight: 600;
@@ -311,11 +325,11 @@ const logout = async () => {
 }
 
 .module-info p {
-  font-size: 14px;
+  font-size: 15px;
   color: #606266;
   margin: 0;
   line-height: 1.6;
-  height: 45px;
+  height: 50px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -347,7 +361,7 @@ const logout = async () => {
 }
 
 .module-card:hover .enter-icon {
-  transform: translateX(3px);
+  transform: translateX(5px);
 }
 
 .loading-container {
@@ -373,15 +387,21 @@ const logout = async () => {
   to { transform: rotate(360deg); }
 }
 
+/* 单个模块卡片宽度优化 */
+.single-module-card .module-card {
+  max-width: 450px;
+  min-width: 350px;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .header {
+  .header-actions {
     flex-direction: column;
     padding: 20px;
   }
   
-  .welcome {
-    text-align: center;
+  .language-switcher {
+    margin-right: 0;
     margin-bottom: 15px;
   }
   
@@ -390,7 +410,7 @@ const logout = async () => {
   }
   
   .module-grid {
-    margin-top: 40px;
+    margin-top: 30px;
     padding: 10px;
   }
   
@@ -401,6 +421,8 @@ const logout = async () => {
   .el-col {
     padding: 0 10px;
     margin-bottom: 20px;
+    flex: 0 0 100%;
+    max-width: 500px;
   }
   
   .module-card {
@@ -408,10 +430,35 @@ const logout = async () => {
     min-height: 280px;
   }
   
-  /* 确保在小屏幕上单个模块卡片也有合适的宽度 */
-  .el-col.el-col-24.el-col-sm-12.el-col-md-8.el-col-lg-6 {
-    max-width: 320px;
-    margin: 0 auto 20px;
+  .single-module-card .module-card {
+    max-width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .module-select-container {
+    padding: 15px;
+  }
+  
+  .header-actions {
+    padding: 10px 0;
+  }
+  
+  .module-grid {
+    margin-top: 20px;
+  }
+  
+  .el-col {
+    max-width: 100%;
+  }
+  
+  .module-info h2 {
+    font-size: 20px;
+  }
+  
+  .module-info p {
+    font-size: 14px;
   }
 }
 
@@ -445,4 +492,4 @@ const logout = async () => {
   margin-top: 8px;
   padding-top: 8px;
 }
-</style> 
+</style>

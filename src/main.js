@@ -4,7 +4,6 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
-import './assets/nprogress.css'  // 引入自定义NProgress样式
 import pinia from './stores'
 import i18n from './i18n'
 
