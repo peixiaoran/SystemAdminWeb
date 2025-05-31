@@ -66,11 +66,35 @@
         </div>
         
         <div class="right-menu">
-          <!-- 添加返回首页按钮 -->
-          <el-button link @click="returnToModuleSelect" class="home-button">
-            <el-icon><Back /></el-icon>
-            返回首页
-          </el-button>
+          <!-- 返回首页按钮，使用SVG -->
+          <div class="home-button" @click="returnToModuleSelect">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>{{ $t('common.backToHome') }}</span>
+          </div>
+          
+          <!-- 语言切换下拉菜单 -->
+          <el-dropdown trigger="click" class="language-dropdown">
+            <div class="language-selector">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span class="language-text">{{ currentLanguageLabel }}</span>
+              <el-icon class="el-icon-arrow-down"><ArrowDown /></el-icon>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="handleLanguageChange('zh-CN')">中文简体</el-dropdown-item>
+                <el-dropdown-item @click="handleLanguageChange('zh-TW')">中文繁体</el-dropdown-item>
+                <el-dropdown-item @click="handleLanguageChange('en-US')">English</el-dropdown-item>
+                <el-dropdown-item @click="handleLanguageChange('vi-VN')">Tiếng Việt</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           
           <el-dropdown trigger="click">
             <div class="avatar-wrapper">
@@ -1059,14 +1083,51 @@ const restoreTabsFromStorage = () => {
   display: flex;
   align-items: center;
   color: #606266;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s;
 }
 
 .home-button:hover {
   color: #409EFF;
+  background-color: #ecf5ff;
 }
 
-.home-button :deep(.el-icon) {
+.home-button .icon {
   margin-right: 4px;
-  font-size: 16px;
+}
+
+/* 语言切换下拉菜单样式 */
+.language-dropdown {
+  margin-right: 15px;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.language-selector:hover {
+  color: #409EFF;
+  background-color: #ecf5ff;
+}
+
+.language-text {
+  margin: 0 4px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.language-selector .icon {
+  color: #606266;
+}
+
+.language-selector:hover .icon {
+  color: #409EFF;
 }
 </style>

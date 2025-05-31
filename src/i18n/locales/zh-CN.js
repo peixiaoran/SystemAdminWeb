@@ -19,6 +19,7 @@ export default {
     tip: '提示',
     warning: '警告',
     enter: '进入',
+    backToHome: '返回首页',
   },
   
   // 登录页

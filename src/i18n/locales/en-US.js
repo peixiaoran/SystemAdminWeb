@@ -19,6 +19,7 @@ export default {
     tip: 'Tip',
     warning: 'Warning',
     enter: 'Enter',
+    backToHome: 'Back to Home',
   },
   
   // Login page
