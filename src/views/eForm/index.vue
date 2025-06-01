@@ -122,32 +122,19 @@
               <div class="service-status-header">
                 <span>服务状态</span>
                 <div class="header-actions">
-                  <el-button 
-                    type="primary" 
-                    size="small" 
-                    plain 
-                    icon="RefreshRight"
-                  >
-                    刷新
-                  </el-button>
+                  <el-button type="primary" size="small" plain icon="RefreshRight">刷新</el-button>
                   <el-button type="success" size="small" plain>全部重启</el-button>
                 </div>
               </div>
             </template>
             <div class="service-list">
-              <div 
-                class="service-item" 
-                v-for="(service, index) in serviceStatus" 
-                :key="index"
-              >
+              <div class="service-item" v-for="(service, index) in serviceStatus" :key="index">
                 <div class="service-info">
                   <div class="service-name">{{ service.name }}</div>
                   <div class="service-desc">{{ service.description }}</div>
                 </div>
                 <div class="service-actions">
-                  <el-tag 
-                    :type="service.status === '运行中' ? 'success' : service.status === '已停止' ? 'danger' : 'warning'"
-                  >
+                  <el-tag :type="service.status === '运行中' ? 'success' : service.status === '已停止' ? 'danger' : 'warning'">
                     {{ service.status }}
                   </el-tag>
                   <div class="action-buttons">
@@ -175,12 +162,7 @@
               <div class="system-log-header">
                 <span>系统日志</span>
                 <div class="log-actions">
-                  <el-select 
-                    v-model="logType" 
-                    placeholder="日志类型" 
-                    size="small" 
-                    style="width: 120px; margin-right: 10px;"
-                  >
+                  <el-select v-model="logType" placeholder="日志类型" size="small" style="width: 120px; margin-right: 10px;">
                     <el-option label="全部" value="all" />
                     <el-option label="错误" value="error" />
                     <el-option label="警告" value="warning" />
@@ -190,13 +172,7 @@
                 </div>
               </div>
             </template>
-            <el-table 
-              :data="systemLogs" 
-              style="width: 100%" 
-              border 
-              stripe 
-              :header-cell-style="{ background: '#f5f7fa' }"
-            >
+            <el-table :data="systemLogs" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
               <el-table-column prop="time" label="时间" width="180" />
               <el-table-column prop="level" label="级别" width="100">
                 <template #default="scope">

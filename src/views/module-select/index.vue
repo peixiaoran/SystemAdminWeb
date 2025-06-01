@@ -155,6 +155,7 @@ const enterModule = (module) => {
       if (Array.isArray(visitedTabs) && visitedTabs.length > 0 && activeTabName) {
         // 检查最后活动的标签是否属于当前模块
         if (activeTabName.startsWith(`/${moduleIdentifier}/`)) {
+          console.log('恢复上次会话，跳转到:', activeTabName)
           // 直接跳转到最后活动的标签页
           router.push(activeTabName)
           return
@@ -162,10 +163,11 @@ const enterModule = (module) => {
       }
     }
   } catch (error) {
-    // 出错时继续执行默认跳转逻辑
+    console.error('读取标签数据失败:', error)
   }
   
   // 如果没有未关闭的标签或标签不属于当前模块，则跳转到模块首页
+  console.log('进入模块:', moduleIdentifier)
   router.push(`/${moduleIdentifier}/index`)
 }
 

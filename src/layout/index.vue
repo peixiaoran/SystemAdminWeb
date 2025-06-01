@@ -147,7 +147,7 @@
         </div>
       </div>
       
-      <!-- 主要内容区域 - 关键修改点 -->
+      <!-- 主要内容区域  -->
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="page-slide" mode="out-in">
@@ -937,9 +937,9 @@ const openMenuForPath = (path) => {
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   overflow-x: hidden;
-  z-index: 10;
   padding: 6px;
   border: none;
+  position: relative;
 }
 
 .logo-container {
@@ -1092,7 +1092,7 @@ const openMenuForPath = (path) => {
   flex-direction: column;
   overflow: hidden;
   border-left: none;
-  height: 100vh;
+  height: 102vh;
   padding-bottom: 0;
   margin: 0;
 }
@@ -1138,7 +1138,6 @@ const openMenuForPath = (path) => {
   box-shadow: none;
   position: relative;
   flex-shrink: 0; /* 防止标签栏被压缩 */
-  z-index: 1; /* 确保标签栏在内容之上 */
 }
 
 .tags-view-container:deep(.el-tabs__header) {
@@ -1204,7 +1203,7 @@ const openMenuForPath = (path) => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   padding: 5px 0;
   min-width: 150px;
-  z-index: 3000;
+  z-index: 10000; /* 提高z-index值，确保高于所有其他元素 */
   font-size: 14px;
 }
 
@@ -1237,7 +1236,7 @@ const openMenuForPath = (path) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 改为hidden防止双层滚动条 */
+  /* 移除 overflow: hidden */
   padding: 12px;
   background-color: #f0f2f5;
   position: relative;

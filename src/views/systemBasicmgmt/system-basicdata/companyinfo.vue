@@ -1,33 +1,19 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
+      
       <div class="conventional-content">
         <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form">
           <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')">
-            <el-input 
-              v-model="filters.companyNameCh" 
-              :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameCh')" 
-              style="width:170px" 
-              clearable 
-            />
+            <el-input v-model="filters.companyNameCh" :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameCh')" style="width:170px" clearable />
           </el-form-item>
           <el-form-item></el-form-item>
           <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')">
-            <el-input 
-              v-model="filters.companyNameEn" 
-              :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameEn')" 
-              style="width:170px" 
-              clearable 
-            />
+            <el-input v-model="filters.companyNameEn" :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameEn')" style="width:170px" clearable />
           </el-form-item>
           <el-form-item>
-            <el-button 
-              type="primary" 
-              @click="handleSearch" 
-              class="conventional-filter-form-button" 
-              plain
-            >
+            <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
               {{ $t('common.search') }}
             </el-button>
             <el-button @click="handleReset">
@@ -50,79 +36,33 @@
               style="width: 100%" 
               border 
               stripe
-              height="100%"
+              max-height="calc(100vh - 240px)"
               :header-cell-style="{ background: '#f5f7fa' }"
               v-loading="loading"
               class="conventional-table"
             >
-              <el-table-column 
-                type="index" 
-                :label="$t('systemBasicmgmt.companyInfo.index')" 
-                width="60" 
-                align="center" 
-                fixed 
-              />
-              <el-table-column 
-                prop="companyNameCh" 
-                :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" 
-                align="left" 
-                min-width="350" 
-              />
-              <el-table-column 
-                prop="companyNameEn" 
-                :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" 
-                align="left" 
-                min-width="350" 
-              />
-              <el-table-column 
-                prop="companyiPhone" 
-                :label="$t('systemBasicmgmt.companyInfo.companyPhone')" 
-                align="center" 
-                min-width="130" 
-              />
-              <el-table-column 
-                prop="companyFax" 
-                :label="$t('systemBasicmgmt.companyInfo.companyFax')" 
-                align="center" 
-                min-width="300" 
-              />
-              <el-table-column 
-                prop="createdDate" 
-                :label="$t('systemBasicmgmt.companyInfo.createdTime')" 
-                min-width="180" 
-              />
-              <el-table-column 
-                prop="remark" 
-                :label="$t('systemBasicmgmt.companyInfo.remark')" 
-                align="left" 
-                min-width="450" 
-              />
-              <el-table-column 
-                :label="$t('systemBasicmgmt.companyInfo.operation')" 
-                min-width="150" 
-                fixed="right"
-              >
-                <template #default="scope">
-                  <el-button 
-                    size="small" 
-                    @click="handleEdit(scope.$index, scope.row)"
-                  >
-                    {{ $t('common.edit') }}
-                  </el-button>
-                  <el-button
-                    size="small"
-                    type="danger"
-                    @click="handleDelete(scope.$index, scope.row)"
-                  >
-                    {{ $t('common.delete') }}
-                  </el-button>
-                </template>
+              <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
+              <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" align="left" min-width="350" />
+              <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="350" />
+              <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="130" />
+              <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
+              <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
+              <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />
+              <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="150" fixed="right">
+                  <template #default="scope">
+                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                      >{{ $t('common.edit') }}</el-button
+                    >
+                    <el-button
+                      size="small"
+                      type="danger"
+                      @click="handleDelete(scope.$index, scope.row)"
+                      >{{ $t('common.delete') }}</el-button
+                    >
+                  </template>
               </el-table-column>
             </el-table>
           </div>
-          
-          <!-- 添加表格与分页之间的间距 -->
-          <div class="table-pagination-spacer"></div>
           
           <!-- 分页 -->
           <div class="pagination-wrapper">
@@ -152,20 +92,20 @@
           <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')">
             <el-input v-model="editForm.companyNameCh" style="width:250px"/>
           </el-form-item>
-          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')">
+          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" >
             <el-input v-model="editForm.companyNameEn" style="width:250px"/>
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')">
+          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')" >
             <el-input v-model="editForm.companyiPhone" style="width:250px"/>
           </el-form-item>
-          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')">
+          <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')" >
             <el-input v-model="editForm.companyFax" style="width:250px"/>
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systemBasicmgmt.companyInfo.remark')">
+          <el-form-item :label="$t('systemBasicmgmt.companyInfo.remark')" >
             <el-input v-model="editForm.remark" style="width:632px" type="textarea"/>
           </el-form-item>
         </div>
@@ -239,6 +179,7 @@ const fetchCompanyEntity = async (companyId) => {
   const params = {
     companyId: companyId
   }
+  console.log(params)
   const res = await post(GET_COMPANY_ENTITY_API.GET_COMPANY_ENTITY, params)
   
   if (res && res.code === '200') {
