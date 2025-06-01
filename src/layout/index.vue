@@ -147,12 +147,12 @@
         </div>
       </div>
       
-      <!-- 主要内容区域 -->
+      <!-- 主要内容区域 - 关键修改点 -->
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="page-slide" mode="out-in">
             <keep-alive :include="cachedTabs">
-              <component :is="markRaw(Component)" />
+              <component :is="markRaw(Component)" class="router-view-component" />
             </keep-alive>
           </transition>
         </router-view>
@@ -918,17 +918,21 @@ const openMenuForPath = (path) => {
 <style scoped>
 .app-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100vh; /* 固定为视口高度 */
   width: 100%;
-  overflow: hidden;
   border: none;
+  overflow: hidden; /* 避免出现滚动条 */
+  box-sizing: border-box; /* 确保内边距包含在总高度内 */
+  margin: 0; /* 移除外边距 */
+  padding: 0; /* 移除内边距 */
 }
 
 /* 侧边栏样式 */
 .aside-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   transition: width 0.3s;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
@@ -1088,10 +1092,13 @@ const openMenuForPath = (path) => {
   flex-direction: column;
   overflow: hidden;
   border-left: none;
+  height: 100vh;
+  padding-bottom: 0;
+  margin: 0;
 }
 
 .header {
-  height: 50px;
+  height: 45px; /* 减小header高度 */
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   display: flex;
@@ -1099,6 +1106,7 @@ const openMenuForPath = (path) => {
   justify-content: space-between;
   padding: 0 15px;
   border-bottom: none;
+  flex-shrink: 0; /* 防止header被压缩 */
 }
 
 .breadcrumb {
@@ -1126,9 +1134,11 @@ const openMenuForPath = (path) => {
 /* 标签页样式 */
 .tags-view-container {
   background-color: #fff;
-  padding: 5px 15px 5px 15px;
+  padding: 3px 15px 3px 15px; /* 减小内边距 */
   box-shadow: none;
   position: relative;
+  flex-shrink: 0; /* 防止标签栏被压缩 */
+  z-index: 1; /* 确保标签栏在内容之上 */
 }
 
 .tags-view-container:deep(.el-tabs__header) {
@@ -1217,12 +1227,82 @@ const openMenuForPath = (path) => {
   cursor: pointer;
 }
 
-/* 主内容区域 */
+/* 主要内容区域的容器样式 */
+.el-main {
+  padding: 12px !important; /* 覆盖element-plus默认内边距 */
+}
+
+/* 主内容区域 - 关键修复点 */
 .main-content {
   flex: 1;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 改为hidden防止双层滚动条 */
   padding: 12px;
   background-color: #f0f2f5;
+  position: relative;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+/* 确保路由视图正确填充 */
+.main-content :deep(router-view) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  margin-bottom: 0;
+}
+
+/* 确保组件视图正确填充 */
+.main-content :deep(.router-view-component) {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* 关键：占据父容器全部可用空间 */
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  min-height: 0;
+  margin-bottom: 0; /* 移除底部间距 */
+  padding-bottom: 0; /* 确保没有底部内边距 */
+}
+
+/* 确保表格容器正确填充 */
+.main-content :deep(.conventional-table-container) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保表格卡片正确填充 */
+.main-content :deep(.conventional-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保卡片内容区域正确填充 */
+.main-content :deep(.conventional-card .el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 8px;
+  height: 100%;
+}
+
+/* 确保表格区域正确填充 */
+.main-content :deep(.table-container) {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 防止表格内容溢出 */
+.conventional-table :deep(.el-table__body-wrapper) {
+  overflow-x: auto;
 }
 
 /* 确保菜单图标和文本对齐 */
@@ -1316,5 +1396,21 @@ const openMenuForPath = (path) => {
 
 .language-selector:hover .icon {
   color: #409EFF;
+}
+
+/* 浏览器缩放适配 */
+@media (min-resolution: 120dpi) {
+  .main-content {
+    padding: 10px; /* 在高分辨率下使用统一内边距 */
+  }
+  
+  .main-content :deep(.router-view-component) {
+    max-height: none; /* 移除最大高度限制 */
+    margin-bottom: 0; /* 移除底部间距 */
+  }
+  
+  .el-main {
+    padding: 10px !important; /* 高分辨率下减小内边距 */
+  }
 }
 </style>

@@ -7,7 +7,6 @@
       </div>
       
       <div class="login-form-container">
-        
         <el-form
           ref="loginFormRef"
           :model="loginForm"
@@ -50,7 +49,12 @@
               :placeholder="$t('login.factoryPlaceholder')"
               class="factory-select"
             >
-              <el-option v-for="(label, value) in factories" :key="value" :label="label" :value="value" />
+              <el-option 
+                v-for="(label, value) in factories" 
+                :key="value" 
+                :label="label" 
+                :value="value" 
+              />
             </el-select>
           </el-form-item>
           
@@ -61,7 +65,12 @@
               class="language-select"
               @change="handleLanguageChange"
             >
-              <el-option v-for="(label, value) in languages" :key="value" :label="label" :value="value" />
+              <el-option 
+                v-for="(label, value) in languages" 
+                :key="value" 
+                :label="label" 
+                :value="value" 
+              />
             </el-select>
           </el-form-item>
           
@@ -193,9 +202,6 @@ const handleLogin = () => {
             const userStore = useUserStore()
             // 设置token
             userStore.setToken(res.data)
-            
-            // 路由现在是静态的，不需要加载动态路由
-            console.log('登录成功，直接跳转到模块选择页')
             
             // 直接跳转到模块选择页
             router.push('/module-select')

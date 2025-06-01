@@ -5,7 +5,11 @@
         <h1 class="error-code">404</h1>
         <h2 class="error-title">页面未找到</h2>
         <p class="error-message">抱歉，您访问的页面不存在或已被移除</p>
-        <el-button type="primary" class="back-button" @click="goToLogin">
+        <el-button 
+          type="primary" 
+          class="back-button" 
+          @click="goToLogin"
+        >
           <el-icon><ArrowLeft /></el-icon>
           返回登录
         </el-button>
@@ -87,7 +91,6 @@ const goToLogin = () => {
   color: #3498db;
   line-height: 1;
   background: linear-gradient(45deg, #3498db, #2980b9);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 20px rgba(52, 152, 219, 0.15);
   animation: pulse 2s infinite;

@@ -22,7 +22,6 @@
           </el-form>
           
           <!-- 日志表格 -->
-          <div class="table-pagination-container">
             <div class="table-wrapper">
               <el-table 
                 :data="roleDomainList" 
@@ -61,7 +60,6 @@
               />
             </div>
           </div>
-        </div>
       </el-card>
     </div>
   </template>

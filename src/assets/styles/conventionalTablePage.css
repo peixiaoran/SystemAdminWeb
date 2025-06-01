@@ -21,6 +21,16 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
+/* 修复卡片内容区域样式，确保完全填充 */
+.conventional-card :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 8px;
+  height: 100%;
+}
+
 /* 卡片头部样式 */
 .conventional-card-header {
   display: flex;
@@ -80,6 +90,15 @@
   align-items: flex-start;
 }
 
+/* 分页组件包装器 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0 0 0;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
 /* 内容区域样式 */
 .conventional-content {
   padding: 5px 5px;
@@ -97,6 +116,15 @@
   display: flex;
   flex-direction: column;
   min-height: 600px;
+}
+
+/* 表格内部容器样式 */
+.table-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* 状态单元格样式 */
@@ -190,12 +218,13 @@
 
 /* 表格包装器 - 优化样式 */
 .table-wrapper {
-  height: calc(100vh - 280px);
+  height: calc(100vh - 280px); /* 可以根据需要调整高度 */
   min-height: 300px;
   width: 100%;
   margin-top: 10px;
   margin-bottom: 5px;
-  overflow: visible;
+  overflow-y: hidden; /* 隐藏垂直滚动条 */
+  overflow-x: auto; /* 允许水平滚动条 */
   border: 1px solid #ebeef5;
   border-radius: 4px;
   position: relative;
@@ -212,11 +241,12 @@
   height: 100%;
 }
 
+/* 移除表格内部滚动条 */
 .table-wrapper .el-table__body-wrapper {
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
-/* 表格边框样式修复 */
+/* 其他样式保持不变 */
 .table-wrapper .el-table::before,
 .table-wrapper .el-table::after,
 .table-wrapper .el-table__inner-wrapper::after,
@@ -226,7 +256,6 @@
   display: none !important;
 }
 
-/* 移除表格内部多余边框 */
 .table-wrapper .el-table--border .el-table__inner-wrapper {
   border: none;
 }
@@ -237,20 +266,6 @@
 
 .table-wrapper .el-table__row:last-child .el-table__cell {
   border-bottom: none;
-}
-
-/* 分页包装器 - 优化样式 */
-.pagination-wrapper {
-  position: relative;
-  height: 50px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  background-color: transparent;
-  z-index: 10;
-  padding-right: 20px;
-  padding-top: 5px;
-  border: none;
 }
 
 /* 表单布局样式 */

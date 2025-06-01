@@ -7,6 +7,7 @@ import './assets/main.css'
 import pinia from './stores'
 import i18n from './i18n'
 import { updateRouteTitle } from './utils/updateRouteTitle'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-CN'
@@ -21,18 +22,12 @@ app.use(i18n) // 先注册i18n
 app.use(ElementPlus, { size: 'default', zIndex: 3000 })
 
 // 导入所有图标并注册
-// 放到最后避免循环依赖问题
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-// 检查用户是否已登录，如果已登录则添加动态路由
+// 检查用户是否已登录
 const token = localStorage.getItem('token')
-if (token) {
-  // 简单记录用户已登录状态，所有路由都已在router/index.js中静态定义
-  console.log('检测到用户已登录')
-}
 
 // 等待路由就绪后初始化标题
 router.isReady().then(() => {

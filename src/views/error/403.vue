@@ -5,7 +5,11 @@
         <h1 class="error-code">403</h1>
         <h2 class="error-title">访问被拒绝</h2>
         <p class="error-message">抱歉，您没有权限访问此页面</p>
-        <el-button type="primary" class="back-button" @click="goToLogin">
+        <el-button 
+          type="primary" 
+          class="back-button" 
+          @click="goToLogin"
+        >
           <el-icon><ArrowLeft /></el-icon>
           返回登录
         </el-button>
@@ -81,7 +85,6 @@ const goToLogin = () => {
   color: #e74c3c;
   line-height: 1;
   background: linear-gradient(45deg, #e74c3c, #f39c12);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 20px rgba(231, 76, 60, 0.15);
   animation: pulse 2s infinite;

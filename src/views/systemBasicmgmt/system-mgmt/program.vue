@@ -41,7 +41,6 @@
           </el-form>
           
           <!-- 日志表格 -->
-          <div class="table-pagination-container">
             <div class="table-wrapper">
               <el-table 
                 :data="programList" 
@@ -108,7 +107,6 @@
               />
             </div>
           </div>
-        </div>
       </el-card>
       
       <!-- 编辑状态对话框 -->

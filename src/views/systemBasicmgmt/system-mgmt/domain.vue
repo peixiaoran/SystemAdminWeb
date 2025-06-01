@@ -28,7 +28,6 @@
         </el-form>
         
         <!-- 日志表格 -->
-        <div class="table-pagination-container">
           <div class="table-wrapper">
             <el-table 
               :data="domainList" 
@@ -94,7 +93,6 @@
               @current-change="handlePageChange"
             />
           </div>
-        </div>
       </div>
     </el-card>
     
