@@ -102,59 +102,59 @@
           <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programCode')">
-                      <el-input v-model="editForm.menuCode" style="width:250px" />
+                      <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programName')">
-                      <el-input v-model="editForm.menuName" style="width:250px" />
+                      <el-input v-model="editForm.menuName" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')">
-                      <el-select v-model="editForm.domainId" style="width:250px" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" clearable @change="handleDomainChange">
+                      <el-select v-model="editForm.domainId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" clearable @change="handleDomainChange">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')">
-                      <el-select v-model="editForm.parentMenuId" style="width:250px" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')" clearable>
+                      <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')" clearable>
                           <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')">
-                      <el-input v-model="editForm.menuIcon" style="width:250px" />
+                      <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.sortOrder')">
-                      <el-input v-model.number="editForm.sortOrder" type="number" style="width:250px" />
+                      <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')">
-                      <el-input v-model="editForm.path" style="width:250px" />
+                      <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programType')">
-                      <el-input v-model.number="editForm.menuType" type="number" style="width:250px" />
+                      <el-input v-model.number="editForm.menuType" type="number" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')">
-                      <el-input v-model="editForm.roleCode" style="width:250px" />
+                      <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.apiRoute')">
-                      <el-input v-model="editForm.routePath" style="width:250px" />
+                      <el-input v-model="editForm.routePath" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.component')">
-                      <el-input v-model="editForm.component" style="width:250px" />
+                      <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.target')">
-                      <el-input v-model="editForm.target" style="width:250px" />
+                      <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
               </div>
-              <div class="form-row">
+              <div class="form-row full-width">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
-                      <el-input v-model="editForm.remarks" style="width:632px" type="textarea" />
+                      <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
               <div class="form-row">

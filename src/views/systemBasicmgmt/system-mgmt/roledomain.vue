@@ -194,12 +194,4 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
-
-  /* 复选框居中 */
-  .checkbox-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-  }
 </style> 

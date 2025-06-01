@@ -30,7 +30,7 @@
               </el-form-item>
           </el-form>
 
-          <!-- 日志表格 -->
+          <!-- 表格区域 -->
           <div class="table-pagination-container">
               <div class="table-wrapper">
                   <el-table :data="roleModuleList"

@@ -16,18 +16,26 @@
           size="large"
           autocomplete="off"
         >
-          <!-- 添加隐藏的用户名和密码字段，用于迷惑浏览器的自动填充 -->
-          <input type="text" style="display:none" />
-          <input type="password" style="display:none" />
+          <!-- 添加多个隐藏的用户名和密码字段，彻底迷惑浏览器的自动填充 -->
+          <div style="display:none">
+            <input type="text" />
+            <input type="password" />
+            <input type="text" name="username" />
+            <input type="password" name="password" />
+            <input type="text" name="email" />
+            <input type="text" name="login" />
+          </div>
           
           <el-form-item prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
-              :name="'username_' + randomStr"
-              autocomplete="off"
+              :name="'fake_username_' + randomStr"
+              autocomplete="new-password"
               data-lpignore="true"
+              readonly
+              onfocus="this.removeAttribute('readonly')"
             />
           </el-form-item>
           
@@ -37,9 +45,11 @@
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
-              :name="'password_' + randomStr"
-              autocomplete="off"
+              :name="'fake_password_' + randomStr"
+              autocomplete="new-password"
               data-lpignore="true"
+              readonly
+              onfocus="this.removeAttribute('readonly')"
               @keyup.enter="handleLogin"
             />
           </el-form-item>
@@ -82,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
@@ -114,7 +124,26 @@ onMounted(() => {
   setTimeout(() => {
     loginForm.loginNo = ''
     loginForm.passWrod = ''
+    
+    // 继续进行多次清空尝试，应对不同浏览器的自动填充延迟
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        loginForm.loginNo = ''
+        loginForm.passWrod = ''
+      }, 100 * i)
+    }
+    
+    // 重置表单验证状态
+    nextTick(() => {
+      loginFormRef.value?.resetFields()
+    })
   }, 100)
+  
+  // 添加页面卸载前的事件，清空表单
+  window.addEventListener('beforeunload', () => {
+    loginForm.loginNo = ''
+    loginForm.passWrod = ''
+  })
 })
 
 // 使用计算属性获取翻译后的选项
@@ -199,6 +228,10 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
+            
+            // 登录成功后清空表单
+            loginForm.loginNo = ''
+            loginForm.passWrod = ''
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }
