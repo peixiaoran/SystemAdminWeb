@@ -464,7 +464,6 @@ const handleSave = () => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
   padding: 16px;
   border-radius: 4px;
 }
@@ -498,7 +497,9 @@ const handleSave = () => {
   width: 99%;
   margin: 0 auto;
   flex-direction: column;
-  overflow: hidden; /* 隐藏容器滚动条 */
+  /* 添加以下两行 */
+  position: relative;
+  z-index: 1;
   border: 1px solid #ebeef5;
   border-radius: 4px;
 }

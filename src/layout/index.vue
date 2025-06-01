@@ -147,7 +147,7 @@
         </div>
       </div>
       
-      <!-- 主要内容区域 - 关键修改点 -->
+      <!-- 主要内容区域  -->
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="page-slide" mode="out-in">
@@ -1092,7 +1092,7 @@ const openMenuForPath = (path) => {
   flex-direction: column;
   overflow: hidden;
   border-left: none;
-  height: 100vh;
+  height: 102vh;
   padding-bottom: 0;
   margin: 0;
 }
@@ -1138,7 +1138,7 @@ const openMenuForPath = (path) => {
   box-shadow: none;
   position: relative;
   flex-shrink: 0; /* 防止标签栏被压缩 */
-  z-index: 1; /* 确保标签栏在内容之上 */
+  z-index: 2; /* 提高z-index值，但确保低于右键菜单 */
 }
 
 .tags-view-container:deep(.el-tabs__header) {
@@ -1204,7 +1204,7 @@ const openMenuForPath = (path) => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   padding: 5px 0;
   min-width: 150px;
-  z-index: 3000;
+  z-index: 10000; /* 提高z-index值，确保高于所有其他元素 */
   font-size: 14px;
 }
 
@@ -1237,12 +1237,13 @@ const openMenuForPath = (path) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 改为hidden防止双层滚动条 */
+  /* 移除 overflow: hidden */
   padding: 12px;
   background-color: #f0f2f5;
   position: relative;
   min-height: 0;
   margin-bottom: 0;
+  z-index: 1; /* 添加较低的z-index值 */
 }
 
 /* 确保路由视图正确填充 */
@@ -1255,6 +1256,7 @@ const openMenuForPath = (path) => {
   min-height: 0;
   overflow: auto;
   margin-bottom: 0;
+  z-index: 1; /* 添加较低的z-index值 */
 }
 
 /* 确保组件视图正确填充 */
@@ -1268,6 +1270,7 @@ const openMenuForPath = (path) => {
   min-height: 0;
   margin-bottom: 0; /* 移除底部间距 */
   padding-bottom: 0; /* 确保没有底部内边距 */
+  z-index: 1; /* 添加较低的z-index值 */
 }
 
 /* 确保表格容器正确填充 */
