@@ -96,7 +96,8 @@ export default {
     roleProgram: 'Liên kết vai trò - chương trình',
     systemBasicData: 'Mô-đun dữ liệu cơ bản',
     userInfo: 'Quản lý thông tin nhân viên',
-    companyInfo: 'Quản lý thông tin công ty'
+    companyInfo: 'Quản lý thông tin công ty',
+    departmentInfo: 'Quản lý thông tin phòng ban'
   },
   
   // Quản lý cơ bản hệ thống
@@ -368,6 +369,47 @@ export default {
         pleaseSelectDomain: 'Vui lòng chọn miền trước',
         pleaseSelectModule: 'Vui lòng chọn mô-đun trước',
         updateBindingsSuccess: 'Cập nhật liên kết thành công'
+      }
+    },
+    // Thông tin bộ phận
+    departmentInfo: {
+      title: 'Thông tin bộ phận',
+      departmentCode: 'Mã bộ phận',
+      departmentName: 'Tên bộ phận',
+      departmentNameCn: 'Tên bộ phận tiếng Trung',
+      departmentNameEn: 'Tên bộ phận tiếng Anh',
+      description: 'Mô tả',
+      landline: 'Điện thoại cố định',
+      email: 'Email',
+      address: 'Địa chỉ',
+      status: 'Trạng thái',
+      active: 'Hoạt động',
+      inactive: 'Không hoạt động',
+      sortOrder: 'Thứ tự sắp xếp',
+      departmentLevelId: 'Cấp độ bộ phận',
+      remark: 'Ghi chú',
+      operation: 'Thao tác',
+      addDepartment: 'Thêm bộ phận',
+      addChild: 'Thêm bộ phận con',
+      addChildDepartment: 'Thêm bộ phận con',
+      editDepartment: 'Sửa bộ phận',
+      deleteConfirm: 'Bạn có chắc chắn muốn xóa bộ phận này không?',
+      hasChildrenCannotDelete: 'Bộ phận này có bộ phận con, không thể xóa',
+      pleaseInputCode: 'Vui lòng nhập mã bộ phận',
+      pleaseInputName: 'Vui lòng nhập tên bộ phận',
+      pleaseInputNameCn: 'Vui lòng nhập tên bộ phận tiếng Trung',
+      pleaseInputNameEn: 'Vui lòng nhập tên bộ phận tiếng Anh',
+      pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+      pleaseCompleteForm: 'Vui lòng hoàn thành biểu mẫu',
+      index: 'STT',
+      saveSuccess: 'Lưu thành công',
+      updateSuccess: 'Cập nhật thành công',
+      deleteSuccess: 'Xóa thành công',
+      operationFailed: 'Thao tác thất bại',
+      getFailed: 'Không thể lấy dữ liệu',
+      filter: {
+        departmentCode: 'Mã bộ phận',
+        departmentName: 'Tên bộ phận'
       }
     }
   }

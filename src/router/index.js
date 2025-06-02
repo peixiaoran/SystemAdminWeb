@@ -207,6 +207,17 @@ const moduleRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
+          },
+          {
+            path: 'departmentinfo',
+            name: 'SystemDepartmentInfo',
+            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/departmentinfo.vue')),
+            meta: { 
+              title: 'route.departmentInfo', 
+              icon: 'Discount',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
           }
         ]
       }

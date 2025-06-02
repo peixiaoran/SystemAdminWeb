@@ -96,7 +96,8 @@ export default {
     roleProgram: '角色程序绑定',
     systemBasicData: '基本资料模块',
     userInfo: '员工资讯维护',
-    companyInfo: '公司资料维护'
+    companyInfo: '公司资料维护',
+    departmentInfo: '部门资料维护'
   },
   
   // 系统基础管理
@@ -213,6 +214,47 @@ export default {
       getFailed: '获取数据失败',
       filter: {
         companyName: '公司名称',
+      }
+    },
+     // 部门信息
+     departmentInfo: {
+      title: '部门信息',
+      departmentCode: '部门编码',
+      departmentName: '部门名称',
+      departmentNameCn: '部门中文名称',
+      departmentNameEn: '部门英文名称',
+      description: '描述',
+      landline: '座机电话',
+      email: '邮箱',
+      address: '地址',
+      status: '状态',
+      active: '启用',
+      inactive: '禁用',
+      sortOrder: '排序',
+      departmentLevelId: '部门层级',
+      remark: '备注',
+      operation: '操作',
+      addDepartment: '新增部门',
+      addChild: '添加子部门',
+      addChildDepartment: '新增子部门',
+      editDepartment: '编辑部门',
+      deleteConfirm: '确定要删除该部门吗？',
+      hasChildrenCannotDelete: '该部门存在子部门，无法删除',
+      pleaseInputCode: '请输入部门编码',
+      pleaseInputName: '请输入部门名称',
+      pleaseInputNameCn: '请输入部门中文名称',
+      pleaseInputNameEn: '请输入部门英文名称',
+      pleaseInputSortOrder: '请输入排序号',
+      pleaseCompleteForm: '请完善表单信息',
+      index: '序号',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '删除成功',
+      operationFailed: '操作失败',
+      getFailed: '获取数据失败',
+      filter: {
+        departmentCode: '部门编码',
+        departmentName: '部门名称'
       }
     },
     // 用户信息

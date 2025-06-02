@@ -96,7 +96,8 @@ export default {
     roleProgram: '角色程式綁定',
     systemBasicData: '基本資料模組',
     userInfo: '員工資訊維護',
-    companyInfo: '公司資料維護'
+    companyInfo: '公司資料維護',
+    departmentInfo: '部門資料維護'
   },
   
   // 系統基礎管理
@@ -213,6 +214,47 @@ export default {
       getFailed: '獲取數據失敗',
       filter: {
         companyName: '公司名稱',
+      }
+    },
+     // 部门信息
+     departmentInfo: {
+      title: '部門信息',
+      departmentCode: '部門編碼',
+      departmentName: '部門名稱',
+      departmentNameCn: '部門中文名稱',
+      departmentNameEn: '部門英文名稱',
+      description: '描述',
+      landline: '座機電話',
+      email: '郵箱',
+      address: '地址',
+      status: '狀態',
+      active: '啟用',
+      inactive: '禁用',
+      sortOrder: '排序',
+      departmentLevelId: '部門層級',
+      remark: '備註',
+      operation: '操作',
+      addDepartment: '新增部門',
+      addChild: '添加子部門',
+      addChildDepartment: '新增子部門',
+      editDepartment: '編輯部門',
+      deleteConfirm: '確定要刪除該部門嗎？',
+      hasChildrenCannotDelete: '該部門存在子部門，無法刪除',
+      pleaseInputCode: '請輸入部門編碼',
+      pleaseInputName: '請輸入部門名稱',
+      pleaseInputNameCn: '請輸入部門中文名稱',
+      pleaseInputNameEn: '請輸入部門英文名稱',
+      pleaseInputSortOrder: '請輸入排序號',
+      pleaseCompleteForm: '請完善表單信息',
+      index: '序號',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗',
+      filter: {
+        departmentCode: '部門編碼',
+        departmentName: '部門名稱'
       }
     },
     // 用戶信息

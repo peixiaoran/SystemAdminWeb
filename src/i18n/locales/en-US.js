@@ -96,7 +96,8 @@ export default {
     roleProgram: 'RoleProgram',
     systemBasicData: 'BasicData',
     userInfo: 'EmployeeInfo',
-    companyInfo: 'CompanyInfo'
+    companyInfo: 'CompanyInfo',
+    departmentInfo: 'DepartmentInfo'
   },
   
   // System Basic Management
@@ -371,6 +372,47 @@ export default {
         pleaseSelectDomain: 'Please select a domain first',
         pleaseSelectModule: 'Please select a module first',
         updateBindingsSuccess: 'Update bindings successfully'
+      }
+    },
+    // Department Information
+    departmentInfo: {
+      title: 'Department Information',
+      departmentCode: 'Department Code',
+      departmentName: 'Department Name',
+      departmentNameCn: 'Chinese Department Name',
+      departmentNameEn: 'English Department Name',
+      description: 'Description',
+      landline: 'Landline',
+      email: 'Email',
+      address: 'Address',
+      status: 'Status',
+      active: 'Active',
+      inactive: 'Inactive',
+      sortOrder: 'Sort Order',
+      departmentLevelId: 'Department Level',
+      remark: 'Remark',
+      operation: 'Operation',
+      addDepartment: 'Add Department',
+      addChild: 'Add Child',
+      addChildDepartment: 'Add Child Department',
+      editDepartment: 'Edit Department',
+      deleteConfirm: 'Are you sure to delete this department?',
+      hasChildrenCannotDelete: 'This department has child departments and cannot be deleted',
+      pleaseInputCode: 'Please input department code',
+      pleaseInputName: 'Please input department name',
+      pleaseInputNameCn: 'Please input Chinese department name',
+      pleaseInputNameEn: 'Please input English department name',
+      pleaseInputSortOrder: 'Please input sort order',
+      pleaseCompleteForm: 'Please complete the form',
+      index: 'No.',
+      saveSuccess: 'Save successfully',
+      updateSuccess: 'Update successfully',
+      deleteSuccess: 'Delete successfully',
+      operationFailed: 'Operation failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        departmentCode: 'Department Code',
+        departmentName: 'Department Name'
       }
     }
   }
