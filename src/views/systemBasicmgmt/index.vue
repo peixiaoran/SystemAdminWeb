@@ -311,7 +311,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, markRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { 
   Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
@@ -475,35 +475,35 @@ const backupRecords = reactive([
 const quickActions = reactive([
   {
     name: '系统设置',
-    icon: Setting
+    icon: markRaw(Setting)
   },
   {
     name: '用户管理',
-    icon: User
+    icon: markRaw(User)
   },
   {
     name: '安全配置',
-    icon: Lock
+    icon: markRaw(Lock)
   },
   {
     name: '系统监控',
-    icon: Monitor
+    icon: markRaw(Monitor)
   },
   {
     name: '备份恢复',
-    icon: Upload
+    icon: markRaw(Upload)
   },
   {
     name: '日志分析',
-    icon: Document
+    icon: markRaw(Document)
   },
   {
     name: '存储管理',
-    icon: Folder
+    icon: markRaw(Folder)
   },
   {
     name: '工具箱',
-    icon: Tools
+    icon: markRaw(Tools)
   }
 ])
 

@@ -6,7 +6,7 @@
         <el-dropdown trigger="click">
           <div class="user-avatar-wrapper">
             <div class="user-avatar">
-              <el-avatar :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+              <el-avatar size="small" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
               <div class="user-details">
                 <span class="username">{{ username }}</span>
                 <span class="role-tag"></span>
@@ -25,8 +25,10 @@
                 <span>{{ $t('moduleSelect.accountSettings') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided @click="logout">
-                <el-icon><SwitchButton /></el-icon>
-                <span>{{ $t('common.logout') }}</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+                  <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                </svg>
+                <span>{{ $t('common.safeLogout') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -81,7 +83,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown, Loading, User, Setting, SwitchButton, ArrowRight } from '@element-plus/icons-vue'
+import { ArrowDown, Loading, User, Setting, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/domainmenu/menu'
 import { useUserStore } from '@/stores/user'
@@ -197,11 +199,36 @@ const logout = async () => {
 <style scoped>
 .module-select-container {
   min-height: 100vh;
-  background-color: #f5f7fa;
-  padding: 20px 30px 60px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 20px 30px 60px;
+  overflow: hidden;
+}
+
+.module-select-container::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  right: -50px;
+  bottom: -50px;
+  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23bdc3c7' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  z-index: 0;
+  animation: backgroundMove 60s linear infinite;
+}
+
+@keyframes backgroundMove {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(20px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
 }
 
 .header-actions {
@@ -211,6 +238,8 @@ const logout = async () => {
   margin-bottom: 20px;
   padding: 10px 20px;
   background-color: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .language-switcher {
@@ -229,17 +258,18 @@ const logout = async () => {
 .user-avatar {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 0 8px;
+  cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .user-avatar:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 .user-details {
-  margin: 0 10px;
+  margin: 0 8px;
 }
 
 .username {
@@ -254,16 +284,14 @@ const logout = async () => {
 }
 
 .module-grid {
-  margin-top: 20px;
-}
-
-.module-grid {
   max-width: 1440px;
-  margin: 60px auto 0;
+  margin: 20px auto 0;
   padding: 20px 0;
   flex: 1;
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .el-row {
@@ -296,12 +324,6 @@ const logout = async () => {
   transition: all 0.3s ease;
 }
 
-.module-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
-  border-color: #d0e1fd;
-}
-
 .module-icon {
   height: 140px;
   display: flex;
@@ -310,12 +332,6 @@ const logout = async () => {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   color: #3b82f6;
   padding: 10px 0;
-  transition: all 0.3s ease;
-}
-
-.module-card:hover .module-icon {
-  background: linear-gradient(135deg, #e0f2fe 0%, #c7e8ff 100%);
-  color: #2563eb;
 }
 
 .module-info {
@@ -324,11 +340,6 @@ const logout = async () => {
   background-color: #fff;
   text-align: center;
   border-top: 1px solid #ebeef5;
-  transition: all 0.3s ease;
-}
-
-.module-card:hover .module-info {
-  background-color: #fafcff;
 }
 
 .module-info h2 {
@@ -336,11 +347,6 @@ const logout = async () => {
   margin: 0 0 16px 0;
   color: #303133;
   font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.module-card:hover .module-info h2 {
-  color: #3b82f6;
 }
 
 .module-info p {
@@ -360,27 +366,15 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   padding: 0 0 20px 0;
-  transition: all 0.3s ease;
 }
 
 .module-footer .el-button {
   border-radius: 20px;
   padding: 8px 20px;
-  transition: all 0.3s ease;
-}
-
-.module-card:hover .module-footer .el-button {
-  background-color: #3b82f6;
-  color: white;
 }
 
 .enter-icon {
   margin-left: 4px;
-  transition: transform 0.3s ease;
-}
-
-.module-card:hover .enter-icon {
-  transform: translateX(5px);
 }
 
 .loading-container {
@@ -392,7 +386,7 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(245, 247, 250, 0.9);
   z-index: 10;
   backdrop-filter: blur(5px);
 }

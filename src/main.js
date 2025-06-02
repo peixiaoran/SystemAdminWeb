@@ -27,13 +27,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-// 检查用户是否已登录，如果已登录则添加动态路由
-const token = localStorage.getItem('token')
-if (token) {
-  // 简单记录用户已登录状态，所有路由都已在router/index.js中静态定义
-  console.log('检测到用户已登录')
-}
-
 // 等待路由就绪后初始化标题
 router.isReady().then(() => {
   // 初始化标题

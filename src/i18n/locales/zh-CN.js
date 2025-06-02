@@ -15,6 +15,7 @@ export default {
     loading: '加载中...',
     noData: '暂无数据',
     logout: '退出登录',
+    safeLogout: '安全退出',
     confirmLogout: '确定要退出登录吗?',
     tip: '提示',
     warning: '警告',
@@ -193,7 +194,7 @@ export default {
     // 公司信息
     companyInfo: {
       title: '公司信息',
-      companyNameCh: '中文名称',
+      companyNameCn: '中文名称',
       companyNameEn: '英文名称',
       companyPhone: '公司电话',
       companyFax: '公司传真',
@@ -203,19 +204,21 @@ export default {
       addCompany: '新增公司',
       editCompany: '编辑公司信息',
       deleteConfirm: '确定要删除该条记录吗？',
-      pleaseInputNameCh: '请输入中文名称',
-      pleaseInputNameEn: '请输入英文名称',
+      pleaseInputName: '请输入公司名称',
       index: '序号',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
       deleteSuccess: '删除成功',
       operationFailed: '操作失败',
-      getFailed: '获取数据失败'
+      getFailed: '获取数据失败',
+      filter: {
+        companyName: '公司名称',
+      }
     },
     // 用户信息
     userInfo: {
       title: '用户信息',
-      companyNameCh: '中文名称',
+      companyNameCn: '中文名称',
       companyNameEn: '英文名称',
       companyPhone: '公司电话',
       companyFax: '公司传真',
@@ -225,7 +228,7 @@ export default {
       addUser: '新增用户',
       editUser: '编辑用户信息',
       deleteConfirm: '确定要删除该条记录吗？',
-      pleaseInputNameCh: '请输入中文名称',
+      pleaseInputNameCn: '请输入中文名称',
       pleaseInputNameEn: '请输入英文名称',
       index: '序号',
       saveSuccess: '保存成功',

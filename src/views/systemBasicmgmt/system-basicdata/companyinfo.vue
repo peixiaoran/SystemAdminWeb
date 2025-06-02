@@ -4,16 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')">
+              <el-form-item :label="$t('systemBasicmgmt.companyInfo.filter.companyName')">
                   <el-input style="width: 180px;"
-                            v-model="filters.companyNameCh"
-                            :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameCh')"
-                            clearable />
-              </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')">
-                  <el-input style="width: 180px;"
-                            v-model="filters.companyNameEn"
-                            :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputNameEn')"
+                            v-model="filters.companyName"
+                            :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputName')"
                             clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -40,7 +34,7 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" align="left" min-width="350" />
+                  <el-table-column prop="companyNameCn" :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" align="left" min-width="350" />
                   <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="350" />
                   <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="130" />
                   <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
@@ -76,19 +70,19 @@
                  :close-on-click-modal="false">
           <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')">
-                      <el-input v-model="editForm.companyNameCh" style="width:250px" />
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCn')">
+                      <el-input v-model="editForm.companyNameCn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')">
-                      <el-input v-model="editForm.companyNameEn" style="width:250px" />
+                      <el-input v-model="editForm.companyNameEn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')">
-                      <el-input v-model="editForm.companyiPhone" style="width:250px" />
+                      <el-input v-model="editForm.companyiPhone" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')">
-                      <el-input v-model="editForm.companyFax" style="width:250px" />
+                      <el-input v-model="editForm.companyFax" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
@@ -130,8 +124,7 @@
 
   // 过滤条件
   const filters = reactive({
-      companyNameCh: '',
-      companyNameEn: ''
+      companyName: '',
   })
 
   // Composition API
@@ -142,7 +135,7 @@
   // 编辑表单
   const editForm = reactive({
       companyId: '',
-      companyNameCh: '',
+      companyNameCn: '',
       companyNameEn: '',
       companyiPhone: '',
       companyFax: '',
@@ -171,7 +164,7 @@
 
       if (res && res.code === '200') {
           editForm.companyId = res.data.companyId
-          editForm.companyNameCh = res.data.companyNameCh
+          editForm.companyNameCn = res.data.companyNameCn
           editForm.companyNameEn = res.data.companyNameEn
           editForm.companyiPhone = res.data.companyiPhone
           editForm.companyFax = res.data.companyFax
@@ -187,8 +180,7 @@
   const fetchCompanyPages = async () => {
       loading.value = true
       const params = {
-          companyNameCh: filters.companyNameCh,
-          companyNameEn: filters.companyNameEn,
+          companyName: filters.companyName,
           pageNumber: pagination.currentPage,
           pageSize: pagination.pageSize
       }
@@ -212,8 +204,7 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      filters.companyNameCh = ''
-      filters.companyNameEn = ''
+      filters.companyName = ''
       pagination.currentPage = 1
       fetchCompanyPages()
   }
@@ -233,7 +224,7 @@
 
   const resetForm = () => {
       editForm.companyId = ''
-      editForm.companyNameCh = ''
+      editForm.companyNameCn = ''
       editForm.companyNameEn = ''
       editForm.companyiPhone = ''
       editForm.companyFax = ''
@@ -338,7 +329,7 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.companyNameCh) {
+      if (!editForm.companyNameCn) {
           ElMessage.warning(t('systemBasicmgmt.companyInfo.pleaseInputNameCh'))
           return
       }

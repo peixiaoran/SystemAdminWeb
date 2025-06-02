@@ -4,10 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCh')">
+              <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCn')">
                   <el-input style="width: 180px;"
-                            v-model="filters.companyNameCh"
-                            :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputNameCh')"
+                            v-model="filters.companyNameCn"
+                            :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputNameCn')"
                             clearable />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameEn')">
@@ -40,7 +40,7 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.userInfo.companyNameCh')" align="left" min-width="230" />
+                  <el-table-column prop="companyNameCn" :label="$t('systemBasicmgmt.userInfo.companyNameCn')" align="left" min-width="230" />
                   <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.userInfo.companyNameEn')" align="left" min-width="380" />
                   <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.userInfo.companyPhone')" align="center" min-width="170" />
                   <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.userInfo.companyFax')" align="center" min-width="180" />
@@ -80,8 +80,8 @@
                  :close-on-click-modal="false">
           <el-form :model="editForm" label-width="100px" class="dialog-form">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCh')">
-                      <el-input v-model="editForm.companyNameCh" style="width:250px" />
+                  <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameCn')">
+                      <el-input v-model="editForm.companyNameCn" style="width:250px" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.companyNameEn')">
                       <el-input v-model="editForm.companyNameEn" style="width:250px" />
@@ -134,7 +134,7 @@
 
   // 过滤条件
   const filters = reactive({
-      companyNameCh: '',
+      companyNameCn: '',
       companyNameEn: ''
   })
 
@@ -146,7 +146,7 @@
   // 编辑表单
   const editForm = reactive({
       companyId: '',
-      companyNameCh: '',
+      companyNameCn: '',
       companyNameEn: '',
       companyiPhone: '',
       companyFax: '',
@@ -174,7 +174,7 @@
 
       if (res && res.code === '200') {
           editForm.companyId = res.data.companyId
-          editForm.companyNameCh = res.data.companyNameCh
+          editForm.companyNameCn = res.data.companyNameCn
           editForm.companyNameEn = res.data.companyNameEn
           editForm.companyiPhone = res.data.companyiPhone
           editForm.companyFax = res.data.companyFax
@@ -190,7 +190,7 @@
   const fetchCompanyPages = async () => {
       loading.value = true
       const params = {
-          companyNameCh: filters.companyNameCh,
+          companyNameCn: filters.companyNameCn,
           companyNameEn: filters.companyNameEn,
           pageNumber: pagination.currentPage,
           pageSize: pagination.pageSize
@@ -215,7 +215,7 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      filters.companyNameCh = ''
+      filters.companyNameCn = ''
       filters.companyNameEn = ''
       pagination.currentPage = 1
       fetchCompanyPages()
@@ -236,7 +236,7 @@
 
   const resetForm = () => {
       editForm.companyId = ''
-      editForm.companyNameCh = ''
+      editForm.companyNameCn = ''
       editForm.companyNameEn = ''
       editForm.companyiPhone = ''
       editForm.companyFax = ''
@@ -341,8 +341,8 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.companyNameCh) {
-          ElMessage.warning(t('systemBasicmgmt.userInfo.pleaseInputNameCh'))
+      if (!editForm.companyNameCn) {
+          ElMessage.warning(t('systemBasicmgmt.userInfo.pleaseInputNameCn'))
           return
       }
 

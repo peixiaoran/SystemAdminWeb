@@ -105,23 +105,24 @@
           <el-form :model="editForm" label-width="100px" class="dialog-form">
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
-                      <el-input v-model="editForm.roleCode" />
+                      <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')">
-                      <el-input v-model="editForm.roleName" />
+                      <el-input v-model="editForm.roleName" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
                       <el-input v-model="editForm.remarks"
                                 type="textarea"
+                                style="width:100%"
                                 :rows="3" />
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
-                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; width:100%"/>
                   </el-form-item>
               </div>
           </el-form>

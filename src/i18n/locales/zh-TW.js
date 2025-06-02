@@ -15,6 +15,7 @@ export default {
     loading: '加載中...',
     noData: '暫無數據',
     logout: '退出登錄',
+    safeLogout: '安全退出',
     confirmLogout: '確定要退出登錄嗎?',
     tip: '提示',
     warning: '警告',
@@ -193,8 +194,8 @@ export default {
     // 公司信息
     companyInfo: {
       title: '公司信息',
-      companyNameCh: '中文名稱',
-      companyNameEn: '英文名稱',
+      companyNameCn: '公司中文名稱',
+      companyNameEn: '公司英文名稱',
       companyPhone: '公司電話',
       companyFax: '公司傳真',
       createdTime: '創建時間',
@@ -203,20 +204,22 @@ export default {
       addCompany: '新增公司',
       editCompany: '編輯公司信息',
       deleteConfirm: '確定要刪除該條記錄嗎？',
-      pleaseInputNameCh: '請輸入中文名稱',
       pleaseInputNameEn: '請輸入英文名稱',
       index: '序號',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
       deleteSuccess: '刪除成功',
       operationFailed: '操作失敗',
-      getFailed: '獲取數據失敗'
+      getFailed: '獲取數據失敗',
+      filter: {
+        companyName: '公司名稱',
+      }
     },
     // 用戶信息
     userInfo: {
       title: '用戶信息',
-      companyNameCh: '中文名稱',
-      companyNameEn: '英文名稱',
+      companyNameCn: '公司中文名稱',
+      companyNameEn: '公司英文名稱',
       companyPhone: '公司電話',
       companyFax: '公司傳真',
       createdTime: '創建時間',
@@ -225,7 +228,7 @@ export default {
       addUser: '新增用戶',
       editUser: '編輯用戶信息',
       deleteConfirm: '確定要刪除該條記錄嗎？',
-      pleaseInputNameCh: '請輸入中文名稱',
+      pleaseInputNameCn: '請輸入中文名稱',
       pleaseInputNameEn: '請輸入英文名稱',
       index: '序號',
       saveSuccess: '保存成功',

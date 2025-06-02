@@ -60,7 +60,7 @@
           </div>
           
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ $t('common.home') }}</el-breadcrumb-item>
             <el-breadcrumb-item v-if="currentSystemName">{{ currentSystemName }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -78,10 +78,8 @@
           <!-- 语言切换下拉菜单 -->
           <el-dropdown trigger="click" class="language-dropdown">
             <div class="language-selector">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="icon">
+                <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
               </svg>
               <span class="language-text">{{ currentLanguageLabel }}</span>
               <el-icon class="el-icon-arrow-down"><ArrowDown /></el-icon>
@@ -104,9 +102,24 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>{{ $t('common.personalInfo') }}</el-dropdown-item>
-                <el-dropdown-item>{{ $t('common.changePassword') }}</el-dropdown-item>
-                <el-dropdown-item divided @click="logout">{{ $t('common.logout') }}</el-dropdown-item>
+                <el-dropdown-item>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                  {{ $t('common.personalInfo') }}
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
+                  {{ $t('common.changePassword') }}
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="logout">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                  </svg>
+                  {{ $t('common.safeLogout') }}
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -140,10 +153,31 @@
         
         <!-- 右键菜单 -->
         <div v-show="contextMenuVisible" :style="contextMenuStyle" class="context-menu">
-          <div class="context-menu-item" @click="refreshSelectedTag">{{ $t('common.refreshPage') }}</div>
-          <div class="context-menu-item" @click="closeSelectedTag">{{ $t('common.closeCurrentTab') }}</div>
-          <div class="context-menu-item" @click="closeOthersTags">{{ $t('common.closeOtherTabs') }}</div>
-          <div class="context-menu-item" @click="closeAllTags">{{ $t('common.closeAllTabs') }}</div>
+          <div class="context-menu-item" @click="refreshSelectedTag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="menu-icon">
+              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+            {{ $t('common.refreshPage') }}
+          </div>
+          <div class="context-menu-item" @click="closeSelectedTag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="menu-icon">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+            {{ $t('common.closeCurrentTab') }}
+          </div>
+          <div class="context-menu-item" @click="closeOthersTags">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="menu-icon">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              <circle cx="9.5" cy="9.5" r="1"/>
+            </svg>
+            {{ $t('common.closeOtherTabs') }}
+          </div>
+          <div class="context-menu-item" @click="closeAllTags">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="menu-icon">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+            {{ $t('common.closeAllTabs') }}
+          </div>
         </div>
       </div>
       
@@ -1212,11 +1246,18 @@ const openMenuForPath = (path) => {
   cursor: pointer;
   color: #606266;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .context-menu-item:hover {
   background-color: #ecf5ff;
   color: #409eff;
+}
+
+.menu-icon {
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 /* 标签样式优化 */
@@ -1352,12 +1393,6 @@ const openMenuForPath = (path) => {
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.home-button:hover {
-  color: #409EFF;
-  background-color: #ecf5ff;
 }
 
 .home-button .icon {
@@ -1375,12 +1410,6 @@ const openMenuForPath = (path) => {
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.language-selector:hover {
-  color: #409EFF;
-  background-color: #ecf5ff;
 }
 
 .language-text {
@@ -1391,10 +1420,6 @@ const openMenuForPath = (path) => {
 
 .language-selector .icon {
   color: #606266;
-}
-
-.language-selector:hover .icon {
-  color: #409EFF;
 }
 
 /* 浏览器缩放适配 */
@@ -1411,5 +1436,39 @@ const openMenuForPath = (path) => {
   .el-main {
     padding: 10px !important; /* 高分辨率下减小内边距 */
   }
+}
+
+/* 下拉菜单圆角化样式 */
+:deep(.el-dropdown-menu) {
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ebeef5;
+  min-width: 160px;
+}
+
+:deep(.el-dropdown-menu__item) {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #606266;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.el-dropdown-menu__item:last-child) {
+  margin-bottom: 0;
+}
+
+:deep(.el-dropdown-menu__item:hover) {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+:deep(.el-dropdown-menu__item--divided) {
+  border-top: 1px solid #ebeef5;
+  margin-top: 8px;
+  padding-top: 8px;
 }
 </style>

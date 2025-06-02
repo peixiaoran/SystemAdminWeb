@@ -15,6 +15,7 @@ export default {
     loading: 'Đang tải...',
     noData: 'Không có dữ liệu',
     logout: 'Đăng xuất',
+    safeLogout: 'Đăng xuất an toàn',
     confirmLogout: 'Bạn có chắc chắn muốn đăng xuất?',
     tip: 'Mẹo',
     warning: 'Cảnh báo',
@@ -193,7 +194,7 @@ export default {
     // Thông tin công ty
     companyInfo: {
       title: 'Thông tin công ty',
-      companyNameCh: 'Tên tiếng Trung',
+      companyNameCn: 'Tên tiếng Trung',
       companyNameEn: 'Tên tiếng Anh',
       companyPhone: 'Điện thoại công ty',
       companyFax: 'Fax công ty',
@@ -203,7 +204,7 @@ export default {
       addCompany: 'Thêm công ty',
       editCompany: 'Chỉnh sửa thông tin công ty',
       deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
-      pleaseInputNameCh: 'Vui lòng nhập tên tiếng Trung',
+      pleaseInputNameCn: 'Vui lòng nhập tên tiếng Trung',
       pleaseInputNameEn: 'Vui lòng nhập tên tiếng Anh',
       index: 'STT',
       saveSuccess: 'Lưu thành công',
@@ -215,7 +216,7 @@ export default {
     // Thông tin người dùng
     userInfo: {
       title: 'Thông tin người dùng',
-      companyNameCh: 'Tên tiếng Trung',
+      companyNameCn: 'Tên tiếng Trung',
       companyNameEn: 'Tên tiếng Anh',
       companyPhone: 'Điện thoại công ty',
       companyFax: 'Fax công ty',
@@ -225,7 +226,7 @@ export default {
       addUser: 'Thêm người dùng',
       editUser: 'Chỉnh sửa thông tin người dùng',
       deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
-      pleaseInputNameCh: 'Vui lòng nhập tên tiếng Trung',
+      pleaseInputNameCn: 'Vui lòng nhập tên tiếng Trung',
       pleaseInputNameEn: 'Vui lòng nhập tên tiếng Anh',
       index: 'STT',
       saveSuccess: 'Lưu thành công',
