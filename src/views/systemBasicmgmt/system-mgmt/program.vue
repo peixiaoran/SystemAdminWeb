@@ -47,7 +47,8 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="240" />
-                  <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.program.programName')" align="left" min-width="200" />
+                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')" align="left" min-width="200" />
+                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="200" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
                   <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="120" />
@@ -104,53 +105,59 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programCode')">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programName')">
-                      <el-input v-model="editForm.menuName" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')">
+                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')">
+                      <el-input v-model="editForm.menuNameEn" style="width:100%" />
+                  </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')">
                       <el-select v-model="editForm.domainId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" clearable @change="handleDomainChange">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')">
                       <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')" clearable>
                           <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                       </el-select>
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')">
                       <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.sortOrder')">
                       <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programType')">
                       <el-input v-model.number="editForm.menuType" type="number" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.apiRoute')">
                       <el-input v-model="editForm.routePath" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.component')">
                       <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.target')">
                       <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
+                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
@@ -204,6 +211,7 @@
   const filters = reactive({
       programCode: '',
       programName: '',
+      programNameEn: '',
       programUrl: '',
       domainId: '',
       parentMenuId: ''
@@ -221,7 +229,8 @@
       parentMenuId: '',
       domainId: '',
       menuCode: '',
-      menuName: '',
+      menuNameCn: '',
+      menuNameEn: '',
       menuType: 1,
       menuUrl: '',
       menuIcon: '',
@@ -299,7 +308,8 @@
           // 对字符串类型字段进行额外的XSS清洗
           editForm.menuId = res.data.menuId
           editForm.menuCode = sanitizeHtml(res.data.menuCode || '')
-          editForm.menuName = sanitizeHtml(res.data.menuName || '')
+          editForm.menuNameCn = sanitizeHtml(res.data.menuNameCn || '')
+          editForm.menuNameEn = sanitizeHtml(res.data.menuNameEn || '')
           editForm.parentMenuId = res.data.parentMenuId
           editForm.domainId = res.data.domainId
           editForm.menuType = res.data.menuType
@@ -375,7 +385,8 @@
       editForm.menuId = ''
       editForm.parentMenuId = ''
       editForm.menuCode = ''
-      editForm.menuName = ''
+      editForm.menuNameCn = ''
+      editForm.menuNameEn = ''
       editForm.domainId = ''
       editForm.menuType = 1
       editForm.menuUrl = ''
@@ -526,7 +537,7 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.menuCode || !editForm.menuName) {
+      if (!editForm.menuCode || !editForm.menuNameCn) {
           ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
           return
       }

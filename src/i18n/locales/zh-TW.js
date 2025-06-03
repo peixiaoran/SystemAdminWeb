@@ -97,7 +97,8 @@ export default {
     systemBasicData: '基本資料模組',
     userInfo: '員工資訊維護',
     companyInfo: '公司資料維護',
-    departmentInfo: '部門資料維護'
+    departmentInfo: '部門資料維護',
+    departmentLevel: '部門級別維護'
   },
   
   // 系統基礎管理
@@ -223,6 +224,7 @@ export default {
       departmentName: '部門名稱',
       departmentNameCn: '部門中文名稱',
       departmentNameEn: '部門英文名稱',
+      departmentLevelName: '部門級別',
       description: '描述',
       landline: '座機電話',
       email: '郵箱',
@@ -245,6 +247,7 @@ export default {
       pleaseInputNameCn: '請輸入部門中文名稱',
       pleaseInputNameEn: '請輸入部門英文名稱',
       pleaseInputSortOrder: '請輸入排序號',
+      pleaseSelectDepartmentLevel: '請選擇部門級別',
       pleaseCompleteForm: '請完善表單信息',
       index: '序號',
       saveSuccess: '保存成功',
@@ -305,6 +308,8 @@ export default {
         title: '網域管理',
         domainCode: '網域編碼',
         domainName: '網域名稱',
+        domainNameCn: '網域中文名稱',
+        domainNameEn: '網域英文名稱',
         domainIcon: '網域圖標',
         sortOrder: '網域排序',
         roleCode: '權限標識',
@@ -315,7 +320,9 @@ export default {
         editDomain: '編輯網域信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
         pleaseInputDomainCode: '請輸入網域編碼',
-        pleaseInputDomainName: '請輸入網域名稱'
+        pleaseInputDomainName: '請輸入網域名稱',
+        pleaseInputDomainNameCn: '請輸入網域中文名稱',
+        pleaseInputDomainNameEn: '請輸入網域英文名稱'
       },
       
       // 模塊管理
@@ -324,6 +331,8 @@ export default {
         domain: '所屬網域',
         menuCode: '模塊編碼',
         menuName: '模塊名稱',
+        menuNameCn: '模塊中文名稱',
+        menuNameEn: '模塊英文名稱',
         menuIcon: '模塊圖標',
         sortOrder: '模塊排序',
         menuUrl: '模塊URL',
@@ -337,7 +346,9 @@ export default {
         deleteConfirm: '確定要刪除該條記錄嗎？',
         pleaseSelectDomain: '請選擇所屬網域',
         pleaseInputMenuCode: '請輸入模塊編碼',
-        pleaseInputMenuName: '請輸入模塊名稱'
+        pleaseInputMenuName: '請輸入模塊名稱',
+        pleaseInputMenuNameCn: '請輸入模塊中文名稱',
+        pleaseInputMenuNameEn: '請輸入模塊英文名稱'
       },
       
       // 程序管理
@@ -345,6 +356,8 @@ export default {
         title: '程序管理',
         programCode: '程序編碼',
         programName: '程序名稱',
+        programNameCn: '程序中文名稱',
+        programNameEn: '程序英文名稱',
         domain: '所屬網域',
         module: '所屬模塊',
         programIcon: '程序圖標',
@@ -360,6 +373,8 @@ export default {
         deleteConfirm: '確定要刪除該條記錄嗎？',
         pleaseInputProgramCode: '請輸入程序編碼',
         pleaseInputProgramName: '請輸入程序名稱',
+        pleaseInputProgramNameCn: '請輸入程序中文名稱',
+        pleaseInputProgramNameEn: '請輸入程序英文名稱',
         pleaseSelectDomain: '請選擇所屬網域',
         pleaseSelectModule: '請選擇所屬模塊'
       },
@@ -413,6 +428,27 @@ export default {
         pleaseSelectModule: '請先選擇模塊',
         updateBindingsSuccess: '更新綁定成功'
       }
+    },
+    
+    // 部門級別管理
+    departmentLevel: {
+      title: '部門級別管理',
+      index: '序號',
+      departmentLevelCode: '級別編號',
+      departmentLevelName: '級別名稱',
+      departmentLevelNameCn: '級別中文名稱',
+      departmentLevelNameEn: '級別英文名稱',
+      departmentLevelDescribe: '級別描述',
+      operation: '操作',
+      addDepartmentLevel: '新增部門級別',
+      editDepartmentLevel: '編輯部門級別',
+      deleteConfirm: '確定要刪除該部門級別嗎？',
+      pleaseInputDepartmentLevelCode: '請輸入級別編號',
+      pleaseInputDepartmentLevelName: '請輸入級別名稱',
+      pleaseInputDepartmentLevelNameCn: '請輸入級別中文名稱',
+      pleaseInputDepartmentLevelNameEn: '請輸入級別英文名稱',
+      pleaseInputDepartmentLevelDescribe: '請輸入級別描述',
+      fillRequiredInfo: '請填寫必要信息'
     }
   }
 } 

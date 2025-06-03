@@ -97,7 +97,8 @@ export default {
     systemBasicData: 'BasicData',
     userInfo: 'EmployeeInfo',
     companyInfo: 'CompanyInfo',
-    departmentInfo: 'DepartmentInfo'
+    departmentInfo: 'DepartmentInfo',
+    departmentLevel: 'DepartmentLevel'
   },
   
   // System Basic Management
@@ -265,6 +266,8 @@ export default {
         title: 'DomainManagement',
         domainCode: 'Domain Code',
         domainName: 'Domain Name',
+        domainNameCn: 'Domain Chinese Name',
+        domainNameEn: 'Domain English Name',
         domainIcon: 'Icon',
         sortOrder: 'SortOrder',
         roleCode: 'RoleCode',
@@ -275,7 +278,9 @@ export default {
         editDomain: 'EditDomain',
         deleteConfirm: 'Are you sure to delete this record?',
         pleaseInputDomainCode: 'Please input domain code',
-        pleaseInputDomainName: 'Please input domain name'
+        pleaseInputDomainName: 'Please input domain name',
+        pleaseInputDomainNameCn: 'Please input domain Chinese name',
+        pleaseInputDomainNameEn: 'Please input domain English name'
       },
       
       // Module Management
@@ -284,6 +289,8 @@ export default {
         domain: 'Domain',
         menuCode: 'Module Code',
         menuName: 'Module Name',
+        menuNameCn: 'Module Chinese Name',
+        menuNameEn: 'Module English Name',
         menuIcon: 'Module Icon',
         sortOrder: 'Sort Order',
         menuUrl: 'Module URL',
@@ -297,7 +304,9 @@ export default {
         deleteConfirm: 'Are you sure to delete this record?',
         pleaseSelectDomain: 'Please select domain',
         pleaseInputMenuCode: 'Please input module code',
-        pleaseInputMenuName: 'Please input module name'
+        pleaseInputMenuName: 'Please input module name',
+        pleaseInputMenuNameCn: 'Please input module Chinese name',
+        pleaseInputMenuNameEn: 'Please input module English name'
       },
       
       // Program Management
@@ -305,6 +314,8 @@ export default {
         title: 'Program Management',
         programCode: 'Program Code',
         programName: 'Program Name',
+        programNameCn: 'Program Chinese Name',
+        programNameEn: 'Program English Name',
         domain: 'Domain',
         module: 'Module',
         programIcon: 'Program Icon',
@@ -320,6 +331,8 @@ export default {
         deleteConfirm: 'Are you sure to delete this record?',
         pleaseInputProgramCode: 'Please input program code',
         pleaseInputProgramName: 'Please input program name',
+        pleaseInputProgramNameCn: 'Please input program Chinese name',
+        pleaseInputProgramNameEn: 'Please input program English name',
         pleaseSelectDomain: 'Please select domain',
         pleaseSelectModule: 'Please select module'
       },
@@ -379,8 +392,9 @@ export default {
       title: 'Department Information',
       departmentCode: 'Department Code',
       departmentName: 'Department Name',
-      departmentNameCn: 'Chinese Department Name',
-      departmentNameEn: 'English Department Name',
+      departmentNameCn: 'Department Name (CN)',
+      departmentNameEn: 'Department Name (EN)',
+      departmentLevelName: 'Department Level',
       description: 'Description',
       landline: 'Landline',
       email: 'Email',
@@ -398,22 +412,43 @@ export default {
       editDepartment: 'Edit Department',
       deleteConfirm: 'Are you sure to delete this department?',
       hasChildrenCannotDelete: 'This department has child departments and cannot be deleted',
-      pleaseInputCode: 'Please input department code',
-      pleaseInputName: 'Please input department name',
-      pleaseInputNameCn: 'Please input Chinese department name',
-      pleaseInputNameEn: 'Please input English department name',
-      pleaseInputSortOrder: 'Please input sort order',
+      pleaseInputCode: 'Please enter department code',
+      pleaseInputName: 'Please enter department name',
+      pleaseInputNameCn: 'Please enter department name (CN)',
+      pleaseInputNameEn: 'Please enter department name (EN)',
+      pleaseInputSortOrder: 'Please enter sort order',
+      pleaseSelectDepartmentLevel: 'Please select department level',
       pleaseCompleteForm: 'Please complete the form',
-      index: 'No.',
-      saveSuccess: 'Save successfully',
-      updateSuccess: 'Update successfully',
-      deleteSuccess: 'Delete successfully',
+      index: 'Index',
+      saveSuccess: 'Save successful',
+      updateSuccess: 'Update successful',
+      deleteSuccess: 'Delete successful',
       operationFailed: 'Operation failed',
       getFailed: 'Failed to get data',
       filter: {
         departmentCode: 'Department Code',
         departmentName: 'Department Name'
       }
+    },
+    // Department Level Management
+    departmentLevel: {
+      title: 'Department Level Management',
+      index: 'No.',
+      departmentLevelCode: 'Level No.',
+      departmentLevelName: 'Level Name',
+      departmentLevelNameCn: 'Level Chinese Name',
+      departmentLevelNameEn: 'Level English Name',
+      departmentLevelDescribe: 'Level Description',
+      operation: 'Operation',
+      addDepartmentLevel: 'Add Department Level',
+      editDepartmentLevel: 'Edit Department Level',
+      deleteConfirm: 'Are you sure to delete this department level?',
+      pleaseInputDepartmentLevelCode: 'Please input level number',
+      pleaseInputDepartmentLevelName: 'Please input level name',
+      pleaseInputDepartmentLevelNameCn: 'Please input level Chinese name',
+      pleaseInputDepartmentLevelNameEn: 'Please input level English name',
+      pleaseInputDepartmentLevelDescribe: 'Please input level description',
+      fillRequiredInfo: 'Please fill in the required information'
     }
   }
 } 

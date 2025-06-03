@@ -37,7 +37,8 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="domainCode" :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')" align="left" min-width="230" />
-                  <el-table-column prop="domainName" :label="$t('systemBasicmgmt.systemMgmt.domain.domainName')" align="left" min-width="170" />
+                  <el-table-column prop="domainNameCn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" align="left" min-width="170" />
+                  <el-table-column prop="domainNameEn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="170" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')" align="left" min-width="230" />
                   <el-table-column prop="domainIcon" :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')" align="center" min-width="120" />
@@ -94,33 +95,39 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')">
                       <el-input v-model="editForm.domainCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainName')">
-                      <el-input v-model="editForm.domainName" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')">
+                      <el-input v-model="editForm.domainNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')">
+                      <el-input v-model="editForm.domainNameEn" style="width:100%" />
+                  </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')">
                       <el-input v-model="editForm.domainIcon" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.sortOrder')">
                       <el-input v-model="editForm.sortOrder" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.component')">
                       <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.target')">
                       <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
+                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
@@ -174,6 +181,7 @@
   const filters = reactive({
       domainCode: '',
       domainName: '',
+      domainNameEn: '',
       domainUrl: ''
   })
 
@@ -184,7 +192,8 @@
   const editForm = reactive({
       domainId: '0',
       domainCode: '',
-      domainName: '',
+      domainNameCn: '',
+      domainNameEn: '',
       domainIcon: '',
       sortOrder: 1,
       roleCode: '',
@@ -214,7 +223,8 @@
       if (res && res.code === '200') {
           editForm.domainId = res.data.domainId
           editForm.domainCode = res.data.domainCode
-          editForm.domainName = res.data.domainName
+          editForm.domainNameCn = res.data.domainNameCn
+          editForm.domainNameEn = res.data.domainNameEn
           editForm.domainIcon = res.data.domainIcon
           editForm.sortOrder = res.data.sortOrder
           editForm.roleCode = res.data.roleCode
@@ -287,7 +297,8 @@
       editForm.isVisible = true
       editForm.domainId = '0'
       editForm.domainCode = ''
-      editForm.domainName = ''
+      editForm.domainNameCn = ''
+      editForm.domainNameEn = ''
   }
 
   // 新增域列表数据
@@ -394,7 +405,7 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.domainCode || !editForm.domainName) {
+      if (!editForm.domainCode || !editForm.domainNameCn) {
           ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
           return
       }

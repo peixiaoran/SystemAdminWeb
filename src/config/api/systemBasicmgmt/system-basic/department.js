@@ -41,3 +41,8 @@ export const DELETE_DEPARTMENT_API = {
 export const UPDATE_DEPARTMENT_API = {
   UPDATE_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/UpdateDepartmentInfo'
 }
+
+// 公司更新API
+export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
+  GET_DEPARTMENTLEVEL_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentLevelDropdown'
+}

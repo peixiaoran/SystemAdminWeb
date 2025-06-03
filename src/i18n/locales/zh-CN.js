@@ -97,7 +97,8 @@ export default {
     systemBasicData: '基本资料模块',
     userInfo: '员工资讯维护',
     companyInfo: '公司资料维护',
-    departmentInfo: '部门资料维护'
+    departmentInfo: '部门资料维护',
+    departmentLevel: '部门级别维护'
   },
   
   // 系统基础管理
@@ -223,6 +224,7 @@ export default {
       departmentName: '部门名称',
       departmentNameCn: '部门中文名称',
       departmentNameEn: '部门英文名称',
+      departmentLevelName: '部门级别',
       description: '描述',
       landline: '座机电话',
       email: '邮箱',
@@ -245,6 +247,7 @@ export default {
       pleaseInputNameCn: '请输入部门中文名称',
       pleaseInputNameEn: '请输入部门英文名称',
       pleaseInputSortOrder: '请输入排序号',
+      pleaseSelectDepartmentLevel: '请选择部门级别',
       pleaseCompleteForm: '请完善表单信息',
       index: '序号',
       saveSuccess: '保存成功',
@@ -305,6 +308,8 @@ export default {
         title: '网域管理',
         domainCode: '网域编码',
         domainName: '网域名称',
+        domainNameCn: '网域中文名称',
+        domainNameEn: '网域英文名称',
         domainIcon: '网域图标',
         sortOrder: '网域排序',
         roleCode: '权限标识',
@@ -315,7 +320,9 @@ export default {
         editDomain: '编辑网域信息',
         deleteConfirm: '确定要删除该条记录吗？',
         pleaseInputDomainCode: '请输入网域编码',
-        pleaseInputDomainName: '请输入网域名称'
+        pleaseInputDomainName: '请输入网域名称',
+        pleaseInputDomainNameCn: '请输入网域中文名称',
+        pleaseInputDomainNameEn: '请输入网域英文名称'
       },
       
       // 模块管理
@@ -324,6 +331,8 @@ export default {
         domain: '所属网域',
         menuCode: '模块编码',
         menuName: '模块名称',
+        menuNameCn: '模块中文名称',
+        menuNameEn: '模块英文名称',
         menuIcon: '模块图标',
         sortOrder: '模块排序',
         menuUrl: '模块URL',
@@ -337,7 +346,9 @@ export default {
         deleteConfirm: '确定要删除该条记录吗？',
         pleaseSelectDomain: '请选择所属网域',
         pleaseInputMenuCode: '请输入模块编码',
-        pleaseInputMenuName: '请输入模块名称'
+        pleaseInputMenuName: '请输入模块名称',
+        pleaseInputMenuNameCn: '请输入模块中文名称',
+        pleaseInputMenuNameEn: '请输入模块英文名称'
       },
       
       // 程序管理
@@ -345,6 +356,8 @@ export default {
         title: '程序管理',
         programCode: '程序编码',
         programName: '程序名称',
+        programNameCn: '程序中文名称',
+        programNameEn: '程序英文名称',
         domain: '所属网域',
         module: '所属模块',
         programIcon: '程序图标',
@@ -360,6 +373,8 @@ export default {
         deleteConfirm: '确定要删除该条记录吗？',
         pleaseInputProgramCode: '请输入程序编码',
         pleaseInputProgramName: '请输入程序名称',
+        pleaseInputProgramNameCn: '请输入程序中文名称',
+        pleaseInputProgramNameEn: '请输入程序英文名称',
         pleaseSelectDomain: '请选择所属网域',
         pleaseSelectModule: '请选择所属模块'
       },
@@ -413,6 +428,27 @@ export default {
         pleaseSelectModule: '请先选择模块',
         updateBindingsSuccess: '更新绑定成功'
       }
+    },
+    
+    // 部门级别管理
+    departmentLevel: {
+      title: '部门级别管理',
+      index: '序号',
+      departmentLevelCode: '级别编号',
+      departmentLevelName: '级别名称',
+      departmentLevelNameCn: '级别中文名称',
+      departmentLevelNameEn: '级别英文名称',
+      departmentLevelDescribe: '级别描述',
+      operation: '操作',
+      addDepartmentLevel: '新增部门级别',
+      editDepartmentLevel: '编辑部门级别',
+      deleteConfirm: '确定要删除该部门级别吗？',
+      pleaseInputDepartmentLevelCode: '请输入级别编号',
+      pleaseInputDepartmentLevelName: '请输入级别名称',
+      pleaseInputDepartmentLevelNameCn: '请输入级别中文名称',
+      pleaseInputDepartmentLevelNameEn: '请输入级别英文名称',
+      pleaseInputDepartmentLevelDescribe: '请输入级别描述',
+      fillRequiredInfo: '请填写必要信息'
     }
   }
 } 

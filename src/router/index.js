@@ -203,7 +203,7 @@ const moduleRoutes = [
             component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/companyinfo.vue')),
             meta: { 
               title: 'route.companyInfo', 
-              icon: 'Discount',
+              icon: 'OfficeBuilding',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -214,7 +214,18 @@ const moduleRoutes = [
             component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/departmentinfo.vue')),
             meta: { 
               title: 'route.departmentInfo', 
-              icon: 'Discount',
+              icon: 'School',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'departmentlevel',
+            name: 'SystemDepartmentLevel',
+            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/departmentlevel.vue')),
+            meta: { 
+              title: 'route.departmentLevel', 
+              icon: 'GoldMedal',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }

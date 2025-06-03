@@ -42,29 +42,31 @@
                           row-key="departmentId"
                           default-expand-all
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
-                        <el-table-column type="index" :label="$t('systemBasicmgmt.departmentInfo.index')" width="60" align="center" fixed />
+                        <el-table-column type="index" :label="$t('systemBasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
                         <el-table-column prop="departmentCode" :label="$t('systemBasicmgmt.departmentInfo.departmentCode')" align="left" min-width="180" />
-                        <el-table-column prop="departmentNameCn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="230" />
-                        <el-table-column prop="departmentNameEn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="270" />
+                        <el-table-column prop="departmentNameCn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
+                        <el-table-column prop="departmentNameEn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
+                        <el-table-column prop="departmentLevelName" :label="$t('systemBasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
+                        <el-table-column prop="status" :label="$t('systemBasicmgmt.departmentInfo.status')" align="center" min-width="110">
+                            <template #default="scope">
+                                <el-tag :type="scope.row.status ? 'success' : 'danger'">
+                                    {{ scope.row.status ? $t('systemBasicmgmt.departmentInfo.active') : $t('systemBasicmgmt.departmentInfo.inactive') }}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="landline" :label="$t('systemBasicmgmt.departmentInfo.landline')" align="center" min-width="120" />
                         <el-table-column prop="email" :label="$t('systemBasicmgmt.departmentInfo.email')" align="left" min-width="180" />
-                        <el-table-column prop="status" :label="$t('systemBasicmgmt.departmentInfo.status')" align="center" min-width="80">
-                        <template #default="scope">
-                            <el-tag :type="scope.row.status ? 'success' : 'danger'">
-                                {{ scope.row.status ? $t('systemBasicmgmt.departmentInfo.active') : $t('systemBasicmgmt.departmentInfo.inactive') }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="description" :label="$t('systemBasicmgmt.departmentInfo.description')" align="left" min-width="200" />
-                    <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="260" fixed="right">
-                        <template #default="scope">
-                            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                            <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systemBasicmgmt.departmentInfo.addChild') }}</el-button>
-                            <el-button size="small"
-                                       type="danger"
-                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
-                        </template>
-                    </el-table-column>
+                        
+                        <el-table-column prop="description" :label="$t('systemBasicmgmt.departmentInfo.description')" align="left" min-width="200" />
+                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="260" fixed="right">
+                            <template #default="scope">
+                                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
+                                <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systemBasicmgmt.departmentInfo.addChild') }}</el-button>
+                                <el-button size="small"
+                                        type="danger"
+                                        @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+                            </template>
+                        </el-table-column>
                 </el-table>
             </div>
         </el-card>
@@ -101,7 +103,15 @@
                 </div>
                 <div class="form-row">
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentLevelId')">
-                        <el-input-number v-model="editForm.departmentLevelId" :min="1" style="width:100%" />
+                        <el-select v-model="editForm.departmentLevelId" 
+                                   style="width:100%" 
+                                   :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')" 
+                                   clearable>
+                            <el-option v-for="item in departmentLevelList" 
+                                       :key="item.departmentLevelId" 
+                                       :label="item.departmentLevelName" 
+                                       :value="item.departmentLevelId" />
+                        </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.status')">
                         <el-switch v-model="editForm.status" 
@@ -142,7 +152,8 @@
         GET_DEPARTMENT_ENTITY_API, 
         INSERST_DEPARTMENT_API, 
         DELETE_DEPARTMENT_API, 
-        UPDATE_DEPARTMENT_API 
+        UPDATE_DEPARTMENT_API,
+        GET_DEPARTMENTLEVEL_DROPDOWN_API 
     } from '@/config/api/systemBasicmgmt/system-basic/department'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
@@ -153,6 +164,9 @@
     // 部门数据
     const departmentList = ref([])
     const loading = ref(false)
+    
+    // 部门级别下拉框数据
+    const departmentLevelList = ref([])
   
     // 过滤条件
     const filters = reactive({
@@ -173,7 +187,7 @@
         departmentNameCn: '',
         departmentNameEn: '',
         parentId: '',
-        departmentLevelId: 1,
+        departmentLevelId: '',
         description: '',
         sortOrder: 1,
         landline: '',
@@ -208,7 +222,19 @@
     // 在组件挂载后获取部门数据
     onMounted(() => {
         fetchDepartmentTree()
+        fetchDepartmentLevelDropdown()
     })
+    
+    // 获取部门级别下拉框数据
+    const fetchDepartmentLevelDropdown = async () => {
+        const res = await post(GET_DEPARTMENTLEVEL_DROPDOWN_API.GET_DEPARTMENTLEVEL_DROPDOWN, {})
+        
+        if (res && res.code === '200') {
+            departmentLevelList.value = res.data || []
+        } else {
+            ElMessage.error(res?.message || '获取部门级别下拉框数据失败')
+        }
+    }
   
     // 获取部门实体数据
     const fetchDepartmentEntity = async (departmentId) => {
@@ -216,7 +242,6 @@
             departmentId: departmentId,
             departmentCode: ""
         }
-        console.log(params)
         const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, params)
         console.log(res)
         if (res && res.code === '200') {
@@ -275,7 +300,7 @@
         editForm.departmentNameCn = ''
         editForm.departmentNameEn = ''
         editForm.parentId = ''
-        editForm.departmentLevelId = 1
+        editForm.departmentLevelId = ''
         editForm.description = ''
         editForm.sortOrder = 1
         editForm.landline = ''
@@ -313,6 +338,7 @@
         const params = {
             ...editForm
         }
+        console.log(params)
         const res = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
   
         if (res && res.code === '200') {
@@ -370,10 +396,8 @@
         // 重置表单数据
         resetForm()
         operationType.value = 'addChild'
-        // 设置父部门ID
-        editForm.parentId = row.departmentId
-        // 设置部门层级（父级+1）
-        editForm.departmentLevelId = (row.departmentLevelId || 1) + 1
+        // 设置父部门ID，确保为字符串类型
+        editForm.parentId = String(row.departmentId)
         // 设置对话框标题
         dialogTitle.value = t('systemBasicmgmt.departmentInfo.addChildDepartment')
         // 显示对话框

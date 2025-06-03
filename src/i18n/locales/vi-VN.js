@@ -97,7 +97,8 @@ export default {
     systemBasicData: 'Mô-đun dữ liệu cơ bản',
     userInfo: 'Quản lý thông tin nhân viên',
     companyInfo: 'Quản lý thông tin công ty',
-    departmentInfo: 'Quản lý thông tin phòng ban'
+    departmentInfo: 'Quản lý thông tin phòng ban',
+    departmentLevel: 'Quản lý cấp độ phòng ban'
   },
   
   // Quản lý cơ bản hệ thống
@@ -262,6 +263,8 @@ export default {
         title: 'Quản lý miền',
         domainCode: 'Mã miền',
         domainName: 'Tên miền',
+        domainNameCn: 'Tên miền tiếng Trung',
+        domainNameEn: 'Tên miền tiếng Anh',
         domainIcon: 'Biểu tượng miền',
         sortOrder: 'Thứ tự sắp xếp',
         roleCode: 'Mã vai trò',
@@ -272,7 +275,9 @@ export default {
         editDomain: 'Sửa thông tin miền',
         deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
         pleaseInputDomainCode: 'Vui lòng nhập mã miền',
-        pleaseInputDomainName: 'Vui lòng nhập tên miền'
+        pleaseInputDomainName: 'Vui lòng nhập tên miền',
+        pleaseInputDomainNameCn: 'Vui lòng nhập tên miền tiếng Trung',
+        pleaseInputDomainNameEn: 'Vui lòng nhập tên miền tiếng Anh'
       },
       
       // Quản lý mô-đun
@@ -281,6 +286,8 @@ export default {
         domain: 'Miền',
         menuCode: 'Mã mô-đun',
         menuName: 'Tên mô-đun',
+        menuNameCn: 'Tên mô-đun tiếng Trung',
+        menuNameEn: 'Tên mô-đun tiếng Anh',
         menuIcon: 'Biểu tượng mô-đun',
         sortOrder: 'Thứ tự sắp xếp',
         menuUrl: 'URL mô-đun',
@@ -294,7 +301,9 @@ export default {
         deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
         pleaseSelectDomain: 'Vui lòng chọn miền',
         pleaseInputMenuCode: 'Vui lòng nhập mã mô-đun',
-        pleaseInputMenuName: 'Vui lòng nhập tên mô-đun'
+        pleaseInputMenuName: 'Vui lòng nhập tên mô-đun',
+        pleaseInputMenuNameCn: 'Vui lòng nhập tên mô-đun tiếng Trung',
+        pleaseInputMenuNameEn: 'Vui lòng nhập tên mô-đun tiếng Anh'
       },
       
       // Quản lý chương trình
@@ -302,6 +311,8 @@ export default {
         title: 'Quản lý chương trình',
         programCode: 'Mã chương trình',
         programName: 'Tên chương trình',
+        programNameCn: 'Tên chương trình tiếng Trung',
+        programNameEn: 'Tên chương trình tiếng Anh',
         domain: 'Miền',
         module: 'Mô-đun',
         programIcon: 'Biểu tượng chương trình',
@@ -317,6 +328,8 @@ export default {
         deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
         pleaseInputProgramCode: 'Vui lòng nhập mã chương trình',
         pleaseInputProgramName: 'Vui lòng nhập tên chương trình',
+        pleaseInputProgramNameCn: 'Vui lòng nhập tên chương trình tiếng Trung',
+        pleaseInputProgramNameEn: 'Vui lòng nhập tên chương trình tiếng Anh',
         pleaseSelectDomain: 'Vui lòng chọn miền',
         pleaseSelectModule: 'Vui lòng chọn mô-đun'
       },
@@ -378,6 +391,7 @@ export default {
       departmentName: 'Tên bộ phận',
       departmentNameCn: 'Tên bộ phận tiếng Trung',
       departmentNameEn: 'Tên bộ phận tiếng Anh',
+      departmentLevelName: 'Cấp độ bộ phận',
       description: 'Mô tả',
       landline: 'Điện thoại cố định',
       email: 'Email',
@@ -400,6 +414,7 @@ export default {
       pleaseInputNameCn: 'Vui lòng nhập tên bộ phận tiếng Trung',
       pleaseInputNameEn: 'Vui lòng nhập tên bộ phận tiếng Anh',
       pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+      pleaseSelectDepartmentLevel: 'Vui lòng chọn cấp độ bộ phận',
       pleaseCompleteForm: 'Vui lòng hoàn thành biểu mẫu',
       index: 'STT',
       saveSuccess: 'Lưu thành công',
@@ -411,6 +426,26 @@ export default {
         departmentCode: 'Mã bộ phận',
         departmentName: 'Tên bộ phận'
       }
+    },
+    // Quản lý cấp độ bộ phận
+    departmentLevel: {
+      title: 'Quản lý cấp độ bộ phận',
+      index: 'STT',
+      departmentLevelCode: 'Số cấp độ',
+      departmentLevelName: 'Tên cấp độ',
+      departmentLevelNameCn: 'Tên cấp độ tiếng Trung',
+      departmentLevelNameEn: 'Tên cấp độ tiếng Anh',
+      departmentLevelDescribe: 'Mô tả cấp độ',
+      operation: 'Thao tác',
+      addDepartmentLevel: 'Thêm cấp độ bộ phận',
+      editDepartmentLevel: 'Sửa cấp độ bộ phận',
+      deleteConfirm: 'Bạn có chắc chắn muốn xóa cấp độ bộ phận này không?',
+      pleaseInputDepartmentLevelCode: 'Vui lòng nhập số cấp độ',
+      pleaseInputDepartmentLevelName: 'Vui lòng nhập tên cấp độ',
+      pleaseInputDepartmentLevelNameCn: 'Vui lòng nhập tên cấp độ tiếng Trung',
+      pleaseInputDepartmentLevelNameEn: 'Vui lòng nhập tên cấp độ tiếng Anh',
+      pleaseInputDepartmentLevelDescribe: 'Vui lòng nhập mô tả cấp độ',
+      fillRequiredInfo: 'Vui lòng điền thông tin bắt buộc'
     }
   }
 } 

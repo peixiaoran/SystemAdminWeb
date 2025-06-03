@@ -45,7 +45,8 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.module.menuName')" align="left" min-width="170" />
+                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')" align="left" min-width="170" />
+                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameEn')" align="left" min-width="170" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.module.pagePath')" align="left" min-width="230" />
                   <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')" align="center" min-width="120" />
@@ -102,43 +103,49 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuName')">
-                      <el-input v-model="editForm.menuName" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')">
+                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuNameEn')">
+                      <el-input v-model="editForm.menuNameEn" style="width:100%" />
+                  </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.domain')">
                       <el-select v-model="editForm.domainId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain')" clearable>
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')">
                       <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.sortOrder')">
                       <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.level')">
                       <el-input v-model.number="editForm.level" type="number" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.pagePath')">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.component')">
                       <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
+              </div>
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.target')">
                       <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
+                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
@@ -191,6 +198,7 @@
   const filters = reactive({
       menuCode: '',
       menuName: '',
+      menuNameEn: '',
       menuUrl: '',
       domainId: ''
   })
@@ -204,7 +212,8 @@
       parentMenuId: '0',
       domainId: '',
       menuCode: '',
-      menuName: '',
+      menuNameCn: '',
+      menuNameEn: '',
       menuType: 1,
       menuUrl: '',
       menuIcon: '',
@@ -255,7 +264,8 @@
       if (res && res.code === '200') {
           editForm.menuId = res.data.menuId
           editForm.menuCode = res.data.menuCode
-          editForm.menuName = res.data.menuName
+          editForm.menuNameCn = res.data.menuNameCn
+          editForm.menuNameEn = res.data.menuNameEn
           editForm.parentMenuId = res.data.parentMenuId
           editForm.domainId = res.data.domainId
           editForm.menuType = res.data.menuType
@@ -321,7 +331,8 @@
       editForm.menuId = ''
       editForm.parentMenuId = '0'
       editForm.menuCode = ''
-      editForm.menuName = ''
+      editForm.menuNameCn = ''
+      editForm.menuNameEn = ''
       editForm.domainId = ''
       editForm.menuType = 1
       editForm.menuUrl = ''
@@ -471,8 +482,8 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.menuCode || !editForm.menuName) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuCode') + ' ' + t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuName'))
+      if (!editForm.menuCode || !editForm.menuNameCn) {
+          ElMessage.warning(t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuCode') + ' ' + t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuNameCn'))
           return
       }
 
