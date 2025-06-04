@@ -10,6 +10,7 @@ export default {
     add: '添加',
     search: '搜索',
     reset: '重置',
+    refresh: '刷新',
     success: '成功',
     failed: '失败',
     loading: '加载中...',
@@ -28,6 +29,7 @@ export default {
     closeCurrentTab: '关闭当前标签',
     closeOtherTabs: '关闭其他标签',
     closeAllTabs: '关闭所有标签',
+    operation: '操作'
   },
   
   // 登录页
@@ -96,6 +98,7 @@ export default {
     roleProgram: '角色程序绑定',
     systemBasicData: '基本资料模块',
     userInfo: '员工资讯维护',
+    userPosition: '用户职位维护',
     companyInfo: '公司资料维护',
     departmentInfo: '部门资料维护',
     departmentLevel: '部门级别维护'
@@ -276,6 +279,26 @@ export default {
       pleaseInputNameCn: '请输入中文名称',
       pleaseInputNameEn: '请输入英文名称',
       index: '序号',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '删除成功',
+      operationFailed: '操作失败',
+      getFailed: '获取数据失败'
+    },
+    // 用户职位
+    userPosition: {
+      title: '用户职位管理',
+      positionNo: '职位编号',
+      positionNameCn: '职位中文名称',
+      positionNameEn: '职位英文名称',
+      positionDescribe: '职位描述',
+      editPosition: '查看职位详情',
+      positionNoPlaceholder: '请输入职位编号',
+      positionNameCnPlaceholder: '请输入职位中文名称',
+      positionNameEnPlaceholder: '请输入职位英文名称',
+      positionDescribePlaceholder: '请输入职位描述',
+      index: '序号',
+      operation: '操作',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
       deleteSuccess: '删除成功',

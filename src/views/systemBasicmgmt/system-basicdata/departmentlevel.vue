@@ -31,7 +31,7 @@
                         style="width: 100%"
                         border
                         stripe
-                        max-height="calc(100vh - 240px)"
+                        height="100%"
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">

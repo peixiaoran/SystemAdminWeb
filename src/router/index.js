@@ -229,6 +229,17 @@ const moduleRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
+          },
+          {
+            path: 'userposition',
+            name: 'SystemUserPosition',
+            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/userposition.vue')),
+            meta: { 
+              title: 'route.userPosition', 
+              icon: 'GoldMedal',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
           }
         ]
       }
