@@ -363,6 +363,8 @@ export default {
         title: 'Role Management',
         roleCode: 'Role Code',
         roleName: 'Role Name',
+        roleNameCn: 'Role Chinese Name',
+        roleNameEn: 'Role English Name',
         description: 'Description',
         addRole: 'Add Role',
         editRole: 'Edit Role Info',

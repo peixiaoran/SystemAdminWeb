@@ -5,18 +5,18 @@
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programName')">
-                  <el-input style="width: 180px" 
+                  <el-input style="width: 200px" 
                             v-model="filters.programName" 
                             :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.programName')" 
                             clearable />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.domain')" style="width:170px" clearable @change="handleFilterDomainChange">
+                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.domain')" style="width:180px" clearable @change="handleFilterDomainChange">
                       <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')">
-                  <el-select v-model="filters.parentMenuId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.module')" style="width:170px" clearable>
+                  <el-select v-model="filters.parentMenuId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.module')" style="width:180px" clearable>
                       <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                   </el-select>
               </el-form-item>

@@ -48,8 +48,12 @@
                                    :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')"
                                    align="left"
                                    min-width="240" />
-                  <el-table-column prop="roleName"
-                                   :label="$t('systemBasicmgmt.systemMgmt.role.roleName')"
+                  <el-table-column prop="roleNameCn"
+                                   :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')"
+                                   align="left"
+                                   min-width="200" />
+                  <el-table-column prop="roleNameEn"
+                                   :label="$t('systemBasicmgmt.systemMgmt.role.roleNameEn')"
                                    align="left"
                                    min-width="200" />
                   <el-table-column prop="isEnabled"
@@ -107,8 +111,13 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
                       <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')">
-                      <el-input v-model="editForm.roleName" style="width:100%"/>
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')">
+                      <el-input v-model="editForm.roleNameCn" style="width:100%"/>
+                  </el-form-item>
+              </div>
+              <div class="form-row">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameEn')">
+                      <el-input v-model="editForm.roleNameEn" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -170,7 +179,8 @@
   const editForm = reactive({
       roleId: '',
       roleCode: '',
-      roleName: '',
+      roleNameCn: '',
+      roleNameEn: '',
       description: '',
       isEnabled: true,
       remarks: ''
@@ -211,7 +221,8 @@
           // 对字符串类型字段进行额外的XSS清洗
           editForm.roleId = res.data.roleId
           editForm.roleCode = sanitizeHtml(res.data.roleCode || '')
-          editForm.roleName = sanitizeHtml(res.data.roleName || '')
+          editForm.roleNameCn = sanitizeHtml(res.data.roleNameCn || '')
+          editForm.roleNameEn = sanitizeHtml(res.data.roleNameEn || '')
           editForm.description = sanitizeHtml(res.data.description || '')
           editForm.isEnabled = res.data.isEnabled
           editForm.remarks = sanitizeHtml(res.data.remarks || '')
@@ -248,7 +259,8 @@
   const resetForm = () => {
       editForm.roleId = ''
       editForm.roleCode = ''
-      editForm.roleName = ''
+      editForm.roleNameCn = ''
+      editForm.roleNameEn = ''
       editForm.description = ''
       editForm.isEnabled = true
       editForm.remarks = ''
@@ -259,7 +271,8 @@
       const params = {
           roleId: '',
           roleCode: editForm.roleCode,
-          roleName: editForm.roleName,
+          roleNameCn: editForm.roleNameCn,
+          roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
           remarks: editForm.remarks
@@ -279,7 +292,8 @@
       const params = {
           roleId: editForm.roleId,
           roleCode: editForm.roleCode,
-          roleName: editForm.roleName,
+          roleNameCn: editForm.roleNameCn,
+          roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
           remarks: editForm.remarks
@@ -371,7 +385,7 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.roleCode || !editForm.roleName) {
+      if (!editForm.roleCode || !editForm.roleNameCn) {
           ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
           return
       }

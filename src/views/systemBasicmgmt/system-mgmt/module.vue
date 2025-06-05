@@ -16,7 +16,7 @@
                   <el-input v-model="filters.menuCode" :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.menuCode')" style="width:170px" clearable />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuName')">
-                  <el-input v-model="filters.menuName" :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.menuName')" style="width:170px" clearable />
+                  <el-input v-model="filters.menuName" :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.module.menuName')" style="width:200px" clearable />
               </el-form-item>
               <el-form-item>
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>

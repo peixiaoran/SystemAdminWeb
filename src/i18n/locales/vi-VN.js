@@ -360,6 +360,8 @@ export default {
         title: 'Quản lý vai trò',
         roleCode: 'Mã vai trò',
         roleName: 'Tên vai trò',
+        roleNameCn: 'Tên vai trò tiếng Trung',
+        roleNameEn: 'Tên vai trò tiếng Anh',
         description: 'Mô tả',
         addRole: 'Thêm vai trò',
         editRole: 'Sửa thông tin vai trò',

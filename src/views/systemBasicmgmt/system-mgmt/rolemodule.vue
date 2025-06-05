@@ -1,73 +1,70 @@
 <template>
-  <div class="conventional-table-container">
-      <el-card class="conventional-card">
+    <div class="conventional-table-container">
+        <el-card class="conventional-card">
 
-          <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')">
-                  <el-select style="width:180px" 
-                             v-model="filters.roleId"
-                             :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.role')"
-                             clearable
-                             @change="handleRoleChange">
-                      <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
-                  </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" clearable @change="handleDomainChange">
-                      <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
-                  </el-select>
-              </el-form-item>
-              <el-form-item class="form-button-group">
-                  <el-button type="primary" @click="handleSearch" plain>
-                      {{ $t('common.search') }}
-                  </el-button>
-              </el-form-item>
-              <el-form-item class="form-right-button">
-                  <el-button type="primary" @click="handleConfirm">
-                      {{ $t('systemBasicmgmt.systemMgmt.updateBindings') }}
-                  </el-button>
-              </el-form-item>
-          </el-form>
+            <!-- 过滤条件 -->
+            <el-form :inline="true" :model="filters" class="conventional-filter-form">
+                <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')">
+                    <el-select style="width:180px"
+                               v-model="filters.roleId"
+                               :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.role')"
+                               clearable
+                               @change="handleRoleChange">
+                        <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.domain')">
+                    <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" clearable @change="handleDomainChange">
+                        <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item class="form-button-group">
+                    <el-button type="primary" @click="handleSearch" plain>
+                        {{ $t('common.search') }}
+                    </el-button>
+                </el-form-item>
+                <el-form-item class="form-right-button">
+                    <el-button type="primary" @click="handleConfirm">
+                        {{ $t('systemBasicmgmt.systemMgmt.updateBindings') }}
+                    </el-button>
+                </el-form-item>
+            </el-form>
 
-          <!-- 表格区域 -->
-          <div class="table-pagination-container">
-              <div class="table-wrapper">
-                  <el-table :data="roleModuleList"
-                            style="width: 100%"
-                            border
-                            stripe
-                            max-height="calc(100vh - 240px)"
-                            :header-cell-style="{ background: '#f5f7fa' }"
-                            v-loading="loading"
-                            class="conventional-table">
-                      <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                      <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
-                      <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.module')" align="left" min-width="180" />
-                      <el-table-column prop="isChecked" :label="$t('systemBasicmgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">
-                          <template #default="scope">
-                              <div class="checkbox-wrapper">
-                                  <el-checkbox v-model="scope.row.isChecked" />
-                              </div>
-                          </template>
-                      </el-table-column>
-                      <el-table-column prop="remark" :label="$t('systemBasicmgmt.systemMgmt.remark')" min-width="150" />
-                  </el-table>
-              </div>
-
-              <!-- 分页 -->
-              <div class="pagination-wrapper">
-                  <el-pagination v-model:current-page="pagination.currentPage"
-                                 v-model:page-size="pagination.pageSize"
-                                 :page-sizes="[10, 20, 50, 100]"
-                                 layout="total, sizes, prev, pager, next, jumper"
-                                 :total="pagination.total"
-                                 @size-change="handleSizeChange"
-                                 @current-change="handlePageChange" />
-              </div>
-          </div>
-      </el-card>
-  </div>
+            <!-- 表格区域 -->
+            <div class="table-container">
+                <el-table :data="roleModuleList"
+                          style="width: 100%"
+                          border
+                          stripe
+                          max-height="calc(100vh - 240px)"
+                          :header-cell-style="{ background: '#f5f7fa' }"
+                          v-loading="loading"
+                          class="conventional-table">
+                    <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
+                    <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
+                    <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.module')" align="left" min-width="180" />
+                    <el-table-column prop="isChecked" :label="$t('systemBasicmgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">
+                        <template #default="scope">
+                            <div class="checkbox-wrapper">
+                                <el-checkbox v-model="scope.row.isChecked" />
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="remark" :label="$t('systemBasicmgmt.systemMgmt.remark')" min-width="150" />
+                </el-table>
+            </div>
+            <!-- 分页 -->
+            <div class="pagination-wrapper">
+                <el-pagination v-model:current-page="pagination.currentPage"
+                               v-model:page-size="pagination.pageSize"
+                               :page-sizes="[10, 20, 50, 100]"
+                               layout="total, sizes, prev, pager, next, jumper"
+                               :total="pagination.total"
+                               @size-change="handleSizeChange"
+                               @current-change="handlePageChange" />
+            </div>
+        </el-card>
+    </div>
 </template>
 
 <script setup>
@@ -229,13 +226,5 @@
 </script>
 
 <style scoped>
-  @import '@/assets/styles/conventionalTablePage.css';
-
-  /* 复选框居中 */
-  .checkbox-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-  }
+    @import '@/assets/styles/conventionalTablePage.css';
 </style>

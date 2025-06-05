@@ -8,7 +8,7 @@
                   <el-input v-model="filters.domainCode" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainCode')" style="width:170px" clearable />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainName')">
-                  <el-input v-model="filters.domainName" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainName')" style="width:170px" clearable />
+                  <el-input v-model="filters.domainName" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainName')" style="width:200px" clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -37,8 +37,8 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="domainCode" :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')" align="left" min-width="230" />
-                  <el-table-column prop="domainNameCn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" align="left" min-width="170" />
-                  <el-table-column prop="domainNameEn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="170" />
+                  <el-table-column prop="domainNameCn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" align="left" min-width="280" />
+                  <el-table-column prop="domainNameEn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="280" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')" align="left" min-width="230" />
                   <el-table-column prop="domainIcon" :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')" align="center" min-width="120" />

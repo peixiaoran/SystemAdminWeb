@@ -407,6 +407,8 @@ export default {
         title: '角色管理',
         roleCode: '角色编码',
         roleName: '角色名称',
+        roleNameCn: '角色中文名称',
+        roleNameEn: '角色英文名称',
         description: '描述',
         addRole: '新增角色',
         editRole: '编辑角色信息',

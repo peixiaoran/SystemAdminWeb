@@ -45,8 +45,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.roleProgram.role')" align="left" min-width="180" />
-                  <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.roleProgram.module')" align="left" min-width="180" />
-                  <el-table-column prop="programName" :label="$t('systemBasicmgmt.systemMgmt.roleProgram.program')" align="left" min-width="180" />
+                  <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.roleProgram.program')" align="left" min-width="180" />
                   <el-table-column prop="isChecked" :label="$t('systemBasicmgmt.systemMgmt.roleProgram.isBinding')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="checkbox-wrapper">
