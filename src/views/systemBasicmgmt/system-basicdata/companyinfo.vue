@@ -3,12 +3,12 @@
       <el-card class="conventional-card">
 
           <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form">
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="公司搜索表单">
               <el-form-item :label="$t('systemBasicmgmt.companyInfo.filter.companyName')">
                   <el-input style="width: 180px;"
                             v-model="filters.companyName"
                             :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputName')"
-                            clearable />
+                            />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -67,21 +67,25 @@
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
-                 :close-on-click-modal="false">
-          <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleDialogClose">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCn')">
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" prop="companyNameCn">
                       <el-input v-model="editForm.companyNameCn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')">
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" prop="companyNameEn">
                       <el-input v-model="editForm.companyNameEn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')">
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')" prop="companyiPhone">
                       <el-input v-model="editForm.companyiPhone" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')">
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')" prop="companyFax">
                       <el-input v-model="editForm.companyFax" style="width:100%" />
                   </el-form-item>
               </div>
@@ -102,7 +106,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
   import { GET_COMPANY_PAGES_API, INSERST_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systemBasicmgmt/system-basic/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -114,6 +118,9 @@
   // 公司数据
   const companyList = ref([])
   const loading = ref(false)
+
+  // 表单引用
+  const editFormRef = ref(null)
 
   // 分页信息
   const pagination = reactive({
@@ -149,6 +156,22 @@
   // 对话框标题
   const dialogTitle = ref(t('systemBasicmgmt.companyInfo.editCompany'))
 
+  // 表单验证规则
+  const formRules = reactive({
+      companyNameCn: [
+          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameCn'), trigger: 'blur' }
+      ],
+      companyNameEn: [
+          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
+      ],
+      companyiPhone: [
+          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputPhone'), trigger: 'blur' }
+      ],
+      companyFax: [
+          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputFax'), trigger: 'blur' }
+      ]
+  })
+
   // 在组件挂载后获取公司数据
   onMounted(() => {
       fetchCompanyPages()
@@ -159,7 +182,7 @@
       const params = {
           companyId: companyId
       }
-      console.log(params)
+      
       const res = await post(GET_COMPANY_ENTITY_API.GET_COMPANY_ENTITY, params)
 
       if (res && res.code === '200') {
@@ -196,10 +219,14 @@
       loading.value = false
   }
 
-  // 处理搜索操作
+  // 防抖搜索优化
+  let searchTimer = null
   const handleSearch = () => {
-      pagination.currentPage = 1
-      fetchCompanyPages()
+      if (searchTimer) clearTimeout(searchTimer)
+      searchTimer = setTimeout(() => {
+          pagination.currentPage = 1
+          fetchCompanyPages()
+      }, 300) // 300ms防抖
   }
 
   // 重置搜索条件
@@ -222,7 +249,16 @@
       fetchCompanyPages()
   }
 
-  const resetForm = () => {
+  const resetForm = (clearValidation = true) => {
+      // 先清除验证状态（在重置数据之前）
+      if (clearValidation && editFormRef.value) {
+          try {
+              editFormRef.value.clearValidate()
+          } catch (error) {
+              console.warn('清除表单验证状态失败:', error)
+          }
+      }
+      
       editForm.companyId = ''
       editForm.companyNameCn = ''
       editForm.companyNameEn = ''
@@ -233,6 +269,19 @@
       editForm.modifiedBy = 1
       editForm.modifiedDate = ''
       editForm.remark = ''
+      
+      // 数据重置后再次清除验证状态
+      if (clearValidation) {
+          nextTick(() => {
+              if (editFormRef.value) {
+                  try {
+                      editFormRef.value.clearValidate()
+                  } catch (error) {
+                      console.warn('清除表单验证状态失败:', error)
+                  }
+              }
+          })
+      }
   }
 
   // 新增公司数据
@@ -297,15 +346,22 @@
   }
 
   // 处理编辑操作
-  const handleEdit = (index, row) => {
+  const handleEdit = async (index, row) => {
       // 重置表单数据
       resetForm()
       // 获取公司实体数据
-      fetchCompanyEntity(row.companyId)
+      await fetchCompanyEntity(row.companyId)
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.companyInfo.editCompany')
       // 显示对话框
       dialogVisible.value = true
+      
+      // 在数据加载完成后再次清除验证状态
+      setTimeout(() => {
+          if (editFormRef.value) {
+              editFormRef.value.clearValidate()
+          }
+      }, 100)
   }
 
   // 处理删除操作
@@ -329,17 +385,24 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.companyNameCn) {
-          ElMessage.warning(t('systemBasicmgmt.companyInfo.pleaseInputNameCh'))
-          return
-      }
+      editFormRef.value?.validate((valid) => {
+          if (valid) {
+              // 判断是新增还是编辑
+              if (!editForm.companyId) {
+                  insertCompany()
+              } else {
+                  updateCompany()
+              }
+          }
+      })
+  }
 
-      // 判断是新增还是编辑
-      if (!editForm.companyId) {
-          insertCompany()
-      } else {
-          updateCompany()
-      }
+  // 处理对话框关闭
+  const handleDialogClose = () => {
+      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      nextTick(() => {
+          resetForm(true)
+      })
   }
 </script>
 

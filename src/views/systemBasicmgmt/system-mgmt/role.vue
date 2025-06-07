@@ -3,18 +3,16 @@
       <el-card class="conventional-card">
 
           <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form">
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色搜索表单">
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
                   <el-input style="width: 180px;"
                             v-model="filters.roleCode"
-                            :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleCode')"
-                            clearable />
+                            :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleCode')" />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleName')">
                   <el-input style="width: 180px;"
                             v-model="filters.roleName"
-                            :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleName')"
-                            clearable />
+                            :placeholder="$t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleName')" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -105,18 +103,22 @@
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
-                 :close-on-click-modal="false">
-          <el-form :model="editForm" label-width="100px" class="dialog-form">
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleDialogClose">
+          <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="角色编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')" prop="roleNameCn">
                       <el-input v-model="editForm.roleNameCn" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameEn')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameEn')" prop="roleNameEn">
                       <el-input v-model="editForm.roleNameEn" style="width:100%"/>
                   </el-form-item>
               </div>
@@ -146,7 +148,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post, sanitizeHtml } from '@/utils/request'
   import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systemBasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -158,6 +160,9 @@
   // 角色数据
   const roleList = ref([])
   const loading = ref(false)
+
+  // 表单引用
+  const editFormRef = ref(null)
 
   // 分页信息
   const pagination = reactive({
@@ -187,6 +192,19 @@
   })
   // 对话框标题
   const dialogTitle = ref(t('systemBasicmgmt.systemMgmt.role.editRole'))
+
+  // 表单验证规则
+  const formRules = reactive({
+      roleCode: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleCode'), trigger: 'blur' }
+      ],
+      roleNameCn: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleNameCn'), trigger: 'blur' }
+      ],
+      roleNameEn: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleNameEn'), trigger: 'blur' }
+      ]
+  })
 
   // 在组件挂载后获取角色数据
   onMounted(() => {
@@ -256,7 +274,16 @@
       fetchRolePages()
   }
 
-  const resetForm = () => {
+  const resetForm = (clearValidation = true) => {
+      // 先清除验证状态（在重置数据之前）
+      if (clearValidation && editFormRef.value) {
+          try {
+              editFormRef.value.clearValidate()
+          } catch (error) {
+              console.warn('清除表单验证状态失败:', error)
+          }
+      }
+      
       editForm.roleId = ''
       editForm.roleCode = ''
       editForm.roleNameCn = ''
@@ -264,6 +291,19 @@
       editForm.description = ''
       editForm.isEnabled = true
       editForm.remarks = ''
+      
+      // 数据重置后再次清除验证状态
+      if (clearValidation) {
+          nextTick(() => {
+              if (editFormRef.value) {
+                  try {
+                      editFormRef.value.clearValidate()
+                  } catch (error) {
+                      console.warn('清除表单验证状态失败:', error)
+                  }
+              }
+          })
+      }
   }
 
   // 新增角色数据
@@ -360,6 +400,21 @@
 
       // 显示对话框
       dialogVisible.value = true
+      
+      // 在数据加载完成后再次清除验证状态
+      setTimeout(() => {
+          if (editFormRef.value) {
+              editFormRef.value.clearValidate()
+          }
+      }, 100)
+  }
+
+  // 处理对话框关闭
+  const handleDialogClose = () => {
+      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      nextTick(() => {
+          resetForm(true)
+      })
   }
 
   // 处理删除操作
@@ -385,23 +440,22 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.roleCode || !editForm.roleNameCn) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
-          return
-      }
+      editFormRef.value?.validate((valid) => {
+          if (valid) {
+              // 判断是新增还是编辑
+              const isNewRole = !editForm.roleId || editForm.roleId === ''
 
-      // 判断是新增还是编辑
-      const isNewRole = !editForm.roleId || editForm.roleId === ''
+              if (isNewRole) {
+                  insertRole()
+              } else {
+                  updateRole()
+              }
+              dialogVisible.value = false
 
-      if (isNewRole) {
-          insertRole()
-      } else {
-          updateRole()
-      }
-      dialogVisible.value = false
-
-      // 重新获取数据
-      fetchRolePages()
+              // 重新获取数据
+              fetchRolePages()
+          }
+      })
   }
 </script>
 

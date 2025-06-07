@@ -3,18 +3,16 @@
         <el-card class="conventional-card">
   
             <!-- 过滤条件 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form">
+            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
                 <el-form-item :label="$t('systemBasicmgmt.departmentInfo.filter.departmentCode')">
                     <el-input style="width: 180px;"
                               v-model="filters.departmentCode"
-                              :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseInputCode')"
-                              clearable />
+                              :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseInputCode')" />
                 </el-form-item>
                 <el-form-item :label="$t('systemBasicmgmt.departmentInfo.filter.departmentName')">
                     <el-input style="width: 180px;"
                               v-model="filters.departmentName"
-                              :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseInputName')"
-                              clearable />
+                              :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseInputName')" />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -75,8 +73,12 @@
         <el-dialog v-model="dialogVisible"
                    :title="dialogTitle"
                    width="50%"
-                   :close-on-click-modal="false">
-            <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form">
+                   :close-on-click-modal="false"
+                   :append-to-body="true"
+                   :modal-append-to-body="true"
+                   :lock-scroll="true"
+                   @close="handleDialogClose">
+            <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="部门编辑表单">
                 <div class="form-row">
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
                         <el-input v-model="editForm.departmentCode" style="width:100%" />
@@ -94,21 +96,20 @@
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.landline')">
+                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.landline')" prop="landline">
                         <el-input v-model="editForm.landline" style="width:100%" />
                     </el-form-item>
-                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.email')">
+                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.email')" prop="email">
                         <el-input v-model="editForm.email" style="width:100%" />
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentLevelId')">
+                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentLevelId')" prop="departmentLevelId">
                         <el-select v-model="editForm.departmentLevelId" 
                                    style="width:100%" 
-                                   :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')" 
-                                   clearable>
-                            <el-option v-for="item in departmentLevelList" 
-                                       :key="item.departmentLevelId" 
+                                   :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
+                            <el-option v-for="item in departmentLevelList"
+                                       :key="`dept-level-${item.departmentLevelId}`" 
                                        :label="item.departmentLevelName" 
                                        :value="item.departmentLevelId" />
                         </el-select>
@@ -119,7 +120,7 @@
                     </el-form-item>
                 </div>
                 <div class="form-row full-width">
-                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.address')">
+                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.address')" prop="address">
                         <el-input v-model="editForm.address" style="width:100%" />
                     </el-form-item>
                 </div>
@@ -145,7 +146,7 @@
   </template>
   
   <script setup>
-    import { ref, reactive, onMounted } from 'vue'
+    import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 
         GET_DEPARTMENT_TREE_API, 
@@ -200,16 +201,28 @@
     // 表单验证规则
     const formRules = reactive({
         departmentCode: [
-            { required: true, message: t('systemBasicmgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
         ],
         departmentNameCn: [
-            { required: true, message: t('systemBasicmgmt.departmentInfo.pleaseInputNameCn'), trigger: 'blur' }
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputNameCn'), trigger: 'blur' }
         ],
         departmentNameEn: [
-            { required: true, message: t('systemBasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
         ],
         sortOrder: [
-            { required: true, message: t('systemBasicmgmt.departmentInfo.pleaseInputSortOrder'), trigger: 'blur' }
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputSortOrder'), trigger: 'blur' }
+        ],
+        landline: [
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputLandline'), trigger: 'blur' }
+        ],
+        email: [
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputEmail'), trigger: 'blur' }
+        ],
+        departmentLevelId: [
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseSelectDepartmentLevel'), trigger: 'change' }
+        ],
+        address: [
+            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputAddress'), trigger: 'blur' }
         ]
     })
   
@@ -243,7 +256,7 @@
             departmentCode: ""
         }
         const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, params)
-        console.log(res)
+
         if (res && res.code === '200') {
             editForm.departmentId = res.data.departmentId
             editForm.departmentCode = res.data.departmentCode
@@ -294,7 +307,22 @@
         fetchDepartmentTree()
     }
   
-    const resetForm = () => {
+    const resetForm = (clearValidation = true) => {
+        // 先清除验证状态（在重置数据之前）
+        if (clearValidation && editFormRef.value) {
+            try {
+                // 针对下拉框字段单独清除验证
+                const selectFields = ['departmentLevelId']
+                selectFields.forEach(field => {
+                    editFormRef.value.clearValidate(field)
+                })
+                // 然后清除所有验证
+                editFormRef.value.clearValidate()
+            } catch (error) {
+                console.warn('清除表单验证状态失败:', error)
+            }
+        }
+        
         editForm.departmentId = ''
         editForm.departmentCode = ''
         editForm.departmentNameCn = ''
@@ -309,9 +337,17 @@
         editForm.status = true
         editForm.remark = ''
         
-        // 清空表单验证
-        if (editFormRef.value) {
-            editFormRef.value.clearValidate()
+        // 数据重置后再次清除验证状态
+        if (clearValidation) {
+            nextTick(() => {
+                if (editFormRef.value) {
+                    try {
+                        editFormRef.value.clearValidate()
+                    } catch (error) {
+                        console.warn('清除表单验证状态失败:', error)
+                    }
+                }
+            })
         }
     }
   
@@ -338,7 +374,7 @@
         const params = {
             ...editForm
         }
-        console.log(params)
+
         const res = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
   
         if (res && res.code === '200') {
@@ -379,16 +415,23 @@
     }
   
     // 处理编辑操作
-    const handleEdit = (index, row) => {
+    const handleEdit = async (index, row) => {
         // 重置表单数据
         resetForm()
         operationType.value = 'edit'
         // 获取部门实体数据
-        fetchDepartmentEntity(row.departmentId)
+        await fetchDepartmentEntity(row.departmentId)
         // 设置对话框标题
         dialogTitle.value = t('systemBasicmgmt.departmentInfo.editDepartment')
         // 显示对话框
         dialogVisible.value = true
+        
+        // 在数据加载完成后再次清除验证状态
+        setTimeout(() => {
+            if (editFormRef.value) {
+                editFormRef.value.clearValidate()
+            }
+        }, 100)
     }
 
     // 处理添加子部门操作
@@ -446,6 +489,14 @@
             }
         })
     }
+
+      // 处理对话框关闭
+  const handleDialogClose = () => {
+      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      nextTick(() => {
+          resetForm(true)
+      })
+  }
   </script>
   
   <style scoped>

@@ -224,7 +224,7 @@ const handleLogin = () => {
             userStore.setToken(res.data)
             
             // 路由现在是静态的，不需要加载动态路由
-            console.log('登录成功，直接跳转到模块选择页')
+    
             
             // 直接跳转到模块选择页
             router.push('/module-select')

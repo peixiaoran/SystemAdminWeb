@@ -3,12 +3,12 @@
       <el-card class="conventional-card">
 
           <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form">
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门级别搜索表单">
               <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelCode')">
-                  <el-input v-model="filters.departmentLevelCode" :placeholder="$t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:170px" clearable />
+                  <el-input v-model="filters.departmentLevelCode" :placeholder="$t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:170px" />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelName')">
-                  <el-input v-model="filters.departmentLevelName" :placeholder="$t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:170px" clearable />
+                  <el-input v-model="filters.departmentLevelName" :placeholder="$t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:170px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -67,18 +67,22 @@
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
-                 :close-on-click-modal="false">
-          <el-form :inline="true" :model="editForm" label-width="120px" class="dialog-form">
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleDialogClose">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="部门级别编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelCode')">
+                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
                       <el-input v-model="editForm.departmentLevelCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCn')">
+                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
                       <el-input v-model="editForm.departmentLevelNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameEn')">
+                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
                       <el-input v-model="editForm.departmentLevelNameEn" style="width:100%" />
                   </el-form-item>
                   <el-form-item></el-form-item>
@@ -100,7 +104,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
   import { 
     GET_DEPARTMENT_LEVEL_LIST_API, 
@@ -118,6 +122,9 @@
   // 数据列表
   const departmentLevelList = ref([])
   const loading = ref(false)
+
+  // 表单引用
+  const editFormRef = ref(null)
 
   // 分页信息
   const pagination = reactive({
@@ -146,6 +153,19 @@
 
   // 对话框标题
   const dialogTitle = ref('')
+
+  // 表单验证规则
+  const formRules = reactive({
+      departmentLevelCode: [
+          { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode'), trigger: 'blur' }
+      ],
+      departmentLevelNameCn: [
+          { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCn'), trigger: 'blur' }
+      ],
+      departmentLevelNameEn: [
+          { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
+      ]
+  })
 
   // 在组件挂载后获取数据
   onMounted(() => {
@@ -220,12 +240,34 @@
   }
 
   // 重置表单
-  const resetForm = () => {
+  const resetForm = (clearValidation = true) => {
+      // 先清除验证状态（在重置数据之前）
+      if (clearValidation && editFormRef.value) {
+          try {
+              editFormRef.value.clearValidate()
+          } catch (error) {
+              console.warn('清除表单验证状态失败:', error)
+          }
+      }
+      
       editForm.departmentLevelId = 0
       editForm.departmentLevelCode = ''
       editForm.departmentLevelNameCn = ''
       editForm.departmentLevelNameEn = ''
       editForm.departmentLevelDescribe = ''
+      
+      // 数据重置后再次清除验证状态
+      if (clearValidation) {
+          nextTick(() => {
+              if (editFormRef.value) {
+                  try {
+                      editFormRef.value.clearValidate()
+                  } catch (error) {
+                      console.warn('清除表单验证状态失败:', error)
+                  }
+              }
+          })
+      }
   }
 
   // 新增部门级别
@@ -299,6 +341,21 @@
       dialogTitle.value = t('systemBasicmgmt.departmentLevel.editDepartmentLevel')
       // 显示对话框
       dialogVisible.value = true
+      
+      // 在数据加载完成后再次清除验证状态
+      setTimeout(() => {
+          if (editFormRef.value) {
+              editFormRef.value.clearValidate()
+          }
+      }, 100)
+  }
+
+  // 处理对话框关闭
+  const handleDialogClose = () => {
+      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      nextTick(() => {
+          resetForm(true)
+      })
   }
 
   // 处理删除操作
@@ -322,19 +379,18 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.departmentLevelCode || !editForm.departmentLevelNameCn) {
-          ElMessage.warning(t('systemBasicmgmt.departmentLevel.fillRequiredInfo'))
-          return
-      }
+      editFormRef.value?.validate((valid) => {
+          if (valid) {
+              // 判断是新增还是编辑
+              const isNew = editForm.departmentLevelId === 0
 
-      // 判断是新增还是编辑
-      const isNew = editForm.departmentLevelId === 0
-
-      if (isNew) {
-          insertDepartmentLevel()
-      } else {
-          updateDepartmentLevel()
-      }
+              if (isNew) {
+                  insertDepartmentLevel()
+              } else {
+                  updateDepartmentLevel()
+              }
+          }
+      })
   }
 </script>
 

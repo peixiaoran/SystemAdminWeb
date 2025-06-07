@@ -3,12 +3,12 @@
       <el-card class="conventional-card">
 
           <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form">
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="域搜索表单">
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')">
-                  <el-input v-model="filters.domainCode" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainCode')" style="width:170px" clearable />
+                  <el-input v-model="filters.domainCode" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainCode')" style="width:170px" />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainName')">
-                  <el-input v-model="filters.domainName" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainName')" style="width:200px" clearable />
+                  <el-input v-model="filters.domainName" :placeholder="$t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainName')" style="width:200px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -89,42 +89,46 @@
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
-                 :close-on-click-modal="false">
-          <el-form :inline="true" :model="editForm" label-width="100px" class="dialog-form">
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleDialogClose">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="域编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')" prop="domainCode">
                       <el-input v-model="editForm.domainCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" prop="domainNameCn">
                       <el-input v-model="editForm.domainNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')" prop="domainNameEn">
                       <el-input v-model="editForm.domainNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainIcon')" prop="domainIcon">
                       <el-input v-model="editForm.domainIcon" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.sortOrder')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.sortOrder')" prop="sortOrder">
                       <el-input v-model="editForm.sortOrder" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.component')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.component')" prop="component">
                       <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.target')">
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.target')" prop="target">
                       <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
                   <el-form-item></el-form-item>
@@ -156,7 +160,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
   import { GET_DOMAIN_PAGES_API, INSERST_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/domain'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -169,6 +173,9 @@
   const domainList = ref([])
   const loading = ref(false)
   const domainTypeList = ref([])
+
+  // 表单引用
+  const editFormRef = ref(null)
 
   // 分页信息
   const pagination = reactive({
@@ -207,6 +214,37 @@
   })
   // 对话框标题
   const dialogTitle = ref(t('systemBasicmgmt.systemMgmt.domain.editDomain'))
+
+  // 表单验证规则
+  const formRules = reactive({
+      domainCode: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainCode'), trigger: 'blur' }
+      ],
+      domainNameCn: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainNameCn'), trigger: 'blur' }
+      ],
+      domainNameEn: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainNameEn'), trigger: 'blur' }
+      ],
+      domainIcon: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainIcon'), trigger: 'blur' }
+      ],
+      sortOrder: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputSortOrder'), trigger: 'blur' }
+      ],
+      roleCode: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputRoleCode'), trigger: 'blur' }
+      ],
+      path: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputPagePath'), trigger: 'blur' }
+      ],
+      component: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputComponent'), trigger: 'blur' }
+      ],
+      target: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputTarget'), trigger: 'blur' }
+      ]
+  })
 
   // 在组件挂载后获取日志数据
   onMounted(() => {
@@ -286,7 +324,16 @@
       fetchDomainPages()
   }
 
-  const resetForm = () => {
+  const resetForm = (clearValidation = true) => {
+      // 先清除验证状态（在重置数据之前）
+      if (clearValidation && editFormRef.value) {
+          try {
+              editFormRef.value.clearValidate()
+          } catch (error) {
+              console.warn('清除表单验证状态失败:', error)
+          }
+      }
+      
       editForm.component = ''
       editForm.target = ''
       editForm.path = ''
@@ -299,6 +346,19 @@
       editForm.domainCode = ''
       editForm.domainNameCn = ''
       editForm.domainNameEn = ''
+      
+      // 数据重置后再次清除验证状态
+      if (clearValidation) {
+          nextTick(() => {
+              if (editFormRef.value) {
+                  try {
+                      editFormRef.value.clearValidate()
+                  } catch (error) {
+                      console.warn('清除表单验证状态失败:', error)
+                  }
+              }
+          })
+      }
   }
 
   // 新增域列表数据
@@ -380,6 +440,21 @@
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.domain.editDomain')
 
       dialogVisible.value = true
+      
+      // 在数据加载完成后再次清除验证状态
+      setTimeout(() => {
+          if (editFormRef.value) {
+              editFormRef.value.clearValidate()
+          }
+      }, 100)
+  }
+
+  // 处理对话框关闭
+  const handleDialogClose = () => {
+      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      nextTick(() => {
+          resetForm(true)
+      })
   }
 
   // 处理删除操作
@@ -405,22 +480,22 @@
 
   // 保存编辑结果
   const handleSave = () => {
-      if (!editForm.domainCode || !editForm.domainNameCn) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.fillRequiredInfo'))
-          return
-      }
-      // 判断是新增还是编辑
-      const actionType = editForm.domainId === '0' ? '新增' : '编辑'
+      editFormRef.value?.validate((valid) => {
+          if (valid) {
+              // 判断是新增还是编辑
+              const actionType = editForm.domainId === '0' ? '新增' : '编辑'
 
-      if (actionType === '新增') {
-          insertDomain()
-      } else {
-          updateDomain()
-      }
-      dialogVisible.value = false
+              if (actionType === '新增') {
+                  insertDomain()
+              } else {
+                  updateDomain()
+              }
+              dialogVisible.value = false
 
-      // 重新获取数据
-      fetchDomainPages()
+              // 重新获取数据
+              fetchDomainPages()
+          }
+      })
   }
 </script>
 

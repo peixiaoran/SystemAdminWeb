@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../layout/index.vue'
-import { markRaw } from 'vue'
 import i18n from '../i18n'
 
 // 获取翻译函数
@@ -27,13 +26,13 @@ const constantRoutes = [
   {
     path: ROUTE_CONFIG.BASE.LOGIN,
     name: 'Login',
-    component: markRaw(() => import('../views/login/index.vue')),
+    component: () => import('../views/login/index.vue'),
     meta: { title: 'route.login' }
   },
   {
     path: ROUTE_CONFIG.BASE.HOME,
     name: 'ModuleSelect',
-    component: markRaw(() => import('../views/module-select/index.vue')),
+    component: () => import('../views/module-select/index.vue'),
     meta: { 
       title: 'route.moduleSelect', 
       [ROUTE_CONFIG.META.AUTH]: true 
@@ -48,13 +47,13 @@ const constantRoutes = [
   {
     path: ROUTE_CONFIG.BASE.ERROR_403,
     name: 'Forbidden',
-    component: markRaw(() => import('../views/error/403.vue')),
+    component: () => import('../views/error/403.vue'),
     meta: { title: 'route.forbidden' }
   },
   {
     path: ROUTE_CONFIG.BASE.ERROR_404,
     name: 'NotFound',
-    component: markRaw(() => import('../views/error/404.vue')),
+    component: () => import('../views/error/404.vue'),
     meta: { title: 'route.notFound' }
   },
   // 通配符路由
@@ -75,7 +74,7 @@ const moduleRoutes = [
       {
         path: 'index',
         name: 'SystemBasicmgmtIndex',
-        component: markRaw(() => import('../views/systemBasicmgmt/index.vue')),
+        component: () => import('../views/systemBasicmgmt/index.vue'),
         meta: { 
           title: 'route.systemBasicmgmt', 
           icon: 'Setting',
@@ -98,7 +97,7 @@ const moduleRoutes = [
           {
             path: 'role',
             name: 'SystemRole',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/role.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/role.vue'),
             meta: { 
               title: 'route.role', 
               icon: 'Avatar',
@@ -109,7 +108,7 @@ const moduleRoutes = [
           {
             path: 'domain',
             name: 'SystemDomain',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/domain.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/domain.vue'),
             meta: { 
               title: 'route.domain', 
               icon: 'Menu',
@@ -120,7 +119,7 @@ const moduleRoutes = [
           {
             path: 'module',
             name: 'SystemModule',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/module.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/module.vue'),
             meta: { 
               title: 'route.module', 
               icon: 'Operation',
@@ -131,7 +130,7 @@ const moduleRoutes = [
           {
             path: 'program',
             name: 'SystemProgram',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/program.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/program.vue'),
             meta: { 
               title: 'route.program', 
               icon: 'Share',
@@ -142,7 +141,7 @@ const moduleRoutes = [
           {
             path: 'roledomain',
             name: 'SystemRoleDomain',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/roledomain.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/roledomain.vue'),
             meta: { 
               title: 'route.roleDomain', 
               icon: 'MoreFilled',
@@ -153,7 +152,7 @@ const moduleRoutes = [
           {
             path: 'rolemodule',
             name: 'SystemRoleModule',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/rolemodule.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
               icon: 'MoreFilled',
@@ -164,7 +163,7 @@ const moduleRoutes = [
           {
             path: 'roleprogram',
             name: 'SystemRoleProgram',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-mgmt/roleprogram.vue')),
+            component: () => import('../views/systemBasicmgmt/system-mgmt/roleprogram.vue'),
             meta: { 
               title: 'route.roleProgram', 
               icon: 'MoreFilled',
@@ -189,7 +188,7 @@ const moduleRoutes = [
           {
             path: 'userinfo',
             name: 'SystemUserInfo',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue')),
+            component: () => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue'),
             meta: { 
               title: 'route.userInfo', 
               icon: 'UserFilled',
@@ -200,7 +199,7 @@ const moduleRoutes = [
           {
             path: 'companyinfo',
             name: 'SystemCompanyInfo',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/companyinfo.vue')),
+            component: () => import('../views/systemBasicmgmt/system-basicdata/companyinfo.vue'),
             meta: { 
               title: 'route.companyInfo', 
               icon: 'OfficeBuilding',
@@ -211,7 +210,7 @@ const moduleRoutes = [
           {
             path: 'departmentinfo',
             name: 'SystemDepartmentInfo',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/departmentinfo.vue')),
+            component: () => import('../views/systemBasicmgmt/system-basicdata/departmentinfo.vue'),
             meta: { 
               title: 'route.departmentInfo', 
               icon: 'School',
@@ -222,7 +221,7 @@ const moduleRoutes = [
           {
             path: 'departmentlevel',
             name: 'SystemDepartmentLevel',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/departmentlevel.vue')),
+            component: () => import('../views/systemBasicmgmt/system-basicdata/departmentlevel.vue'),
             meta: { 
               title: 'route.departmentLevel', 
               icon: 'GoldMedal',
@@ -233,7 +232,7 @@ const moduleRoutes = [
           {
             path: 'userposition',
             name: 'SystemUserPosition',
-            component: markRaw(() => import('../views/systemBasicmgmt/system-basicdata/userposition.vue')),
+            component: () => import('../views/systemBasicmgmt/system-basicdata/userposition.vue'),
             meta: { 
               title: 'route.userPosition', 
               icon: 'GoldMedal',

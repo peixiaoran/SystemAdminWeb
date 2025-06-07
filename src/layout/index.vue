@@ -222,19 +222,24 @@ const activeTabName = ref('')
 const visitedTabs = ref([])
 const cachedTabs = ref([])
 
-// 监听语言变化，更新标签标题
+// 监听语言变化，更新标签标题 - 使用防抖优化性能
+let languageChangeTimer = null
 watch(() => locale.value, () => {
-  // 更新所有标签的标题
-  visitedTabs.value.forEach((tab, index) => {
-    if (tab.titleKey && tab.titleKey.startsWith('route.')) {
-      visitedTabs.value[index].title = t(tab.titleKey)
+  // 使用防抖避免频繁更新
+  if (languageChangeTimer) clearTimeout(languageChangeTimer)
+  languageChangeTimer = setTimeout(() => {
+    // 更新所有标签的标题
+    visitedTabs.value.forEach((tab, index) => {
+      if (tab.titleKey && tab.titleKey.startsWith('route.')) {
+        visitedTabs.value[index].title = t(tab.titleKey)
+      }
+    })
+    // 更新页面标题
+    const currentRoute = router.currentRoute.value
+    if (currentRoute.meta.title) {
+      document.title = t(currentRoute.meta.title) + ' - ' + t('common.systemTitle')
     }
-  })
-  // 更新页面标题
-  const currentRoute = router.currentRoute.value
-  if (currentRoute.meta.title) {
-    document.title = t(currentRoute.meta.title) + ' - ' + t('common.systemTitle')
-  }
+  }, 100)
 }, { immediate: true })
 
 const currentLanguageLabel = computed(() => {
@@ -251,19 +256,28 @@ const handleLanguageChange = (lang) => {
   locale.value = lang
   localStorage.setItem('language', lang)
   
-  // 刷新当前页面
+  // 优化语言切换的页面刷新
   const currentPath = route.path
-  const index = cachedTabs.value.indexOf(currentPath.replace(/\//g, '-'))
+  const componentName = currentPath.replace(/\//g, '-')
+  
+  // 从缓存中移除当前组件
+  const index = cachedTabs.value.indexOf(componentName)
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
   }
   
-  nextTick(() => {
-    router.replace('/').then(() => {
-      nextTick(() => {
-        router.replace(currentPath)
-      })
-    })
+  // 使用更高效的方式触发组件重新渲染
+  const refreshKey = Date.now().toString()
+  router.replace({
+    path: currentPath,
+    query: { ...route.query, _lang_refresh: refreshKey }
+  }).then(() => {
+    // 延迟重新添加到缓存，确保组件完全重新渲染
+    setTimeout(() => {
+      if (!cachedTabs.value.includes(componentName)) {
+        cachedTabs.value.push(componentName)
+      }
+    }, 100)
   })
 }
 
@@ -697,7 +711,7 @@ const handleContextMenu = (e, tab) => {
   document.addEventListener('click', closeMenu)
 }
 
-// 刷新当前标签页
+// 刷新当前标签页 - 优化版本
 const refreshSelectedTag = () => {
   if (!tagRightClicked.value) return
   
@@ -709,14 +723,20 @@ const refreshSelectedTag = () => {
     cachedTabs.value.splice(index, 1)
   }
   
-  nextTick(() => {
-    // 记录当前路径
-    const currentPath = path
-    // 先跳转到空白页再返回，避免vue-router复用相同组件导致不刷新
-    router.replace('/').then(() => {
-      nextTick(() => {
-        router.replace(currentPath)
-      })
+  // 使用更高效的刷新方式
+  const currentPath = path
+  const routeKey = Math.random().toString()
+  
+  // 直接替换路由，避免多次跳转
+  router.replace({
+    path: currentPath,
+    query: { _refresh: routeKey }
+  }).then(() => {
+    // 重新添加到缓存
+    nextTick(() => {
+      if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
+        cachedTabs.value.push(currentPath.replace(/\//g, '-'))
+      }
     })
   })
 }
@@ -960,6 +980,8 @@ const openMenuForPath = (path) => {
   box-sizing: border-box; /* 确保内边距包含在总高度内 */
   margin: 0; /* 移除外边距 */
   padding: 0; /* 移除内边距 */
+  position: relative; /* 确保正确的定位上下文 */
+  z-index: 1; /* 设置基础层级，确保对话框能正确覆盖 */
 }
 
 /* 侧边栏样式 */
@@ -1212,20 +1234,51 @@ const openMenuForPath = (path) => {
   margin-right: 5px;
 }
 
-/* 页面切换动画 */
-.page-slide-enter-active,
+/* 页面切换动画 - 高性能版本 */
+.page-slide-enter-active {
+  transition: opacity 0.15s ease-out;
+  will-change: opacity;
+}
+
 .page-slide-leave-active {
-  transition: all 0.3s ease;
+  transition: opacity 0.1s ease-in;
+  will-change: opacity;
 }
 
 .page-slide-enter-from {
   opacity: 0;
-  transform: translateX(-20px);
 }
 
 .page-slide-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+}
+
+.page-slide-enter-to,
+.page-slide-leave-from {
+  opacity: 1;
+}
+
+/* 为需要平移动画的特殊情况保留 */
+.page-slide-with-transform-enter-active,
+.page-slide-with-transform-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  will-change: opacity, transform;
+}
+
+.page-slide-with-transform-enter-from {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+}
+
+.page-slide-with-transform-leave-to {
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+}
+
+.page-slide-with-transform-enter-to,
+.page-slide-with-transform-leave-from {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 /* 右键菜单样式 */
@@ -1272,17 +1325,20 @@ const openMenuForPath = (path) => {
   padding: 12px !important; /* 覆盖element-plus默认内边距 */
 }
 
-/* 主内容区域 - 关键修复点 */
+/* 主内容区域 - 性能优化版本 */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* 移除 overflow: hidden */
   padding: 12px;
   background-color: #f0f2f5;
   position: relative;
   min-height: 0;
   margin-bottom: 0;
+  contain: layout style paint; /* CSS Containment API - 优化渲染性能 */
+  transform: translateZ(0); /* 启用硬件加速 */
+  will-change: auto; /* 避免不必要的合成层 */
+  isolation: isolate; /* 创建新的堆叠上下文，避免干扰对话框 */
 }
 
 /* 确保路由视图正确填充 */
@@ -1297,7 +1353,7 @@ const openMenuForPath = (path) => {
   margin-bottom: 0;
 }
 
-/* 确保组件视图正确填充 */
+/* 确保组件视图正确填充 - 性能优化版本 */
 .main-content :deep(.router-view-component) {
   display: flex;
   flex-direction: column;
@@ -1308,6 +1364,8 @@ const openMenuForPath = (path) => {
   min-height: 0;
   margin-bottom: 0; /* 移除底部间距 */
   padding-bottom: 0; /* 确保没有底部内边距 */
+  backface-visibility: hidden; /* 启用硬件加速 */
+  transform: translateZ(0); /* 强制GPU加速 */
 }
 
 /* 确保表格容器正确填充 */
@@ -1422,6 +1480,22 @@ const openMenuForPath = (path) => {
   color: #606266;
 }
 
+/* 性能优化 - 通用设置 */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container,
+.main-content,
+.router-view-component {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
 /* 浏览器缩放适配 */
 @media (min-resolution: 120dpi) {
   .main-content {
@@ -1436,6 +1510,113 @@ const openMenuForPath = (path) => {
   .el-main {
     padding: 10px !important; /* 高分辨率下减小内边距 */
   }
+}
+
+/* 减少动画期间的重绘 */
+@media (prefers-reduced-motion: no-preference) {
+  .page-slide-enter-active,
+  .page-slide-leave-active {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+  }
+}
+
+/* Dialog 遮罩层全局覆盖修复 - 提高z-index避免冲突 */
+:deep(.el-overlay) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2100 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+:deep(.el-dialog) {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 2101 !important;
+  margin: 0 !important;
+}
+
+/* 确保对话框在所有设备上都能正确显示 */
+:deep(.el-dialog__wrapper) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2100 !important;
+  overflow: auto !important;
+}
+
+/* 修复对话框标题和内容区域的样式 */
+:deep(.el-dialog__header) {
+  padding: 15px 20px 10px !important;
+}
+
+:deep(.el-dialog__body) {
+  padding: 10px 20px !important;
+  max-height: calc(100vh - 200px) !important;
+  overflow-y: auto !important;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 10px 20px 15px !important;
+}
+
+/* 确保对话框在小屏幕上也能正常显示 */
+@media (max-width: 768px) {
+  :deep(.el-dialog) {
+    width: 90% !important;
+    max-width: 90% !important;
+    margin: 0 !important;
+  }
+  
+  :deep(.el-dialog__body) {
+    max-height: calc(100vh - 150px) !important;
+  }
+}
+
+/* 防止对话框被其他元素遮挡 */
+:deep(.el-overlay-dialog) {
+  z-index: 2100 !important;
+}
+
+:deep(.el-dialog__wrapper .el-dialog) {
+  margin: 0 auto !important;
+}
+
+/* 全局强制所有对话框遮罩层覆盖整个页面 */
+body > .el-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2100 !important;
+}
+
+body > .el-dialog__wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2100 !important;
+}
+
+/* 确保直接添加到body的对话框也能正确居中 */
+body > .el-dialog__wrapper .el-dialog {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
 }
 
 /* 下拉菜单圆角化样式 */

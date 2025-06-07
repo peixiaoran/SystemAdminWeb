@@ -36,13 +36,16 @@ export default defineConfig(({ command, mode }) => {
         compress: {
           drop_console: env.PROD === 'true', // 生产环境删除console
           drop_debugger: env.PROD === 'true', // 生产环境删除debugger
-          pure_funcs: env.PROD === 'true' ? ['console.log'] : [] // 生产环境删除console.log
+          pure_funcs: env.PROD === 'true' ? ['console.log', 'console.warn', 'console.info'] : [] // 生产环境删除console语句
         },
         mangle: {
           // 防止i18n相关变量名被混淆
           reserved: ['$t', 'i18n', 't', 'locale']
         }
       },
+      // 启用代码分割优化
+      target: 'es2015', // 支持现代浏览器，减少polyfill
+      reportCompressedSize: false, // 禁用压缩大小报告以提升构建速度
       // CSS相关优化
       cssCodeSplit: true,
       // 确保生成正确的资源路径
@@ -53,7 +56,7 @@ export default defineConfig(({ command, mode }) => {
           warn(warning);
         },
         output: {
-          // 防止重复打包
+          // 优化的代码分割策略
           manualChunks: function(id) {
             // 按模块打包
             if (id.includes('node_modules')) {
@@ -85,7 +88,11 @@ export default defineConfig(({ command, mode }) => {
               // 其他依赖
               return 'vendors';
             }
-          }
+          },
+          // 优化文件名生成
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
         }
       }
     }
