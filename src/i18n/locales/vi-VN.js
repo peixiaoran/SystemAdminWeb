@@ -241,6 +241,8 @@ export default {
       isSign: 'Điểm danh',
       isPartTime: 'Bán thời gian',
       isEmployed: 'Đang làm việc',
+      Employed: 'Đang làm việc',
+      Resigned: 'Đã nghỉ',
       isFreeze: 'Đóng băng',
       userType: 'Loại người dùng',
       remark: 'Ghi chú',

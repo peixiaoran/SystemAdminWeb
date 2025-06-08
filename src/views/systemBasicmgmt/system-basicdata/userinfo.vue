@@ -71,7 +71,15 @@
                   <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="80" />
                   <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="180" />
                   <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
+                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" >
+                    <template #default="scope">
+                          <div class="flex">
+                              <el-tag :type="scope.row.isEmployed ? 'success' : 'danger'">
+                                  {{ scope.row.isEmployed ? $t('systemBasicmgmt.userInfo.Employed') : $t('systemBasicmgmt.userInfo.Resigned') }}
+                              </el-tag>
+                          </div>
+                      </template>
+                  </el-table-column>
                   <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="100" />
                   <el-table-column prop="userType" :label="$t('systemBasicmgmt.userInfo.userType')" align="center" min-width="120" />
                   <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="150" fixed="right">
@@ -201,19 +209,23 @@
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isEmployed')">
-                      <el-switch v-model="editForm.isEmployed" />
+                      <el-switch v-model="editForm.isEmployed" 
+                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isFreeze')">
-                      <el-switch v-model="editForm.isFreeze" />
+                      <el-switch v-model="editForm.isFreeze" 
+                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
               <!-- 第六行：状态开关 -->
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isSign')">
-                      <el-switch v-model="editForm.isSign" />
+                      <el-switch v-model="editForm.isSign" 
+                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isPartTime')">
-                      <el-switch v-model="editForm.isPartTime" />
+                      <el-switch v-model="editForm.isPartTime" 
+                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item>
                       

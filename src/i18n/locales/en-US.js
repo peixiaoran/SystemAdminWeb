@@ -241,6 +241,8 @@ export default {
       isSign: 'Is Sign',
       isPartTime: 'Is Part Time',
       isEmployed: 'Is Employed',
+      Employed: 'Employed',
+      Resigned: 'Resigned',
       isFreeze: 'Is Freeze',
       userType: 'User Type',
       remark: 'Remark',

@@ -287,6 +287,8 @@ export default {
       isSign: '是否簽到',
       isPartTime: '是否兼職',
       isEmployed: '是否在職',
+      Employed: '在職',
+      Resigned: '離職',
       isFreeze: '是否凍結',
       userType: '用戶類型',
       remark: '備註',

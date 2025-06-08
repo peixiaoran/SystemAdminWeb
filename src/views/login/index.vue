@@ -8,13 +8,19 @@
       
       <div class="login-form-container">
         
+        <!-- 添加虚假的输入框来欺骗浏览器 -->
+        <div style="position: absolute; left: -9999px; opacity: 0;">
+          <input type="text" name="fake_username" tabindex="-1" />
+          <input type="password" name="fake_password" tabindex="-1" />
+        </div>
+        
         <el-form
           ref="loginFormRef"
           :model="loginForm"
           :rules="loginRules"
           class="login-form"
           size="large"
-          autocomplete="off"
+          autocomplete="new-password"
         >
           
           <el-form-item prop="loginNo">
@@ -22,8 +28,15 @@
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
-              autocomplete="off"
+              autocomplete="new-password"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
               data-lpignore="true"
+              data-form-type="other"
+              :name="'username_' + Math.random().toString(36).substr(2, 9)"
+              readonly
+              @focus="handleInputFocus"
             />
           </el-form-item>
           
@@ -33,8 +46,15 @@
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
-              autocomplete="off"
+              autocomplete="new-password"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
               data-lpignore="true"
+              data-form-type="other"
+              :name="'password_' + Math.random().toString(36).substr(2, 9)"
+              readonly
+              @focus="handleInputFocus"
               @keyup.enter="handleLogin"
             />
           </el-form-item>
@@ -102,6 +122,19 @@ onMounted(() => {
   // 重置表单验证状态
   nextTick(() => {
     loginFormRef.value?.resetFields()
+    
+    // 清除可能的浏览器自动填充
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('.login-form input')
+      inputs.forEach(input => {
+        if (input.value && (input.name.includes('username') || input.name.includes('password'))) {
+          input.value = ''
+        }
+      })
+      // 确保表单数据也清空
+      loginForm.loginNo = ''
+      loginForm.passWrod = ''
+    }, 100)
   })
 })
 
@@ -153,6 +186,11 @@ const handleLanguageChange = (value) => {
   localStorage.setItem('language', value)
   // 更新document标题
   document.title = t('common.systemTitle')
+}
+
+// 处理输入框焦点事件，移除readonly属性
+const handleInputFocus = (event) => {
+  event.target.removeAttribute('readonly')
 }
 
 const handleLogin = () => {
@@ -450,6 +488,28 @@ const handleLogin = () => {
 /* 移除必填标记 */
 .login-form :deep(.el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before) {
   content: '';
+}
+
+/* 禁用浏览器自动填充样式 */
+.login-form :deep(input:-webkit-autofill) {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #606266 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.login-form :deep(input:-webkit-autofill:hover) {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #606266 !important;
+}
+
+.login-form :deep(input:-webkit-autofill:focus) {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #606266 !important;
+}
+
+.login-form :deep(input:-webkit-autofill:active) {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #606266 !important;
 }
 
 /* 自定义表格滚动条样式 */

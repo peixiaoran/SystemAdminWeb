@@ -245,41 +245,28 @@ watch(() => locale.value, () => {
 const currentLanguageLabel = computed(() => {
   const languageMap = {
     'zh-CN': '中文简体',
-    'zh-TW': '中文繁体',
+    'zh-TW': '中文繁体', 
     'en-US': 'English',
     'vi-VN': 'Tiếng Việt'
   }
-  return languageMap[locale.value] || '中文简体'
+  return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文简体'
 })
 
 const handleLanguageChange = (lang) => {
+  // 如果语言没有变化，不执行切换
+  if (locale.value === lang) {
+    return
+  }
+  
+  // 设置新语言
   locale.value = lang
   localStorage.setItem('language', lang)
   
-  // 优化语言切换的页面刷新
-  const currentPath = route.path
-  const componentName = currentPath.replace(/\//g, '-')
-  
-  // 从缓存中移除当前组件
-  const index = cachedTabs.value.indexOf(componentName)
-  if (index > -1) {
-    cachedTabs.value.splice(index, 1)
-  }
-  
-  // 使用更高效的方式触发组件重新渲染
-  const refreshKey = Date.now().toString()
-  router.replace({
-    path: currentPath,
-    query: { ...route.query, _lang_refresh: refreshKey }
-  }).then(() => {
-    // 延迟重新添加到缓存，确保组件完全重新渲染
-    setTimeout(() => {
-      if (!cachedTabs.value.includes(componentName)) {
-        cachedTabs.value.push(componentName)
-      }
-    }, 100)
-  })
+  // 直接刷新页面
+  window.location.reload()
 }
+
+
 
 // 格式化路径辅助函数
 const getFormattedPath = (path) => {
@@ -717,6 +704,14 @@ const refreshSelectedTag = () => {
   
   const { path } = tagRightClicked.value
   
+  // 显示刷新提示
+  ElMessage({
+    message: '正在刷新页面...',
+    type: 'info',
+    duration: 1000,
+    showClose: false
+  })
+  
   // 从缓存中移除
   const index = cachedTabs.value.indexOf(path.replace(/\//g, '-'))
   if (index > -1) {
@@ -725,19 +720,25 @@ const refreshSelectedTag = () => {
   
   // 使用更高效的刷新方式
   const currentPath = path
-  const routeKey = Math.random().toString()
+  const routeKey = Date.now().toString()
   
   // 直接替换路由，避免多次跳转
   router.replace({
-    path: currentPath,
-    query: { _refresh: routeKey }
+    path: currentPath,  
+    query: { ...route.query, _refresh: routeKey }
   }).then(() => {
     // 重新添加到缓存
     nextTick(() => {
       if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
         cachedTabs.value.push(currentPath.replace(/\//g, '-'))
       }
+      
+      // 显示刷新成功提示
+      ElMessage.success('页面刷新成功')
     })
+  }).catch(() => {
+    // 如果路由刷新失败，提示用户
+    ElMessage.error('页面刷新失败，请稍后重试')
   })
 }
 
