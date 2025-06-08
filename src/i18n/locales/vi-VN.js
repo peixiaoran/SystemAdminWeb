@@ -207,14 +207,20 @@ export default {
       addCompany: 'Thêm công ty',
       editCompany: 'Chỉnh sửa thông tin công ty',
       deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này không?',
+      pleaseInputName: 'Vui lòng nhập tên công ty',
       pleaseInputNameCn: 'Vui lòng nhập tên tiếng Trung',
       pleaseInputNameEn: 'Vui lòng nhập tên tiếng Anh',
+      pleaseInputPhone: 'Vui lòng nhập điện thoại công ty',
+      pleaseInputFax: 'Vui lòng nhập fax công ty',
       index: 'STT',
       saveSuccess: 'Lưu thành công',
       updateSuccess: 'Cập nhật thành công',
       deleteSuccess: 'Xóa thành công',
       operationFailed: 'Thao tác thất bại',
-      getFailed: 'Không thể lấy dữ liệu'
+      getFailed: 'Không thể lấy dữ liệu',
+      filter: {
+        companyName: 'Tên công ty',
+      }
     },
     // Thông tin người dùng
     userInfo: {
@@ -247,6 +253,11 @@ export default {
       pleaseInputUserName: 'Vui lòng nhập tên người dùng',
       pleaseInputUserNameCh: 'Vui lòng nhập tên tiếng Trung',
       pleaseInputUserNameEn: 'Vui lòng nhập tên tiếng Anh',
+      pleaseInputLoginNo: 'Vui lòng nhập tài khoản đăng nhập',
+      pleaseInputPassword: 'Vui lòng nhập mật khẩu',
+      pleaseInputEmail: 'Vui lòng nhập email',
+      pleaseSelectGender: 'Vui lòng chọn giới tính',
+      pleaseSelectUserType: 'Vui lòng chọn loại người dùng',
       pleaseSelectDepartment: 'Vui lòng chọn bộ phận',
       pleaseSelectPosition: 'Vui lòng chọn vị trí',
       pleaseSelectRole: 'Vui lòng chọn vai trò',
@@ -463,6 +474,9 @@ export default {
       pleaseInputNameCn: 'Vui lòng nhập tên bộ phận tiếng Trung',
       pleaseInputNameEn: 'Vui lòng nhập tên bộ phận tiếng Anh',
       pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+      pleaseInputLandline: 'Vui lòng nhập điện thoại cố định',
+      pleaseInputEmail: 'Vui lòng nhập email',
+      pleaseInputAddress: 'Vui lòng nhập địa chỉ',
       pleaseSelectDepartmentLevel: 'Vui lòng chọn cấp độ bộ phận',
       pleaseCompleteForm: 'Vui lòng hoàn thành biểu mẫu',
       index: 'STT',
@@ -494,7 +508,12 @@ export default {
       pleaseInputDepartmentLevelNameCn: 'Vui lòng nhập tên cấp độ tiếng Trung',
       pleaseInputDepartmentLevelNameEn: 'Vui lòng nhập tên cấp độ tiếng Anh',
       pleaseInputDepartmentLevelDescribe: 'Vui lòng nhập mô tả cấp độ',
-      fillRequiredInfo: 'Vui lòng điền thông tin bắt buộc'
+      fillRequiredInfo: 'Vui lòng điền thông tin bắt buộc',
+      saveSuccess: 'Lưu thành công',
+      updateSuccess: 'Cập nhật thành công',
+      deleteSuccess: 'Xóa thành công',
+      operationFailed: 'Thao tác thất bại',
+      getFailed: 'Không thể lấy dữ liệu'
     }
   }
 } 

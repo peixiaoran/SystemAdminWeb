@@ -817,52 +817,15 @@ onMounted(async () => {
   // 获取当前路径
   const currentPath = route.path
   
-  // 尝试从本地存储恢复标签状态
+  // 清空之前的标签记录，每次进入layout都从新开始
   try {
-    const tabsData = localStorage.getItem('tabs-store')
-    if (tabsData) {
-      const { visitedTabs: storedTabs, activeTabName: storedActiveTab, cachedTabs: storedCachedTabs } = JSON.parse(tabsData)
-      
-      if (Array.isArray(storedTabs) && storedTabs.length > 0) {
-        // 处理存储的标签，确保翻译标题
-        storedTabs.forEach(tab => {
-          // 如果存在titleKey且以route.开头，使用翻译函数处理
-          if (tab.titleKey && tab.titleKey.startsWith('route.')) {
-            tab.title = t(tab.titleKey)
-          } else if (tab.title && typeof tab.title === 'string' && tab.title.startsWith('route.')) {
-            // 对于没有titleKey但title是以route.开头的情况
-            tab.titleKey = tab.title
-            tab.title = t(tab.title)
-          }
-        })
-        
-        visitedTabs.value = storedTabs
-      }
-      
-      // 优先使用当前路径作为活动标签，避免闪烁
-      if (currentPath !== '/' && currentPath !== '/module-select' && currentPath !== '/login') {
-        const isCurrentPathInTabs = visitedTabs.value.some(tab => tab.path === currentPath)
-        if (isCurrentPathInTabs) {
-          // 当前路径在标签中，直接设置为活动标签
-          activeTabName.value = currentPath
-          activeMenu.value = currentPath
-        } else if (storedActiveTab) {
-          // 当前路径不在标签中，使用存储的活动标签
-          activeTabName.value = storedActiveTab
-          activeMenu.value = storedActiveTab
-        }
-      } else if (storedActiveTab) {
-        // 对于特殊路径，使用存储的活动标签
-        activeTabName.value = storedActiveTab
-        activeMenu.value = storedActiveTab
-      }
-      
-      if (Array.isArray(storedCachedTabs) && storedCachedTabs.length > 0) {
-        cachedTabs.value = storedCachedTabs
-      }
-    }
+    localStorage.removeItem('tabs-store')
+    // 初始化为空状态
+    visitedTabs.value = []
+    cachedTabs.value = []
+    activeTabName.value = ''
   } catch (error) {
-    console.error('恢复标签状态失败:', error)
+    console.error('清空标签状态失败:', error)
   }
   
   // 获取菜单数据

@@ -16,26 +16,14 @@
           size="large"
           autocomplete="off"
         >
-          <!-- 添加多个隐藏的用户名和密码字段，彻底迷惑浏览器的自动填充 -->
-          <div style="display:none">
-            <input type="text" />
-            <input type="password" />
-            <input type="text" name="username" />
-            <input type="password" name="password" />
-            <input type="text" name="email" />
-            <input type="text" name="login" />
-          </div>
           
           <el-form-item prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
-              :name="'fake_username_' + randomStr"
-              autocomplete="new-password"
+              autocomplete="off"
               data-lpignore="true"
-              readonly
-              onfocus="this.removeAttribute('readonly')"
             />
           </el-form-item>
           
@@ -45,11 +33,8 @@
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
-              :name="'fake_password_' + randomStr"
-              autocomplete="new-password"
+              autocomplete="off"
               data-lpignore="true"
-              readonly
-              onfocus="this.removeAttribute('readonly')"
               @keyup.enter="handleLogin"
             />
           </el-form-item>
@@ -104,8 +89,6 @@ const { t, locale } = useI18n()
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
-// 生成随机字符串，用于每次页面加载时创建不同的input name
-const randomStr = ref(Math.random().toString(36).substring(2, 15))
 
 const loginForm = reactive({
   loginNo: '',
@@ -114,35 +97,11 @@ const loginForm = reactive({
   language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
-// 在组件挂载后清除表单内容
+// 在组件挂载后进行初始化
 onMounted(() => {
-  // 确保表单清空，防止浏览器填充
-  loginForm.loginNo = ''
-  loginForm.passWrod = ''
-  
-  // 延迟后再次清空，以防止某些浏览器在页面加载后延迟填充
-  setTimeout(() => {
-    loginForm.loginNo = ''
-    loginForm.passWrod = ''
-    
-    // 继续进行多次清空尝试，应对不同浏览器的自动填充延迟
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        loginForm.loginNo = ''
-        loginForm.passWrod = ''
-      }, 100 * i)
-    }
-    
-    // 重置表单验证状态
-    nextTick(() => {
-      loginFormRef.value?.resetFields()
-    })
-  }, 100)
-  
-  // 添加页面卸载前的事件，清空表单
-  window.addEventListener('beforeunload', () => {
-    loginForm.loginNo = ''
-    loginForm.passWrod = ''
+  // 重置表单验证状态
+  nextTick(() => {
+    loginFormRef.value?.resetFields()
   })
 })
 
@@ -228,10 +187,6 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
-            
-            // 登录成功后清空表单
-            loginForm.loginNo = ''
-            loginForm.passWrod = ''
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }

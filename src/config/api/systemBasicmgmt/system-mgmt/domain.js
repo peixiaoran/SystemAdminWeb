@@ -20,7 +20,7 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 // 网域分页API
 export const GET_DOMAIN_ENTITY_API = {
     GET_DOMAIN_ENTITY: 'SystemBasicMgmt/SystemMgmt/Domain/GetSysDomainEntity'
-  }
+}
 
 // 网域分页API
 export const GET_DOMAIN_PAGES_API = {

@@ -45,14 +45,19 @@ export const GET_USER_ENTITY_API = {
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
     GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetDepartmentDropDown'
-  }
+}
 
 // 职位下拉框API
 export const GET_USER_POSITION_DROPDOWN_API = {
     GET_USER_POSITION_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserPositionDropDown'
-  }
+}
 
 // 角色下拉框API
 export const GET_ROLE_DROPDOWN_API = {
     GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetRoleDropDown'
-  }
+}
+
+// 性别下拉框API
+export const GET_GENDER_DROPDOWN_API = {
+  GET_GENDER_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetGenderDropDown'
+}

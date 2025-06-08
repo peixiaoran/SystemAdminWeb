@@ -12,7 +12,7 @@
                       check-strictly
                       filterable
                       :filter-node-method="filterNodeMethod"
-                      style="width: 280px;"
+                      style="width: 200px;"
                       :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.position')">
@@ -64,15 +64,14 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
                   <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="120" />
-                  <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="120" />
-                  <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="120" />
+                  <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="180" />
+                  <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="180" />
                   <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="150" />
                   <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="120" />
                   <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="80" />
-                  <el-table-column prop="hireDate" :label="$t('systemBasicmgmt.userInfo.hireDate')" align="center" min-width="120" />
                   <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="180" />
-                  <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="130" />
-                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="100" />
+                  <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
+                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
                   <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="100" />
                   <el-table-column prop="userType" :label="$t('systemBasicmgmt.userInfo.userType')" align="center" min-width="120" />
                   <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="150" fixed="right">
@@ -97,9 +96,8 @@
                              @current-change="handlePageChange" />
           </div>
       </el-card>
-
       <!-- 编辑状态对话框 -->
-                <el-dialog v-model="dialogVisible"
+      <el-dialog v-model="dialogVisible"
                      :title="dialogTitle"
                      width="70%"
                      :close-on-click-modal="false"
@@ -123,9 +121,12 @@
               <!-- 第二行：性别和其他 -->
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.gender')" prop="gender">
-                      <el-select v-model="editForm.gender" style="width:100%">
-                          <el-option label="男" value="Male" />
-                          <el-option label="女" value="Female" />
+                      <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectGender')">
+                          <el-option 
+                              v-for="item in genderOptions"
+                              :key="`gender-${item.genderCode}`"
+                              :label="item.genderName"
+                              :value="item.genderCode" />
                       </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.hireDate')" prop="hireDate">
@@ -150,6 +151,7 @@
                           :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
                           check-strictly
                           filterable
+                          clearable
                           :filter-node-method="filterNodeMethod"
                           style="width:100%"
                           :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectDepartment')" />
@@ -158,6 +160,7 @@
                       <el-select 
                           v-model="editForm.positionId" 
                           style="width:100%"
+                          clearable
                           :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectPosition')">
                           <el-option
                               v-for="item in positionOptions"
@@ -170,6 +173,7 @@
                       <el-select 
                           v-model="editForm.roleId" 
                           style="width:100%"
+                          clearable
                           :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectRole')">
                           <el-option
                               v-for="item in roleOptions"
@@ -193,27 +197,26 @@
               </div>
               <!-- 第五行：联系信息 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.email')">
-                      <el-input v-model="editForm.email" style="width:100%" />
-                  </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isEmployed')">
                       <el-switch v-model="editForm.isEmployed" />
                   </el-form-item>
-              </div>
-              <!-- 第六行：状态开关 -->
-              <div class="form-row">
-                 
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isFreeze')">
                       <el-switch v-model="editForm.isFreeze" />
                   </el-form-item>
+              </div>
+              <!-- 第六行：状态开关 -->
+              <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isSign')">
                       <el-switch v-model="editForm.isSign" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isPartTime')">
                       <el-switch v-model="editForm.isPartTime" />
+                  </el-form-item>
+                  <el-form-item>
+                      
                   </el-form-item>
               </div>
               <!-- 备注信息 -->
@@ -244,7 +247,8 @@
       UPDATE_USER_API,
       GET_DEPARTMENT_DROPDOWN_API,
       GET_USER_POSITION_DROPDOWN_API,
-      GET_ROLE_DROPDOWN_API
+      GET_ROLE_DROPDOWN_API,
+      GET_GENDER_DROPDOWN_API
   } from '@/config/api/systemBasicmgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -263,6 +267,7 @@
   const departmentOptions = ref([])
   const positionOptions = ref([])
   const roleOptions = ref([])
+  const genderOptions = ref([])
 
   // 分页信息
   const pagination = reactive({
@@ -286,7 +291,6 @@
   // 编辑表单
   const editForm = reactive({
       userId: '',
-      companyId: '',
       departmentId: '',
       positionId: '',
       userNo: '',
@@ -362,6 +366,7 @@
       await fetchDepartmentDropdown(true, false)
       await fetchPositionDropdown(true, false)
       await fetchRoleDropdown(true, false)
+      await fetchGenderDropdown()
       // 获取用户列表数据
       fetchUserPages()
   })
@@ -421,6 +426,21 @@
       }
   }
 
+  // 获取性别下拉框数据
+  const fetchGenderDropdown = async () => {
+      try {
+          const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
+          if (res && res.code === '200') {
+              console.log(res.data)
+              genderOptions.value = res.data || []
+          } else {
+              genderOptions.value = []
+          }
+      } catch (error) {
+
+      }
+  }
+
   // 获取用户实体数据
   const fetchUserEntity = async (userId) => {
       const params = {
@@ -437,7 +457,9 @@
   const fetchUserPages = async () => {
       loading.value = true
       const params = {
-          departmentId: filters.departmentId || null,
+          departmentId: filters.departmentId,
+          roleId: filters.roleId,
+          positionId: filters.positionId,
           pageNumber: pagination.currentPage,
           pageSize: pagination.pageSize
       }
@@ -485,22 +507,7 @@
       fetchUserPages()
   }
 
-  const resetForm = (clearValidation = true) => {
-      // 先清除验证状态（在重置数据之前）
-      if (clearValidation && editFormRef.value) {
-          try {
-              // 针对下拉框字段单独清除验证
-              const selectFields = ['departmentId', 'positionId', 'roleId', 'gender']
-              selectFields.forEach(field => {
-                  editFormRef.value.clearValidate(field)
-              })
-              // 然后清除所有验证
-              editFormRef.value.clearValidate()
-          } catch (error) {
-              console.warn('清除表单验证状态失败:', error)
-          }
-      }
-      
+  const resetForm = () => {
       // 重置表单数据
       Object.assign(editForm, {
           userId: '',
@@ -522,19 +529,19 @@
           modifiedBy: '',
           modifiedDate: ''
       })
-      
-      // 数据重置后再次清除验证状态
-      if (clearValidation) {
-          nextTick(() => {
-              if (editFormRef.value) {
-                  try {
-                      editFormRef.value.clearValidate()
-                  } catch (error) {
-                      console.warn('清除表单验证状态失败:', error)
-                  }
+  }
+
+  // 清除表单验证状态
+  const clearFormValidation = () => {
+      nextTick(() => {
+          if (editFormRef.value) {
+              try {
+                  editFormRef.value.clearValidate()
+              } catch (error) {
+                  console.warn('清除表单验证状态失败:', error)
               }
-          })
-      }
+          }
+      })
   }
 
   // 新增用户数据
@@ -560,6 +567,7 @@
       const params = {
           ...editForm
       }
+      console.log(params)
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
       
       if (res && res.code === '200') {
@@ -596,10 +604,13 @@
       await fetchDepartmentDropdown(false, true)
       await fetchPositionDropdown(false, true)
       await fetchRoleDropdown(false, true)
+      await fetchGenderDropdown()
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.userInfo.addUser')
       // 显示对话框
       dialogVisible.value = true
+      // 对话框显示后清除验证状态
+      clearFormValidation()
   }
 
   // 处理编辑操作
@@ -610,19 +621,16 @@
       await fetchDepartmentDropdown(false, false)
       await fetchPositionDropdown(false, false)
       await fetchRoleDropdown(false, false)
+      await fetchGenderDropdown()
       // 获取用户实体数据
       await fetchUserEntity(row.userId)
+      console.log(editForm)
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.userInfo.editUser')
       // 显示对话框
       dialogVisible.value = true
-      
-      // 在数据加载完成后再次清除验证状态
-      setTimeout(() => {
-          if (editFormRef.value) {
-              editFormRef.value.clearValidate()
-          }
-      }, 100)
+      // 对话框显示后清除验证状态
+      clearFormValidation()
   }
 
   // 处理删除操作
@@ -660,10 +668,8 @@
 
   // 处理对话框关闭
   const handleDialogClose = () => {
-      // 使用 nextTick 确保 DOM 更新完成后再清除验证
-      nextTick(() => {
-          resetForm(true)
-      })
+      // 重置表单数据
+      resetForm()
   }
 </script>
 

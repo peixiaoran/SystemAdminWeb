@@ -118,14 +118,14 @@
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')" prop="domainId">
-                      <el-select v-model="editForm.domainId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" @change="handleDomainChange">
+                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" @change="handleDomainChange">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')" prop="parentMenuId">
-                      <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')">
+                      <el-select v-model="editForm.parentMenuId" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')">
                           <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                       </el-select>
                   </el-form-item>

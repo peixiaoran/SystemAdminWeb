@@ -207,7 +207,11 @@ export default {
       addCompany: '新增公司',
       editCompany: '編輯公司信息',
       deleteConfirm: '確定要刪除該條記錄嗎？',
+      pleaseInputName: '請輸入公司名稱',
+      pleaseInputNameCn: '請輸入中文名稱',
       pleaseInputNameEn: '請輸入英文名稱',
+      pleaseInputPhone: '請輸入公司電話',
+      pleaseInputFax: '請輸入公司傳真',
       index: '序號',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
@@ -248,6 +252,9 @@ export default {
       pleaseInputNameCn: '請輸入部門中文名稱',
       pleaseInputNameEn: '請輸入部門英文名稱',
       pleaseInputSortOrder: '請輸入排序號',
+      pleaseInputLandline: '請輸入座機電話',
+      pleaseInputEmail: '請輸入郵箱',
+      pleaseInputAddress: '請輸入地址',
       pleaseSelectDepartmentLevel: '請選擇部門級別',
       pleaseCompleteForm: '請完善表單信息',
       index: '序號',
@@ -292,6 +299,11 @@ export default {
       pleaseInputUserName: '請輸入用戶姓名',
       pleaseInputUserNameCh: '請輸入中文姓名',
       pleaseInputUserNameEn: '請輸入英文姓名',
+      pleaseInputLoginNo: '請輸入登錄賬號',
+      pleaseInputPassword: '請輸入密碼',
+      pleaseInputEmail: '請輸入郵箱',
+      pleaseSelectGender: '請選擇性別',
+      pleaseSelectUserType: '請選擇用戶類型',
       pleaseSelectDepartment: '請選擇部門',
       pleaseSelectPosition: '請選擇職位',
       pleaseSelectRole: '請選擇角色',
@@ -497,7 +509,12 @@ export default {
       pleaseInputDepartmentLevelNameCn: '請輸入級別中文名稱',
       pleaseInputDepartmentLevelNameEn: '請輸入級別英文名稱',
       pleaseInputDepartmentLevelDescribe: '請輸入級別描述',
-      fillRequiredInfo: '請填寫必要信息'
+      fillRequiredInfo: '請填寫必要信息',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗'
     }
   }
 } 

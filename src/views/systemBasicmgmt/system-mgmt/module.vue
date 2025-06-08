@@ -115,7 +115,7 @@
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.domain')" prop="domainId">
-                      <el-select v-model="editForm.domainId" style="width:100%" :placeholder="$t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain')">
+                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.module.pleaseSelectDomain')">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>

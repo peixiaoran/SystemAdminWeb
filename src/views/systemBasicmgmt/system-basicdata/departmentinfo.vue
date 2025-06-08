@@ -107,6 +107,7 @@
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentLevelId')" prop="departmentLevelId">
                         <el-select v-model="editForm.departmentLevelId" 
                                    style="width:100%" 
+                                   clearable
                                    :placeholder="$t('systemBasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
                             <el-option v-for="item in departmentLevelList"
                                        :key="`dept-level-${item.departmentLevelId}`" 
@@ -323,19 +324,22 @@
             }
         }
         
-        editForm.departmentId = ''
-        editForm.departmentCode = ''
-        editForm.departmentNameCn = ''
-        editForm.departmentNameEn = ''
-        editForm.parentId = ''
-        editForm.departmentLevelId = ''
-        editForm.description = ''
-        editForm.sortOrder = 1
-        editForm.landline = ''
-        editForm.email = ''
-        editForm.address = ''
-        editForm.status = true
-        editForm.remark = ''
+        // 重置表单数据
+        Object.assign(editForm, {
+            departmentId: '',
+            departmentCode: '',
+            departmentNameCn: '',
+            departmentNameEn: '',
+            parentId: '',
+            departmentLevelId: '',
+            description: '',
+            sortOrder: 1,
+            landline: '',
+            email: '',
+            address: '',
+            status: true,
+            remark: ''
+        })
         
         // 数据重置后再次清除验证状态
         if (clearValidation) {
@@ -484,7 +488,6 @@
                     insertDepartment()
                 }
             } else {
-                ElMessage.warning(t('systemBasicmgmt.departmentInfo.pleaseCompleteForm'))
                 return false
             }
         })

@@ -34,9 +34,9 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="companyNameCn" :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" align="left" min-width="350" />
-                  <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="350" />
-                  <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="130" />
+                  <el-table-column prop="companyNameCn" :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" align="left" min-width="240" />
+                  <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
+                  <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="280" />
                   <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
                   <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />

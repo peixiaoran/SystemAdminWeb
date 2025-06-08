@@ -62,10 +62,10 @@ export default {
       MTY: 'Singapore ESONSG'
     },
     languages: {
-      'zh-CN': '中文简体',
-      'zh-TW': '中文繁体',
+      'zh-CN': 'Simplified Chinese',
+      'zh-TW': 'Traditional Chinese',
       'en-US': 'English',
-      'vi-VN': 'Tiếng Việt'
+      'vi-VN': 'Vietnamese'
     }
   },
   
@@ -207,6 +207,7 @@ export default {
       addCompany: 'Add Company',
       editCompany: 'Edit Company Info',
       deleteConfirm: 'Are you sure to delete this record?',
+      pleaseInputName: 'Please input company name',
       pleaseInputNameCn: 'Please input Chinese name',
       pleaseInputNameEn: 'Please input English name',
       pleaseInputPhone: 'Please input company phone',
@@ -507,7 +508,12 @@ export default {
       pleaseInputDepartmentLevelNameCn: 'Please input level Chinese name',
       pleaseInputDepartmentLevelNameEn: 'Please input level English name',
       pleaseInputDepartmentLevelDescribe: 'Please input level description',
-      fillRequiredInfo: 'Please fill in the required information'
+      fillRequiredInfo: 'Please fill in the required information',
+      saveSuccess: 'Save successfully',
+      updateSuccess: 'Update successfully',
+      deleteSuccess: 'Delete successfully',
+      operationFailed: 'Operation failed',
+      getFailed: 'Failed to get data'
     }
   }
 } 

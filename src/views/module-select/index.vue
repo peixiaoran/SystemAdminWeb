@@ -147,29 +147,14 @@ const enterModule = (module) => {
     moduleIdentifier
   )
   
-  // 检查是否有未关闭的标签
+  // 清空之前的标签记录
   try {
-    const tabsData = localStorage.getItem('tabs-store')
-    if (tabsData) {
-      const { visitedTabs, activeTabName } = JSON.parse(tabsData)
-      
-      // 如果有访问过的标签且有活动标签
-      if (Array.isArray(visitedTabs) && visitedTabs.length > 0 && activeTabName) {
-        // 检查最后活动的标签是否属于当前模块
-        if (activeTabName.startsWith(`/${moduleIdentifier}/`)) {
-    
-          // 直接跳转到最后活动的标签页
-          router.push(activeTabName)
-          return
-        }
-      }
-    }
+    localStorage.removeItem('tabs-store')
   } catch (error) {
-    console.error('读取标签数据失败:', error)
+    console.error('清空标签数据失败:', error)
   }
   
-  // 如果没有未关闭的标签或标签不属于当前模块，则跳转到模块首页
-  
+  // 直接跳转到模块首页
   router.push(`/${moduleIdentifier}/index`)
 }
 
