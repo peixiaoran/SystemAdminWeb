@@ -28,6 +28,16 @@ export default {
     closeCurrentTab: 'Close Current Tab',
     closeOtherTabs: 'Close Other Tabs',
     closeAllTabs: 'Close All Tabs',
+    operation: 'Operation',
+    goBack: 'Go Back'
+  },
+  
+  // Error pages
+  error: {
+    pageNotFound: 'Sorry, the page you visited does not exist or has been removed',
+    accessDenied: 'Sorry, you do not have permission to access this page',
+    access: 'ACCESS',
+    denied: 'DENIED'
   },
   
   // Login page
@@ -83,8 +93,8 @@ export default {
   route: {
     login: 'Login',
     moduleSelect: 'System Modules',
-    notFound: '404',
-    forbidden: '403',
+    notFound: 'Page Not Found',
+    forbidden: 'Access Forbidden',
     systemBasicmgmt: 'System Basic Management',
     systemMgmt: 'SystemMgmt',
     role: 'RoleData',
@@ -244,7 +254,7 @@ export default {
       Employed: 'Employed',
       Resigned: 'Resigned',
       isFreeze: 'Is Freeze',
-      userType: 'User Type',
+      employmentType: 'Employment Type',
       remark: 'Remark',
       operation: 'Operation',
       index: 'No.',
@@ -259,7 +269,7 @@ export default {
       pleaseInputPassword: 'Please input password',
       pleaseInputEmail: 'Please input email',
       pleaseSelectGender: 'Please select gender',
-      pleaseSelectUserType: 'Please select user type',
+      pleaseSelectEmploymentType: 'Please select employment type',
       pleaseSelectDepartment: 'Please select department',
       pleaseSelectPosition: 'Please select position',
       pleaseSelectRole: 'Please select role',

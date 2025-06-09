@@ -4,8 +4,8 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.department')">
-                  <el-tree-select 
+             <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.department')">
+                <el-tree-select 
                       v-model="filters.departmentId"
                       :data="departmentOptions || []"
                       :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
@@ -51,8 +51,8 @@
                   <el-button type="primary" @click="handleAdd">
                       {{ $t('systemBasicmgmt.userInfo.addUser') }}
                   </el-button>
-                                </el-form-item>
-              </el-form>
+              </el-form-item>
+          </el-form>
 
           <!-- 表格区域 -->
           <div class="table-container">
@@ -71,17 +71,11 @@
                   <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="80" />
                   <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="180" />
                   <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" >
-                    <template #default="scope">
-                          <div class="flex">
-                              <el-tag :type="scope.row.isEmployed ? 'success' : 'danger'">
-                                  {{ scope.row.isEmployed ? $t('systemBasicmgmt.userInfo.Employed') : $t('systemBasicmgmt.userInfo.Resigned') }}
-                              </el-tag>
-                          </div>
-                      </template>
-                  </el-table-column>
+                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
+                  <el-table-column prop="isSignName" :label="$t('systemBasicmgmt.userInfo.isSign')" align="center" min-width="120" />
+                  <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
                   <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="100" />
-                  <el-table-column prop="userType" :label="$t('systemBasicmgmt.userInfo.userType')" align="center" min-width="120" />
+                  <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="160" />
                   <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="150" fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -146,8 +140,18 @@
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.userType')" prop="userType">
-                      <el-input v-model="editForm.userType" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentType">
+                      <el-select 
+                          v-model="editForm.employmentType" 
+                          style="width:100%"
+                          clearable
+                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType')">
+                          <el-option
+                              v-for="item in employmentTypeOptions"
+                              :key="`employment-type-edit-${item.employmentTypeId}`"
+                              :label="item.employmentName"
+                              :value="item.employmentTypeId" />
+                      </el-select>
                   </el-form-item>
               </div>
               <!-- 第三行：组织信息 -->
@@ -260,7 +264,8 @@
       GET_DEPARTMENT_DROPDOWN_API,
       GET_USER_POSITION_DROPDOWN_API,
       GET_ROLE_DROPDOWN_API,
-      GET_GENDER_DROPDOWN_API
+      GET_GENDER_DROPDOWN_API,
+      GET_EMPLOYMENT_TYPE_DROPDOWN_API
   } from '@/config/api/systemBasicmgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -280,6 +285,7 @@
   const positionOptions = ref([])
   const roleOptions = ref([])
   const genderOptions = ref([])
+  const employmentTypeOptions = ref([])
 
   // 分页信息
   const pagination = reactive({
@@ -320,7 +326,7 @@
       isPartTime: false,
       isEmployed: true,
       isFreeze: false,
-      userType: '',
+      employmentType: '',
       remark: '',
       modifiedBy: '',
       modifiedDate: ''
@@ -346,8 +352,8 @@
       hireDate: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
-      userType: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectUserType'), trigger: 'blur' }
+      employmentType: [
+          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
       ],
       departmentId: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
@@ -379,6 +385,7 @@
       await fetchPositionDropdown(true, false)
       await fetchRoleDropdown(true, false)
       await fetchGenderDropdown()
+      await fetchEmploymentTypeDropdown()
       // 获取用户列表数据
       fetchUserPages()
   })
@@ -450,6 +457,25 @@
           }
       } catch (error) {
 
+      }
+  }
+
+  // 获取雇佣类型下拉框数据
+  const fetchEmploymentTypeDropdown = async (setDefaultForm = false) => {
+      try {
+          const res = await post(GET_EMPLOYMENT_TYPE_DROPDOWN_API.GET_EMPLOYMENT_TYPE_DROPDOWN, {})
+          if (res && res.code === '200') {
+              employmentTypeOptions.value = res.data || []
+              // 设置编辑表单默认值（仅新增时）
+              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentType) {
+                  editForm.employmentType = employmentTypeOptions.value[0].employmentTypeId
+              }
+          } else {
+              employmentTypeOptions.value = []
+          }
+      } catch (error) {
+          console.error('获取雇佣类型数据失败:', error)
+          employmentTypeOptions.value = []
       }
   }
 
@@ -536,7 +562,7 @@
           isPartTime: false,
           isEmployed: true,
           isFreeze: false,
-          userType: '',
+          employmentType: '',
           remark: '',
           modifiedBy: '',
           modifiedDate: ''
@@ -617,6 +643,7 @@
       await fetchPositionDropdown(false, true)
       await fetchRoleDropdown(false, true)
       await fetchGenderDropdown()
+      await fetchEmploymentTypeDropdown(true)
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.userInfo.addUser')
       // 显示对话框
@@ -634,9 +661,9 @@
       await fetchPositionDropdown(false, false)
       await fetchRoleDropdown(false, false)
       await fetchGenderDropdown()
+      await fetchEmploymentTypeDropdown(false)
       // 获取用户实体数据
       await fetchUserEntity(row.userId)
-      console.log(editForm)
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.userInfo.editUser')
       // 显示对话框

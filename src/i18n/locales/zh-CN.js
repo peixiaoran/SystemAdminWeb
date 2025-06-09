@@ -29,7 +29,16 @@ export default {
     closeCurrentTab: '关闭当前标签',
     closeOtherTabs: '关闭其他标签',
     closeAllTabs: '关闭所有标签',
-    operation: '操作'
+    operation: '操作',
+    goBack: '返回'
+  },
+  
+  // 错误页面
+  error: {
+    pageNotFound: '抱歉，您访问的页面不存在或已被移除',
+    accessDenied: '抱歉，您没有权限访问此页面',
+    access: '访问',
+    denied: '拒绝'
   },
   
   // 登录页
@@ -85,8 +94,8 @@ export default {
   route: {
     login: '登录',
     moduleSelect: '系统模块',
-    notFound: '404',
-    forbidden: '403',
+    notFound: '页面未找到',
+    forbidden: '访问被拒绝',
     systemBasicmgmt: '系统基础管理',
     systemMgmt: '系统管理模块',
     role: '角色资料维护',
@@ -292,7 +301,7 @@ export default {
       Employed: '在职',
       Resigned: '离职',
       isFreeze: '是否冻结',
-      userType: '用户类型',
+      employmentType: '雇佣类型',
       remark: '备注',
       operation: '操作',
       index: '序号',
@@ -307,7 +316,7 @@ export default {
       pleaseInputPassword: '请输入密码',
       pleaseInputEmail: '请输入邮箱',
       pleaseSelectGender: '请选择性别',
-      pleaseSelectUserType: '请选择用户类型',
+      pleaseSelectEmploymentType: '请选择雇佣类型',
       pleaseSelectDepartment: '请选择部门',
       pleaseSelectPosition: '请选择职位',
       pleaseSelectRole: '请选择角色',

@@ -28,6 +28,16 @@ export default {
     closeCurrentTab: 'Đóng tab hiện tại',
     closeOtherTabs: 'Đóng các tab khác',
     closeAllTabs: 'Đóng tất cả tab',
+    operation: 'Thao tác',
+    goBack: 'Quay lại'
+  },
+  
+  // Trang lỗi
+  error: {
+    pageNotFound: 'Xin lỗi, trang bạn truy cập không tồn tại hoặc đã bị xóa',
+    accessDenied: 'Xin lỗi, bạn không có quyền truy cập trang này',
+    access: 'TRUY CẬP',
+    denied: 'TỪ CHỐI'
   },
   
   // Trang đăng nhập
@@ -83,8 +93,8 @@ export default {
   route: {
     login: 'Đăng nhập',
     moduleSelect: 'Mô-đun hệ thống',
-    notFound: '404',
-    forbidden: '403',
+    notFound: 'Không tìm thấy trang',
+    forbidden: 'Truy cập bị từ chối',
     systemBasicmgmt: 'Quản lý cơ bản hệ thống',
     systemMgmt: 'Mô-đun quản lý hệ thống',
     role: 'Quản lý vai trò',
@@ -244,7 +254,7 @@ export default {
       Employed: 'Đang làm việc',
       Resigned: 'Đã nghỉ',
       isFreeze: 'Đóng băng',
-      userType: 'Loại người dùng',
+      employmentType: 'Loại hình tuyển dụng',
       remark: 'Ghi chú',
       operation: 'Thao tác',
       index: 'STT',
@@ -259,7 +269,7 @@ export default {
       pleaseInputPassword: 'Vui lòng nhập mật khẩu',
       pleaseInputEmail: 'Vui lòng nhập email',
       pleaseSelectGender: 'Vui lòng chọn giới tính',
-      pleaseSelectUserType: 'Vui lòng chọn loại người dùng',
+      pleaseSelectEmploymentType: 'Vui lòng chọn loại hình tuyển dụng',
       pleaseSelectDepartment: 'Vui lòng chọn bộ phận',
       pleaseSelectPosition: 'Vui lòng chọn vị trí',
       pleaseSelectRole: 'Vui lòng chọn vai trò',

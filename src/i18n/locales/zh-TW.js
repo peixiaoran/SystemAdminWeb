@@ -28,6 +28,16 @@ export default {
     closeCurrentTab: '關閉當前標籤',
     closeOtherTabs: '關閉其他標籤',
     closeAllTabs: '關閉所有標籤',
+    operation: '操作',
+    goBack: '返回'
+  },
+  
+  // 錯誤頁面
+  error: {
+    pageNotFound: '抱歉，您訪問的頁面不存在或已被移除',
+    accessDenied: '抱歉，您沒有權限訪問此頁面',
+    access: '訪問',
+    denied: '拒絕'
   },
   
   // 登录页
@@ -83,8 +93,8 @@ export default {
   route: {
     login: '登錄',
     moduleSelect: '系統模塊',
-    notFound: '404',
-    forbidden: '403',
+    notFound: '頁面未找到',
+    forbidden: '訪問被拒絕',
     systemBasicmgmt: '系統基礎管理',
     systemMgmt: '系統管理模組',
     role: '角色資料維護',
@@ -290,7 +300,7 @@ export default {
       Employed: '在職',
       Resigned: '離職',
       isFreeze: '是否凍結',
-      userType: '用戶類型',
+      employmentType: '雇佣類型',
       remark: '備註',
       operation: '操作',
       index: '序號',
@@ -305,7 +315,7 @@ export default {
       pleaseInputPassword: '請輸入密碼',
       pleaseInputEmail: '請輸入郵箱',
       pleaseSelectGender: '請選擇性別',
-      pleaseSelectUserType: '請選擇用戶類型',
+      pleaseSelectEmploymentType: '請選擇雇佣類型',
       pleaseSelectDepartment: '請選擇部門',
       pleaseSelectPosition: '請選擇職位',
       pleaseSelectRole: '請選擇角色',

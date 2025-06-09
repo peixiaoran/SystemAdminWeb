@@ -61,3 +61,8 @@ export const GET_ROLE_DROPDOWN_API = {
 export const GET_GENDER_DROPDOWN_API = {
   GET_GENDER_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetGenderDropDown'
 }
+
+// 雇佣类型下拉框API
+export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
+  GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetEmploymentType'
+}
