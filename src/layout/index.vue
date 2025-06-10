@@ -1194,6 +1194,23 @@ const openMenuForPath = (path) => {
   display: none;
 }
 
+/* 标签页滚动箭头居中对齐 */
+.tags-view-container:deep(.el-tabs__nav-prev),
+.tags-view-container:deep(.el-tabs__nav-next) {
+  height: 32px !important;
+  line-height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.tags-view-container:deep(.el-tabs__nav-prev .el-icon),
+.tags-view-container:deep(.el-tabs__nav-next .el-icon) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .tab-icon {
   margin-right: 5px;
 }
