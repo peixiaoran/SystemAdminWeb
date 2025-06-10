@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <!-- 表格区域 -->
@@ -222,3 +222,4 @@ onMounted(() => {
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div></div>
 </template>
 
@@ -29,3 +29,4 @@ onBeforeMount(() => {
   router.replace({ path: targetPath })
 })
 </script> 
+

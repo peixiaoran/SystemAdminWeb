@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
   
@@ -522,3 +522,4 @@
         width: 100%;
     }
   </style> 
+

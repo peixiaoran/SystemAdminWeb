@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 系统状态卡片 -->
     <el-row :gutter="20">
@@ -194,7 +194,7 @@
           </el-table>
           <div class="pagination-container">
             <el-pagination
-              v-model:current-page="logPagination.currentPage"
+              v-model:current-page="logPagination.pageIndex"
               v-model:page-size="logPagination.pageSize"
               :page-sizes="[5, 10, 20, 50]"
               layout="total, sizes, prev, pager, next"
@@ -265,7 +265,7 @@
           </el-table>
           <div class="pagination-container">
             <el-pagination
-              v-model:current-page="noticePagination.currentPage"
+              v-model:current-page="noticePagination.pageIndex"
               v-model:page-size="noticePagination.pageSize"
               :page-sizes="[5, 10, 20]"
               layout="total, sizes, prev, pager, next"
@@ -327,14 +327,14 @@ const resourceTimeRange = ref('day')
 
 // 日志分页
 const logPagination = reactive({
-  currentPage: 1,
+  pageIndex: 1,
   pageSize: 5,
   total: 100
 })
 
 // 通知分页
 const noticePagination = reactive({
-  currentPage: 1,
+  pageIndex: 1,
   pageSize: 5,
   total: 50
 })
@@ -779,3 +779,4 @@ const getNoticeType = (type) => {
   font-weight: 500;
 }
 </style> 
+

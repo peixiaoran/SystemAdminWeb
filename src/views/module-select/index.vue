@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="module-select-container">
     <div class="header-actions">
       <language-switcher class="language-switcher" />
@@ -491,3 +491,4 @@ const logout = async () => {
   padding-top: 8px;
 }
 </style>
+

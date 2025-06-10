@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
@@ -49,7 +49,7 @@
 
           <!-- 分页 -->
           <div class="pagination-wrapper">
-              <el-pagination v-model:current-page="pagination.currentPage"
+              <el-pagination v-model:current-page="pagination.pageIndex"
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
@@ -83,7 +83,7 @@
 
   // 分页信息 - 添加缺失的分页对象
   const pagination = reactive({
-      currentPage: 1,
+      pageIndex: 1,
       pageSize: 10,
       total: 0
   })
@@ -187,7 +187,7 @@
   }
 
   const handlePageChange = (page) => {
-      pagination.currentPage = page
+      pagination.pageIndex = page
       fetchRoleDomainList()
   }
 </script>
@@ -195,3 +195,4 @@
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
 </style> 
+

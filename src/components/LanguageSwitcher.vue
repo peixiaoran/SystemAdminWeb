@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="language-switcher">
     <el-dropdown @command="handleCommand" trigger="click">
       <span class="language-selector">
@@ -110,3 +110,4 @@ const handleCommand = (command) => {
   justify-content: space-between;
 }
 </style> 
+
