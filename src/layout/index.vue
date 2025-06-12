@@ -800,6 +800,33 @@ const returnToModuleSelect = () => {
   })
 }
 
+// 从本地存储恢复标签状态
+const restoreTabsFromStorage = () => {
+  try {
+    const tabsData = localStorage.getItem('tabs-store')
+    if (tabsData) {
+      const parsedData = JSON.parse(tabsData)
+      if (parsedData.visitedTabs && Array.isArray(parsedData.visitedTabs)) {
+        visitedTabs.value = parsedData.visitedTabs
+        cachedTabs.value = parsedData.cachedTabs || []
+        activeTabName.value = parsedData.activeTabName || ''
+        
+        // 更新标签标题（考虑语言切换的情况）
+        visitedTabs.value.forEach((tab, index) => {
+          if (tab.titleKey && tab.titleKey.startsWith('route.')) {
+            visitedTabs.value[index].title = t(tab.titleKey)
+          }
+        })
+        
+        return true
+      }
+    }
+  } catch (error) {
+    console.error('恢复标签状态失败:', error)
+  }
+  return false
+}
+
 // 在组件挂载后执行
 onMounted(async () => {
   // 从用户存储或本地存储获取用户名
@@ -818,16 +845,8 @@ onMounted(async () => {
   // 获取当前路径
   const currentPath = route.path
   
-  // 清空之前的标签记录，每次进入layout都从新开始
-  try {
-    localStorage.removeItem('tabs-store')
-    // 初始化为空状态
-    visitedTabs.value = []
-    cachedTabs.value = []
-    activeTabName.value = ''
-  } catch (error) {
-    console.error('清空标签状态失败:', error)
-  }
+  // 尝试从本地存储恢复标签状态
+  const hasRestoredTabs = restoreTabsFromStorage()
   
   // 获取菜单数据
   await fetchMenuData()
@@ -852,39 +871,69 @@ onMounted(async () => {
       return
     }
     
-    if (!isCurrentPathInTabs && activeTabName.value && activeTabName.value !== currentPath) {
-      // 当前路径不在标签中，跳转到激活的标签
-      router.push(activeTabName.value)
-    } else if (!isCurrentPathInTabs) {
-      // 如果当前路径不在标签中，且没有激活标签，添加当前路径到标签
-      if (matchedRoute && matchedRoute.name) {
-        // 尝试从路由元数据中获取标题和图标
-        const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
-        // 如果标题键以route.开头，使用翻译函数
-        const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
-        const routeIcon = matchedRoute.meta?.icon || 'Document'
-        
-        // 添加新标签
-        visitedTabs.value.push({
-          title: routeTitle,
-          titleKey: routeTitleKey,
-          path: currentPath,
-          icon: routeIcon,
-          name: currentPath.replace(/\//g, '-')
-        })
-        
-        // 添加到缓存列表
-        if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
-          cachedTabs.value.push(currentPath.replace(/\//g, '-'))
+    // 如果已经恢复了标签状态
+    if (hasRestoredTabs) {
+      // 如果当前路径在已恢复的标签中，设置为活动标签
+      if (isCurrentPathInTabs) {
+        activeTabName.value = currentPath
+        activeMenu.value = currentPath
+      } else {
+        // 如果当前路径不在恢复的标签中，但有其他标签，保持原有的活动标签
+        if (visitedTabs.value.length > 0 && activeTabName.value) {
+          // 跳转到之前的活动标签
+          router.push(activeTabName.value)
+        } else {
+          // 如果没有活动标签，添加当前路径为新标签
+          if (matchedRoute && matchedRoute.name) {
+            const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
+            const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
+            const routeIcon = matchedRoute.meta?.icon || 'Document'
+            
+            visitedTabs.value.push({
+              title: routeTitle,
+              titleKey: routeTitleKey,
+              path: currentPath,
+              icon: routeIcon,
+              name: currentPath.replace(/\//g, '-')
+            })
+            
+            if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
+              cachedTabs.value.push(currentPath.replace(/\//g, '-'))
+            }
+            
+            activeTabName.value = currentPath
+            activeMenu.value = currentPath
+            saveTabsToStorage()
+          }
+        }
+      }
+    } else {
+      // 如果没有恢复标签状态（首次访问或存储为空）
+      if (!isCurrentPathInTabs) {
+        // 添加当前路径到标签
+        if (matchedRoute && matchedRoute.name) {
+          const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
+          const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
+          const routeIcon = matchedRoute.meta?.icon || 'Document'
+          
+          visitedTabs.value.push({
+            title: routeTitle,
+            titleKey: routeTitleKey,
+            path: currentPath,
+            icon: routeIcon,
+            name: currentPath.replace(/\//g, '-')
+          })
+          
+          if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
+            cachedTabs.value.push(currentPath.replace(/\//g, '-'))
+          }
+          
+          saveTabsToStorage()
         }
         
-        // 保存标签状态
-        saveTabsToStorage()
+        activeTabName.value = currentPath
+        activeMenu.value = currentPath
       }
-      
-      // 设置当前路径为活动标签
-      activeTabName.value = currentPath
-      activeMenu.value = currentPath
     }
   }
   
