@@ -109,7 +109,9 @@ export default {
     userPosition: '用戶職位維護',
     companyInfo: '公司資料維護',
     departmentInfo: '部門資料維護',
-    departmentLevel: '部門級別維護'
+    departmentLevel: '部門級別維護',
+    sysSettingsModule: '系統模組管理',
+    dictionaryInfo: '字典信息維護'
   },
   
   // 系統基礎管理
@@ -500,6 +502,35 @@ export default {
         pleaseSelectDomain: '請先選擇網域',
         pleaseSelectModule: '請先選擇模塊',
         updateBindingsSuccess: '更新綁定成功'
+      }
+    },
+    
+    // 字典信息管理
+    dictionaryInfo: {
+      title: '字典信息管理',
+      index: '序號',
+      dicType: '字典類型',
+      dicCode: '字典編碼',
+      dicName: '字典名稱',
+      createdDate: '創建時間',
+      operation: '操作',
+      addDictionary: '新增字典',
+      editDictionary: '編輯字典信息',
+      deleteConfirm: '確定要刪除該條記錄嗎？',
+      pleaseInputDicCode: '請輸入字典編碼',
+      pleaseInputDicName: '請輸入字典名稱',
+      pleaseSelectDicType: '請選擇字典類型',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗',
+      filter: {
+        dicType: '字典類型'
+      },
+      dicTypes: {
+        Bit: '字節類型',
+        Int: '數值類型'
       }
     },
     

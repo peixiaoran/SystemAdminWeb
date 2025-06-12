@@ -109,7 +109,9 @@ export default {
     userPosition: 'Quản lý vị trí người dùng',
     companyInfo: 'Quản lý thông tin công ty',
     departmentInfo: 'Quản lý thông tin phòng ban',
-    departmentLevel: 'Quản lý cấp độ phòng ban'
+    departmentLevel: 'Quản lý cấp độ phòng ban',
+    sysSettingsModule: 'Quản lý mô-đun cài đặt hệ thống',
+    dictionaryInfo: 'Thông tin từ điển'
   },
   
   // Quản lý cơ bản hệ thống
@@ -500,6 +502,34 @@ export default {
       filter: {
         departmentCode: 'Mã bộ phận',
         departmentName: 'Tên bộ phận'
+      }
+    },
+    // Quản lý thông tin từ điển
+    dictionaryInfo: {
+      title: 'Quản lý thông tin từ điển',
+      index: 'STT',
+      dicType: 'Loại từ điển',
+      dicCode: 'Mã từ điển',
+      dicName: 'Tên từ điển',
+      createdDate: 'Thời gian tạo',
+      operation: 'Thao tác',
+      addDictionary: 'Thêm từ điển',
+      editDictionary: 'Chỉnh sửa thông tin từ điển',
+      deleteConfirm: 'Bạn có chắc chắn muốn xóa bản ghi này?',
+      pleaseInputDicCode: 'Vui lòng nhập mã từ điển',
+      pleaseInputDicName: 'Vui lòng nhập tên từ điển',
+      pleaseSelectDicType: 'Vui lòng chọn loại từ điển',
+      saveSuccess: 'Lưu thành công',
+      updateSuccess: 'Cập nhật thành công',
+      deleteSuccess: 'Xóa thành công',
+      operationFailed: 'Thao tác thất bại',
+      getFailed: 'Lấy dữ liệu thất bại',
+      filter: {
+        dicType: 'Loại từ điển'
+      },
+      dicTypes: {
+        Bit: 'Loại byte',
+        Int: 'Loại số'
       }
     },
     // Quản lý cấp độ bộ phận

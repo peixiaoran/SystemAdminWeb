@@ -1633,5 +1633,107 @@ body > .el-dialog__wrapper .el-dialog {
   margin-top: 8px;
   padding-top: 8px;
 }
+
+/* 调整折叠状态下弹出菜单的整体样式 */
+:deep(.el-menu--collapse .el-menu.el-menu--popup) {
+  min-width: 160px !important; /* 缩小宽度 */
+  padding: 8px 0 !important; /* 增加上下内边距 */
+  border-radius: 12px !important; /* 增加圆角 */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important; /* 优化阴影 */
+  margin-left: 6px !important; /* 与左侧菜单保持间距 */
+  border: 1px solid #e4e7ed !important; /* 添加边框 */
+}
+
+/* 调整二级菜单项样式 */
+:deep(.el-menu--collapse .el-menu.el-menu--popup .el-menu-item) {
+  height: 32px !important; /* 降低高度 */
+  line-height: 32px !important; /* 调整行高 */
+  padding: 0 16px !important; /* 简化内边距 */
+  margin: 3px 10px !important; /* 增加上下间距 */
+  border-radius: 8px !important; /* 增加圆角 */
+  transition: all 0.2s ease;
+  font-size: 14px !important; /* 调整字体大小 */
+}
+
+/* 调整二级菜单激活状态 */
+:deep(.el-menu--collapse .el-menu.el-menu--popup .el-menu-item.is-active) {
+  background-color: var(--el-color-primary-light-9) !important;
+  color: var(--el-color-primary) !important;
+}
+
+/* 调整二级菜单悬停效果 */
+:deep(.el-menu--collapse .el-menu.el-menu--popup .el-menu-item:hover) {
+  background-color: var(--el-color-primary-light-8) !important;
+}
+
+/* 调整二级菜单图标样式 */
+:deep(.el-menu--collapse .el-menu.el-menu--popup .el-menu-item .el-icon) {
+  margin-right: 8px !important;
+  font-size: 14px !important; /* 与字体大小保持一致 */
+}
+
+/* 确保一级菜单折叠后的宽度 */
+.el-menu-vertical:deep(.el-menu--collapse) {
+  width: 64px !important;
+}
+
+/* 调整折叠按钮样式 */
+.collapse-btn-header {
+  transition: all 0.3s;
+  margin-right: 12px;
+}
+
+/* 确保折叠状态下菜单图标居中 */
+.el-menu-vertical:deep(.el-menu--collapse .el-sub-menu > .el-sub-menu__title .el-icon) {
+  margin-right: 0 !important;
+}
+
+/* 修复折叠状态下弹出菜单位置 */
+:deep(.el-menu--popup-container) {
+  margin-left: -4px !important;
+}
+
+/* 全局弹出菜单样式覆盖 - 最高优先级 */
+:deep(.el-menu.el-menu--popup),
+:deep(.el-popper[data-popper-placement] .el-menu.el-menu--popup) {
+  min-width: 160px !important;
+  border-radius: 12px !important;
+  padding: 8px 0 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid #e4e7ed !important;
+  background: #fff !important;
+}
+
+:deep(.el-menu.el-menu--popup .el-menu-item),
+:deep(.el-popper[data-popper-placement] .el-menu.el-menu--popup .el-menu-item) {
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 16px !important;
+  margin: 3px 10px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  color: #606266 !important;
+}
+
+:deep(.el-menu.el-menu--popup .el-menu-item:hover),
+:deep(.el-popper[data-popper-placement] .el-menu.el-menu--popup .el-menu-item:hover) {
+  background-color: #f5f7fa !important;
+  color: #409eff !important;
+  transform: translateX(2px) !important;
+}
+
+:deep(.el-menu.el-menu--popup .el-menu-item.is-active),
+:deep(.el-popper[data-popper-placement] .el-menu.el-menu--popup .el-menu-item.is-active) {
+  background-color: #ecf5ff !important;
+  color: #409eff !important;
+  font-weight: 500 !important;
+}
+
+:deep(.el-menu.el-menu--popup .el-menu-item .el-icon),
+:deep(.el-popper[data-popper-placement] .el-menu.el-menu--popup .el-menu-item .el-icon) {
+  margin-right: 8px !important;
+  font-size: 14px !important;
+}
 </style>
 

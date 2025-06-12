@@ -109,7 +109,9 @@ export default {
     userPosition: 'UserPosition',
     companyInfo: 'CompanyInfo',
     departmentInfo: 'DepartmentInfo',
-    departmentLevel: 'DepartmentLevel'
+    departmentLevel: 'DepartmentLevel',
+    sysSettingsModule: 'System Settings Module',
+    dictionaryInfo: 'Dictionary Info'
   },
   
   // System Basic Management
@@ -500,6 +502,34 @@ export default {
       filter: {
         departmentCode: 'Department Code',
         departmentName: 'Department Name'
+      }
+    },
+    // Dictionary Info Management
+    dictionaryInfo: {
+      title: 'Dictionary Info Management',
+      index: 'No.',
+      dicType: 'Dictionary Type',
+      dicCode: 'Dictionary Code',
+      dicName: 'Dictionary Name',
+      createdDate: 'Created Date',
+      operation: 'Operation',
+      addDictionary: 'Add Dictionary',
+      editDictionary: 'Edit Dictionary Info',
+      deleteConfirm: 'Are you sure to delete this record?',
+      pleaseInputDicCode: 'Please input dictionary code',
+      pleaseInputDicName: 'Please input dictionary name',
+      pleaseSelectDicType: 'Please select dictionary type',
+      saveSuccess: 'Save successfully',
+      updateSuccess: 'Update successfully',
+      deleteSuccess: 'Delete successfully',
+      operationFailed: 'Operation failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        dicType: 'Dictionary Type'
+      },
+      dicTypes: {
+        Bit: 'Byte Type',
+        Int: 'Numeric Type'
       }
     },
     // Department Level Management

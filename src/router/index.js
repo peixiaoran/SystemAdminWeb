@@ -241,6 +241,31 @@ const moduleRoutes = [
             }
           }
         ]
+      },
+      // 基础数据管理子模块 - 使用嵌套结构
+      {
+        path: 'syssettings-module',
+        name: 'SysSettingsModule',
+        redirect: '/systemBasicmgmt/syssettings-module/dictionaryinfo',
+        meta: { 
+          title: 'route.sysSettingsModule',
+          icon: 'List',
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
+        },
+        children: [
+          {
+            path: 'dictionaryinfo',
+            name: 'DictionaryInfo',
+            component: () => import('../views/systemBasicmgmt/sysSettings-Module/dictionaryinfo.vue'),
+            meta: { 
+              title: 'route.dictionaryInfo', 
+              icon: 'List',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          }
+        ]
       }
     ]
   }
