@@ -395,7 +395,13 @@ export default {
         pleaseInputDomainCode: '請輸入網域編碼',
         pleaseInputDomainName: '請輸入網域名稱',
         pleaseInputDomainNameCn: '請輸入網域中文名稱',
-        pleaseInputDomainNameEn: '請輸入網域英文名稱'
+        pleaseInputDomainNameEn: '請輸入網域英文名稱',
+        pleaseInputDomainIcon: '請輸入網域圖標',
+        pleaseInputSortOrder: '請輸入網域排序',
+        pleaseInputRoleCode: '請輸入權限標識',
+        pleaseInputPagePath: '請輸入頁面Path',
+        pleaseInputComponent: '請輸入組件',
+        pleaseInputTarget: '請輸入目標'
       },
       
       // 模塊管理
@@ -421,7 +427,14 @@ export default {
         pleaseInputMenuCode: '請輸入模塊編碼',
         pleaseInputMenuName: '請輸入模塊名稱',
         pleaseInputMenuNameCn: '請輸入模塊中文名稱',
-        pleaseInputMenuNameEn: '請輸入模塊英文名稱'
+        pleaseInputMenuNameEn: '請輸入模塊英文名稱',
+        pleaseInputMenuIcon: '請輸入模組圖標',
+        pleaseInputSortOrder: '請輸入模組排序',
+        pleaseInputLevel: '請輸入模組等級',
+        pleaseInputRoleCode: '請輸入權限標識',
+        pleaseInputPagePath: '請輸入頁面Path',
+        pleaseInputComponent: '請輸入組件',
+        pleaseInputTarget: '請輸入目標'
       },
       
       // 程序管理
@@ -449,7 +462,15 @@ export default {
         pleaseInputProgramNameCn: '請輸入程序中文名稱',
         pleaseInputProgramNameEn: '請輸入程序英文名稱',
         pleaseSelectDomain: '請選擇所屬網域',
-        pleaseSelectModule: '請選擇所屬模塊'
+        pleaseSelectModule: '請選擇所屬模塊',
+        pleaseInputProgramIcon: '請輸入程式圖標',
+        pleaseInputSortOrder: '請輸入程式排序',
+        pleaseInputProgramType: '請輸入程式類型',
+        pleaseInputRoleCode: '請輸入權限標識',
+        pleaseInputApiRoute: '請輸入API路由',
+        pleaseInputPagePath: '請輸入頁面Path',
+        pleaseInputComponent: '請輸入組件',
+        pleaseInputTarget: '請輸入目標'
       },
       
       // 角色管理
@@ -560,4 +581,4 @@ export default {
       getFailed: '獲取數據失敗'
     }
   }
-} 
+}

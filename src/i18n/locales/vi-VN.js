@@ -349,7 +349,13 @@ export default {
         pleaseInputDomainCode: 'Vui lòng nhập mã miền',
         pleaseInputDomainName: 'Vui lòng nhập tên miền',
         pleaseInputDomainNameCn: 'Vui lòng nhập tên miền tiếng Trung',
-        pleaseInputDomainNameEn: 'Vui lòng nhập tên miền tiếng Anh'
+        pleaseInputDomainNameEn: 'Vui lòng nhập tên miền tiếng Anh',
+        pleaseInputDomainIcon: 'Vui lòng nhập biểu tượng miền',
+        pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+        pleaseInputRoleCode: 'Vui lòng nhập mã vai trò',
+        pleaseInputPagePath: 'Vui lòng nhập đường dẫn trang',
+        pleaseInputComponent: 'Vui lòng nhập thành phần',
+        pleaseInputTarget: 'Vui lòng nhập mục tiêu'
       },
       
       // Quản lý mô-đun
@@ -375,7 +381,14 @@ export default {
         pleaseInputMenuCode: 'Vui lòng nhập mã mô-đun',
         pleaseInputMenuName: 'Vui lòng nhập tên mô-đun',
         pleaseInputMenuNameCn: 'Vui lòng nhập tên mô-đun tiếng Trung',
-        pleaseInputMenuNameEn: 'Vui lòng nhập tên mô-đun tiếng Anh'
+        pleaseInputMenuNameEn: 'Vui lòng nhập tên mô-đun tiếng Anh',
+        pleaseInputMenuIcon: 'Vui lòng nhập biểu tượng mô-đun',
+        pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+        pleaseInputLevel: 'Vui lòng nhập cấp độ',
+        pleaseInputRoleCode: 'Vui lòng nhập mã vai trò',
+        pleaseInputPagePath: 'Vui lòng nhập đường dẫn trang',
+        pleaseInputComponent: 'Vui lòng nhập thành phần',
+        pleaseInputTarget: 'Vui lòng nhập mục tiêu'
       },
       
       // Quản lý chương trình
@@ -403,7 +416,15 @@ export default {
         pleaseInputProgramNameCn: 'Vui lòng nhập tên chương trình tiếng Trung',
         pleaseInputProgramNameEn: 'Vui lòng nhập tên chương trình tiếng Anh',
         pleaseSelectDomain: 'Vui lòng chọn miền',
-        pleaseSelectModule: 'Vui lòng chọn mô-đun'
+        pleaseSelectModule: 'Vui lòng chọn mô-đun',
+        pleaseInputProgramIcon: 'Vui lòng nhập biểu tượng chương trình',
+        pleaseInputSortOrder: 'Vui lòng nhập thứ tự sắp xếp',
+        pleaseInputProgramType: 'Vui lòng nhập loại chương trình',
+        pleaseInputRoleCode: 'Vui lòng nhập mã vai trò',
+        pleaseInputApiRoute: 'Vui lòng nhập đường dẫn API',
+        pleaseInputPagePath: 'Vui lòng nhập đường dẫn trang',
+        pleaseInputComponent: 'Vui lòng nhập thành phần',
+        pleaseInputTarget: 'Vui lòng nhập mục tiêu'
       },
       
       // Quản lý vai trò
@@ -558,4 +579,4 @@ export default {
       getFailed: 'Không thể lấy dữ liệu'
     }
   }
-} 
+}

@@ -349,7 +349,13 @@ export default {
         pleaseInputDomainCode: 'Please input domain code',
         pleaseInputDomainName: 'Please input domain name',
         pleaseInputDomainNameCn: 'Please input domain Chinese name',
-        pleaseInputDomainNameEn: 'Please input domain English name'
+        pleaseInputDomainNameEn: 'Please input domain English name',
+        pleaseInputDomainIcon: 'Please input domain icon',
+        pleaseInputSortOrder: 'Please input sort order',
+        pleaseInputRoleCode: 'Please input role code',
+        pleaseInputPagePath: 'Please input page path',
+        pleaseInputComponent: 'Please input component',
+        pleaseInputTarget: 'Please input target'
       },
       
       // Module Management
@@ -375,7 +381,14 @@ export default {
         pleaseInputMenuCode: 'Please input module code',
         pleaseInputMenuName: 'Please input module name',
         pleaseInputMenuNameCn: 'Please input module Chinese name',
-        pleaseInputMenuNameEn: 'Please input module English name'
+        pleaseInputMenuNameEn: 'Please input module English name',
+        pleaseInputMenuIcon: 'Please input module icon',
+        pleaseInputSortOrder: 'Please input sort order',
+        pleaseInputLevel: 'Please input level',
+        pleaseInputRoleCode: 'Please input role code',
+        pleaseInputPagePath: 'Please input page path',
+        pleaseInputComponent: 'Please input component',
+        pleaseInputTarget: 'Please input target'
       },
       
       // Program Management
@@ -403,7 +416,15 @@ export default {
         pleaseInputProgramNameCn: 'Please input program Chinese name',
         pleaseInputProgramNameEn: 'Please input program English name',
         pleaseSelectDomain: 'Please select domain',
-        pleaseSelectModule: 'Please select module'
+        pleaseSelectModule: 'Please select module',
+        pleaseInputProgramIcon: 'Please input program icon',
+        pleaseInputSortOrder: 'Please input sort order',
+        pleaseInputProgramType: 'Please input program type',
+        pleaseInputRoleCode: 'Please input role code',
+        pleaseInputApiRoute: 'Please input API route',
+        pleaseInputPagePath: 'Please input page path',
+        pleaseInputComponent: 'Please input component',
+        pleaseInputTarget: 'Please input target'
       },
       
       // Role Management
@@ -558,4 +579,4 @@ export default {
       getFailed: 'Failed to get data'
     }
   }
-} 
+}
