@@ -43,13 +43,14 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')" align="left" min-width="170" />
-                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameEn')" align="left" min-width="170" />
+                  <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameEn')" align="left" min-width="200" />
+                  <el-table-column prop="menuTypeName" :label="$t('systemBasicmgmt.systemMgmt.module.menuType')" align="center" min-width="130" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.module.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')" align="center" min-width="120" />
-                  <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="90">
+                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.module.menuIcon')" align="center" min-width="170" />
+                  <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="120">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
@@ -132,8 +133,14 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.level')" prop="level">
-                      <el-input v-model.number="editForm.level" type="number" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuType')" prop="menuType">
+                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.module.pleaseSelectMenuType')">
+                          <el-option
+                              v-for="item in menuTypeOptions"
+                              :key="item.menuTypeCode"
+                              :label="item.menuTypeName"
+                              :value="item.menuTypeCode" />
+                      </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -179,7 +186,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
+  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -189,6 +196,7 @@
   const moduleList = ref([])
   const loading = ref(false)
   const domainDropList = ref([])
+  const menuTypeOptions = ref([])
 
   // 表单引用
   const editFormRef = ref(null)
@@ -220,14 +228,13 @@
       menuCode: '',
       menuNameCn: '',
       menuNameEn: '',
-      menuType: 1,
+      menuType: '',
       menuUrl: '',
       menuIcon: '',
       sortOrder: 1,
       roleCode: '',
       isEnabled: true,
       isVisible: true,
-      level: 1,
       path: '',
       component: '',
       target: '',
@@ -259,8 +266,8 @@
       roleCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputRoleCode'), trigger: 'blur' }
       ],
-      level: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputLevel'), trigger: 'blur' }
+      menuType: [
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseSelectMenuType'), trigger: 'change' }
       ],
       path: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputPagePath'), trigger: 'blur' }
@@ -276,6 +283,7 @@
   // 在组件挂载后获取日志数据
   onMounted(() => {
       fetchDomainDrop() // 先获取网域，设置默认值后再查询数据
+      fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
   // 获取网域类型
@@ -306,6 +314,21 @@
       }
   }
 
+  // 获取菜单类型选项
+  const fetchMenuTypeOptions = async () => {
+      try {
+          const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
+          if (res && res.code === '200') {
+              menuTypeOptions.value = res.data || []
+          } else {
+              menuTypeOptions.value = []
+          }
+      } catch (error) {
+          console.error('获取菜单类型数据失败:', error)
+          menuTypeOptions.value = []
+      }
+  }
+
   // 获取模块实体数据
   const fetchModuleEntity = async (menuId) => {
       try {
@@ -332,7 +355,6 @@
               editForm.remarks = res.data.remarks
               editForm.isEnabled = res.data.isEnabled
               editForm.isVisible = res.data.isVisible
-              editForm.level = res.data.level
           }
       } catch (error) {
           if (error.name === 'CanceledError') {
@@ -403,7 +425,7 @@
       if (clearValidation && editFormRef.value) {
           try {
               // 针对下拉框字段单独清除验证
-              const selectFields = ['domainId']
+              const selectFields = ['domainId', 'menuType']
               selectFields.forEach(field => {
                   editFormRef.value.clearValidate(field)
               })
@@ -421,7 +443,7 @@
           menuCode: '',
           menuNameCn: '',
           menuNameEn: '',
-          menuType: 1,
+          menuType: '',
           menuUrl: '',
           component: '',
           target: '',
@@ -431,7 +453,6 @@
           sortOrder: 1,
           isEnabled: true,
           isVisible: true,
-          level: 1,
           remarks: ''
       })
       
@@ -527,17 +548,16 @@
       // 设置默认值
       editForm.menuId = '0'
       editForm.parentMenuId = '0'
-      editForm.menuType = 1
       editForm.sortOrder = 1
-      editForm.level = 1
       editForm.isEnabled = true
       editForm.isVisible = true
 
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.module.addModule')
 
-      // 获取网域类型
+      // 获取网域类型和菜单类型
       fetchDomainDrop()
+      fetchMenuTypeOptions()
       // 显示对话框
       dialogVisible.value = true
   }
@@ -550,8 +570,9 @@
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.module.editModule')
 
-      // 获取网域类型
+      // 获取网域类型和菜单类型
       fetchDomainDrop()
+      fetchMenuTypeOptions()
 
       // 获取网域实体数据
       fetchModuleEntity(row.menuId)

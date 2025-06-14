@@ -51,3 +51,8 @@ export const GET_MODULE_DROP_API = {
 export const UPDATE_PROGRAM_API = {
   UPDATE_PROGRAM: 'SystemBasicMgmt/SystemMgmt/Program/UpdateSysProgram'
 }
+
+// 菜单类型下拉框
+export const GET_MENU_TYPE_API = {
+  GET_MENU_TYPE: 'SystemBasicMgmt/SystemMgmt/Program/GetMenuType'
+}

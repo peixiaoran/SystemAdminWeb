@@ -111,7 +111,7 @@ export default {
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
     sysSettingsModule: 'System Settings Module',
-    dictionaryInfo: 'Dictionary Info'
+    dictionaryInfo: 'DictionaryData'
   },
   
   // System Basic Management
@@ -364,12 +364,12 @@ export default {
         domain: 'Domain',
         menuCode: 'Module Code',
         menuName: 'Module Name',
-        menuNameCn: 'Module Chinese Name',
-        menuNameEn: 'Module English Name',
+        menuNameCn: 'Chinese Name',
+        menuNameEn: 'English Name',
+        menuType: 'Menu Type',
         menuIcon: 'Module Icon',
         sortOrder: 'Sort Order',
         menuUrl: 'Module URL',
-        level: 'Level',
         roleCode: 'Role Code',
         pagePath: 'Page Path',
         component: 'Component',
@@ -378,13 +378,13 @@ export default {
         editModule: 'Edit Module Info',
         deleteConfirm: 'Are you sure to delete this record?',
         pleaseSelectDomain: 'Please select domain',
+        pleaseSelectMenuType: 'Please select menu type',
         pleaseInputMenuCode: 'Please input module code',
         pleaseInputMenuName: 'Please input module name',
         pleaseInputMenuNameCn: 'Please input module Chinese name',
         pleaseInputMenuNameEn: 'Please input module English name',
         pleaseInputMenuIcon: 'Please input module icon',
         pleaseInputSortOrder: 'Please input sort order',
-        pleaseInputLevel: 'Please input level',
         pleaseInputRoleCode: 'Please input role code',
         pleaseInputPagePath: 'Please input page path',
         pleaseInputComponent: 'Please input component',
@@ -419,7 +419,7 @@ export default {
         pleaseSelectModule: 'Please select module',
         pleaseInputProgramIcon: 'Please input program icon',
         pleaseInputSortOrder: 'Please input sort order',
-        pleaseInputProgramType: 'Please input program type',
+        pleaseSelectProgramType: 'Please select program type',
         pleaseInputRoleCode: 'Please input role code',
         pleaseInputApiRoute: 'Please input API route',
         pleaseInputPagePath: 'Please input page path',
@@ -539,6 +539,7 @@ export default {
       deleteConfirm: 'Are you sure to delete this record?',
       pleaseInputDicCode: 'Please input dictionary code',
       pleaseInputDicName: 'Please input dictionary name',
+      pleaseInputDicType: 'Please input dictionary type',
       pleaseSelectDicType: 'Please select dictionary type',
       saveSuccess: 'Save successfully',
       updateSuccess: 'Update successfully',
@@ -546,7 +547,7 @@ export default {
       operationFailed: 'Operation failed',
       getFailed: 'Failed to get data',
       filter: {
-        dicType: 'Dictionary Type'
+        dicName: 'Dictionary Name'
       },
       dicTypes: {
         Bit: 'Byte Type',

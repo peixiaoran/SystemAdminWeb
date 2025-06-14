@@ -51,7 +51,7 @@
                   <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="200" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="120" />
+                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="150" />
                   <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
@@ -72,7 +72,7 @@
                   </el-table-column>
                   <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="150" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="170" fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -143,7 +143,13 @@
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programType')" prop="menuType">
-                      <el-input v-model.number="editForm.menuType" type="number" style="width:100%" />
+                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectProgramType')">
+                          <el-option
+                              v-for="item in menuTypeOptions"
+                              :key="item.menuTypeCode"
+                              :label="item.menuTypeName"
+                              :value="item.menuTypeCode" />
+                      </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
@@ -192,7 +198,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post, sanitizeHtml } from '@/utils/request'
-  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
+  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -203,6 +209,7 @@
   const loading = ref(false)
   const domainDropList = ref([])
   const moduleDropList = ref([])
+  const menuTypeOptions = ref([])
 
   // 表单引用
   const editFormRef = ref(null)
@@ -238,7 +245,7 @@
       menuCode: '',
       menuNameCn: '',
       menuNameEn: '',
-      menuType: 1,
+      menuType: '',
       menuUrl: '',
       menuIcon: '',
       sortOrder: 1,
@@ -282,7 +289,7 @@
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputPagePath'), trigger: 'blur' }
       ],
       menuType: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramType'), trigger: 'blur' }
+          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseSelectProgramType'), trigger: 'change' }
       ],
       roleCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputRoleCode'), trigger: 'blur' }
@@ -301,6 +308,7 @@
   // 在组件挂载后获取日志数据
   onMounted(() => {
       fetchDomainDrop() // 先获取网域和模块，设置默认值后再查询数据
+      fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
   // 获取网域类型
@@ -453,7 +461,7 @@
       if (clearValidation && editFormRef.value) {
           try {
               // 针对下拉框字段单独清除验证
-              const selectFields = ['domainId', 'parentMenuId']
+              const selectFields = ['domainId', 'parentMenuId', 'menuType']
               selectFields.forEach(field => {
                   editFormRef.value.clearValidate(field)
               })
@@ -470,7 +478,7 @@
           menuCode: '',
           menuNameCn: '',
           menuNameEn: '',
-          menuType: 1,
+          menuType: '',
           menuUrl: '',
           component: '',
           target: '',
@@ -480,7 +488,6 @@
           sortOrder: 1,
           isEnabled: true,
           isVisible: true,
-          level: 1,
           routePath: '',
           remarks: ''
       })
@@ -576,17 +583,16 @@
       resetForm()
       // 设置默认值
       editForm.menuId = '0'
-      editForm.menuType = 1
       editForm.sortOrder = 1
-      editForm.level = 1
       editForm.isEnabled = true
       editForm.isVisible = true
 
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.addProgram')
 
-      // 获取网域类型
+      // 获取网域类型和菜单类型
       fetchDomainDrop()
+      fetchMenuTypeOptions()
 
       // 显示对话框
       dialogVisible.value = true
@@ -603,8 +609,9 @@
       // 获取程序实体数据
       fetchProgramEntity(row.menuId)
 
-      // 获取网域类型
+      // 获取网域类型和菜单类型
       fetchDomainDrop()
+      fetchMenuTypeOptions()
 
       // 显示对话框
       dialogVisible.value = true
@@ -702,6 +709,21 @@
           }
       } catch (error) {
         
+      }
+  }
+
+  // 获取菜单类型选项
+  const fetchMenuTypeOptions = async () => {
+      try {
+          const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
+          if (res && res.code === '200') {
+              menuTypeOptions.value = res.data || []
+          } else {
+              menuTypeOptions.value = []
+          }
+      } catch (error) {
+          console.error('获取菜单类型数据失败:', error)
+          menuTypeOptions.value = []
       }
   }
 </script>

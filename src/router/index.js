@@ -249,7 +249,7 @@ const moduleRoutes = [
         redirect: '/systemBasicmgmt/syssettings-module/dictionaryinfo',
         meta: { 
           title: 'route.sysSettingsModule',
-          icon: 'List',
+          icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
         },
@@ -260,7 +260,7 @@ const moduleRoutes = [
             component: () => import('../views/systemBasicmgmt/sysSettings-Module/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
-              icon: 'List',
+              icon: 'Collection',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }

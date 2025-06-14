@@ -63,20 +63,20 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="120" />
+                  <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="150" />
                   <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="180" />
                   <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="180" />
                   <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="150" />
                   <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="120" />
-                  <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="80" />
+                  <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="100" />
                   <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="180" />
                   <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
                   <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
                   <el-table-column prop="isSignName" :label="$t('systemBasicmgmt.userInfo.isSign')" align="center" min-width="120" />
                   <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
-                  <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="100" />
-                  <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="160" />
-                  <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="150" fixed="right">
+                  <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="130" />
+                  <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="180" />
+                  <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="170" fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -140,17 +140,17 @@
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentType">
+                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentCode">
                       <el-select 
-                          v-model="editForm.employmentType" 
+                          v-model="editForm.employmentCode" 
                           style="width:100%"
                           clearable
                           :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType')">
                           <el-option
                               v-for="item in employmentTypeOptions"
-                              :key="`employment-type-edit-${item.employmentTypeId}`"
+                              :key="`employment-type-edit-${item.employmentCode}`"
                               :label="item.employmentName"
-                              :value="item.employmentTypeId" />
+                              :value="item.employmentCode" />
                       </el-select>
                   </el-form-item>
               </div>
@@ -213,23 +213,35 @@
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isEmployed')">
-                      <el-switch v-model="editForm.isEmployed" 
-                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                      <el-switch
+                          v-model="editForm.isEmployed"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isFreeze')">
-                      <el-switch v-model="editForm.isFreeze" 
-                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                      <el-switch
+                          v-model="editForm.isFreeze"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
               <!-- 第六行：状态开关 -->
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isSign')">
-                      <el-switch v-model="editForm.isSign" 
-                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                      <el-switch
+                          v-model="editForm.isSign"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.userInfo.isPartTime')">
-                      <el-switch v-model="editForm.isPartTime" 
-                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                      <el-switch
+                          v-model="editForm.isPartTime"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item>
                       
@@ -322,11 +334,11 @@
       loginNo: '',
       passWord: '',
       pwdSalt: '',
-      isSign: false,
-      isPartTime: false,
-      isEmployed: true,
-      isFreeze: false,
-      employmentType: '',
+      isSign: 0,
+      isPartTime: 0,
+      isEmployed: 1,
+      isFreeze: 0,
+      employmentCode: '',
       remark: '',
       modifiedBy: '',
       modifiedDate: ''
@@ -352,7 +364,7 @@
       hireDate: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
-      employmentType: [
+      employmentCode: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
       ],
       departmentId: [
@@ -467,8 +479,8 @@
           if (res && res.code === '200') {
               employmentTypeOptions.value = res.data || []
               // 设置编辑表单默认值（仅新增时）
-              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentType) {
-                  editForm.employmentType = employmentTypeOptions.value[0].employmentTypeId
+              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentCode) {
+                  editForm.employmentCode = employmentTypeOptions.value[0].employmentCode
               }
           } else {
               employmentTypeOptions.value = []
@@ -558,11 +570,11 @@
           loginNo: '',
           passWord: '',
           pwdSalt: '',
-          isSign: false,
-          isPartTime: false,
-          isEmployed: true,
-          isFreeze: false,
-          employmentType: '',
+          isSign: 0,
+          isPartTime: 0,
+          isEmployed: 1,
+          isFreeze: 0,
+          employmentCode: '',
           remark: '',
           modifiedBy: '',
           modifiedDate: ''

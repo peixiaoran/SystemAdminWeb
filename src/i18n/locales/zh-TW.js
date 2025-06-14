@@ -547,7 +547,7 @@ export default {
       operationFailed: '操作失敗',
       getFailed: '獲取數據失敗',
       filter: {
-        dicType: '字典類型'
+        dicName: '字典名稱'
       },
       dicTypes: {
         Bit: '字節類型',

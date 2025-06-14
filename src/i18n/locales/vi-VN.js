@@ -367,6 +367,7 @@ export default {
         menuNameCn: 'Tên mô-đun tiếng Trung',
         menuNameEn: 'Tên mô-đun tiếng Anh',
         menuIcon: 'Biểu tượng mô-đun',
+        menuType: 'Loại mô-đun',
         sortOrder: 'Thứ tự sắp xếp',
         menuUrl: 'URL mô-đun',
         level: 'Cấp độ',
@@ -546,7 +547,7 @@ export default {
       operationFailed: 'Thao tác thất bại',
       getFailed: 'Lấy dữ liệu thất bại',
       filter: {
-        dicType: 'Loại từ điển'
+        dicName: 'Tên từ điển'
       },
       dicTypes: {
         Bit: 'Loại byte',

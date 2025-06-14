@@ -4,18 +4,11 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
-              <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.filter.dicType')">
-                  <el-select style="width: 180px;"
-                            v-model="filters.dicType"
-                            :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseSelectDicType')"
-                            clearable>
-                      <el-option
-                          v-for="(label, value) in $t('systemBasicmgmt.dictionaryInfo.dicTypes')"
-                          :key="value"
-                          :label="label"
-                          :value="value">
-                      </el-option>
-                  </el-select>
+              <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.filter.dicName')">
+                  <el-input v-model="filters.dicName"
+                           style="width: 180px;"
+                           :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicName')"
+                           clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -41,15 +34,10 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.dictionaryInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="dicType" :label="$t('systemBasicmgmt.dictionaryInfo.dicType')" align="center" min-width="120">
-                      <template #default="scope">
-                          {{ $t(`systemBasicmgmt.dictionaryInfo.dicTypes.${scope.row.dicType}`) }}
-                      </template>
-                  </el-table-column>
-                  <el-table-column prop="dicCode" :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="150" />
-                  <el-table-column prop="dicName" :label="$t('systemBasicmgmt.dictionaryInfo.dicName')" align="left" min-width="200" />
-                  <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.dictionaryInfo.createdDate')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.dictionaryInfo.operation')" min-width="150" fixed="right">
+                  <el-table-column prop="dicType" :label="$t('systemBasicmgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
+                  <el-table-column prop="dicCode" :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
+                  <el-table-column prop="dicName" :label="$t('systemBasicmgmt.dictionaryInfo.dicName')" align="left" min-width="230" />
+                  <el-table-column :label="$t('systemBasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -84,14 +72,9 @@
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="字典编辑表单">
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicType')" prop="dicType">
-                      <el-select v-model="editForm.dicType" style="width:100%" :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseSelectDicType')">
-                          <el-option
-                              v-for="(label, value) in $t('systemBasicmgmt.dictionaryInfo.dicTypes')"
-                              :key="value"
-                              :label="label"
-                              :value="value">
-                          </el-option>
-                      </el-select>
+                      <el-input v-model="editForm.dicType" 
+                               style="width:100%" 
+                               :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicType')" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
                       <el-input v-model="editForm.dicCode" style="width:100%" />
@@ -145,7 +128,7 @@
 
   // 过滤条件
   const filters = reactive({
-      dicType: '',
+      dicName: '',
   })
 
   // Composition API
@@ -189,7 +172,7 @@
   // 获取字典实体数据
   const fetchDictionaryEntity = async (dictionaryInfoId) => {
       const params = {
-          dictionaryInfoId: dictionaryInfoId
+          dictionaryInfoId: String(dictionaryInfoId)
       }
       
       const res = await post(GET_DICTIONARY_ENTITY_API.GET_DICTIONARY_ENTITY, params)
@@ -210,10 +193,9 @@
   const fetchDictionaryPages = async () => {
       loading.value = true
       const params = {
-          dicType: filters.dicType,
+          dicName: filters.dicName,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
-          totalCount: pagination.total
       }
 
       const res = await post(GET_DICTIONARY_PAGES_API.GET_DICTIONARY_PAGES, params)
@@ -239,7 +221,7 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      filters.dicType = ''
+      filters.dicName = ''
       pagination.pageIndex = 1
       fetchDictionaryPages()
   }

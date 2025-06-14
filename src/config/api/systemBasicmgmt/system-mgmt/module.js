@@ -46,3 +46,8 @@ export const GET_DOMAIN_DROP_API = {
 export const UPDATE_MODULE_API = {
   UPDATE_MODULE: 'SystemBasicMgmt/SystemMgmt/Module/UpdateSysModule'
 }
+
+// 菜单类型下拉框
+export const GET_MENU_TYPE_API = {
+  GET_MENU_TYPE: 'SystemBasicMgmt/SystemMgmt/Module/GetMenuType'
+}
