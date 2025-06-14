@@ -140,9 +140,9 @@
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentCode">
+                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentType">
                       <el-select 
-                          v-model="editForm.employmentCode" 
+                          v-model="editForm.employmentType" 
                           style="width:100%"
                           clearable
                           :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType')">
@@ -378,9 +378,6 @@
       ],
       loginNo: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
-      ],
-      passWord: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputPassword'), trigger: 'blur' }
       ],
       email: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
