@@ -84,15 +84,10 @@ export const useUserStore = defineStore('user', {
     }
   },
   
-  // 启用持久化
+  // 启用持久化 - 使用3.x版本API
   persist: {
-    enabled: true,
-    strategies: [
-      {
-        key: 'user-store',
-        storage: localStorage,
-        paths: ['token', 'username', 'userId', 'roles', 'permissions']
-      }
-    ]
+    key: 'user-store',
+    storage: localStorage,
+    paths: ['token', 'username', 'userId', 'roles', 'permissions']
   }
 }) 

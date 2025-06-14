@@ -459,7 +459,6 @@
       try {
           const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
           if (res && res.code === '200') {
-              console.log(res.data)
               genderOptions.value = res.data || []
           } else {
               genderOptions.value = []
@@ -614,7 +613,6 @@
       const params = {
           ...editForm
       }
-      console.log(params)
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
       
       if (res && res.code === '200') {

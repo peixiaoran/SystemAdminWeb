@@ -17,11 +17,25 @@ export default defineConfig(({ command, mode }) => {
     },
     server: {
       port: 3001, // 前端开发服务器端口，不影响API请求
-      open: true
+      open: true,
+      // Vite 6 安全配置 - 限制网络访问
+      host: 'localhost',
+      // 启用 HTTPS（可选，用于开发环境）
+      // https: true,
+      // 添加安全头
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      }
     },
     // 定义全局常量替换方式
     define: {
-      __APP_ENV__: JSON.stringify(env.APP_ENV)
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
+      // Vue 3.5 特性标志
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
     },
     // 构建选项
     build: {
@@ -41,10 +55,14 @@ export default defineConfig(({ command, mode }) => {
         mangle: {
           // 防止i18n相关变量名被混淆
           reserved: ['$t', 'i18n', 't', 'locale']
+        },
+        format: {
+          // 移除注释
+          comments: false
         }
       },
       // 启用代码分割优化
-      target: 'es2015', // 支持现代浏览器，减少polyfill
+      target: 'es2020', // 支持现代浏览器，减少polyfill
       reportCompressedSize: false, // 禁用压缩大小报告以提升构建速度
       // CSS相关优化
       cssCodeSplit: true,
@@ -93,6 +111,25 @@ export default defineConfig(({ command, mode }) => {
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        }
+      }
+    },
+    // Vite 6 性能优化
+    optimizeDeps: {
+      include: [
+        'vue',
+        'vue-router',
+        'pinia',
+        'element-plus',
+        'axios'
+      ],
+      exclude: ['vue-demi']
+    },
+    // CSS 预处理器配置
+    css: {
+      preprocessorOptions: {
+        scss: { 
+          api: 'modern-compiler' // Sass 现代编译器API
         }
       }
     }
