@@ -106,12 +106,12 @@ export default {
     roleProgram: '角色程式綁定',
     systemBasicData: '基本資料模組',
     userInfo: '員工資訊維護',
-    userPosition: '用戶職位維護',
+    userPosition: '職位資訊維護',
     companyInfo: '公司資料維護',
     departmentInfo: '部門資料維護',
-    departmentLevel: '部門級別維護',
-    sysSettingsModule: '系統模組管理',
-    dictionaryInfo: '字典信息維護'
+    departmentLevel: '部門層級維護',
+    sysSettingsModule: '系統設定模組',
+    dictionaryInfo: '字典資料維護'
   },
   
   // 系統基礎管理

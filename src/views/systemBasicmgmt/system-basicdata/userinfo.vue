@@ -43,9 +43,6 @@
                   <el-button type="primary" @click="handleSearch" plain>
                       {{ $t('common.search') }}
                   </el-button>
-                  <el-button @click="handleReset">
-                      {{ $t('common.reset') }}
-                  </el-button>
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
@@ -69,7 +66,7 @@
                   <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="150" />
                   <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="120" />
                   <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="100" />
-                  <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="180" />
+                  <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="200" />
                   <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
                   <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
                   <el-table-column prop="isSignName" :label="$t('systemBasicmgmt.userInfo.isSign')" align="center" min-width="120" />
@@ -236,12 +233,8 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.isPartTime')">
-                      <el-switch
-                          v-model="editForm.isPartTime"
-                          :active-value="1"
-                          :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                  <el-form-item>
+                      
                   </el-form-item>
                   <el-form-item>
                       
@@ -335,7 +328,6 @@
       passWord: '',
       pwdSalt: '',
       isSign: 0,
-      isPartTime: 0,
       isEmployed: 1,
       isFreeze: 0,
       employmentCode: '',
@@ -417,7 +409,6 @@
               departmentOptions.value = []
           }
       } catch (error) {
-          console.error('获取部门数据失败:', error)
           departmentOptions.value = []
       }
   }
@@ -567,7 +558,6 @@
           passWord: '',
           pwdSalt: '',
           isSign: 0,
-          isPartTime: 0,
           isEmployed: 1,
           isFreeze: 0,
           employmentCode: '',

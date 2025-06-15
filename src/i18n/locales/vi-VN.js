@@ -490,7 +490,7 @@ export default {
       departmentLevelName: 'Cấp độ bộ phận',
       description: 'Mô tả',
       landline: 'Điện thoại cố định',
-      email: 'Email',
+      email: 'Email liên hệ',
       address: 'Địa chỉ',
       status: 'Trạng thái',
       active: 'Hoạt động',

@@ -40,7 +40,7 @@
                   <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
                   <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />
-                  <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="150" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="170" fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"

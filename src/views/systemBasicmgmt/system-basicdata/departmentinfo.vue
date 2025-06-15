@@ -41,7 +41,7 @@
                           default-expand-all
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
                         <el-table-column type="index" :label="$t('systemBasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
-                        <el-table-column prop="departmentCode" :label="$t('systemBasicmgmt.departmentInfo.departmentCode')" align="left" min-width="180" />
+                        <el-table-column prop="departmentCode" :label="$t('systemBasicmgmt.departmentInfo.departmentCode')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameCn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('systemBasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
@@ -52,11 +52,11 @@
                                 </el-tag>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="landline" :label="$t('systemBasicmgmt.departmentInfo.landline')" align="center" min-width="120" />
+                        <el-table-column prop="landline" :label="$t('systemBasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
                         <el-table-column prop="email" :label="$t('systemBasicmgmt.departmentInfo.email')" align="left" min-width="180" />
                         
                         <el-table-column prop="description" :label="$t('systemBasicmgmt.departmentInfo.description')" align="left" min-width="200" />
-                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="260" fixed="right">
+                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="310" fixed="right">
                             <template #default="scope">
                                 <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                                 <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systemBasicmgmt.departmentInfo.addChild') }}</el-button>
