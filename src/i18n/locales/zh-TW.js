@@ -29,7 +29,8 @@ export default {
     closeOtherTabs: '關閉其他標籤',
     closeAllTabs: '關閉所有標籤',
     operation: '操作',
-    goBack: '返回'
+    goBack: '返回',
+    tokenExpired: '登錄已過期，請重新登錄'
   },
   
   // 錯誤頁面
@@ -309,6 +310,14 @@ export default {
       addUser: '新增用戶',
       editUser: '編輯用戶信息',
       deleteConfirm: '確定要刪除該用戶嗎？',
+      exportUsers: '導出用戶',
+      exportUsersPdf: '導出PDF',
+      exportConfirm: '確定要導出用戶數據嗎？',
+      exportPdfConfirm: '確定要導出用戶PDF數據嗎？',
+      exportSuccess: '導出成功',
+      exportFailed: '導出失敗',
+      exportFileName: '用戶信息導出',
+      exportPdfFileName: '用戶信息導出',
       pleaseInputUserNo: '請輸入用戶編號',
       pleaseInputUserName: '請輸入用戶姓名',
       pleaseInputUserNameCh: '請輸入中文姓名',

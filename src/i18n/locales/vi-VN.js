@@ -29,7 +29,8 @@ export default {
     closeOtherTabs: 'Đóng các tab khác',
     closeAllTabs: 'Đóng tất cả tab',
     operation: 'Thao tác',
-    goBack: 'Quay lại'
+    goBack: 'Quay lại',
+    tokenExpired: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'
   },
   
   // Trang lỗi
@@ -263,6 +264,14 @@ export default {
       addUser: 'Thêm người dùng',
       editUser: 'Chỉnh sửa thông tin người dùng',
       deleteConfirm: 'Bạn có chắc chắn muốn xóa người dùng này không?',
+      exportUsers: 'Xuất người dùng',
+      exportUsersPdf: 'Xuất PDF',
+      exportConfirm: 'Bạn có chắc chắn muốn xuất dữ liệu người dùng không?',
+      exportPdfConfirm: 'Bạn có chắc chắn muốn xuất dữ liệu PDF người dùng không?',
+      exportSuccess: 'Xuất thành công',
+      exportFailed: 'Xuất thất bại',
+      exportFileName: 'Xuat_Thong_Tin_Nguoi_Dung',
+      exportPdfFileName: 'Xuat_Thong_Tin_Nguoi_Dung',
       pleaseInputUserNo: 'Vui lòng nhập mã người dùng',
       pleaseInputUserName: 'Vui lòng nhập tên người dùng',
       pleaseInputUserNameCh: 'Vui lòng nhập tên tiếng Trung',

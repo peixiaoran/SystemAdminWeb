@@ -29,7 +29,8 @@ export default {
     closeOtherTabs: 'Close Other Tabs',
     closeAllTabs: 'Close All Tabs',
     operation: 'Operation',
-    goBack: 'Go Back'
+    goBack: 'Go Back',
+    tokenExpired: 'Login expired, please login again'
   },
   
   // Error pages
@@ -263,6 +264,14 @@ export default {
       addUser: 'Add User',
       editUser: 'Edit User',
       deleteConfirm: 'Are you sure to delete this user?',
+      exportUsers: 'Export Users',
+      exportUsersPdf: 'Export PDF',
+      exportConfirm: 'Are you sure to export user data?',
+      exportPdfConfirm: 'Are you sure to export user PDF data?',
+      exportSuccess: 'Export successfully',
+      exportFailed: 'Export failed',
+      exportFileName: 'User_Information_Export',
+      exportPdfFileName: 'User_Information_Export',
       pleaseInputUserNo: 'Please input user number',
       pleaseInputUserName: 'Please input user name',
       pleaseInputUserNameCh: 'Please input Chinese name',

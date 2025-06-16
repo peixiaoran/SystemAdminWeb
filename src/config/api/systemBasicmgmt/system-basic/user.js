@@ -66,3 +66,14 @@ export const GET_GENDER_DROPDOWN_API = {
 export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
   GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetEmploymentType'
 }
+
+// 导出用户API
+export const EXPORT_USERS_API = {
+  EXPORT_USERS: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToExcel'
+}
+
+// 导出用户PDFAPI
+export const EXPORT_USERS_PDF_API = {
+  EXPORT_USERS_PDF: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToPdf'
+}
+

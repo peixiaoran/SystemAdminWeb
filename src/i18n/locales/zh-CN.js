@@ -30,7 +30,8 @@ export default {
     closeOtherTabs: '关闭其他标签',
     closeAllTabs: '关闭所有标签',
     operation: '操作',
-    goBack: '返回'
+    goBack: '返回',
+    tokenExpired: '登录已过期，请重新登录'
   },
   
   // 错误页面
@@ -310,6 +311,14 @@ export default {
       addUser: '新增用户',
       editUser: '编辑用户信息',
       deleteConfirm: '确定要删除该用户吗？',
+      exportUsers: '导出用户',
+      exportUsersPdf: '导出PDF',
+      exportConfirm: '确定要导出用户数据吗？',
+      exportPdfConfirm: '确定要导出用户PDF数据吗？',
+      exportSuccess: '导出成功',
+      exportFailed: '导出失败',
+      exportFileName: '用户信息导出',
+      exportPdfFileName: '用户信息导出',
       pleaseInputUserNo: '请输入用户编号',
       pleaseInputUserName: '请输入用户姓名',
       pleaseInputUserNameCh: '请输入中文姓名',
