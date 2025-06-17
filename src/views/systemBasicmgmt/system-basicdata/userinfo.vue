@@ -48,9 +48,6 @@
                   <el-button type="success" @click="handleExport" :loading="exportLoading" plain>
                       {{ $t('systemBasicmgmt.userInfo.exportUsers') }}
                   </el-button>
-                  <el-button type="warning" @click="handleExportPdf" :loading="exportPdfLoading" plain>
-                      {{ $t('systemBasicmgmt.userInfo.exportUsersPdf') }}
-                  </el-button>
                   <el-button type="primary" @click="handleAdd">
                       {{ $t('systemBasicmgmt.userInfo.addUser') }}
                   </el-button>
@@ -279,7 +276,6 @@
       GET_GENDER_DROPDOWN_API,
       GET_EMPLOYMENT_TYPE_DROPDOWN_API,
       EXPORT_USERS_API,
-      EXPORT_USERS_PDF_API,
       BASE_API_URL
   } from '@/config/api/systemBasicmgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -292,7 +288,6 @@
   const userList = ref([])
   const loading = ref(false)
   const exportLoading = ref(false)
-  const exportPdfLoading = ref(false)
 
   // 表单引用
   const editFormRef = ref(null)
@@ -629,92 +624,7 @@
           })
   }
 
-  // 导出用户PDF
-  const exportUsersPdf = async () => {
-      try {
-          exportPdfLoading.value = true
-          const params = {
-              departmentId: filters.departmentId || '',
-              positionId: filters.positionId || '',
-              roleId: filters.roleId || '',
-              userNo: filters.userNo || '',
-              userName: filters.userName || '',
-              gender: filters.gender || ''
-          }
-          
-          // 直接使用axios进行文件下载
-          const response = await axios.post(
-              `${BASE_API_URL}/${EXPORT_USERS_PDF_API.EXPORT_USERS_PDF}`, 
-              params,
-              {
-                  responseType: 'blob',
-                  headers: {
-                      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                      'Accept-Language': localStorage.getItem('language') || 'zh-CN',
-                      'Factory': localStorage.getItem('factory') || 'ETW',
-                      'Content-Type': 'application/json'
-                  }
-              }
-          )
-          
-          if (response.data && response.data.size > 0) {
-              // 创建下载链接
-              const blob = new Blob([response.data], { 
-                  type: 'application/pdf' 
-              })
-              const url = window.URL.createObjectURL(blob)
-              const link = document.createElement('a')
-              link.href = url
-              
-              // 生成文件名（包含当前时间）
-              const now = new Date()
-              const timestamp = now.getFullYear() + 
-                              String(now.getMonth() + 1).padStart(2, '0') + 
-                              String(now.getDate()).padStart(2, '0') + '_' +
-                              String(now.getHours()).padStart(2, '0') + 
-                              String(now.getMinutes()).padStart(2, '0') + 
-                              String(now.getSeconds()).padStart(2, '0')
-              
-              link.download = `${t('systemBasicmgmt.userInfo.exportPdfFileName')}_${timestamp}.pdf`
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-              window.URL.revokeObjectURL(url)
-              
-              ElMessage.success(t('systemBasicmgmt.userInfo.exportSuccess'))
-          } else {
-              ElMessage.error(t('systemBasicmgmt.userInfo.exportFailed'))
-          }
-      } catch (error) {
-          console.error('PDF导出失败:', error)
-          if (error.response && error.response.status === 401) {
-              ElMessage.error(t('common.tokenExpired'))
-          } else {
-              ElMessage.error(t('systemBasicmgmt.userInfo.exportFailed'))
-          }
-      } finally {
-          exportPdfLoading.value = false
-      }
-  }
 
-  // 处理PDF导出操作
-  const handleExportPdf = () => {
-      ElMessageBox.confirm(
-          t('systemBasicmgmt.userInfo.exportPdfConfirm'),
-          t('common.tip'),
-          {
-              confirmButtonText: t('common.confirm'),
-              cancelButtonText: t('common.cancel'),
-              type: 'info',
-          }
-      )
-          .then(() => {
-              exportUsersPdf()
-          })
-          .catch(() => {
-              // 取消导出
-          })
-  }
 
   // 处理页码变化
   const handlePageChange = (page) => {

@@ -71,9 +71,3 @@ export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
 export const EXPORT_USERS_API = {
   EXPORT_USERS: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToExcel'
 }
-
-// 导出用户PDFAPI
-export const EXPORT_USERS_PDF_API = {
-  EXPORT_USERS_PDF: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToPdf'
-}
-

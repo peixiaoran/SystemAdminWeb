@@ -57,7 +57,7 @@
                   <el-table-column prop="isEnabled"
                                    :label="$t('systemBasicmgmt.systemMgmt.isEnabled')"
                                    align="center"
-                                   min-width="100">
+                                   min-width="150">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
                               {{ scope.row.isEnabled ? $t('systemBasicmgmt.systemMgmt.enabled') : $t('systemBasicmgmt.systemMgmt.disabled') }}
@@ -71,7 +71,7 @@
                                    :label="$t('systemBasicmgmt.systemMgmt.createdTime')"
                                    min-width="180" />
                   <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')"
-                                   min-width="150"
+                                   min-width="200"
                                    fixed="right">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">

@@ -46,13 +46,13 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="240" />
-                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="200" />
+                  <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="200" />
+                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')" align="left" min-width="260" />
+                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="230" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="150" />
-                  <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="90">
+                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="230" />
+                  <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="150">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
