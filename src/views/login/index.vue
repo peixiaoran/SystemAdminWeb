@@ -7,22 +7,15 @@
       </div>
       
       <div class="login-form-container">
-        
-        <!-- 添加虚假的输入框来欺骗浏览器 -->
-        <div style="position: absolute; left: -9999px; opacity: 0;">
-          <input type="text" name="fake_username" tabindex="-1" />
-          <input type="password" name="fake_password" tabindex="-1" />
-        </div>
-        
         <el-form
           ref="loginFormRef"
           :model="loginForm"
           :rules="loginRules"
           class="login-form"
           size="large"
-          autocomplete="new-password"
+          autocomplete="off"
+          @submit.prevent
         >
-          
           <el-form-item prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
@@ -34,7 +27,7 @@
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-              :name="'username_' + Math.random().toString(36).substr(2, 9)"
+              :name="usernameFieldName"
               readonly
               @focus="handleInputFocus"
             />
@@ -52,7 +45,7 @@
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-              :name="'password_' + Math.random().toString(36).substr(2, 9)"
+              :name="passwordFieldName"
               readonly
               @focus="handleInputFocus"
               @keyup.enter="handleLogin"
@@ -110,6 +103,10 @@ const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
 
+// 动态生成字段名称，防止浏览器识别
+const usernameFieldName = ref(`usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`)
+const passwordFieldName = ref(`pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`)
+
 const loginForm = reactive({
   loginNo: '',
   passWrod: '',
@@ -123,18 +120,30 @@ onMounted(() => {
   nextTick(() => {
     loginFormRef.value?.resetFields()
     
-    // 清除可能的浏览器自动填充
+    // 延迟清除可能的浏览器自动填充
     setTimeout(() => {
-      const inputs = document.querySelectorAll('.login-form input')
-      inputs.forEach(input => {
-        if (input.value && (input.name.includes('username') || input.name.includes('password'))) {
-          input.value = ''
-        }
-      })
-      // 确保表单数据也清空
+      // 确保表单数据清空
       loginForm.loginNo = ''
       loginForm.passWrod = ''
+      
+      // 动态更改字段名称，进一步防止自动填充
+      usernameFieldName.value = `usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
+      passwordFieldName.value = `pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
     }, 100)
+    
+    // 定期更新字段名称，防止浏览器学习
+    const updateFieldNames = () => {
+      usernameFieldName.value = `usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
+      passwordFieldName.value = `pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
+    }
+    
+    // 每30秒更新一次字段名称
+    const updateInterval = setInterval(updateFieldNames, 30000)
+    
+    // 页面卸载时清除定时器
+    window.addEventListener('beforeunload', () => {
+      clearInterval(updateInterval)
+    })
   })
 })
 
@@ -188,9 +197,24 @@ const handleLanguageChange = (value) => {
   document.title = t('common.systemTitle')
 }
 
-// 处理输入框焦点事件，移除readonly属性
+// 处理输入框焦点事件，移除readonly属性并防止自动填充
 const handleInputFocus = (event) => {
   event.target.removeAttribute('readonly')
+  
+  // 额外的防护措施：延迟检查自动填充
+  setTimeout(() => {
+    const input = event.target
+    // 如果检测到输入框被自动填充但用户实际没有输入，清除填充值
+    if (input.value && input.value !== loginForm.loginNo && input.value !== loginForm.passWrod) {
+      input.value = ''
+      // 同时清空对应的表单数据
+      if (input.name && input.name.includes('usr')) {
+        loginForm.loginNo = ''
+      } else if (input.name && input.name.includes('pwd')) {
+        loginForm.passWrod = ''
+      }
+    }
+  }, 50)
 }
 
 const handleLogin = () => {
@@ -490,26 +514,21 @@ const handleLogin = () => {
   content: '';
 }
 
-/* 禁用浏览器自动填充样式 */
-.login-form :deep(input:-webkit-autofill) {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: #606266 !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-.login-form :deep(input:-webkit-autofill:hover) {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: #606266 !important;
-}
-
-.login-form :deep(input:-webkit-autofill:focus) {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: #606266 !important;
-}
-
+/* 强力禁用浏览器自动填充样式 */
+.login-form :deep(input:-webkit-autofill),
+.login-form :deep(input:-webkit-autofill:hover),
+.login-form :deep(input:-webkit-autofill:focus),
 .login-form :deep(input:-webkit-autofill:active) {
   -webkit-box-shadow: 0 0 0 1000px white inset !important;
   -webkit-text-fill-color: #606266 !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* 进一步防止自动填充的样式 */
+.login-form :deep(input[autocomplete="new-password"]) {
+  background: white !important;
+  color: #606266 !important;
 }
 
 /* 自定义表格滚动条样式 */
