@@ -186,7 +186,7 @@
               </el-table-column>
               <el-table-column prop="module" label="模块" width="120" />
               <el-table-column prop="message" label="内容" show-overflow-tooltip />
-              <el-table-column label="操作" width="120" fixed="right">
+              <el-table-column label="操作" width="120" fixed="right" align="center">
                 <template #default>
                   <el-button size="small" type="primary" plain>详情</el-button>
                 </template>
@@ -256,7 +256,7 @@
               </el-table-column>
               <el-table-column prop="publisher" label="发布人" width="120" />
               <el-table-column prop="time" label="发布时间" width="180" />
-              <el-table-column label="操作" width="180" fixed="right">
+              <el-table-column label="操作" width="180" fixed="right" align="center">
                 <template #default>
                   <el-button size="small" type="primary" plain icon="View">查看</el-button>
                   <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
@@ -370,8 +370,8 @@
     {
       time: '2023-05-15 15:20:30',
       level: 'ERROR',
-      module: '用户认证',
-      message: '用户登录失败：密码错误 (IP: 192.168.1.5)'
+              module: '员工认证',
+        message: '员工登录失败：密码错误 (IP: 192.168.1.5)'
     },
     {
       time: '2023-05-15 15:15:22',
@@ -388,8 +388,8 @@
     {
       time: '2023-05-15 15:05:48',
       level: 'INFO',
-      module: '用户管理',
-      message: '新用户注册：user123'
+              module: '员工管理',
+        message: '新员工注册：user123'
     },
     {
       time: '2023-05-15 15:01:33',
@@ -477,7 +477,7 @@
     { name: '系统监控', icon: 'Monitor' },
     { name: '网络设置', icon: 'Connection' },
     { name: '安全设置', icon: 'Lock' },
-    { name: '用户管理', icon: 'User' },
+          { name: '员工管理', icon: 'User' },
     { name: '告警设置', icon: 'Warning' },
     { name: '消息通知', icon: 'Notification' },
     { name: '日志管理', icon: 'Document' },

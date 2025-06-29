@@ -28,8 +28,8 @@
             min-width="120" 
           />
           <el-table-column 
-            prop="positionNameCn" 
-            :label="$t('systemBasicmgmt.userPosition.positionNameCn')"
+            prop="positionNameCh"
+:label="$t('systemBasicmgmt.userPosition.positionNameCh')"
             align="left" 
             min-width="200" 
           />
@@ -49,6 +49,7 @@
             :label="$t('common.operation')" 
             min-width="150" 
             fixed="right"
+            align="center"
           >
             <template #default="scope">
               <el-button 
@@ -88,10 +89,10 @@
                 readonly
               />
             </el-form-item>
-            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionNameCn')">
-              <el-input 
-                v-model="editForm.positionNameCn" 
-                :placeholder="$t('systemBasicmgmt.userPosition.positionNameCnPlaceholder')"
+            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionNameCh')">
+<el-input
+v-model="editForm.positionNameCh"
+:placeholder="$t('systemBasicmgmt.userPosition.positionNameChPlaceholder')"
                 style="width:100%" 
                 readonly
               />

@@ -169,8 +169,7 @@ const languages = computed(() => {
   return {
     'zh-CN': t('login.languages.zh-CN'),
     'zh-TW': t('login.languages.zh-TW'),
-    'en-US': t('login.languages.en-US'),
-    'vi-VN': t('login.languages.vi-VN')
+    'en-US': t('login.languages.en-US')
   }
 })
 
@@ -204,7 +203,7 @@ const handleInputFocus = (event) => {
   // 额外的防护措施：延迟检查自动填充
   setTimeout(() => {
     const input = event.target
-    // 如果检测到输入框被自动填充但用户实际没有输入，清除填充值
+            // 如果检测到输入框被自动填充但员工实际没有输入，清除填充值
     if (input.value && input.value !== loginForm.loginNo && input.value !== loginForm.passWrod) {
       input.value = ''
       // 同时清空对应的表单数据
@@ -239,7 +238,7 @@ const handleLogin = () => {
             // 设置标题
             document.title = t('common.systemTitle')
             
-            // 获取用户store
+            // 获取员工store
             const userStore = useUserStore()
             // 设置token
             userStore.setToken(res.data)

@@ -44,7 +44,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" align="left" min-width="230" />
-                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameCh" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCh')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.module.menuNameEn')" align="left" min-width="200" />
                   <el-table-column prop="menuTypeName" :label="$t('systemBasicmgmt.systemMgmt.module.menuType')" align="center" min-width="130" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.module.roleCode')" align="center" min-width="130" />
@@ -70,7 +70,7 @@
                   </el-table-column>
                   <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="180" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -107,8 +107,8 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCn')" prop="menuNameCn">
-                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.module.menuNameCh')" prop="menuNameCh">
+<el-input v-model="editForm.menuNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -226,7 +226,7 @@
       parentMenuId: '0',
       domainId: '',
       menuCode: '',
-      menuNameCn: '',
+      menuNameCh: '',
       menuNameEn: '',
       menuType: '',
       menuUrl: '',
@@ -248,8 +248,8 @@
       menuCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuCode'), trigger: 'blur' }
       ],
-      menuNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuNameCn'), trigger: 'blur' }
+      menuNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuNameCh'), trigger: 'blur' }
       ],
       menuNameEn: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputMenuNameEn'), trigger: 'blur' }
@@ -273,7 +273,7 @@
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputPagePath'), trigger: 'blur' }
       ],
       component: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputComponent'), trigger: 'blur' }
+          // component 可为空，移除必填验证
       ],
       target: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.module.pleaseInputTarget'), trigger: 'blur' }
@@ -340,7 +340,7 @@
           if (res && res.code === '200') {
               editForm.menuId = res.data.menuId
               editForm.menuCode = res.data.menuCode
-              editForm.menuNameCn = res.data.menuNameCn
+              editForm.menuNameCh = res.data.menuNameCh
               editForm.menuNameEn = res.data.menuNameEn
               editForm.parentMenuId = res.data.parentMenuId
               editForm.domainId = res.data.domainId
@@ -441,7 +441,7 @@
           menuId: '',
           parentMenuId: '0',
           menuCode: '',
-          menuNameCn: '',
+          menuNameCh: '',
           menuNameEn: '',
           menuType: '',
           menuUrl: '',

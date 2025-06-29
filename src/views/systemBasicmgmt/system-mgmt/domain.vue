@@ -37,7 +37,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="domainCode" :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')" align="left" min-width="230" />
-                  <el-table-column prop="domainNameCn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" align="left" min-width="280" />
+                  <el-table-column prop="domainNameCh" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCh')" align="left" min-width="280" />
                   <el-table-column prop="domainNameEn" :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="280" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.domain.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.domain.pagePath')" align="left" min-width="230" />
@@ -62,7 +62,7 @@
                   </el-table-column>
                   <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="180" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -99,8 +99,8 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainCode')" prop="domainCode">
                       <el-input v-model="editForm.domainCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCn')" prop="domainNameCn">
-                      <el-input v-model="editForm.domainNameCn" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.domain.domainNameCh')" prop="domainNameCh">
+<el-input v-model="editForm.domainNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -199,7 +199,7 @@
   const editForm = reactive({
       domainId: '0',
       domainCode: '',
-      domainNameCn: '',
+      domainNameCh: '',
       domainNameEn: '',
       domainIcon: '',
       sortOrder: 1,
@@ -220,8 +220,8 @@
       domainCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainCode'), trigger: 'blur' }
       ],
-      domainNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainNameCn'), trigger: 'blur' }
+      domainNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainNameCh'), trigger: 'blur' }
       ],
       domainNameEn: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.domain.pleaseInputDomainNameEn'), trigger: 'blur' }
@@ -261,7 +261,7 @@
       if (res && res.code === '200') {
           editForm.domainId = res.data.domainId
           editForm.domainCode = res.data.domainCode
-          editForm.domainNameCn = res.data.domainNameCn
+          editForm.domainNameCh = res.data.domainNameCh
           editForm.domainNameEn = res.data.domainNameEn
           editForm.domainIcon = res.data.domainIcon
           editForm.sortOrder = res.data.sortOrder
@@ -344,7 +344,7 @@
       editForm.isVisible = true
       editForm.domainId = '0'
       editForm.domainCode = ''
-      editForm.domainNameCn = ''
+      editForm.domainNameCh = ''
       editForm.domainNameEn = ''
       
       // 数据重置后再次清除验证状态

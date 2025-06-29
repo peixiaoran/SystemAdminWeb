@@ -186,7 +186,7 @@
             </el-table-column>
             <el-table-column prop="module" :label="$t('systemBasicmgmt.systemLog.module')" width="120" />
             <el-table-column prop="message" :label="$t('systemBasicmgmt.systemLog.content')" show-overflow-tooltip />
-            <el-table-column :label="$t('systemBasicmgmt.systemLog.operation')" width="120" fixed="right">
+                              <el-table-column :label="$t('systemBasicmgmt.systemLog.operation')" width="120" fixed="right" align="center">
               <template #default>
                 <el-button size="small" type="primary" plain>{{ $t('systemBasicmgmt.systemLog.details') }}</el-button>
               </template>
@@ -256,7 +256,7 @@
             </el-table-column>
             <el-table-column prop="publisher" :label="$t('systemBasicmgmt.systemNotice.publisher')" width="120" />
             <el-table-column prop="time" :label="$t('systemBasicmgmt.systemNotice.publishTime')" width="180" />
-            <el-table-column :label="$t('systemBasicmgmt.systemNotice.operation')" width="180" fixed="right">
+                          <el-table-column :label="$t('systemBasicmgmt.systemNotice.operation')" width="180" fixed="right" align="center">
               <template #default>
                 <el-button size="small" type="primary" plain icon="View">{{ $t('systemBasicmgmt.systemNotice.view') }}</el-button>
                 <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.systemNotice.delete') }}</el-button>
@@ -374,8 +374,8 @@ const systemLogs = reactive([
   {
     time: '2023-05-15 15:20:30',
     level: 'ERROR',
-    module: '用户认证',
-    message: '用户登录失败：密码错误 (IP: 192.168.1.5)'
+            module: '员工认证',
+        message: '员工登录失败：密码错误 (IP: 192.168.1.5)'
   },
   {
     time: '2023-05-15 15:15:22',
@@ -392,8 +392,8 @@ const systemLogs = reactive([
   {
     time: '2023-05-15 15:05:48',
     level: 'INFO',
-    module: '用户管理',
-    message: '新用户注册：user123'
+            module: '员工管理',
+        message: '新员工注册：user123'
   },
   {
     time: '2023-05-15 15:01:33',
@@ -478,7 +478,7 @@ const quickActions = reactive([
     icon: markRaw(Setting)
   },
   {
-    name: '用户管理',
+          name: '员工管理',
     icon: markRaw(User)
   },
   {

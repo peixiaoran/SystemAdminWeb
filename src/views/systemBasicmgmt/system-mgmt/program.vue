@@ -47,7 +47,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameCn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')" align="left" min-width="260" />
+                  <el-table-column prop="menuNameCh" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCh')" align="left" min-width="260" />
                   <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="230" />
                   <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
@@ -72,7 +72,7 @@
                   </el-table-column>
                   <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="170" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -109,8 +109,8 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameCn')" prop="menuNameCn">
-                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameCh')" prop="menuNameCh">
+<el-input v-model="editForm.menuNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -243,7 +243,7 @@
       parentMenuId: '',
       domainId: '',
       menuCode: '',
-      menuNameCn: '',
+      menuNameCh: '',
       menuNameEn: '',
       menuType: '',
       menuUrl: '',
@@ -267,8 +267,8 @@
       menuCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramCode'), trigger: 'blur' }
       ],
-      menuNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramNameCn'), trigger: 'blur' }
+      menuNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramNameCh'), trigger: 'blur' }
       ],
       menuNameEn: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramNameEn'), trigger: 'blur' }
@@ -301,7 +301,7 @@
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputComponent'), trigger: 'blur' }
       ],
       target: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputTarget'), trigger: 'blur' }
+          // target (Redirect) 可为空，移除必填验证
       ]
   })
 
@@ -375,7 +375,7 @@
               // 对字符串类型字段进行额外的XSS清洗
               editForm.menuId = res.data.menuId
               editForm.menuCode = sanitizeHtml(res.data.menuCode || '')
-              editForm.menuNameCn = sanitizeHtml(res.data.menuNameCn || '')
+              editForm.menuNameCh = sanitizeHtml(res.data.menuNameCh || '')
               editForm.menuNameEn = sanitizeHtml(res.data.menuNameEn || '')
               editForm.parentMenuId = res.data.parentMenuId
               editForm.domainId = res.data.domainId
@@ -476,7 +476,7 @@
       Object.assign(editForm, {
           menuId: '',
           menuCode: '',
-          menuNameCn: '',
+          menuNameCh: '',
           menuNameEn: '',
           menuType: '',
           menuUrl: '',

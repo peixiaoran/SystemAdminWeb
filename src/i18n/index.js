@@ -2,7 +2,6 @@ import { createI18n } from 'vue-i18n'
 import zhCN from './locales/zh-CN'
 import zhTW from './locales/zh-TW'
 import enUS from './locales/en-US'
-import viVN from './locales/vi-VN'
 
 // 创建i18n实例
 const i18n = createI18n({
@@ -12,8 +11,7 @@ const i18n = createI18n({
   messages: {
     'zh-CN': zhCN,
     'zh-TW': zhTW,
-    'en-US': enUS,
-    'vi-VN': viVN
+    'en-US': enUS
   },
   silentTranslationWarn: true, // 关闭翻译警告
   silentFallbackWarn: true, // 关闭回退警告

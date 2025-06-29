@@ -89,7 +89,6 @@
                 <el-dropdown-item @click="handleLanguageChange('zh-CN')">中文简体</el-dropdown-item>
                 <el-dropdown-item @click="handleLanguageChange('zh-TW')">中文繁体</el-dropdown-item>
                 <el-dropdown-item @click="handleLanguageChange('en-US')">English</el-dropdown-item>
-                <el-dropdown-item @click="handleLanguageChange('vi-VN')">Tiếng Việt</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -246,8 +245,7 @@ const currentLanguageLabel = computed(() => {
   const languageMap = {
     'zh-CN': '中文简体',
     'zh-TW': '中文繁体', 
-    'en-US': 'English',
-    'vi-VN': 'Tiếng Việt'
+    'en-US': 'English'
   }
   return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文简体'
 })
@@ -513,7 +511,7 @@ const logout = async () => {
     await userStore.logout()
     router.push('/login')
   } catch (error) {
-    // 用户取消，不处理
+            // 员工取消，不处理
   }
 }
 
@@ -737,7 +735,7 @@ const refreshSelectedTag = () => {
       ElMessage.success('页面刷新成功')
     })
   }).catch(() => {
-    // 如果路由刷新失败，提示用户
+            // 如果路由刷新失败，提示员工
     ElMessage.error('页面刷新失败，请稍后重试')
   })
 }
@@ -829,7 +827,7 @@ const restoreTabsFromStorage = () => {
 
 // 在组件挂载后执行
 onMounted(async () => {
-  // 从用户存储或本地存储获取用户名
+      // 从员工存储或本地存储获取员工名
   if (userStore.username) {
     username.value = userStore.username;
   } else {
@@ -837,7 +835,7 @@ onMounted(async () => {
     if (storedUsername) {
       username.value = storedUsername;
     } else {
-      // 默认用户名
+      // 默认员工名
       username.value = t('moduleSelect.userInfo');
     }
   }

@@ -37,7 +37,7 @@
                   <el-table-column prop="dicType" :label="$t('systemBasicmgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
                   <el-table-column prop="dicCode" :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
                   <el-table-column prop="dicName" :label="$t('systemBasicmgmt.dictionaryInfo.dicName')" align="left" min-width="230" />
-                  <el-table-column :label="$t('systemBasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"

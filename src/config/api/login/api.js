@@ -17,7 +17,7 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 用户登录
+// 员工登录
 export const LOGIN_API = {
   USER_LOGIN: 'SystemBasicMgmt/SystemBasic/SysLogin/UserLogin'
 }

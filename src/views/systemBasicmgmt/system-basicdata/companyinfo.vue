@@ -34,13 +34,13 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="companyNameCn" :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" align="left" min-width="240" />
+                  <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" align="left" min-width="240" />
                   <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
                   <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="280" />
                   <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
                   <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
                   <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />
-                  <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="170" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -74,8 +74,8 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCn')" prop="companyNameCn">
-                      <el-input v-model="editForm.companyNameCn" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" prop="companyNameCh">
+<el-input v-model="editForm.companyNameCh" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" prop="companyNameEn">
                       <el-input v-model="editForm.companyNameEn" style="width:100%" />
@@ -142,7 +142,7 @@
   // 编辑表单
   const editForm = reactive({
       companyId: '',
-      companyNameCn: '',
+      companyNameCh: '',
       companyNameEn: '',
       companyiPhone: '',
       companyFax: '',
@@ -158,8 +158,8 @@
 
   // 表单验证规则
   const formRules = reactive({
-      companyNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameCn'), trigger: 'blur' }
+      companyNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameCh'), trigger: 'blur' }
       ],
       companyNameEn: [
           { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
@@ -187,7 +187,7 @@
 
       if (res && res.code === '200') {
           editForm.companyId = res.data.companyId
-          editForm.companyNameCn = res.data.companyNameCn
+          editForm.companyNameCh = res.data.companyNameCh
           editForm.companyNameEn = res.data.companyNameEn
           editForm.companyiPhone = res.data.companyiPhone
           editForm.companyFax = res.data.companyFax
@@ -260,7 +260,7 @@
       }
       
       editForm.companyId = ''
-      editForm.companyNameCn = ''
+      editForm.companyNameCh = ''
       editForm.companyNameEn = ''
       editForm.companyiPhone = ''
       editForm.companyFax = ''

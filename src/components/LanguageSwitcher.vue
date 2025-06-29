@@ -33,8 +33,7 @@ const languages = computed(() => {
   return {
     'zh-CN': t('login.languages.zh-CN'),
     'zh-TW': t('login.languages.zh-TW'),
-    'en-US': t('login.languages.en-US'),
-    'vi-VN': t('login.languages.vi-VN')
+    'en-US': t('login.languages.en-US')
   }
 })
 

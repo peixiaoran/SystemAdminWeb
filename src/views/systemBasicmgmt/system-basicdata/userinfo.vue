@@ -45,9 +45,6 @@
                   </el-button>
               </el-form-item>
               <el-form-item class="form-right-button">
-                  <el-button type="success" @click="handleExport" :loading="exportLoading" plain>
-                      {{ $t('systemBasicmgmt.userInfo.exportUsers') }}
-                  </el-button>
                   <el-button type="primary" @click="handleAdd">
                       {{ $t('systemBasicmgmt.userInfo.addUser') }}
                   </el-button>
@@ -76,7 +73,7 @@
                   <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
                   <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="130" />
                   <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="170" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -262,7 +259,6 @@
 
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
-  import axios from 'axios'
   import { post } from '@/utils/request'
   import { 
       GET_USER_PAGES_API, 
@@ -274,9 +270,7 @@
       GET_USER_POSITION_DROPDOWN_API,
       GET_ROLE_DROPDOWN_API,
       GET_GENDER_DROPDOWN_API,
-      GET_EMPLOYMENT_TYPE_DROPDOWN_API,
-      EXPORT_USERS_API,
-      BASE_API_URL
+      GET_EMPLOYMENT_TYPE_DROPDOWN_API
   } from '@/config/api/systemBasicmgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -284,10 +278,9 @@
   // 初始化i18n
   const { t } = useI18n()
 
-  // 用户数据
+  // 员工数据
   const userList = ref([])
   const loading = ref(false)
-  const exportLoading = ref(false)
 
   // 表单引用
   const editFormRef = ref(null)
@@ -483,7 +476,7 @@
       }
   }
 
-  // 获取用户实体数据
+  // 获取员工实体数据
   const fetchUserEntity = async (userId) => {
       const params = {
           userId: userId
@@ -495,7 +488,7 @@
       }
   }
 
-  // 获取用户列表数据
+  // 获取员工列表数据
   const fetchUserPages = async () => {
       loading.value = true
       const params = {
@@ -537,92 +530,7 @@
       fetchUserPages()
   }
 
-  // 导出用户Excel
-  const exportUsers = async () => {
-      try {
-          exportLoading.value = true
-          const params = {
-              departmentId: filters.departmentId || '',
-              positionId: filters.positionId || '',
-              roleId: filters.roleId || '',
-              userNo: filters.userNo || '',
-              userName: filters.userName || '',
-              gender: filters.gender || ''
-          }
-          
-          // 直接使用axios进行文件下载
-          const response = await axios.post(
-              `${BASE_API_URL}/${EXPORT_USERS_API.EXPORT_USERS}`, 
-              params,
-              {
-                  responseType: 'blob',
-                  headers: {
-                      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                      'Accept-Language': localStorage.getItem('language') || 'zh-CN',
-                      'Factory': localStorage.getItem('factory') || 'ETW',
-                      'Content-Type': 'application/json'
-                  }
-              }
-          )
-          
-          if (response.data && response.data.size > 0) {
-              // 创建下载链接
-              const blob = new Blob([response.data], { 
-                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-              })
-              const url = window.URL.createObjectURL(blob)
-              const link = document.createElement('a')
-              link.href = url
-              
-              // 生成文件名（包含当前时间）
-              const now = new Date()
-              const timestamp = now.getFullYear() + 
-                              String(now.getMonth() + 1).padStart(2, '0') + 
-                              String(now.getDate()).padStart(2, '0') + '_' +
-                              String(now.getHours()).padStart(2, '0') + 
-                              String(now.getMinutes()).padStart(2, '0') + 
-                              String(now.getSeconds()).padStart(2, '0')
-              
-              link.download = `${t('systemBasicmgmt.userInfo.exportFileName')}_${timestamp}.xlsx`
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-              window.URL.revokeObjectURL(url)
-              
-              ElMessage.success(t('systemBasicmgmt.userInfo.exportSuccess'))
-          } else {
-              ElMessage.error(t('systemBasicmgmt.userInfo.exportFailed'))
-          }
-      } catch (error) {
-          console.error('导出失败:', error)
-          if (error.response && error.response.status === 401) {
-              ElMessage.error(t('common.tokenExpired'))
-          } else {
-              ElMessage.error(t('systemBasicmgmt.userInfo.exportFailed'))
-          }
-      } finally {
-          exportLoading.value = false
-      }
-  }
 
-  // 处理导出操作
-  const handleExport = () => {
-      ElMessageBox.confirm(
-          t('systemBasicmgmt.userInfo.exportConfirm'),
-          t('common.tip'),
-          {
-              confirmButtonText: t('common.confirm'),
-              cancelButtonText: t('common.cancel'),
-              type: 'info',
-          }
-      )
-          .then(() => {
-              exportUsers()
-          })
-          .catch(() => {
-              // 取消导出
-          })
-  }
 
 
 
@@ -675,7 +583,7 @@
       })
   }
 
-  // 新增用户数据
+  // 新增员工数据
   const insertUser = async () => {
       const params = {
           ...editForm
@@ -693,7 +601,7 @@
       }
   }
 
-  // 更新用户数据
+  // 更新员工数据
   const updateUser = async () => {
       const params = {
           ...editForm
@@ -710,7 +618,7 @@
       }
   }
 
-  // 删除用户数据
+  // 删除员工数据
   const deleteUser = async (userId) => {
       const params = {
           userId: userId
@@ -754,7 +662,7 @@
       await fetchRoleDropdown(false, false)
       await fetchGenderDropdown()
       await fetchEmploymentTypeDropdown(false)
-      // 获取用户实体数据
+      // 获取员工实体数据
       await fetchUserEntity(row.userId)
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.userInfo.editUser')

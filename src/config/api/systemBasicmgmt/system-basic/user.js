@@ -17,27 +17,27 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 用户分页API
+// 员工分页API
 export const GET_USER_PAGES_API = {
     GET_USER_PAGES: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserInfoPagesList'
 }
 
-// 用户新增API
+// 员工新增API
 export const INSERST_USER_API = {
   INSERST_USER: 'SystemBasicMgmt/SystemBasicData/UserInfo/InsertUserInfo'
 }
 
-// 用户删除API
+// 员工删除API
 export const DELETE_USER_API = {
   DELETE_USER: 'SystemBasicMgmt/SystemBasicData/UserInfo/DeleteUserInfo'
 }
 
-// 用户更新API
+// 员工更新API
 export const UPDATE_USER_API = {
   UPDATE_USER: 'SystemBasicMgmt/SystemBasicData/UserInfo/UpdateUserInfo'
 }
 
-// 用户实体API
+// 员工实体API
 export const GET_USER_ENTITY_API = {
   GET_USER_ENTITY: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserInfoEntity'
 }
@@ -67,7 +67,7 @@ export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
   GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetEmploymentType'
 }
 
-// 导出用户API
+// 导出员工API
 export const EXPORT_USERS_API = {
   EXPORT_USERS: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToExcel'
 }

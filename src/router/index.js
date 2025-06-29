@@ -86,7 +86,7 @@ const moduleRoutes = [
       {
         path: 'system-mgmt',
         name: 'SystemMgmt',
-        redirect: '/systemBasicmgmt/system-mgmt/role',
+        redirect: '/systemBasicmgmt/system-mgmt',
         meta: { 
           title: 'route.systemMgmt', 
           icon: 'Setting',
@@ -177,7 +177,7 @@ const moduleRoutes = [
       {
         path: 'system-basicdata',
         name: 'SystemBasicData',
-        redirect: '/systemBasicmgmt/system-basicdata/userinfo',
+        redirect: '/systemBasicmgmt/system-basicdata',
         meta: { 
           title: 'route.systemBasicData',
           icon: 'List',
@@ -185,17 +185,6 @@ const moduleRoutes = [
           noTag: true
         },
         children: [
-          {
-            path: 'userinfo',
-            name: 'SystemUserInfo',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue'),
-            meta: { 
-              title: 'route.userInfo', 
-              icon: 'UserFilled',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
           {
             path: 'companyinfo',
             name: 'SystemCompanyInfo',
@@ -239,6 +228,28 @@ const moduleRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
+          },
+          {
+            path: 'userinfo',
+            name: 'SystemUserInfo',
+            component: () => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue'),
+            meta: { 
+              title: 'route.userInfo', 
+              icon: 'UserFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'useragent',
+            name: 'SystemUseragent',
+            component: () => import('../views/systemBasicmgmt/system-basicdata/useragent.vue'),
+            meta: { 
+              title: 'route.userAgent', 
+              icon: 'GoodsFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
           }
         ]
       },
@@ -246,7 +257,7 @@ const moduleRoutes = [
       {
         path: 'syssettings-module',
         name: 'SysSettingsModule',
-        redirect: '/systemBasicmgmt/syssettings-module/dictionaryinfo',
+        redirect: '/systemBasicmgmt/syssettings-module',
         meta: { 
           title: 'route.sysSettingsModule',
           icon: 'Setting',

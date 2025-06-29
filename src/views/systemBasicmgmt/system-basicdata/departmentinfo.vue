@@ -42,7 +42,7 @@
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
                         <el-table-column type="index" :label="$t('systemBasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
                         <el-table-column prop="departmentCode" :label="$t('systemBasicmgmt.departmentInfo.departmentCode')" align="left" min-width="200" />
-                        <el-table-column prop="departmentNameCn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
+                        <el-table-column prop="departmentNameCh" :label="$t('systemBasicmgmt.departmentInfo.departmentNameCh')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('systemBasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
                         <el-table-column prop="status" :label="$t('systemBasicmgmt.departmentInfo.status')" align="center" min-width="110">
@@ -56,7 +56,7 @@
                         <el-table-column prop="email" :label="$t('systemBasicmgmt.departmentInfo.email')" align="left" min-width="180" />
                         
                         <el-table-column prop="description" :label="$t('systemBasicmgmt.departmentInfo.description')" align="left" min-width="200" />
-                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="310" fixed="right">
+                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="310" fixed="right" align="center">
                             <template #default="scope">
                                 <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                                 <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systemBasicmgmt.departmentInfo.addChild') }}</el-button>
@@ -88,8 +88,8 @@
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
-                        <el-input v-model="editForm.departmentNameCn" style="width:100%" />
+                    <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentNameCh')" prop="departmentNameCh">
+<el-input v-model="editForm.departmentNameCh" style="width:100%" />
                     </el-form-item>
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
                         <el-input v-model="editForm.departmentNameEn" style="width:100%" />
@@ -186,7 +186,7 @@
     const editForm = reactive({
         departmentId: '',
         departmentCode: '',
-        departmentNameCn: '',
+        departmentNameCh: '',
         departmentNameEn: '',
         parentId: '',
         departmentLevelId: '',
@@ -204,8 +204,8 @@
         departmentCode: [
             { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
         ],
-        departmentNameCn: [
-            { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputNameCn'), trigger: 'blur' }
+        departmentNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputNameCh'), trigger: 'blur' }
         ],
         departmentNameEn: [
             { required: true, message: () => t('systemBasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
@@ -261,7 +261,7 @@
         if (res && res.code === '200') {
             editForm.departmentId = res.data.departmentId
             editForm.departmentCode = res.data.departmentCode
-            editForm.departmentNameCn = res.data.departmentNameCn
+            editForm.departmentNameCh = res.data.departmentNameCh
             editForm.departmentNameEn = res.data.departmentNameEn
             editForm.parentId = res.data.parentId
             editForm.departmentLevelId = res.data.departmentLevelId
@@ -328,7 +328,7 @@
         Object.assign(editForm, {
             departmentId: '',
             departmentCode: '',
-            departmentNameCn: '',
+            departmentNameCh: '',
             departmentNameEn: '',
             parentId: '',
             departmentLevelId: '',

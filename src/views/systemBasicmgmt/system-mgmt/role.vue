@@ -46,8 +46,8 @@
                                    :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')"
                                    align="left"
                                    min-width="240" />
-                  <el-table-column prop="roleNameCn"
-                                   :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')"
+                  <el-table-column prop="roleNameCh"
+:label="$t('systemBasicmgmt.systemMgmt.role.roleNameCh')"
                                    align="left"
                                    min-width="200" />
                   <el-table-column prop="roleNameEn"
@@ -72,7 +72,8 @@
                                    min-width="180" />
                   <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')"
                                    min-width="200"
-                                   fixed="right">
+                                   fixed="right"
+                                   align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
                               {{ $t('common.edit') }}
@@ -113,8 +114,8 @@
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCn')" prop="roleNameCn">
-                      <el-input v-model="editForm.roleNameCn" style="width:100%"/>
+                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.role.roleNameCh')" prop="roleNameCh">
+<el-input v-model="editForm.roleNameCh" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -184,7 +185,7 @@
   const editForm = reactive({
       roleId: '',
       roleCode: '',
-      roleNameCn: '',
+      roleNameCh: '',
       roleNameEn: '',
       description: '',
       isEnabled: true,
@@ -198,8 +199,8 @@
       roleCode: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleCode'), trigger: 'blur' }
       ],
-      roleNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleNameCn'), trigger: 'blur' }
+      roleNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleNameCh'), trigger: 'blur' }
       ],
       roleNameEn: [
           { required: true, message: () => t('systemBasicmgmt.systemMgmt.role.pleaseInputRoleNameEn'), trigger: 'blur' }
@@ -239,7 +240,7 @@
           // 对字符串类型字段进行额外的XSS清洗
           editForm.roleId = res.data.roleId
           editForm.roleCode = sanitizeHtml(res.data.roleCode || '')
-          editForm.roleNameCn = sanitizeHtml(res.data.roleNameCn || '')
+          editForm.roleNameCh = sanitizeHtml(res.data.roleNameCh || '')
           editForm.roleNameEn = sanitizeHtml(res.data.roleNameEn || '')
           editForm.description = sanitizeHtml(res.data.description || '')
           editForm.isEnabled = res.data.isEnabled
@@ -286,7 +287,7 @@
       
       editForm.roleId = ''
       editForm.roleCode = ''
-      editForm.roleNameCn = ''
+      editForm.roleNameCh = ''
       editForm.roleNameEn = ''
       editForm.description = ''
       editForm.isEnabled = true
@@ -311,7 +312,7 @@
       const params = {
           roleId: '',
           roleCode: editForm.roleCode,
-          roleNameCn: editForm.roleNameCn,
+          roleNameCh: editForm.roleNameCh,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
@@ -332,7 +333,7 @@
       const params = {
           roleId: editForm.roleId,
           roleCode: editForm.roleCode,
-          roleNameCn: editForm.roleNameCn,
+          roleNameCh: editForm.roleNameCh,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,

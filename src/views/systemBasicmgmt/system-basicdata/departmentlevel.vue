@@ -37,10 +37,10 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systemBasicmgmt.departmentLevel.index')" width="60" align="center" fixed />
                   <el-table-column prop="departmentLevelCode" :label="$t('systemBasicmgmt.departmentLevel.departmentLevelCode')" align="center" min-width="120" />
-                  <el-table-column prop="departmentLevelNameCn" :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />
+                  <el-table-column prop="departmentLevelNameCh" :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCh')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelNameEn" :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelDescribe" :label="$t('systemBasicmgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
-                  <el-table-column :label="$t('systemBasicmgmt.departmentLevel.operation')" min-width="150" fixed="right">
+                  <el-table-column :label="$t('systemBasicmgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -77,8 +77,8 @@
                   <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
                       <el-input v-model="editForm.departmentLevelCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
-                      <el-input v-model="editForm.departmentLevelNameCn" style="width:100%" />
+                  <el-form-item :label="$t('systemBasicmgmt.departmentLevel.departmentLevelNameCh')" prop="departmentLevelNameCh">
+<el-input v-model="editForm.departmentLevelNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -146,7 +146,7 @@
   const editForm = reactive({
       departmentLevelId: 0,
       departmentLevelCode: '',
-      departmentLevelNameCn: '',
+      departmentLevelNameCh: '',
       departmentLevelNameEn: '',
       departmentLevelDescribe: ''
   })
@@ -159,8 +159,8 @@
       departmentLevelCode: [
           { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode'), trigger: 'blur' }
       ],
-      departmentLevelNameCn: [
-          { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCn'), trigger: 'blur' }
+      departmentLevelNameCh: [
+{ required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCh'), trigger: 'blur' }
       ],
       departmentLevelNameEn: [
           { required: true, message: () => t('systemBasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
@@ -182,7 +182,7 @@
       if (res && res.code === '200') {
           editForm.departmentLevelId = res.data.departmentLevelId
           editForm.departmentLevelCode = res.data.departmentLevelCode
-          editForm.departmentLevelNameCn = res.data.departmentLevelNameCn
+          editForm.departmentLevelNameCh = res.data.departmentLevelNameCh
           editForm.departmentLevelNameEn = res.data.departmentLevelNameEn
           editForm.departmentLevelDescribe = res.data.departmentLevelDescribe
       }
@@ -252,7 +252,7 @@
       
       editForm.departmentLevelId = 0
       editForm.departmentLevelCode = ''
-      editForm.departmentLevelNameCn = ''
+      editForm.departmentLevelNameCh = ''
       editForm.departmentLevelNameEn = ''
       editForm.departmentLevelDescribe = ''
       

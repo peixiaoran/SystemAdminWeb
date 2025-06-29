@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 
-// 用户信息存储
+// 员工信息存储
 export const useUserStore = defineStore('user', {
   state: () => ({
     userId: '',
@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', {
   },
   
   actions: {
-    // 设置用户信息
+    // 设置员工信息
     setUserInfo(userInfo) {
       if (!userInfo) return
       
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
       this.username = userInfo.username
       this.avatar = userInfo.avatar
       
-      // 保存用户名到localStorage
+      // 保存员工名到localStorage
       localStorage.setItem('username', userInfo.username)
     },
     
