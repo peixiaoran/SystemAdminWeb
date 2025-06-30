@@ -19,25 +19,25 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 字典实体API
 export const GET_DICTIONARY_ENTITY_API = {
-    GET_DICTIONARY_ENTITY: 'SystemBasicMgmt/SysSettingsModule/Dictionary/GetDictionaryInfoEntity'
+    GET_DICTIONARY_ENTITY: 'SystemBasicMgmt/SystemSettingsModule/Dictionary/GetDictionaryInfoEntity'
 }
 
 // 字典分页API
 export const GET_DICTIONARY_PAGES_API = {
-  GET_DICTIONARY_PAGES: 'SystemBasicMgmt/SysSettingsModule/Dictionary/GetDictionaryInfoPage'
+  GET_DICTIONARY_PAGES: 'SystemBasicMgmt/SystemSettingsModule/Dictionary/GetDictionaryInfoPage'
 }
 
 // 新增字典API
 export const INSERT_DICTIONARY_API = {
-  INSERT_DICTIONARY: 'SystemBasicMgmt/SysSettingsModule/Dictionary/InsertDictionaryInfo'
+  INSERT_DICTIONARY: 'SystemBasicMgmt/SystemSettingsModule/Dictionary/InsertDictionaryInfo'
 }
 
 // 更新字典API
 export const UPDATE_DICTIONARY_API = {
-  UPDATE_DICTIONARY: 'SystemBasicMgmt/SysSettingsModule/Dictionary/UpdateDictionaryInfo'
+  UPDATE_DICTIONARY: 'SystemBasicMgmt/SystemSettingsModule/Dictionary/UpdateDictionaryInfo'
 }
 
 // 删除字典API
 export const DELETE_DICTIONARY_API = {
-  DELETE_DICTIONARY: 'SystemBasicMgmt/SysSettingsModule/Dictionary/DeleteDictionaryInfo'
+  DELETE_DICTIONARY: 'SystemBasicMgmt/SystemSettingsModule/Dictionary/DeleteDictionaryInfo'
 }

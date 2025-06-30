@@ -9,7 +9,7 @@ import i18n from './i18n'
 import { updateRouteTitle } from './utils/updateRouteTitle'
 
 // 获取存储的语言
-const language = localStorage.getItem('language') || 'zh-CN'
+const language = localStorage.getItem('language') || 'zh-TW'
 
 // 创建应用实例
 const app = createApp(App)

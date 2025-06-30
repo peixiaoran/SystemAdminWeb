@@ -19,10 +19,10 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 查询模块列表
 export const MODULE_API = {
-    GET_MODULES: 'SystemBasicMgmt/SystemBasic/SysDomainMenu/GetSysDomainList'
+    GET_MODULES: 'SystemBasicMgmt/SystemBasicCoreApi/SysDomainMenu/GetSysDomainList'
 }
   
   // 查询菜单树结构
 export const MENU_API = {
-    GET_MENU: 'SystemBasicMgmt/SystemBasic/SysDomainMenu/GetSysModuleTreeList'
+    GET_MENU: 'SystemBasicMgmt/SystemBasicCoreApi/SysDomainMenu/GetSysModuleTreeList'
 }

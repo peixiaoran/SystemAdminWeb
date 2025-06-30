@@ -11,8 +11,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [vue()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
-        'path': 'path-browserify'
+        '@': path.resolve(__dirname, './src')
       },
     },
     server: {

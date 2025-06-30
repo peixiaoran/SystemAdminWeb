@@ -111,7 +111,7 @@ const loginForm = reactive({
   loginNo: '',
   passWrod: '',
   factory: 'ESK', // 默认设置为昆山乙盛
-  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
+  language: localStorage.getItem('language') || 'zh-TW' // 从localStorage获取语言设置
 })
 
 // 在组件挂载后进行初始化
@@ -167,7 +167,6 @@ const factories = computed(() => {
 
 const languages = computed(() => {
   return {
-    'zh-CN': t('login.languages.zh-CN'),
     'zh-TW': t('login.languages.zh-TW'),
     'en-US': t('login.languages.en-US')
   }

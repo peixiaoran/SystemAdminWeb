@@ -86,7 +86,6 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="handleLanguageChange('zh-CN')">中文简体</el-dropdown-item>
                 <el-dropdown-item @click="handleLanguageChange('zh-TW')">中文繁体</el-dropdown-item>
                 <el-dropdown-item @click="handleLanguageChange('en-US')">English</el-dropdown-item>
               </el-dropdown-menu>
@@ -243,11 +242,10 @@ watch(() => locale.value, () => {
 
 const currentLanguageLabel = computed(() => {
   const languageMap = {
-    'zh-CN': '中文简体',
     'zh-TW': '中文繁体', 
     'en-US': 'English'
   }
-  return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文简体'
+  return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文繁体'
 })
 
 const handleLanguageChange = (lang) => {

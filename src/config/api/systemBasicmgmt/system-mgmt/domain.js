@@ -19,25 +19,25 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 网域分页API
 export const GET_DOMAIN_ENTITY_API = {
-    GET_DOMAIN_ENTITY: 'SystemBasicMgmt/SystemMgmt/Domain/GetSysDomainEntity'
+    GET_DOMAIN_ENTITY: 'SystemBasicMgmt/SystemMgmt/DomainInfo/GetSysDomainEntity'
 }
 
 // 网域分页API
 export const GET_DOMAIN_PAGES_API = {
-  GET_DOMAIN_PAGES: 'SystemBasicMgmt/SystemMgmt/Domain/GetSysDomainPagesList'
+  GET_DOMAIN_PAGES: 'SystemBasicMgmt/SystemMgmt/DomainInfo/GetSysDomainPagesList'
 }
 
 // 网域新增理API
 export const INSERST_DOMAIN_API = {
-  INSERST_DOMAIN: 'SystemBasicMgmt/SystemMgmt/Domain/InsertSysDomain'
+  INSERST_DOMAIN: 'SystemBasicMgmt/SystemMgmt/DomainInfo/InsertSysDomain'
 }
 
 // 网域删除API
 export const DELETE_DOMAIN_API = {
-  DELETE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/Domain/DeleteSysDomain'
+  DELETE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/DomainInfo/DeleteSysDomain'
 }
 
 // 网域更新API
 export const UPDATE_DOMAIN_API = {
-  UPDATE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/Domain/UpdateSysDomain'
+  UPDATE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/DomainInfo/UpdateSysDomain'
 }

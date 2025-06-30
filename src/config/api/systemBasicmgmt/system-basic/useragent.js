@@ -27,22 +27,12 @@ export const GET_USER_VIEW_API = {
     GET_USER_VIEW: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserInfoAgentView'
 }
 
-// 员工代理API
+// 员工代理列表API
 export const GET_USER_AGENT_API = {
     GET_USER_AGENT: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserAgentList'
 }
 
-// 员工代理新增API
-export const GET_USER_AGENT_INSERT_API = {
-    GET_USER_AGENT_INSERT: 'SystemBasicMgmt/SystemBasicData/UserAgent/InsertUserAgentAsync'
-}
-
-// 员工代理更新API
-export const GET_USER_AGENT_UPDATE_API = {
-    GET_USER_AGENT_UPDATE: 'SystemBasicMgmt/SystemBasicData/UserAgent/UpdateUserAgentAsync'
-}
-
-// 员工代理删除API
-export const GET_USER_AGENT_DELETE_API = {
-    GET_USER_AGENT_DELETE: 'SystemBasicMgmt/SystemBasicData/UserAgent/DeleteUserAgentAsync'
+// 员工代理配置API
+export const GET_USER_AGENT_CONFIG_API = {
+    GET_USER_AGENT_CONFIG: 'SystemBasicMgmt/SystemBasicData/UserAgent/DeploymentUserAgent'
 }

@@ -74,7 +74,6 @@ export default {
       MTY: 'Singapore ESONSG'
     },
     languages: {
-      'zh-CN': 'Simplified Chinese',
       'zh-TW': 'Traditional Chinese',
       'en-US': 'English'
     }
@@ -313,7 +312,16 @@ export default {
       noAgentData: 'No agent data available',
       agentDetails: 'Agent Details',
       index: 'No.',
-      getFailed: 'Failed to get data'
+      getFailed: 'Failed to get data',
+      selectAgent: 'Select Agent',
+      saveSuccess: 'Save successfully',
+      operationFailed: 'Operation failed',
+      addAgent: 'Add Agent',
+      addSuccess: 'Add successfully',
+      pleaseSelectUsers: 'Please select users',
+      pleaseSelectTimeRange: 'Please select start and end time',
+      pleaseSelectStartTime: 'Please select start time',
+      pleaseSelectEndTime: 'Please select end time'
     },
     // Employee Position
     userPosition: {

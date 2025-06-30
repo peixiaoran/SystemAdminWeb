@@ -31,7 +31,6 @@ const { t, locale } = useI18n()
 // 获取所有支持的语言选项
 const languages = computed(() => {
   return {
-    'zh-CN': t('login.languages.zh-CN'),
     'zh-TW': t('login.languages.zh-TW'),
     'en-US': t('login.languages.en-US')
   }
@@ -39,7 +38,7 @@ const languages = computed(() => {
 
 // 获取当前语言标签
 const currentLanguageLabel = computed(() => {
-  return languages.value[locale.value] || languages.value['zh-CN']
+  return languages.value[locale.value] || languages.value['zh-TW']
 })
 
 // 切换语言

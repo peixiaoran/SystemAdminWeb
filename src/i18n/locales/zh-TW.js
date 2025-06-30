@@ -74,7 +74,6 @@ export default {
       MTY: '新加坡ESONSG'
     },
     languages: {
-      'zh-CN': '中文簡體',
       'zh-TW': '中文繁體',
       'en-US': 'English'
     }
@@ -359,7 +358,16 @@ export default {
       noAgentData: '暫無代理人數據',
       agentDetails: '代理人詳情',
       index: '序號',
-      getFailed: '獲取數據失敗'
+      getFailed: '獲取數據失敗',
+      selectAgent: '選擇代理人',
+      saveSuccess: '保存成功',
+      operationFailed: '操作失敗',
+      addAgent: '新增代理人',
+      addSuccess: '新增成功',
+      pleaseSelectUsers: '請選擇用戶',
+      pleaseSelectTimeRange: '請選擇開始和結束時間',
+      pleaseSelectStartTime: '請選擇開始時間',
+      pleaseSelectEndTime: '請選擇結束時間'
     },
     // 員工職位
     userPosition: {

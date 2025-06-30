@@ -47,7 +47,7 @@ service.interceptors.request.use(
     }
 
     // 添加语言参数到请求头
-    const language = localStorage.getItem('language') || 'zh-CN'
+    const language = localStorage.getItem('language') || 'zh-TW'
     // 添加厂区参数到请求头
     const factory = localStorage.getItem('factory') || 'ETW'
     
