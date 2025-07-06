@@ -307,12 +307,12 @@
 
   // 在组件挂载后获取日志数据
   onMounted(() => {
-      fetchDomainDrop() // 先获取网域和模块，设置默认值后再查询数据
+      initPageData() // 初始化页面数据，设置查询表单默认值
       fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
-  // 获取网域类型
-  const fetchDomainDrop = async () => {
+  // 初始化页面数据（只在页面加载时调用）
+  const initPageData = async () => {
       try {
           const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
           // 对获取的数据进行XSS清洗
@@ -325,13 +325,6 @@
               await fetchFilterModuleDrop()
           }
 
-          // 如果是新增操作，默认选中第一个网域
-          if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && domainDropList.value.length > 0) {
-              editForm.domainId = domainDropList.value[0].domainId
-              // 网域选择后联动获取模块数据
-              fetchModuleDrop()
-          }
-
           // 应用默认值进行初始查询
           fetchProgramPages()
       } catch (error) {
@@ -339,8 +332,26 @@
       }
   }
 
+  // 获取网域类型（不会影响查询表单的值）
+  const fetchDomainDrop = async () => {
+      try {
+          const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
+          // 对获取的数据进行XSS清洗
+          domainDropList.value = res.data || []
+
+          // 如果是新增操作，默认选中第一个网域
+          if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && domainDropList.value.length > 0) {
+              editForm.domainId = domainDropList.value[0].domainId
+              // 网域选择后联动获取模块数据，并设置默认值
+              fetchModuleDrop(true)
+          }
+      } catch (error) {
+
+      }
+  }
+
   // 获取模块下拉框
-  const fetchModuleDrop = async () => {
+  const fetchModuleDrop = async (setDefaultValue = false) => {
       if (!editForm.domainId) {
           moduleDropList.value = []
           return
@@ -354,8 +365,8 @@
           // 对获取的数据进行XSS清洗
           moduleDropList.value = res.data || []
 
-          // 如果是新增操作且有模块数据，默认选中第一个模块
-          if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && moduleDropList.value.length > 0) {
+          // 只有在明确指定需要设置默认值且是新增操作时才设置默认值
+          if (setDefaultValue && dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && moduleDropList.value.length > 0) {
               editForm.parentMenuId = moduleDropList.value[0].menuId
           }
       } catch (error) {
@@ -372,12 +383,14 @@
           const res = await post(GET_PROGRAM_ENTITY_API.GET_PROGRAM_ENTITY, params)
 
           if (res && res.code === '200') {
+              // 先保存原始的 parentMenuId 值
+              const originalParentMenuId = res.data.parentMenuId
+              
               // 对字符串类型字段进行额外的XSS清洗
               editForm.menuId = res.data.menuId
               editForm.menuCode = sanitizeHtml(res.data.menuCode || '')
               editForm.menuNameCh = sanitizeHtml(res.data.menuNameCh || '')
               editForm.menuNameEn = sanitizeHtml(res.data.menuNameEn || '')
-              editForm.parentMenuId = res.data.parentMenuId
               editForm.domainId = res.data.domainId
               editForm.menuType = res.data.menuType
               editForm.menuUrl = sanitizeHtml(res.data.menuUrl || '')
@@ -393,9 +406,11 @@
               editForm.level = res.data.level
               editForm.routePath = sanitizeHtml(res.data.routePath || '')
 
-              // 加载网域后，联动获取模块列表
+              // 加载网域后，联动获取模块列表（编辑时不设置默认值）
               if (editForm.domainId) {
-                  fetchModuleDrop()
+                  await fetchModuleDrop(false)
+                  // 在模块列表加载完成后，恢复原始的 parentMenuId 值
+                  editForm.parentMenuId = originalParentMenuId
               }
           }
       } catch (error) {
@@ -432,13 +447,22 @@
   }
 
   // 重置搜索条件
-  const handleReset = () => {
+  const handleReset = async () => {
       filters.programCode = ''
       filters.programName = ''
       filters.programUrl = ''
-      filters.domainId = ''
-      filters.parentMenuId = ''
-      filterModuleList.value = []
+      
+      // 重置为默认的第一个网域和模块
+      if (domainDropList.value.length > 0) {
+          filters.domainId = domainDropList.value[0].domainId
+          // 获取对应的模块列表
+          await fetchFilterModuleDrop()
+      } else {
+          filters.domainId = ''
+          filters.parentMenuId = ''
+          filterModuleList.value = []
+      }
+      
       pagination.pageIndex = 1
       fetchProgramPages()
   }
@@ -599,19 +623,19 @@
   }
 
   // 处理编辑操作
-  const handleEdit = (index, row) => {
+  const handleEdit = async (index, row) => {
       // 重置表单数据
       resetForm()
 
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.editProgram')
 
-      // 获取程序实体数据
-      fetchProgramEntity(row.menuId)
-
-      // 获取网域类型和菜单类型
-      fetchDomainDrop()
-      fetchMenuTypeOptions()
+      // 先获取网域类型和菜单类型
+      await fetchDomainDrop()
+      await fetchMenuTypeOptions()
+      
+      // 然后获取程序实体数据（这会自动加载对应的模块列表）
+      await fetchProgramEntity(row.menuId)
 
       // 显示对话框
       dialogVisible.value = true
@@ -677,15 +701,15 @@
   const handleDomainChange = () => {
       // 清空模块选择
       editForm.parentMenuId = ''
-      // 重新获取模块列表
-      fetchModuleDrop()
+      // 重新获取模块列表，并在新增时设置默认值
+      fetchModuleDrop(true)
   }
 
-  // 处理查询表单中网域变化
+  // 处理查询表单中网域变化（用户手动操作）
   const handleFilterDomainChange = () => {
       // 清空模块选择
       filters.parentMenuId = ''
-      // 重新获取模块列表
+      // 重新获取模块列表，并设置默认值
       fetchFilterModuleDrop()
   }
 

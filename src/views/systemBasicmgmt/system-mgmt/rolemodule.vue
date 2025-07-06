@@ -8,13 +8,12 @@
                     <el-select style="width:180px"
                                v-model="filters.roleId"
                                :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.role')"
-                               clearable
                                @change="handleRoleChange">
                         <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.domain')">
-                    <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" clearable @change="handleDomainChange">
+                    <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" @change="handleDomainChange">
                         <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                     </el-select>
                 </el-form-item>

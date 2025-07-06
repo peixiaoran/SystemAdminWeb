@@ -8,7 +8,6 @@
                   <el-select style="width:180px" 
                              v-model="filters.roleId"
                              :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder')" 
-                             clearable 
                              @change="handleRoleChange">
                       <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                   </el-select>

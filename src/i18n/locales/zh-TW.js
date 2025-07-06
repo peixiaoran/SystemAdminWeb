@@ -31,7 +31,11 @@ export default {
     closeAllTabs: '關閉所有標籤',
     operation: '操作',
     goBack: '返回',
-    tokenExpired: '登錄已過期，請重新登錄'
+    tokenExpired: '登錄已過期，請重新登錄',
+    saveSuccess: '保存成功',
+    deleteSuccess: '刪除成功',
+    operationFailed: '操作失敗',
+    confirmDelete: '確認刪除'
   },
   
   // 錯誤頁面
@@ -112,7 +116,8 @@ export default {
     departmentInfo: '部門資料維護',
     departmentLevel: '部門層級維護',
     sysSettingsModule: '系統設定模組',
-    dictionaryInfo: '字典資料維護'
+    dictionaryInfo: '字典資料維護',
+    personalInfo: '個人信息管理'
   },
   
   // 系統基礎管理
@@ -336,6 +341,10 @@ export default {
       deleteSuccess: '刪除成功',
       operationFailed: '操作失敗',
       getFailed: '獲取數據失敗',
+      passwordLengthError: '密碼必須為8-16個字符',
+      passwordLowercaseError: '密碼必須包含小寫字母',
+      passwordUppercaseError: '密碼必須包含大寫字母',
+      passwordNumberError: '密碼必須包含數字',
       filter: {
         department: '部門',
         position: '職位',
@@ -348,9 +357,11 @@ export default {
     userAgent: {
       title: '員工代理管理',
       configureAgent: '配置代理人',
+      viewAgentList: '查看代理人列表',
       agentList: '代理人列表',
       substituteUser: '被代理員工',
       agentUser: '代理員工',
+      agentUserNo: '代理員工編號',
       startTime: '開始時間',
       endTime: '結束時間',
       createdBy: '創建人',
@@ -367,7 +378,10 @@ export default {
       pleaseSelectUsers: '請選擇用戶',
       pleaseSelectTimeRange: '請選擇開始和結束時間',
       pleaseSelectStartTime: '請選擇開始時間',
-      pleaseSelectEndTime: '請選擇結束時間'
+      pleaseSelectEndTime: '請選擇結束時間',
+      confirmDeleteAgent: '確定要刪除代理人 {name} 嗎？',
+      startTimeCannotLaterThanEndTime: '開始時間不能大於結束時間',
+      endTimeCannotEarlierThanStartTime: '結束時間不能小於開始時間'
     },
     // 員工職位
     userPosition: {
@@ -388,6 +402,48 @@ export default {
       deleteSuccess: '刪除成功',
       operationFailed: '操作失敗',
       getFailed: '獲取數據失敗'
+    },
+    // 個人信息
+    personalInfo: {
+      title: '個人信息管理',
+      userNo: '員工編號',
+      loginNo: '登錄賬號',
+      userNameCh: '中文姓名',
+      userNameEn: '英文姓名',
+      email: '郵箱',
+      phoneNumber: '手機號碼',
+      password: '密碼',
+      gender: '性別',
+      hireDate: '入職日期',
+      department: '部門',
+      position: '職位',
+      role: '角色',
+      employmentType: '雇佣類型',
+      isEmployed: '是否在職',
+      isAgent: '是否代理',
+      isSign: '是否簽到',
+      isPartTime: '是否兼職',
+      isFreeze: '是否凍結',
+      remark: '備註',
+      pleaseInputUserNameCh: '請輸入中文姓名',
+      pleaseInputUserNameEn: '請輸入英文姓名',
+      pleaseInputEmail: '請輸入郵箱',
+      pleaseInputPhoneNumber: '請輸入手機號碼',
+      pleaseInputPassword: '請輸入密碼',
+      userNameChRequired: '請輸入中文姓名',
+      userNameEnRequired: '請輸入英文姓名',
+      emailRequired: '請輸入郵箱',
+      emailFormatError: '請輸入正確的郵箱格式',
+      phoneNumberRequired: '請輸入手機號碼',
+      phoneNumberFormatError: '請輸入正確的手機號碼格式',
+      passwordMinLength: '密碼長度不能少於6位',
+      passwordLengthError: '密碼必須為8-16個字符',
+      passwordLowercaseError: '密碼必須包含小寫字母',
+      passwordUppercaseError: '密碼必須包含大寫字母',
+      passwordNumberError: '密碼必須包含數字',
+      pleaseInputRemark: '請輸入備註信息',
+      getPersonalInfoFailed: '獲取個人信息失敗',
+      savePersonalInfoFailed: '保存個人信息失敗'
     },
     // 系統管理
     systemMgmt: {
@@ -446,6 +502,7 @@ export default {
         menuName: '模塊名稱',
         menuNameCh: '中文名稱',
         menuNameEn: '英文名稱',
+        menuType: '模塊類型',
         menuIcon: '模塊圖標',
         sortOrder: '模塊排序',
         menuUrl: '模塊URL',
@@ -458,6 +515,7 @@ export default {
         editModule: '編輯模塊信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
         pleaseSelectDomain: '請選擇所屬網域',
+        pleaseSelectMenuType: '請選擇模塊類型',
         pleaseInputMenuCode: '請輸入模塊編碼',
         pleaseInputMenuName: '請輸入模塊名稱',
         pleaseInputMenuNameCh: '請輸入模塊中文名稱',
@@ -500,6 +558,7 @@ export default {
         pleaseInputProgramIcon: '請輸入程式圖標',
         pleaseInputSortOrder: '請輸入程式排序',
         pleaseInputProgramType: '請輸入程式類型',
+        pleaseSelectProgramType: '請選擇程式類型',
         pleaseInputRoleCode: '請輸入權限標識',
         pleaseInputApiRoute: '請輸入API路由',
         pleaseInputPagePath: '請輸入頁面Path',
@@ -519,7 +578,9 @@ export default {
         editRole: '編輯角色信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
         pleaseInputRoleCode: '請輸入角色代碼',
-        pleaseInputRoleName: '請輸入角色名稱'
+        pleaseInputRoleName: '請輸入角色名稱',
+        pleaseInputRoleNameCh: '請輸入角色中文名稱',
+        pleaseInputRoleNameEn: '請輸入角色英文名稱'
       },
       
       // 角色網域
@@ -574,6 +635,7 @@ export default {
       deleteConfirm: '確定要刪除該條記錄嗎？',
       pleaseInputDicCode: '請輸入字典編碼',
       pleaseInputDicName: '請輸入字典名稱',
+      pleaseInputDicType: '請輸入字典類型',
       pleaseSelectDicType: '請選擇字典類型',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',

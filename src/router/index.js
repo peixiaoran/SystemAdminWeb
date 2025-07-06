@@ -170,6 +170,17 @@ const moduleRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
+          },
+          {
+            path: 'personal',
+            name: 'SystemPersonalInfo',
+            component: () => import('../views/systemBasicmgmt/system-mgmt/personal.vue'),
+            meta: { 
+              title: 'route.personalInfo', 
+              icon: 'Female',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
           }
         ]
       },

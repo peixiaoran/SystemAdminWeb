@@ -68,9 +68,10 @@
                     <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
                     <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="130" />
                     <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="180" />
-                    <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
+                    <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
                         <template #default="scope">
-                            <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systemBasicmgmt.userAgent.configureAgent') }}</el-button>
+                            <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('systemBasicmgmt.userAgent.addAgent') }}</el-button>
+                            <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systemBasicmgmt.userAgent.viewAgentList') }}</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -99,23 +100,18 @@
                    :lock-scroll="true"
                    @closed="handleAgentDialogClosed"
                    class="agent-dialog">
-            <div v-loading="agentLoading" style="height: 360px; padding-top: 20px;">
-                <!-- 新增代理人按钮 -->
-                <div style="margin-bottom: 16px;">
-                    <el-button type="primary" style="height: 30px;" @click="handleAddAgent">{{ $t('systemBasicmgmt.userAgent.addAgent') }}</el-button>
-                </div>
-                
+            <div v-loading="agentLoading" style="height: 380px; padding-top: 20px;">
                 <el-table :data="agentList"
                           border
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
-                          height="280"
+                          height="370"
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('systemBasicmgmt.userAgent.index')" width="60" align="center" />
-                    
-                    <el-table-column prop="agentUserName" :label="$t('systemBasicmgmt.userAgent.agentUser')" align="left" min-width="150" />
-                    <el-table-column prop="startTime" :label="$t('systemBasicmgmt.userAgent.startTime')" align="center" min-width="180" />
-                    <el-table-column prop="endTime" :label="$t('systemBasicmgmt.userAgent.endTime')" align="center" min-width="180" />
+                    <el-table-column prop="agentUserNo" :label="$t('systemBasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
+                    <el-table-column prop="agentUserName" :label="$t('systemBasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
+                    <el-table-column prop="startTime" :label="$t('systemBasicmgmt.userAgent.startTime')" align="center" min-width="110" />
+                    <el-table-column prop="endTime" :label="$t('systemBasicmgmt.userAgent.endTime')" align="center" min-width="110" />
                     <el-table-column :label="$t('common.operation')" align="center" width="120">
                         <template #default="scope">
                             <el-button size="small" type="danger" @click="handleDeleteAgent(scope.$index)">
@@ -127,28 +123,30 @@
             </div>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="agentDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSaveAgentConfig" :loading="saveLoading">{{ $t('common.confirm') }}</el-button>
+                    <el-button @click="agentDialogVisible = false">{{ $t('common.close') }}</el-button>
                 </span>
             </template>
         </el-dialog>
 
         <!-- 员工选择对话框 -->
         <el-dialog v-model="userSelectDialogVisible"
-                   :title="$t('systemBasicmgmt.userAgent.addAgent')"
+                   :title="`${$t('systemBasicmgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCh || currentUserInfo.userNameEn}`"
                    width="70%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"
-                   :lock-scroll="true">
-            <div v-loading="userSelectLoading" style="min-height: 400px;">
+                   :lock-scroll="true"
+                   @closed="handleUserSelectDialogClosed">
+            <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 20px; padding: 20px 16px;">
+                <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;">
                     <el-form-item :label="$t('systemBasicmgmt.userAgent.startTime')">
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
                             type="datetime"
                             :placeholder="$t('systemBasicmgmt.userAgent.pleaseSelectStartTime')"
+                            :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
+                            @change="handleStartTimeChange"
                             style="width: 200px;" />
                     </el-form-item>
                     <el-form-item :label="$t('systemBasicmgmt.userAgent.endTime')">
@@ -156,12 +154,17 @@
                             v-model="agentTimeRange.endTime"
                             type="datetime"
                             :placeholder="$t('systemBasicmgmt.userAgent.pleaseSelectEndTime')"
+                            :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
+                            @change="handleEndTimeChange"
                             style="width: 200px;" />
                     </el-form-item>
                 </el-form>
+                
+                <!-- 分隔线 -->
+                <el-divider style="margin: 10px 0;"></el-divider>
 
                 <!-- 搜索区域 -->
-                <el-form :inline="true" :model="userSelectFilters" class="conventional-filter-form">
+                <el-form :inline="true" :model="userSelectFilters" class="conventional-filter-form" style="margin-top: 10px;">
                     <el-form-item :label="$t('systemBasicmgmt.userInfo.userNo')">
                         <el-input 
                             v-model="userSelectFilters.userNo" 
@@ -187,6 +190,7 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           class="conventional-table"
                           ref="userSelectTableRef"
+                          height="300"
                           @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="120" />
@@ -229,7 +233,8 @@
     } from '@/config/api/systemBasicmgmt/system-basic/user'
     import { 
         GET_USER_AGENT_API,
-        GET_USER_AGENT_CONFIG_API,
+        GET_USER_AGENT_INSERT_API,
+        GET_USER_AGENT_DELETE_API,
         GET_USER_VIEW_API
     } from '@/config/api/systemBasicmgmt/system-basic/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
@@ -267,7 +272,8 @@
     const agentList = ref([])
     const agentLoading = ref(false)
     const currentUserId = ref('')
-    const saveLoading = ref(false)
+    const currentUserInfo = ref({})
+
 
     // 员工选择对话框相关数据
     const userSelectDialogVisible = ref(false)
@@ -446,15 +452,10 @@
         await fetchUserAgentList(row.userId)
     }
 
-    // 处理代理人对话框完全关闭后的清理
-    const handleAgentDialogClosed = () => {
-        agentList.value = []
-        currentUserId.value = ''
-        agentDialogTitle.value = ''
-    }
-
-    // 处理新增代理人
-    const handleAddAgent = () => {
+    // 处理主页面新增代理人操作
+    const handleAddAgentForUser = (index, row) => {
+        currentUserId.value = row.userId
+        currentUserInfo.value = row
         // 重置时间选择
         Object.assign(agentTimeRange, {
             startTime: '',
@@ -472,9 +473,73 @@
         fetchUserSelectList()
     }
 
+    // 处理代理人对话框完全关闭后的清理
+    const handleAgentDialogClosed = () => {
+        agentList.value = []
+        currentUserId.value = ''
+        agentDialogTitle.value = ''
+    }
+
+    // 处理员工选择对话框关闭后的清理
+    const handleUserSelectDialogClosed = () => {
+        currentUserInfo.value = {}
+        currentUserId.value = ''
+        selectedUsers.value = []
+        Object.assign(agentTimeRange, {
+            startTime: '',
+            endTime: ''
+        })
+        Object.assign(userSelectFilters, {
+            userNo: '',
+            userName: ''
+        })
+        // 清空表格选择
+        if (userSelectTableRef.value) {
+            userSelectTableRef.value.clearSelection()
+        }
+    }
+
+
+
     // 处理删除代理人
-    const handleDeleteAgent = (index) => {
-        agentList.value.splice(index, 1)
+    const handleDeleteAgent = async (index) => {
+        try {
+            const agent = agentList.value[index]
+            
+            // 确认删除
+            await ElMessageBox.confirm(
+                t('systemBasicmgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
+                t('common.confirmDelete'),
+                {
+                    confirmButtonText: t('common.confirm'),
+                    cancelButtonText: t('common.cancel'),
+                    type: 'warning',
+                }
+            )
+            
+            // 调用删除接口
+            const params = {
+                substituteUserId: currentUserId.value,
+                agentUserId: agent.agentUserId
+            }
+            
+            const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, params)
+            
+            if (res && res.code === '200') {
+                ElMessage.success(res.message || t('common.deleteSuccess'))
+                // 重新获取代理人列表
+                await fetchUserAgentList(currentUserId.value)
+            } else {
+                ElMessage.error(res.message || t('common.operationFailed'))
+            }
+        } catch (error) {
+            if (error === 'cancel') {
+                // 用户取消删除
+                return
+            }
+            console.error('删除代理人失败:', error)
+            ElMessage.error(t('common.operationFailed'))
+        }
     }
 
     // 获取用户选择列表
@@ -486,7 +551,8 @@
                 userName: userSelectFilters.userName,
                 pageIndex: userSelectPagination.pageIndex,
                 pageSize: userSelectPagination.pageSize,
-                totalCount: userSelectPagination.total
+                totalCount: userSelectPagination.total,
+                SubstituteUserId: currentUserId.value // 排除自己不能代理自己
             }
             const res = await post(GET_USER_VIEW_API.GET_USER_VIEW, params)
             
@@ -542,8 +608,24 @@
         selectedUsers.value = selection
     }
 
+    // 处理开始时间变化
+    const handleStartTimeChange = (value) => {
+        if (value && agentTimeRange.endTime && new Date(value) > new Date(agentTimeRange.endTime)) {
+            ElMessage.warning(t('systemBasicmgmt.userAgent.startTimeCannotLaterThanEndTime'))
+            agentTimeRange.startTime = ''
+        }
+    }
+
+    // 处理结束时间变化
+    const handleEndTimeChange = (value) => {
+        if (value && agentTimeRange.startTime && new Date(value) < new Date(agentTimeRange.startTime)) {
+            ElMessage.warning(t('systemBasicmgmt.userAgent.endTimeCannotEarlierThanStartTime'))
+            agentTimeRange.endTime = ''
+        }
+    }
+
     // 确认用户选择
-    const handleConfirmUserSelect = () => {
+    const handleConfirmUserSelect = async () => {
         if (selectedUsers.value.length === 0) {
             ElMessage.warning(t('systemBasicmgmt.userAgent.pleaseSelectUsers'))
             return
@@ -554,72 +636,58 @@
             return
         }
 
-        // 格式化时间
-        const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
-        const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
-
-        // 添加选中的用户到代理人列表
-        selectedUsers.value.forEach(user => {
-            const newAgent = {
-                substituteUserId: currentUserId.value,
-                substituteUserName: '', // 这个会在刷新时从接口获取
-                agentUserId: user.userId,
-                agentUserName: user.userNameCh || user.userNameEn,
-                startTime: startTime,
-                endTime: endTime
-            }
-            agentList.value.push(newAgent)
-        })
-
-        userSelectDialogVisible.value = false
-        
-        // 重置数据
-        selectedUsers.value = []
-        Object.assign(agentTimeRange, {
-            startTime: '',
-            endTime: ''
-        })
-        
-        // 清空表格选择
-        if (userSelectTableRef.value) {
-            userSelectTableRef.value.clearSelection()
-        }
-    }
-
-    // 保存代理配置
-    const handleSaveAgentConfig = async () => {
         try {
-            saveLoading.value = true
-            
-            // 构建请求参数
-            const userAgentUpserts = agentList.value.map(item => ({
-                substituteUserId: currentUserId.value,
-                agentUserId: item.agentUserId || '',
-                startTime: item.startTime || '',
-                endTime: item.endTime || ''
-            }))
+            // 格式化时间
+            const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
+            const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
 
-            const params = {
-                userAgentUpserts: userAgentUpserts
+            // 逐个调用新增接口
+            for (const user of selectedUsers.value) {
+                const params = {
+                    substituteUserId: currentUserId.value,
+                    agentUserId: user.userId,
+                    startTime: startTime,
+                    endTime: endTime
+                }
+                
+                const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
+                
+                if (res && res.code === '200') {
+                    console.log(`成功添加代理人: ${user.userNameCh || user.userNameEn}`)
+                } else {
+                    ElMessage.error(res.message || `添加代理人失败: ${user.userNameCh || user.userNameEn}`)
+                    return
+                }
             }
 
-            const res = await post(GET_USER_AGENT_CONFIG_API.GET_USER_AGENT_CONFIG, params)
+            ElMessage.success(t('common.saveSuccess'))
+            userSelectDialogVisible.value = false
             
-            if (res && res.code === '200') {
-                ElMessage.success(res.message || t('common.saveSuccess'))
-                agentDialogVisible.value = false
-                // 重新获取代理人列表
-                await fetchUserAgentList(currentUserId.value)
-            } else {
-                ElMessage.error(res.message || t('common.operationFailed'))
+            // 重置数据
+            selectedUsers.value = []
+            Object.assign(agentTimeRange, {
+                startTime: '',
+                endTime: ''
+            })
+            
+            // 清空表格选择
+            if (userSelectTableRef.value) {
+                userSelectTableRef.value.clearSelection()
             }
+
+            // 重新获取代理人列表
+            await fetchUserAgentList(currentUserId.value)
+            
+            // 清理当前用户信息
+            currentUserInfo.value = {}
+            
         } catch (error) {
-            console.error('保存代理配置失败:', error)
+            console.error('添加代理人失败:', error)
             ElMessage.error(t('common.operationFailed'))
-        } finally {
-            saveLoading.value = false
         }
     }
+
+
   
     
   </script>
@@ -629,12 +697,12 @@
 
     /* 代理人对话框样式 */
     :deep(.agent-dialog .el-dialog) {
-      height: 500px;
+      height: 550px;
       overflow: hidden;
     }
 
     :deep(.agent-dialog .el-dialog__body) {
-      height: calc(500px - 120px); /* 减去header和footer的高度 */
+      height: calc(550px - 120px); /* 减去header和footer的高度 */
       overflow: auto;
       padding: 0 20px 20px 20px;
     }

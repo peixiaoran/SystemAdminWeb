@@ -282,28 +282,43 @@
 
   // 在组件挂载后获取日志数据
   onMounted(() => {
-      fetchDomainDrop() // 先获取网域，设置默认值后再查询数据
+      initPageData() // 初始化页面数据，设置查询表单默认值
       fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
-  // 获取网域类型
+  // 初始化页面数据（只在页面加载时调用）
+  const initPageData = async () => {
+      try {
+          const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
+          domainDropList.value = res.data || []
+
+          // 默认选中第一个网域（用于查询表单）
+          if (domainDropList.value.length > 0) {
+              filters.domainId = domainDropList.value[0].domainId
+          }
+
+          // 应用默认值进行初始查询
+          fetchModulePages()
+      } catch (error) {
+          if (error.name === 'CanceledError') {
+              // 请求被取消，不显示错误信息
+              return
+          }
+          console.error('获取网域数据失败:', error)
+          ElMessage.error('获取网域数据失败，请刷新页面重试')
+      }
+  }
+
+  // 获取网域类型（不会影响查询表单的值）
   const fetchDomainDrop = async () => {
       try {
           const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
           domainDropList.value = res.data || []
 
-          // 默认选中第一个网域
-          if (domainDropList.value.length > 0) {
-              filters.domainId = domainDropList.value[0].domainId
-          }
-
-          // 如果是新增操作，默认选中第一个模块
+          // 如果是新增操作，默认选中第一个网域
           if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.module.addModule') && domainDropList.value.length > 0) {
               editForm.domainId = domainDropList.value[0].domainId
           }
-
-          // 应用默认值进行初始查询
-          fetchModulePages()
       } catch (error) {
           if (error.name === 'CanceledError') {
               // 请求被取消，不显示错误信息
@@ -402,7 +417,14 @@
       filters.menuCode = ''
       filters.menuName = ''
       filters.menuUrl = ''
-      filters.domainId = ''
+      
+      // 重置为默认的第一个网域
+      if (domainDropList.value.length > 0) {
+          filters.domainId = domainDropList.value[0].domainId
+      } else {
+          filters.domainId = ''
+      }
+      
       pagination.pageIndex = 1
       fetchModulePages()
   }

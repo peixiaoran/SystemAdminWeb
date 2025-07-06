@@ -371,6 +371,38 @@
       ],
       email: [
           { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
+      ],
+      passWord: [
+        { 
+          validator: (rule, value, callback) => {
+            if (!value) {
+              callback()
+              return
+            }
+            // 密碼必須為 8-16 個字符
+            if (value.length < 8 || value.length > 16) {
+              callback(new Error(t('systemBasicmgmt.userInfo.passwordLengthError')))
+              return
+            }
+            // 必須包含小寫字母
+            if (!/[a-z]/.test(value)) {
+              callback(new Error(t('systemBasicmgmt.userInfo.passwordLowercaseError')))
+              return
+            }
+            // 必須包含大寫字母
+            if (!/[A-Z]/.test(value)) {
+              callback(new Error(t('systemBasicmgmt.userInfo.passwordUppercaseError')))
+              return
+            }
+            // 必須包含數字
+            if (!/[0-9]/.test(value)) {
+              callback(new Error(t('systemBasicmgmt.userInfo.passwordNumberError')))
+              return
+            }
+            callback()
+          }, 
+          trigger: 'blur' 
+        }
       ]
   })
 

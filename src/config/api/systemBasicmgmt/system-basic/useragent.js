@@ -32,7 +32,12 @@ export const GET_USER_AGENT_API = {
     GET_USER_AGENT: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserAgentList'
 }
 
-// 员工代理配置API
-export const GET_USER_AGENT_CONFIG_API = {
-    GET_USER_AGENT_CONFIG: 'SystemBasicMgmt/SystemBasicData/UserAgent/DeploymentUserAgent'
+// 员工代理新增API
+export const GET_USER_AGENT_INSERT_API = {
+    GET_USER_AGENT_INSERT: 'SystemBasicMgmt/SystemBasicData/UserAgent/InsertUserAgent'
+}
+
+// 员工代理删除API
+export const GET_USER_AGENT_DELETE_API = {
+    GET_USER_AGENT_DELETE: 'SystemBasicMgmt/SystemBasicData/UserAgent/DeleteUserAgent'
 }

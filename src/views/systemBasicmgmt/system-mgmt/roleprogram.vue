@@ -8,18 +8,17 @@
                   <el-select style="width:180px"
                              v-model="filters.roleId"
                              :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleProgram.role')"
-                             clearable
                              @change="handleRoleChange">
                       <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleProgram.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleProgram.domain')" style="width:180px" clearable @change="handleDomainChange">
+                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleProgram.domain')" style="width:180px" @change="handleDomainChange">
                       <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleProgram.module')">
-                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleProgram.module')" style="width:180px" clearable @change="handleModuleChange">
+                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleProgram.module')" style="width:180px" @change="handleModuleChange">
                       <el-option v-for="item in moduleOptions" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                   </el-select>
               </el-form-item>

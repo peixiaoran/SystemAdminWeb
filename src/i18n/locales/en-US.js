@@ -31,7 +31,11 @@ export default {
     closeAllTabs: 'Close All Tabs',
     operation: 'Operation',
     goBack: 'Go Back',
-    tokenExpired: 'Login expired, please login again'
+    tokenExpired: 'Login expired, please login again',
+    saveSuccess: 'Save successfully',
+    deleteSuccess: 'Delete successfully',
+    operationFailed: 'Operation failed',
+    confirmDelete: 'Confirm Delete'
   },
   
   // Error pages
@@ -112,7 +116,8 @@ export default {
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
     sysSettingsModule: 'System Settings Module',
-    dictionaryInfo: 'DictionaryData'
+    dictionaryInfo: 'DictionaryData',
+    personalInfo: 'Personal Information'
   },
   
   // System Basic Management
@@ -290,6 +295,10 @@ export default {
       deleteSuccess: 'Delete successfully',
       operationFailed: 'Operation failed',
       getFailed: 'Failed to get data',
+      passwordLengthError: 'Password must be 8-16 characters long',
+      passwordLowercaseError: 'Password must contain lowercase letters',
+      passwordUppercaseError: 'Password must contain uppercase letters',
+      passwordNumberError: 'Password must contain numbers',
       filter: {
         department: 'Department',
         position: 'Position',
@@ -302,9 +311,11 @@ export default {
     userAgent: {
       title: 'Employee Agent Management',
       configureAgent: 'Configure Agent',
+      viewAgentList: 'View Agent List',
       agentList: 'Agent List',
       substituteUser: 'Substitute Employee',
       agentUser: 'Agent Employee',
+      agentUserNo: 'Agent Employee No.',
       startTime: 'Start Time',
       endTime: 'End Time',
       createdBy: 'Created By',
@@ -321,7 +332,10 @@ export default {
       pleaseSelectUsers: 'Please select users',
       pleaseSelectTimeRange: 'Please select start and end time',
       pleaseSelectStartTime: 'Please select start time',
-      pleaseSelectEndTime: 'Please select end time'
+      pleaseSelectEndTime: 'Please select end time',
+      confirmDeleteAgent: 'Are you sure to delete agent {name}?',
+      startTimeCannotLaterThanEndTime: 'Start time cannot be later than end time',
+      endTimeCannotEarlierThanStartTime: 'End time cannot be earlier than start time'
     },
     // Employee Position
     userPosition: {
@@ -342,6 +356,48 @@ export default {
       deleteSuccess: 'Delete successfully',
       operationFailed: 'Operation failed',
       getFailed: 'Failed to get data'
+    },
+    // Personal Information
+    personalInfo: {
+      title: 'Personal Information Management',
+      userNo: 'Employee No.',
+      loginNo: 'Login Account',
+      userNameCh: 'Chinese Name',
+      userNameEn: 'English Name',
+      email: 'Email',
+      phoneNumber: 'Phone Number',
+      password: 'Password',
+      gender: 'Gender',
+      hireDate: 'Hire Date',
+      department: 'Department',
+      position: 'Position',
+      role: 'Role',
+      employmentType: 'Employment Type',
+      isEmployed: 'Is Employed',
+      isAgent: 'Is Agent',
+      isSign: 'Is Sign',
+      isPartTime: 'Is Part Time',
+      isFreeze: 'Is Freeze',
+      remark: 'Remark',
+      pleaseInputUserNameCh: 'Please input Chinese name',
+      pleaseInputUserNameEn: 'Please input English name',
+      pleaseInputEmail: 'Please input email',
+      pleaseInputPhoneNumber: 'Please input phone number',
+      pleaseInputPassword: 'Please input password',
+      userNameChRequired: 'Please input Chinese name',
+      userNameEnRequired: 'Please input English name',
+      emailRequired: 'Please input email',
+      emailFormatError: 'Please input correct email format',
+      phoneNumberRequired: 'Please input phone number',
+      phoneNumberFormatError: 'Please input correct phone number format',
+      passwordMinLength: 'Password length cannot be less than 6 characters',
+      passwordLengthError: 'Password must be 8-16 characters long',
+      passwordLowercaseError: 'Password must contain lowercase letters',
+      passwordUppercaseError: 'Password must contain uppercase letters',
+      passwordNumberError: 'Password must contain numbers',
+      pleaseInputRemark: 'Please input remark',
+      getPersonalInfoFailed: 'Failed to get personal information',
+      savePersonalInfoFailed: 'Failed to save personal information'
     },
     // System Management
     systemMgmt: {
@@ -473,7 +529,9 @@ export default {
         editRole: 'Edit Role Info',
         deleteConfirm: 'Are you sure to delete this record?',
         pleaseInputRoleCode: 'Please input role code',
-        pleaseInputRoleName: 'Please input role name'
+        pleaseInputRoleName: 'Please input role name',
+        pleaseInputRoleNameCh: 'Please input role Chinese name',
+        pleaseInputRoleNameEn: 'Please input role English name'
       },
       
       // Role Domain

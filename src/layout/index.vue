@@ -700,14 +700,6 @@ const refreshSelectedTag = () => {
   
   const { path } = tagRightClicked.value
   
-  // 显示刷新提示
-  ElMessage({
-    message: '正在刷新页面...',
-    type: 'info',
-    duration: 1000,
-    showClose: false
-  })
-  
   // 从缓存中移除
   const index = cachedTabs.value.indexOf(path.replace(/\//g, '-'))
   if (index > -1) {
