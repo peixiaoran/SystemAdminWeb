@@ -35,7 +35,9 @@ export default {
     saveSuccess: 'Save successfully',
     deleteSuccess: 'Delete successfully',
     operationFailed: 'Operation failed',
-    confirmDelete: 'Confirm Delete'
+    confirmDelete: 'Confirm Delete',
+    active: 'Active',
+    inactive: 'Inactive'
   },
   
   // Error pages
@@ -115,8 +117,9 @@ export default {
     companyInfo: 'CompanyInfo',
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
-    sysSettingsModule: 'System Settings Module',
+    SystemSettings: 'System Settings Module',
     dictionaryInfo: 'DictionaryData',
+    currencyInfo: 'CurrencyData',
     personalInfo: 'Personal Information'
   },
   
@@ -623,14 +626,16 @@ export default {
       index: 'No.',
       dicType: 'Dictionary Type',
       dicCode: 'Dictionary Code',
-      dicName: 'Dictionary Name',
+      dicNameCh: 'Dictionary Chinese Name',
+      dicNameEn: 'Dictionary English Name',
       createdDate: 'Created Date',
       operation: 'Operation',
       addDictionary: 'Add Dictionary',
       editDictionary: 'Edit Dictionary Info',
       deleteConfirm: 'Are you sure to delete this record?',
       pleaseInputDicCode: 'Please input dictionary code',
-      pleaseInputDicName: 'Please input dictionary name',
+      pleaseInputDicNameCh: 'Please input dictionary Chinese name',
+      pleaseInputDicNameEn: 'Please input dictionary English name',
       pleaseInputDicType: 'Please input dictionary type',
       pleaseSelectDicType: 'Please select dictionary type',
       saveSuccess: 'Save successfully',
@@ -639,11 +644,37 @@ export default {
       operationFailed: 'Operation failed',
       getFailed: 'Failed to get data',
       filter: {
-        dicName: 'Dictionary Name'
+        dicNameCh: 'Dictionary Chinese Name'
       },
       dicTypes: {
         Bit: 'Byte Type',
         Int: 'Numeric Type'
+      }
+    },
+    // Currency Info Management
+    currencyInfo: {
+      title: 'Currency Info Management',
+      index: 'No.',
+      currencyCode: 'Currency Code',
+      currencyNameCh: 'Currency Chinese Name',
+      currencyNameEn: 'Currency English Name',
+      currencyState: 'Status',
+      remark: 'Remark',
+      operation: 'Operation',
+      addCurrency: 'Add Currency',
+      editCurrency: 'Edit Currency Info',
+      deleteConfirm: 'Are you sure to delete this record?',
+      pleaseInputCurrencyCode: 'Please input currency code',
+      pleaseInputCurrencyNameCh: 'Please input currency Chinese name',
+      pleaseInputCurrencyNameEn: 'Please input currency English name',
+      pleaseInputRemark: 'Please input remark',
+      saveSuccess: 'Save successfully',
+      updateSuccess: 'Update successfully',
+      deleteSuccess: 'Delete successfully',
+      operationFailed: 'Operation failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        currencyCode: 'Currency Code'
       }
     },
     // Department Level Management

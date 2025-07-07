@@ -35,7 +35,9 @@ export default {
     saveSuccess: '保存成功',
     deleteSuccess: '刪除成功',
     operationFailed: '操作失敗',
-    confirmDelete: '確認刪除'
+    confirmDelete: '確認刪除',
+    active: '啟用',
+    inactive: '禁用'
   },
   
   // 錯誤頁面
@@ -115,8 +117,9 @@ export default {
     companyInfo: '公司資料維護',
     departmentInfo: '部門資料維護',
     departmentLevel: '部門層級維護',
-    sysSettingsModule: '系統設定模組',
+    SystemSettings: '系統設定模組',
     dictionaryInfo: '字典資料維護',
+    currencyInfo: '币别資料維護',
     personalInfo: '個人信息管理'
   },
   
@@ -627,14 +630,16 @@ export default {
       index: '序號',
       dicType: '字典類型',
       dicCode: '字典編碼',
-      dicName: '字典名稱',
+      dicNameCh: '字典中文名稱',
+      dicNameEn: '字典英文名稱',
       createdDate: '創建時間',
       operation: '操作',
       addDictionary: '新增字典',
       editDictionary: '編輯字典信息',
       deleteConfirm: '確定要刪除該條記錄嗎？',
       pleaseInputDicCode: '請輸入字典編碼',
-      pleaseInputDicName: '請輸入字典名稱',
+      pleaseInputDicNameCh: '請輸入字典中文名稱',
+      pleaseInputDicNameEn: '請輸入字典英文名稱',
       pleaseInputDicType: '請輸入字典類型',
       pleaseSelectDicType: '請選擇字典類型',
       saveSuccess: '保存成功',
@@ -643,11 +648,38 @@ export default {
       operationFailed: '操作失敗',
       getFailed: '獲取數據失敗',
       filter: {
-        dicName: '字典名稱'
+        dicNameCh: '字典中文名稱'
       },
       dicTypes: {
         Bit: '字節類型',
         Int: '數值類型'
+      }
+    },
+    
+    // 币别信息管理
+    currencyInfo: {
+      title: '币别信息管理',
+      index: '序號',
+      currencyCode: '币别编码',
+      currencyNameCh: '币别中文名称',
+      currencyNameEn: '币别英文名称',
+      currencyState: '启用状态',
+      remark: '备注',
+      operation: '操作',
+      addCurrency: '新增币别',
+      editCurrency: '编辑币别信息',
+      deleteConfirm: '确定要删除该条记录吗？',
+      pleaseInputCurrencyCode: '请输入币别编码',
+      pleaseInputCurrencyNameCh: '请输入币别中文名称',
+      pleaseInputCurrencyNameEn: '请输入币别英文名称',
+      pleaseInputRemark: '请输入备注',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '删除成功',
+      operationFailed: '操作失败',
+      getFailed: '获取数据失败',
+      filter: {
+        currencyCode: '币别编码'
       }
     },
     

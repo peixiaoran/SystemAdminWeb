@@ -4,10 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
-              <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.filter.dicName')">
-                  <el-input v-model="filters.dicName"
+              <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.filter.dicNameCh')">
+                  <el-input v-model="filters.dicNameCh"
                            style="width: 180px;"
-                           :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicName')"
+                           :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicNameCh')"
                            clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -36,7 +36,8 @@
                   <el-table-column type="index" :label="$t('systemBasicmgmt.dictionaryInfo.index')" width="60" align="center" fixed />
                   <el-table-column prop="dicType" :label="$t('systemBasicmgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
                   <el-table-column prop="dicCode" :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
-                  <el-table-column prop="dicName" :label="$t('systemBasicmgmt.dictionaryInfo.dicName')" align="left" min-width="230" />
+                  <el-table-column prop="dicNameCh" :label="$t('systemBasicmgmt.dictionaryInfo.dicNameCh')" align="left" min-width="230" />
+                  <el-table-column prop="dicNameEn" :label="$t('systemBasicmgmt.dictionaryInfo.dicNameEn')" align="left" min-width="230" />
                   <el-table-column :label="$t('systemBasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -80,9 +81,12 @@
                       <el-input v-model="editForm.dicCode" style="width:100%" />
                   </el-form-item>
               </div>
-              <div class="form-row full-width">
-                  <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicName')" prop="dicName">
-                      <el-input v-model="editForm.dicName" style="width:100%" />
+              <div class="form-row">
+                  <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicNameCh')" prop="dicNameCh">
+                      <el-input v-model="editForm.dicNameCh" style="width:100%" />
+                  </el-form-item>
+                  <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
+                      <el-input v-model="editForm.dicNameEn" style="width:100%" />
                   </el-form-item>
               </div>
           </el-form>
@@ -105,7 +109,7 @@
     DELETE_DICTIONARY_API, 
     GET_DICTIONARY_ENTITY_API, 
     UPDATE_DICTIONARY_API 
-  } from '@/config/api/systemBasicmgmt/syssettings-module/dictionary'
+  } from '@/config/api/systemBasicmgmt/system-settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -128,7 +132,7 @@
 
   // 过滤条件
   const filters = reactive({
-      dicName: '',
+      dicNameCh: '',
   })
 
   // Composition API
@@ -141,7 +145,8 @@
       dicId: '',
       dicType: '',
       dicCode: '',
-      dicName: '',
+      dicNameCh: '',
+      dicNameEn: '',
       createdBy: 1,
       createdDate: '',
       modifiedBy: 1,
@@ -159,8 +164,11 @@
       dicCode: [
           { required: true, message: () => t('systemBasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
       ],
-      dicName: [
-          { required: true, message: () => t('systemBasicmgmt.dictionaryInfo.pleaseInputDicName'), trigger: 'blur' }
+      dicNameCh: [
+          { required: true, message: () => t('systemBasicmgmt.dictionaryInfo.pleaseInputDicNameCh'), trigger: 'blur' }
+      ],
+      dicNameEn: [
+          { required: true, message: () => t('systemBasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
       ]
   })
 
@@ -181,7 +189,8 @@
           editForm.dicId = res.data.dicId
           editForm.dicType = res.data.dicType
           editForm.dicCode = res.data.dicCode
-          editForm.dicName = res.data.dicName
+          editForm.dicNameCh = res.data.dicNameCh
+          editForm.dicNameEn = res.data.dicNameEn
           editForm.createdBy = res.data.createdBy
           editForm.createdDate = res.data.createdDate
           editForm.modifiedBy = res.data.modifiedBy
@@ -193,7 +202,7 @@
   const fetchDictionaryPages = async () => {
       loading.value = true
       const params = {
-          dicName: filters.dicName,
+          dicNameCh: filters.dicNameCh,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
       }
@@ -221,7 +230,7 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      filters.dicName = ''
+      filters.dicNameCh = ''
       pagination.pageIndex = 1
       fetchDictionaryPages()
   }
@@ -252,7 +261,8 @@
       editForm.dicId = ''
       editForm.dicType = ''
       editForm.dicCode = ''
-      editForm.dicName = ''
+      editForm.dicNameCh = ''
+      editForm.dicNameEn = ''
       editForm.createdBy = 1
       editForm.createdDate = ''
       editForm.modifiedBy = 1

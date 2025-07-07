@@ -177,7 +177,7 @@ const moduleRoutes = [
             component: () => import('../views/systemBasicmgmt/system-mgmt/personal.vue'),
             meta: { 
               title: 'route.personalInfo', 
-              icon: 'Female',
+              icon: 'User',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -266,11 +266,11 @@ const moduleRoutes = [
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
-        path: 'syssettings-module',
-        name: 'SysSettingsModule',
-        redirect: '/systemBasicmgmt/syssettings-module',
+        path: 'system-settings',
+        name: 'SystemSettings',
+        redirect: '/systemBasicmgmt/system-settings',
         meta: { 
-          title: 'route.sysSettingsModule',
+          title: 'route.systemSettings',
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -279,10 +279,21 @@ const moduleRoutes = [
           {
             path: 'dictionaryinfo',
             name: 'DictionaryInfo',
-            component: () => import('../views/systemBasicmgmt/sysSettings-Module/dictionaryinfo.vue'),
+            component: () => import('../views/systemBasicmgmt/system-settings/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
               icon: 'Collection',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'currencyinfo',
+            name: 'CurrencyInfo',
+            component: () => import('../views/systemBasicmgmt/system-settings/currencyinfo.vue'),
+            meta: { 
+              title: 'route.currencyInfo', 
+              icon: 'Money',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
