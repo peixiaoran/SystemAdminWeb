@@ -177,10 +177,14 @@
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
+                                 :active-value="1"
+                                 :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
+                                 :active-value="1"
+                                 :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
@@ -250,8 +254,8 @@
       menuIcon: '',
       sortOrder: 1,
       roleCode: '',
-      isEnabled: true,
-      isVisible: true,
+      isEnabled: 1,
+      isVisible: 1,
       level: 1,
       routePath: '',
       path: '',
@@ -510,8 +514,8 @@
           roleCode: '',
           menuIcon: '',
           sortOrder: 1,
-          isEnabled: true,
-          isVisible: true,
+          isEnabled: 1,
+          isVisible: 1,
           routePath: '',
           remarks: ''
       })
@@ -608,8 +612,8 @@
       // 设置默认值
       editForm.menuId = '0'
       editForm.sortOrder = 1
-      editForm.isEnabled = true
-      editForm.isVisible = true
+      editForm.isEnabled = 1
+      editForm.isVisible = 1
 
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.addProgram')

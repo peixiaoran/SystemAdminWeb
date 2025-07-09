@@ -78,7 +78,10 @@
                                :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicType')" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
-                      <el-input v-model="editForm.dicCode" style="width:100%" />
+                      <el-input v-model.number="editForm.dicCode" 
+                               type="number" 
+                               style="width:100%" 
+                               :placeholder="$t('systemBasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -140,11 +143,14 @@
   // 对话框显示状态
   const dialogVisible = ref(false)
 
+  // 编辑模式标志
+  const isEditMode = ref(false)
+
   // 编辑表单
   const editForm = reactive({
-      dicId: '',
+      dicId: 1,
       dicType: '',
-      dicCode: '',
+      dicCode: 0,
       dicNameCh: '',
       dicNameEn: '',
       createdBy: 1,
@@ -258,9 +264,9 @@
           }
       }
       
-      editForm.dicId = ''
+      editForm.dicId = 1
       editForm.dicType = ''
-      editForm.dicCode = ''
+      editForm.dicCode = 0
       editForm.dicNameCh = ''
       editForm.dicNameEn = ''
       editForm.createdBy = 1
@@ -285,7 +291,11 @@
   // 新增字典数据
   const insertDictionary = async () => {
       const params = {
-          ...editForm
+          dicId: editForm.dicId,
+          dicType: editForm.dicType,
+          dicCode: editForm.dicCode,
+          dicNameCh: editForm.dicNameCh,
+          dicNameEn: editForm.dicNameEn
       }
 
       const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
@@ -320,7 +330,7 @@
   // 删除字典数据
   const deleteDictionary = async (dicId) => {
       const params = {
-          DicId: dicId
+          dicId: dicId
       }
 
       const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, params)
@@ -337,6 +347,8 @@
   const handleAdd = () => {
       // 重置表单数据
       resetForm()
+      // 设置为新增模式
+      isEditMode.value = false
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.dictionaryInfo.addDictionary')
       // 显示对话框
@@ -347,6 +359,8 @@
   const handleEdit = async (index, row) => {
       // 重置表单数据
       resetForm()
+      // 设置为编辑模式
+      isEditMode.value = true
       // 获取字典实体数据
       await fetchDictionaryEntity(row.dicId)
       // 设置对话框标题
@@ -386,10 +400,10 @@
       editFormRef.value?.validate((valid) => {
           if (valid) {
               // 判断是新增还是编辑
-              if (!editForm.dicId) {
-                  insertDictionary()
-              } else {
+              if (isEditMode.value) {
                   updateDictionary()
+              } else {
+                  insertDictionary()
               }
           }
       })

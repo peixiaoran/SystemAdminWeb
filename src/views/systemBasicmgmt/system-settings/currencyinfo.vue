@@ -39,8 +39,8 @@
                     <el-table-column prop="currencyNameEn" :label="$t('systemBasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
                     <el-table-column prop="currencyState" :label="$t('systemBasicmgmt.currencyInfo.currencyState')" align="center" min-width="100">
                         <template #default="scope">
-                            <el-tag :type="scope.row.currencyState === true ? 'success' : 'danger'">
-                                {{ scope.row.currencyState === true ? $t('common.active') : $t('common.inactive') }}
+                            <el-tag :type="scope.row.currencyState === 1 ? 'success' : 'danger'">
+                                {{ scope.row.currencyState === 1 ? $t('common.active') : $t('common.inactive') }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -88,8 +88,8 @@
                         <el-switch v-model="editForm.currencyState" 
                                   active-color="#67C23A"
                                   inactive-color="#F56C6C"
-                                  :active-value="true"
-                                  :inactive-value="false" 
+                                  :active-value="1"
+                                  :inactive-value="0" 
                                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"/>
                     </el-form-item>
                 </div>
@@ -165,7 +165,7 @@
         currencyCode: '',
         currencyNameCh: '',
         currencyNameEn: '',
-        currencyState: true,
+        currencyState: 1,
         remark: ''
     })
   
@@ -273,7 +273,7 @@
         editForm.currencyCode = ''
         editForm.currencyNameCh = ''
         editForm.currencyNameEn = ''
-        editForm.currencyState = true
+        editForm.currencyState = 1
         editForm.remark = ''
         
         // 数据重置后再次清除验证状态

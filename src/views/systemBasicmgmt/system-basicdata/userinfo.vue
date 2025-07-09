@@ -27,18 +27,7 @@
                           :value="item.positionId" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.role')">
-                  <el-select 
-                      v-model="filters.roleId" 
-                      style="width: 180px;"
-                      :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectRole')">
-                      <el-option
-                          v-for="item in roleOptions"
-                          :key="`role-filter-${item.roleId}`"
-                          :label="item.roleName"
-                          :value="item.roleId" />
-                  </el-select>
-              </el-form-item>
+
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
                       {{ $t('common.search') }}
@@ -303,7 +292,6 @@
   const filters = reactive({
       departmentId: '',
       positionId: '',
-      roleId: '',
   })
 
   // 对话框显示状态
@@ -414,7 +402,6 @@
       // 获取下拉框数据并设置筛选条件默认值
       await fetchDepartmentDropdown(true, false)
       await fetchPositionDropdown(true, false)
-      await fetchRoleDropdown(true, false)
       await fetchGenderDropdown()
       await fetchEmploymentTypeDropdown()
       // 获取用户列表数据
@@ -525,7 +512,6 @@
       loading.value = true
       const params = {
           departmentId: filters.departmentId,
-          roleId: filters.roleId,
           positionId: filters.positionId,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize
@@ -553,7 +539,6 @@
       Object.assign(filters, {
           departmentId: '',
           positionId: '',
-          roleId: '',
           userNo: '',
           userName: '',
           gender: ''

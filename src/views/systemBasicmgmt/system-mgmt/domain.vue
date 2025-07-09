@@ -141,10 +141,14 @@
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
+                                 :active-value="1"
+                                 :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
+                                 :active-value="1"
+                                 :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
@@ -204,8 +208,8 @@
       domainIcon: '',
       sortOrder: 1,
       roleCode: '',
-      isEnabled: true,
-      isVisible: true,
+      isEnabled: 1,
+      isVisible: 1,
       level: 1,
       path: '',
       component: '',
@@ -340,8 +344,8 @@
       editForm.roleCode = ''
       editForm.domainIcon = ''
       editForm.sortOrder = 1
-      editForm.isEnabled = true
-      editForm.isVisible = true
+      editForm.isEnabled = 1
+      editForm.isVisible = 1
       editForm.domainId = '0'
       editForm.domainCode = ''
       editForm.domainNameCh = ''
