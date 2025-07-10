@@ -338,7 +338,11 @@
       try {
           const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
           if (res && res.code === '200') {
-              menuTypeOptions.value = res.data || []
+              // 确保 menuTypeCode 为字符串类型
+              menuTypeOptions.value = (res.data || []).map(item => ({
+                  ...item,
+                  menuTypeCode: String(item.menuTypeCode)
+              }))
           } else {
               menuTypeOptions.value = []
           }
@@ -363,7 +367,7 @@
               editForm.menuNameEn = res.data.menuNameEn
               editForm.parentMenuId = res.data.parentMenuId
               editForm.domainId = res.data.domainId
-              editForm.menuType = res.data.menuType
+              editForm.menuType = String(res.data.menuType || '')
               editForm.menuUrl = res.data.menuUrl
               editForm.menuIcon = res.data.menuIcon
               editForm.sortOrder = res.data.sortOrder

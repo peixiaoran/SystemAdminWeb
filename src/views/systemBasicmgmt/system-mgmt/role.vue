@@ -134,6 +134,8 @@
               <div class="form-row">
                   <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
+                                 :active-value="1"
+                                 :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; width:100%"/>
                   </el-form-item>
               </div>
@@ -188,7 +190,7 @@
       roleNameCh: '',
       roleNameEn: '',
       description: '',
-      isEnabled: true,
+      isEnabled: 1,
       remarks: ''
   })
   // 对话框标题
@@ -290,7 +292,7 @@
       editForm.roleNameCh = ''
       editForm.roleNameEn = ''
       editForm.description = ''
-      editForm.isEnabled = true
+      editForm.isEnabled = 1
       editForm.remarks = ''
       
       // 数据重置后再次清除验证状态
@@ -379,7 +381,7 @@
       resetForm()
       // 设置默认值
       editForm.roleId = ''
-      editForm.isEnabled = true
+      editForm.isEnabled = 1
 
       // 设置对话框标题
       dialogTitle.value = t('systemBasicmgmt.systemMgmt.role.addRole')
