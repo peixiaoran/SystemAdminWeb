@@ -67,16 +67,16 @@ const constantRoutes = [
 const moduleRoutes = [
   // 系统基础管理模块路由
   {
-    path: '/systemBasicmgmt',
+    path: '/SystemBasicMgmt',
     component: Layout,
-    redirect: '/systemBasicmgmt/index',
+    redirect: '/SystemBasicMgmt/index',
     children: [
       {
         path: 'index',
-        name: 'SystemBasicmgmtIndex',
-        component: () => import('../views/systemBasicmgmt/index.vue'),
+        name: 'SystemBasicMgmtIndex',
+        component: () => import('../views/SystemBasicMgmt/index.vue'),
         meta: { 
-          title: 'route.systemBasicmgmt', 
+          title: 'route.SystemBasicMgmt', 
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -86,7 +86,7 @@ const moduleRoutes = [
       {
         path: 'system-mgmt',
         name: 'SystemMgmt',
-        redirect: '/systemBasicmgmt/system-mgmt',
+        redirect: '/SystemBasicMgmt/system-mgmt',
         meta: { 
           title: 'route.systemMgmt', 
           icon: 'Setting',
@@ -97,7 +97,7 @@ const moduleRoutes = [
           {
             path: 'role',
             name: 'SystemRole',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/role.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/role.vue'),
             meta: { 
               title: 'route.role', 
               icon: 'Avatar',
@@ -108,7 +108,7 @@ const moduleRoutes = [
           {
             path: 'domain',
             name: 'SystemDomain',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/domain.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/domain.vue'),
             meta: { 
               title: 'route.domain', 
               icon: 'Menu',
@@ -119,7 +119,7 @@ const moduleRoutes = [
           {
             path: 'module',
             name: 'SystemModule',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/module.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/module.vue'),
             meta: { 
               title: 'route.module', 
               icon: 'Operation',
@@ -130,7 +130,7 @@ const moduleRoutes = [
           {
             path: 'program',
             name: 'SystemProgram',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/program.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/program.vue'),
             meta: { 
               title: 'route.program', 
               icon: 'Share',
@@ -141,7 +141,7 @@ const moduleRoutes = [
           {
             path: 'roledomain',
             name: 'SystemRoleDomain',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/roledomain.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/roledomain.vue'),
             meta: { 
               title: 'route.roleDomain', 
               icon: 'MoreFilled',
@@ -152,7 +152,7 @@ const moduleRoutes = [
           {
             path: 'rolemodule',
             name: 'SystemRoleModule',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/rolemodule.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
               icon: 'MoreFilled',
@@ -163,7 +163,7 @@ const moduleRoutes = [
           {
             path: 'roleprogram',
             name: 'SystemRoleProgram',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/roleprogram.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/roleprogram.vue'),
             meta: { 
               title: 'route.roleProgram', 
               icon: 'MoreFilled',
@@ -174,7 +174,7 @@ const moduleRoutes = [
           {
             path: 'personal',
             name: 'SystemPersonalInfo',
-            component: () => import('../views/systemBasicmgmt/system-mgmt/personal.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-mgmt/personal.vue'),
             meta: { 
               title: 'route.personalInfo', 
               icon: 'User',
@@ -188,7 +188,7 @@ const moduleRoutes = [
       {
         path: 'system-basicdata',
         name: 'SystemBasicData',
-        redirect: '/systemBasicmgmt/system-basicdata',
+        redirect: '/SystemBasicMgmt/system-basicdata',
         meta: { 
           title: 'route.systemBasicData',
           icon: 'List',
@@ -199,7 +199,7 @@ const moduleRoutes = [
           {
             path: 'companyinfo',
             name: 'SystemCompanyInfo',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/companyinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/companyinfo.vue'),
             meta: { 
               title: 'route.companyInfo', 
               icon: 'OfficeBuilding',
@@ -210,7 +210,7 @@ const moduleRoutes = [
           {
             path: 'departmentinfo',
             name: 'SystemDepartmentInfo',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/departmentinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/departmentinfo.vue'),
             meta: { 
               title: 'route.departmentInfo', 
               icon: 'School',
@@ -221,7 +221,7 @@ const moduleRoutes = [
           {
             path: 'departmentlevel',
             name: 'SystemDepartmentLevel',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/departmentlevel.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/departmentlevel.vue'),
             meta: { 
               title: 'route.departmentLevel', 
               icon: 'GoldMedal',
@@ -232,7 +232,7 @@ const moduleRoutes = [
           {
             path: 'userposition',
             name: 'SystemUserPosition',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/userposition.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/userposition.vue'),
             meta: { 
               title: 'route.userPosition', 
               icon: 'GoldMedal',
@@ -243,7 +243,7 @@ const moduleRoutes = [
           {
             path: 'userinfo',
             name: 'SystemUserInfo',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/userinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/userinfo.vue'),
             meta: { 
               title: 'route.userInfo', 
               icon: 'UserFilled',
@@ -254,7 +254,7 @@ const moduleRoutes = [
           {
             path: 'useragent',
             name: 'SystemUseragent',
-            component: () => import('../views/systemBasicmgmt/system-basicdata/useragent.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-basicdata/useragent.vue'),
             meta: { 
               title: 'route.userAgent', 
               icon: 'GoodsFilled',
@@ -268,7 +268,7 @@ const moduleRoutes = [
       {
         path: 'system-settings',
         name: 'SystemSettings',
-        redirect: '/systemBasicmgmt/system-settings',
+        redirect: '/SystemBasicMgmt/system-settings',
         meta: { 
           title: 'route.systemSettings',
           icon: 'Setting',
@@ -279,7 +279,7 @@ const moduleRoutes = [
           {
             path: 'dictionaryinfo',
             name: 'DictionaryInfo',
-            component: () => import('../views/systemBasicmgmt/system-settings/dictionaryinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-settings/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
               icon: 'Collection',
@@ -290,7 +290,7 @@ const moduleRoutes = [
           {
             path: 'currencyinfo',
             name: 'CurrencyInfo',
-            component: () => import('../views/systemBasicmgmt/system-settings/currencyinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/system-settings/currencyinfo.vue'),
             meta: { 
               title: 'route.currencyInfo', 
               icon: 'Money',

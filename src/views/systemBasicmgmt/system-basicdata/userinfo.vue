@@ -1,10 +1,10 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
-          <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
-             <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.department')">
+          <!-- 筛选 -->
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户筛选">
+             <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
                 <el-tree-select 
                       v-model="filters.departmentId"
                       :data="departmentOptions || []"
@@ -13,13 +13,13 @@
                       filterable
                       :filter-node-method="filterNodeMethod"
                       style="width: 200px;"
-                      :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectDepartment')" />
+                      :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.position')">
+              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.position')">
                   <el-select 
                       v-model="filters.positionId" 
                       style="width: 180px;"
-                      :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectPosition')">
+                      :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
                       <el-option
                           v-for="item in positionOptions"
                           :key="`position-filter-${item.positionId}`"
@@ -35,12 +35,12 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('systemBasicmgmt.userInfo.addUser') }}
+                      {{ $t('SystemBasicMgmt.userInfo.addUser') }}
                   </el-button>
               </el-form-item>
           </el-form>
 
-          <!-- 表格区域 -->
+          <!-- 表格 -->
           <div class="table-container">
               <el-table :data="userList"
                         border
@@ -48,21 +48,21 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="150" />
-                  <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="180" />
-                  <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="180" />
-                  <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="150" />
-                  <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="120" />
-                  <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="100" />
-                  <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="200" />
-                  <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                  <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
-                  <el-table-column prop="isSignName" :label="$t('systemBasicmgmt.userInfo.isSign')" align="center" min-width="120" />
-                  <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
-                  <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="130" />
-                  <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="60" align="center" fixed />
+                  <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
+                  <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="180" />
+                  <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
+                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
+                  <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
+                  <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
+                  <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
+                  <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
+                  <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
+                  <el-table-column prop="isSignName" :label="$t('SystemBasicMgmt.userInfo.isSign')" align="center" min-width="120" />
+                  <el-table-column prop="isPartTimeName" :label="$t('SystemBasicMgmt.userInfo.isPartTime')" align="center" min-width="120" />
+                  <el-table-column prop="isFreezeName" :label="$t('SystemBasicMgmt.userInfo.isFreeze')" align="center" min-width="130" />
+                  <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -84,7 +84,7 @@
                              @current-change="handlePageChange" />
           </div>
       </el-card>
-      <!-- 编辑状态对话框 -->
+      <!-- 编辑弹窗 -->
       <el-dialog v-model="dialogVisible"
                      :title="dialogTitle"
                      width="70%"
@@ -93,23 +93,23 @@
                      :modal-append-to-body="true"
                      :lock-scroll="true"
                      @close="handleDialogClose">
-              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="用户编辑表单">
-              <!-- 第一行：基本信息 -->
+              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="用户编辑">
+              <!-- 第一行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.userNo')" prop="userNo">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
                       <el-input v-model="editForm.userNo" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.userNameCh')" prop="userNameCh">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCh')" prop="userNameCh">
                       <el-input v-model="editForm.userNameCh" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.userNameEn')" prop="userNameEn">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameEn')" prop="userNameEn">
                       <el-input v-model="editForm.userNameEn" style="width:100%" />
                   </el-form-item>
               </div>
-              <!-- 第二行：性别和其他 -->
+              <!-- 第二行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.gender')" prop="gender">
-                      <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectGender')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.gender')" prop="gender">
+                      <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectGender')">
                           <el-option 
                               v-for="item in genderOptions"
                               :key="`gender-${item.genderCode}`"
@@ -117,21 +117,21 @@
                               :value="item.genderCode" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.hireDate')" prop="hireDate">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.hireDate')" prop="hireDate">
                       <el-date-picker
                           v-model="editForm.hireDate"
                           type="date"
                           style="width:100%"
-                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectHireDate')"
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectHireDate')"
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.employmentType')" prop="employmentType">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.employmentType')" prop="employmentType">
                       <el-select 
                           v-model="editForm.employmentType" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType')">
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType')">
                           <el-option
                               v-for="item in employmentTypeOptions"
                               :key="`employment-type-edit-${item.employmentCode}`"
@@ -140,9 +140,9 @@
                       </el-select>
                   </el-form-item>
               </div>
-              <!-- 第三行：组织信息 -->
+              <!-- 第三行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.department')" prop="departmentId">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.department')" prop="departmentId">
                       <el-tree-select
                           v-model="editForm.departmentId"
                           :data="departmentOptions || []"
@@ -152,14 +152,14 @@
                           clearable
                           :filter-node-method="filterNodeMethod"
                           style="width:100%"
-                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectDepartment')" />
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.position')" prop="positionId">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.position')" prop="positionId">
                       <el-select 
                           v-model="editForm.positionId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectPosition')">
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
                           <el-option
                               v-for="item in positionOptions"
                               :key="`position-edit-${item.positionId}`"
@@ -167,12 +167,12 @@
                               :value="item.positionId" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.role')" prop="roleId">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.role')" prop="roleId">
                       <el-select 
                           v-model="editForm.roleId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectRole')">
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectRole')">
                           <el-option
                               v-for="item in roleOptions"
                               :key="`role-edit-${item.roleId}`"
@@ -181,31 +181,31 @@
                       </el-select>
                   </el-form-item>
               </div>
-              <!-- 第四行：登录账号 -->
+              <!-- 第四行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.loginNo')" prop="loginNo">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.loginNo')" prop="loginNo">
                       <el-input v-model="editForm.loginNo" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.password')" prop="passWord">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.password')" prop="passWord">
                       <el-input v-model="editForm.passWord" type="password" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.email')" prop="email">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.email')" prop="email">
                       <el-input v-model="editForm.email" style="width:100%" />
                   </el-form-item>
               </div>
-              <!-- 第五行：联系信息 -->
+              <!-- 第五行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.phoneNumber')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.isEmployed')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isEmployed')">
                       <el-switch
                           v-model="editForm.isEmployed"
                           :active-value="1"
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.isFreeze')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
                       <el-switch
                           v-model="editForm.isFreeze"
                           :active-value="1"
@@ -213,9 +213,9 @@
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
-              <!-- 第六行：状态开关 -->
+              <!-- 第六行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.isSign')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isSign')">
                       <el-switch
                           v-model="editForm.isSign"
                           :active-value="1"
@@ -231,7 +231,7 @@
               </div>
               <!-- 备注信息 -->
               <div class="form-row full-width">
-                  <el-form-item :label="$t('systemBasicmgmt.userInfo.remark')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.remark')">
                       <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
@@ -260,7 +260,7 @@
       GET_ROLE_DROPDOWN_API,
       GET_GENDER_DROPDOWN_API,
       GET_EMPLOYMENT_TYPE_DROPDOWN_API
-  } from '@/config/api/systemBasicmgmt/system-basic/user'
+  } from '@/config/api/SystemBasicMgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -274,7 +274,7 @@
   // 表单引用
   const editFormRef = ref(null)
 
-  // 下拉框选项
+  // 下拉选项
   const departmentOptions = ref([])
   const positionOptions = ref([])
   const roleOptions = ref([])
@@ -323,42 +323,42 @@
   })
 
   // 对话框标题
-  const dialogTitle = ref(t('systemBasicmgmt.userInfo.editUser'))
+  const dialogTitle = ref(t('SystemBasicMgmt.userInfo.editUser'))
 
   // 表单验证规则
   const formRules = reactive({
       userNo: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputUserNo'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNo'), trigger: 'blur' }
       ],
       userNameCh: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputUserNameCh'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameCh'), trigger: 'blur' }
       ],
       userNameEn: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputUserNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameEn'), trigger: 'blur' }
       ],
       gender: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectGender'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectGender'), trigger: 'change' }
       ],
       hireDate: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
       employmentCode: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
       ],
       departmentId: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
       ],
       positionId: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectPosition'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectPosition'), trigger: 'change' }
       ],
       roleId: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseSelectRole'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectRole'), trigger: 'change' }
       ],
       loginNo: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
       ],
       email: [
-          { required: true, message: () => t('systemBasicmgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
       ],
       passWord: [
         { 
@@ -367,24 +367,24 @@
               callback()
               return
             }
-            // 密碼必須為 8-16 個字符
+            // 密码长度 8-16 个字符
             if (value.length < 8 || value.length > 16) {
-              callback(new Error(t('systemBasicmgmt.userInfo.passwordLengthError')))
+              callback(new Error(t('SystemBasicMgmt.userInfo.passwordLengthError')))
               return
             }
-            // 必須包含小寫字母
+            // 必须包含小写字母
             if (!/[a-z]/.test(value)) {
-              callback(new Error(t('systemBasicmgmt.userInfo.passwordLowercaseError')))
+              callback(new Error(t('SystemBasicMgmt.userInfo.passwordLowercaseError')))
               return
             }
-            // 必須包含大寫字母
+            // 必须包含大写字母
             if (!/[A-Z]/.test(value)) {
-              callback(new Error(t('systemBasicmgmt.userInfo.passwordUppercaseError')))
+              callback(new Error(t('SystemBasicMgmt.userInfo.passwordUppercaseError')))
               return
             }
-            // 必須包含數字
+            // 必须包含数字
             if (!/[0-9]/.test(value)) {
-              callback(new Error(t('systemBasicmgmt.userInfo.passwordNumberError')))
+              callback(new Error(t('SystemBasicMgmt.userInfo.passwordNumberError')))
               return
             }
             callback()
@@ -394,12 +394,12 @@
       ]
   })
 
-  // 部门搜索过滤方法
+  // 树形选择器过滤方法
   const filterNodeMethod = (value, data) => data.departmentName.includes(value)
 
-  // 在组件挂载后获取数据
+  // 组件挂载后获取数据
   onMounted(async () => {
-      // 获取下拉框数据并设置筛选条件默认值
+      // 获取下拉数据并设置筛选条件默认值
       await fetchDepartmentDropdown(true, false)
       await fetchPositionDropdown(true, false)
       await fetchGenderDropdown()
@@ -408,7 +408,7 @@
       fetchUserPages()
   })
 
-  // 获取部门下拉框数据
+  // 获取下拉数据
   const fetchDepartmentDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       try {
           const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
@@ -418,7 +418,7 @@
               if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
                   filters.departmentId = departmentOptions.value[0].departmentId
               }
-              // 设置编辑表单默认值（仅新增时）
+              // 设置编辑表单默认值
               if (setDefaultForm && departmentOptions.value.length > 0 && !editForm.departmentId) {
                   editForm.departmentId = departmentOptions.value[0].departmentId
               }
@@ -430,7 +430,7 @@
       }
   }
 
-  // 获取职位下拉框数据
+  // 获取职位下拉数据
   const fetchPositionDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
       if (res && res.code === '200') {
@@ -439,14 +439,14 @@
           if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
               filters.positionId = positionOptions.value[0].positionId
           }
-          // 设置编辑表单默认值（仅新增时）
+          // 设置编辑表单默认值
           if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
               editForm.positionId = positionOptions.value[0].positionId
           }
       }
   }
 
-  // 获取角色下拉框数据
+  // 获取角色下拉数据
   const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
       if (res && res.code === '200') {
@@ -455,14 +455,14 @@
           if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
               filters.roleId = roleOptions.value[0].roleId
           }
-          // 设置编辑表单默认值（仅新增时）
+          // 设置编辑表单默认值
           if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
               editForm.roleId = roleOptions.value[0].roleId
           }
       }
   }
 
-  // 获取性别下拉框数据
+  // 获取性别下拉数据
   const fetchGenderDropdown = async () => {
       try {
           const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
@@ -476,13 +476,13 @@
       }
   }
 
-  // 获取雇佣类型下拉框数据
+  // 获取就业类型下拉数据
   const fetchEmploymentTypeDropdown = async (setDefaultForm = false) => {
       try {
           const res = await post(GET_EMPLOYMENT_TYPE_DROPDOWN_API.GET_EMPLOYMENT_TYPE_DROPDOWN, {})
           if (res && res.code === '200') {
               employmentTypeOptions.value = res.data || []
-              // 设置编辑表单默认值（仅新增时）
+              // 设置编辑表单默认值
               if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentCode) {
                   editForm.employmentCode = employmentTypeOptions.value[0].employmentCode
               }
@@ -490,12 +490,12 @@
               employmentTypeOptions.value = []
           }
       } catch (error) {
-          console.error('获取雇佣类型数据失败:', error)
+          console.error('获取就业类型失败:', error)
           employmentTypeOptions.value = []
       }
   }
 
-  // 获取员工实体数据
+  // 获取员工实体
   const fetchUserEntity = async (userId) => {
       const params = {
           userId: userId
@@ -507,7 +507,7 @@
       }
   }
 
-  // 获取员工列表数据
+  // 获取员工列表
   const fetchUserPages = async () => {
       loading.value = true
       const params = {
@@ -523,18 +523,18 @@
           userList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.userInfo.getFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
       }
       loading.value = false
   }
 
-  // 处理搜索操作
+  // 搜索
   const handleSearch = () => {
       pagination.pageIndex = 1
       fetchUserPages()
   }
 
-  // 重置搜索条件
+  // 重置
   const handleReset = () => {
       Object.assign(filters, {
           departmentId: '',
@@ -551,13 +551,13 @@
 
 
 
-  // 处理页码变化
+  // 分页变化
   const handlePageChange = (page) => {
       pagination.pageIndex = page
       fetchUserPages()
   }
 
-  // 处理每页记录数变化
+  // 每页条数变化
   const handleSizeChange = (size) => {
       pagination.pageSize = size
       pagination.pageIndex = 1
@@ -565,7 +565,7 @@
   }
 
   const resetForm = () => {
-      // 重置表单数据
+      // 重置表单
       Object.assign(editForm, {
           userId: '',
           userNo: '',
@@ -600,7 +600,7 @@
       })
   }
 
-  // 新增员工数据
+  // 插入员工
   const insertUser = async () => {
       const params = {
           ...editForm
@@ -610,15 +610,15 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('systemBasicmgmt.userInfo.saveSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.saveSuccess'))
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
       }
   }
 
-  // 更新员工数据
+  // 更新员工
   const updateUser = async () => {
       const params = {
           ...editForm
@@ -627,15 +627,15 @@
       
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('systemBasicmgmt.userInfo.updateSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.updateSuccess'))
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
       }
   }
 
-  // 删除员工数据
+  // 删除员工
   const deleteUser = async (userId) => {
       const params = {
           userId: userId
@@ -644,55 +644,55 @@
       const res = await post(DELETE_USER_API.DELETE_USER, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || t('systemBasicmgmt.userInfo.deleteSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.deleteSuccess'))
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.userInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
       }
   }
 
-  // 处理新增操作
+  // 添加用户
   const handleAdd = async () => {
-      // 重置表单数据
+      // 重置表单
       resetForm()
-      // 重新获取下拉框数据并设置编辑表单默认值
+      // 重新获取下拉数据并设置编辑表单默认值
       await fetchDepartmentDropdown(false, true)
       await fetchPositionDropdown(false, true)
       await fetchRoleDropdown(false, true)
       await fetchGenderDropdown()
       await fetchEmploymentTypeDropdown(true)
-      // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.userInfo.addUser')
+      // 打开对话框
+      dialogTitle.value = t('SystemBasicMgmt.userInfo.addUser')
       // 显示对话框
       dialogVisible.value = true
-      // 对话框显示后清除验证状态
+      // 显示对话框时清除表单验证状态
       clearFormValidation()
   }
 
-  // 处理编辑操作
+  // 编辑用户
   const handleEdit = async (index, row) => {
-      // 重置表单数据
+      // 重置表单
       resetForm()
-      // 重新获取下拉框数据（编辑时不设置默认值）
+      // 重新获取下拉数据，编辑时设置默认值
       await fetchDepartmentDropdown(false, false)
       await fetchPositionDropdown(false, false)
       await fetchRoleDropdown(false, false)
       await fetchGenderDropdown()
       await fetchEmploymentTypeDropdown(false)
-      // 获取员工实体数据
+      // 获取员工实体
       await fetchUserEntity(row.userId)
-      // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.userInfo.editUser')
+      // 打开对话框
+      dialogTitle.value = t('SystemBasicMgmt.userInfo.editUser')
       // 显示对话框
       dialogVisible.value = true
-      // 对话框显示后清除验证状态
+      // 显示对话框时清除表单验证状态
       clearFormValidation()
   }
 
-  // 处理删除操作
+  // 删除用户
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('systemBasicmgmt.userInfo.deleteConfirm'),
+          t('SystemBasicMgmt.userInfo.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),
@@ -708,7 +708,7 @@
           })
   }
 
-  // 保存编辑结果
+  // 保存编辑
   const handleSave = () => {
       editFormRef.value?.validate((valid) => {
           if (valid) {
@@ -722,9 +722,9 @@
       })
   }
 
-  // 处理对话框关闭
+  // 关闭对话框
   const handleDialogClose = () => {
-      // 重置表单数据
+      // 重置表单
       resetForm()
   }
 </script>

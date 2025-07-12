@@ -101,7 +101,7 @@ export default {
     moduleSelect: '系統模塊',
     notFound: '頁面未找到',
     forbidden: '訪問被拒絕',
-    systemBasicmgmt: '系統基礎管理',
+    SystemBasicMgmt: '系統基礎管理',
     systemMgmt: '系統管理模組',
     role: '角色資料維護',
     domain: '網域資料維護',
@@ -124,7 +124,7 @@ export default {
   },
   
   // 系統基礎管理
-  systemBasicmgmt: {
+  SystemBasicMgmt: {
     // 系統狀態卡片
     systemStatus: {
       cpuUsage: 'CPU使用率',

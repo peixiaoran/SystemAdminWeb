@@ -1,19 +1,19 @@
-﻿<template>
+<template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
 
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form">
-                <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')">
+                <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleModule.role')">
                     <el-select style="width:180px"
                                v-model="filters.roleId"
-                               :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.role')"
+                               :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.roleModule.role')"
                                @change="handleRoleChange">
                         <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="$t('systemBasicmgmt.systemMgmt.roleModule.domain')">
-                    <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.roleModule.domain')" style="width:180px" @change="handleDomainChange">
+                <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleModule.domain')">
+                    <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.roleModule.domain')" style="width:180px" @change="handleDomainChange">
                         <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                     </el-select>
                 </el-form-item>
@@ -24,12 +24,12 @@
                 </el-form-item>
                 <el-form-item class="form-right-button">
                     <el-button type="primary" @click="handleConfirm">
-                        {{ $t('systemBasicmgmt.systemMgmt.updateBindings') }}
+                        {{ $t('SystemBasicMgmt.systemMgmt.updateBindings') }}
                     </el-button>
                 </el-form-item>
             </el-form>
 
-            <!-- 表格区域 -->
+            <!-- 表格数据 -->
             <div class="table-container">
                 <el-table :data="roleModuleList"
                           style="width: 100%"
@@ -39,17 +39,17 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                    <el-table-column prop="roleName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
-                    <el-table-column prop="menuName" :label="$t('systemBasicmgmt.systemMgmt.roleModule.module')" align="left" min-width="180" />
-                    <el-table-column prop="isChecked" :label="$t('systemBasicmgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                    <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
+                    <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.module')" align="left" min-width="180" />
+                    <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">
                         <template #default="scope">
                             <div class="checkbox-wrapper">
                                 <el-checkbox v-model="scope.row.isChecked" />
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="remark" :label="$t('systemBasicmgmt.systemMgmt.remark')" min-width="150" />
+                    <el-table-column prop="remark" :label="$t('SystemBasicMgmt.systemMgmt.remark')" min-width="150" />
                 </el-table>
             </div>
             <!-- 分页 -->
@@ -76,11 +76,11 @@
       GET_ROLE_DROPDOWN_API,
       GET_DOMAIN_DROPDOWN_API,
       UPDATE_ROLE_MODULE_API
-  } from '@/config/api/systemBasicmgmt/system-mgmt/rolemodule'
+  } from '@/config/api/SystemBasicMgmt/system-mgmt/rolemodule'
 
   const { t } = useI18n()
 
-  // 角色网域数据
+  // 角色模块数据
   const roleModuleList = ref([])
   const roleOptions = ref([])
   const domainOptions = ref([])
@@ -99,7 +99,7 @@
       total: 0
   })
 
-  // 在组件挂载后获取角色和网域数据
+  // 组件挂载后获取角色和网域数据
   onMounted(() => {
       fetchRoleDropdown()
       fetchDomainDropdown()
@@ -141,7 +141,7 @@
       }
   }
 
-  // 获取角色网域列表数据
+  // 获取角色模块列表数据
   const fetchRoleModuleList = async () => {
       if (!filters.roleId || !filters.domainId) return
 
@@ -167,7 +167,7 @@
       }
   }
 
-  // 处理搜索操作
+  // 处理搜索事件
   const handleSearch = () => {
       fetchRoleModuleList()
   }
@@ -175,7 +175,7 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId || !filters.domainId) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.roleModule.pleaseSelectRole') + '，' + t('systemBasicmgmt.systemMgmt.roleModule.pleaseSelectDomain'))
+          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.roleModule.pleaseSelectRole') + '和' + t('SystemBasicMgmt.systemMgmt.roleModule.pleaseSelectDomain'))
           return
       }
 
@@ -192,7 +192,7 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('systemBasicmgmt.systemMgmt.roleModule.updateBindingsSuccess'))
+              ElMessage.success(t('SystemBasicMgmt.systemMgmt.roleModule.updateBindingsSuccess'))
               fetchRoleModuleList()
           } else {
               ElMessage.error(res.message)
@@ -212,7 +212,7 @@
       fetchRoleModuleList()
   }
 
-  // 添加缺失的分页处理方法
+  // 处理缺失的分页事件处理
   const handleSizeChange = (size) => {
       pagination.pageSize = size
       fetchRoleModuleList()

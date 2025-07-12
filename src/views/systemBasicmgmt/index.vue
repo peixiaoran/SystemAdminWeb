@@ -1,11 +1,11 @@
-Ôªø<template>
+<template>
   <div class="page-container">
-    <!-- Á≥ªÁªüÁä∂ÊÄÅÂç°Áâá -->
+    <!-- œµÕ≥◊¥Ã¨ø®∆¨ -->
     <el-row :gutter="20">
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.cpuUsage') }}</div>
+            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.cpuUsage') }}</div>
             <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -13,15 +13,15 @@
             <el-progress :percentage="32" :show-text="false" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
-            <span class="compare-text">4 {{ $t('systemBasicmgmt.systemStatus.cores') }} / 8 {{ $t('systemBasicmgmt.systemStatus.threads') }}</span>
+            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
+            <span class="compare-text">4 {{ $t('SystemBasicMgmt.systemStatus.cores') }} / 8 {{ $t('SystemBasicMgmt.systemStatus.threads') }}</span>
           </div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.memoryUsage') }}</div>
+            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.memoryUsage') }}</div>
             <el-icon :size="24" color="#67C23A"><Connection /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -29,7 +29,7 @@
             <el-progress :percentage="65" :show-text="false" color="#67C23A" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
+            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
             <span class="compare-text">8GB / 16GB</span>
           </div>
         </el-card>
@@ -37,7 +37,7 @@
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.diskUsage') }}</div>
+            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.diskUsage') }}</div>
             <el-icon :size="24" color="#E6A23C"><DataAnalysis /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -45,7 +45,7 @@
             <el-progress :percentage="78" :show-text="false" color="#E6A23C" />
           </div>
           <div class="card-footer">
-            <span class="status-warning">{{ $t('systemBasicmgmt.systemStatus.warning') }}</span>
+            <span class="status-warning">{{ $t('SystemBasicMgmt.systemStatus.warning') }}</span>
             <span class="compare-text">780GB / 1TB</span>
           </div>
         </el-card>
@@ -53,7 +53,7 @@
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
           <div class="card-header">
-            <div class="card-title">{{ $t('systemBasicmgmt.systemStatus.systemLoad') }}</div>
+            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.systemLoad') }}</div>
             <el-icon :size="24" color="#F56C6C"><Loading /></el-icon>
           </div>
           <div class="card-value-with-progress">
@@ -61,57 +61,57 @@
             <el-progress :percentage="47" :show-text="false" color="#F56C6C" />
           </div>
           <div class="card-footer">
-            <span class="status-normal">{{ $t('systemBasicmgmt.systemStatus.normal') }}</span>
-            <span class="compare-text">{{ $t('systemBasicmgmt.systemStatus.lastMinutes') }}</span>
+            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
+            <span class="compare-text">{{ $t('SystemBasicMgmt.systemStatus.lastMinutes') }}</span>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- ËµÑÊ∫ê‰ΩøÁî®Ë∂ãÂäøÂõæ -->
+    <!-- ◊ ‘¥ π”√«˜ ∆Õº -->
     <el-row :gutter="20" class="chart-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="card-header-with-tabs">
-              <div class="card-header-title">{{ $t('systemBasicmgmt.resourceTrend.title') }}</div>
+              <div class="card-header-title">{{ $t('SystemBasicMgmt.resourceTrend.title') }}</div>
               <div class="card-header-tabs">
                 <el-radio-group v-model="resourceTimeRange" size="small">
-                  <el-radio-button value="hour">{{ $t('systemBasicmgmt.resourceTrend.hour') }}</el-radio-button>
-                  <el-radio-button value="day">{{ $t('systemBasicmgmt.resourceTrend.day') }}</el-radio-button>
-                  <el-radio-button value="week">{{ $t('systemBasicmgmt.resourceTrend.week') }}</el-radio-button>
-                  <el-radio-button value="month">{{ $t('systemBasicmgmt.resourceTrend.month') }}</el-radio-button>
+                  <el-radio-button value="hour">{{ $t('SystemBasicMgmt.resourceTrend.hour') }}</el-radio-button>
+                  <el-radio-button value="day">{{ $t('SystemBasicMgmt.resourceTrend.day') }}</el-radio-button>
+                  <el-radio-button value="week">{{ $t('SystemBasicMgmt.resourceTrend.week') }}</el-radio-button>
+                  <el-radio-button value="month">{{ $t('SystemBasicMgmt.resourceTrend.month') }}</el-radio-button>
                 </el-radio-group>
               </div>
             </div>
           </template>
           <div class="resource-chart">
-            <!-- ËøôÈáåÂèØ‰ª•ÊîæËµÑÊ∫êË∂ãÂäøÂõæË°®ÁªÑ‰ª∂ -->
-            <div class="chart-placeholder">{{ $t('systemBasicmgmt.resourceTrend.placeholder') }}</div>
+            <!-- ’‚¿Ôø…“‘∑≈◊ ‘¥«˜ ∆Õº±Ì◊Èº˛ -->
+            <div class="chart-placeholder">{{ $t('SystemBasicMgmt.resourceTrend.placeholder') }}</div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- Á≥ªÁªü‰ø°ÊÅØÂíåÊúçÂä°Áä∂ÊÄÅ -->
+    <!-- œµÕ≥–≈œ¢∫Õ∑˛ŒÒ◊¥Ã¨ -->
     <el-row :gutter="20" class="info-row">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-info-header">
-              <span>{{ $t('systemBasicmgmt.systemInfo.title') }}</span>
-              <el-button type="primary" size="small" plain>{{ $t('systemBasicmgmt.systemInfo.refresh') }}</el-button>
+              <span>{{ $t('SystemBasicMgmt.systemInfo.title') }}</span>
+              <el-button type="primary" size="small" plain>{{ $t('SystemBasicMgmt.systemInfo.refresh') }}</el-button>
             </div>
           </template>
           <el-descriptions :column="1" border class="descriptions-block">
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.os')">CentOS 8.4.2105</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.serverIp')">192.168.1.100</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.systemTime')">2023-05-15 15:30:45</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.uptime')">23Â§© 5Â∞èÊó∂ 16ÂàÜÈíü</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.cpuModel')">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.memoryCapacity')">16 GB</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.diskSpace')">1 TB</el-descriptions-item>
-            <el-descriptions-item :label="$t('systemBasicmgmt.systemInfo.systemVersion')">v2.5.3 (build 20230510)</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.os')">CentOS 8.4.2105</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.serverIp')">192.168.1.100</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.systemTime')">2023-05-15 15:30:45</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.uptime')">23ÃÏ 5–° ± 16∑÷÷”</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.cpuModel')">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.memoryCapacity')">16 GB</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.diskSpace')">1 TB</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.systemVersion')">v2.5.3 (build 20230510)</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
@@ -120,10 +120,10 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="service-status-header">
-              <span>{{ $t('systemBasicmgmt.serviceStatus.title') }}</span>
+              <span>{{ $t('SystemBasicMgmt.serviceStatus.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="RefreshRight">{{ $t('systemBasicmgmt.serviceStatus.refresh') }}</el-button>
-                <el-button type="success" size="small" plain>{{ $t('systemBasicmgmt.serviceStatus.restartAll') }}</el-button>
+                <el-button type="primary" size="small" plain icon="RefreshRight">{{ $t('SystemBasicMgmt.serviceStatus.refresh') }}</el-button>
+                <el-button type="success" size="small" plain>{{ $t('SystemBasicMgmt.serviceStatus.restartAll') }}</el-button>
               </div>
             </div>
           </template>
@@ -134,18 +134,18 @@
                 <div class="service-desc">{{ service.description }}</div>
               </div>
               <div class="service-actions">
-                <el-tag :type="service.status === $t('systemBasicmgmt.serviceStatus.running') ? 'success' : service.status === $t('systemBasicmgmt.serviceStatus.stopped') ? 'danger' : 'warning'">
+                <el-tag :type="service.status === $t('SystemBasicMgmt.serviceStatus.running') ? 'success' : service.status === $t('SystemBasicMgmt.serviceStatus.stopped') ? 'danger' : 'warning'">
                   {{ service.status }}
                 </el-tag>
                 <div class="action-buttons">
                   <el-button 
                     size="small" 
-                    :type="service.status === $t('systemBasicmgmt.serviceStatus.running') ? 'danger' : 'success'"
+                    :type="service.status === $t('SystemBasicMgmt.serviceStatus.running') ? 'danger' : 'success'"
                     plain
                   >
-                    {{ service.status === $t('systemBasicmgmt.serviceStatus.running') ? $t('systemBasicmgmt.serviceStatus.stop') : $t('systemBasicmgmt.serviceStatus.start') }}
+                    {{ service.status === $t('SystemBasicMgmt.serviceStatus.running') ? $t('SystemBasicMgmt.serviceStatus.stop') : $t('SystemBasicMgmt.serviceStatus.start') }}
                   </el-button>
-                  <el-button size="small" type="primary" plain>{{ $t('systemBasicmgmt.serviceStatus.restart') }}</el-button>
+                  <el-button size="small" type="primary" plain>{{ $t('SystemBasicMgmt.serviceStatus.restart') }}</el-button>
                 </div>
               </div>
             </div>
@@ -154,27 +154,27 @@
       </el-col>
     </el-row>
 
-    <!-- Á≥ªÁªüÊó•ÂøóÂíåÂ§á‰ªΩËÆ∞ÂΩï -->
+    <!-- œµÕ≥»’÷æ∫Õ±∏∑›º«¬º -->
     <el-row :gutter="20" class="log-row">
       <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-log-header">
-              <span>{{ $t('systemBasicmgmt.systemLog.title') }}</span>
+              <span>{{ $t('SystemBasicMgmt.systemLog.title') }}</span>
               <div class="log-actions">
-                <el-select v-model="logType" placeholder="Êó•ÂøóÁ±ªÂûã" size="small" style="width: 120px; margin-right: 10px;">
-                  <el-option :label="$t('systemBasicmgmt.systemLog.all')" value="all" />
-                  <el-option :label="$t('systemBasicmgmt.systemLog.error')" value="error" />
-                  <el-option :label="$t('systemBasicmgmt.systemLog.warning')" value="warning" />
-                  <el-option :label="$t('systemBasicmgmt.systemLog.info')" value="info" />
+                <el-select v-model="logType" placeholder="»’÷æ¿‡–Õ" size="small" style="width: 120px; margin-right: 10px;">
+                  <el-option :label="$t('SystemBasicMgmt.systemLog.all')" value="all" />
+                  <el-option :label="$t('SystemBasicMgmt.systemLog.error')" value="error" />
+                  <el-option :label="$t('SystemBasicMgmt.systemLog.warning')" value="warning" />
+                  <el-option :label="$t('SystemBasicMgmt.systemLog.info')" value="info" />
                 </el-select>
-                <el-button type="primary" size="small" plain>{{ $t('systemBasicmgmt.systemLog.viewMore') }}</el-button>
+                <el-button type="primary" size="small" plain>{{ $t('SystemBasicMgmt.systemLog.viewMore') }}</el-button>
               </div>
             </div>
           </template>
           <el-table :data="systemLogs" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="time" :label="$t('systemBasicmgmt.systemLog.time')" width="180" />
-            <el-table-column prop="level" :label="$t('systemBasicmgmt.systemLog.level')" width="100">
+            <el-table-column prop="time" :label="$t('SystemBasicMgmt.systemLog.time')" width="180" />
+            <el-table-column prop="level" :label="$t('SystemBasicMgmt.systemLog.level')" width="100">
               <template #default="scope">
                 <el-tag 
                   :type="scope.row.level === 'ERROR' ? 'danger' : scope.row.level === 'WARNING' ? 'warning' : 'info'"
@@ -184,11 +184,11 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="module" :label="$t('systemBasicmgmt.systemLog.module')" width="120" />
-            <el-table-column prop="message" :label="$t('systemBasicmgmt.systemLog.content')" show-overflow-tooltip />
-                              <el-table-column :label="$t('systemBasicmgmt.systemLog.operation')" width="120" fixed="right" align="center">
+            <el-table-column prop="module" :label="$t('SystemBasicMgmt.systemLog.module')" width="120" />
+            <el-table-column prop="message" :label="$t('SystemBasicMgmt.systemLog.content')" show-overflow-tooltip />
+                              <el-table-column :label="$t('SystemBasicMgmt.systemLog.operation')" width="120" fixed="right" align="center">
               <template #default>
-                <el-button size="small" type="primary" plain>{{ $t('systemBasicmgmt.systemLog.details') }}</el-button>
+                <el-button size="small" type="primary" plain>{{ $t('SystemBasicMgmt.systemLog.details') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -208,9 +208,9 @@
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="backup-header">
-              <span>{{ $t('systemBasicmgmt.backupRecord.title') }}</span>
+              <span>{{ $t('SystemBasicMgmt.backupRecord.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" icon="Plus">{{ $t('systemBasicmgmt.backupRecord.backupNow') }}</el-button>
+                <el-button type="primary" size="small" icon="Plus">{{ $t('SystemBasicMgmt.backupRecord.backupNow') }}</el-button>
               </div>
             </div>
           </template>
@@ -225,8 +225,8 @@
                   </div>
                 </div>
                 <div class="backup-actions">
-                  <el-button size="small" type="primary" plain icon="Download">{{ $t('systemBasicmgmt.backupRecord.restore') }}</el-button>
-                  <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.backupRecord.delete') }}</el-button>
+                  <el-button size="small" type="primary" plain icon="Download">{{ $t('SystemBasicMgmt.backupRecord.restore') }}</el-button>
+                  <el-button size="small" type="danger" plain icon="Delete">{{ $t('SystemBasicMgmt.backupRecord.delete') }}</el-button>
                 </div>
               </div>
             </div>
@@ -235,31 +235,31 @@
       </el-col>
     </el-row>
 
-    <!-- Á≥ªÁªüÈÄöÁü• -->
+    <!-- œµÕ≥Õ®÷™ -->
     <el-row :gutter="20" class="notice-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="system-notice-header">
-              <span>{{ $t('systemBasicmgmt.systemNotice.title') }}</span>
+              <span>{{ $t('SystemBasicMgmt.systemNotice.title') }}</span>
               <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="Plus">{{ $t('systemBasicmgmt.systemNotice.publish') }}</el-button>
+                <el-button type="primary" size="small" plain icon="Plus">{{ $t('SystemBasicMgmt.systemNotice.publish') }}</el-button>
               </div>
             </div>
           </template>
           <el-table :data="systemNotices" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="title" :label="$t('systemBasicmgmt.systemNotice.noticeTitle')" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="type" :label="$t('systemBasicmgmt.systemNotice.type')" width="120">
+            <el-table-column prop="title" :label="$t('SystemBasicMgmt.systemNotice.noticeTitle')" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="type" :label="$t('SystemBasicMgmt.systemNotice.type')" width="120">
               <template #default="scope">
                 <el-tag :type="getNoticeType(scope.row.type)">{{ scope.row.type }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="publisher" :label="$t('systemBasicmgmt.systemNotice.publisher')" width="120" />
-            <el-table-column prop="time" :label="$t('systemBasicmgmt.systemNotice.publishTime')" width="180" />
-                          <el-table-column :label="$t('systemBasicmgmt.systemNotice.operation')" width="180" fixed="right" align="center">
+            <el-table-column prop="publisher" :label="$t('SystemBasicMgmt.systemNotice.publisher')" width="120" />
+            <el-table-column prop="time" :label="$t('SystemBasicMgmt.systemNotice.publishTime')" width="180" />
+                          <el-table-column :label="$t('SystemBasicMgmt.systemNotice.operation')" width="180" fixed="right" align="center">
               <template #default>
-                <el-button size="small" type="primary" plain icon="View">{{ $t('systemBasicmgmt.systemNotice.view') }}</el-button>
-                <el-button size="small" type="danger" plain icon="Delete">{{ $t('systemBasicmgmt.systemNotice.delete') }}</el-button>
+                <el-button size="small" type="primary" plain icon="View">{{ $t('SystemBasicMgmt.systemNotice.view') }}</el-button>
+                <el-button size="small" type="danger" plain icon="Delete">{{ $t('SystemBasicMgmt.systemNotice.delete') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -276,13 +276,13 @@
       </el-col>
     </el-row>
 
-    <!-- Âø´Êç∑Êìç‰ΩúÂå∫ -->
+    <!-- øÏΩ›≤Ÿ◊˜«¯ -->
     <el-row :gutter="20" class="quick-action-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
           <template #header>
             <div class="quick-action-header">
-              <span>{{ $t('systemBasicmgmt.quickAction.title') }}</span>
+              <span>{{ $t('SystemBasicMgmt.quickAction.title') }}</span>
             </div>
           </template>
           <div class="quick-action-list">
@@ -299,7 +299,7 @@
       </el-col>
     </el-row>
 
-    <!-- Ê∑ªÂä†router-viewÔºåÁî®‰∫éÊòæÁ§∫Â≠êË∑ØÁî±ÂÜÖÂÆπ -->
+    <!-- ÃÌº”router-view£¨”√”⁄œ‘ æ◊”¬∑”…ƒ⁄»› -->
     <router-view v-slot="{ Component }">
       <transition name="fade-transform" mode="out-in">
         <keep-alive>
@@ -319,207 +319,207 @@ import {
   Document, Folder, Tools, Upload, Cpu, DataAnalysis, Loading
 } from '@element-plus/icons-vue'
 
-// ÂàùÂßãÂåñi18n
+// ≥ı ºªØi18n
 const { t } = useI18n()
 
-// ËµÑÊ∫êË∂ãÂäøÂõæÊó∂Èó¥ËåÉÂõ¥
+// ◊ ‘¥«˜ ∆Õº ±º‰∑∂Œß
 const resourceTimeRange = ref('day')
 
-// Êó•ÂøóÂàÜÈ°µ
+// »’÷æ∑÷“≥
 const logPagination = reactive({
   pageIndex: 1,
   pageSize: 5,
   total: 100
 })
 
-// ÈÄöÁü•ÂàÜÈ°µ
+// Õ®÷™∑÷“≥
 const noticePagination = reactive({
   pageIndex: 1,
   pageSize: 5,
   total: 50
 })
 
-// ÊúçÂä°Áä∂ÊÄÅ
+// ∑˛ŒÒ◊¥Ã¨
 const serviceStatus = reactive([
   {
-    name: 'WebÊúçÂä°Âô®',
+    name: 'Web∑˛ŒÒ∆˜',
     description: 'Nginx 1.20.1',
-    status: 'ËøêË°å‰∏≠'
+    status: '‘À––÷–'
   },
   {
-    name: 'Êï∞ÊçÆÂ∫ìÊúçÂä°',
+    name: ' ˝æ›ø‚∑˛ŒÒ',
     description: 'MySQL 8.0.27',
-    status: 'ËøêË°å‰∏≠'
+    status: '‘À––÷–'
   },
   {
-    name: 'ÁºìÂ≠òÊúçÂä°',
+    name: 'ª∫¥Ê∑˛ŒÒ',
     description: 'Redis 6.2.6',
-    status: 'ËøêË°å‰∏≠'
+    status: '‘À––÷–'
   },
   {
-    name: 'Ê∂àÊÅØÈòüÂàó',
+    name: 'œ˚œ¢∂”¡–',
     description: 'RabbitMQ 3.9.13',
-    status: 'Â∑≤ÂÅúÊ≠¢'
+    status: '“—Õ£÷π'
   },
   {
-    name: 'ÂÆöÊó∂‰ªªÂä°',
+    name: '∂® ±»ŒŒÒ',
     description: 'Cron Service',
-    status: 'ËøêË°å‰∏≠'
+    status: '‘À––÷–'
   }
 ])
 
-// Á≥ªÁªüÊó•Âøó
+// œµÕ≥»’÷æ
 const logType = ref('all')
 const systemLogs = reactive([
   {
     time: '2023-05-15 15:20:30',
     level: 'ERROR',
-            module: 'ÂëòÂ∑•ËÆ§ËØÅ',
-        message: 'ÂëòÂ∑•ÁôªÂΩïÂ§±Ë¥•ÔºöÂØÜÁ†ÅÈîôËØØ (IP: 192.168.1.5)'
+            module: '‘±π§»œ÷§',
+        message: '‘±π§µ«¬º ß∞‹£∫√‹¬Î¥ÌŒÛ (IP: 192.168.1.5)'
   },
   {
     time: '2023-05-15 15:15:22',
     level: 'WARNING',
-    module: 'Êï∞ÊçÆÂ∫ì',
-    message: 'Êï∞ÊçÆÂ∫ìËøûÊé•Ê±†ËææÂà∞80%ÂÆπÈáè'
+    module: ' ˝æ›ø‚',
+    message: ' ˝æ›ø‚¡¨Ω”≥ÿ¥ÔµΩ80%»›¡ø'
   },
   {
     time: '2023-05-15 15:10:15',
     level: 'INFO',
-    module: 'Á≥ªÁªü',
-    message: 'Á≥ªÁªüÈÖçÁΩÆÂ∑≤Êõ¥Êñ∞'
+    module: 'œµÕ≥',
+    message: 'œµÕ≥≈‰÷√“—∏¸–¬'
   },
   {
     time: '2023-05-15 15:05:48',
     level: 'INFO',
-            module: 'ÂëòÂ∑•ÁÆ°ÁêÜ',
-        message: 'Êñ∞ÂëòÂ∑•Ê≥®ÂÜåÔºöuser123'
+            module: '‘±π§π‹¿Ì',
+        message: '–¬‘±π§◊¢≤·£∫user123'
   },
   {
     time: '2023-05-15 15:01:33',
     level: 'WARNING',
-    module: 'Êñá‰ª∂Â≠òÂÇ®',
-    message: 'Á£ÅÁõòÁ©∫Èó¥‰∏çË∂≥ÔºåÂâ©‰ΩôÁ©∫Èó¥‰Ωé‰∫é20%'
+    module: 'Œƒº˛¥Ê¥¢',
+    message: '¥≈≈Ãø’º‰≤ª◊„£¨ £”‡ø’º‰µÕ”⁄20%'
   },
 ])
 
-// Á≥ªÁªüÈÄöÁü•
+// œµÕ≥Õ®÷™
 const systemNotices = reactive([
   {
-    title: 'Á≥ªÁªüÁª¥Êä§ÈÄöÁü•ÔºöÂ∞Ü‰∫é5Êúà20Êó•ËøõË°åÁ≥ªÁªüÊõ¥Êñ∞',
-    type: 'Áª¥Êä§',
+    title: 'œµÕ≥Œ¨ª§Õ®÷™£∫Ω´”⁄5‘¬20»’Ω¯––œµÕ≥∏¸–¬',
+    type: 'Œ¨ª§',
     publisher: 'Admin',
     time: '2023-05-15 10:30:00'
   },
   {
-    title: 'ÂÆâÂÖ®Êõ¥Êñ∞ÔºöÂ∑≤‰øÆÂ§çÂÖ≥ÈîÆÂÆâÂÖ®ÊºèÊ¥ûÔºåËØ∑ÂèäÊó∂Êõ¥Êñ∞',
-    type: 'ÂÆâÂÖ®',
+    title: '∞≤»´∏¸–¬£∫“—–ﬁ∏¥πÿº¸∞≤»´¬©∂¥£¨«Îº∞ ±∏¸–¬',
+    type: '∞≤»´',
     publisher: 'SecurityTeam',
     time: '2023-05-14 16:45:20'
   },
   {
-    title: 'ÂäüËÉΩÊõ¥Êñ∞ÔºöÊñ∞Â¢ûÊï∞ÊçÆÂàÜÊûêÊ®°Âùó',
-    type: 'Êõ¥Êñ∞',
+    title: 'π¶ƒ‹∏¸–¬£∫–¬‘ˆ ˝æ›∑÷Œˆƒ£øÈ',
+    type: '∏¸–¬',
     publisher: 'Admin',
     time: '2023-05-12 09:15:30'
   },
   {
-    title: 'ÊúçÂä°Âô®ÂçáÁ∫ßÂÆåÊàêÂÖ¨Âëä',
-    type: 'ÂÖ¨Âëä',
+    title: '∑˛ŒÒ∆˜…˝º∂ÕÍ≥…π´∏Ê',
+    type: 'π´∏Ê',
     publisher: 'SystemAdmin',
     time: '2023-05-10 14:20:00'
   },
   {
-    title: 'Âπ¥Â∫¶Á≥ªÁªüÂÆâÂÖ®ÂÆ°ËÆ°Â∞Ü‰∫é‰∏ãÂë®ÂºÄÂßã',
-    type: 'ÂÆâÂÖ®',
+    title: 'ƒÍ∂»œµÕ≥∞≤»´…Ûº∆Ω´”⁄œ¬÷‹ø™ º',
+    type: '∞≤»´',
     publisher: 'SecurityTeam',
     time: '2023-05-08 11:30:45'
   }
 ])
 
-// Â§á‰ªΩËÆ∞ÂΩï
+// ±∏∑›º«¬º
 const backupRecords = reactive([
   {
-    name: 'Á≥ªÁªüÂÆåÊï¥Â§á‰ªΩ_20230515',
+    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230515',
     time: '2023-05-15 03:00:00',
     size: '4.2 GB'
   },
   {
-    name: 'Êï∞ÊçÆÂ∫ìÂ§á‰ªΩ_20230514',
+    name: ' ˝æ›ø‚±∏∑›_20230514',
     time: '2023-05-14 03:00:00',
     size: '1.8 GB'
   },
   {
-    name: 'ÈÖçÁΩÆÊñá‰ª∂Â§á‰ªΩ_20230513',
+    name: '≈‰÷√Œƒº˛±∏∑›_20230513',
     time: '2023-05-13 03:00:00',
     size: '156 MB'
   },
   {
-    name: 'Á≥ªÁªüÂÆåÊï¥Â§á‰ªΩ_20230510',
+    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230510',
     time: '2023-05-10 03:00:00',
     size: '4.1 GB'
   },
   {
-    name: 'Êï∞ÊçÆÂ∫ìÂ§á‰ªΩ_20230507',
+    name: ' ˝æ›ø‚±∏∑›_20230507',
     time: '2023-05-07 03:00:00',
     size: '1.7 GB'
   },
   {
-    name: 'Á≥ªÁªüÂÆåÊï¥Â§á‰ªΩ_20230501',
+    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230501',
     time: '2023-05-01 03:00:00',
     size: '4.0 GB'
   }
 ])
 
-// Âø´Êç∑Êìç‰Ωú
+// øÏΩ›≤Ÿ◊˜
 const quickActions = reactive([
   {
-    name: 'Á≥ªÁªüËÆæÁΩÆ',
+    name: 'œµÕ≥…Ë÷√',
     icon: markRaw(Setting)
   },
   {
-          name: 'ÂëòÂ∑•ÁÆ°ÁêÜ',
+          name: '‘±π§π‹¿Ì',
     icon: markRaw(User)
   },
   {
-    name: 'ÂÆâÂÖ®ÈÖçÁΩÆ',
+    name: '∞≤»´≈‰÷√',
     icon: markRaw(Lock)
   },
   {
-    name: 'Á≥ªÁªüÁõëÊéß',
+    name: 'œµÕ≥º‡øÿ',
     icon: markRaw(Monitor)
   },
   {
-    name: 'Â§á‰ªΩÊÅ¢Â§ç',
+    name: '±∏∑›ª÷∏¥',
     icon: markRaw(Upload)
   },
   {
-    name: 'Êó•ÂøóÂàÜÊûê',
+    name: '»’÷æ∑÷Œˆ',
     icon: markRaw(Document)
   },
   {
-    name: 'Â≠òÂÇ®ÁÆ°ÁêÜ',
+    name: '¥Ê¥¢π‹¿Ì',
     icon: markRaw(Folder)
   },
   {
-    name: 'Â∑•ÂÖ∑ÁÆ±',
+    name: 'π§æﬂœ‰',
     icon: markRaw(Tools)
   }
 ])
 
-// Ëé∑ÂèñÈÄöÁü•Á±ªÂûã
+// ªÒ»°Õ®÷™¿‡–Õ
 const getNoticeType = (type) => {
   switch (type) {
-    case 'Áª¥Êä§':
+    case 'Œ¨ª§':
     case 'Maintenance':
       return 'warning'
-    case 'ÂÆâÂÖ®':
+    case '∞≤»´':
     case 'Security':
       return 'danger'
-    case 'Êõ¥Êñ∞':
+    case '∏¸–¬':
     case 'Update':
       return 'success'
-    case 'ÂÖ¨Âëä':
+    case 'π´∏Ê':
     case 'Announcement':
       return 'info'
     default:
@@ -627,7 +627,7 @@ const getNoticeType = (type) => {
   gap: 10px;
 }
 
-/* ÂõæË°®Âç†‰Ωç */
+/* Õº±Ì’ºŒª */
 .resource-chart {
   height: 300px;
   display: flex;
@@ -645,12 +645,12 @@ const getNoticeType = (type) => {
   border-radius: 4px;
 }
 
-/* ÊèèËø∞ÂàóË°® */
+/* √Ë ˆ¡–±Ì */
 .descriptions-block {
   margin-top: 10px;
 }
 
-/* ÊúçÂä°Áä∂ÊÄÅÊ†∑Âºè */
+/* ∑˛ŒÒ◊¥Ã¨—˘ Ω */
 .service-list {
   max-height: 365px;
   overflow-y: auto;
@@ -691,14 +691,14 @@ const getNoticeType = (type) => {
   gap: 8px;
 }
 
-/* ÂàÜÈ°µÂÆπÂô® */
+/* ∑÷“≥»›∆˜ */
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
-/* Â§á‰ªΩËÆ∞ÂΩïÊ†∑Âºè */
+/* ±∏∑›º«¬º—˘ Ω */
 .backup-list {
   padding: 5px 0;
 }
@@ -739,7 +739,7 @@ const getNoticeType = (type) => {
   gap: 8px;
 }
 
-/* Âø´Êç∑Êìç‰ΩúÂå∫ */
+/* øÏΩ›≤Ÿ◊˜«¯ */
 .quick-action-list {
   padding: 15px 0;
 }
@@ -764,7 +764,7 @@ const getNoticeType = (type) => {
   text-align: center;
 }
 
-/* Ë°®Ê†ºÊ†∑ÂºèË∞ÉÊï¥ */
+/* ±Ì∏Ò—˘ Ωµ˜’˚ */
 :deep(.el-table th) {
   background-color: #f5f7fa !important;
   font-weight: 600;

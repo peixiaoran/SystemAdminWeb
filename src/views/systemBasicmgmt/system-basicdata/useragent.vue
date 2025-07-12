@@ -4,7 +4,7 @@
   
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
-               <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.department')">
+               <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
                   <el-tree-select 
                         v-model="filters.departmentId"
                         :data="departmentOptions || []"
@@ -13,13 +13,13 @@
                         filterable
                         :filter-node-method="filterNodeMethod"
                         style="width: 200px;"
-                        :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectDepartment')" />
+                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
                 </el-form-item>
-                <el-form-item :label="$t('systemBasicmgmt.userInfo.filter.position')">
+                <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.position')">
                     <el-select 
                         v-model="filters.positionId" 
                         style="width: 180px;"
-                        :placeholder="$t('systemBasicmgmt.userInfo.pleaseSelectPosition')">
+                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
                         <el-option
                             v-for="item in positionOptions"
                             :key="`position-filter-${item.positionId}`"
@@ -43,24 +43,24 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('systemBasicmgmt.userInfo.index')" width="60" align="center" fixed />
-                    <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="150" />
-                    <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="180" />
-                    <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="180" />
-                    <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="150" />
-                    <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="120" />
-                    <el-table-column prop="genderName" :label="$t('systemBasicmgmt.userInfo.gender')" align="center" min-width="100" />
-                    <el-table-column prop="email" :label="$t('systemBasicmgmt.userInfo.email')" align="left" min-width="200" />
-                    <el-table-column prop="phoneNumber" :label="$t('systemBasicmgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                    <el-table-column prop="isEmployedName" :label="$t('systemBasicmgmt.userInfo.isEmployed')" align="center" min-width="130" />
-                    <el-table-column prop="isSignName" :label="$t('systemBasicmgmt.userInfo.isSign')" align="center" min-width="120" />
-                    <el-table-column prop="isPartTimeName" :label="$t('systemBasicmgmt.userInfo.isPartTime')" align="center" min-width="120" />
-                    <el-table-column prop="isFreezeName" :label="$t('systemBasicmgmt.userInfo.isFreeze')" align="center" min-width="130" />
-                    <el-table-column prop="employmentTypeName" :label="$t('systemBasicmgmt.userInfo.employmentType')" align="center" min-width="180" />
-                    <el-table-column :label="$t('systemBasicmgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="60" align="center" fixed />
+                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
+                    <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="180" />
+                    <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
+                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
+                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
+                    <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
+                    <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
+                    <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
+                    <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
+                    <el-table-column prop="isSignName" :label="$t('SystemBasicMgmt.userInfo.isSign')" align="center" min-width="120" />
+                    <el-table-column prop="isPartTimeName" :label="$t('SystemBasicMgmt.userInfo.isPartTime')" align="center" min-width="120" />
+                    <el-table-column prop="isFreezeName" :label="$t('SystemBasicMgmt.userInfo.isFreeze')" align="center" min-width="130" />
+                    <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
+                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
                         <template #default="scope">
-                            <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('systemBasicmgmt.userAgent.addAgent') }}</el-button>
-                            <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systemBasicmgmt.userAgent.viewAgentList') }}</el-button>
+                            <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.addAgent') }}</el-button>
+                            <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.viewAgentList') }}</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -96,11 +96,11 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           height="370"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('systemBasicmgmt.userAgent.index')" width="60" align="center" />
-                    <el-table-column prop="agentUserNo" :label="$t('systemBasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
-                    <el-table-column prop="agentUserName" :label="$t('systemBasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
-                    <el-table-column prop="startTime" :label="$t('systemBasicmgmt.userAgent.startTime')" align="center" min-width="110" />
-                    <el-table-column prop="endTime" :label="$t('systemBasicmgmt.userAgent.endTime')" align="center" min-width="110" />
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userAgent.index')" width="60" align="center" />
+                    <el-table-column prop="agentUserNo" :label="$t('SystemBasicMgmt.userAgent.agentUserNo')" align="left" min-width="110" />
+                    <el-table-column prop="agentUserName" :label="$t('SystemBasicMgmt.userAgent.agentUser')" align="left" min-width="200" />
+                    <el-table-column prop="startTime" :label="$t('SystemBasicMgmt.userAgent.startTime')" align="center" min-width="110" />
+                    <el-table-column prop="endTime" :label="$t('SystemBasicMgmt.userAgent.endTime')" align="center" min-width="110" />
                     <el-table-column :label="$t('common.operation')" align="center" width="120">
                         <template #default="scope">
                             <el-button size="small" type="danger" @click="handleDeleteAgent(scope.$index)">
@@ -117,9 +117,9 @@
             </template>
         </el-dialog>
 
-        <!-- 员工选择对话框 -->
+        <!-- 员工选择对话�?-->
         <el-dialog v-model="userSelectDialogVisible"
-                   :title="`${$t('systemBasicmgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCh || currentUserInfo.userNameEn}`"
+                   :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCh || currentUserInfo.userNameEn}`"
                    width="70%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
@@ -129,42 +129,42 @@
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
                 <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;">
-                    <el-form-item :label="$t('systemBasicmgmt.userAgent.startTime')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')">
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
                             type="datetime"
-                            :placeholder="$t('systemBasicmgmt.userAgent.pleaseSelectStartTime')"
+                            :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectStartTime')"
                             :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
                             @change="handleStartTimeChange"
                             style="width: 200px;" />
                     </el-form-item>
-                    <el-form-item :label="$t('systemBasicmgmt.userAgent.endTime')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.endTime')">
                         <el-date-picker
                             v-model="agentTimeRange.endTime"
                             type="datetime"
-                            :placeholder="$t('systemBasicmgmt.userAgent.pleaseSelectEndTime')"
+                            :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectEndTime')"
                             :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
                             @change="handleEndTimeChange"
                             style="width: 200px;" />
                     </el-form-item>
                 </el-form>
                 
-                <!-- 分隔线 -->
+                <!-- 分隔�?-->
                 <el-divider style="margin: 10px 0;"></el-divider>
 
                 <!-- 搜索区域 -->
                 <el-form :inline="true" :model="userSelectFilters" class="conventional-filter-form" style="margin-top: 10px;">
-                    <el-form-item :label="$t('systemBasicmgmt.userInfo.userNo')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
                         <el-input 
                             v-model="userSelectFilters.userNo" 
                             style="width: 180px;"
-                            :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputUserNo')" />
+                            :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserNo')" />
                     </el-form-item>
-                    <el-form-item :label="$t('systemBasicmgmt.userInfo.userNameCh')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCh')">
                         <el-input 
                             v-model="userSelectFilters.userName" 
                             style="width: 180px;"
-                            :placeholder="$t('systemBasicmgmt.userInfo.pleaseInputUserName')" />
+                            :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserName')" />
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="handleUserSelectSearch">{{ $t('common.search') }}</el-button>
@@ -182,11 +182,11 @@
                           height="300"
                           @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('systemBasicmgmt.userInfo.userNo')" align="center" min-width="120" />
-                    <el-table-column prop="userNameCh" :label="$t('systemBasicmgmt.userInfo.userNameCh')" align="left" min-width="120" />
-                    <el-table-column prop="userNameEn" :label="$t('systemBasicmgmt.userInfo.userNameEn')" align="left" min-width="120" />
-                    <el-table-column prop="departmentName" :label="$t('systemBasicmgmt.userInfo.department')" align="left" min-width="120" />
-                    <el-table-column prop="positionName" :label="$t('systemBasicmgmt.userInfo.position')" align="left" min-width="100" />
+                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="120" />
+                    <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="120" />
+                    <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="120" />
+                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="120" />
+                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="100" />
                 </el-table>
 
                 <!-- 分页 -->
@@ -219,13 +219,13 @@
         GET_DEPARTMENT_DROPDOWN_API,
         GET_USER_POSITION_DROPDOWN_API,
         GET_ROLE_DROPDOWN_API
-    } from '@/config/api/systemBasicmgmt/system-basic/user'
+    } from '@/config/api/SystemBasicMgmt/system-basic/user'
     import { 
         GET_USER_AGENT_API,
         GET_USER_AGENT_INSERT_API,
         GET_USER_AGENT_DELETE_API,
         GET_USER_VIEW_API
-    } from '@/config/api/systemBasicmgmt/system-basic/useragent'
+    } from '@/config/api/SystemBasicMgmt/system-basic/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -254,7 +254,7 @@
         positionId: '',
     })
   
-        // 代理人相关数据
+        // 代理人相关数�?
     const agentDialogVisible = ref(false)
     const agentDialogTitle = ref('')
     const agentList = ref([])
@@ -263,7 +263,7 @@
     const currentUserInfo = ref({})
 
 
-    // 员工选择对话框相关数据
+    // 员工选择对话框相关数�?
     const userSelectDialogVisible = ref(false)
     const userSelectLoading = ref(false)
     const userSelectList = ref([])
@@ -276,7 +276,7 @@
         endTime: ''
     })
     
-    // 员工选择筛选条件
+    // 员工选择筛选条�?
     const userSelectFilters = reactive({
         userNo: '',
         userName: ''
@@ -294,20 +294,20 @@
   
     // 在组件挂载后获取数据
     onMounted(async () => {
-        // 获取下拉框数据并设置筛选条件默认值
+        // 获取下拉框数据并设置筛选条件默认�?
         await fetchDepartmentDropdown(true)
         await fetchPositionDropdown(true)
         // 获取员工列表数据
         fetchUserPages()
     })
   
-    // 获取部门下拉框数据
+    // 获取部门下拉框数�?
     const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
             if (res && res.code === '200') {
                 departmentOptions.value = Array.isArray(res.data) ? res.data : []
-                // 设置筛选条件默认值
+                // 设置筛选条件默认�?
                 if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
                     filters.departmentId = departmentOptions.value[0].departmentId
                 }
@@ -319,24 +319,24 @@
         }
     }
   
-    // 获取职位下拉框数据
+    // 获取职位下拉框数�?
     const fetchPositionDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
         if (res && res.code === '200') {
             positionOptions.value = res.data || []
-            // 设置筛选条件默认值
+            // 设置筛选条件默认�?
             if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
                 filters.positionId = positionOptions.value[0].positionId
             }
         }
     }
   
-    // 获取角色下拉框数据
+    // 获取角色下拉框数�?
     const fetchRoleDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
         if (res && res.code === '200') {
             roleOptions.value = res.data || []
-            // 设置筛选条件默认值
+            // 设置筛选条件默认�?
             if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
                 filters.roleId = roleOptions.value[0].roleId
             }
@@ -345,7 +345,7 @@
   
     
   
-    // 获取代理人列表数据
+    // 获取代理人列表数�?
     const fetchUserAgentList = async (substituteUserId) => {
         agentLoading.value = true
         try {
@@ -358,12 +358,12 @@
                 agentList.value = res.data || []
             } else {
                 agentList.value = []
-                ElMessage.error(res.message || t('systemBasicmgmt.userAgent.getFailed'))
+                ElMessage.error(res.message || t('SystemBasicMgmt.userAgent.getFailed'))
             }
         } catch (error) {
-            console.error('获取代理人列表失败:', error)
+            console.error('获取代理人列表失�?', error)
             agentList.value = []
-            ElMessage.error(t('systemBasicmgmt.userAgent.getFailed'))
+            ElMessage.error(t('SystemBasicMgmt.userAgent.getFailed'))
         } finally {
             agentLoading.value = false
         }
@@ -385,7 +385,7 @@
             userList.value = res.data || []
             pagination.total = res.totalNumber || 0
         } else {
-            ElMessage.error(res.message || t('systemBasicmgmt.userInfo.getFailed'))
+            ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
         }
         loading.value = false
     }
@@ -419,7 +419,7 @@
         fetchUserPages()
     }
   
-    // 处理每页记录数变化
+    // 处理每页记录数变�?
     const handleSizeChange = (size) => {
         pagination.pageSize = size
         pagination.pageIndex = 1
@@ -428,12 +428,12 @@
   
     
   
-        // 处理配置代理人操作
+        // 处理配置代理人操�?
     const handleConfigureAgent = async (index, row) => {
         currentUserId.value = row.userId
-        agentDialogTitle.value = `${t('systemBasicmgmt.userAgent.agentDetails')} - ${row.userNameCh || row.userNameEn}`
+        agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userNameCh || row.userNameEn}`
         agentDialogVisible.value = true
-        // 获取代理人列表
+        // 获取代理人列�?
         await fetchUserAgentList(row.userId)
     }
 
@@ -449,7 +449,7 @@
         // 重置用户选择
         selectedUsers.value = []
         userSelectDialogVisible.value = true
-        // 重置搜索条件并获取用户列表
+        // 重置搜索条件并获取用户列�?
         Object.assign(userSelectFilters, {
             userNo: '',
             userName: ''
@@ -465,7 +465,7 @@
         agentDialogTitle.value = ''
     }
 
-    // 处理员工选择对话框关闭后的清理
+    // 处理员工选择对话框关闭后的清�?
     const handleUserSelectDialogClosed = () => {
         currentUserInfo.value = {}
         currentUserId.value = ''
@@ -486,14 +486,14 @@
 
 
 
-    // 处理删除代理人
+    // 处理删除代理�?
     const handleDeleteAgent = async (index) => {
         try {
             const agent = agentList.value[index]
             
             // 确认删除
             await ElMessageBox.confirm(
-                t('systemBasicmgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
+                t('SystemBasicMgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
                 t('common.confirmDelete'),
                 {
                     confirmButtonText: t('common.confirm'),
@@ -512,7 +512,7 @@
             
             if (res && res.code === '200') {
                 ElMessage.success(res.message || t('common.deleteSuccess'))
-                // 重新获取代理人列表
+                // 重新获取代理人列�?
                 await fetchUserAgentList(currentUserId.value)
             } else {
                 ElMessage.error(res.message || t('common.operationFailed'))
@@ -522,7 +522,7 @@
                 // 用户取消删除
                 return
             }
-            console.error('删除代理人失败:', error)
+            console.error('删除代理人失�?', error)
             ElMessage.error(t('common.operationFailed'))
         }
     }
@@ -547,13 +547,13 @@
             } else {
                 userSelectList.value = []
                 userSelectPagination.total = 0
-                ElMessage.error(res.message || t('systemBasicmgmt.userInfo.getFailed'))
+                ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
             }
         } catch (error) {
             console.error('获取用户列表失败:', error)
             userSelectList.value = []
             userSelectPagination.total = 0
-            ElMessage.error(t('systemBasicmgmt.userInfo.getFailed'))
+            ElMessage.error(t('SystemBasicMgmt.userInfo.getFailed'))
         } finally {
             userSelectLoading.value = false
         }
@@ -588,15 +588,15 @@
         fetchUserSelectList()
     }
 
-    // 处理多选变化
+    // 处理多选变�?
     const handleSelectionChange = (selection) => {
         selectedUsers.value = selection
     }
 
-    // 处理开始时间变化
+    // 处理开始时间变�?
     const handleStartTimeChange = (value) => {
         if (value && agentTimeRange.endTime && new Date(value) > new Date(agentTimeRange.endTime)) {
-            ElMessage.warning(t('systemBasicmgmt.userAgent.startTimeCannotLaterThanEndTime'))
+            ElMessage.warning(t('SystemBasicMgmt.userAgent.startTimeCannotLaterThanEndTime'))
             agentTimeRange.startTime = ''
         }
     }
@@ -604,7 +604,7 @@
     // 处理结束时间变化
     const handleEndTimeChange = (value) => {
         if (value && agentTimeRange.startTime && new Date(value) < new Date(agentTimeRange.startTime)) {
-            ElMessage.warning(t('systemBasicmgmt.userAgent.endTimeCannotEarlierThanStartTime'))
+            ElMessage.warning(t('SystemBasicMgmt.userAgent.endTimeCannotEarlierThanStartTime'))
             agentTimeRange.endTime = ''
         }
     }
@@ -612,17 +612,17 @@
     // 确认用户选择
     const handleConfirmUserSelect = async () => {
         if (selectedUsers.value.length === 0) {
-            ElMessage.warning(t('systemBasicmgmt.userAgent.pleaseSelectUsers'))
+            ElMessage.warning(t('SystemBasicMgmt.userAgent.pleaseSelectUsers'))
             return
         }
 
         if (!agentTimeRange.startTime || !agentTimeRange.endTime) {
-            ElMessage.warning(t('systemBasicmgmt.userAgent.pleaseSelectTimeRange'))
+            ElMessage.warning(t('SystemBasicMgmt.userAgent.pleaseSelectTimeRange'))
             return
         }
 
         try {
-            // 格式化时间
+            // 格式化时�?
             const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
             const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
 
@@ -638,9 +638,9 @@
                 const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
                 
                 if (res && res.code === '200') {
-                    // 成功添加代理人
+                    // 成功添加代理�?
                 } else {
-                    ElMessage.error(res.message || `添加代理人失败: ${user.userNameCh || user.userNameEn}`)
+                    ElMessage.error(res.message || `添加代理人失�? ${user.userNameCh || user.userNameEn}`)
                     return
                 }
             }
@@ -660,14 +660,14 @@
                 userSelectTableRef.value.clearSelection()
             }
 
-            // 重新获取代理人列表
+            // 重新获取代理人列�?
             await fetchUserAgentList(currentUserId.value)
             
             // 清理当前用户信息
             currentUserInfo.value = {}
             
         } catch (error) {
-            console.error('添加代理人失败:', error)
+            console.error('添加代理人失�?', error)
             ElMessage.error(t('common.operationFailed'))
         }
     }
@@ -687,7 +687,7 @@
     }
 
     :deep(.agent-dialog .el-dialog__body) {
-      height: calc(550px - 120px); /* 减去header和footer的高度 */
+      height: calc(550px - 120px); /* 减去header和footer的高�?*/
       overflow: auto;
       padding: 0 20px 20px 20px;
     }

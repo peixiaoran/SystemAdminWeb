@@ -1,7 +1,7 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- 表格区域 -->
+      <!-- �������� -->
       <div class="table-container">
         <el-table 
           :data="positionList"
@@ -16,32 +16,32 @@
         >
           <el-table-column 
             type="index" 
-            :label="$t('systemBasicmgmt.userPosition.index')" 
+            :label="$t('SystemBasicMgmt.userPosition.index')" 
             width="60" 
             align="center" 
             fixed 
           />
           <el-table-column 
             prop="positionNo" 
-            :label="$t('systemBasicmgmt.userPosition.positionNo')"
+            :label="$t('SystemBasicMgmt.userPosition.positionNo')"
             align="center" 
             min-width="120" 
           />
           <el-table-column 
             prop="positionNameCh"
-:label="$t('systemBasicmgmt.userPosition.positionNameCh')"
+:label="$t('SystemBasicMgmt.userPosition.positionNameCh')"
             align="left" 
             min-width="200" 
           />
           <el-table-column 
             prop="positionNameEn" 
-            :label="$t('systemBasicmgmt.userPosition.positionNameEn')"
+            :label="$t('SystemBasicMgmt.userPosition.positionNameEn')"
             align="left" 
             min-width="200" 
           />
           <el-table-column 
             prop="positionDescribe" 
-            :label="$t('systemBasicmgmt.userPosition.positionDescribe')"
+            :label="$t('SystemBasicMgmt.userPosition.positionDescribe')"
             align="left" 
             min-width="250" 
           />
@@ -65,10 +65,10 @@
       </div>
     </el-card>
     
-    <!-- 编辑状态对话框 -->
+    <!-- �༭״̬�Ի��� -->
     <el-dialog 
       v-model="dialogVisible"
-      :title="$t('systemBasicmgmt.userPosition.editPosition')"
+      :title="$t('SystemBasicMgmt.userPosition.editPosition')"
       width="50%"
       :close-on-click-modal="false"
     >
@@ -81,28 +81,28 @@
           class="dialog-form"
         >
           <div class="form-row">
-            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionNo')">
+            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNo')">
               <el-input 
                 v-model="editForm.positionNo" 
-                :placeholder="$t('systemBasicmgmt.userPosition.positionNoPlaceholder')"
+                :placeholder="$t('SystemBasicMgmt.userPosition.positionNoPlaceholder')"
                 style="width:100%" 
                 readonly
               />
             </el-form-item>
-            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionNameCh')">
+            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNameCh')">
 <el-input
 v-model="editForm.positionNameCh"
-:placeholder="$t('systemBasicmgmt.userPosition.positionNameChPlaceholder')"
+:placeholder="$t('SystemBasicMgmt.userPosition.positionNameChPlaceholder')"
                 style="width:100%" 
                 readonly
               />
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionNameEn')">
+            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNameEn')">
               <el-input 
                 v-model="editForm.positionNameEn" 
-                :placeholder="$t('systemBasicmgmt.userPosition.positionNameEnPlaceholder')"
+                :placeholder="$t('SystemBasicMgmt.userPosition.positionNameEnPlaceholder')"
                 style="width:100%" 
                 readonly
               />
@@ -110,10 +110,10 @@ v-model="editForm.positionNameCh"
             <el-form-item></el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('systemBasicmgmt.userPosition.positionDescribe')">
+            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionDescribe')">
               <el-input 
                 v-model="editForm.positionDescribe" 
-                :placeholder="$t('systemBasicmgmt.userPosition.positionDescribePlaceholder')"
+                :placeholder="$t('SystemBasicMgmt.userPosition.positionDescribePlaceholder')"
                 style="width:100%" 
                 type="textarea" 
                 :rows="3" 
@@ -149,7 +149,7 @@ import { post } from '@/utils/request'
 import { 
   GET_USER_POSITION_LIST_API, 
   GET_USER_POSITION_ENTITY_API 
-} from '@/config/api/systemBasicmgmt/system-basic/userposition.js'
+} from '@/config/api/SystemBasicMgmt/system-basic/userposition.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n
@@ -171,12 +171,12 @@ const getPositionList = async () => {
     if (response.code === '200') {
       positionList.value = response.data || []
     } else {
-      ElMessage.error(response.message || t('systemBasicmgmt.userPosition.getFailed'))
+      ElMessage.error(response.message || t('SystemBasicMgmt.userPosition.getFailed'))
       positionList.value = []
     }
   } catch (error) {
     console.error('获取职位列表失败:', error)
-    ElMessage.error(t('systemBasicmgmt.userPosition.getFailed'))
+    ElMessage.error(t('SystemBasicMgmt.userPosition.getFailed'))
     positionList.value = []
   } finally {
     loading.value = false
@@ -201,12 +201,12 @@ const handleEdit = async (index, row) => {
     if (response.code === '200') {
       editForm.value = { ...response.data }
     } else {
-      ElMessage.error(response.message || t('systemBasicmgmt.userPosition.getFailed'))
+      ElMessage.error(response.message || t('SystemBasicMgmt.userPosition.getFailed'))
       dialogVisible.value = false
     }
   } catch (error) {
     console.error('获取职位详情失败:', error)
-    ElMessage.error(t('systemBasicmgmt.userPosition.getFailed'))
+    ElMessage.error(t('SystemBasicMgmt.userPosition.getFailed'))
     dialogVisible.value = false
   } finally {
     editLoading.value = false

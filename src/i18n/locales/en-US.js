@@ -101,7 +101,7 @@ export default {
     moduleSelect: 'System Modules',
     notFound: 'Page Not Found',
     forbidden: 'Access Forbidden',
-    systemBasicmgmt: 'System Basic Management',
+    SystemBasicMgmt: 'System Basic Management',
     systemMgmt: 'SystemMgmt',
     role: 'RoleData',
     domain: 'DomainData',
@@ -124,7 +124,7 @@ export default {
   },
   
   // System Basic Management
-  systemBasicmgmt: {
+  SystemBasicMgmt: {
     // System Status Cards
     systemStatus: {
       cpuUsage: 'CPU Usage',
@@ -525,8 +525,8 @@ export default {
         title: 'Role Management',
         roleCode: 'Role Code',
         roleName: 'Role Name',
-        roleNameCh: 'Role Chinese Name',
-        roleNameEn: 'Role English Name',
+        roleNameCh: 'Chinese Name',
+        roleNameEn: 'English Name',
         description: 'Description',
         addRole: 'Add Role',
         editRole: 'Edit Role Info',

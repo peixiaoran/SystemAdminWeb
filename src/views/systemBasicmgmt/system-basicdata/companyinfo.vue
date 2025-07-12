@@ -1,13 +1,13 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
-          <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="公司搜索表单">
-              <el-form-item :label="$t('systemBasicmgmt.companyInfo.filter.companyName')">
+          <!-- 搜索 -->
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="公司信息">
+              <el-form-item :label="$t('SystemBasicMgmt.companyInfo.filter.companyName')">
                   <el-input style="width: 180px;"
                             v-model="filters.companyName"
-                            :placeholder="$t('systemBasicmgmt.companyInfo.pleaseInputName')"
+                            :placeholder="$t('SystemBasicMgmt.companyInfo.pleaseInputName')"
                             />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -20,12 +20,12 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('systemBasicmgmt.companyInfo.addCompany') }}
+                      {{ $t('SystemBasicMgmt.companyInfo.addCompany') }}
                   </el-button>
               </el-form-item>
           </el-form>
 
-          <!-- 表格区域 -->
+          <!-- 表格 -->
           <div class="table-container">
               <el-table :data="companyList"
                         border
@@ -33,14 +33,14 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('systemBasicmgmt.companyInfo.index')" width="60" align="center" fixed />
-                  <el-table-column prop="companyNameCh" :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" align="left" min-width="240" />
-                  <el-table-column prop="companyNameEn" :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
-                  <el-table-column prop="companyiPhone" :label="$t('systemBasicmgmt.companyInfo.companyPhone')" align="center" min-width="280" />
-                  <el-table-column prop="companyFax" :label="$t('systemBasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
-                  <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.companyInfo.createdTime')" min-width="180" />
-                  <el-table-column prop="remark" :label="$t('systemBasicmgmt.companyInfo.remark')" align="left" min-width="450" />
-                  <el-table-column :label="$t('systemBasicmgmt.companyInfo.operation')" min-width="170" fixed="right" align="center">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.companyInfo.index')" width="60" align="center" fixed />
+                  <el-table-column prop="companyNameCh" :label="$t('SystemBasicMgmt.companyInfo.companyNameCh')" align="left" min-width="240" />
+                  <el-table-column prop="companyNameEn" :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
+                  <el-table-column prop="companyiPhone" :label="$t('SystemBasicMgmt.companyInfo.companyPhone')" align="center" min-width="280" />
+                  <el-table-column prop="companyFax" :label="$t('SystemBasicMgmt.companyInfo.companyFax')" align="center" min-width="300" />
+                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.companyInfo.createdTime')" min-width="180" />
+                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.companyInfo.remark')" align="left" min-width="450" />
+                  <el-table-column :label="$t('SystemBasicMgmt.companyInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -63,7 +63,7 @@
           </div>
       </el-card>
 
-      <!-- 编辑状态对话框 -->
+      <!-- 编辑弹窗 -->
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
@@ -72,25 +72,25 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑表单">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameCh')" prop="companyNameCh">
+                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameCh')" prop="companyNameCh">
 <el-input v-model="editForm.companyNameCh" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyNameEn')" prop="companyNameEn">
+                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" prop="companyNameEn">
                       <el-input v-model="editForm.companyNameEn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyPhone')" prop="companyiPhone">
+                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyPhone')" prop="companyiPhone">
                       <el-input v-model="editForm.companyiPhone" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.companyFax')" prop="companyFax">
+                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyFax')" prop="companyFax">
                       <el-input v-model="editForm.companyFax" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('systemBasicmgmt.companyInfo.remark')">
+                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.remark')">
                       <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
@@ -108,7 +108,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systemBasicmgmt/system-basic/company'
+  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/SystemBasicMgmt/system-basic/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -154,25 +154,25 @@
   })
 
   // 对话框标题
-  const dialogTitle = ref(t('systemBasicmgmt.companyInfo.editCompany'))
+  const dialogTitle = ref(t('SystemBasicMgmt.companyInfo.editCompany'))
 
   // 表单验证规则
   const formRules = reactive({
       companyNameCh: [
-{ required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameCh'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputNameCh'), trigger: 'blur' }
       ],
       companyNameEn: [
-          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
       ],
       companyiPhone: [
-          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputPhone'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputPhone'), trigger: 'blur' }
       ],
       companyFax: [
-          { required: true, message: () => t('systemBasicmgmt.companyInfo.pleaseInputFax'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputFax'), trigger: 'blur' }
       ]
   })
 
-  // 在组件挂载后获取公司数据
+  // 组件挂载后获取公司数据
   onMounted(() => {
       fetchCompanyPages()
   })
@@ -214,12 +214,12 @@
           companyList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.companyInfo.getFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.getFailed'))
       }
       loading.value = false
   }
 
-  // 防抖搜索优化
+  // 搜索优化
   let searchTimer = null
   const handleSearch = () => {
       if (searchTimer) clearTimeout(searchTimer)
@@ -229,7 +229,7 @@
       }, 300) // 300ms防抖
   }
 
-  // 重置搜索条件
+  // 处理重置事件
   const handleReset = () => {
       filters.companyName = ''
       pagination.pageIndex = 1
@@ -250,7 +250,7 @@
   }
 
   const resetForm = (clearValidation = true) => {
-      // 先清除验证状态（在重置数据之前）
+      // 清除验证状态（需要在重置之前）
       if (clearValidation && editFormRef.value) {
           try {
               editFormRef.value.clearValidate()
@@ -270,7 +270,7 @@
       editForm.modifiedDate = ''
       editForm.remark = ''
       
-      // 数据重置后再次清除验证状态
+      // 重置完成后再次清除验证状态
       if (clearValidation) {
           nextTick(() => {
               if (editFormRef.value) {
@@ -284,25 +284,25 @@
       }
   }
 
-  // 新增公司数据
+  // 新增公司操作
   const insertCompany = async () => {
       const params = {
           ...editForm
       }
 
-              const res = await post(INSERT_COMPANY_API.INSERT_COMPANY, params)
+      const res = await post(INSERT_COMPANY_API.INSERT_COMPANY, params)
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('systemBasicmgmt.companyInfo.saveSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.saveSuccess'))
           dialogVisible.value = false
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.companyInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
       }
   }
 
-  // 更新公司数据
+  // 更新公司操作
   const updateCompany = async () => {
       const params = {
           ...editForm
@@ -311,15 +311,15 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('systemBasicmgmt.companyInfo.updateSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.updateSuccess'))
           dialogVisible.value = false
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.companyInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
       }
   }
 
-  // 删除公司数据
+  // 删除公司操作
   const deleteCompany = async (companyId) => {
       const params = {
           CompanyId: companyId
@@ -328,35 +328,35 @@
       const res = await post(DELETE_COMPANY_API.DELETE_COMPANY, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || t('systemBasicmgmt.companyInfo.deleteSuccess'))
+          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.deleteSuccess'))
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('systemBasicmgmt.companyInfo.operationFailed'))
+          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
       }
   }
 
-  // 处理新增操作
+  // 处理添加事件
   const handleAdd = () => {
       // 重置表单数据
       resetForm()
       // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.companyInfo.addCompany')
+      dialogTitle.value = t('SystemBasicMgmt.companyInfo.addCompany')
       // 显示对话框
       dialogVisible.value = true
   }
 
-  // 处理编辑操作
+  // 处理编辑事件
   const handleEdit = async (index, row) => {
       // 重置表单数据
       resetForm()
       // 获取公司实体数据
       await fetchCompanyEntity(row.companyId)
       // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.companyInfo.editCompany')
+      dialogTitle.value = t('SystemBasicMgmt.companyInfo.editCompany')
       // 显示对话框
       dialogVisible.value = true
       
-      // 在数据加载完成后再次清除验证状态
+      // 数据加载完成后再次清除验证状态
       setTimeout(() => {
           if (editFormRef.value) {
               editFormRef.value.clearValidate()
@@ -364,10 +364,10 @@
       }, 100)
   }
 
-  // 处理删除操作
+  // 处理删除事件
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('systemBasicmgmt.companyInfo.deleteConfirm'),
+          t('SystemBasicMgmt.companyInfo.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),
@@ -383,7 +383,7 @@
           })
   }
 
-  // 保存编辑结果
+  // 处理编辑保存
   const handleSave = () => {
       editFormRef.value?.validate((valid) => {
           if (valid) {
@@ -399,7 +399,7 @@
 
   // 处理对话框关闭
   const handleDialogClose = () => {
-      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      // 使用 nextTick 确保 DOM 更新完成后清除验证
       nextTick(() => {
           resetForm(true)
       })

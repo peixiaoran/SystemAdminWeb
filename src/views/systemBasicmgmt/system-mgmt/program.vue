@@ -1,22 +1,22 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
-          <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="程序搜索表单">
-              <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programName')">
+          <!-- 搜索表单 -->
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
+              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programName')">
                   <el-input style="width: 200px" 
                             v-model="filters.programName" 
-                            :placeholder="$t('systemBasicmgmt.systemMgmt.inputPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.programName')" 
+                            :placeholder="$t('SystemBasicMgmt.systemMgmt.inputPlaceholder') + $t('SystemBasicMgmt.systemMgmt.program.programName')" 
                             />
               </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.domain')" style="width:180px" @change="handleFilterDomainChange">
+              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.domain')">
+                  <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.program.domain')" style="width:180px" @change="handleFilterDomainChange">
                       <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')">
-                  <el-select v-model="filters.parentMenuId" :placeholder="$t('systemBasicmgmt.systemMgmt.selectPlaceholder') + $t('systemBasicmgmt.systemMgmt.program.module')" style="width:180px">
+              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.module')">
+                  <el-select v-model="filters.parentMenuId" :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.program.module')" style="width:180px">
                       <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                   </el-select>
               </el-form-item>
@@ -30,12 +30,12 @@
               </el-form-item>
               <div class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('systemBasicmgmt.systemMgmt.program.addProgram') }}
+                      {{ $t('SystemBasicMgmt.systemMgmt.program.addProgram') }}
                   </el-button>
               </div>
           </el-form>
 
-          <!-- 表格区域 -->
+          <!-- 表格 -->
           <div class="table-container">
               <el-table :data="programList"
                         style="width: 100%"
@@ -45,34 +45,34 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('systemBasicmgmt.systemMgmt.index')" width="60" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameCh" :label="$t('systemBasicmgmt.systemMgmt.program.programNameCh')" align="left" min-width="260" />
-                  <el-table-column prop="menuNameEn" :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" align="left" min-width="230" />
-                  <el-table-column prop="roleCode" :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
-                  <el-table-column prop="path" :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" align="center" min-width="230" />
-                  <el-table-column prop="isEnabled" :label="$t('systemBasicmgmt.systemMgmt.isEnabled')" align="center" min-width="150">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                  <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.systemMgmt.program.programCode')" align="left" min-width="200" />
+                  <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.systemMgmt.program.programNameCh')" align="left" min-width="260" />
+                  <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.systemMgmt.program.programNameEn')" align="left" min-width="230" />
+                  <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.systemMgmt.program.roleCode')" align="center" min-width="130" />
+                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.systemMgmt.program.pagePath')" align="left" min-width="230" />
+                  <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.systemMgmt.program.programIcon')" align="center" min-width="230" />
+                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')" align="center" min-width="150">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                                  {{ scope.row.isEnabled ? $t('systemBasicmgmt.systemMgmt.enabled') : $t('systemBasicmgmt.systemMgmt.disabled') }}
+                                  {{ scope.row.isEnabled ? $t('SystemBasicMgmt.systemMgmt.enabled') : $t('SystemBasicMgmt.systemMgmt.disabled') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="isVisible" :label="$t('systemBasicmgmt.systemMgmt.isVisible')" align="center" min-width="90">
+                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.systemMgmt.isVisible')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                                  {{ scope.row.isVisible ? $t('systemBasicmgmt.systemMgmt.visible') : $t('systemBasicmgmt.systemMgmt.hidden') }}
+                                  {{ scope.row.isVisible ? $t('SystemBasicMgmt.systemMgmt.visible') : $t('SystemBasicMgmt.systemMgmt.hidden') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="createdName" :label="$t('systemBasicmgmt.systemMgmt.createdBy')" min-width="120" />
-                  <el-table-column prop="createdDate" :label="$t('systemBasicmgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('systemBasicmgmt.systemMgmt.operation')" min-width="170" fixed="right" align="center">
+                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.systemMgmt.createdBy')" min-width="180" />
+                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.systemMgmt.createdTime')" min-width="180" />
+                  <el-table-column :label="$t('SystemBasicMgmt.systemMgmt.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -95,7 +95,7 @@
           </div>
       </el-card>
 
-      <!-- 编辑状态对话框 -->
+      <!-- 编辑弹窗 -->
       <el-dialog v-model="dialogVisible"
                  :title="dialogTitle"
                  width="50%"
@@ -104,46 +104,46 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="程序编辑表单">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programCode')" prop="menuCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameCh')" prop="menuNameCh">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programNameCh')" prop="menuNameCh">
 <el-input v-model="editForm.menuNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programNameEn')" prop="menuNameEn">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programNameEn')" prop="menuNameEn">
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.domain')" prop="domainId">
-                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain')" @change="handleDomainChange">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.domain')" prop="domainId">
+                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.systemMgmt.program.pleaseSelectDomain')" @change="handleDomainChange">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.module')" prop="parentMenuId">
-                      <el-select v-model="editForm.parentMenuId" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule')">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.module')" prop="parentMenuId">
+                      <el-select v-model="editForm.parentMenuId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.systemMgmt.program.pleaseSelectModule')">
                           <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programIcon')" prop="menuIcon">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programIcon')" prop="menuIcon">
                       <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.sortOrder')" prop="sortOrder">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.sortOrder')" prop="sortOrder">
                       <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.pagePath')" prop="path">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.programType')" prop="menuType">
-                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('systemBasicmgmt.systemMgmt.program.pleaseSelectProgramType')">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.programType')" prop="menuType">
+                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.systemMgmt.program.pleaseSelectProgramType')">
                           <el-option
                               v-for="item in menuTypeOptions"
                               :key="item.menuTypeCode"
@@ -151,37 +151,37 @@
                               :value="item.menuTypeCode" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.roleCode')" prop="roleCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.apiRoute')" prop="routePath">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.apiRoute')" prop="routePath">
                       <el-input v-model="editForm.routePath" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.component')" prop="component">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.component')" prop="component">
                       <el-input v-model="editForm.component" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.program.target')" prop="target">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.target')" prop="target">
                       <el-input v-model="editForm.target" style="width:100%" />
                   </el-form-item>
                   <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.remarks')">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
                       <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isEnabled')">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('systemBasicmgmt.systemMgmt.isVisible')">
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
@@ -206,6 +206,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
+  // 使用i18n
   const { t } = useI18n()
 
   // 程序数据
@@ -235,7 +236,7 @@
       parentMenuId: ''
   })
 
-  // 过滤用模块列表
+  // 过滤模块列表
   const filterModuleList = ref([])
 
   // 对话框显示状态
@@ -269,49 +270,49 @@
   // 表单验证规则
   const formRules = reactive({
       menuCode: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputProgramCode'), trigger: 'blur' }
       ],
       menuNameCh: [
-{ required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramNameCh'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputProgramNameCh'), trigger: 'blur' }
       ],
       menuNameEn: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputProgramNameEn'), trigger: 'blur' }
       ],
       domainId: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseSelectDomain'), trigger: 'change' }
       ],
       parentMenuId: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseSelectModule'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseSelectModule'), trigger: 'change' }
       ],
       menuIcon: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputProgramIcon'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputProgramIcon'), trigger: 'blur' }
       ],
       sortOrder: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputSortOrder'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputSortOrder'), trigger: 'blur' }
       ],
       path: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputPagePath'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputPagePath'), trigger: 'blur' }
       ],
       menuType: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseSelectProgramType'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseSelectProgramType'), trigger: 'change' }
       ],
       roleCode: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputRoleCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputRoleCode'), trigger: 'blur' }
       ],
       routePath: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputApiRoute'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputApiRoute'), trigger: 'blur' }
       ],
       component: [
-          { required: true, message: () => t('systemBasicmgmt.systemMgmt.program.pleaseInputComponent'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputComponent'), trigger: 'blur' }
       ],
       target: [
           // target (Redirect) 可为空，移除必填验证
       ]
   })
 
-  // 在组件挂载后获取日志数据
+  // 组件挂载后获取网域数据
   onMounted(() => {
-      initPageData() // 初始化页面数据，设置查询表单默认值
+      initPageData() // 初始化页面数据，设置查询条件默认值
       fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
@@ -322,7 +323,7 @@
           // 对获取的数据进行XSS清洗
           domainDropList.value = res.data || []
 
-          // 默认选中第一个网域（用于查询表单）
+          // 默认选中第一个网域（用于查询条件）
           if (domainDropList.value.length > 0) {
               filters.domainId = domainDropList.value[0].domainId
               // 获取对应的模块列表
@@ -336,17 +337,17 @@
       }
   }
 
-  // 获取网域类型（不会影响查询表单的值）
+  // 获取网域数据（用于新增时设置默认值）
   const fetchDomainDrop = async () => {
       try {
           const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
           // 对获取的数据进行XSS清洗
           domainDropList.value = res.data || []
 
-          // 如果是新增操作，默认选中第一个网域
-          if (dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && domainDropList.value.length > 0) {
+          // 新增时默认选中第一个网域
+          if (dialogTitle.value === t('SystemBasicMgmt.systemMgmt.program.addProgram') && domainDropList.value.length > 0) {
               editForm.domainId = domainDropList.value[0].domainId
-              // 网域选择后联动获取模块数据，并设置默认值
+              // 根据选中的网域获取模块列表
               fetchModuleDrop(true)
           }
       } catch (error) {
@@ -354,7 +355,7 @@
       }
   }
 
-  // 获取模块下拉框
+  // 获取模块数据
   const fetchModuleDrop = async (setDefaultValue = false) => {
       if (!editForm.domainId) {
           moduleDropList.value = []
@@ -369,8 +370,8 @@
           // 对获取的数据进行XSS清洗
           moduleDropList.value = res.data || []
 
-          // 只有在明确指定需要设置默认值且是新增操作时才设置默认值
-          if (setDefaultValue && dialogTitle.value === t('systemBasicmgmt.systemMgmt.program.addProgram') && moduleDropList.value.length > 0) {
+          // 只有当需要设置默认值且是新增时才设置默认值
+          if (setDefaultValue && dialogTitle.value === t('SystemBasicMgmt.systemMgmt.program.addProgram') && moduleDropList.value.length > 0) {
               editForm.parentMenuId = moduleDropList.value[0].menuId
           }
       } catch (error) {
@@ -378,7 +379,7 @@
       }
   }
 
-  // 获取程序实体数据
+  // 获取实体数据
   const fetchProgramEntity = async (menuId) => {
       try {
           const params = {
@@ -387,10 +388,10 @@
           const res = await post(GET_PROGRAM_ENTITY_API.GET_PROGRAM_ENTITY, params)
 
           if (res && res.code === '200') {
-              // 先保存原始的 parentMenuId 值
+              // 还原原始的 parentMenuId 值
               const originalParentMenuId = res.data.parentMenuId
               
-              // 设置表单数据
+              // 填充表单数据
               editForm.menuId = res.data.menuId
               editForm.menuCode = res.data.menuCode || ''
               editForm.menuNameCh = res.data.menuNameCh || ''
@@ -410,10 +411,10 @@
               editForm.level = res.data.level
               editForm.routePath = res.data.routePath || ''
 
-              // 加载网域后，联动获取模块列表（编辑时不设置默认值）
+              // 当编辑时，需要重新获取模块列表，并还原 parentMenuId
               if (editForm.domainId) {
                   await fetchModuleDrop(false)
-                  // 在模块列表加载完成后，恢复原始的 parentMenuId 值
+                  // 模块列表加载完成后，还原 parentMenuId
                   editForm.parentMenuId = originalParentMenuId
               }
           }
@@ -422,7 +423,7 @@
       }
   }
 
-  // 获取域列表数据
+  // 获取列表数据
   const fetchProgramPages = async () => {
       loading.value = true
       try {
@@ -434,7 +435,7 @@
 
           const res = await post(GET_PROGRAM_PAGES_API.GET_PROGRAM_PAGES, params)
 
-          // 在设置数据前，确保使用sanitizeHtml清洗敏感字段
+          // 确保使用sanitizeHtml清洗数据
           programList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } catch (error) {
@@ -444,19 +445,19 @@
       }
   }
 
-  // 处理搜索操作
+  // 搜索
   const handleSearch = () => {
       pagination.pageIndex = 1
       fetchProgramPages()
   }
 
-  // 重置搜索条件
+  // 重置
   const handleReset = async () => {
       filters.programCode = ''
       filters.programName = ''
       filters.programUrl = ''
       
-      // 重置为默认的第一个网域和模块
+      // 设置为默认的第一个模块
       if (domainDropList.value.length > 0) {
           filters.domainId = domainDropList.value[0].domainId
           // 获取对应的模块列表
@@ -471,13 +472,13 @@
       fetchProgramPages()
   }
 
-  // 处理页码变化
+  // 分页变化
   const handlePageChange = (page) => {
       pagination.pageIndex = page
       fetchProgramPages()
   }
 
-  // 处理每页记录数变化
+  // 每页条数变化
   const handleSizeChange = (size) => {
       pagination.pageSize = size
       pagination.pageIndex = 1
@@ -485,10 +486,10 @@
   }
 
   const resetForm = (clearValidation = true) => {
-      // 先清除验证状态（在重置数据之前）
+      // 清除表单验证状态，在重新设置表单值之前
       if (clearValidation && editFormRef.value) {
           try {
-              // 针对下拉框字段单独清除验证
+              // 清除表单中选择框的验证
               const selectFields = ['domainId', 'parentMenuId', 'menuType']
               selectFields.forEach(field => {
                   editFormRef.value.clearValidate(field)
@@ -496,11 +497,11 @@
               // 然后清除所有验证
               editFormRef.value.clearValidate()
           } catch (error) {
-              console.warn('清除表单验证状态失败:', error)
+              console.warn('重置表单验证状态失败:', error)
           }
       }
       
-      // 重置表单数据
+      // 重置表单值
       Object.assign(editForm, {
           menuId: '',
           menuCode: '',
@@ -520,29 +521,29 @@
           remarks: ''
       })
       
-      // 数据重置后再次清除验证状态
+      // 重新设置表单验证状态
       if (clearValidation) {
           nextTick(() => {
               if (editFormRef.value) {
                   try {
                       editFormRef.value.clearValidate()
                   } catch (error) {
-                      console.warn('清除表单验证状态失败:', error)
+                      console.warn('重置表单验证状态失败:', error)
                   }
               }
           })
       }
   }
 
-  // 新增程序列表数据
+  // 新增程序
   const insertProgram = async () => {
-      // 检查必填字段
+      // 验证必填项
       if (!editForm.domainId) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'))
+          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.program.pleaseSelectDomain'))
           return
       }
 
-      // 处理数值类型字段
+      // 设置必填项
       const params = {
           ...editForm,
       }
@@ -558,15 +559,15 @@
       }
   }
 
-  // 更新程序列表数据
+  // 更新程序
   const updateProgram = async () => {
-      // 检查必填字段
+      // 验证必填项
       if (!editForm.domainId) {
-          ElMessage.warning(t('systemBasicmgmt.systemMgmt.program.pleaseSelectDomain'))
+          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.program.pleaseSelectDomain'))
           return
       }
 
-      // 处理数值类型字段
+      // 设置必填项
       const params = {
           ...editForm
       }
@@ -583,14 +584,14 @@
       }
   }
 
-  // 删除程序列表数据
+  // 删除程序
   const deleteProgram = async (menuId) => {
       const params = {
           menuId: menuId
       }
 
       if (isNaN(params.menuId)) {
-          ElMessage.error(t('systemBasicmgmt.systemMgmt.invalidId'))
+          ElMessage.error(t('SystemBasicMgmt.systemMgmt.invalidId'))
           return
       }
 
@@ -605,9 +606,9 @@
       }
   }
 
-  // 处理新增操作
+  // 新增程序
   const handleAdd = () => {
-      // 重置表单数据
+      // 重置表单
       resetForm()
       // 设置默认值
       editForm.menuId = '0'
@@ -616,9 +617,9 @@
       editForm.isVisible = 1
 
       // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.addProgram')
+      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.program.addProgram')
 
-      // 获取网域类型和菜单类型
+      // 获取网域和菜单类型选项
       fetchDomainDrop()
       fetchMenuTypeOptions()
 
@@ -626,25 +627,25 @@
       dialogVisible.value = true
   }
 
-  // 处理编辑操作
+  // 编辑程序
   const handleEdit = async (index, row) => {
-      // 重置表单数据
+      // 重置表单
       resetForm()
 
       // 设置对话框标题
-      dialogTitle.value = t('systemBasicmgmt.systemMgmt.program.editProgram')
+      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.program.editProgram')
 
-      // 先获取网域类型和菜单类型
+      // 先获取网域和菜单类型选项
       await fetchDomainDrop()
       await fetchMenuTypeOptions()
       
-      // 然后获取程序实体数据（这会自动加载对应的模块列表）
+      // 然后获取实体数据，并自动填充对应的模块列表
       await fetchProgramEntity(row.menuId)
 
       // 显示对话框
       dialogVisible.value = true
       
-      // 在数据加载完成后再次清除验证状态
+      // 延迟清除表单验证状态
       setTimeout(() => {
           if (editFormRef.value) {
               editFormRef.value.clearValidate()
@@ -652,18 +653,18 @@
       }, 100)
   }
 
-  // 处理对话框关闭
+  // 关闭对话框
   const handleDialogClose = () => {
-      // 使用 nextTick 确保 DOM 更新完成后再清除验证
+      // 使用nextTick确保DOM渲染完成后再清除验证
       nextTick(() => {
           resetForm(true)
       })
   }
 
-  // 处理删除操作
+  // 删除程序
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('systemBasicmgmt.systemMgmt.program.deleteConfirm'),
+          t('SystemBasicMgmt.systemMgmt.program.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),
@@ -673,7 +674,7 @@
       )
           .then(() => {
               deleteProgram(row.menuId)
-              // 重新获取数据
+              // 刷新列表
               fetchProgramPages()
           })
           .catch(() => {
@@ -681,7 +682,7 @@
           })
   }
 
-  // 保存编辑结果
+  // 保存
   const handleSave = () => {
       editFormRef.value?.validate((valid) => {
           if (valid) {
@@ -695,29 +696,29 @@
               }
               dialogVisible.value = false
 
-              // 重新获取数据
+              // 刷新列表
               fetchProgramPages()
           }
       })
   }
 
-  // 处理网域变化事件
+  // 域名变化
   const handleDomainChange = () => {
-      // 清空模块选择
+      // 清除模块选择
       editForm.parentMenuId = ''
-      // 重新获取模块列表，并在新增时设置默认值
+      // 当模块选择变化时，设置默认值
       fetchModuleDrop(true)
   }
 
-  // 处理查询表单中网域变化（用户手动操作）
+  // 过滤域名变化
   const handleFilterDomainChange = () => {
-      // 清空模块选择
+      // 清除模块选择
       filters.parentMenuId = ''
-      // 重新获取模块列表，并设置默认值
+      // 当模块选择变化时，设置默认值
       fetchFilterModuleDrop()
   }
 
-  // 获取查询表单中的模块下拉框数据
+  // 获取过滤条件下的模块数据
   const fetchFilterModuleDrop = async () => {
       if (!filters.domainId) {
           filterModuleList.value = []
@@ -745,7 +746,7 @@
       try {
           const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
           if (res && res.code === '200') {
-              // 确保 menuTypeCode 为字符串类型
+              // 确保 menuTypeCode 为字符串
               menuTypeOptions.value = (res.data || []).map(item => ({
                   ...item,
                   menuTypeCode: String(item.menuTypeCode)
@@ -754,7 +755,7 @@
               menuTypeOptions.value = []
           }
       } catch (error) {
-          console.error('获取菜单类型数据失败:', error)
+          console.error('获取菜单类型选项失败:', error)
           menuTypeOptions.value = []
       }
   }
