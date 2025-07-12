@@ -1,13 +1,16 @@
+/* 导入CSS变量 */
+@import './styles/variables.css';
+
 /* 全局样式 */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: '微软雅黑', Arial, sans-serif;
+  font-family: var(--font-family-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 14px;
-  color: #333;
+  font-size: var(--font-size-base);
+  color: var(--text-color-primary);
   overflow: hidden;
 }
 
@@ -60,15 +63,15 @@ html, body {
 
 /* 页面标题 */
 .page-title {
-  font-size: 20px;
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 20px;
+  font-size: var(--font-size-extra-large);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-xl);
 }
 
 /* 表格工具栏 */
 .table-toolbar {
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -76,14 +79,14 @@ html, body {
 
 /* 表格样式 */
 .el-table {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-xl);
 }
 
 /* 分页样式 */
 .pagination-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 15px;
+  margin-top: var(--spacing-md);
 }
 
 /* 表单样式 */
@@ -93,18 +96,18 @@ html, body {
 
 /* 表单底部按钮 */
 .form-footer {
-  margin-top: 20px;
+  margin-top: var(--spacing-xl);
   text-align: right;
 }
 
 /* 卡片样式 */
 .el-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-xl);
 }
 
 /* 弹窗表单 */
 .dialog-form .el-form-item {
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 /* 响应式调整 */
@@ -127,20 +130,20 @@ html, body {
 
 /* 滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--spacing-sm);
+  height: var(--spacing-sm);
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: var(--background-color-base);
+  border-radius: var(--border-radius-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+  background: var(--border-color-base);
+  border-radius: var(--border-radius-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--text-color-secondary);
 } 

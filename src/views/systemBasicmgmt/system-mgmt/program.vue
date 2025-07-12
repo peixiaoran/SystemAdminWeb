@@ -201,8 +201,8 @@
 
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
-  import { post, sanitizeHtml } from '@/utils/request'
-  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERST_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
+  import { post } from '@/utils/request'
+  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERT_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -390,25 +390,25 @@
               // 先保存原始的 parentMenuId 值
               const originalParentMenuId = res.data.parentMenuId
               
-              // 对字符串类型字段进行额外的XSS清洗
+              // 设置表单数据
               editForm.menuId = res.data.menuId
-              editForm.menuCode = sanitizeHtml(res.data.menuCode || '')
-              editForm.menuNameCh = sanitizeHtml(res.data.menuNameCh || '')
-              editForm.menuNameEn = sanitizeHtml(res.data.menuNameEn || '')
+              editForm.menuCode = res.data.menuCode || ''
+              editForm.menuNameCh = res.data.menuNameCh || ''
+              editForm.menuNameEn = res.data.menuNameEn || ''
               editForm.domainId = res.data.domainId
               editForm.menuType = String(res.data.menuType || '')
-              editForm.menuUrl = sanitizeHtml(res.data.menuUrl || '')
-              editForm.menuIcon = sanitizeHtml(res.data.menuIcon || '')
+              editForm.menuUrl = res.data.menuUrl || ''
+              editForm.menuIcon = res.data.menuIcon || ''
               editForm.sortOrder = res.data.sortOrder
-              editForm.roleCode = sanitizeHtml(res.data.roleCode || '')
-              editForm.path = sanitizeHtml(res.data.path || '')
-              editForm.component = sanitizeHtml(res.data.component || '')
-              editForm.target = sanitizeHtml(res.data.target || '')
-              editForm.remarks = sanitizeHtml(res.data.remarks || '')
+              editForm.roleCode = res.data.roleCode || ''
+              editForm.path = res.data.path || ''
+              editForm.component = res.data.component || ''
+              editForm.target = res.data.target || ''
+              editForm.remarks = res.data.remarks || ''
               editForm.isEnabled = res.data.isEnabled
               editForm.isVisible = res.data.isVisible
               editForm.level = res.data.level
-              editForm.routePath = sanitizeHtml(res.data.routePath || '')
+              editForm.routePath = res.data.routePath || ''
 
               // 加载网域后，联动获取模块列表（编辑时不设置默认值）
               if (editForm.domainId) {
@@ -546,7 +546,7 @@
       const params = {
           ...editForm,
       }
-      const res = await post(INSERST_PROGRAM_API.INSERST_PROGRAM, params)
+              const res = await post(INSERT_PROGRAM_API.INSERT_PROGRAM, params)
 
       if (res && res.code === '200') {
           resetForm()

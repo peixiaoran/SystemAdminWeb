@@ -190,7 +190,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERST_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
+  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -514,7 +514,7 @@
       }
 
 
-      const res = await post(INSERST_MODULE_API.INSERST_MODULE, params)
+              const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
 
       if (res && res.code === '200') {
           resetForm()

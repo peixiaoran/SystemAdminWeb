@@ -27,9 +27,9 @@ export const GET_PROGRAM_PAGES_API = {
   GET_PROGRAM_PAGES: 'SystemBasicMgmt/SystemMgmt/ProgramInfo/GetSysProgramPagesList'
 }
 
-// 程序新增理API
-export const INSERST_PROGRAM_API = {
-  INSERST_PROGRAM: 'SystemBasicMgmt/SystemMgmt/ProgramInfo/InsertSysProgram'
+// 程序新增API
+export const INSERT_PROGRAM_API = {
+  INSERT_PROGRAM: 'SystemBasicMgmt/SystemMgmt/ProgramInfo/InsertSysProgram'
 }
 
 // 程序删除API

@@ -1,7 +1,6 @@
 ﻿<template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
-  
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
                 <el-form-item :label="$t('systemBasicmgmt.departmentInfo.filter.departmentCode')">
@@ -56,7 +55,7 @@
                         <el-table-column prop="email" :label="$t('systemBasicmgmt.departmentInfo.email')" align="left" min-width="180" />
                         
                         <el-table-column prop="description" :label="$t('systemBasicmgmt.departmentInfo.description')" align="left" min-width="200" />
-                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="310" fixed="right" align="center">
+                        <el-table-column :label="$t('systemBasicmgmt.departmentInfo.operation')" min-width="240" fixed="right" align="center">
                             <template #default="scope">
                                 <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                                 <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systemBasicmgmt.departmentInfo.addChild') }}</el-button>
@@ -89,7 +88,7 @@
                 </div>
                 <div class="form-row">
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentNameCh')" prop="departmentNameCh">
-<el-input v-model="editForm.departmentNameCh" style="width:100%" />
+                        <el-input v-model="editForm.departmentNameCh" style="width:100%" />
                     </el-form-item>
                     <el-form-item :label="$t('systemBasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
                         <el-input v-model="editForm.departmentNameEn" style="width:100%" />
@@ -152,7 +151,7 @@
     import { 
         GET_DEPARTMENT_TREE_API, 
         GET_DEPARTMENT_ENTITY_API, 
-        INSERST_DEPARTMENT_API, 
+        INSERT_DEPARTMENT_API, 
         DELETE_DEPARTMENT_API, 
         UPDATE_DEPARTMENT_API,
         GET_DEPARTMENTLEVEL_DROPDOWN_API 
@@ -361,7 +360,7 @@
             ...editForm
         }
   
-        const res = await post(INSERST_DEPARTMENT_API.INSERST_DEPARTMENT, params)
+        const res = await post(INSERT_DEPARTMENT_API.INSERT_DEPARTMENT, params)
   
         if (res && res.code === '200') {
             resetForm()

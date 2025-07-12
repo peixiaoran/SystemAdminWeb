@@ -1,0 +1,197 @@
+/**
+ * CSS变量定义
+ * 统一管理颜色、字体、间距等设计规范
+ */
+
+:root {
+  /* 主题色彩 */
+  --primary-color: #409eff;
+  --primary-color-light: #79bbff;
+  --primary-color-lighter: #a0cfff;
+  --primary-color-extra-light: #d9ecff;
+  --primary-color-dark: #337ecc;
+  --primary-color-darker: #2b6cb0;
+
+  /* 功能色彩 */
+  --success-color: #67c23a;
+  --success-color-light: #95d475;
+  --success-color-lighter: #b3e19d;
+  --success-color-extra-light: #e1f3d8;
+
+  --warning-color: #e6a23c;
+  --warning-color-light: #ebb563;
+  --warning-color-lighter: #f0c78a;
+  --warning-color-extra-light: #faecd8;
+
+  --danger-color: #f56c6c;
+  --danger-color-light: #f78989;
+  --danger-color-lighter: #fab6b6;
+  --danger-color-extra-light: #fde2e2;
+
+  --info-color: #909399;
+  --info-color-light: #a6a9ad;
+  --info-color-lighter: #c8c9cc;
+  --info-color-extra-light: #e9e9eb;
+
+  /* 文本色彩 */
+  --text-color-primary: #303133;
+  --text-color-regular: #606266;
+  --text-color-secondary: #909399;
+  --text-color-placeholder: #c0c4cc;
+  --text-color-disabled: #c0c4cc;
+
+  /* 边框色彩 */
+  --border-color-base: #dcdfe6;
+  --border-color-light: #e4e7ed;
+  --border-color-lighter: #ebeef5;
+  --border-color-extra-light: #f2f6fc;
+
+  /* 背景色彩 */
+  --background-color-base: #f5f7fa;
+  --background-color-light: #fafafa;
+  --background-color-lighter: #ffffff;
+
+  /* 字体 */
+  --font-family-primary: '微软雅黑', 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  /* 字体大小 */
+  --font-size-extra-large: 20px;
+  --font-size-large: 18px;
+  --font-size-medium: 16px;
+  --font-size-base: 14px;
+  --font-size-small: 13px;
+  --font-size-extra-small: 12px;
+
+  /* 行高 */
+  --line-height-base: 1.5;
+  --line-height-large: 1.6;
+  --line-height-small: 1.4;
+
+  /* 字重 */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 32px;
+
+  /* 圆角 */
+  --border-radius-base: 4px;
+  --border-radius-small: 2px;
+  --border-radius-large: 8px;
+  --border-radius-round: 50%;
+
+  /* 阴影 */
+  --box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  --box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  /* 过渡动画 */
+  --transition-base: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  --transition-fade: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-slide: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* 层级 */
+  --z-index-normal: 1;
+  --z-index-top: 1000;
+  --z-index-popper: 2000;
+  --z-index-modal: 3000;
+  --z-index-message: 4000;
+
+  /* 表格相关 */
+  --table-header-background: #f5f7fa;
+  --table-border-color: #ebeef5;
+  --table-row-hover-background: #f5f7fa;
+  --table-stripe-background: #fafafa;
+
+  /* 表单相关 */
+  --form-label-color: var(--text-color-regular);
+  --form-input-height: 40px;
+  --form-input-padding: 0 15px;
+  --form-input-border-color: var(--border-color-base);
+  --form-input-focus-border-color: var(--primary-color);
+  --form-input-disabled-background: #f5f7fa;
+  --form-input-disabled-color: var(--text-color-placeholder);
+
+  /* 按钮相关 */
+  --button-height-large: 40px;
+  --button-height-medium: 36px;
+  --button-height-small: 32px;
+  --button-height-mini: 28px;
+  --button-padding-horizontal: 20px;
+  --button-padding-vertical: 12px;
+
+  /* 卡片相关 */
+  --card-padding: 20px;
+  --card-border-radius: var(--border-radius-base);
+  --card-shadow: var(--box-shadow-base);
+
+  /* 响应式断点 */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 992px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1920px;
+}
+
+/* 暗色主题变量 */
+[data-theme="dark"] {
+  --text-color-primary: #e5eaf3;
+  --text-color-regular: #cfd3dc;
+  --text-color-secondary: #a3a6ad;
+  --text-color-placeholder: #6c6e72;
+  --text-color-disabled: #6c6e72;
+
+  --border-color-base: #4c4d4f;
+  --border-color-light: #414243;
+  --border-color-lighter: #363637;
+  --border-color-extra-light: #2b2b2c;
+
+  --background-color-base: #1d1e1f;
+  --background-color-light: #25262b;
+  --background-color-lighter: #2c2e33;
+
+  --table-header-background: #25262b;
+  --table-border-color: #4c4d4f;
+  --table-row-hover-background: #2c2e33;
+  --table-stripe-background: #25262b;
+
+  --form-input-border-color: #4c4d4f;
+  --form-input-disabled-background: #25262b;
+  --form-input-disabled-color: #6c6e72;
+
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 高对比度主题变量 */
+[data-theme="high-contrast"] {
+  --text-color-primary: #000000;
+  --text-color-regular: #000000;
+  --text-color-secondary: #333333;
+  --text-color-placeholder: #666666;
+  --text-color-disabled: #999999;
+
+  --border-color-base: #000000;
+  --border-color-light: #333333;
+  --border-color-lighter: #666666;
+  --border-color-extra-light: #999999;
+
+  --background-color-base: #ffffff;
+  --background-color-light: #ffffff;
+  --background-color-lighter: #ffffff;
+
+  --primary-color: #0066cc;
+  --success-color: #006600;
+  --warning-color: #cc6600;
+  --danger-color: #cc0000;
+  --info-color: #666666;
+} 

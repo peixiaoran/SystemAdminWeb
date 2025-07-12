@@ -25,7 +25,6 @@ onBeforeMount(() => {
     targetPath = `${targetPath}?${queryParams}`
   }
   
-  // 重定向到目标路径
   router.replace({ path: targetPath })
 })
 </script> 

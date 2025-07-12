@@ -27,9 +27,9 @@ export const GET_DEPARTMENT_TREE_API = {
   GET_DEPARTMENT_TREE: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentInfoTree'
 }
 
-// 公司新增理API
-export const INSERST_DEPARTMENT_API = {
-  INSERST_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/InsertDepartmentInfo'
+// 公司新增API
+export const INSERT_DEPARTMENT_API = {
+  INSERT_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/InsertDepartmentInfo'
 }
 
 // 公司删除API

@@ -638,7 +638,7 @@
                 const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
                 
                 if (res && res.code === '200') {
-                    console.log(`成功添加代理人: ${user.userNameCh || user.userNameEn}`)
+                    // 成功添加代理人
                 } else {
                     ElMessage.error(res.message || `添加代理人失败: ${user.userNameCh || user.userNameEn}`)
                     return

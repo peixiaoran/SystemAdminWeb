@@ -48,12 +48,9 @@ service.interceptors.request.use(
 
     // 添加语言参数到请求头
     const language = localStorage.getItem('language') || 'zh-TW'
-    // 添加厂区参数到请求头
-    const factory = localStorage.getItem('factory') || 'ETW'
     
     // 设置请求头
     config.headers['Accept-Language'] = language
-    config.headers['Factory'] = factory
     
     // 为请求添加取消token
     const source = axios.CancelToken.source()
@@ -206,7 +203,6 @@ export const cancelAllRequests = () => {
   pendingRequests.clear()
 }
 
-// 提供一个空的sanitizeHtml函数以保持兼容性
-export const sanitizeHtml = (html) => html
+// 已移除sanitizeHtml函数，不再需要
 
 export default service 

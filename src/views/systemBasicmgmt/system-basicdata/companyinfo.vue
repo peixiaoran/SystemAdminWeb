@@ -108,7 +108,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_COMPANY_PAGES_API, INSERST_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systemBasicmgmt/system-basic/company'
+  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systemBasicmgmt/system-basic/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -290,7 +290,7 @@
           ...editForm
       }
 
-      const res = await post(INSERST_COMPANY_API.INSERST_COMPANY, params)
+              const res = await post(INSERT_COMPANY_API.INSERT_COMPANY, params)
 
       if (res && res.code === '200') {
           resetForm()

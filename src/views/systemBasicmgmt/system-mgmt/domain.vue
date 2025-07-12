@@ -166,7 +166,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_DOMAIN_PAGES_API, INSERST_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/domain'
+  import { GET_DOMAIN_PAGES_API, INSERT_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/domain'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -371,7 +371,7 @@
           ...editForm
       }
 
-      const res = await post(INSERST_DOMAIN_API.INSERST_DOMAIN, params)
+              const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
 
       if (res && res.code === '200') {
           resetForm()

@@ -251,7 +251,7 @@
   import { post } from '@/utils/request'
   import { 
       GET_USER_PAGES_API, 
-      INSERST_USER_API, 
+      INSERT_USER_API, 
       DELETE_USER_API, 
       GET_USER_ENTITY_API, 
       UPDATE_USER_API,
@@ -606,7 +606,7 @@
           ...editForm
       }
 
-      const res = await post(INSERST_USER_API.INSERST_USER, params)
+              const res = await post(INSERT_USER_API.INSERT_USER, params)
 
       if (res && res.code === '200') {
           resetForm()

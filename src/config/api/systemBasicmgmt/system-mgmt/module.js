@@ -27,9 +27,9 @@ export const GET_MODULE_PAGES_API = {
   GET_MODULE_PAGES: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetSysModulePagesList'
 }
 
-// 模块新增理API
-export const INSERST_MODULE_API = {
-  INSERST_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/InsertSysModule'
+// 模块新增API
+export const INSERT_MODULE_API = {
+  INSERT_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/InsertSysModule'
 }
 
 // 模块删除API

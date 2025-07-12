@@ -109,7 +109,7 @@
   import { 
     GET_DEPARTMENT_LEVEL_LIST_API, 
     GET_DEPARTMENT_LEVEL_ENTITY_API, 
-    INSERST_DEPARTMENT_LEVEL_API, 
+    INSERT_DEPARTMENT_LEVEL_API, 
     DELETE_DEPARTMENT_LEVEL_API, 
     UPDATE_DEPARTMENT_LEVEL_API 
   } from '@/config/api/systemBasicmgmt/system-basic/departmentlevel'
@@ -276,7 +276,7 @@
           ...editForm
       }
 
-      const res = await post(INSERST_DEPARTMENT_LEVEL_API.INSERST_DEPARTMENT_LEVEL, params)
+              const res = await post(INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL, params)
 
       if (res && res.code === '200') {
           resetForm()

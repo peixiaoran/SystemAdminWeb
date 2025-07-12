@@ -28,8 +28,8 @@ export const GET_DEPARTMENT_LEVEL_LIST_API = {
 }
 
 // 公司新增API
-export const INSERST_DEPARTMENT_LEVEL_API = {
-  INSERST_DEPARTMENT_LEVEL: 'SystemBasicMgmt/SystemBasicData/DepartmentLevel/InsertDepartmentLevel'
+export const INSERT_DEPARTMENT_LEVEL_API = {
+  INSERT_DEPARTMENT_LEVEL: 'SystemBasicMgmt/SystemBasicData/DepartmentLevel/InsertDepartmentLevel'
 }
 
 // 公司删除API

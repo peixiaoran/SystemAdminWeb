@@ -152,7 +152,7 @@
 
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
-  import { post, sanitizeHtml } from '@/utils/request'
+  import { post } from '@/utils/request'
   import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systemBasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -241,12 +241,12 @@
       if (res && res.code === '200') {
           // 对字符串类型字段进行额外的XSS清洗
           editForm.roleId = res.data.roleId
-          editForm.roleCode = sanitizeHtml(res.data.roleCode || '')
-          editForm.roleNameCh = sanitizeHtml(res.data.roleNameCh || '')
-          editForm.roleNameEn = sanitizeHtml(res.data.roleNameEn || '')
-          editForm.description = sanitizeHtml(res.data.description || '')
-          editForm.isEnabled = res.data.isEnabled
-          editForm.remarks = sanitizeHtml(res.data.remarks || '')
+                  editForm.roleCode = res.data.roleCode || ''
+        editForm.roleNameCh = res.data.roleNameCh || ''
+        editForm.roleNameEn = res.data.roleNameEn || ''
+        editForm.description = res.data.description || ''
+        editForm.isEnabled = res.data.isEnabled
+        editForm.remarks = res.data.remarks || ''
       }
   }
 
@@ -320,7 +320,7 @@
           isEnabled: editForm.isEnabled,
           remarks: editForm.remarks
       }
-      const res = await post(INSERT_ROLE_API.INSERST_ROLE, params)
+              const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
 
       if (res && res.code === '200') {
           resetForm()

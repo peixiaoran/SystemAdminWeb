@@ -27,9 +27,9 @@ export const GET_DOMAIN_PAGES_API = {
   GET_DOMAIN_PAGES: 'SystemBasicMgmt/SystemMgmt/DomainInfo/GetSysDomainPagesList'
 }
 
-// 网域新增理API
-export const INSERST_DOMAIN_API = {
-  INSERST_DOMAIN: 'SystemBasicMgmt/SystemMgmt/DomainInfo/InsertSysDomain'
+// 网域新增API
+export const INSERT_DOMAIN_API = {
+  INSERT_DOMAIN: 'SystemBasicMgmt/SystemMgmt/DomainInfo/InsertSysDomain'
 }
 
 // 网域删除API

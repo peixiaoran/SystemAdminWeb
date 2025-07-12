@@ -23,8 +23,8 @@ export const GET_USER_PAGES_API = {
 }
 
 // 员工新增API
-export const INSERST_USER_API = {
-  INSERST_USER: 'SystemBasicMgmt/SystemBasicData/UserInfo/InsertUserInfo'
+export const INSERT_USER_API = {
+  INSERT_USER: 'SystemBasicMgmt/SystemBasicData/UserInfo/InsertUserInfo'
 }
 
 // 员工删除API

@@ -33,9 +33,9 @@
             />
           </el-form-item>
           
-          <el-form-item prop="passWrod">
+          <el-form-item prop="password">
             <el-input
-              v-model="loginForm.passWrod"
+              v-model="loginForm.password"
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
@@ -50,16 +50,6 @@
               @focus="handleInputFocus"
               @keyup.enter="handleLogin"
             />
-          </el-form-item>
-          
-          <el-form-item prop="factory">
-            <el-select 
-              v-model="loginForm.factory" 
-              :placeholder="$t('login.factoryPlaceholder')"
-              class="factory-select"
-            >
-              <el-option v-for="(label, value) in factories" :key="value" :label="label" :value="value" />
-            </el-select>
           </el-form-item>
           
           <el-form-item prop="language">
@@ -109,8 +99,7 @@ const passwordFieldName = ref(`pwd_${Date.now()}_${Math.random().toString(36).su
 
 const loginForm = reactive({
   loginNo: '',
-  passWrod: '',
-  factory: 'ESK', // 默认设置为昆山乙盛
+  password: '',
   language: localStorage.getItem('language') || 'zh-TW' // 从localStorage获取语言设置
 })
 
@@ -124,7 +113,7 @@ onMounted(() => {
     setTimeout(() => {
       // 确保表单数据清空
       loginForm.loginNo = ''
-      loginForm.passWrod = ''
+      loginForm.password = ''
       
       // 动态更改字段名称，进一步防止自动填充
       usernameFieldName.value = `usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
@@ -148,23 +137,6 @@ onMounted(() => {
 })
 
 // 使用计算属性获取翻译后的选项
-const factories = computed(() => {
-  return {
-    ESK: t('login.factories.ESK'),
-    ETW: t('login.factories.ETW'),
-    ESW: t('login.factories.ESW'),
-    ESD: t('login.factories.ESD'),
-    ESC: t('login.factories.ESC'),
-    EMY: t('login.factories.EMY'),
-    EMJ: t('login.factories.EMJ'),
-    ESV: t('login.factories.ESV'),
-    EST: t('login.factories.EST'),
-    ESH: t('login.factories.ESH'),
-    ESM: t('login.factories.ESM'),
-    MTY: t('login.factories.MTY')
-  }
-})
-
 const languages = computed(() => {
   return {
     'zh-TW': t('login.languages.zh-TW'),
@@ -178,11 +150,8 @@ const loginRules = computed(() => {
     loginNo: [
       { required: true, message: t('login.usernameRequired'), trigger: 'blur' }
     ],
-    passWrod: [
+    password: [
       { required: true, message: t('login.passwordRequired'), trigger: 'blur' }
-    ],
-    factory: [
-      { required: true, message: t('login.factoryRequired'), trigger: 'change' }
     ]
   }
 })
@@ -203,13 +172,13 @@ const handleInputFocus = (event) => {
   setTimeout(() => {
     const input = event.target
             // 如果检测到输入框被自动填充但员工实际没有输入，清除填充值
-    if (input.value && input.value !== loginForm.loginNo && input.value !== loginForm.passWrod) {
+    if (input.value && input.value !== loginForm.loginNo && input.value !== loginForm.password) {
       input.value = ''
       // 同时清空对应的表单数据
       if (input.name && input.name.includes('usr')) {
         loginForm.loginNo = ''
       } else if (input.name && input.name.includes('pwd')) {
-        loginForm.passWrod = ''
+        loginForm.password = ''
       }
     }
   }, 50)
@@ -220,14 +189,13 @@ const handleLogin = () => {
     if (valid) {
       loading.value = true
 
-      // 保存语言和厂区选择到localStorage
+      // 保存语言选择到localStorage
       localStorage.setItem('language', loginForm.language)
-      localStorage.setItem('factory', loginForm.factory)
 
       // 使用封装的post方法，它会使用环境变量中的API基础URL
       post(LOGIN_API.USER_LOGIN, {
         loginNo: loginForm.loginNo,
-        passWrod: loginForm.passWrod
+        password: loginForm.password
       })
         .then(res => {
           

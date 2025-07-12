@@ -27,9 +27,9 @@ export const GET_ROLE_PAGES_API = {
   GET_ROLE_PAGES: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetSysRolePagesList'
 }
 
-// 角色新增理API
+// 角色新增API
 export const INSERT_ROLE_API = {
-  INSERST_ROLE: 'SystemBasicMgmt/SystemMgmt/RoleInfo/InsertSysRole'
+  INSERT_ROLE: 'SystemBasicMgmt/SystemMgmt/RoleInfo/InsertSysRole'
 }
 
 // 角色删除API
