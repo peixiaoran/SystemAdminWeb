@@ -64,7 +64,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
   import { ElMessage } from 'element-plus'
-  import { GET_ROLE_DOMAIN_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/roledomian'
+  import { GET_ROLE_DOMAIN_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_DOMAIN_API } from '@/config/api/systemBasicmgmt/system-mgmt/roledomain'
   import { useI18n } from 'vue-i18n'
 
   // 使用i18n
