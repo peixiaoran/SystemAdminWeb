@@ -120,7 +120,8 @@ export default {
     SystemSettings: '系統設定模組',
     dictionaryInfo: '字典資料維護',
     currencyInfo: '币别資料維護',
-    personalInfo: '個人信息管理'
+    personalInfo: '個人信息管理',
+    exchangerateInfo: '匯率資料維護'
   },
   
   // 系統基礎管理
@@ -480,8 +481,7 @@ export default {
         sortOrder: '網域排序',
         roleCode: '權限標識',
         pagePath: '頁面Path',
-        component: '組件',
-        target: '目標',
+        redirect: '重定向',
         addDomain: '新增網域',
         editDomain: '編輯網域信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
@@ -493,8 +493,7 @@ export default {
         pleaseInputSortOrder: '請輸入網域排序',
         pleaseInputRoleCode: '請輸入權限標識',
         pleaseInputPagePath: '請輸入頁面Path',
-        pleaseInputComponent: '請輸入組件',
-        pleaseInputTarget: '請輸入目標'
+        pleaseInputTarget: '請輸入重定向'
       },
       
       // 模塊管理
@@ -509,11 +508,10 @@ export default {
         menuIcon: '模塊圖標',
         sortOrder: '模塊排序',
         menuUrl: '模塊URL',
-        level: '模塊等級',
+
         roleCode: '權限標識',
         pagePath: '頁面Path',
-        component: '組件',
-        target: '目標',
+        redirect: '重定向',
         addModule: '新增模塊',
         editModule: '編輯模塊信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
@@ -525,11 +523,10 @@ export default {
         pleaseInputMenuNameEn: '請輸入模塊英文名稱',
         pleaseInputMenuIcon: '請輸入模組圖標',
         pleaseInputSortOrder: '請輸入模組排序',
-        pleaseInputLevel: '請輸入模組等級',
+
         pleaseInputRoleCode: '請輸入權限標識',
         pleaseInputPagePath: '請輸入頁面Path',
-        pleaseInputComponent: '請輸入組件',
-        pleaseInputTarget: '請輸入目標'
+        pleaseInputTarget: '請輸入重定向'
       },
       
       // 程序管理
@@ -547,8 +544,7 @@ export default {
         programType: '程序類型',
         roleCode: '權限標識',
         apiRoute: 'AIP路由',
-        component: '組件',
-        target: '目標',
+        redirect: '重定向',
         addProgram: '新增程序',
         editProgram: '編輯程序信息',
         deleteConfirm: '確定要刪除該條記錄嗎？',
@@ -565,8 +561,7 @@ export default {
         pleaseInputRoleCode: '請輸入權限標識',
         pleaseInputApiRoute: '請輸入API路由',
         pleaseInputPagePath: '請輸入頁面Path',
-        pleaseInputComponent: '請輸入組件',
-        pleaseInputTarget: '請輸入目標'
+        pleaseInputTarget: '請輸入重定向'
       },
       
       // 角色管理
@@ -707,6 +702,33 @@ export default {
       deleteSuccess: '刪除成功',
       operationFailed: '操作失敗',
       getFailed: '獲取數據失敗'
+    },
+    
+    // 匯率信息管理
+    exchangeRateInfo: {
+      title: '匯率信息管理',
+      index: '序號',
+      currencyCode: '本位币别',
+      exchangeCurrencyCode: '兌換币别',
+      exchangeRate: '匯率',
+      remark: '備註',
+      operation: '操作',
+      addExchangeRate: '新增匯率',
+      editExchangeRate: '編輯匯率信息',
+      deleteConfirm: '確定要刪除該條記錄嗎？',
+      pleaseSelectCurrencyCode: '請選擇本位币别',
+      pleaseInputExchangeCurrencyCode: '請輸入兌換币别',
+      pleaseSelectExchangeCurrencyCode: '請選擇兌換币别',
+      pleaseInputExchangeRate: '請輸入匯率',
+      pleaseInputRemark: '請輸入備註',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗',
+      filter: {
+        currencyCode: '本位币别'
+      }
     }
   }
 }

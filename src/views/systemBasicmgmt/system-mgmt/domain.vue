@@ -123,15 +123,9 @@
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.component')" prop="component">
-                      <el-input v-model="editForm.component" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.redirect')" prop="redirect">
+                      <el-input v-model="editForm.redirect" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.target')" prop="target">
-                      <el-input v-model="editForm.target" style="width:100%" />
-                  </el-form-item>
-                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
@@ -212,8 +206,7 @@
       isVisible: 1,
       level: 1,
       path: '',
-      component: '',
-      target: '',
+      redirect: '',
       remarks: ''
   })
   // 对话框标题
@@ -242,11 +235,8 @@
       path: [
           { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputPagePath'), trigger: 'blur' }
       ],
-      component: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputComponent'), trigger: 'blur' }
-      ],
-      target: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputTarget'), trigger: 'blur' }
+      redirect: [
+          // redirect 可為空，移除必填驗證
       ]
   })
 
@@ -271,8 +261,7 @@
           editForm.sortOrder = res.data.sortOrder
           editForm.roleCode = res.data.roleCode
           editForm.path = res.data.path
-          editForm.component = res.data.component
-          editForm.target = res.data.target
+          editForm.redirect = res.data.redirect
           editForm.remarks = res.data.remarks
           editForm.isEnabled = res.data.isEnabled
           editForm.isVisible = res.data.isVisible
@@ -338,8 +327,7 @@
           }
       }
       
-      editForm.component = ''
-      editForm.target = ''
+      editForm.redirect = ''
       editForm.path = ''
       editForm.roleCode = ''
       editForm.domainIcon = ''
@@ -368,7 +356,8 @@
   // 插入网域
   const insertDomain = async () => {
       const params = {
-          ...editForm
+          ...editForm,
+          redirect: editForm.redirect
       }
 
               const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
@@ -387,7 +376,8 @@
   // 更新网域
   const updateDomain = async () => {
       const params = {
-          ...editForm
+          ...editForm,
+          redirect: editForm.redirect
       }
       const res = await post(UPDATE_DOMAIN_API.UPDATE_DOMAIN, params)
 

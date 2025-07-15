@@ -1,11 +1,12 @@
-1、币别维护页面加一个删除币别功能，请求参数{
-  "currencyId": ""
-}，返回参数与新增一致
-2、币别维护页面加一个修改币别功能，请求参数{
-  "currencyId": "",
-  "currencyCode": "",
-  "currencyNameCh": "",
-  "currencyNameEn": "",
-  "currencyState": 1,
-  "remark": ""
-}，返回参数与新增一致
+1、汇率页面增加编辑GET_EXCHANGE_RATE_ENTITY_API，请求参数：{
+  "currencyCode": "RMB"
+}返回参数：{
+  "data": {
+    "currencyCode": "RMB",
+    "exchangeCurrencyCode": "USD",
+    "exchangeRate": 0.131579,
+    "remark": "1"
+  },
+  "code": "200",
+  "message": ""
+}

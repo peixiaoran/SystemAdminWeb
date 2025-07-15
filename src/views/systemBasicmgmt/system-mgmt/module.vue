@@ -147,15 +147,9 @@
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.component')" prop="component">
-                      <el-input v-model="editForm.component" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.redirect')" prop="redirect">
+                      <el-input v-model="editForm.redirect" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.target')" prop="target">
-                      <el-input v-model="editForm.target" style="width:100%" />
-                  </el-form-item>
-                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
@@ -240,8 +234,7 @@
       isEnabled: 1,
       isVisible: 1,
       path: '',
-      component: '',
-      target: '',
+      redirect: '',
       remarks: ''
   })
   // 对话框标题
@@ -276,11 +269,8 @@
       path: [
           { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputPagePath'), trigger: 'blur' }
       ],
-      component: [
-          // component 可为空，移除必填验证
-      ],
-      target: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputTarget'), trigger: 'blur' }
+      redirect: [
+          // redirect 可为空，移除必填验证
       ]
   })
 
@@ -373,8 +363,7 @@
               editForm.sortOrder = res.data.sortOrder
               editForm.roleCode = res.data.roleCode
               editForm.path = res.data.path
-              editForm.component = res.data.component
-              editForm.target = res.data.target
+              editForm.redirect = res.data.redirect
               editForm.remarks = res.data.remarks
               editForm.isEnabled = res.data.isEnabled
               editForm.isVisible = res.data.isVisible
@@ -475,8 +464,7 @@
           menuNameEn: '',
           menuType: '',
           menuUrl: '',
-          component: '',
-          target: '',
+          redirect: '',
           path: '',
           roleCode: '',
           menuIcon: '',
@@ -511,6 +499,7 @@
       // 处理数值类型字段
       const params = {
           ...editForm,
+          redirect: editForm.redirect
       }
 
 
@@ -535,7 +524,8 @@
 
       // 处理数值类型字段
       const params = {
-          ...editForm
+          ...editForm,
+          redirect: editForm.redirect
       }
       const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, params)
 

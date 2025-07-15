@@ -297,6 +297,17 @@ const moduleRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
+          },
+          {
+            path: 'exchangerateInfo',
+            name: 'exchangerateInfo',
+            component: () => import('../views/SystemBasicMgmt/system-settings/exchangerateInfo.vue'),
+            meta: { 
+              title: 'route.exchangerateInfo', 
+              icon: 'Switch',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
           }
         ]
       }

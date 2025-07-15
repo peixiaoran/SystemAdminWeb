@@ -159,15 +159,9 @@
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.apiRoute')" prop="routePath">
                       <el-input v-model="editForm.routePath" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.component')" prop="component">
-                      <el-input v-model="editForm.component" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.redirect')" prop="redirect">
+                      <el-input v-model="editForm.redirect" style="width:100%" />
                   </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.program.target')" prop="target">
-                      <el-input v-model="editForm.target" style="width:100%" />
-                  </el-form-item>
-                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
@@ -202,7 +196,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERT_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API, GET_MENU_TYPE_API } from '@/config/api/systemBasicmgmt/system-mgmt/program'
+  import { GET_PROGRAM_PAGES_API, GET_PROGRAM_ENTITY_API, INSERT_PROGRAM_API, DELETE_PROGRAM_API, GET_DOMAIN_DROP_API, GET_MODULE_DROP_API, UPDATE_PROGRAM_API, GET_MENU_TYPE_API } from '@/config/api/SystemBasicMgmt/system-mgmt/program'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -260,8 +254,7 @@
       level: 1,
       routePath: '',
       path: '',
-      component: '',
-      target: '',
+      redirect: '',
       remarks: ''
   })
   // 对话框标题
@@ -302,11 +295,8 @@
       routePath: [
           { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputApiRoute'), trigger: 'blur' }
       ],
-      component: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.program.pleaseInputComponent'), trigger: 'blur' }
-      ],
-      target: [
-          // target (Redirect) 可为空，移除必填验证
+      redirect: [
+          // redirect 可为空，移除必填验证
       ]
   })
 
@@ -403,8 +393,7 @@
               editForm.sortOrder = res.data.sortOrder
               editForm.roleCode = res.data.roleCode || ''
               editForm.path = res.data.path || ''
-              editForm.component = res.data.component || ''
-              editForm.target = res.data.target || ''
+              editForm.redirect = res.data.redirect || ''
               editForm.remarks = res.data.remarks || ''
               editForm.isEnabled = res.data.isEnabled
               editForm.isVisible = res.data.isVisible
@@ -509,8 +498,7 @@
           menuNameEn: '',
           menuType: '',
           menuUrl: '',
-          component: '',
-          target: '',
+          redirect: '',
           path: '',
           roleCode: '',
           menuIcon: '',
@@ -546,6 +534,7 @@
       // 设置必填项
       const params = {
           ...editForm,
+          redirect: editForm.redirect
       }
               const res = await post(INSERT_PROGRAM_API.INSERT_PROGRAM, params)
 
@@ -569,7 +558,8 @@
 
       // 设置必填项
       const params = {
-          ...editForm
+          ...editForm,
+          redirect: editForm.redirect
       }
 
       const res = await post(UPDATE_PROGRAM_API.UPDATE_PROGRAM, params)
