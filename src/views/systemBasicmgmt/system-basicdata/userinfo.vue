@@ -58,9 +58,6 @@
                   <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
                   <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
                   <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
-                  <el-table-column prop="isSignName" :label="$t('SystemBasicMgmt.userInfo.isSign')" align="center" min-width="120" />
-                  <el-table-column prop="isPartTimeName" :label="$t('SystemBasicMgmt.userInfo.isPartTime')" align="center" min-width="120" />
-                  <el-table-column prop="isFreezeName" :label="$t('SystemBasicMgmt.userInfo.isFreeze')" align="center" min-width="130" />
                   <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
                   <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
@@ -215,18 +212,44 @@
               </div>
               <!-- 第六行 -->
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isSign')">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
                       <el-switch
-                          v-model="editForm.isSign"
+                          v-model="editForm.isApproval"
                           :active-value="1"
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item>
-                      
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isRealtimeNotification')">
+                      <el-switch
+                          v-model="editForm.isRealtimeNotification"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item>
-                      
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isScheduledNotification')">
+                      <el-switch
+                          v-model="editForm.isScheduledNotification"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                  </el-form-item>
+              </div>
+              <!-- 第七行 - 头像上传 -->
+              <div class="form-row full-width">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
+                      <el-upload
+                          class="avatar-uploader"
+                          :show-file-list="false"
+                          :before-upload="beforeAvatarUpload"
+                          :on-success="handleAvatarSuccess"
+                          :on-error="handleAvatarError"
+                          :http-request="customUpload"
+                          accept=".jpg,.jpeg,.png"
+                          style="width: 10%">
+                          <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
+                          <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+                      </el-upload>
+                      <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
                   </el-form-item>
               </div>
               <!-- 备注信息 -->
@@ -248,6 +271,7 @@
 
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
+  import { Plus } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { 
       GET_USER_PAGES_API, 
@@ -259,7 +283,8 @@
       GET_USER_POSITION_DROPDOWN_API,
       GET_ROLE_DROPDOWN_API,
       GET_GENDER_DROPDOWN_API,
-      GET_EMPLOYMENT_TYPE_DROPDOWN_API
+      GET_EMPLOYMENT_TYPE_DROPDOWN_API,
+      UPLOAD_AVATAR_API
   } from '@/config/api/SystemBasicMgmt/system-basic/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -313,14 +338,21 @@
       loginNo: '',
       passWord: '',
       pwdSalt: '',
-      isSign: 0,
+      isApproval: 0,
+      isRealtimeNotification: 0,
+      isScheduledNotification: 0,
       isEmployed: 1,
       isFreeze: 0,
       employmentCode: '',
       remark: '',
       modifiedBy: '',
-      modifiedDate: ''
+      modifiedDate: '',
+      avatarAddress: ''
   })
+
+  // 头像上传相关
+  const avatarUrl = ref('')
+  const avatarFile = ref(null)
 
   // 对话框标题
   const dialogTitle = ref(t('SystemBasicMgmt.userInfo.editUser'))
@@ -504,6 +536,15 @@
 
       if (res && res.code === '200') {
           Object.assign(editForm, res.data)
+          // 设置头像显示
+          if (res.data.avatarAddress) {
+              // 如果头像地址是相对路径，需要拼接完整的URL
+              const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
+              avatarUrl.value = res.data.avatarAddress.startsWith('http') 
+                  ? res.data.avatarAddress 
+                  : `${baseUrl}/${res.data.avatarAddress}`
+              console.log('头像地址:', avatarUrl.value) // 调试用
+          }
       }
   }
 
@@ -577,14 +618,20 @@
           loginNo: '',
           passWord: '',
           pwdSalt: '',
-          isSign: 0,
+          isApproval: 0,
+          isRealtimeNotification: 0,
+          isScheduledNotification: 0,
           isEmployed: 1,
           isFreeze: 0,
           employmentCode: '',
           remark: '',
           modifiedBy: '',
-          modifiedDate: ''
+          modifiedDate: '',
+          avatarAddress: ''
       })
+      // 重置头像
+      avatarUrl.value = ''
+      avatarFile.value = null
   }
 
   // 清除表单验证状态
@@ -722,6 +769,61 @@
       })
   }
 
+  // 头像上传前验证
+  const beforeAvatarUpload = (file) => {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/jpg'
+      const isPNG = file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG && !isPNG) {
+          ElMessage.error(t('SystemBasicMgmt.userInfo.avatarFormatError'))
+          return false
+      }
+      if (!isLt2M) {
+          ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeError'))
+          return false
+      }
+      return true
+  }
+
+  // 自定义上传
+  const customUpload = async (options) => {
+      try {
+          const formData = new FormData()
+          formData.append('file', options.file)
+          
+          const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          })
+          
+          if (res && res.code === '200') {
+              options.onSuccess(res)
+          } else {
+              options.onError(new Error(res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed')))
+          }
+      } catch (error) {
+          options.onError(error)
+      }
+  }
+
+  // 头像上传成功
+  const handleAvatarSuccess = (res) => {
+      editForm.avatarAddress = res.data
+      // 如果头像地址是相对路径，需要拼接完整的URL
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
+      avatarUrl.value = res.data.startsWith('http') 
+          ? res.data 
+          : `${baseUrl}/${res.data}`
+      ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess'))
+  }
+
+  // 头像上传失败
+  const handleAvatarError = (error) => {
+      ElMessage.error(error.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'))
+  }
+
   // 关闭对话框
   const handleDialogClose = () => {
       // 重置表单
@@ -731,5 +833,49 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
+
+  .avatar-uploader {
+    text-align: center;
+    display: inline-block;
+  }
+
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+    display: inline-block;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: var(--el-color-primary);
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    line-height: 100px;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .avatar-tip {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    text-align: right;
+    padding-left: 20px;
+  }
 </style>
 

@@ -94,7 +94,10 @@
           
           <el-dropdown trigger="click">
             <div class="avatar-wrapper">
-              <el-avatar size="small" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+              <el-avatar 
+                size="small" 
+                :src="userAvatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" 
+                :alt="username" />
               <span class="username">{{ username }}</span>
               <el-icon class="el-icon-arrow-down"><ArrowDown /></el-icon>
             </div>
@@ -212,7 +215,8 @@ const moduleStore = useModuleStore()
 const { t, locale } = useI18n()
 const isCollapse = ref(false)
 const menuList = ref([])
-const username = ref('')
+const username = computed(() => userStore.getDisplayName)
+const userAvatar = computed(() => userStore.avatar || '')
 const currentSystemName = ref('')
 
 // 标签相关状态
@@ -258,7 +262,10 @@ const handleLanguageChange = (lang) => {
   locale.value = lang
   localStorage.setItem('language', lang)
   
-  // 直接刷新页面
+  // 更新页面标题
+  document.title = t('common.systemTitle')
+  
+  // 直接刷新页面以更新用户名显示
   window.location.reload()
 }
 
@@ -817,18 +824,6 @@ const restoreTabsFromStorage = () => {
 
 // 在组件挂载后执行
 onMounted(async () => {
-      // 从员工存储或本地存储获取员工名
-  if (userStore.username) {
-    username.value = userStore.username;
-  } else {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      username.value = storedUsername;
-    } else {
-      // 默认员工名
-      username.value = t('moduleSelect.userInfo');
-    }
-  }
   
   // 获取当前路径
   const currentPath = route.path

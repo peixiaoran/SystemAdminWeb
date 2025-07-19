@@ -6,7 +6,10 @@
         <el-dropdown trigger="click">
           <div class="user-avatar-wrapper">
             <div class="user-avatar">
-              <el-avatar size="small" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+              <el-avatar 
+                size="small" 
+                :src="userAvatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" 
+                :alt="username" />
               <div class="user-details">
                 <span class="username">{{ username }}</span>
                 <span class="role-tag"></span>
@@ -80,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, Loading, User, Setting, ArrowRight } from '@element-plus/icons-vue'
@@ -93,10 +96,11 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const username = ref('管理员')
+const userStore = useUserStore()
+const username = computed(() => userStore.getDisplayName)
+const userAvatar = computed(() => userStore.avatar || '')
 const modules = ref([])
 const loading = ref(true)
-const userStore = useUserStore()
 const moduleStore = useModuleStore()
 
 // 获取模块数据

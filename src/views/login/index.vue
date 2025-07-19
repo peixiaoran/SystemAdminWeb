@@ -200,18 +200,31 @@ const handleLogin = () => {
         .then(res => {
           
           if (res.code === '200') {
-            // 保存token
-            localStorage.setItem('token', res.data)
             // 设置标题
             document.title = t('common.systemTitle')
             
             // 获取员工store
             const userStore = useUserStore()
-            // 设置token
-            userStore.setToken(res.data)
             
-            // 路由现在是静态的，不需要加载动态路由
-    
+            // 处理返回的数据
+            if (res.data) {
+              // 设置token
+              if (res.data.token) {
+                userStore.setToken(res.data.token)
+              } else if (res.data) {
+                // 如果直接返回的是token字符串
+                userStore.setToken(res.data)
+              }
+              
+              // 设置用户信息
+              userStore.setUserInfo({
+                userId: res.data.userId || '',
+                userNameCh: res.data.userNameCh || '',
+                userNameEn: res.data.userNameEn || '',
+                loginNo: res.data.loginNo || loginForm.loginNo,
+                avatar: res.data.avatarAddress || ''
+              })
+            }
             
             // 直接跳转到模块选择页
             router.push('/module-select')

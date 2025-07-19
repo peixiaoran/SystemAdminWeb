@@ -49,6 +49,9 @@ const handleCommand = (command) => {
     
     // 更新路由标题
     updateRouteTitle()
+    
+    // 刷新页面以更新用户名显示
+    window.location.reload()
   }
 }
 </script>

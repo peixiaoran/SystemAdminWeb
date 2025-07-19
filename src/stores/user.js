@@ -6,7 +6,9 @@ import { post } from '@/utils/request'
 export const useUserStore = defineStore('user', {
   state: () => ({
     userId: '',
-    username: localStorage.getItem('username') || '管理员',
+    userNameCh: '',
+    userNameEn: '',
+    loginNo: '',
     avatar: '',
     token: localStorage.getItem('token') || '',
     roles: [],
@@ -15,7 +17,17 @@ export const useUserStore = defineStore('user', {
   
   getters: {
     // 是否已登录
-    isLoggedIn: (state) => !!state.token
+    isLoggedIn: (state) => !!state.token,
+    
+    // 根据当前语言获取用户名
+    getDisplayName: (state) => {
+      const currentLanguage = localStorage.getItem('language') || 'zh-TW'
+      if (currentLanguage === 'zh-TW') {
+        return state.userNameCh || state.loginNo || '管理员'
+      } else {
+        return state.userNameEn || state.userNameCh || state.loginNo || 'Admin'
+      }
+    }
   },
   
   actions: {
@@ -24,11 +36,15 @@ export const useUserStore = defineStore('user', {
       if (!userInfo) return
       
       this.userId = userInfo.userId
-      this.username = userInfo.username
+      this.userNameCh = userInfo.userNameCh
+      this.userNameEn = userInfo.userNameEn
+      this.loginNo = userInfo.loginNo
       this.avatar = userInfo.avatar
       
-      // 保存员工名到localStorage
-      localStorage.setItem('username', userInfo.username)
+      // 保存用户信息到localStorage
+      localStorage.setItem('userNameCh', userInfo.userNameCh)
+      localStorage.setItem('userNameEn', userInfo.userNameEn)
+      localStorage.setItem('loginNo', userInfo.loginNo)
     },
     
     // 设置Token
@@ -50,7 +66,9 @@ export const useUserStore = defineStore('user', {
         
         // 清除本地存储
         localStorage.removeItem('token')
-        localStorage.removeItem('username')
+        localStorage.removeItem('userNameCh')
+        localStorage.removeItem('userNameEn')
+        localStorage.removeItem('loginNo')
         localStorage.removeItem('currentDomainId')
         localStorage.removeItem('currentSystemName')
         localStorage.removeItem('currentSystemPath')
@@ -58,7 +76,9 @@ export const useUserStore = defineStore('user', {
         // 重置状态
         this.token = ''
         this.userId = ''
-        this.username = ''
+        this.userNameCh = ''
+        this.userNameEn = ''
+        this.loginNo = ''
         this.avatar = ''
         this.roles = []
         this.permissions = []
@@ -77,7 +97,9 @@ export const useUserStore = defineStore('user', {
     resetState() {
       this.token = ''
       this.userId = ''
-      this.username = ''
+      this.userNameCh = ''
+      this.userNameEn = ''
+      this.loginNo = ''
       this.avatar = ''
       this.roles = []
       this.permissions = []
@@ -88,6 +110,6 @@ export const useUserStore = defineStore('user', {
   persist: {
     key: 'user-store',
     storage: localStorage,
-    paths: ['token', 'username', 'userId', 'roles', 'permissions']
+    paths: ['token', 'userNameCh', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
   }
 }) 
