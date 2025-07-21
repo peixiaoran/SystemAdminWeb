@@ -32,7 +32,7 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.role')" align="left" min-width="180" />
                   <el-table-column prop="domainName" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.domain')" align="left" min-width="180" />
                   <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.isBinding')" align="center" min-width="90">

@@ -38,7 +38,7 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.exchangeRateInfo.index')" width="60" align="center" fixed />
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.exchangeRateInfo.index')" width="70" align="center" fixed />
                     <el-table-column prop="currencyCode" :label="$t('SystemBasicMgmt.exchangeRateInfo.currencyCode')" align="center" min-width="120"/>
                     <el-table-column prop="exchangeCurrencyCode" :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeCurrencyCode')" align="center" min-width="150" />
                     <el-table-column prop="exchangeRate" :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeRate')" align="center" min-width="120">

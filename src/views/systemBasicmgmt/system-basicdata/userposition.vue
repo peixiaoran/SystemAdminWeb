@@ -17,7 +17,7 @@
           <el-table-column 
             type="index" 
             :label="$t('SystemBasicMgmt.userPosition.index')" 
-            width="60" 
+            width="70" 
             align="center" 
             fixed 
           />

@@ -33,7 +33,7 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.companyInfo.index')" width="60" align="center" fixed />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.companyInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="companyNameCh" :label="$t('SystemBasicMgmt.companyInfo.companyNameCh')" align="left" min-width="240" />
                   <el-table-column prop="companyNameEn" :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
                   <el-table-column prop="companyiPhone" :label="$t('SystemBasicMgmt.companyInfo.companyPhone')" align="center" min-width="280" />

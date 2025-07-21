@@ -11,23 +11,23 @@
       >
       <!-- 第一行：基本信息 -->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.userNo')" prop="userNo">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.userNo')" prop="userNo">
           <el-input v-model="personalInfoForm.userNo" :disabled="true" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.loginNo')" prop="loginNo">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.loginNo')" prop="loginNo">
           <el-input v-model="personalInfoForm.loginNo" :disabled="true" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.userNameCh')" prop="userNameCh">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.userNameCh')" prop="userNameCh">
           <el-input 
             v-model="personalInfoForm.userNameCh" 
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputUserNameCh')" 
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputUserNameCh')" 
             :disabled="loading"
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.userNameEn')" prop="userNameEn">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.userNameEn')" prop="userNameEn">
           <el-input 
             v-model="personalInfoForm.userNameEn" 
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputUserNameEn')" 
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputUserNameEn')" 
             :disabled="loading"
           />
         </el-form-item>
@@ -35,30 +35,30 @@
 
       <!-- 第二行：联系信息 -->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.email')" prop="email">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.email')" prop="email">
           <el-input 
             v-model="personalInfoForm.email" 
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputEmail')" 
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputEmail')" 
             :disabled="loading"
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.phoneNumber')" prop="phoneNumber">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.phoneNumber')" prop="phoneNumber">
           <el-input 
             v-model="personalInfoForm.phoneNumber" 
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputPhoneNumber')" 
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputPhoneNumber')" 
             :disabled="loading"
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.password')" prop="password">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.password')" prop="password">
           <el-input 
             v-model="personalInfoForm.password" 
             type="password"
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputPassword')" 
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputPassword')" 
             :disabled="loading"
             show-password
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.gender')" prop="gender">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.gender')" prop="gender">
           <el-select v-model="personalInfoForm.gender" :disabled="true" style="width: 100%">
             <el-option
               v-for="item in genderOptions"
@@ -72,7 +72,7 @@
 
       <!-- 第三行：日期和部门信�?-->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.hireDate')" prop="hireDate">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.hireDate')" prop="hireDate">
           <el-date-picker
             v-model="personalInfoForm.hireDate"
             type="date"
@@ -82,7 +82,7 @@
             value-format="YYYY-MM-DD"
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.department')" prop="departmentId">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.department')" prop="departmentId">
           <el-tree-select
             v-model="personalInfoForm.departmentId"
             :data="departmentOptions"
@@ -92,7 +92,7 @@
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.position')" prop="positionId">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.position')" prop="positionId">
           <el-select v-model="personalInfoForm.positionId" :disabled="true" style="width: 100%">
             <el-option
               v-for="item in positionOptions"
@@ -102,7 +102,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.role')" prop="roleId">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.role')" prop="roleId">
           <el-select v-model="personalInfoForm.roleId" :disabled="true" style="width: 100%">
             <el-option
               v-for="item in roleOptions"
@@ -116,7 +116,7 @@
 
       <!-- 第四行：雇佣类型和状态信�?-->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.employmentType')" prop="employmentType">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.employmentType')" prop="employmentType">
           <el-select v-model="personalInfoForm.employmentType" :disabled="true" style="width: 100%">
             <el-option
               v-for="item in employmentTypeOptions"
@@ -126,32 +126,32 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isEmployed')" prop="isEmployed">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.isEmployed')" prop="isEmployed">
           <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isAgent')" prop="isAgent">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.isAgent')" prop="isAgent">
           <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isSign')" prop="isSign">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.isSign')" prop="isSign">
           <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
       </div>
 
       <!-- 第五行：其他状态和备注 -->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isPartTime')" prop="isPartTime">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.isPartTime')" prop="isPartTime">
           <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isFreeze')" prop="isFreeze">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.isFreeze')" prop="isFreeze">
           <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.remark')" prop="remark" class="remark-item">
+        <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.personalInfo.remark')" prop="remark" class="remark-item">
           <el-input 
             v-model="personalInfoForm.remark" 
             :disabled="loading"
             type="textarea"
             :rows="2"
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputRemark')"
+            :placeholder="$t('SystemBasicMgmt.systemMgmt.personalInfo.pleaseInputRemark')"
           />
         </el-form-item>
       </div>
@@ -232,18 +232,18 @@ export default {
     // 表单验证规则
     const formRules = reactive({
       userNameCh: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.userNameChRequired'), trigger: 'blur' }
+        { required: true, message: t('SystemBasicMgmt.systemMgmt.personalInfo.userNameChRequired'), trigger: 'blur' }
       ],
       userNameEn: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.userNameEnRequired'), trigger: 'blur' }
+        { required: true, message: t('SystemBasicMgmt.systemMgmt.personalInfo.userNameEnRequired'), trigger: 'blur' }
       ],
       email: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.emailRequired'), trigger: 'blur' },
-        { type: 'email', message: t('SystemBasicMgmt.personalInfo.emailFormatError'), trigger: 'blur' }
+        { required: true, message: t('SystemBasicMgmt.systemMgmt.personalInfo.emailRequired'), trigger: 'blur' },
+        { type: 'email', message: t('SystemBasicMgmt.systemMgmt.personalInfo.emailFormatError'), trigger: 'blur' }
       ],
       phoneNumber: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.phoneNumberRequired'), trigger: 'blur' },
-        { pattern: /^[0-9-+\s()]+$/, message: t('SystemBasicMgmt.personalInfo.phoneNumberFormatError'), trigger: 'blur' }
+        { required: true, message: t('SystemBasicMgmt.systemMgmt.personalInfo.phoneNumberRequired'), trigger: 'blur' },
+        { pattern: /^[0-9-+\s()]+$/, message: t('SystemBasicMgmt.systemMgmt.personalInfo.phoneNumberFormatError'), trigger: 'blur' }
       ],
       password: [
         { 
@@ -254,22 +254,22 @@ export default {
             }
             // 密碼必須�?8-16 個字�?
             if (value.length < 8 || value.length > 16) {
-              callback(new Error(t('SystemBasicMgmt.personalInfo.passwordLengthError')))
+              callback(new Error(t('SystemBasicMgmt.systemMgmt.personalInfo.passwordLengthError')))
               return
             }
             // 必須包含小寫字母
             if (!/[a-z]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.personalInfo.passwordLowercaseError')))
+              callback(new Error(t('SystemBasicMgmt.systemMgmt.personalInfo.passwordLowercaseError')))
               return
             }
             // 必須包含大寫字母
             if (!/[A-Z]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.personalInfo.passwordUppercaseError')))
+              callback(new Error(t('SystemBasicMgmt.systemMgmt.personalInfo.passwordUppercaseError')))
               return
             }
             // 必須包含數字
             if (!/[0-9]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.personalInfo.passwordNumberError')))
+              callback(new Error(t('SystemBasicMgmt.systemMgmt.personalInfo.passwordNumberError')))
               return
             }
             callback()
@@ -292,11 +292,11 @@ export default {
           Object.assign(originalFormData, response.data)
           originalFormData.password = ''
         } else {
-          ElMessage.error(response.message || t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'))
+          ElMessage.error(response.message || t('SystemBasicMgmt.systemMgmt.personalInfo.getPersonalInfoFailed'))
         }
       } catch (error) {
         console.error('获取个人信息失败:', error)
-        ElMessage.error(t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'))
+        ElMessage.error(t('SystemBasicMgmt.systemMgmt.personalInfo.getPersonalInfoFailed'))
       } finally {
         loading.value = false
       }
@@ -399,11 +399,11 @@ export default {
           // 重新获取最新数�?
           await getPersonalInfo()
         } else {
-          ElMessage.error(response.message || t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'))
+          ElMessage.error(response.message || t('SystemBasicMgmt.systemMgmt.personalInfo.savePersonalInfoFailed'))
         }
       } catch (error) {
         console.error('保存个人信息失败:', error)
-        ElMessage.error(t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'))
+        ElMessage.error(t('SystemBasicMgmt.systemMgmt.personalInfo.savePersonalInfoFailed'))
       } finally {
         saving.value = false
       }

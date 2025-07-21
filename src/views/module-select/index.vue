@@ -50,7 +50,12 @@
           v-for="module in modules" 
           :key="module.domainId"
         >
-          <div class="module-card" @click="enterModule(module)">
+          <el-card
+            class="module-card"
+            shadow="hover"
+            @click="enterModule(module)"
+            :body-style="{ padding: '0', height: '100%' }"
+          >
             <div class="module-icon">
               <el-icon :size="54">
                 <component :is="module.domainIcon" />
@@ -59,14 +64,14 @@
             <div class="module-info">
               <h2>{{ module.domainName }}</h2>
               <p>{{ module.remarks }}</p>
+              <div class="module-footer">
+                <el-button type="primary" round>
+                  <span>{{ $t('common.enter') }}</span>
+                  <el-icon class="enter-icon"><ArrowRight /></el-icon>
+                </el-button>
+              </div>
             </div>
-            <div class="module-footer">
-              <el-button type="primary" text>
-                <span>{{ $t('common.enter') }}</span>
-                <el-icon class="enter-icon"><ArrowRight /></el-icon>
-              </el-button>
-            </div>
-          </div>
+          </el-card>
         </el-col>
       </el-row>
     </div>
@@ -188,36 +193,12 @@ const logout = async () => {
 <style scoped>
 .module-select-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  background: #fff;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 20px 30px 60px;
+  padding: 0 30px 60px;
   overflow: hidden;
-}
-
-.module-select-container::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  left: -50px;
-  right: -50px;
-  bottom: -50px;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23bdc3c7' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-  z-index: 0;
-  animation: backgroundMove 60s linear infinite;
-}
-
-@keyframes backgroundMove {
-  0% {
-    transform: translateY(0) translateX(0);
-  }
-  50% {
-    transform: translateY(-20px) translateX(20px);
-  }
-  100% {
-    transform: translateY(0) translateX(0);
-  }
 }
 
 .header-actions {
@@ -225,7 +206,7 @@ const logout = async () => {
   justify-content: flex-end;
   align-items: center;
   margin-bottom: 20px;
-  padding: 10px 20px;
+  padding: 12px 0 0 0;
   background-color: transparent;
   position: relative;
   z-index: 1;
@@ -300,50 +281,54 @@ const logout = async () => {
 .module-card {
   width: 100%;
   min-width: 260px;
-  height: 320px;
-  background-color: #fff;
-  border-radius: 16px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  height: 280px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  justify-content: space-between;
+  border-radius: 16px;
+  transition: box-shadow 0.3s, border-color 0.3s;
   cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
+  overflow: hidden;
+  background: #fff;
+  border: 1.5px solid #e0eaff;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.06);
+}
+.module-card:hover {
+  border-color: #409eff;
+  box-shadow: 0 8px 32px rgba(64, 158, 255, 0.18);
 }
 
 .module-icon {
-  height: 140px;
+  height: 105px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  color: #3b82f6;
-  padding: 10px 0;
+  background: #ecf5ff;
+  color: #409eff;
+  border-bottom: 1px solid #e0eaff;
 }
 
 .module-info {
   flex: 1;
-  padding: 20px;
-  background-color: #fff;
+  padding: 24px 20px 10px 20px;
+  background: #fff;
   text-align: center;
-  border-top: 1px solid #ebeef5;
 }
 
 .module-info h2 {
-  font-size: 22px;
-  margin: 0 0 16px 0;
-  color: #303133;
-  font-weight: 600;
+  font-size: 20px;
+  margin: 0 0 10px 0;
+  color: #409eff;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .module-info p {
-  font-size: 15px;
-  color: #606266;
+  font-size: 14px;
+  color: #90baff;
   margin: 0;
   line-height: 1.6;
-  height: 50px;
+  min-height: 40px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -351,15 +336,31 @@ const logout = async () => {
   -webkit-box-orient: vertical;
 }
 
+/* 移除module-footer的背景、边框等样式，只保留布局 */
 .module-footer {
   display: flex;
   justify-content: center;
-  padding: 0 0 20px 0;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 0;
+  border-top: none;
+  background: none;
 }
 
 .module-footer .el-button {
   border-radius: 20px;
-  padding: 8px 20px;
+  padding: 8px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  background: #409eff;
+  color: #fff;
+  border: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.08);
+}
+.module-footer .el-button:hover {
+  background: linear-gradient(90deg, #409eff 0%, #337ecc 100%);
+  color: #fff;
 }
 
 .enter-icon {
@@ -428,13 +429,19 @@ const logout = async () => {
   }
   
   .module-card {
+    min-width: 100%;
     height: auto;
-    min-height: 280px;
   }
   
   .single-module-card .module-card {
     max-width: 100%;
     min-width: 100%;
+  }
+  .module-info {
+    padding: 18px 10px 8px 10px;
+  }
+  .module-footer {
+    padding: 12px 0 14px 0;
   }
 }
 

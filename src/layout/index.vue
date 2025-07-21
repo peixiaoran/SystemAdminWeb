@@ -978,6 +978,7 @@ const openMenuForPath = (path) => {
   padding: 0; /* 移除内边距 */
   position: relative; /* 确保正确的定位上下文 */
   z-index: 1; /* 设置基础层级，确保对话框能正确覆盖 */
+  background: #fff !important;
 }
 
 /* 侧边栏样式 */
@@ -1147,6 +1148,7 @@ const openMenuForPath = (path) => {
   height: 102vh;
   padding-bottom: 0;
   margin: 0;
+  background: #fff;
 }
 
 .header {
@@ -1344,7 +1346,7 @@ const openMenuForPath = (path) => {
   display: flex;
   flex-direction: column;
   padding: 12px;
-  background-color: #f0f2f5;
+  background-color: #f4f6fa;
   position: relative;
   min-height: 0;
   margin-bottom: 0;

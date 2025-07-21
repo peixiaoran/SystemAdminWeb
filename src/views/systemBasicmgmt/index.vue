@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <!-- œµÕ≥◊¥Ã¨ø®∆¨ -->
+    <!-- Á≥ªÁªüÁä∂ÊÄÅÊ¶ÇËßà -->
     <el-row :gutter="20">
       <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
         <el-card class="data-card" shadow="hover">
@@ -68,7 +68,7 @@
       </el-col>
     </el-row>
 
-    <!-- ◊ ‘¥ π”√«˜ ∆Õº -->
+    <!-- ËµÑÊ∫êË∂ãÂäøÂõæ -->
     <el-row :gutter="20" class="chart-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
@@ -86,14 +86,14 @@
             </div>
           </template>
           <div class="resource-chart">
-            <!-- ’‚¿Ôø…“‘∑≈◊ ‘¥«˜ ∆Õº±Ì◊Èº˛ -->
+            <!-- ÂõæË°®Âç†‰ΩçÁ¨¶ -->
             <div class="chart-placeholder">{{ $t('SystemBasicMgmt.resourceTrend.placeholder') }}</div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- œµÕ≥–≈œ¢∫Õ∑˛ŒÒ◊¥Ã¨ -->
+    <!-- Á≥ªÁªü‰ø°ÊÅØ‰∏éÊúçÂä°Áä∂ÊÄÅ -->
     <el-row :gutter="20" class="info-row">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
         <el-card class="custom-card" shadow="hover">
@@ -107,7 +107,7 @@
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.os')">CentOS 8.4.2105</el-descriptions-item>
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.serverIp')">192.168.1.100</el-descriptions-item>
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.systemTime')">2023-05-15 15:30:45</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.uptime')">23ÃÏ 5–° ± 16∑÷÷”</el-descriptions-item>
+            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.uptime')">23 days 5 hours 16 minutes</el-descriptions-item>
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.cpuModel')">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.memoryCapacity')">16 GB</el-descriptions-item>
             <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.diskSpace')">1 TB</el-descriptions-item>
@@ -154,7 +154,7 @@
       </el-col>
     </el-row>
 
-    <!-- œµÕ≥»’÷æ∫Õ±∏∑›º«¬º -->
+    <!-- Á≥ªÁªüÊó•Âøó‰∏éÂ§á‰ªΩËÆ∞ÂΩï -->
     <el-row :gutter="20" class="log-row">
       <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
         <el-card class="custom-card" shadow="hover">
@@ -162,7 +162,7 @@
             <div class="system-log-header">
               <span>{{ $t('SystemBasicMgmt.systemLog.title') }}</span>
               <div class="log-actions">
-                <el-select v-model="logType" placeholder="»’÷æ¿‡–Õ" size="small" style="width: 120px; margin-right: 10px;">
+                <el-select v-model="logType" placeholder="Êó•ÂøóÁ±ªÂûã" size="small" style="width: 120px; margin-right: 10px;">
                   <el-option :label="$t('SystemBasicMgmt.systemLog.all')" value="all" />
                   <el-option :label="$t('SystemBasicMgmt.systemLog.error')" value="error" />
                   <el-option :label="$t('SystemBasicMgmt.systemLog.warning')" value="warning" />
@@ -235,7 +235,7 @@
       </el-col>
     </el-row>
 
-    <!-- œµÕ≥Õ®÷™ -->
+    <!-- Á≥ªÁªüÈÄöÁü• -->
     <el-row :gutter="20" class="notice-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
@@ -276,7 +276,7 @@
       </el-col>
     </el-row>
 
-    <!-- øÏΩ›≤Ÿ◊˜«¯ -->
+    <!-- Âø´Êç∑Êìç‰Ωú -->
     <el-row :gutter="20" class="quick-action-row">
       <el-col :span="24">
         <el-card class="custom-card" shadow="hover">
@@ -299,7 +299,7 @@
       </el-col>
     </el-row>
 
-    <!-- ÃÌº”router-view£¨”√”⁄œ‘ æ◊”¬∑”…ƒ⁄»› -->
+    <!-- Ë∑ØÁî±ËßÜÂõæÔºåÁî®‰∫éÂä®ÊÄÅÂä†ËΩΩÁªÑ‰ª∂ -->
     <router-view v-slot="{ Component }">
       <transition name="fade-transform" mode="out-in">
         <keep-alive>
@@ -319,207 +319,207 @@ import {
   Document, Folder, Tools, Upload, Cpu, DataAnalysis, Loading
 } from '@element-plus/icons-vue'
 
-// ≥ı ºªØi18n
+// ÂàùÂßãÂåñi18n
 const { t } = useI18n()
 
-// ◊ ‘¥«˜ ∆Õº ±º‰∑∂Œß
+// ËµÑÊ∫êË∂ãÂäøÂõæÊó∂Èó¥ËåÉÂõ¥
 const resourceTimeRange = ref('day')
 
-// »’÷æ∑÷“≥
+// Êó•ÂøóÂàÜÈ°µ
 const logPagination = reactive({
   pageIndex: 1,
   pageSize: 5,
   total: 100
 })
 
-// Õ®÷™∑÷“≥
+// ÈÄöÁü•ÂàÜÈ°µ
 const noticePagination = reactive({
   pageIndex: 1,
   pageSize: 5,
   total: 50
 })
 
-// ∑˛ŒÒ◊¥Ã¨
+// ÊúçÂä°Áä∂ÊÄÅ
 const serviceStatus = reactive([
   {
-    name: 'Web∑˛ŒÒ∆˜',
+    name: 'Web Server',
     description: 'Nginx 1.20.1',
-    status: '‘À––÷–'
+    status: 'Running'
   },
   {
-    name: ' ˝æ›ø‚∑˛ŒÒ',
+    name: 'Database',
     description: 'MySQL 8.0.27',
-    status: '‘À––÷–'
+    status: 'Running'
   },
   {
-    name: 'ª∫¥Ê∑˛ŒÒ',
+    name: 'Redis',
     description: 'Redis 6.2.6',
-    status: '‘À––÷–'
+    status: 'Running'
   },
   {
-    name: 'œ˚œ¢∂”¡–',
+    name: 'Message Queue',
     description: 'RabbitMQ 3.9.13',
-    status: '“—Õ£÷π'
+    status: 'Stopped'
   },
   {
-    name: '∂® ±»ŒŒÒ',
+    name: 'Cron Service',
     description: 'Cron Service',
-    status: '‘À––÷–'
+    status: 'Running'
   }
 ])
 
-// œµÕ≥»’÷æ
+// Á≥ªÁªüÊó•Âøó
 const logType = ref('all')
 const systemLogs = reactive([
   {
     time: '2023-05-15 15:20:30',
     level: 'ERROR',
-            module: '‘±π§»œ÷§',
-        message: '‘±π§µ«¬º ß∞‹£∫√‹¬Î¥ÌŒÛ (IP: 192.168.1.5)'
+            module: 'Authentication',
+        message: 'Authentication failed (IP: 192.168.1.5)'
   },
   {
     time: '2023-05-15 15:15:22',
     level: 'WARNING',
-    module: ' ˝æ›ø‚',
-    message: ' ˝æ›ø‚¡¨Ω”≥ÿ¥ÔµΩ80%»›¡ø'
+    module: 'Database',
+    message: 'Database connection reached 80% threshold'
   },
   {
     time: '2023-05-15 15:10:15',
     level: 'INFO',
-    module: 'œµÕ≥',
-    message: 'œµÕ≥≈‰÷√“—∏¸–¬'
+    module: 'System',
+    message: 'System load increased'
   },
   {
     time: '2023-05-15 15:05:48',
     level: 'INFO',
-            module: '‘±π§π‹¿Ì',
-        message: '–¬‘±π§◊¢≤·£∫user123'
+            module: 'Authentication',
+        message: 'User logged in: user123'
   },
   {
     time: '2023-05-15 15:01:33',
     level: 'WARNING',
-    module: 'Œƒº˛¥Ê¥¢',
-    message: '¥≈≈Ãø’º‰≤ª◊„£¨ £”‡ø’º‰µÕ”⁄20%'
+    module: 'Storage',
+    message: 'Disk space low, remaining 20%'
   },
 ])
 
-// œµÕ≥Õ®÷™
+// Á≥ªÁªüÈÄöÁü•
 const systemNotices = reactive([
   {
-    title: 'œµÕ≥Œ¨ª§Õ®÷™£∫Ω´”⁄5‘¬20»’Ω¯––œµÕ≥∏¸–¬',
-    type: 'Œ¨ª§',
+    title: 'System Maintenance Notice on May 20th',
+    type: 'Maintenance',
     publisher: 'Admin',
     time: '2023-05-15 10:30:00'
   },
   {
-    title: '∞≤»´∏¸–¬£∫“—–ﬁ∏¥πÿº¸∞≤»´¬©∂¥£¨«Îº∞ ±∏¸–¬',
-    type: '∞≤»´',
+    title: 'Security Update: Critical Vulnerability Fixed',
+    type: 'Security',
     publisher: 'SecurityTeam',
     time: '2023-05-14 16:45:20'
   },
   {
-    title: 'π¶ƒ‹∏¸–¬£∫–¬‘ˆ ˝æ›∑÷Œˆƒ£øÈ',
-    type: '∏¸–¬',
+    title: 'Database Schema Update',
+    type: 'Update',
     publisher: 'Admin',
     time: '2023-05-12 09:15:30'
   },
   {
-    title: '∑˛ŒÒ∆˜…˝º∂ÕÍ≥…π´∏Ê',
-    type: 'π´∏Ê',
+    title: 'System Update Successful',
+    type: 'Update',
     publisher: 'SystemAdmin',
     time: '2023-05-10 14:20:00'
   },
   {
-    title: 'ƒÍ∂»œµÕ≥∞≤»´…Ûº∆Ω´”⁄œ¬÷‹ø™ º',
-    type: '∞≤»´',
+    title: 'System Full Backup Completed',
+    type: 'Security',
     publisher: 'SecurityTeam',
     time: '2023-05-08 11:30:45'
   }
 ])
 
-// ±∏∑›º«¬º
+// Â§á‰ªΩËÆ∞ÂΩï
 const backupRecords = reactive([
   {
-    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230515',
+    name: 'System Backup_20230515',
     time: '2023-05-15 03:00:00',
     size: '4.2 GB'
   },
   {
-    name: ' ˝æ›ø‚±∏∑›_20230514',
+    name: 'Database Backup_20230514',
     time: '2023-05-14 03:00:00',
     size: '1.8 GB'
   },
   {
-    name: '≈‰÷√Œƒº˛±∏∑›_20230513',
+    name: 'Application Logs_20230513',
     time: '2023-05-13 03:00:00',
     size: '156 MB'
   },
   {
-    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230510',
+    name: 'System Backup_20230510',
     time: '2023-05-10 03:00:00',
     size: '4.1 GB'
   },
   {
-    name: ' ˝æ›ø‚±∏∑›_20230507',
+    name: 'Database Backup_20230507',
     time: '2023-05-07 03:00:00',
     size: '1.7 GB'
   },
   {
-    name: 'œµÕ≥ÕÍ’˚±∏∑›_20230501',
+    name: 'System Backup_20230501',
     time: '2023-05-01 03:00:00',
     size: '4.0 GB'
   }
 ])
 
-// øÏΩ›≤Ÿ◊˜
+// Âø´Êç∑Êìç‰Ωú
 const quickActions = reactive([
   {
-    name: 'œµÕ≥…Ë÷√',
+    name: 'System Status',
     icon: markRaw(Setting)
   },
   {
-          name: '‘±π§π‹¿Ì',
+          name: 'User Management',
     icon: markRaw(User)
   },
   {
-    name: '∞≤»´≈‰÷√',
+    name: 'Security',
     icon: markRaw(Lock)
   },
   {
-    name: 'œµÕ≥º‡øÿ',
+    name: 'System Monitor',
     icon: markRaw(Monitor)
   },
   {
-    name: '±∏∑›ª÷∏¥',
+    name: 'Data Recovery',
     icon: markRaw(Upload)
   },
   {
-    name: '»’÷æ∑÷Œˆ',
+    name: 'Log Viewer',
     icon: markRaw(Document)
   },
   {
-    name: '¥Ê¥¢π‹¿Ì',
+    name: 'Storage',
     icon: markRaw(Folder)
   },
   {
-    name: 'π§æﬂœ‰',
+    name: 'Tools',
     icon: markRaw(Tools)
   }
 ])
 
-// ªÒ»°Õ®÷™¿‡–Õ
+// Ëé∑ÂèñÈÄöÁü•Á±ªÂûã
 const getNoticeType = (type) => {
   switch (type) {
-    case 'Œ¨ª§':
+    case 'Maintenance':
     case 'Maintenance':
       return 'warning'
-    case '∞≤»´':
+    case 'Security':
     case 'Security':
       return 'danger'
-    case '∏¸–¬':
+    case 'Update':
     case 'Update':
       return 'success'
-    case 'π´∏Ê':
+    case 'Announcement':
     case 'Announcement':
       return 'info'
     default:
@@ -627,7 +627,7 @@ const getNoticeType = (type) => {
   gap: 10px;
 }
 
-/* Õº±Ì’ºŒª */
+/* ÂõæË°®Âç†‰ΩçÁ¨¶ */
 .resource-chart {
   height: 300px;
   display: flex;
@@ -645,12 +645,12 @@ const getNoticeType = (type) => {
   border-radius: 4px;
 }
 
-/* √Ë ˆ¡–±Ì */
+/* ÊèèËø∞ÂàóË°® */
 .descriptions-block {
   margin-top: 10px;
 }
 
-/* ∑˛ŒÒ◊¥Ã¨—˘ Ω */
+/* ÊúçÂä°Áä∂ÊÄÅÊ†∑Âºè */
 .service-list {
   max-height: 365px;
   overflow-y: auto;
@@ -691,14 +691,14 @@ const getNoticeType = (type) => {
   gap: 8px;
 }
 
-/* ∑÷“≥»›∆˜ */
+/* ÂàÜÈ°µ */
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
-/* ±∏∑›º«¬º—˘ Ω */
+/* Â§á‰ªΩËÆ∞ÂΩïÊ†∑Âºè */
 .backup-list {
   padding: 5px 0;
 }
@@ -739,7 +739,7 @@ const getNoticeType = (type) => {
   gap: 8px;
 }
 
-/* øÏΩ›≤Ÿ◊˜«¯ */
+/* Âø´Êç∑Êìç‰Ωú */
 .quick-action-list {
   padding: 15px 0;
 }
@@ -764,7 +764,7 @@ const getNoticeType = (type) => {
   text-align: center;
 }
 
-/* ±Ì∏Ò—˘ Ωµ˜’˚ */
+/* Ë°®Ê†ºÊ†∑Âºè */
 :deep(.el-table th) {
   background-color: #f5f7fa !important;
   font-weight: 600;

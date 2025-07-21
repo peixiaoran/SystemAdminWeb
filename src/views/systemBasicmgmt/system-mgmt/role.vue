@@ -39,7 +39,7 @@
                         class="conventional-table">
                   <el-table-column type="index"
                                    :label="$t('SystemBasicMgmt.systemMgmt.index')"
-                                   width="60"
+                                   width="70"
                                    align="center"
                                    fixed />
                   <el-table-column prop="roleCode"

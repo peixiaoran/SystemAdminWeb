@@ -42,7 +42,7 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.systemMgmt.module.menuCode')" align="left" min-width="230" />
                   <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameCh')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameEn')" align="left" min-width="200" />

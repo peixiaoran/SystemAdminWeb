@@ -33,7 +33,7 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.dictionaryInfo.index')" width="60" align="center" fixed />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.dictionaryInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="dicType" :label="$t('SystemBasicMgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
                   <el-table-column prop="dicCode" :label="$t('SystemBasicMgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
                   <el-table-column prop="dicNameCh" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCh')" align="left" min-width="230" />

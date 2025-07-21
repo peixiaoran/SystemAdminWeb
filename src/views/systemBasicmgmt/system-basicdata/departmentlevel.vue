@@ -35,8 +35,8 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentLevel.index')" width="60" align="center" fixed />
-                  <el-table-column prop="departmentLevelCode" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" align="center" min-width="120" />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentLevel.index')" width="70" align="center" fixed />
+                  <el-table-column prop="departmentLevelCode" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
                   <el-table-column prop="departmentLevelNameCh" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelNameEn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
@@ -78,7 +78,7 @@
                       <el-input v-model="editForm.departmentLevelCode" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" prop="departmentLevelNameCh">
-<el-input v-model="editForm.departmentLevelNameCh" style="width:100%" />
+                      <el-input v-model="editForm.departmentLevelNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">

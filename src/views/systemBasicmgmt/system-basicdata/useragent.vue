@@ -43,7 +43,7 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="60" align="center" fixed />
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
                     <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="180" />
                     <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />

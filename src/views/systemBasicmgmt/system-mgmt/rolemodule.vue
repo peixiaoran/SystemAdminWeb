@@ -39,7 +39,7 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
                     <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.role')" align="left" min-width="180" />
                     <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.module')" align="left" min-width="180" />
                     <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.systemMgmt.roleModule.isBinding')" align="center" min-width="90">

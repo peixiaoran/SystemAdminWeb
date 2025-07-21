@@ -35,7 +35,7 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="60" align="center" fixed />
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="domainCode" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainCode')" align="left" min-width="230" />
                   <el-table-column prop="domainNameCh" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameCh')" align="left" min-width="280" />
                   <el-table-column prop="domainNameEn" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="280" />
