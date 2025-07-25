@@ -4,21 +4,21 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.role')">
+              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.role')">
                   <el-select style="width:180px"
                              v-model="filters.roleId"
-                             :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.roleProgram.role')"
+                             :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.role')"
                              @change="handleRoleChange">
                       <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.roleProgram.domain')" style="width:180px" @change="handleDomainChange">
+              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.domain')">
+                  <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.domain')" style="width:180px" @change="handleDomainChange">
                       <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.module')">
-                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.roleProgram.module')" style="width:180px" @change="handleModuleChange">
+              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.module')">
+                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.module')" style="width:180px" @change="handleModuleChange">
                       <el-option v-for="item in moduleOptions" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                   </el-select>
               </el-form-item>
@@ -29,7 +29,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleConfirm">
-                      {{ $t('SystemBasicMgmt.systemMgmt.updateBindings') }}
+                      {{ $t('SystemBasicMgmt.updateBindings') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -42,17 +42,17 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.role')" align="left" min-width="180" />
-                  <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.program')" align="left" min-width="180" />
-                  <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.systemMgmt.roleProgram.isBinding')" align="center" min-width="90">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
+                  <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.roleProgram.role')" align="left" min-width="180" />
+                  <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.roleProgram.program')" align="left" min-width="180" />
+                  <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.roleProgram.isBinding')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="checkbox-wrapper">
                               <el-checkbox v-model="scope.row.isChecked" />
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.systemMgmt.remark')" min-width="150" />
+                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.remark')" min-width="150" />
               </el-table>
           </div>
 
@@ -214,9 +214,9 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) {
-          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.roleProgram.pleaseSelectRole') + '和' +
-              t('SystemBasicMgmt.systemMgmt.roleProgram.pleaseSelectDomain') + '和' +
-              t('SystemBasicMgmt.systemMgmt.roleProgram.pleaseSelectModule'))
+          ElMessage.warning(t('SystemBasicMgmt.roleProgram.pleaseSelectRole') + '和' +
+              t('SystemBasicMgmt.roleProgram.pleaseSelectDomain') + '和' +
+              t('SystemBasicMgmt.roleProgram.pleaseSelectModule'))
           return
       }
 
@@ -234,7 +234,7 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('SystemBasicMgmt.systemMgmt.roleProgram.updateBindingsSuccess'))
+              ElMessage.success(t('SystemBasicMgmt.roleProgram.updateBindingsSuccess'))
               fetchRoleProgramList()
           } else {
               ElMessage.error(res.message)

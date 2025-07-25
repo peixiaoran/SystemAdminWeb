@@ -5,7 +5,9 @@ export const useModuleStore = defineStore('module', {
   state: () => ({
     currentDomainId: localStorage.getItem('currentDomainId') || '',
     currentSystemName: localStorage.getItem('currentSystemName') || '',
-    currentSystemPath: localStorage.getItem('currentSystemPath') || ''
+    currentSystemPath: localStorage.getItem('currentSystemPath') || '',
+    currentSystemNameCh: localStorage.getItem('currentSystemNameCh') || '',
+    currentSystemNameEn: localStorage.getItem('currentSystemNameEn') || ''
   }),
   
   getters: {
@@ -24,15 +26,19 @@ export const useModuleStore = defineStore('module', {
   
   actions: {
     // 设置当前模块信息
-    setCurrentModule(domainId, systemName, systemPath) {
+    setCurrentModule(domainId, systemName, systemPath, systemNameCh = '', systemNameEn = '') {
       this.currentDomainId = domainId
       this.currentSystemName = systemName
       this.currentSystemPath = systemPath
+      this.currentSystemNameCh = systemNameCh
+      this.currentSystemNameEn = systemNameEn
       
       // 同时更新localStorage (兼容原有代码)
       localStorage.setItem('currentDomainId', domainId)
       localStorage.setItem('currentSystemName', systemName)
       localStorage.setItem('currentSystemPath', systemPath)
+      localStorage.setItem('currentSystemNameCh', systemNameCh)
+      localStorage.setItem('currentSystemNameEn', systemNameEn)
     },
     
     // 清除模块信息
@@ -52,6 +58,6 @@ export const useModuleStore = defineStore('module', {
   persist: {
     key: 'module-store',
     storage: localStorage,
-    paths: ['currentDomainId', 'currentSystemName', 'currentSystemPath']
+    paths: ['currentDomainId', 'currentSystemName', 'currentSystemPath', 'currentSystemNameCh', 'currentSystemNameEn']
   }
 }) 

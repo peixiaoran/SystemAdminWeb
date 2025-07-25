@@ -4,18 +4,18 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="模块搜索表单">
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.domain')">
+              <el-form-item :label="$t('SystemBasicMgmt.domain')">
                   <el-select style="width: 180px" 
                             v-model="filters.domainId" 
-                            :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder') + $t('SystemBasicMgmt.systemMgmt.module.domain')">
+                            :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.module.domain')">
                       <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuCode')">
-                  <el-input v-model="filters.menuCode" :placeholder="$t('SystemBasicMgmt.systemMgmt.inputPlaceholder') + $t('SystemBasicMgmt.systemMgmt.module.menuCode')" style="width:170px" />
+              <el-form-item :label="$t('SystemBasicMgmt.module.menuCode')">
+                  <el-input v-model="filters.menuCode" :placeholder="$t('SystemBasicMgmt.inputPlaceholder') + $t('SystemBasicMgmt.module.menuCode')" style="width:170px" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuName')">
-                  <el-input v-model="filters.menuName" :placeholder="$t('SystemBasicMgmt.systemMgmt.inputPlaceholder') + $t('SystemBasicMgmt.systemMgmt.module.menuName')" style="width:200px" />
+              <el-form-item :label="$t('SystemBasicMgmt.module.menuName')">
+                  <el-input v-model="filters.menuName" :placeholder="$t('SystemBasicMgmt.inputPlaceholder') + $t('SystemBasicMgmt.module.menuName')" style="width:200px" />
               </el-form-item>
               <el-form-item>
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -27,7 +27,7 @@
               </el-form-item>
               <div class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.systemMgmt.module.addModule') }}
+                      {{ $t('SystemBasicMgmt.module.addModule') }}
                   </el-button>
               </div>
           </el-form>
@@ -42,35 +42,35 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.systemMgmt.module.menuCode')" align="left" min-width="230" />
-                  <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameCh')" align="left" min-width="230" />
-                  <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.systemMgmt.module.menuType')" align="center" min-width="130" />
-                  <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.systemMgmt.module.roleCode')" align="center" min-width="130" />
-                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.systemMgmt.module.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.systemMgmt.module.menuIcon')" align="center" min-width="170" />
-                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')" align="center" min-width="120">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
+                  <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.module.menuCode')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.module.menuNameCh')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.module.menuNameEn')" align="left" min-width="200" />
+                  <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="130" />
+                  <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.module.roleCode')" align="center" min-width="130" />
+                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.module.pagePath')" align="left" min-width="230" />
+                  <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.module.menuIcon')" align="center" min-width="170" />
+                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.isEnabled')" align="center" min-width="120">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                                  {{ scope.row.isEnabled ? $t('SystemBasicMgmt.systemMgmt.enabled') : $t('SystemBasicMgmt.systemMgmt.disabled') }}
+                                  {{ scope.row.isEnabled ? $t('SystemBasicMgmt.enabled') : $t('SystemBasicMgmt.disabled') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.systemMgmt.isVisible')" align="center" min-width="90">
+                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.isVisible')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                                  {{ scope.row.isVisible ? $t('SystemBasicMgmt.systemMgmt.visible') : $t('SystemBasicMgmt.systemMgmt.hidden') }}
+                                  {{ scope.row.isVisible ? $t('SystemBasicMgmt.visible') : $t('SystemBasicMgmt.hidden') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.systemMgmt.createdBy')" min-width="120" />
-                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('SystemBasicMgmt.systemMgmt.operation')" min-width="180" fixed="right" align="center">
+                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.createdBy')" min-width="120" />
+                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.createdTime')" min-width="180" />
+                  <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -104,37 +104,37 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="模块编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuCode')" prop="menuCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameCh')" prop="menuNameCh">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuNameCh')" prop="menuNameCh">
 <el-input v-model="editForm.menuNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuNameEn')" prop="menuNameEn">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuNameEn')" prop="menuNameEn">
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.domain')" prop="domainId">
-                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.systemMgmt.module.pleaseSelectDomain')">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.domain')" prop="domainId">
+                      <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.module.pleaseSelectDomain')">
                           <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuIcon')" prop="menuIcon">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuIcon')" prop="menuIcon">
                       <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.sortOrder')" prop="sortOrder">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.sortOrder')" prop="sortOrder">
                       <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.roleCode')" prop="roleCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.menuType')" prop="menuType">
-                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.systemMgmt.module.pleaseSelectMenuType')">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuType')" prop="menuType">
+                      <el-select v-model="editForm.menuType" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.module.pleaseSelectMenuType')">
                           <el-option
                               v-for="item in menuTypeOptions"
                               :key="item.menuTypeCode"
@@ -144,26 +144,26 @@
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.pagePath')" prop="path">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.module.redirect')" prop="redirect">
+                  <el-form-item :label="$t('SystemBasicMgmt.module.redirect')" prop="redirect">
                       <el-input v-model="editForm.redirect" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
+                  <el-form-item :label="$t('SystemBasicMgmt.remarks')">
                       <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')">
+                  <el-form-item :label="$t('SystemBasicMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isVisible')">
+                  <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
@@ -243,31 +243,31 @@
   // 表单验证规则
   const formRules = reactive({
       menuCode: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputMenuCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuCode'), trigger: 'blur' }
       ],
       menuNameCh: [
-{ required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputMenuNameCh'), trigger: 'blur' }
+{ required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuNameCh'), trigger: 'blur' }
       ],
       menuNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputMenuNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuNameEn'), trigger: 'blur' }
       ],
       domainId: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseSelectDomain'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseSelectDomain'), trigger: 'change' }
       ],
       menuIcon: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputMenuIcon'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuIcon'), trigger: 'blur' }
       ],
       sortOrder: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputSortOrder'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputSortOrder'), trigger: 'blur' }
       ],
       roleCode: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputRoleCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputRoleCode'), trigger: 'blur' }
       ],
       menuType: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseSelectMenuType'), trigger: 'change' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseSelectMenuType'), trigger: 'change' }
       ],
       path: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.module.pleaseInputPagePath'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputPagePath'), trigger: 'blur' }
       ],
       redirect: [
           // redirect 可为空，移除必填验证
@@ -310,7 +310,7 @@
           domainDropList.value = res.data || []
 
           // 如果是新增操作，默认选中第一个网域
-          if (dialogTitle.value === t('SystemBasicMgmt.systemMgmt.module.addModule') && domainDropList.value.length > 0) {
+          if (dialogTitle.value === t('SystemBasicMgmt.module.addModule') && domainDropList.value.length > 0) {
               editForm.domainId = domainDropList.value[0].domainId
           }
       } catch (error) {
@@ -492,7 +492,7 @@
   const insertModule = async () => {
       // 检查必填字段
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.module.pleaseSelectDomain'))
+          ElMessage.warning(t('SystemBasicMgmt.module.pleaseSelectDomain'))
           return
       }
 
@@ -518,7 +518,7 @@
   const updateModule = async () => {
       // 检查必填字段
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.module.pleaseSelectDomain'))
+          ElMessage.warning(t('SystemBasicMgmt.module.pleaseSelectDomain'))
           return
       }
 
@@ -546,7 +546,7 @@
       }
 
       if (isNaN(params.menuId)) {
-          ElMessage.error(t('SystemBasicMgmt.systemMgmt.invalidId'))
+          ElMessage.error(t('SystemBasicMgmt.invalidId'))
           return
       }
 
@@ -573,7 +573,7 @@
       editForm.isVisible = 1
 
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.module.addModule')
+      dialogTitle.value = t('SystemBasicMgmt.module.addModule')
 
       // 获取网域类型和菜单类型
       fetchDomainDrop()
@@ -588,7 +588,7 @@
       resetForm()
 
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.module.editModule')
+      dialogTitle.value = t('SystemBasicMgmt.module.editModule')
 
       // 获取网域类型和菜单类型
       fetchDomainDrop()
@@ -619,7 +619,7 @@
   // 处理删除操作
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.systemMgmt.module.deleteConfirm'),
+          t('SystemBasicMgmt.module.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

@@ -217,7 +217,14 @@ const isCollapse = ref(false)
 const menuList = ref([])
 const username = computed(() => userStore.getDisplayName)
 const userAvatar = computed(() => userStore.avatar || '')
-const currentSystemName = ref('')
+const currentSystemName = computed(() => {
+  // 优先用多语言字段
+  if (locale.value === 'en-US') {
+    return moduleStore.currentSystemNameEn || moduleStore.currentSystemName || ''
+  } else {
+    return moduleStore.currentSystemNameCh || moduleStore.currentSystemName || ''
+  }
+})
 
 // 标签相关状态
 const activeTabName = ref('')
@@ -448,8 +455,7 @@ const fetchMenuData = async () => {
       return
     }
     
-    // 更新当前系统名称
-    currentSystemName.value = moduleStore.currentSystemName
+    // 不再手动赋值 currentSystemName，直接依赖 computed
     
     // 请求菜单数据
     const res = await post(MENU_API.GET_MENU, { domainId })

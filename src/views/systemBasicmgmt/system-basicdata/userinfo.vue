@@ -237,18 +237,17 @@
               <!-- 第七行 - 头像上传 -->
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
-                      <el-upload
-                          class="avatar-uploader"
-                          :show-file-list="false"
-                          :before-upload="beforeAvatarUpload"
-                          :on-success="handleAvatarSuccess"
-                          :on-error="handleAvatarError"
-                          :http-request="customUpload"
-                          accept=".jpg,.jpeg,.png"
-                          style="width: 10%">
-                          <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
-                          <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-                      </el-upload>
+                    <el-upload
+                        class="avatar-uploader"
+                        action="https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/File/UploadAvatar"
+                        :show-file-list="false"
+                        :on-success="handleAvatarSuccess"
+                        :before-upload="beforeAvatarUpload"
+                        accept=".jpg,.jpeg,.png"
+                        >
+                        <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
+                        <el-icon v-else class="avatar-uploader-icon"></el-icon>
+                    </el-upload>
                       <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
                   </el-form-item>
               </div>
@@ -588,10 +587,6 @@
       fetchUserPages()
   }
 
-
-
-
-
   // 分页变化
   const handlePageChange = (page) => {
       pagination.pageIndex = page
@@ -652,8 +647,8 @@
       const params = {
           ...editForm
       }
-
-              const res = await post(INSERT_USER_API.INSERT_USER, params)
+      
+      const res = await post(INSERT_USER_API.INSERT_USER, params)
 
       if (res && res.code === '200') {
           resetForm()
@@ -771,20 +766,21 @@
 
   // 头像上传前验证
   const beforeAvatarUpload = (file) => {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/jpg'
-      const isPNG = file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
+    const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+    const isLt5M = file.size / 1024 / 1024 < 5
 
-      if (!isJPG && !isPNG) {
-          ElMessage.error(t('SystemBasicMgmt.userInfo.avatarFormatError'))
-          return false
-      }
-      if (!isLt2M) {
-          ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeError'))
-          return false
-      }
-      return true
-  }
+    if (!isJPG) {
+        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!')
+        return false
+    }
+    if (!isLt5M) {
+        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!')
+        return false
+    }
+
+    return true
+}
+
 
   // 自定义上传
   const customUpload = async (options) => {
@@ -810,14 +806,11 @@
 
   // 头像上传成功
   const handleAvatarSuccess = (res) => {
-      editForm.avatarAddress = res.data
-      // 如果头像地址是相对路径，需要拼接完整的URL
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
-      avatarUrl.value = res.data.startsWith('http') 
-          ? res.data 
-          : `${baseUrl}/${res.data}`
-      ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess'))
-  }
+    editForm.avatarAddress = res.data
+    avatarUrl.value = res.data
+
+    ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess') || '头像上传成功')
+}
 
   // 头像上传失败
   const handleAvatarError = (error) => {

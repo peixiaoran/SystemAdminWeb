@@ -4,11 +4,14 @@
 
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainCode')">
-                  <el-input v-model="filters.domainCode" :placeholder="$t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainCode')" style="width:170px" />
+              <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')">
+                  <el-input v-model="filters.domainCode" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainCode')" style="width:170px" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainName')">
-                  <el-input v-model="filters.domainName" :placeholder="$t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainName')" style="width:200px" />
+              <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCh')">
+                  <el-input v-model="filters.domainNameCh" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameCh')" style="width:200px" />
+              </el-form-item>
+              <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameEn')">
+                  <el-input v-model="filters.domainNameEn" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameEn')" style="width:200px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -20,7 +23,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.systemMgmt.domain.addDomain') }}
+                      {{ $t('SystemBasicMgmt.domain.addDomain') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -35,34 +38,36 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="domainCode" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainCode')" align="left" min-width="230" />
-                  <el-table-column prop="domainNameCh" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameCh')" align="left" min-width="280" />
-                  <el-table-column prop="domainNameEn" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameEn')" align="left" min-width="280" />
-                  <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.systemMgmt.domain.roleCode')" align="center" min-width="130" />
-                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.systemMgmt.domain.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="domainIcon" :label="$t('SystemBasicMgmt.systemMgmt.domain.domainIcon')" align="center" min-width="150" />
-                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')" align="center" min-width="120">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
+                  <el-table-column prop="domainCode" :label="$t('SystemBasicMgmt.domain.domainCode')" align="left" min-width="230" />
+                  <el-table-column prop="domainNameCh" :label="$t('SystemBasicMgmt.domain.domainNameCh')" align="left" min-width="280" />
+                  <el-table-column prop="domainNameEn" :label="$t('SystemBasicMgmt.domain.domainNameEn')" align="left" min-width="280" />
+                  <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.domain.roleCode')" align="center" min-width="130" />
+                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.domain.pagePath')" align="left" min-width="230" />
+                  <el-table-column prop="domainIcon" :label="$t('SystemBasicMgmt.domain.domainIcon')" align="center" min-width="150" />
+                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.isEnabled')" align="center" min-width="120">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                                  {{ scope.row.isEnabled ? $t('SystemBasicMgmt.systemMgmt.enabled') : $t('SystemBasicMgmt.systemMgmt.disabled') }}
+                                  {{ scope.row.isEnabled ? $t('SystemBasicMgmt.enabled') : $t('SystemBasicMgmt.disabled') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.systemMgmt.isVisible')" align="center" min-width="120">
+                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.isVisible')" align="center" min-width="120">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                                  {{ scope.row.isVisible ? $t('SystemBasicMgmt.systemMgmt.visible') : $t('SystemBasicMgmt.systemMgmt.hidden') }}
+                                  {{ scope.row.isVisible ? $t('SystemBasicMgmt.visible') : $t('SystemBasicMgmt.hidden') }}
                               </el-tag>
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.systemMgmt.createdBy')" min-width="120" />
-                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.systemMgmt.createdTime')" min-width="180" />
-                  <el-table-column :label="$t('SystemBasicMgmt.systemMgmt.operation')" min-width="180" fixed="right" align="center">
+                  <el-table-column prop="remarksCh" :label="$t('SystemBasicMgmt.domain.remarksCh')" align="left" min-width="700" />
+                  <el-table-column prop="remarksEn" :label="$t('SystemBasicMgmt.domain.remarksEn')" align="left" min-width="700" />
+                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.createdBy')" min-width="120" />
+                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.createdTime')" min-width="180" />
+                  <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -96,50 +101,55 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainCode')" prop="domainCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')" prop="domainCode">
                       <el-input v-model="editForm.domainCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameCh')" prop="domainNameCh">
-<el-input v-model="editForm.domainNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCh')" prop="domainNameCh">
+                      <el-input v-model="editForm.domainNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainNameEn')" prop="domainNameEn">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameEn')" prop="domainNameEn">
                       <el-input v-model="editForm.domainNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.domainIcon')" prop="domainIcon">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainIcon')" prop="domainIcon">
                       <el-input v-model="editForm.domainIcon" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.sortOrder')" prop="sortOrder">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.sortOrder')" prop="sortOrder">
                       <el-input v-model="editForm.sortOrder" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.roleCode')" prop="roleCode">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.pagePath')" prop="path">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.domain.redirect')" prop="redirect">
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.redirect')" prop="redirect">
                       <el-input v-model="editForm.redirect" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.remarks')">
-                      <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3" />
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.remarksCh')" prop="remarksCh">
+                      <el-input v-model="editForm.remarksCh" style="width:100%" type="textarea" :rows="2" />
+                  </el-form-item>
+              </div>
+              <div class="form-row full-width">
+                <el-form-item :label="$t('SystemBasicMgmt.domain.remarksEn')" prop="remarksEn">
+                      <el-input v-model="editForm.remarksEn" style="width:100%" type="textarea" :rows="2" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isEnabled')">
+                  <el-form-item :label="$t('SystemBasicMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.isVisible')">
+                  <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
@@ -185,7 +195,7 @@
   // 过滤条件
   const filters = reactive({
       domainCode: '',
-      domainName: '',
+      domainNameCh: '',
       domainNameEn: '',
       domainUrl: ''
   })
@@ -207,33 +217,40 @@
       level: 1,
       path: '',
       redirect: '',
-      remarks: ''
+      remarksCh: '',
+      remarksEn: ''
   })
   // 对话框标题
-  const dialogTitle = ref(t('SystemBasicMgmt.systemMgmt.domain.editDomain'))
+  const dialogTitle = ref(t('SystemBasicMgmt.domain.editDomain'))
 
   // 表单验证规则
   const formRules = reactive({
       domainCode: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainCode'), trigger: 'blur' }
       ],
       domainNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainNameCh'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainNameCh'), trigger: 'blur' }
       ],
       domainNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainNameEn'), trigger: 'blur' }
+      ],
+      remarksCh: [
+          { required: false, message: () => t('SystemBasicMgmt.domain.pleaseInputRemarksCh'), trigger: 'blur' }
+      ],
+      remarksEn: [
+          { required: false, message: () => t('SystemBasicMgmt.domain.pleaseInputRemarksEn'), trigger: 'blur' }
       ],
       domainIcon: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputDomainIcon'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainIcon'), trigger: 'blur' }
       ],
       sortOrder: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputSortOrder'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputSortOrder'), trigger: 'blur' }
       ],
       roleCode: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputRoleCode'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputRoleCode'), trigger: 'blur' }
       ],
       path: [
-          { required: true, message: () => t('SystemBasicMgmt.systemMgmt.domain.pleaseInputPagePath'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputPagePath'), trigger: 'blur' }
       ],
       redirect: [
           // redirect 可為空，移除必填驗證
@@ -262,7 +279,8 @@
           editForm.roleCode = res.data.roleCode
           editForm.path = res.data.path
           editForm.redirect = res.data.redirect
-          editForm.remarks = res.data.remarks
+          editForm.remarksCh = res.data.remarksCh
+          editForm.remarksEn = res.data.remarksEn
           editForm.isEnabled = res.data.isEnabled
           editForm.isVisible = res.data.isVisible
           editForm.level = res.data.level
@@ -298,8 +316,8 @@
   // 重置
   const handleReset = () => {
       filters.domainCode = ''
-      filters.domainName = ''
-      filters.domainUrl = ''
+      filters.domainNameCh = ''
+      filters.domainNameEn = ''
       pagination.pageIndex = 1
       fetchDomainPages()
   }
@@ -338,7 +356,8 @@
       editForm.domainCode = ''
       editForm.domainNameCh = ''
       editForm.domainNameEn = ''
-      
+      editForm.remarksCh = ''
+      editForm.remarksEn = ''
       // 组件挂载后清除表单验证状态
       if (clearValidation) {
           nextTick(() => {
@@ -359,15 +378,12 @@
           ...editForm,
           redirect: editForm.redirect
       }
-
-              const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
-
+      const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
       if (res && res.code === '200') {
           resetForm()
           ElMessage.success(res.message)
           dialogVisible.value = false
           fetchDomainPages()
-
       } else {
           ElMessage.error(res.message)
       }
@@ -380,7 +396,6 @@
           redirect: editForm.redirect
       }
       const res = await post(UPDATE_DOMAIN_API.UPDATE_DOMAIN, params)
-
       if (res && res.code === '200') {
           resetForm()
           ElMessage.success(res.message)
@@ -398,7 +413,7 @@
       }
 
       if (isNaN(params.domainId)) {
-          ElMessage.error(t('SystemBasicMgmt.systemMgmt.invalidId'))
+          ElMessage.error(t('SystemBasicMgmt.invalidId'))
           return
       }
 
@@ -418,7 +433,7 @@
       // 重置表单
       resetForm()
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.domain.addDomain')
+             dialogTitle.value = t('SystemBasicMgmt.domain.addDomain')
       // 显示对话框
       dialogVisible.value = true
   }
@@ -431,7 +446,7 @@
       fetchDomainEntity(row.domainId)
 
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.systemMgmt.domain.editDomain')
+             dialogTitle.value = t('SystemBasicMgmt.domain.editDomain')
 
       dialogVisible.value = true
       
@@ -454,7 +469,7 @@
   // 删除网域
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.systemMgmt.domain.deleteConfirm'),
+                     t('SystemBasicMgmt.domain.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

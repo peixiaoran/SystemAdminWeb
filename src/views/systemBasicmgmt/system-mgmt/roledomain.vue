@@ -4,10 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.role')">
+                             <el-form-item :label="$t('SystemBasicMgmt.roleDomain.role')">
                   <el-select style="width:180px" 
                              v-model="filters.roleId"
-                             :placeholder="$t('SystemBasicMgmt.systemMgmt.selectPlaceholder')" 
+                             :placeholder="$t('SystemBasicMgmt.selectPlaceholder')" 
                              @change="handleRoleChange">
                       <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
                   </el-select>
@@ -19,7 +19,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleConfirm">
-                      {{ $t('SystemBasicMgmt.systemMgmt.updateBindings') }}
+                      {{ $t('SystemBasicMgmt.updateBindings') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -32,17 +32,17 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.systemMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.role')" align="left" min-width="180" />
-                  <el-table-column prop="domainName" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.domain')" align="left" min-width="180" />
-                  <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.systemMgmt.roleDomain.isBinding')" align="center" min-width="90">
+                  <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
+                                     <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.roleDomain.role')" align="left" min-width="180" />
+                  <el-table-column prop="domainName" :label="$t('SystemBasicMgmt.roleDomain.domain')" align="left" min-width="180" />
+                  <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.roleDomain.isBinding')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="checkbox-wrapper">
                               <el-checkbox v-model="scope.row.isChecked" />
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.systemMgmt.remark')" min-width="150" />
+                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.remark')" min-width="150" />
               </el-table>
           </div>
 
@@ -148,7 +148,7 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId) {
-          ElMessage.warning(t('SystemBasicMgmt.systemMgmt.roleDomain.pleaseSelectRole'))
+          ElMessage.warning(t('SystemBasicMgmt.roleDomain.pleaseSelectRole'))
           return
       }
 
@@ -164,7 +164,7 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('SystemBasicMgmt.systemMgmt.roleDomain.updateBindingsSuccess'))
+              ElMessage.success(t('SystemBasicMgmt.roleDomain.updateBindingsSuccess'))
               fetchRoleDomainList()
           } else {
               ElMessage.error(res.message)

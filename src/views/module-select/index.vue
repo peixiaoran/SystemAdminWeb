@@ -62,8 +62,8 @@
               </el-icon>
             </div>
             <div class="module-info">
-              <h2>{{ module.domainName }}</h2>
-              <p>{{ module.remarks }}</p>
+              <h2>{{ getModuleName(module) }}</h2>
+              <p>{{ getModuleRemarks(module) }}</p>
               <div class="module-footer">
                 <el-button type="primary" round>
                   <span>{{ $t('common.enter') }}</span>
@@ -99,7 +99,7 @@ import { useModuleStore } from '@/stores/module'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const username = computed(() => userStore.getDisplayName)
@@ -139,6 +139,16 @@ onMounted(() => {
   fetchModules()
 })
 
+// 多语言字段获取
+function getModuleName(module) {
+  if (!module) return ''
+  return locale.value === 'en-US' ? (module.domainNameEn || module.domainNameCh || module.domainName) : (module.domainNameCh || module.domainNameEn || module.domainName)
+}
+function getModuleRemarks(module) {
+  if (!module) return ''
+  return locale.value === 'en-US' ? (module.remarksEn || module.remarksCh || module.remarks) : (module.remarksCh || module.remarksEn || module.remarks)
+}
+
 // 进入模块
 const enterModule = (module) => {
   if (!module || !module.domainId || !module.path) {
@@ -151,9 +161,11 @@ const enterModule = (module) => {
   
   // 使用新的模块存储来保存模块信息
   moduleStore.setCurrentModule(
-    String(module.domainId), 
-    module.domainName, 
-    moduleIdentifier
+    String(module.domainId),
+    getModuleName(module),
+    moduleIdentifier,
+    module.domainNameCh || '',
+    module.domainNameEn || ''
   )
   
   // 清空之前的标签记录
@@ -281,21 +293,23 @@ const logout = async () => {
 .module-card {
   width: 100%;
   min-width: 260px;
+  max-width: 320px;
   height: 280px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border-radius: 16px;
-  transition: box-shadow 0.3s, border-color 0.3s;
+  transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
   cursor: pointer;
   overflow: hidden;
-  background: #fff;
-  border: 1.5px solid #e0eaff;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.06);
+  background: #f4f8fd; /* 更深一点的淡蓝色 */
+  border: 1.5px solid #b3d8fd; /* 主色调淡蓝边框 */
+  box-shadow: 0 4px 16px 0 rgba(64, 158, 255, 0.10), 0 1.5px 4px 0 rgba(64, 158, 255, 0.06);
 }
 .module-card:hover {
   border-color: #409eff;
-  box-shadow: 0 8px 32px rgba(64, 158, 255, 0.18);
+  background: #eaf4fe; /* hover时更明显的主色浅蓝 */
+  box-shadow: 0 12px 32px rgba(64, 158, 255, 0.18), 0 2px 8px rgba(64, 158, 255, 0.10);
 }
 
 .module-icon {
@@ -303,37 +317,45 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #ecf5ff;
+  background: linear-gradient(90deg, #e3f0ff 0%, #f4f8fd 100%);
   color: #409eff;
-  border-bottom: 1px solid #e0eaff;
+  border-bottom: 1px solid #b3d8fd;
 }
 
 .module-info {
   flex: 1;
   padding: 24px 20px 10px 20px;
-  background: #fff;
+  background: transparent;
   text-align: center;
+  overflow: hidden;
 }
 
 .module-info h2 {
   font-size: 20px;
   margin: 0 0 10px 0;
-  color: #409eff;
+  color: #337ecc;
   font-weight: 700;
   letter-spacing: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .module-info p {
   font-size: 14px;
-  color: #90baff;
+  color: #6b90b7;
   margin: 0;
   line-height: 1.6;
   min-height: 40px;
+  max-height: 44px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  word-break: break-all;
+  hyphens: auto;
 }
 
 /* 移除module-footer的背景、边框等样式，只保留布局 */
@@ -352,14 +374,14 @@ const logout = async () => {
   padding: 8px 24px;
   font-size: 15px;
   font-weight: 500;
-  background: #409eff;
+  background: linear-gradient(90deg, #409eff 0%, #337ecc 100%);
   color: #fff;
   border: none;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.12);
 }
 .module-footer .el-button:hover {
-  background: linear-gradient(90deg, #409eff 0%, #337ecc 100%);
+  background: linear-gradient(90deg, #337ecc 0%, #409eff 100%);
   color: #fff;
 }
 
@@ -430,6 +452,7 @@ const logout = async () => {
   
   .module-card {
     min-width: 100%;
+    max-width: 100%; /* 移动端占满容器宽度 */
     height: auto;
   }
   
@@ -439,6 +462,14 @@ const logout = async () => {
   }
   .module-info {
     padding: 18px 10px 8px 10px;
+  }
+  .module-info h2 {
+    font-size: 18px; /* 移动端适当缩小标题字体 */
+    white-space: normal; /* 移动端允许标题换行 */
+  }
+  .module-info p {
+    font-size: 13px; /* 移动端适当缩小描述字体 */
+    max-height: 38px; /* 移动端适当缩小最大高度 */
   }
   .module-footer {
     padding: 12px 0 14px 0;
@@ -462,12 +493,17 @@ const logout = async () => {
     max-width: 100%;
   }
   
+  .module-card {
+    max-width: 100%; /* 小屏幕完全占满 */
+  }
+  
   .module-info h2 {
-    font-size: 20px;
+    font-size: 16px; /* 小屏幕进一步缩小 */
   }
   
   .module-info p {
-    font-size: 14px;
+    font-size: 12px; /* 小屏幕进一步缩小 */
+    max-height: 32px; /* 小屏幕进一步缩小最大高度 */
   }
 }
 
