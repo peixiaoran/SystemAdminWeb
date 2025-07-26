@@ -84,9 +84,9 @@ const moduleRoutes = [
       },
       // 系统管理子模块 - 使用嵌套结构
       {
-        path: 'system-mgmt',
+        path: 'System-Mgmt',
         name: 'SystemMgmt',
-        redirect: '/SystemBasicMgmt/system-mgmt',
+        redirect: '/SystemBasicMgmt/System-Mgmt',
         meta: { 
           title: 'route.systemMgmt', 
           icon: 'Setting',
@@ -97,7 +97,7 @@ const moduleRoutes = [
           {
             path: 'role',
             name: 'SystemRole',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/role.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/role.vue'),
             meta: { 
               title: 'route.role', 
               icon: 'Avatar',
@@ -108,7 +108,7 @@ const moduleRoutes = [
           {
             path: 'domain',
             name: 'SystemDomain',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/domain.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/domain.vue'),
             meta: { 
               title: 'route.domain', 
               icon: 'Menu',
@@ -119,7 +119,7 @@ const moduleRoutes = [
           {
             path: 'module',
             name: 'SystemModule',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/module.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/module.vue'),
             meta: { 
               title: 'route.module', 
               icon: 'Operation',
@@ -130,7 +130,7 @@ const moduleRoutes = [
           {
             path: 'program',
             name: 'SystemProgram',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/program.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/program.vue'),
             meta: { 
               title: 'route.program', 
               icon: 'Share',
@@ -141,7 +141,7 @@ const moduleRoutes = [
           {
             path: 'roledomain',
             name: 'SystemRoleDomain',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/roledomain.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/roledomain.vue'),
             meta: { 
               title: 'route.roleDomain', 
               icon: 'MoreFilled',
@@ -152,7 +152,7 @@ const moduleRoutes = [
           {
             path: 'rolemodule',
             name: 'SystemRoleModule',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/rolemodule.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
               icon: 'MoreFilled',
@@ -163,7 +163,7 @@ const moduleRoutes = [
           {
             path: 'roleprogram',
             name: 'SystemRoleProgram',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/roleprogram.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/roleprogram.vue'),
             meta: { 
               title: 'route.roleProgram', 
               icon: 'MoreFilled',
@@ -174,7 +174,7 @@ const moduleRoutes = [
           {
             path: 'personal',
             name: 'SystemPersonalInfo',
-            component: () => import('../views/SystemBasicMgmt/system-mgmt/personal.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Mgmt/personal.vue'),
             meta: { 
               title: 'route.personalInfo', 
               icon: 'User',

@@ -1,7 +1,6 @@
 <template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
-  
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="币别搜索表单">
                 <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.filter.currencyCode')">

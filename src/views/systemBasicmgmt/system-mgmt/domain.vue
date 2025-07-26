@@ -14,7 +14,7 @@
                   <el-input v-model="filters.domainNameEn" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameEn')" style="width:200px" />
               </el-form-item>
               <el-form-item class="form-button-group">
-                  <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
+                  <el-button type="primary" @click="handleSearch" plain>
                       {{ $t('common.search') }}
                   </el-button>
                   <el-button @click="handleReset">
@@ -31,10 +31,8 @@
           <!-- 表格 -->
           <div class="table-container">
               <el-table :data="domainList"
-                        style="width: 100%"
                         border
                         stripe
-                        max-height="calc(100vh - 240px)"
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
@@ -170,7 +168,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_DOMAIN_PAGES_API, INSERT_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/SystemBasicMgmt/system-mgmt/domain'
+  import { GET_DOMAIN_PAGES_API, INSERT_DOMAIN_API, DELETE_DOMAIN_API, GET_DOMAIN_ENTITY_API, UPDATE_DOMAIN_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/domain'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -510,5 +508,15 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
-</style> 
+  
+  /* 确保分页组件右对齐 */
+  .pagination-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 0;
+    background: white;
+    flex-shrink: 0;
+    margin: 0;
+  }
+</style>
 

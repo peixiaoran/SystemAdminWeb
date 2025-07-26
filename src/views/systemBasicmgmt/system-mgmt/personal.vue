@@ -218,7 +218,7 @@ import {
   GET_GENDER_DROPDOWN_API,
   GET_EMPLOYMENT_TYPE_DROPDOWN_API,
   UPLOAD_AVATAR_API
-} from '@/config/api/SystemBasicMgmt/system-mgmt/personal'
+} from '@/config/api/SystemBasicMgmt/System-Mgmt/personal'
 
 export default {
   name: 'PersonalInfo',

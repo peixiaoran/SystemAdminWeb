@@ -503,22 +503,5 @@
   
   <style scoped>
     @import '@/assets/styles/conventionalTablePage.css';
-    
-    .form-row {
-        display: flex;
-        gap: 20px;
-    }
-    
-    .form-row .el-form-item {
-        flex: 1;
-    }
-    
-    .form-row.full-width {
-        display: block;
-    }
-    
-    .form-row.full-width .el-form-item {
-        width: 100%;
-    }
   </style> 
 

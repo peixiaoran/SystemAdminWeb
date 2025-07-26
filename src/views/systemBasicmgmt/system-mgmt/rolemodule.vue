@@ -76,7 +76,7 @@
       GET_ROLE_DROPDOWN_API,
       GET_DOMAIN_DROPDOWN_API,
       UPDATE_ROLE_MODULE_API
-  } from '@/config/api/SystemBasicMgmt/system-mgmt/rolemodule'
+  } from '@/config/api/SystemBasicMgmt/System-Mgmt/rolemodule'
 
   const { t } = useI18n()
 

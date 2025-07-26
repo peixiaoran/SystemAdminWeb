@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
@@ -184,7 +184,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API, GET_MENU_TYPE_API } from '@/config/api/SystemBasicMgmt/system-mgmt/module'
+  import { GET_MODULE_PAGES_API, GET_MODULE_ENTITY_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_DOMAIN_DROP_API, UPDATE_MODULE_API, GET_MENU_TYPE_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 

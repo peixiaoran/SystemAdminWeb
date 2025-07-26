@@ -81,7 +81,7 @@
       GET_DOMAIN_DROPDOWN_API,
       GET_MODULE_DROPDOWN_API,
       UPDATE_ROLE_PROGRAM_API
-  } from '@/config/api/SystemBasicMgmt/system-mgmt/roleprogram'
+  } from '@/config/api/SystemBasicMgmt/System-Mgmt/roleprogram'
 
   const { t } = useI18n()
 
@@ -287,5 +287,5 @@
       align-items: center;
       height: 100%;
   }
-</style> 
+</style>
 
