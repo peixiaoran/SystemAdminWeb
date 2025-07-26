@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-        
+
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
               <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')">
