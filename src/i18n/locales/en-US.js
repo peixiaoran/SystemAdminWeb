@@ -592,6 +592,8 @@ export default {
       isSign: 'Is Sign In',
       isPartTime: 'Is Part Time',
       isFreeze: 'Is Freeze',
+      isRealtimeNotification: 'Real-time Email Notification',
+      isScheduledNotification: 'Scheduled Email Notification',
       remark: 'Remark',
       pleaseInputUserNameCh: 'Please enter Chinese name',
       pleaseInputUserNameEn: 'Please enter English name',

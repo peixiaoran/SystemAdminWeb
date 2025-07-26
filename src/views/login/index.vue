@@ -21,15 +21,12 @@
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
-              autocomplete="new-password"
+              autocomplete="off"
               autocapitalize="off"
               autocorrect="off"
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-              :name="usernameFieldName"
-              readonly
-              @focus="handleInputFocus"
             />
           </el-form-item>
           
@@ -39,15 +36,12 @@
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
-              autocomplete="new-password"
+              autocomplete="off"
               autocapitalize="off"
               autocorrect="off"
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-              :name="passwordFieldName"
-              readonly
-              @focus="handleInputFocus"
               @keyup.enter="handleLogin"
             />
           </el-form-item>
@@ -93,9 +87,7 @@ const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
 
-// 动态生成字段名称，防止浏览器识别
-const usernameFieldName = ref(`usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`)
-const passwordFieldName = ref(`pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`)
+// 移除了动态字段名生成逻辑，简化防自动填充机制
 
 const loginForm = reactive({
   loginNo: '',
@@ -108,31 +100,6 @@ onMounted(() => {
   // 重置表单验证状态
   nextTick(() => {
     loginFormRef.value?.resetFields()
-    
-    // 延迟清除可能的浏览器自动填充
-    setTimeout(() => {
-      // 确保表单数据清空
-      loginForm.loginNo = ''
-      loginForm.password = ''
-      
-      // 动态更改字段名称，进一步防止自动填充
-      usernameFieldName.value = `usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
-      passwordFieldName.value = `pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
-    }, 100)
-    
-    // 定期更新字段名称，防止浏览器学习
-    const updateFieldNames = () => {
-      usernameFieldName.value = `usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
-      passwordFieldName.value = `pwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
-    }
-    
-    // 每30秒更新一次字段名称
-    const updateInterval = setInterval(updateFieldNames, 30000)
-    
-    // 页面卸载时清除定时器
-    window.addEventListener('beforeunload', () => {
-      clearInterval(updateInterval)
-    })
   })
 })
 
@@ -164,25 +131,7 @@ const handleLanguageChange = (value) => {
   document.title = t('common.systemTitle')
 }
 
-// 处理输入框焦点事件，移除readonly属性并防止自动填充
-const handleInputFocus = (event) => {
-  event.target.removeAttribute('readonly')
-  
-  // 额外的防护措施：延迟检查自动填充
-  setTimeout(() => {
-    const input = event.target
-            // 如果检测到输入框被自动填充但员工实际没有输入，清除填充值
-    if (input.value && input.value !== loginForm.loginNo && input.value !== loginForm.password) {
-      input.value = ''
-      // 同时清空对应的表单数据
-      if (input.name && input.name.includes('usr')) {
-        loginForm.loginNo = ''
-      } else if (input.name && input.name.includes('pwd')) {
-        loginForm.password = ''
-      }
-    }
-  }, 50)
-}
+// 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
 
 const handleLogin = () => {
   loginFormRef.value.validate(valid => {
@@ -517,5 +466,5 @@ const handleLogin = () => {
 .login-form :deep(.el-form-item:first-child) {
   margin-top: -5px;
 }
-</style> 
+</style>
 

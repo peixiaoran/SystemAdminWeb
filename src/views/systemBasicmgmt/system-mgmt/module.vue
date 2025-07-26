@@ -4,7 +4,7 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="模块搜索表单">
-              <el-form-item :label="$t('SystemBasicMgmt.domain')">
+              <el-form-item :label="$t('SystemBasicMgmt.module.domain')">
                   <el-select style="width: 180px" 
                             v-model="filters.domainId" 
                             :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.module.domain')">

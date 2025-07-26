@@ -9,13 +9,12 @@
     "build:dev": "vite build --mode development",
     "build:prod": "vite build --mode production",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore --cache"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.11.0",
     "element-plus": "^2.10.4",
-    "path-browserify": "^1.0.1",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.4.1",
     "vue": "^3.5.18",
@@ -28,6 +27,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-vue": "^10.2.0",
     "terser": "^5.43.1",
-    "vite": "^7.0.6"
+    "vite": "^7.0.6",
+    "vite-imagetools": "^7.1.0"
   }
 }

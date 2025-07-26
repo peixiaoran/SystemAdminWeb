@@ -70,7 +70,7 @@
         </el-form-item>
       </div>
 
-      <!-- 第三行：日期和部门信�?-->
+      <!-- 第三行：日期和部门信息 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.hireDate')" prop="hireDate">
           <el-date-picker
@@ -114,7 +114,7 @@
         </el-form-item>
       </div>
 
-      <!-- 第四行：雇佣类型和状态信�?-->
+      <!-- 第四行：雇佣类型和状态信息 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.employmentType')" prop="employmentType">
           <el-select v-model="personalInfoForm.employmentType" :disabled="true" style="width: 100%">
@@ -137,7 +137,7 @@
         </el-form-item>
       </div>
 
-      <!-- 第五行：其他状态和备注 -->
+      <!-- 第五行：其他状态 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isPartTime')" prop="isPartTime">
           <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" />
@@ -145,6 +145,16 @@
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isFreeze')" prop="isFreeze">
           <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" />
         </el-form-item>
+        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
+          <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="true" :active-value="1" :inactive-value="0" />
+        </el-form-item>
+        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isScheduledNotification')" prop="isScheduledNotification">
+          <el-switch v-model="personalInfoForm.isScheduledNotification" :disabled="true" :active-value="1" :inactive-value="0" />
+        </el-form-item>
+      </div>
+
+      <!-- 第六行：备注 -->
+      <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.remark')" prop="remark" class="remark-item">
           <el-input 
             v-model="personalInfoForm.remark" 
@@ -153,6 +163,27 @@
             :rows="2"
             :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputRemark')"
           />
+        </el-form-item>
+      </div>
+
+      <!-- 第七行：头像上传 -->
+      <div class="form-row">
+        <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
+          <div class="avatar-container">
+            <el-upload
+              class="avatar-uploader"
+              action="https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/File/UploadAvatar"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+              accept=".jpg,.jpeg,.png"
+              :disabled="loading"
+            >
+              <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
+              <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
+            <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
+          </div>
         </el-form-item>
       </div>
 
@@ -175,6 +206,7 @@
 <script>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { get, post } from '@/utils/request'
 import {
@@ -184,16 +216,23 @@ import {
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
   GET_GENDER_DROPDOWN_API,
-  GET_EMPLOYMENT_TYPE_DROPDOWN_API
+  GET_EMPLOYMENT_TYPE_DROPDOWN_API,
+  UPLOAD_AVATAR_API
 } from '@/config/api/SystemBasicMgmt/system-mgmt/personal'
 
 export default {
   name: 'PersonalInfo',
+  components: {
+    Plus
+  },
   setup() {
     const { t } = useI18n()
     const personalInfoFormRef = ref(null)
     const loading = ref(false)
     const saving = ref(false)
+
+    // 头像相关
+    const avatarUrl = ref('')
 
     // 表单数据
     const personalInfoForm = reactive({
@@ -216,7 +255,10 @@ export default {
       isPartTime: 0,
       isFreeze: 0,
       employmentType: '',
-      remark: ''
+      remark: '',
+      avatarAddress: '',
+      isRealtimeNotification: 0,
+      isScheduledNotification: 0
     })
 
     // 原始数据备份（用于重置）
@@ -252,22 +294,22 @@ export default {
               callback()
               return
             }
-            // 密碼必須�?8-16 個字�?
+            // 密码必须为8-16个字符
             if (value.length < 8 || value.length > 16) {
               callback(new Error(t('SystemBasicMgmt.personalInfo.passwordLengthError')))
               return
             }
-            // 必須包含小寫字母
+            // 必须包含小写字母
             if (!/[a-z]/.test(value)) {
               callback(new Error(t('SystemBasicMgmt.personalInfo.passwordLowercaseError')))
               return
             }
-            // 必須包含大寫字母
+            // 必须包含大写字母
             if (!/[A-Z]/.test(value)) {
               callback(new Error(t('SystemBasicMgmt.personalInfo.passwordUppercaseError')))
               return
             }
-            // 必須包含數字
+            // 必须包含数字
             if (!/[0-9]/.test(value)) {
               callback(new Error(t('SystemBasicMgmt.personalInfo.passwordNumberError')))
               return
@@ -279,6 +321,34 @@ export default {
       ]
     })
 
+    // 头像上传前验证
+    const beforeAvatarUpload = (file) => {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarFormatError'))
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeError'))
+        return false
+      }
+
+      return true
+    }
+
+    // 头像上传成功
+    const handleAvatarSuccess = (res) => {
+      if (res && res.code === '200') {
+        personalInfoForm.avatarAddress = res.data
+        avatarUrl.value = res.data
+        ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess'))
+      } else {
+        ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'))
+      }
+    }
+
     // 获取个人信息
     const getPersonalInfo = async () => {
       try {
@@ -287,8 +357,12 @@ export default {
         
         if (response.code === '200' && response.data) {
           Object.assign(personalInfoForm, response.data)
-          // 密码字段在查询时设置为空字符�?
+          // 密码字段在查询时设置为空字符串
           personalInfoForm.password = ''
+          // 设置头像显示
+          if (response.data.avatarAddress) {
+            avatarUrl.value = response.data.avatarAddress
+          }
           Object.assign(originalFormData, response.data)
           originalFormData.password = ''
         } else {
@@ -302,7 +376,7 @@ export default {
       }
     }
 
-    // 获取部门下拉框数�?
+    // 获取部门下拉框数据
     const getDepartmentDropdown = async () => {
       try {
         const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
@@ -310,11 +384,11 @@ export default {
           departmentOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取部门下拉框失�?', error)
+        console.error('获取部门下拉框失败:', error)
       }
     }
 
-    // 获取职位下拉框数�?
+    // 获取职位下拉框数据
     const getPositionDropdown = async () => {
       try {
         const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
@@ -322,11 +396,11 @@ export default {
           positionOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取职位下拉框失�?', error)
+        console.error('获取职位下拉框失败:', error)
       }
     }
 
-    // 获取角色下拉框数�?
+    // 获取角色下拉框数据
     const getRoleDropdown = async () => {
       try {
         const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
@@ -334,11 +408,11 @@ export default {
           roleOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取角色下拉框失�?', error)
+        console.error('获取角色下拉框失败:', error)
       }
     }
 
-    // 获取性别下拉框数�?
+    // 获取性别下拉框数据
     const getGenderDropdown = async () => {
       try {
         const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
@@ -346,11 +420,11 @@ export default {
           genderOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取性别下拉框失�?', error)
+        console.error('获取性别下拉框失败:', error)
       }
     }
 
-    // 获取雇佣类型下拉框数�?
+    // 获取雇佣类型下拉框数据
     const getEmploymentTypeDropdown = async () => {
       try {
         const response = await post(GET_EMPLOYMENT_TYPE_DROPDOWN_API.GET_EMPLOYMENT_TYPE_DROPDOWN, {})
@@ -358,7 +432,7 @@ export default {
           employmentTypeOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取雇佣类型下拉框失�?', error)
+        console.error('获取雇佣类型下拉框失败:', error)
       }
     }
 
@@ -368,7 +442,7 @@ export default {
       try {
         const valid = await personalInfoFormRef.value.validate()
         if (!valid) {
-          // 验证失败时不显示额外的错误提示，Element Plus会自动显示字段验证错�?
+          // 验证失败时不显示额外的错误提示，Element Plus会自动显示字段验证错误
           return
         }
       } catch (validationError) {
@@ -377,7 +451,7 @@ export default {
         return
       }
 
-      // 验证通过后进行保存操�?
+      // 验证通过后进行保存操作
       try {
         saving.value = true
         
@@ -389,14 +463,17 @@ export default {
           email: personalInfoForm.email,
           phoneNumber: personalInfoForm.phoneNumber,
           PassWord: personalInfoForm.password,
-          remark: personalInfoForm.remark
+          remark: personalInfoForm.remark,
+          avatarAddress: personalInfoForm.avatarAddress,
+          isRealtimeNotification: personalInfoForm.isRealtimeNotification,
+          isScheduledNotification: personalInfoForm.isScheduledNotification
         }
 
         const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
         
         if (response.code === '200') {
           ElMessage.success(response.message || t('common.saveSuccess'))
-          // 重新获取最新数�?
+          // 重新获取最新数据
           await getPersonalInfo()
         } else {
           ElMessage.error(response.message || t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'))
@@ -415,7 +492,7 @@ export default {
       personalInfoFormRef.value?.clearValidate()
     }
 
-    // 初始化数�?
+    // 初始化数据
     const initData = async () => {
       await Promise.all([
         getPersonalInfo(),
@@ -442,8 +519,11 @@ export default {
       roleOptions,
       genderOptions,
       employmentTypeOptions,
+      avatarUrl,
       handleSave,
-      handleReset
+      handleReset,
+      beforeAvatarUpload,
+      handleAvatarSuccess
     }
   }
 }
@@ -455,6 +535,60 @@ export default {
 .personal-info-form {
   padding: 20px;
   background: white;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.avatar-uploader {
+  text-align: center;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.avatar-uploader :deep(.el-upload) {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+  display: inline-block;
+}
+
+.avatar-uploader :deep(.el-upload:hover) {
+  border-color: var(--el-color-primary);
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.avatar-tip {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .form-row {
@@ -479,7 +613,7 @@ export default {
 }
 
 .remark-item {
-  grid-column: span 2;
+  grid-column: span 4;
 }
 
 .form-buttons {
@@ -497,14 +631,14 @@ export default {
   opacity: 0.6;
 }
 
-/* 响应式设�?*/
+/* 响应式设计 */
 @media (max-width: 1200px) {
   .form-row {
     grid-template-columns: repeat(3, 1fr);
   }
   
   .remark-item {
-    grid-column: span 2;
+    grid-column: span 3;
   }
 }
 

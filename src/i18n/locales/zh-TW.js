@@ -437,6 +437,8 @@ export default {
       isSign: '是否簽到',
       isPartTime: '是否兼職',
       isFreeze: '是否凍結',
+      isRealtimeNotification: '實時郵件通知',
+      isScheduledNotification: '定時郵件通知',
       remark: '備註',
       pleaseInputUserNameCh: '請輸入中文姓名',
       pleaseInputUserNameEn: '請輸入英文姓名',

@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { imagetools } from 'vite-imagetools' // 新增图片优化插件
 import path from 'path'
 
 // https://vitejs.dev/config/
@@ -8,7 +9,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   
   return {
-    plugins: [vue()],
+    plugins: [vue(), imagetools()], // 启用图片优化插件
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src')
@@ -23,6 +24,8 @@ export default defineConfig(({ command, mode }) => {
       // https: true,
       // 添加安全头
       headers: {
+        // 新增HSTS头增强安全
+        'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
@@ -38,7 +41,7 @@ export default defineConfig(({ command, mode }) => {
     },
     // 构建选项
     build: {
-      outDir: 'E:/MyCode/PlayCode/SystemsWebDist/dist',
+      outDir: 'dist', // 改为相对路径提升可移植性
       emptyOutDir: true,
       assetsDir: 'assets',
       sourcemap: env.DEV === 'true', // 只在开发环境启用
@@ -53,7 +56,7 @@ export default defineConfig(({ command, mode }) => {
         },
         mangle: {
           // 防止i18n相关变量名被混淆
-          reserved: ['$t', 'i18n', 't', 'locale']
+          reserved: ['$t', 'i18n', 't', 'locale', 'ElMessage', 'ElNotification'] // 保留Element提示组件变量名
         },
         format: {
           // 移除注释
@@ -116,13 +119,17 @@ export default defineConfig(({ command, mode }) => {
     // Vite 6 性能优化
     optimizeDeps: {
       include: [
+        'vue-i18n', // 新增i18n库预构建
         'vue',
         'vue-router',
         'pinia',
         'element-plus',
         'axios'
       ],
-      exclude: ['vue-demi']
+      exclude: ['vue-demi'],
+      // 新增vue-i18n预构建以提升启动速度,
+      // 新增缓存目录提升构建速度
+      cacheDir: 'node_modules/.vite_cache'
     },
     // CSS 预处理器配置
     css: {
@@ -133,4 +140,4 @@ export default defineConfig(({ command, mode }) => {
       }
     }
   }
-}) 
+})
