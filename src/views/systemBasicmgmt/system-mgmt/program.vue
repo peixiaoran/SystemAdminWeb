@@ -135,7 +135,7 @@
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.program.sortOrder')" prop="sortOrder">
-                      <el-input v-model.number="editForm.sortOrder" type="number" style="width:100%" />
+                      <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.program.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />

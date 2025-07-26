@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="module-select-container">
     <div class="header-actions">
       <language-switcher class="language-switcher" />
@@ -302,30 +302,26 @@ const logout = async () => {
   transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
   cursor: pointer;
   overflow: hidden;
-  background: #f4f8fd; /* 更深一点的淡蓝色 */
-  border: 1.5px solid #b3d8fd; /* 主色调淡蓝边框 */
-  box-shadow: 0 4px 16px 0 rgba(64, 158, 255, 0.10), 0 1.5px 4px 0 rgba(64, 158, 255, 0.06);
+  background: #ffffff;
+  border: 1px solid #dcdfe6;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08), 0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
 }
-.module-card:hover {
-  border-color: #409eff;
-  background: #eaf4fe; /* hover时更明显的主色浅蓝 */
-  box-shadow: 0 12px 32px rgba(64, 158, 255, 0.18), 0 2px 8px rgba(64, 158, 255, 0.10);
-}
+
 
 .module-icon {
   height: 105px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(90deg, #e3f0ff 0%, #f4f8fd 100%);
-  color: #409eff;
-  border-bottom: 1px solid #b3d8fd;
+  background: #d3d4d6;
+  color: #ffffff;
+  border-bottom: none;
 }
 
 .module-info {
   flex: 1;
-  padding: 24px 20px 10px 20px;
-  background: transparent;
+  padding: 20px 20px 10px 20px;
+  background: #ffffff;
   text-align: center;
   overflow: hidden;
 }
@@ -333,7 +329,7 @@ const logout = async () => {
 .module-info h2 {
   font-size: 20px;
   margin: 0 0 10px 0;
-  color: #337ecc;
+  color: #303133;
   font-weight: 700;
   letter-spacing: 1px;
   overflow: hidden;
@@ -343,7 +339,7 @@ const logout = async () => {
 
 .module-info p {
   font-size: 14px;
-  color: #6b90b7;
+  color: #606266;
   margin: 0;
   line-height: 1.6;
   min-height: 40px;
@@ -374,14 +370,14 @@ const logout = async () => {
   padding: 8px 24px;
   font-size: 15px;
   font-weight: 500;
-  background: linear-gradient(90deg, #409eff 0%, #337ecc 100%);
+  background: #d3d4d6;
   color: #fff;
   border: none;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(211, 212, 214, 0.12);
 }
 .module-footer .el-button:hover {
-  background: linear-gradient(90deg, #337ecc 0%, #409eff 100%);
+  background: #c0c4cc;
   color: #fff;
 }
 

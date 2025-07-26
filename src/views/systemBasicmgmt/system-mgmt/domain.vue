@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-
+        
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
               <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')">
@@ -113,7 +113,7 @@
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.domain.sortOrder')" prop="sortOrder">
-                      <el-input v-model="editForm.sortOrder" style="width:100%" />
+                      <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.domain.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%" />
@@ -190,7 +190,8 @@
   // 过滤条件
   const filters = reactive({
       domainCode: '',
-      domainName: '',
+      domainNameCh: '',
+      domainNameEn: '',
       domainUrl: ''
   })
 
@@ -310,7 +311,8 @@
   // 重置
   const handleReset = () => {
       filters.domainCode = ''
-      filters.domainName = ''
+      filters.domainNameCh = ''
+      filters.domainNameEn = ''
       pagination.pageIndex = 1
   }
 
