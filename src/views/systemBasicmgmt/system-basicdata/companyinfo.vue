@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="公司信息">
               <el-form-item :label="$t('SystemBasicMgmt.companyInfo.filter.companyName')">
@@ -108,7 +107,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/SystemBasicMgmt/system-basic/company'
+  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/SystemBasicMgmt/System-BasicData/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -233,7 +232,6 @@
   const handleReset = () => {
       filters.companyName = ''
       pagination.pageIndex = 1
-      fetchCompanyPages()
   }
 
   // 处理页码变化
@@ -408,5 +406,5 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
-</style> 
+</style>
 

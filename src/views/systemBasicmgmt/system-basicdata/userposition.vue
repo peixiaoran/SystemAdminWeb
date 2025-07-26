@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- �������� -->
+      <!-- 表格区域 -->
       <div class="table-container">
         <el-table 
           :data="positionList"
@@ -65,7 +65,7 @@
       </div>
     </el-card>
     
-    <!-- �༭״̬�Ի��� -->
+    <!-- 编辑状态对话框 -->
     <el-dialog 
       v-model="dialogVisible"
       :title="$t('SystemBasicMgmt.userPosition.editPosition')"
@@ -149,7 +149,7 @@ import { post } from '@/utils/request'
 import { 
   GET_USER_POSITION_LIST_API, 
   GET_USER_POSITION_ENTITY_API 
-} from '@/config/api/SystemBasicMgmt/system-basic/userposition.js'
+} from '@/config/api/SystemBasicMgmt/System-BasicData/userposition.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n

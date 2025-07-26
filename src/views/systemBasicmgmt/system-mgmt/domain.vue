@@ -8,10 +8,7 @@
                   <el-input v-model="filters.domainCode" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainCode')" style="width:170px" />
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCh')">
-                  <el-input v-model="filters.domainNameCh" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameCh')" style="width:200px" />
-              </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameEn')">
-                  <el-input v-model="filters.domainNameEn" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameEn')" style="width:200px" />
+                  <el-input v-model="filters.domainName" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameCh')" style="width:200px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -193,8 +190,7 @@
   // 过滤条件
   const filters = reactive({
       domainCode: '',
-      domainNameCh: '',
-      domainNameEn: '',
+      domainName: '',
       domainUrl: ''
   })
 
@@ -314,10 +310,8 @@
   // 重置
   const handleReset = () => {
       filters.domainCode = ''
-      filters.domainNameCh = ''
-      filters.domainNameEn = ''
+      filters.domainName = ''
       pagination.pageIndex = 1
-      fetchDomainPages()
   }
 
   // 分页变化

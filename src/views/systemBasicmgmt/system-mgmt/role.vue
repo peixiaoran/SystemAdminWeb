@@ -261,7 +261,6 @@
       filters.roleCode = ''
       filters.roleName = ''
       pagination.pageIndex = 1
-      fetchRolePages()
   }
 
   // 处理页码变化

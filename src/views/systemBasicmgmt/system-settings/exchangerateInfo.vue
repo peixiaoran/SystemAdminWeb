@@ -142,7 +142,7 @@
       INSERT_EXCHANGE_RATE_API, 
       UPDATE_EXCHANGE_RATE_API,
       DELETE_EXCHANGE_RATE_API
-    } from '@/config/api/SystemBasicMgmt/system-settings/exchangerateInfo'
+    } from '@/config/api/SystemBasicMgmt/System-Settings/exchangerateInfo'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -276,7 +276,6 @@
     const handleReset = () => {
         filters.currencyCode = ''
         pagination.pageIndex = 1
-        fetchExchangeRatePages()
     }
   
     // 处理页码变化

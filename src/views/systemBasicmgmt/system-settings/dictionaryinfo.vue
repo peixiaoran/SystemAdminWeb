@@ -5,7 +5,7 @@
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
               <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.filter.dicNameCh')">
-                  <el-input v-model="filters.dicNameCh"
+                  <el-input v-model="filters.dicName"
                            style="width: 180px;"
                            :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCh')"
                            clearable />
@@ -112,7 +112,7 @@
     DELETE_DICTIONARY_API, 
     GET_DICTIONARY_ENTITY_API, 
     UPDATE_DICTIONARY_API 
-  } from '@/config/api/SystemBasicMgmt/system-settings/dictionary'
+  } from '@/config/api/SystemBasicMgmt/System-Settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -135,7 +135,7 @@
 
   // 过滤条件
   const filters = reactive({
-      dicNameCh: '',
+      dicName: '',
   })
 
   // Composition API
@@ -208,7 +208,7 @@
   const fetchDictionaryPages = async () => {
       loading.value = true
       const params = {
-          dicNameCh: filters.dicNameCh,
+          dicName: filters.dicName,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
       }
@@ -236,9 +236,8 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      filters.dicNameCh = ''
+      filters.dicName = ''
       pagination.pageIndex = 1
-      fetchDictionaryPages()
   }
 
   // 处理页码变化

@@ -2,7 +2,7 @@
   <div class="conventional-table-container">
       <el-card class="conventional-card">
 
-          <!-- 筛选 -->
+          
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户筛选">
              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
                 <el-tree-select 
@@ -40,7 +40,7 @@
               </el-form-item>
           </el-form>
 
-          <!-- 表格 -->
+          
           <div class="table-container">
               <el-table :data="userList"
                         border
@@ -59,6 +59,8 @@
                   <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
                   <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
                   <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
+                  <el-table-column prop="isApprovalName" :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="130" />
+                  <el-table-column prop="isParttimedName" :label="$t('SystemBasicMgmt.userInfo.isParttimed')" align="center" min-width="130" />
                   <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -70,7 +72,7 @@
               </el-table>
           </div>
 
-          <!-- 分页 -->
+          
           <div class="pagination-wrapper">
               <el-pagination v-model:current-page="pagination.pageIndex"
                              v-model:page-size="pagination.pageSize"
@@ -81,7 +83,7 @@
                              @current-change="handlePageChange" />
           </div>
       </el-card>
-      <!-- 编辑弹窗 -->
+      
       <el-dialog v-model="dialogVisible"
                      :title="dialogTitle"
                      width="70%"
@@ -91,7 +93,7 @@
                      :lock-scroll="true"
                      @close="handleDialogClose">
               <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="用户编辑">
-              <!-- 第一行 -->
+              
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
                       <el-input v-model="editForm.userNo" style="width:100%" />
@@ -103,7 +105,7 @@
                       <el-input v-model="editForm.userNameEn" style="width:100%" />
                   </el-form-item>
               </div>
-              <!-- 第二行 -->
+              
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.gender')" prop="gender">
                       <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectGender')">
@@ -137,7 +139,7 @@
                       </el-select>
                   </el-form-item>
               </div>
-              <!-- 第三行 -->
+              
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.department')" prop="departmentId">
                       <el-tree-select
@@ -178,7 +180,7 @@
                       </el-select>
                   </el-form-item>
               </div>
-              <!-- 第四行 -->
+              
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.loginNo')" prop="loginNo">
                       <el-input v-model="editForm.loginNo" style="width:100%" />
@@ -190,7 +192,7 @@
                       <el-input v-model="editForm.email" style="width:100%" />
                   </el-form-item>
               </div>
-              <!-- 第五行 -->
+              
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
@@ -202,16 +204,6 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
-                      <el-switch
-                          v-model="editForm.isFreeze"
-                          :active-value="1"
-                          :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
-                  </el-form-item>
-              </div>
-              <!-- 第六行 -->
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
                       <el-switch
                           v-model="editForm.isApproval"
@@ -219,11 +211,15 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
+              </div>
+              
+              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isRealtimeNotification')">
                       <el-switch
                           v-model="editForm.isRealtimeNotification"
                           :active-value="1"
                           :inactive-value="0"
+                          :disabled="editForm.isApproval === 0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isScheduledNotification')">
@@ -231,10 +227,36 @@
                           v-model="editForm.isScheduledNotification"
                           :active-value="1"
                           :inactive-value="0"
+                          :disabled="editForm.isApproval === 0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                  </el-form-item>
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isAgent')">
+                      <el-switch
+                          v-model="editForm.isAgent"
+                          :active-value="1"
+                          :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                   </el-form-item>
               </div>
-              <!-- 第七行 - 头像上传 -->
+              
+              <div class="form-row">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isParttimed')">
+                      <el-switch
+                          v-model="editForm.isParttimed"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                  </el-form-item>
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
+                      <el-switch
+                          v-model="editForm.isFreeze"
+                          :active-value="1"
+                          :inactive-value="0"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                  </el-form-item>
+                  <el-form-item></el-form-item>
+              </div>
+              
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
                     <el-upload
@@ -246,17 +268,13 @@
                         accept=".jpg,.jpeg,.png"
                         >
                         <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
-                        <el-icon v-else class="avatar-uploader-icon"></el-icon>
+                        <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
                     </el-upload>
                       <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
                   </el-form-item>
               </div>
-              <!-- 备注信息 -->
-              <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.remark')">
-                      <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
-                  </el-form-item>
-              </div>
+              
+
           </el-form>
           <template #footer>
               <span class="dialog-footer">
@@ -269,7 +287,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted, nextTick } from 'vue'
+  import { ref, reactive, onMounted, nextTick, watch } from 'vue'
   import { Plus } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { 
@@ -284,7 +302,7 @@
       GET_GENDER_DROPDOWN_API,
       GET_EMPLOYMENT_TYPE_DROPDOWN_API,
       UPLOAD_AVATAR_API
-  } from '@/config/api/SystemBasicMgmt/system-basic/user'
+  } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -338,12 +356,13 @@
       passWord: '',
       pwdSalt: '',
       isApproval: 0,
+      isParttimed: 0,
       isRealtimeNotification: 0,
       isScheduledNotification: 0,
+      isAgent: 0,
       isEmployed: 1,
       isFreeze: 0,
       employmentCode: '',
-      remark: '',
       modifiedBy: '',
       modifiedDate: '',
       avatarAddress: ''
@@ -352,6 +371,12 @@
   // 头像上传相关
   const avatarUrl = ref('')
   const avatarFile = ref(null)
+
+  // 存储isApproval关闭前的通知状态
+  const previousNotificationState = reactive({
+    isRealtimeNotification: 0,
+    isScheduledNotification: 0
+  })
 
   // 对话框标题
   const dialogTitle = ref(t('SystemBasicMgmt.userInfo.editUser'))
@@ -427,6 +452,25 @@
 
   // 树形选择器过滤方法
   const filterNodeMethod = (value, data) => data.departmentName.includes(value)
+
+  // 监听isApproval变化
+  watch(() => editForm.isApproval, (newValue, oldValue) => {
+    // 只有当值真正变化且不是初始化时才执行逻辑
+    if (oldValue !== undefined) {
+      if (newValue === 0) { // 关闭审批权限
+        // 保存当前通知状态
+        previousNotificationState.isRealtimeNotification = editForm.isRealtimeNotification
+        previousNotificationState.isScheduledNotification = editForm.isScheduledNotification
+        // 关闭所有通知
+        editForm.isRealtimeNotification = 0
+        editForm.isScheduledNotification = 0
+      } else if (oldValue === 0) { // 开启审批权限
+        // 恢复之前的通知状态
+        editForm.isRealtimeNotification = previousNotificationState.isRealtimeNotification
+        editForm.isScheduledNotification = previousNotificationState.isScheduledNotification
+      }
+    }
+  }, { immediate: false }) // 设置immediate为false，避免初始化时触发
 
   // 组件挂载后获取数据
   onMounted(async () => {
@@ -534,7 +578,14 @@
       const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, params)
 
       if (res && res.code === '200') {
+          // 先保存通知状态，以便在 watch 触发前记录原始值
+          if (res.data.isRealtimeNotification !== undefined && res.data.isScheduledNotification !== undefined) {
+              previousNotificationState.isRealtimeNotification = res.data.isRealtimeNotification
+              previousNotificationState.isScheduledNotification = res.data.isScheduledNotification
+          }
+          
           Object.assign(editForm, res.data)
+          
           // 设置头像显示
           if (res.data.avatarAddress) {
               // 如果头像地址是相对路径，需要拼接完整的URL
@@ -542,7 +593,6 @@
               avatarUrl.value = res.data.avatarAddress.startsWith('http') 
                   ? res.data.avatarAddress 
                   : `${baseUrl}/${res.data.avatarAddress}`
-              console.log('头像地址:', avatarUrl.value) // 调试用
           }
       }
   }
@@ -584,7 +634,6 @@
           gender: ''
       })
       pagination.pageIndex = 1
-      fetchUserPages()
   }
 
   // 分页变化
@@ -614,16 +663,19 @@
           passWord: '',
           pwdSalt: '',
           isApproval: 0,
+          isParttimed: 0,
           isRealtimeNotification: 0,
           isScheduledNotification: 0,
           isEmployed: 1,
           isFreeze: 0,
           employmentCode: '',
-          remark: '',
           modifiedBy: '',
           modifiedDate: '',
           avatarAddress: ''
       })
+      // 重置通知状态记录
+      previousNotificationState.isRealtimeNotification = 0
+      previousNotificationState.isScheduledNotification = 0
       // 重置头像
       avatarUrl.value = ''
       avatarFile.value = null
@@ -695,7 +747,7 @@
 
   // 添加用户
   const handleAdd = async () => {
-      // 重置表单
+      // 重置表单 (resetForm 内部已经初始化了 previousNotificationState)
       resetForm()
       // 重新获取下拉数据并设置编辑表单默认值
       await fetchDepartmentDropdown(false, true)
@@ -721,7 +773,7 @@
       await fetchRoleDropdown(false, false)
       await fetchGenderDropdown()
       await fetchEmploymentTypeDropdown(false)
-      // 获取员工实体
+      // 获取员工实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
       await fetchUserEntity(row.userId)
       // 打开对话框
       dialogTitle.value = t('SystemBasicMgmt.userInfo.editUser')

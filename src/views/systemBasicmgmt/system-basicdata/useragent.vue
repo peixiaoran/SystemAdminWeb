@@ -117,7 +117,7 @@
             </template>
         </el-dialog>
 
-        <!-- 员工选择对话�?-->
+        <!-- 员工选择对话框 -->
         <el-dialog v-model="userSelectDialogVisible"
                    :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCh || currentUserInfo.userNameEn}`"
                    width="70%"
@@ -149,7 +149,7 @@
                     </el-form-item>
                 </el-form>
                 
-                <!-- 分隔�?-->
+                <!-- 分隔线 -->
                 <el-divider style="margin: 10px 0;"></el-divider>
 
                 <!-- 搜索区域 -->
@@ -219,13 +219,13 @@
         GET_DEPARTMENT_DROPDOWN_API,
         GET_USER_POSITION_DROPDOWN_API,
         GET_ROLE_DROPDOWN_API
-    } from '@/config/api/SystemBasicMgmt/system-basic/user'
+    } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
     import { 
         GET_USER_AGENT_API,
         GET_USER_AGENT_INSERT_API,
         GET_USER_AGENT_DELETE_API,
         GET_USER_VIEW_API
-    } from '@/config/api/SystemBasicMgmt/system-basic/useragent'
+    } from '@/config/api/SystemBasicMgmt/System-BasicData/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -254,7 +254,7 @@
         positionId: '',
     })
   
-        // 代理人相关数�?
+        // 代理人相关数据
     const agentDialogVisible = ref(false)
     const agentDialogTitle = ref('')
     const agentList = ref([])
@@ -263,7 +263,7 @@
     const currentUserInfo = ref({})
 
 
-    // 员工选择对话框相关数�?
+    // 员工选择对话框相关数据
     const userSelectDialogVisible = ref(false)
     const userSelectLoading = ref(false)
     const userSelectList = ref([])
@@ -276,7 +276,7 @@
         endTime: ''
     })
     
-    // 员工选择筛选条�?
+    // 员工选择筛选条件
     const userSelectFilters = reactive({
         userNo: '',
         userName: ''
@@ -294,20 +294,20 @@
   
     // 在组件挂载后获取数据
     onMounted(async () => {
-        // 获取下拉框数据并设置筛选条件默认�?
+        // 获取下拉框数据并设置筛选条件默认值
         await fetchDepartmentDropdown(true)
         await fetchPositionDropdown(true)
         // 获取员工列表数据
         fetchUserPages()
     })
   
-    // 获取部门下拉框数�?
+    // 获取部门下拉框数据
     const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
             if (res && res.code === '200') {
                 departmentOptions.value = Array.isArray(res.data) ? res.data : []
-                // 设置筛选条件默认�?
+                // 设置筛选条件默认值
                 if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
                     filters.departmentId = departmentOptions.value[0].departmentId
                 }
@@ -319,24 +319,24 @@
         }
     }
   
-    // 获取职位下拉框数�?
+    // 获取职位下拉框数据
     const fetchPositionDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
         if (res && res.code === '200') {
             positionOptions.value = res.data || []
-            // 设置筛选条件默认�?
+            // 设置筛选条件默认值
             if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
                 filters.positionId = positionOptions.value[0].positionId
             }
         }
     }
   
-    // 获取角色下拉框数�?
+    // 获取角色下拉框数据
     const fetchRoleDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
         if (res && res.code === '200') {
             roleOptions.value = res.data || []
-            // 设置筛选条件默认�?
+            // 设置筛选条件默认值
             if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
                 filters.roleId = roleOptions.value[0].roleId
             }
@@ -345,7 +345,7 @@
   
     
   
-    // 获取代理人列表数�?
+    // 获取代理人列表数据
     const fetchUserAgentList = async (substituteUserId) => {
         agentLoading.value = true
         try {
@@ -361,7 +361,7 @@
                 ElMessage.error(res.message || t('SystemBasicMgmt.userAgent.getFailed'))
             }
         } catch (error) {
-            console.error('获取代理人列表失�?', error)
+            console.error('获取代理人列表失败', error)
             agentList.value = []
             ElMessage.error(t('SystemBasicMgmt.userAgent.getFailed'))
         } finally {
@@ -406,7 +406,6 @@
             gender: ''
         })
         pagination.pageIndex = 1
-        fetchUserPages()
     }
   
 
@@ -419,7 +418,7 @@
         fetchUserPages()
     }
   
-    // 处理每页记录数变�?
+    // 处理每页记录数变化
     const handleSizeChange = (size) => {
         pagination.pageSize = size
         pagination.pageIndex = 1
@@ -428,12 +427,12 @@
   
     
   
-        // 处理配置代理人操�?
+        // 处理配置代理人操作
     const handleConfigureAgent = async (index, row) => {
         currentUserId.value = row.userId
         agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userNameCh || row.userNameEn}`
         agentDialogVisible.value = true
-        // 获取代理人列�?
+        // 获取代理人列表
         await fetchUserAgentList(row.userId)
     }
 
@@ -465,7 +464,7 @@
         agentDialogTitle.value = ''
     }
 
-    // 处理员工选择对话框关闭后的清�?
+    // 处理员工选择对话框关闭后的清理
     const handleUserSelectDialogClosed = () => {
         currentUserInfo.value = {}
         currentUserId.value = ''
@@ -486,7 +485,7 @@
 
 
 
-    // 处理删除代理�?
+    // 处理删除代理人
     const handleDeleteAgent = async (index) => {
         try {
             const agent = agentList.value[index]
@@ -512,7 +511,7 @@
             
             if (res && res.code === '200') {
                 ElMessage.success(res.message || t('common.deleteSuccess'))
-                // 重新获取代理人列�?
+                // 重新获取代理人列表
                 await fetchUserAgentList(currentUserId.value)
             } else {
                 ElMessage.error(res.message || t('common.operationFailed'))
@@ -522,7 +521,7 @@
                 // 用户取消删除
                 return
             }
-            console.error('删除代理人失�?', error)
+            console.error('删除代理人失败', error)
             ElMessage.error(t('common.operationFailed'))
         }
     }
@@ -588,12 +587,12 @@
         fetchUserSelectList()
     }
 
-    // 处理多选变�?
+    // 处理多选变化
     const handleSelectionChange = (selection) => {
         selectedUsers.value = selection
     }
 
-    // 处理开始时间变�?
+    // 处理开始时间变化
     const handleStartTimeChange = (value) => {
         if (value && agentTimeRange.endTime && new Date(value) > new Date(agentTimeRange.endTime)) {
             ElMessage.warning(t('SystemBasicMgmt.userAgent.startTimeCannotLaterThanEndTime'))
@@ -622,7 +621,7 @@
         }
 
         try {
-            // 格式化时�?
+            // 格式化时间
             const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
             const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
 
@@ -638,9 +637,9 @@
                 const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
                 
                 if (res && res.code === '200') {
-                    // 成功添加代理�?
+                    // 成功添加代理人
                 } else {
-                    ElMessage.error(res.message || `添加代理人失�? ${user.userNameCh || user.userNameEn}`)
+                    ElMessage.error(res.message || `添加代理人失败 ${user.userNameCh || user.userNameEn}`)
                     return
                 }
             }
@@ -660,14 +659,14 @@
                 userSelectTableRef.value.clearSelection()
             }
 
-            // 重新获取代理人列�?
+            // 重新获取代理人列表
             await fetchUserAgentList(currentUserId.value)
             
             // 清理当前用户信息
             currentUserInfo.value = {}
             
         } catch (error) {
-            console.error('添加代理人失�?', error)
+            console.error('添加代理人失败', error)
             ElMessage.error(t('common.operationFailed'))
         }
     }
@@ -687,7 +686,7 @@
     }
 
     :deep(.agent-dialog .el-dialog__body) {
-      height: calc(550px - 120px); /* 减去header和footer的高�?*/
+      height: calc(550px - 120px); /* 减去header和footer的高度 */
       overflow: auto;
       padding: 0 20px 20px 20px;
     }

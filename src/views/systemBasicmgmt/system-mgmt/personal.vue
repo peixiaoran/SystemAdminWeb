@@ -127,44 +127,34 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isEmployed')" prop="isEmployed">
-          <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isAgent')" prop="isAgent">
-          <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isSign')" prop="isSign">
-          <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
       </div>
 
       <!-- 第五行：其他状态 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isPartTime')" prop="isPartTime">
-          <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isFreeze')" prop="isFreeze">
-          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
-          <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isScheduledNotification')" prop="isScheduledNotification">
-          <el-switch v-model="personalInfoForm.isScheduledNotification" :disabled="true" :active-value="1" :inactive-value="0" />
+          <el-switch v-model="personalInfoForm.isScheduledNotification" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
       </div>
 
       <!-- 第六行：备注 -->
-      <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.remark')" prop="remark" class="remark-item">
-          <el-input 
-            v-model="personalInfoForm.remark" 
-            :disabled="loading"
-            type="textarea"
-            :rows="2"
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputRemark')"
-          />
-        </el-form-item>
-      </div>
+      <!-- 备注字段已移除 -->
 
       <!-- 第七行：头像上传 -->
       <div class="form-row">
@@ -255,7 +245,6 @@ export default {
       isPartTime: 0,
       isFreeze: 0,
       employmentType: '',
-      remark: '',
       avatarAddress: '',
       isRealtimeNotification: 0,
       isScheduledNotification: 0
@@ -284,7 +273,6 @@ export default {
         { type: 'email', message: t('SystemBasicMgmt.personalInfo.emailFormatError'), trigger: 'blur' }
       ],
       phoneNumber: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.phoneNumberRequired'), trigger: 'blur' },
         { pattern: /^[0-9-+\s()]+$/, message: t('SystemBasicMgmt.personalInfo.phoneNumberFormatError'), trigger: 'blur' }
       ],
       password: [
@@ -463,7 +451,6 @@ export default {
           email: personalInfoForm.email,
           phoneNumber: personalInfoForm.phoneNumber,
           PassWord: personalInfoForm.password,
-          remark: personalInfoForm.remark,
           avatarAddress: personalInfoForm.avatarAddress,
           isRealtimeNotification: personalInfoForm.isRealtimeNotification,
           isScheduledNotification: personalInfoForm.isScheduledNotification

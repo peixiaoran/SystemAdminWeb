@@ -1,13 +1,13 @@
 <template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
-            <!-- 过滤条件 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="币别搜索表单">
+            <!-- 搜索 -->
+            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
                 <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.filter.currencyCode')">
-                    <el-input v-model="filters.currencyCode"
-                             style="width: 180px;"
-                             :placeholder="$t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode')"
-                             clearable />
+                    <el-input v-model="filters.currencyCode" :placeholder="$t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
+                </el-form-item>
+                <el-form-item style="visibility: hidden; width: 0; margin: 0; padding: 0;">
+                    <el-input style="width: 0; height: 0; border: none; padding: 0; margin: 0;" />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -24,7 +24,7 @@
                 </el-form-item>
             </el-form>
   
-            <!-- 表格区域 -->
+            <!-- 表格 -->
             <div class="table-container">
                 <el-table :data="currencyList"
                           border
@@ -61,22 +61,22 @@
                                v-model:page-size="pagination.pageSize"
                                :page-sizes="[10, 20, 50, 100]"
                                layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.totalCount"
+                               :total="pagination.total"
                                @size-change="handleSizeChange"
-                               @current-change="handlePageChange" />
+                               @current-change="handlePageChange"/>
             </div>
         </el-card>
   
-        <!-- 编辑状态对话框 -->
+        <!-- 编辑状态弹窗 -->
         <el-dialog v-model="dialogVisible"
                    :title="dialogTitle"
-                   width="60%"
+                   width="50%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"
                    :lock-scroll="true"
                    @close="handleDialogClose">
-            <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="币别编辑表单">
+            <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
                 <div class="form-row">
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyCode')" prop="currencyCode">
                         <el-input v-model="editForm.currencyCode" 
@@ -129,7 +129,7 @@
       DELETE_CURRENCY_API, 
       GET_CURRENCY_ENTITY_API, 
       UPDATE_CURRENCY_API 
-    } from '@/config/api/SystemBasicMgmt/system-settings/currency'
+    } from '@/config/api/SystemBasicMgmt/System-Settings/currency'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -147,7 +147,7 @@
     const pagination = reactive({
         pageIndex: 1,
         pageSize: 10,
-        totalCount: 0
+        total: 0
     })
   
     // 过滤条件
@@ -214,14 +214,14 @@
             currencyCode: filters.currencyCode,
             pageIndex: pagination.pageIndex,
             pageSize: pagination.pageSize,
-            totalCount: pagination.totalCount
+            total: pagination.total
         }
   
         const res = await post(GET_CURRENCY_PAGES_API.GET_CURRENCY_PAGES, params)
   
         if (res && res.code === '200') {
             currencyList.value = res.data || []
-            pagination.totalCount = res.totalNumber || 0
+            pagination.total = res.totalNumber || 0
         } else {
             ElMessage.error(res.message || t('SystemBasicMgmt.currencyInfo.getFailed'))
         }
@@ -242,7 +242,6 @@
     const handleReset = () => {
         filters.currencyCode = ''
         pagination.pageIndex = 1
-        fetchCurrencyPages()
     }
   
     // 处理页码变化

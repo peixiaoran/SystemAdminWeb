@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container">
     <!-- 侧边菜单 -->
     <el-aside :width="isCollapse ? '64px' : '220px'" class="aside-container">
@@ -1249,6 +1249,27 @@ const openMenuForPath = (path) => {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  font-size: 16px !important;
+  color: #409eff !important;
+  font-weight: bold !important;
+}
+
+.tags-view-container:deep(.el-tabs__nav-prev),
+.tags-view-container:deep(.el-tabs__nav-next) {
+  background-color: transparent !important;
+  border: none !important;
+  margin: 0 2px !important;
+  transition: all 0.3s !important;
+}
+
+.tags-view-container:deep(.el-tabs__nav-prev:hover),
+.tags-view-container:deep(.el-tabs__nav-next:hover) {
+  background-color: transparent !important;
+}
+
+.tags-view-container:deep(.el-tabs__nav-prev:hover .el-icon),
+.tags-view-container:deep(.el-tabs__nav-next:hover .el-icon) {
+  color: #337ecc !important;
 }
 
 .tab-icon {

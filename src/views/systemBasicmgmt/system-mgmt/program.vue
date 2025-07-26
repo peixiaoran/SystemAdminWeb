@@ -458,7 +458,6 @@
       }
       
       pagination.pageIndex = 1
-      fetchProgramPages()
   }
 
   // 分页变化

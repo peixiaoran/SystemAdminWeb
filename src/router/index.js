@@ -186,9 +186,9 @@ const moduleRoutes = [
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
-        path: 'system-basicdata',
+        path: 'System-BasicData',
         name: 'SystemBasicData',
-        redirect: '/SystemBasicMgmt/system-basicdata',
+        redirect: '/SystemBasicMgmt/System-BasicData',
         meta: { 
           title: 'route.systemBasicData',
           icon: 'List',
@@ -199,7 +199,7 @@ const moduleRoutes = [
           {
             path: 'companyinfo',
             name: 'SystemCompanyInfo',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/companyinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/companyinfo.vue'),
             meta: { 
               title: 'route.companyInfo', 
               icon: 'OfficeBuilding',
@@ -210,7 +210,7 @@ const moduleRoutes = [
           {
             path: 'departmentinfo',
             name: 'SystemDepartmentInfo',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/departmentinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/departmentinfo.vue'),
             meta: { 
               title: 'route.departmentInfo', 
               icon: 'School',
@@ -221,7 +221,7 @@ const moduleRoutes = [
           {
             path: 'departmentlevel',
             name: 'SystemDepartmentLevel',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/departmentlevel.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/departmentlevel.vue'),
             meta: { 
               title: 'route.departmentLevel', 
               icon: 'GoldMedal',
@@ -232,7 +232,7 @@ const moduleRoutes = [
           {
             path: 'userposition',
             name: 'SystemUserPosition',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/userposition.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/userposition.vue'),
             meta: { 
               title: 'route.userPosition', 
               icon: 'GoldMedal',
@@ -243,7 +243,7 @@ const moduleRoutes = [
           {
             path: 'userinfo',
             name: 'SystemUserInfo',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/userinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/userinfo.vue'),
             meta: { 
               title: 'route.userInfo', 
               icon: 'UserFilled',
@@ -254,7 +254,7 @@ const moduleRoutes = [
           {
             path: 'useragent',
             name: 'SystemUseragent',
-            component: () => import('../views/SystemBasicMgmt/system-basicdata/useragent.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/useragent.vue'),
             meta: { 
               title: 'route.userAgent', 
               icon: 'GoodsFilled',
@@ -266,9 +266,9 @@ const moduleRoutes = [
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
-        path: 'system-settings',
+        path: 'System-Settings',
         name: 'SystemSettings',
-        redirect: '/SystemBasicMgmt/system-settings',
+        redirect: '/SystemBasicMgmt/System-Settings',
         meta: { 
           title: 'route.systemSettings',
           icon: 'Setting',
@@ -279,7 +279,7 @@ const moduleRoutes = [
           {
             path: 'dictionaryinfo',
             name: 'DictionaryInfo',
-            component: () => import('../views/SystemBasicMgmt/system-settings/dictionaryinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Settings/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
               icon: 'Collection',
@@ -290,7 +290,7 @@ const moduleRoutes = [
           {
             path: 'currencyinfo',
             name: 'CurrencyInfo',
-            component: () => import('../views/SystemBasicMgmt/system-settings/currencyinfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Settings/currencyinfo.vue'),
             meta: { 
               title: 'route.currencyInfo', 
               icon: 'Money',
@@ -301,7 +301,7 @@ const moduleRoutes = [
           {
             path: 'exchangerateInfo',
             name: 'exchangerateInfo',
-            component: () => import('../views/SystemBasicMgmt/system-settings/exchangerateInfo.vue'),
+            component: () => import('../views/SystemBasicMgmt/System-Settings/exchangerateInfo.vue'),
             meta: { 
               title: 'route.exchangerateInfo', 
               icon: 'Switch',

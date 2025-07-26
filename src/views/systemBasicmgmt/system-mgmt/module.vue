@@ -423,7 +423,6 @@
       }
       
       pagination.pageIndex = 1
-      fetchModulePages()
   }
 
   // 处理页码变化

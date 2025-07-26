@@ -112,7 +112,7 @@
     INSERT_DEPARTMENT_LEVEL_API, 
     DELETE_DEPARTMENT_LEVEL_API, 
     UPDATE_DEPARTMENT_LEVEL_API 
-  } from '@/config/api/SystemBasicMgmt/system-basic/departmentlevel'
+  } from '@/config/api/SystemBasicMgmt/System-BasicData/departmentlevel'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -223,7 +223,6 @@
       filters.departmentLevelCode = ''
       filters.departmentLevelName = ''
       pagination.pageIndex = 1
-      fetchDepartmentLevelList()
   }
 
   // 处理页码变化

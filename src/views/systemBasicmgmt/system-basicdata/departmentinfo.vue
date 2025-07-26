@@ -155,7 +155,7 @@
         DELETE_DEPARTMENT_API, 
         UPDATE_DEPARTMENT_API,
         GET_DEPARTMENTLEVEL_DROPDOWN_API 
-    } from '@/config/api/SystemBasicMgmt/system-basic/department'
+    } from '@/config/api/SystemBasicMgmt/System-BasicData/department'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -304,7 +304,6 @@
     const handleReset = () => {
         filters.departmentCode = ''
         filters.departmentName = ''
-        fetchDepartmentTree()
     }
 
     const resetForm = (clearValidation = true) => {
@@ -503,5 +502,5 @@
   
   <style scoped>
     @import '@/assets/styles/conventionalTablePage.css';
-  </style> 
+  </style>
 
