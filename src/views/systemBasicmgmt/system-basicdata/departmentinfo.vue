@@ -37,10 +37,10 @@
                           v-loading="loading"
                           class="conventional-table"
                           row-key="departmentId"
-                          default-expand-all
+                          :default-expand-all="true"
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
                         <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentInfo.index')" width="70" align="center" fixed />
-                        <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="200" />
+                        <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="300" />
                         <el-table-column prop="departmentNameCh" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameCh')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />

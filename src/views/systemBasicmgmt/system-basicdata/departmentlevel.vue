@@ -39,8 +39,8 @@
                   <el-table-column prop="departmentLevelCode" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
                   <el-table-column prop="departmentLevelNameCh" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelNameEn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
-                  <el-table-column :label="$t('SystemBasicMgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
+                  <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="300" />
+                  <el-table-column :label="$t('SystemBasicMgmt.departmentLevel.operation')" min-width="110" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -144,7 +144,7 @@
 
   // 编辑表单
   const editForm = reactive({
-      departmentLevelId: 0,
+      departmentLevelId: '',
       departmentLevelCode: '',
       departmentLevelNameCh: '',
       departmentLevelNameEn: '',
@@ -223,6 +223,7 @@
       filters.departmentLevelCode = ''
       filters.departmentLevelName = ''
       pagination.pageIndex = 1
+      fetchDepartmentLevelList()
   }
 
   // 处理页码变化
@@ -249,7 +250,7 @@
           }
       }
       
-      editForm.departmentLevelId = 0
+      editForm.departmentLevelId = ''
       editForm.departmentLevelCode = ''
       editForm.departmentLevelNameCh = ''
       editForm.departmentLevelNameEn = ''
@@ -381,7 +382,7 @@
       editFormRef.value?.validate((valid) => {
           if (valid) {
               // 判断是新增还是编辑
-              const isNew = editForm.departmentLevelId === 0
+              const isNew = editForm.departmentLevelId === ''
 
               if (isNew) {
                   insertDepartmentLevel()
