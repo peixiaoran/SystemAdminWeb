@@ -60,8 +60,7 @@
                   </el-table-column>
                   <el-table-column prop="remarksCh" :label="$t('SystemBasicMgmt.domain.remarksCh')" align="left" min-width="700" />
                   <el-table-column prop="remarksEn" :label="$t('SystemBasicMgmt.domain.remarksEn')" align="left" min-width="700" />
-                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.createdBy')" min-width="120" />
-                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.createdTime')" min-width="180" />
+
                   <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>

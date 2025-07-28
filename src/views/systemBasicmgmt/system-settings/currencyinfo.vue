@@ -242,7 +242,6 @@
     const handleReset = () => {
         filters.currencyCode = ''
         pagination.pageIndex = 1
-        fetchCurrencyPages()
     }
   
     // 处理页码变化

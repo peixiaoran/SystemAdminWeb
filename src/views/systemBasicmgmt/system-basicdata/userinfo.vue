@@ -634,7 +634,6 @@
           gender: ''
       })
       pagination.pageIndex = 1
-      fetchUserPages()
   }
 
   // 分页变化

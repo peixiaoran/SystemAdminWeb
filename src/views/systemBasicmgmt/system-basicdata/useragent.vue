@@ -406,7 +406,6 @@
             gender: ''
         })
         pagination.pageIndex = 1
-        fetchUserPages()
     }
   
 
