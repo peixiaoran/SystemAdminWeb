@@ -106,7 +106,7 @@
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.module.menuNameCh')" prop="menuNameCh">
-<el-input v-model="editForm.menuNameCh" style="width:100%" />
+                      <el-input v-model="editForm.menuNameCh" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">

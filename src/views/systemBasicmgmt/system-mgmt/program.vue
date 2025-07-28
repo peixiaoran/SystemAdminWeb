@@ -11,12 +11,12 @@
                             />
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.program.domain')">
-                                     <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.domain')" style="width:180px" @change="handleFilterDomainChange">
+                      <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.domain')" style="width:180px" @change="handleFilterDomainChange">
                       <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.program.module')">
-                                     <el-select v-model="filters.parentMenuId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.module')" style="width:180px">
+                      <el-select v-model="filters.parentMenuId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.module')" style="width:180px">
                       <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
                   </el-select>
               </el-form-item>

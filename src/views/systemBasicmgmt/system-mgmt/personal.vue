@@ -127,13 +127,13 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isEmployed')" prop="isEmployed">
-          <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+           <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isAgent')" prop="isAgent">
-          <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+           <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isSign')" prop="isSign">
-          <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+           <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
         </el-form-item>
       </div>
 
