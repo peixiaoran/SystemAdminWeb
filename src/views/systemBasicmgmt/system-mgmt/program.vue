@@ -7,7 +7,7 @@
               <el-form-item :label="$t('SystemBasicMgmt.program.programName')">
                   <el-input style="width: 200px" 
                             v-model="filters.programName" 
-                                                         :placeholder="$t('SystemBasicMgmt.inputPlaceholder') + $t('SystemBasicMgmt.program.programName')" 
+                            :placeholder="$t('SystemBasicMgmt.inputPlaceholder') + $t('SystemBasicMgmt.program.programName')" 
                             />
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.program.domain')">
@@ -50,9 +50,9 @@
                   <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.program.programNameCh')" align="left" min-width="260" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.program.programNameEn')" align="left" min-width="230" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.program.roleCode')" align="center" min-width="130" />
-                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.program.pagePath')" align="left" min-width="230" />
-                  <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.program.programIcon')" align="center" min-width="230" />
-                                     <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.isEnabled')" align="center" min-width="150">
+                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.program.pagePath')" align="left" min-width="420" />
+                  <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.program.programIcon')" align="center" min-width="150" />
+                  <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.isEnabled')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
@@ -61,7 +61,7 @@
                           </div>
                       </template>
                   </el-table-column>
-                                     <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.isVisible')" align="center" min-width="90">
+                  <el-table-column prop="isVisible" :label="$t('SystemBasicMgmt.isVisible')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
@@ -70,9 +70,7 @@
                           </div>
                       </template>
                   </el-table-column>
-                                     <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.createdBy')" min-width="180" />
-                                     <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.createdTime')" min-width="180" />
-                                     <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="170" fixed="right" align="center">
+                <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"

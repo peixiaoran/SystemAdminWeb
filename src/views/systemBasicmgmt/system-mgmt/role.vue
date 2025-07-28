@@ -64,12 +64,7 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="createdName"
-                                   :label="$t('SystemBasicMgmt.createdBy')"
-                                   min-width="170" />
-                  <el-table-column prop="createdDate"
-                                   :label="$t('SystemBasicMgmt.createdTime')"
-                                   min-width="180" />
+
                   <el-table-column :label="$t('SystemBasicMgmt.operation')"
                                    min-width="150"
                                    fixed="right"

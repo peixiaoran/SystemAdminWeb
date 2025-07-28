@@ -48,7 +48,7 @@
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.module.menuNameEn')" align="left" min-width="200" />
                   <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="130" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.module.roleCode')" align="center" min-width="130" />
-                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.module.pagePath')" align="left" min-width="230" />
+                  <el-table-column prop="path" :label="$t('SystemBasicMgmt.module.pagePath')" align="left" min-width="280" />
                   <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.module.menuIcon')" align="center" min-width="170" />
                   <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.isEnabled')" align="center" min-width="120">
                       <template #default="scope">
@@ -68,8 +68,6 @@
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="createdName" :label="$t('SystemBasicMgmt.createdBy')" min-width="120" />
-                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.createdTime')" min-width="180" />
                   <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="180" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
