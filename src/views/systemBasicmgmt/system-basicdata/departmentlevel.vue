@@ -40,7 +40,6 @@
                   <el-table-column prop="departmentLevelNameCh" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelNameEn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
-                  <el-table-column prop="sortOrder" :label="$t('SystemBasicMgmt.departmentLevel.sortOrder')" align="center" min-width="100" />
                   <el-table-column :label="$t('SystemBasicMgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -86,9 +85,7 @@
                   <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
                       <el-input v-model="editForm.departmentLevelNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.sortOrder')" prop="sortOrder">
-                      <el-input-number v-model="editForm.sortOrder" :min="1" style="width:100%" />
-                  </el-form-item>
+                  <el-form-item></el-form-item>
               </div>
               <div class="form-row full-width">
                   <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')">
@@ -151,8 +148,7 @@
       departmentLevelCode: '',
       departmentLevelNameCh: '',
       departmentLevelNameEn: '',
-      departmentLevelDescribe: '',
-      sortOrder: 1
+      departmentLevelDescribe: ''
   })
 
   // 对话框标题
@@ -168,9 +164,6 @@
       ],
       departmentLevelNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
-      ],
-      sortOrder: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputSortOrder'), trigger: 'blur' }
       ]
   })
 
@@ -192,7 +185,6 @@
           editForm.departmentLevelNameCh = res.data.departmentLevelNameCh
           editForm.departmentLevelNameEn = res.data.departmentLevelNameEn
           editForm.departmentLevelDescribe = res.data.departmentLevelDescribe
-          editForm.sortOrder = res.data.sortOrder || 1
       }
   }
 
@@ -263,7 +255,6 @@
       editForm.departmentLevelNameCh = ''
       editForm.departmentLevelNameEn = ''
       editForm.departmentLevelDescribe = ''
-      editForm.sortOrder = 1
       
       // 重置完成后再次清除验证状态
       if (clearValidation) {

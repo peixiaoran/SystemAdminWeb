@@ -232,6 +232,7 @@
   const handleReset = () => {
       filters.companyName = ''
       pagination.pageIndex = 1
+      fetchCompanyPages()
   }
 
   // 处理页码变化
