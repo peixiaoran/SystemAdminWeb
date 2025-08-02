@@ -69,7 +69,7 @@
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import {
       GET_ROLE_MODULE_API,
@@ -179,14 +179,24 @@
           return
       }
 
-      const roleModuleUpserts = roleModuleList.value.map(item => ({
-          roleId: item.roleId,
-          menuId: item.menuId,
-          domainId: item.domainId,
-          isChecked: item.isChecked
-      }))
-
       try {
+          await ElMessageBox.confirm(
+              t('SystemBasicMgmt.roleModule.confirmUpdate'),
+              t('common.confirm'),
+              {
+                  confirmButtonText: t('common.confirm'),
+                  cancelButtonText: t('common.cancel'),
+                  type: 'warning'
+              }
+          )
+
+          const roleModuleUpserts = roleModuleList.value.map(item => ({
+              roleId: item.roleId,
+              menuId: item.menuId,
+              domainId: item.domainId,
+              isChecked: item.isChecked
+          }))
+
           const res = await post(UPDATE_ROLE_MODULE_API.UPDATE_ROLE_MODULE, {
               roleModuleUpserts
           })
@@ -198,6 +208,9 @@
               ElMessage.error(res.message)
           }
       } catch (error) {
+          if (error === 'cancel') {
+              return
+          }
           ElMessage.error(error.message)
       }
   }

@@ -302,6 +302,11 @@ export default {
               callback(new Error(t('SystemBasicMgmt.personalInfo.passwordNumberError')))
               return
             }
+            // 必须包含特殊字符
+            if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+              callback(new Error(t('SystemBasicMgmt.personalInfo.passwordSpecialCharError')))
+              return
+            }
             callback()
           }, 
           trigger: 'blur' 

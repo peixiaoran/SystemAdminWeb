@@ -443,6 +443,11 @@
               callback(new Error(t('SystemBasicMgmt.userInfo.passwordNumberError')))
               return
             }
+            // 必须包含特殊字符
+            if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+              callback(new Error(t('SystemBasicMgmt.userInfo.passwordSpecialCharError')))
+              return
+            }
             callback()
           }, 
           trigger: 'blur' 

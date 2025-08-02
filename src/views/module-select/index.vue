@@ -38,44 +38,33 @@
         </el-dropdown>
       </div>
     </div>
-
-    <div class="module-grid">
-      <el-row :gutter="30" justify="center">
-        <el-col 
-          :xs="24" 
-          :sm="modules.length === 1 ? 16 : 12" 
-          :md="modules.length === 1 ? 12 : 8" 
-          :lg="modules.length === 1 ? 10 : 6" 
-          :xl="modules.length === 1 ? 8 : 4" 
-          v-for="module in modules" 
-          :key="module.domainId"
-        >
-          <el-card
-            class="module-card"
-            shadow="hover"
-            @click="enterModule(module)"
-            :body-style="{ padding: '0', height: '100%' }"
-          >
+    
+    
+    <!-- 模块展示区域 -->
+    <div v-if="!loading" class="module-grid">
+      <div class="module-row">
+        <div v-for="module in modules" :key="module.domainId" class="module-col">
+          <div class="module-card" @click="enterModule(module)">
             <div class="module-icon">
-              <el-icon :size="54">
-                <component :is="module.domainIcon" />
+              <el-icon :size="48">
+                <component :is="module.domainIcon || 'Setting'" />
               </el-icon>
             </div>
             <div class="module-info">
               <h2>{{ getModuleName(module) }}</h2>
               <p>{{ getModuleRemarks(module) }}</p>
-              <div class="module-footer">
-                <el-button type="primary" round>
-                  <span>{{ $t('common.enter') }}</span>
-                  <el-icon class="enter-icon"><ArrowRight /></el-icon>
-                </el-button>
-              </div>
             </div>
-          </el-card>
-        </el-col>
-      </el-row>
+            <div class="module-footer">
+              <el-button type="primary" size="small">
+                {{ $t('moduleSelect.enterModule') }}
+                <el-icon class="enter-icon"><ArrowRight /></el-icon>
+              </el-button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    
+
     <!-- 添加加载状态 -->
     <div v-if="loading" class="loading-container">
       <el-empty :description="$t('moduleSelect.moduleLoading')" :image-size="100">
@@ -267,8 +256,8 @@ const logout = async () => {
 
 .module-grid {
   max-width: 1440px;
-  margin: 20px auto 0;
-  padding: 20px 0;
+  margin: 40px auto 0;
+  padding: 20px;
   flex: 1;
   display: flex;
   justify-content: center;
@@ -276,113 +265,155 @@ const logout = async () => {
   z-index: 1;
 }
 
-.el-row {
-  margin: 0 -15px;
+.module-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  max-width: 1200px;
+  justify-items: center;
 }
 
-.el-col {
-  padding: 0 15px;
-  margin-bottom: 30px;
+@media (min-width: 1200px) {
+  .module-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .module-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .module-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .module-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.module-col {
+  width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .module-card {
   width: 100%;
-  min-width: 260px;
-  max-width: 320px;
-  height: 280px;
+  max-width: 280px;
+  height: 320px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  border-radius: 16px;
-  transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
   cursor: pointer;
   overflow: hidden;
   background: #ffffff;
-  border: 1px solid #dcdfe6;
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08), 0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+  border: 1px solid #e4e7ed;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px 0 rgba(0, 0, 0, 0.12);
 }
 
 
 .module-icon {
-  height: 105px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #d3d4d6;
+  background: linear-gradient(135deg, #dda0dd 0%, #d8bfd8 100%);
   color: #ffffff;
-  border-bottom: none;
+  position: relative;
+}
+
+.module-icon::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
 .module-info {
   flex: 1;
-  padding: 20px 20px 10px 20px;
+  padding: 24px 20px 16px 20px;
   background: #ffffff;
   text-align: center;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .module-info h2 {
-  font-size: 20px;
-  margin: 0 0 10px 0;
+  font-size: 18px;
+  margin: 0 0 12px 0;
   color: #303133;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .module-info p {
-  font-size: 14px;
-  color: #606266;
+  font-size: 13px;
+  color: #909399;
   margin: 0;
-  line-height: 1.6;
-  min-height: 40px;
-  max-height: 44px;
+  line-height: 1.5;
+  height: 60px;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   word-wrap: break-word;
-  word-break: break-all;
-  hyphens: auto;
 }
 
-/* 移除module-footer的背景、边框等样式，只保留布局 */
 .module-footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 16px;
-  padding-bottom: 0;
-  border-top: none;
-  background: none;
+  padding: 16px 20px 20px 20px;
+  background: #ffffff;
 }
 
 .module-footer .el-button {
-  border-radius: 20px;
-  padding: 8px 24px;
-  font-size: 15px;
+  border-radius: 25px;
+  padding: 12px 28px;
+  font-size: 14px;
   font-weight: 500;
-  background: #d3d4d6;
+  background: linear-gradient(135deg, #dda0dd 0%, #d8bfd8 100%);
   color: #fff;
   border: none;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(211, 212, 214, 0.12);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(221, 160, 221, 0.3);
+  min-width: 120px;
 }
+
 .module-footer .el-button:hover {
-  background: #c0c4cc;
-  color: #fff;
+  background: linear-gradient(135deg, #da70d6 0%, #d3a3d3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(221, 160, 221, 0.4);
 }
 
 .enter-icon {
-  margin-left: 4px;
+  margin-left: 6px;
+  transition: transform 0.2s ease;
+}
+
+.module-footer .el-button:hover .enter-icon {
+  transform: translateX(2px);
 }
 
 .loading-container {
@@ -432,43 +463,41 @@ const logout = async () => {
   
   .module-grid {
     margin-top: 30px;
-    padding: 10px;
-  }
-  
-  .el-row {
-    margin: 0 -10px;
-  }
-  
-  .el-col {
-    padding: 0 10px;
-    margin-bottom: 20px;
-    flex: 0 0 100%;
-    max-width: 500px;
+    padding: 15px;
   }
   
   .module-card {
-    min-width: 100%;
-    max-width: 100%; /* 移动端占满容器宽度 */
-    height: auto;
+    height: 300px;
   }
   
-  .single-module-card .module-card {
-    max-width: 100%;
-    min-width: 100%;
+  .module-icon {
+    height: 100px;
   }
+  
   .module-info {
-    padding: 18px 10px 8px 10px;
+    padding: 20px 16px 12px 16px;
   }
+  
   .module-info h2 {
-    font-size: 18px; /* 移动端适当缩小标题字体 */
-    white-space: normal; /* 移动端允许标题换行 */
+    font-size: 16px;
+    white-space: normal;
   }
+  
   .module-info p {
-    font-size: 13px; /* 移动端适当缩小描述字体 */
-    max-height: 38px; /* 移动端适当缩小最大高度 */
+    font-size: 12px;
+    height: 48px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
+  
   .module-footer {
-    padding: 12px 0 14px 0;
+    padding: 12px 16px 16px 16px;
+  }
+  
+  .module-footer .el-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: 100px;
   }
 }
 
@@ -483,23 +512,30 @@ const logout = async () => {
   
   .module-grid {
     margin-top: 20px;
-  }
-  
-  .el-col {
-    max-width: 100%;
+    padding: 10px;
   }
   
   .module-card {
-    max-width: 100%; /* 小屏幕完全占满 */
+    height: 280px;
+  }
+  
+  .module-icon {
+    height: 90px;
   }
   
   .module-info h2 {
-    font-size: 16px; /* 小屏幕进一步缩小 */
+    font-size: 15px;
   }
   
   .module-info p {
-    font-size: 12px; /* 小屏幕进一步缩小 */
-    max-height: 32px; /* 小屏幕进一步缩小最大高度 */
+    font-size: 11px;
+    height: 42px;
+  }
+  
+  .module-footer .el-button {
+    padding: 8px 16px;
+    font-size: 12px;
+    min-width: 90px;
   }
 }
 

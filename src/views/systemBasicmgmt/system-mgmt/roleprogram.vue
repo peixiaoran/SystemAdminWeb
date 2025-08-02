@@ -73,7 +73,7 @@
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import {
       GET_ROLE_PROGRAM_API,
@@ -220,15 +220,25 @@
           return
       }
 
-      const roleProgramUpserts = roleProgramList.value.map(item => ({
-          roleId: item.roleId,
-          programId: item.programId,
-          domainId: item.domainId,
-          menuId: item.menuId,
-          isChecked: item.isChecked
-      }))
-
       try {
+          await ElMessageBox.confirm(
+              t('SystemBasicMgmt.roleProgram.confirmUpdate'),
+              t('common.confirm'),
+              {
+                  confirmButtonText: t('common.confirm'),
+                  cancelButtonText: t('common.cancel'),
+                  type: 'warning'
+              }
+          )
+
+          const roleProgramUpserts = roleProgramList.value.map(item => ({
+              roleId: item.roleId,
+              programId: item.programId,
+              domainId: item.domainId,
+              menuId: item.menuId,
+              isChecked: item.isChecked
+          }))
+
           const res = await post(UPDATE_ROLE_PROGRAM_API.UPDATE_ROLE_PROGRAM, {
               roleProgramUpserts
           })
@@ -240,6 +250,9 @@
               ElMessage.error(res.message)
           }
       } catch (error) {
+          if (error === 'cancel') {
+              return
+          }
           ElMessage.error(error.message)
       }
   }

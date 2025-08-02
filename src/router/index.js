@@ -224,7 +224,7 @@ const moduleRoutes = [
             component: () => import('../views/SystemBasicMgmt/System-BasicData/departmentlevel.vue'),
             meta: { 
               title: 'route.departmentLevel', 
-              icon: 'GoldMedal',
+              icon: 'CollectionTag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -282,7 +282,7 @@ const moduleRoutes = [
             component: () => import('../views/SystemBasicMgmt/System-Settings/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
-              icon: 'Collection',
+              icon: 'Reading',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -305,6 +305,17 @@ const moduleRoutes = [
             meta: { 
               title: 'route.exchangerateInfo', 
               icon: 'Switch',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userLoginLog',
+            name: 'userLoginLog',
+            component: () => import('../views/SystemBasicMgmt/System-Settings/userLoginLog.vue'),
+            meta: { 
+              title: 'route.userLoginLog', 
+              icon: 'Tickets',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }

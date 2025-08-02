@@ -92,7 +92,8 @@ export default {
     moduleLoading: '正在加載數據...',
     moduleError: '獲取模塊數據失敗',
     moduleErrorRetry: '獲取模塊數據失敗，請稍後重試',
-    moduleIncomplete: '模塊信息不完整'
+    moduleIncomplete: '模塊信息不完整',
+    enterModule: '進入模塊'
   },
   
   // 路由標題
@@ -121,7 +122,8 @@ export default {
     dictionaryInfo: '字典資料維護',
     currencyInfo: '币别資料維護',
     personalInfo: '個人信息管理',
-    exchangerateInfo: '匯率資料維護'
+    exchangerateInfo: '匯率資料維護',
+    userLoginLog: '用戶登錄日誌'
   },
   
   // 系統基礎管理
@@ -360,6 +362,7 @@ export default {
       passwordLowercaseError: '密碼必須包含小寫字母',
       passwordUppercaseError: '密碼必須包含大寫字母',
       passwordNumberError: '密碼必須包含數字',
+      passwordSpecialCharError: '密碼必須包含特殊字符',
       filter: {
         department: '部門',
         position: '職位',
@@ -458,6 +461,7 @@ export default {
       passwordLowercaseError: '密碼必須包含小寫字母',
       passwordUppercaseError: '密碼必須包含大寫字母',
       passwordNumberError: '密碼必須包含數字',
+      passwordSpecialCharError: '密碼必須包含特殊字符',
       getPersonalInfoFailed: '獲取個人信息失敗',
       savePersonalInfoFailed: '保存個人信息失敗'
     },
@@ -604,7 +608,8 @@ export default {
       isBinding: '是否綁定',
       pleaseSelectRole: '請先選擇角色',
       pleaseSelectDomain: '請先選擇網域',
-      updateBindingsSuccess: '更新綁定成功'
+      updateBindingsSuccess: '更新綁定成功',
+      confirmUpdate: '確定要更新角色網域綁定關係嗎？'
     },
     
     // 角色模塊
@@ -616,7 +621,8 @@ export default {
       isBinding: '是否綁定',
       pleaseSelectRole: '請先選擇角色',
       pleaseSelectDomain: '請先選擇網域',
-      updateBindingsSuccess: '更新綁定成功'
+      updateBindingsSuccess: '更新綁定成功',
+      confirmUpdate: '確定要更新角色模塊綁定關係嗎？'
     },
     
     // 角色程序
@@ -630,7 +636,8 @@ export default {
       pleaseSelectRole: '請先選擇角色',
       pleaseSelectDomain: '請先選擇網域',
       pleaseSelectModule: '請先選擇模塊',
-      updateBindingsSuccess: '更新綁定成功'
+      updateBindingsSuccess: '更新綁定成功',
+      confirmUpdate: '確定要更新角色程序綁定關係嗎？'
     },
     
     // 字典信息管理
@@ -744,6 +751,26 @@ export default {
       getFailed: '獲取數據失敗',
       filter: {
         currencyCode: '本位币别'
+      }
+    },
+
+    userLoginLog: {
+      title: '用戶登錄日誌',
+      index: '序號',
+      userNo: '員工編號',
+      userNameCh: '中文姓名',
+      userNameEn: '英文姓名',
+      ip: 'IP地址',
+      status: '登錄狀態',
+      loginDate: '登錄時間',
+      pleaseInputIp: '請輸入IP地址',
+      pleaseSelectStartTime: '請選擇開始時間',
+      pleaseSelectEndTime: '請選擇結束時間',
+      getFailed: '獲取數據失敗',
+      filter: {
+        ip: 'IP地址',
+        startTime: '開始時間',
+        endTime: '結束時間'
       }
     }
   }

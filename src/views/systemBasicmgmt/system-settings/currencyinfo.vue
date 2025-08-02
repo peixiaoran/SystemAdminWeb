@@ -155,7 +155,7 @@
         currencyCode: '',
     })
   
-    // 对话框显示状�?
+    // 对话框显示状态
     const dialogVisible = ref(false)
   
     // 编辑表单
@@ -168,7 +168,7 @@
         remark: ''
     })
   
-    // 对话框标�?
+    // 对话框标题
     const dialogTitle = ref(t('SystemBasicMgmt.currencyInfo.editCurrency'))
   
     // 表单验证规则
@@ -250,7 +250,7 @@
         fetchCurrencyPages()
     }
   
-    // 处理每页记录数变�?
+    // 处理每页记录数变化
     const handleSizeChange = (size) => {
         pagination.pageSize = size
         pagination.pageIndex = 1
@@ -263,7 +263,7 @@
             try {
                 editFormRef.value.clearValidate()
             } catch (error) {
-                console.warn('清除表单验证状态失�?', error)
+                console.warn('清除表单验证状态失败', error)
             }
         }
         
@@ -274,14 +274,14 @@
         editForm.currencyState = 1
         editForm.remark = ''
         
-        // 数据重置后再次清除验证状�?
+        // 数据重置后再次清除验证状态
         if (clearValidation) {
             nextTick(() => {
                 if (editFormRef.value) {
                     try {
                         editFormRef.value.clearValidate()
                     } catch (error) {
-                        console.warn('清除表单验证状态失�?', error)
+                        console.warn('清除表单验证状态失败', error)
                     }
                 }
             })
@@ -343,9 +343,9 @@
     const handleAdd = () => {
         // 重置表单数据
         resetForm()
-        // 设置对话框标�?
+        // 设置对话框标题
         dialogTitle.value = t('SystemBasicMgmt.currencyInfo.addCurrency')
-        // 显示对话�?
+        // 显示对话框
         dialogVisible.value = true
     }
   
@@ -355,12 +355,12 @@
         resetForm()
         // 获取币别实体数据
         await fetchCurrencyEntity(row.currencyId)
-        // 设置对话框标�?
+        // 设置对话框标题
         dialogTitle.value = t('SystemBasicMgmt.currencyInfo.editCurrency')
-        // 显示对话�?
+        // 显示对话框
         dialogVisible.value = true
         
-        // 在数据加载完成后再次清除验证状�?
+        // 在数据加载完成后再次清除验证状态
         setTimeout(() => {
             if (editFormRef.value) {
                 editFormRef.value.clearValidate()
@@ -391,7 +391,7 @@
     const handleSave = () => {
         editFormRef.value?.validate((valid) => {
             if (valid) {
-                // 判断是新增还是编�?
+                // 判断是新增还是编辑
                 if (!editForm.currencyId) {
                     insertCurrency()
                 } else {
@@ -401,7 +401,7 @@
         })
     }
   
-    // 处理对话框关�?
+    // 处理对话框关闭
     const handleDialogClose = () => {
         // 使用 nextTick 确保 DOM 更新完成后再清除验证
         nextTick(() => {

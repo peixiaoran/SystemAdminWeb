@@ -63,7 +63,7 @@
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { GET_ROLE_DOMAIN_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_DOMAIN_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/roledomain'
   import { useI18n } from 'vue-i18n'
 
@@ -152,13 +152,23 @@
           return
       }
 
-      const roleDomainUpserts = roleDomainList.value.map(item => ({
-          roleId: item.roleId,
-          domainId: item.domainId,
-          isChecked: item.isChecked
-      }))
-
       try {
+          await ElMessageBox.confirm(
+              t('SystemBasicMgmt.roleDomain.confirmUpdate'),
+              t('common.confirm'),
+              {
+                  confirmButtonText: t('common.confirm'),
+                  cancelButtonText: t('common.cancel'),
+                  type: 'warning'
+              }
+          )
+
+          const roleDomainUpserts = roleDomainList.value.map(item => ({
+              roleId: item.roleId,
+              domainId: item.domainId,
+              isChecked: item.isChecked
+          }))
+
           const res = await post(UPDATE_ROLE_DOMAIN_API.UPDATE_ROLE_DOMAIN, {
               roleDomainUpserts
           })
@@ -170,6 +180,9 @@
               ElMessage.error(res.message)
           }
       } catch (error) {
+          if (error === 'cancel') {
+              return
+          }
           ElMessage.error(error.message)
       }
   }

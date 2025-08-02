@@ -92,7 +92,8 @@ export default {
     moduleLoading: 'Loading data...',
     moduleError: 'Failed to get module data',
     moduleErrorRetry: 'Failed to get module data, please try again later',
-    moduleIncomplete: 'Module information incomplete'
+    moduleIncomplete: 'Module information incomplete',
+    enterModule: 'Enter Module'
   },
   
   // Route Titles
@@ -121,7 +122,8 @@ export default {
     dictionaryInfo: 'DictionaryData',
     currencyInfo: 'CurrencyInfo',
     personalInfo: 'PersonalInfo',
-    exchangerateInfo: 'ExchangeRateInfo'
+    exchangerateInfo: 'ExchangeRateInfo',
+    userLoginLog: 'LoginInformation'
   },
   
   // System Basic Management
@@ -250,6 +252,7 @@ export default {
       passwordLowercaseError: 'Password must contain lowercase letters',
       passwordUppercaseError: 'Password must contain uppercase letters',
       passwordNumberError: 'Password must contain numbers',
+      passwordSpecialCharError: 'Password must contain special characters',
       filter: {
         department: 'Department',
         position: 'Position',
@@ -550,7 +553,8 @@ export default {
       isBinding: 'Is Binding',
       updateBindingsSuccess: 'Update bindings successfully',
       pleaseSelectRole: 'Please select a role',
-      deleteConfirm: 'Are you sure you want to delete this role domain?'
+      deleteConfirm: 'Are you sure you want to delete this role domain?',
+      confirmUpdate: 'Are you sure you want to update the role domain bindings?'
     },
     // RoleModule
     roleModule: {
@@ -561,7 +565,8 @@ export default {
       updateBindingsSuccess: 'Update bindings successfully',
       pleaseSelectRole: 'Please select a role',
       pleaseSelectDomain: 'Please select a domain',
-      deleteConfirm: 'Are you sure you want to delete this role module?'
+      deleteConfirm: 'Are you sure you want to delete this role module?',
+      confirmUpdate: 'Are you sure you want to update the role module bindings?'
     },
     // RoleProgram
     roleProgram: {
@@ -574,7 +579,8 @@ export default {
       pleaseSelectRole: 'Please select a role',
       pleaseSelectDomain: 'Please select a domain',
       pleaseSelectModule: 'Please select a module',
-      deleteConfirm: 'Are you sure you want to delete this role program?'
+      deleteConfirm: 'Are you sure you want to delete this role program?',
+      confirmUpdate: 'Are you sure you want to update the role program bindings?'
     },
     // Personal
     personalInfo: {
@@ -616,6 +622,7 @@ export default {
       passwordLowercaseError: 'Password must contain lowercase letters',
       passwordUppercaseError: 'Password must contain uppercase letters',
       passwordNumberError: 'Password must contain numbers',
+      passwordSpecialCharError: 'Password must contain special characters',
       getPersonalInfoFailed: 'Failed to get personal information',
       savePersonalInfoFailed: 'Failed to save personal information'
     },
@@ -695,6 +702,26 @@ export default {
     },
     quickAction: {
       title: 'Quick Actions'
+    },
+
+    userLoginLog: {
+      title: 'User Login Log',
+      index: 'Index',
+      userNo: 'Employee No.',
+      userNameCh: 'Chinese Name',
+      userNameEn: 'English Name',
+      ip: 'IP Address',
+      status: 'Login Status',
+      loginDate: 'Login Time',
+      pleaseInputIp: 'Please enter IP address',
+      pleaseSelectStartTime: 'Please select start time',
+      pleaseSelectEndTime: 'Please select end time',
+      getFailed: 'Failed to get data',
+      filter: {
+        ip: 'IP Address',
+        startTime: 'Start Time',
+        endTime: 'End Time'
+      }
     }
   }
 }

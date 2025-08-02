@@ -140,7 +140,7 @@
 
   // Composition API
 
-  // 对话框显示状�?
+  // 对话框显示状态
   const dialogVisible = ref(false)
 
   // 编辑模式标志
@@ -159,7 +159,7 @@
       modifiedDate: ''
   })
 
-  // 对话框标�?
+  // 对话框标题
   const dialogTitle = ref(t('SystemBasicMgmt.dictionaryInfo.editDictionary'))
 
   // 表单验证规则
@@ -246,7 +246,7 @@
       fetchDictionaryPages()
   }
 
-  // 处理每页记录数变�?
+  // 处理每页记录数变化
   const handleSizeChange = (size) => {
       pagination.pageSize = size
       pagination.pageIndex = 1
@@ -259,7 +259,7 @@
           try {
               editFormRef.value.clearValidate()
           } catch (error) {
-              console.warn('清除表单验证状态失�?', error)
+              console.warn('清除表单验证状态失败', error)
           }
       }
       
@@ -273,14 +273,14 @@
       editForm.modifiedBy = 1
       editForm.modifiedDate = ''
       
-      // 数据重置后再次清除验证状�?
+      // 数据重置后再次清除验证状态
       if (clearValidation) {
           nextTick(() => {
               if (editFormRef.value) {
                   try {
                       editFormRef.value.clearValidate()
                   } catch (error) {
-                      console.warn('清除表单验证状态失�?', error)
+                      console.warn('清除表单验证状态失败', error)
                   }
               }
           })
@@ -290,13 +290,12 @@
   // 新增字典数据
   const insertDictionary = async () => {
       const params = {
-          dicId: editForm.dicId,
           dicType: editForm.dicType,
           dicCode: editForm.dicCode,
           dicNameCh: editForm.dicNameCh,
           dicNameEn: editForm.dicNameEn
       }
-
+      console.log(params);
       const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
 
       if (res && res.code === '200') {
@@ -346,11 +345,11 @@
   const handleAdd = () => {
       // 重置表单数据
       resetForm()
-      // 设置为新增模�?
+      // 设置为新增模式
       isEditMode.value = false
-      // 设置对话框标�?
+      // 设置对话框标题
       dialogTitle.value = t('SystemBasicMgmt.dictionaryInfo.addDictionary')
-      // 显示对话�?
+      // 显示对话框
       dialogVisible.value = true
   }
 
@@ -358,16 +357,16 @@
   const handleEdit = async (index, row) => {
       // 重置表单数据
       resetForm()
-      // 设置为编辑模�?
+      // 设置为编辑模式
       isEditMode.value = true
       // 获取字典实体数据
       await fetchDictionaryEntity(row.dicId)
-      // 设置对话框标�?
+      // 设置对话框标题
       dialogTitle.value = t('SystemBasicMgmt.dictionaryInfo.editDictionary')
-      // 显示对话�?
+      // 显示对话框
       dialogVisible.value = true
       
-      // 在数据加载完成后再次清除验证状�?
+      // 在数据加载完成后再次清除验证状态
       setTimeout(() => {
           if (editFormRef.value) {
               editFormRef.value.clearValidate()
@@ -398,7 +397,7 @@
   const handleSave = () => {
       editFormRef.value?.validate((valid) => {
           if (valid) {
-              // 判断是新增还是编�?
+              // 判断是新增还是编辑
               if (isEditMode.value) {
                   updateDictionary()
               } else {
@@ -408,7 +407,7 @@
       })
   }
 
-  // 处理对话框关�?
+  // 处理对话框关闭
   const handleDialogClose = () => {
       // 使用 nextTick 确保 DOM 更新完成后再清除验证
       nextTick(() => {
