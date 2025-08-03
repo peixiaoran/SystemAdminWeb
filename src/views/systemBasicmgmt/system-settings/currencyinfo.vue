@@ -85,11 +85,9 @@
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyState')" prop="currencyState">
                         <el-switch v-model="editForm.currencyState" 
-                                  active-color="#67C23A"
-                                  inactive-color="#F56C6C"
                                   :active-value="1"
                                   :inactive-value="0" 
-                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"/>
+                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399"/>
                     </el-form-item>
                 </div>
                 <div class="form-row">

@@ -127,36 +127,33 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isEmployed')" prop="isEmployed">
-           <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+           <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isAgent')" prop="isAgent">
-           <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+           <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isSign')" prop="isSign">
-           <el-switch v-model="personalInfoForm.isSign" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isApproval')" prop="isApproval">
+           <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
       </div>
 
       <!-- 第五行：其他状态 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isPartTime')" prop="isPartTime">
-          <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+          <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isFreeze')" prop="isFreeze">
-          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
-          <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+          <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="loading" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.isScheduledNotification')" prop="isScheduledNotification">
-          <el-switch v-model="personalInfoForm.isScheduledNotification" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+          <el-switch v-model="personalInfoForm.isScheduledNotification" :disabled="loading" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
         </el-form-item>
       </div>
 
-      <!-- 第六行：备注 -->
-      <!-- 备注字段已移除 -->
-
-      <!-- 第七行：头像上传 -->
+      <!-- 第六行：头像上传 -->
       <div class="form-row">
         <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
           <div class="avatar-container">
@@ -241,7 +238,7 @@ export default {
       loginNo: '',
       isEmployed: 1,
       isAgent: 0,
-      isSign: 0,
+      IsApproval: 0,
       isPartTime: 0,
       isFreeze: 0,
       employmentType: '',

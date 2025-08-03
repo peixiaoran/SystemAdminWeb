@@ -50,13 +50,25 @@
                     <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
                     <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
                     <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
-                    <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
-                    <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                    <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
-                    <el-table-column prop="isSignName" :label="$t('SystemBasicMgmt.userInfo.isSign')" align="center" min-width="120" />
-                    <el-table-column prop="isPartTimeName" :label="$t('SystemBasicMgmt.userInfo.isPartTime')" align="center" min-width="120" />
-                    <el-table-column prop="isFreezeName" :label="$t('SystemBasicMgmt.userInfo.isFreeze')" align="center" min-width="130" />
-                    <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
+                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="120">
+                        <template #default="scope">
+                            <el-tag :type="scope.row.isApproval === 1 ? 'success' : 'info'">
+                                {{ scope.row.isApprovalName }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180">
+                        <template #default="scope">
+                            <span :style="{
+                                 color: scope.row.employmentType === '1' ? '#faad14' : 
+                                        scope.row.employmentType === '2' ? '#13c2c2' : 
+                                        scope.row.employmentType === '3' ? '#1890ff' : 
+                                        scope.row.employmentType === '4' ? '#722ed1' : '#000'
+                             }">
+                                {{ scope.row.employmentTypeName }}
+                            </span>
+                        </template>
+                    </el-table-column>
                     <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.addAgent') }}</el-button>

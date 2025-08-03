@@ -57,7 +57,7 @@
                   <el-table-column prop="isEnabled"
                                    :label="$t('SystemBasicMgmt.isEnabled')"
                                    align="center"
-                                   min-width="150">
+                                   min-width="100">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
                               {{ scope.row.isEnabled ? $t('SystemBasicMgmt.enabled') : $t('SystemBasicMgmt.disabled') }}
@@ -131,7 +131,7 @@
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
-                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; width:100%"/>
+                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399; width:100%"/>
                   </el-form-item>
               </div>
           </el-form>

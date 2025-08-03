@@ -129,7 +129,7 @@
   // 分页信息
   const pagination = reactive({
       pageIndex: 1,
-      pageSize: 10,
+      pageSize: 20,
       total: 0
   })
 

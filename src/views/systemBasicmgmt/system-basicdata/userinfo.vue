@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-
           
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户筛选">
              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
@@ -50,17 +49,45 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
-                  <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="180" />
-                  <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
-                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
+                  <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="150" />
+                  <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="230" />
+                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="180" />
                   <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
                   <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
                   <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
-                  <el-table-column prop="phoneNumber" :label="$t('SystemBasicMgmt.userInfo.phoneNumber')" align="center" min-width="170" />
-                  <el-table-column prop="isEmployedName" :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130" />
-                  <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180" />
-                  <el-table-column prop="isApprovalName" :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="130" />
-                  <el-table-column prop="isParttimedName" :label="$t('SystemBasicMgmt.userInfo.isParttimed')" align="center" min-width="130" />
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130">
+                      <template #default="scope">
+                          <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'info'">
+                              {{ scope.row.isEmployedName }}
+                          </el-tag>
+                      </template>
+                  </el-table-column>
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="130">
+                      <template #default="scope">
+                          <el-tag :type="scope.row.isApproval === 1 ? 'success' : 'info'">
+                              {{ scope.row.isApprovalName }}
+                          </el-tag>
+                      </template>
+                  </el-table-column>
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isParttimed')" align="center" min-width="130">
+                      <template #default="scope">
+                          <el-tag :type="scope.row.isParttimed === 1 ? 'success' : 'info'">
+                              {{ scope.row.isParttimedName }}
+                          </el-tag>
+                      </template>
+                  </el-table-column>
+                  <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180">
+                      <template #default="scope">
+                          <span :style="{
+                               color: scope.row.employmentType === '1' ? '#faad14' : 
+                                      scope.row.employmentType === '2' ? '#13c2c2' : 
+                                      scope.row.employmentType === '3' ? '#1890ff' : 
+                                      scope.row.employmentType === '4' ? '#722ed1' : '#000'
+                           }">
+                              {{ scope.row.employmentTypeName }}
+                          </span>
+                      </template>
+                  </el-table-column>
                   <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -133,7 +160,7 @@
                           :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType')">
                           <el-option
                               v-for="item in employmentTypeOptions"
-                              :key="`employment-type-edit-${item.employmentCode}`"
+                              :key="`employment-type-edit-${item.employmentType}`"
                               :label="item.employmentName"
                               :value="item.employmentCode" />
                       </el-select>
@@ -202,14 +229,14 @@
                           v-model="editForm.isEmployed"
                           :active-value="1"
                           :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
                       <el-switch
                           v-model="editForm.isApproval"
                           :active-value="1"
                           :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>
               
@@ -220,7 +247,7 @@
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="editForm.isApproval === 0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isScheduledNotification')">
                       <el-switch
@@ -228,14 +255,15 @@
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="editForm.isApproval === 0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isAgent')">
                       <el-switch
                           v-model="editForm.isAgent"
                           :active-value="1"
                           :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          :disabled="true"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>
               
@@ -245,14 +273,14 @@
                           v-model="editForm.isParttimed"
                           :active-value="1"
                           :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
                       <el-switch
                           v-model="editForm.isFreeze"
                           :active-value="1"
                           :inactive-value="0"
-                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item></el-form-item>
               </div>
@@ -362,7 +390,7 @@
       isAgent: 0,
       isEmployed: 1,
       isFreeze: 0,
-      employmentCode: '',
+      employmentType: '',
       modifiedBy: '',
       modifiedDate: '',
       avatarAddress: ''
@@ -398,7 +426,7 @@
       hireDate: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
-      employmentCode: [
+      employmentType: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
       ],
       departmentId: [
@@ -563,8 +591,8 @@
           if (res && res.code === '200') {
               employmentTypeOptions.value = res.data || []
               // 设置编辑表单默认值
-              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentCode) {
-                  editForm.employmentCode = employmentTypeOptions.value[0].employmentCode
+              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentType) {
+                  editForm.employmentType = employmentTypeOptions.value[0].employmentType
               }
           } else {
               employmentTypeOptions.value = []
@@ -671,6 +699,7 @@
           isParttimed: 0,
           isRealtimeNotification: 0,
           isScheduledNotification: 0,
+          isAgent: 0,
           isEmployed: 1,
           isFreeze: 0,
           employmentCode: '',
