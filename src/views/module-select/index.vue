@@ -234,10 +234,7 @@ const logout = async () => {
   transition: background-color 0.3s;
 }
 
-.user-avatar:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
+
 
 .user-details {
   margin: 0 8px;
@@ -319,10 +316,7 @@ const logout = async () => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
 }
 
-.module-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px 0 rgba(0, 0, 0, 0.12);
-}
+
 
 
 .module-icon {
@@ -330,7 +324,7 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #dda0dd 0%, #d8bfd8 100%);
+  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
   color: #ffffff;
   position: relative;
 }
@@ -393,7 +387,7 @@ const logout = async () => {
   padding: 12px 28px;
   font-size: 14px;
   font-weight: 500;
-  background: linear-gradient(135deg, #dda0dd 0%, #d8bfd8 100%);
+  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
   color: #fff;
   border: none;
   transition: all 0.3s ease;
@@ -401,20 +395,14 @@ const logout = async () => {
   min-width: 120px;
 }
 
-.module-footer .el-button:hover {
-  background: linear-gradient(135deg, #da70d6 0%, #d3a3d3 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(221, 160, 221, 0.4);
-}
+
 
 .enter-icon {
   margin-left: 6px;
   transition: transform 0.2s ease;
 }
 
-.module-footer .el-button:hover .enter-icon {
-  transform: translateX(2px);
-}
+
 
 .loading-container {
   position: absolute;

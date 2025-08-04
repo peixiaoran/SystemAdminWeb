@@ -37,7 +37,13 @@ export default {
     operationFailed: '操作失敗',
     confirmDelete: '確認刪除',
     active: '啟用',
-    inactive: '禁用'
+    inactive: '禁用',
+    prevPage: '上一頁',
+    nextPage: '下一頁',
+    total: '共 {total} 條',
+    goto: '前往',
+    page: '頁',
+    itemsPerPage: '條/頁'
   },
   
   // 錯誤頁面
@@ -306,6 +312,14 @@ export default {
       hireDate: '入職日期',
       email: '郵箱',
       phoneNumber: '手機號碼',
+      expirationDays: '到期天數',
+       pleaseInputExpirationDays: '請輸入到期天數',
+       expirationDaysOptions: {
+         30: '30天',
+         60: '60天',
+         90: '90天',
+         180: '180天'
+       },
       loginNo: '登錄賬號',
       password: '密碼',
       IsApproval: '是否審批',

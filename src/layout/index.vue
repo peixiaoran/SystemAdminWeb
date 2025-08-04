@@ -1303,7 +1303,7 @@ const openMenuForPath = (path) => {
 /* 为需要平移动画的特殊情况保留 */
 .page-slide-with-transform-enter-active,
 .page-slide-with-transform-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
   will-change: opacity, transform;
 }
 

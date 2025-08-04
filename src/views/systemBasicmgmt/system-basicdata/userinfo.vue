@@ -38,7 +38,6 @@
                   </el-button>
               </el-form-item>
           </el-form>
-
           
           <div class="table-container">
               <el-table :data="userList"
@@ -98,7 +97,6 @@
                   </el-table-column>
               </el-table>
           </div>
-
           
           <div class="pagination-wrapper">
               <el-pagination v-model:current-page="pagination.pageIndex"
@@ -213,7 +211,7 @@
                       <el-input v-model="editForm.loginNo" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.password')" prop="passWord">
-                      <el-input v-model="editForm.passWord" type="password" style="width:100%" />
+                      <el-input v-model="editForm.passWord" type="password" style="width:100%" show-password />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.email')" prop="email">
                       <el-input v-model="editForm.email" style="width:100%" />
@@ -224,6 +222,14 @@
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.expirationDays')" prop="expirationDays">
+                      <el-select v-model="editForm.expirationDays" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputExpirationDays')">
+                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.30')" :value="30" />
+                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.60')" :value="60" />
+                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.90')" :value="90" />
+                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.180')" :value="180" />
+                      </el-select>
+                  </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isEmployed')">
                       <el-switch
                           v-model="editForm.isEmployed"
@@ -231,6 +237,9 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
+              </div>
+              
+              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
                       <el-switch
                           v-model="editForm.isApproval"
@@ -238,9 +247,6 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isRealtimeNotification')">
                       <el-switch
                           v-model="editForm.isRealtimeNotification"
@@ -257,6 +263,9 @@
                           :disabled="editForm.isApproval === 0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
+              </div>
+              
+              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isAgent')">
                       <el-switch
                           v-model="editForm.isAgent"
@@ -265,9 +274,6 @@
                           :disabled="true"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isParttimed')">
                       <el-switch
                           v-model="editForm.isParttimed"
@@ -282,7 +288,6 @@
                           :inactive-value="0"
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item></el-form-item>
               </div>
               
               <div class="form-row full-width">
@@ -391,6 +396,7 @@
       isEmployed: 1,
       isFreeze: 0,
       employmentType: '',
+      expirationDays: null,
       modifiedBy: '',
       modifiedDate: '',
       avatarAddress: ''
@@ -703,6 +709,7 @@
           isEmployed: 1,
           isFreeze: 0,
           employmentCode: '',
+          expirationDays: null,
           modifiedBy: '',
           modifiedDate: '',
           avatarAddress: ''

@@ -37,7 +37,13 @@ export default {
     operationFailed: 'Operation Failed',
     confirmDelete: 'Confirm Delete',
     active: 'Active',
-    inactive: 'Inactive'
+    inactive: 'Inactive',
+    prevPage: 'Previous',
+    nextPage: 'Next',
+    total: 'Total {total}',
+    goto: 'Go to',
+    page: '',
+    itemsPerPage: '/ page'
   },
   
   // Error Pages
@@ -196,6 +202,14 @@ export default {
       hireDate: 'Hire Date',
       email: 'Email',
       phoneNumber: 'Phone Number',
+      expirationDays: 'Expiration Days',
+       pleaseInputExpirationDays: 'Please input expiration days',
+       expirationDaysOptions: {
+         30: '30 Days',
+         60: '60 Days',
+         90: '90 Days',
+         180: '180 Days'
+       },
       loginNo: 'Login Account',
       password: 'Password',
       IsApproval: 'Is Approval',

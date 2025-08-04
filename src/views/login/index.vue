@@ -223,7 +223,7 @@ const handleLogin = () => {
   flex-direction: column;
   align-items: center;
   padding: 30px 0;
-  background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
+  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
   color: white;
 }
 
@@ -377,7 +377,7 @@ const handleLogin = () => {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
+  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
   border: none;
   margin-left: 0;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);

@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import zhTw from 'element-plus/dist/locale/zh-tw.mjs'
+import en from 'element-plus/dist/locale/en.mjs'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -10,6 +12,11 @@ import { updateRouteTitle } from './utils/updateRouteTitle'
 
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-TW'
+
+// 根据语言设置Element Plus的locale
+const getElementLocale = (lang) => {
+  return lang === 'en-US' ? en : zhTw
+}
 
 // 创建应用实例
 const app = createApp(App)
@@ -21,6 +28,7 @@ app.use(i18n) // 先注册i18n
 app.use(ElementPlus, { 
   size: 'default', 
   zIndex: 2200,
+  locale: getElementLocale(language),
   // 全局配置所有对话框默认添加到 body
   namespace: 'el'
 })
@@ -111,4 +119,4 @@ router.isReady().then(() => {
     childList: true,
     subtree: true // 需要观察子树来捕获对话框元素
   })
-}) 
+})

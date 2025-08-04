@@ -1,5 +1,9 @@
-﻿<template>
-  <router-view />
+<template>
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup>
@@ -17,5 +21,27 @@ body {
   width: 100%;
   height: 100vh;
 }
-</style> 
+
+/* 全局路由过渡效果 - 淡入淡出 */
+.fade-enter-active {
+  transition: opacity 0.15s ease-in-out;
+}
+
+.fade-leave-active {
+  transition: opacity 0.1s ease-in-out;
+}
+
+.fade-enter-from {
+  opacity: 0;
+}
+
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+</style>
 

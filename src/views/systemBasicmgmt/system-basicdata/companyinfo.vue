@@ -74,7 +74,7 @@
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑">
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameCh')" prop="companyNameCh">
-<el-input v-model="editForm.companyNameCh" style="width:100%" />
+                      <el-input v-model="editForm.companyNameCh" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" prop="companyNameEn">
                       <el-input v-model="editForm.companyNameEn" style="width:100%" />
