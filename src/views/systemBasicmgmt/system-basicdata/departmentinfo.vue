@@ -40,7 +40,7 @@
                           :default-expand-all="false"
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
                         <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentInfo.index')" width="70" align="center" fixed />
-                        <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="300" />
+                        <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
                         <el-table-column prop="departmentNameCh" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameCh')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
@@ -52,10 +52,10 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="landline" :label="$t('SystemBasicMgmt.departmentInfo.landline')" align="center" min-width="170" />
-                        <el-table-column prop="email" :label="$t('SystemBasicMgmt.departmentInfo.email')" align="left" min-width="180" />
+                        <el-table-column prop="email" :label="$t('SystemBasicMgmt.departmentInfo.email')" align="left" min-width="230" />
                         
-                        <el-table-column prop="description" :label="$t('SystemBasicMgmt.departmentInfo.description')" align="left" min-width="200" />
-                        <el-table-column :label="$t('SystemBasicMgmt.departmentInfo.operation')" min-width="240" fixed="right" align="center">
+                        <el-table-column prop="description" :label="$t('SystemBasicMgmt.departmentInfo.description')" align="left" min-width="230" />
+                        <el-table-column :label="$t('SystemBasicMgmt.departmentInfo.operation')" min-width="300" fixed="right" align="center">
                             <template #default="scope">
                                 <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                                 <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.departmentInfo.addChild') }}</el-button>

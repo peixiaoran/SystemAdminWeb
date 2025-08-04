@@ -24,6 +24,7 @@ export default {
     backToHome: '返回首頁',
     home: '首頁',
     personalInfo: '個人信息',
+    editPersonalInfo: '修改個人資訊',
     changePassword: '修改密碼',
     refreshPage: '刷新頁面',
     closeCurrentTab: '關閉當前標籤',

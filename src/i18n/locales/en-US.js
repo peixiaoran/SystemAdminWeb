@@ -24,6 +24,7 @@ export default {
     backToHome: 'Back to Home',
     home: 'Home',
     personalInfo: 'Personal Info',
+    editPersonalInfo: 'Edit Personal Info',
     changePassword: 'Change Password',
     refreshPage: 'Refresh Page',
     closeCurrentTab: 'Close Current Tab',
