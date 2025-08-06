@@ -67,6 +67,14 @@
               {{ $t('login.loginButton') }}
             </el-button>
           </el-form-item>
+          <div class="unlock-link-container">
+              <el-link 
+                type="primary" 
+                @click="handleUnlockAccount"
+                class="unlock-link"
+              >{{ $t('login.unlockAccount') }}
+            </el-link>
+          </div>
         </el-form>
       </div>
     </div>
@@ -131,6 +139,11 @@ const handleLanguageChange = (value) => {
   document.title = t('common.systemTitle')
 }
 
+// 跳转到解锁页面
+const handleUnlockAccount = () => {
+  router.push('/unlock')
+}
+
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
 
 const handleLogin = () => {
@@ -177,6 +190,9 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
+          } else if (res.code === '220') {
+            // 账户被锁定，跳转到解锁页面
+            router.push('/unlock')
           } else {
             ElMessage.error(res.message || t('login.loginFailed'))
           }
@@ -411,6 +427,17 @@ const handleLogin = () => {
 
 .language-select {
   width: 100%;
+}
+
+.unlock-link-container {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.unlock-link {
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* 移除必填标记 */

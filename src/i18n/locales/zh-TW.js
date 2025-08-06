@@ -63,6 +63,8 @@ export default {
     factory: '廠區',
     language: '語言',
     loginButton: '登錄',
+    unlockAccount: '賬號解鎖',
+    backToLogin: '返回登入',
     usernamePlaceholder: '請輸入員工名',
     passwordPlaceholder: '請輸入密碼',
     factoryPlaceholder: '請選擇廠區',
@@ -92,6 +94,28 @@ export default {
     }
   },
   
+  // 解锁页面
+  unlock: {
+    title: '賬號解鎖',
+    userNo: '員工編號',
+    verificationCode: '驗證碼',
+    language: '語言',
+    userNoPlaceholder: '請輸入員工編號',
+    verificationCodePlaceholder: '請輸入驗證碼',
+    languagePlaceholder: '請選擇語言',
+    sendCode: '發送驗證碼',
+    unlockButton: '解鎖',
+    userNoRequired: '請輸入員工編號',
+    verificationCodeRequired: '請輸入驗證碼',
+    seconds: '秒',
+    unlockRequestFailed: '解鎖請求失敗',
+    redirectCountdownText: '秒後跳轉登錄頁面',
+    languages: {
+      'zh-TW': '中文繁體',
+      'en-US': 'English'
+    }
+  },
+  
   // 模块选择页面
   moduleSelect: {
     userInfo: '個人信息',
@@ -107,6 +131,7 @@ export default {
   route: {
     login: '登錄',
     moduleSelect: '系統模塊',
+    unlock: '賬戶解鎖',
     notFound: '頁面未找到',
     forbidden: '訪問被拒絕',
     SystemBasicMgmt: '系統基礎管理',

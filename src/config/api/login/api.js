@@ -8,7 +8,27 @@ export { BASE_API_URL, API_TIMEOUT, ENABLE_LOGS, ENV_MODE, IS_DEV, IS_PROD }
 
 // 员工登录
 export const LOGIN_API = {
-  USER_LOGIN: `${API_BASE_PATHS.SYSTEM_CORE}/SysLogin/UserLogin`
+  USER_LOGIN: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UserLogin`
+}
+
+// 解锁和过期发送验证码
+export const UNLOCKEXPIRATION_SEND_API = {
+  UNLOCK_EXPIRATION_SEND: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UnLockAndExpirationSendVcCode`
+}
+
+// 解锁
+export const UNLOCK_API = {
+  UNLOCK: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UserUnlock`
+}
+
+// 密码过期更新
+export const PWD_EXPIRATION_UPDATE_API = {
+  PWD_EXPIRATION_UPDATE: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/PwdExpirationUpdate`
+}
+
+// 员工退出
+export const LOGOUT_API = {
+  USER_LOGOUT: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserLogOut/UserLogOut`
 }
 
 // 查询模块列表

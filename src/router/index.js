@@ -38,6 +38,12 @@ const constantRoutes = [
       [ROUTE_CONFIG.META.AUTH]: true 
     }
   },
+  {
+    path: '/unlock',
+    name: 'Unlock',
+    component: () => import('../views/unlock/index.vue'),
+    meta: { title: 'route.unlock' }
+  },
   // 根路由重定向
   {
     path: '/',

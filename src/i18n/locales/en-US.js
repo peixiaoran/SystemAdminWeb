@@ -63,6 +63,8 @@ export default {
     factory: 'Factory',
     language: 'Language',
     loginButton: 'Login',
+    unlockAccount: 'Unlock Account',
+    backToLogin: 'Back to Login',
     usernamePlaceholder: 'Please enter employee name',
     passwordPlaceholder: 'Please enter password',
     factoryPlaceholder: 'Please select factory',
@@ -92,6 +94,28 @@ export default {
     }
   },
   
+  // Unlock Page
+  unlock: {
+    title: 'Account Unlock',
+    userNo: 'Employee No.',
+    verificationCode: 'Verification Code',
+    language: 'Language',
+    userNoPlaceholder: 'Please enter employee number',
+    verificationCodePlaceholder: 'Please enter verification code',
+    languagePlaceholder: 'Please select language',
+    sendCode: 'Send Code',
+    unlockButton: 'Unlock',
+    userNoRequired: 'Please enter employee number',
+    verificationCodeRequired: 'Please enter verification code',
+    seconds: 's',
+    unlockRequestFailed: 'Unlock request failed',
+    redirectCountdownText: 's to redirect to login page',
+    languages: {
+      'zh-TW': '中文繁體',
+      'en-US': 'English'
+    }
+  },
+  
   // Module Selection Page
   moduleSelect: {
     userInfo: 'Personal Info',
@@ -107,6 +131,7 @@ export default {
   route: {
     login: 'Login',
     moduleSelect: 'System Modules',
+    unlock: 'Account Unlock',
     notFound: 'Page Not Found',
     forbidden: 'Access Denied',
     SystemBasicMgmt: 'System Basic Management',
