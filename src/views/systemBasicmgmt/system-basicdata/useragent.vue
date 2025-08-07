@@ -370,12 +370,22 @@
                 agentList.value = res.data || []
             } else {
                 agentList.value = []
-                ElMessage.error(res.message || t('SystemBasicMgmt.userAgent.getFailed'))
+                ElMessage({
+                    message: res.message || t('SystemBasicMgmt.userAgent.getFailed'),
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
             }
         } catch (error) {
             console.error('获取代理人列表失败', error)
             agentList.value = []
-            ElMessage.error(t('SystemBasicMgmt.userAgent.getFailed'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         } finally {
             agentLoading.value = false
         }
@@ -397,7 +407,12 @@
             userList.value = res.data || []
             pagination.total = res.totalNumber || 0
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
         loading.value = false
     }
@@ -522,11 +537,21 @@
             const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, params)
             
             if (res && res.code === '200') {
-                ElMessage.success(res.message || t('common.deleteSuccess'))
+                ElMessage({
+                    message: res.message || t('common.deleteSuccess'),
+                    type: 'success',
+                    plain: true,
+                    showClose: true
+                })
                 // 重新获取代理人列表
                 await fetchUserAgentList(currentUserId.value)
             } else {
-                ElMessage.error(res.message || t('common.operationFailed'))
+                ElMessage({
+                    message: res.message || t('common.operationFailed'),
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
             }
         } catch (error) {
             if (error === 'cancel') {
@@ -534,7 +559,12 @@
                 return
             }
             console.error('删除代理人失败', error)
-            ElMessage.error(t('common.operationFailed'))
+            ElMessage({
+                message: t('common.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -558,13 +588,23 @@
             } else {
                 userSelectList.value = []
                 userSelectPagination.total = 0
-                ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
+                ElMessage({
+                    message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
             }
         } catch (error) {
             console.error('获取用户列表失败:', error)
             userSelectList.value = []
             userSelectPagination.total = 0
-            ElMessage.error(t('SystemBasicMgmt.userInfo.getFailed'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         } finally {
             userSelectLoading.value = false
         }
@@ -607,7 +647,12 @@
     // 处理开始时间变化
     const handleStartTimeChange = (value) => {
         if (value && agentTimeRange.endTime && new Date(value) > new Date(agentTimeRange.endTime)) {
-            ElMessage.warning(t('SystemBasicMgmt.userAgent.startTimeCannotLaterThanEndTime'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.startTimeCannotLaterThanEndTime'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             agentTimeRange.startTime = ''
         }
     }
@@ -615,7 +660,12 @@
     // 处理结束时间变化
     const handleEndTimeChange = (value) => {
         if (value && agentTimeRange.startTime && new Date(value) < new Date(agentTimeRange.startTime)) {
-            ElMessage.warning(t('SystemBasicMgmt.userAgent.endTimeCannotEarlierThanStartTime'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.endTimeCannotEarlierThanStartTime'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             agentTimeRange.endTime = ''
         }
     }
@@ -623,12 +673,22 @@
     // 确认用户选择
     const handleConfirmUserSelect = async () => {
         if (selectedUsers.value.length === 0) {
-            ElMessage.warning(t('SystemBasicMgmt.userAgent.pleaseSelectUsers'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.pleaseSelectUsers'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             return
         }
 
         if (!agentTimeRange.startTime || !agentTimeRange.endTime) {
-            ElMessage.warning(t('SystemBasicMgmt.userAgent.pleaseSelectTimeRange'))
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.pleaseSelectTimeRange'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             return
         }
 
@@ -651,12 +711,22 @@
                 if (res && res.code === '200') {
                     // 成功添加代理人
                 } else {
-                    ElMessage.error(res.message || `添加代理人失败 ${user.userNameCh || user.userNameEn}`)
+                    ElMessage({
+                        message: res.message || `添加代理人失败 ${user.userNameCh || user.userNameEn}`,
+                        type: 'error',
+                        plain: true,
+                        showClose: true
+                    })
                     return
                 }
             }
 
-            ElMessage.success(t('common.saveSuccess'))
+            ElMessage({
+                message: t('common.saveSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             userSelectDialogVisible.value = false
             
             // 重置数据
@@ -679,7 +749,12 @@
             
         } catch (error) {
             console.error('添加代理人失败', error)
-            ElMessage.error(t('common.operationFailed'))
+            ElMessage({
+                message: t('common.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 

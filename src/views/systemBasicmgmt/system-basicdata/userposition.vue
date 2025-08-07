@@ -171,12 +171,22 @@ const getPositionList = async () => {
     if (response.code === '200') {
       positionList.value = response.data || []
     } else {
-      ElMessage.error(response.message || t('SystemBasicMgmt.userPosition.getFailed'))
+      ElMessage({
+        message: response.message || t('SystemBasicMgmt.userPosition.getFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
       positionList.value = []
     }
   } catch (error) {
     console.error('获取职位列表失败:', error)
-    ElMessage.error(t('SystemBasicMgmt.userPosition.getFailed'))
+    ElMessage({
+      message: t('SystemBasicMgmt.userPosition.getFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
     positionList.value = []
   } finally {
     loading.value = false
@@ -201,12 +211,22 @@ const handleEdit = async (index, row) => {
     if (response.code === '200') {
       editForm.value = { ...response.data }
     } else {
-      ElMessage.error(response.message || t('SystemBasicMgmt.userPosition.getFailed'))
+      ElMessage({
+        message: response.message || t('SystemBasicMgmt.userPosition.getFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
       dialogVisible.value = false
     }
   } catch (error) {
     console.error('获取职位详情失败:', error)
-    ElMessage.error(t('SystemBasicMgmt.userPosition.getFailed'))
+    ElMessage({
+      message: t('SystemBasicMgmt.userPosition.getFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
     dialogVisible.value = false
   } finally {
     editLoading.value = false

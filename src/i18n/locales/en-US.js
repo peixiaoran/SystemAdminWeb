@@ -47,6 +47,41 @@ export default {
     itemsPerPage: '/ page'
   },
   
+  // Password Expiration Page
+  passwordExpiration: {
+    title: 'Password Expiration Modification',
+    account: 'Account',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm Password',
+    verificationCode: 'Verification Code',
+    language: 'Language',
+    accountPlaceholder: 'Please enter account',
+    newPasswordPlaceholder: 'Please enter new password',
+    confirmPasswordPlaceholder: 'Please enter new password again',
+    verificationCodePlaceholder: 'Please enter verification code',
+    languagePlaceholder: 'Please select language',
+    sendCode: 'Send Code',
+    submitButton: 'Change Password',
+    accountRequired: 'Please enter account',
+    newPasswordRequired: 'Please enter new password',
+    confirmPasswordRequired: 'Please confirm password',
+    verificationCodeRequired: 'Please enter verification code',
+    passwordMismatch: 'The two passwords entered are inconsistent',
+    seconds: 's',
+    sendCodeSuccess: 'Verification code sent successfully',
+    sendCodeFailed: 'Failed to send verification code',
+    submitSuccess: 'Password changed successfully',
+    submitFailed: 'Failed to change password',
+    updateSuccess: 'Password changed successfully',
+    updateFailed: 'Failed to change password',
+    redirectCountdownText: 's to redirect to login page',
+    backToLogin: 'Back to Login',
+    languages: {
+      'zh-TW': '中文繁體',
+      'en-US': 'English'
+    }
+  },
+  
   // Error Pages
   error: {
     pageNotFound: 'Sorry, the page you visited does not exist or has been removed',
@@ -64,6 +99,7 @@ export default {
     language: 'Language',
     loginButton: 'Login',
     unlockAccount: 'Unlock Account',
+    passwordExpiration: 'Password Expiration',
     backToLogin: 'Back to Login',
     usernamePlaceholder: 'Please enter employee name',
     passwordPlaceholder: 'Please enter password',
@@ -132,6 +168,7 @@ export default {
     login: 'Login',
     moduleSelect: 'System Modules',
     unlock: 'Account Unlock',
+    passwordExpiration: 'Password Expiration',
     notFound: 'Page Not Found',
     forbidden: 'Access Denied',
     SystemBasicMgmt: 'System Basic Management',

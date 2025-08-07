@@ -134,7 +134,12 @@
           userLoginLogList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.userLoginLog.getFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userLoginLog.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
       loading.value = false
   }

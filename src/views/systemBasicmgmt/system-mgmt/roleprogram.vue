@@ -123,10 +123,20 @@
                   fetchRoleProgramList()
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -141,10 +151,20 @@
                   fetchModuleDropdown()
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -171,10 +191,20 @@
                   roleProgramList.value = []
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -197,10 +227,20 @@
               // 设置总记录数
               pagination.total = res.data?.length || 0
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       } finally {
           loading.value = false
       }
@@ -214,9 +254,14 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) {
-          ElMessage.warning(t('SystemBasicMgmt.roleProgram.pleaseSelectRole') + '和' +
-              t('SystemBasicMgmt.roleProgram.pleaseSelectDomain') + '和' +
-              t('SystemBasicMgmt.roleProgram.pleaseSelectModule'))
+          ElMessage({
+              message: t('SystemBasicMgmt.roleProgram.pleaseSelectRole') + '和' +
+                  t('SystemBasicMgmt.roleProgram.pleaseSelectDomain') + '和' +
+                  t('SystemBasicMgmt.roleProgram.pleaseSelectModule'),
+              type: 'warning',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
@@ -244,16 +289,31 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('SystemBasicMgmt.roleProgram.updateBindingsSuccess'))
+              ElMessage({
+                  message: t('SystemBasicMgmt.roleProgram.updateBindingsSuccess'),
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
               fetchRoleProgramList()
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
           if (error === 'cancel') {
               return
           }
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

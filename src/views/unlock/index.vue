@@ -28,7 +28,11 @@
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-            />
+            >
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           
           <el-form-item prop="verificationCode">
@@ -46,9 +50,13 @@
                 data-form-type="other"
                 @keyup.enter="handleUnlock"
                 class="verification-input"
-              />
+              >
+                <template #prefix>
+                  <el-icon><Message /></el-icon>
+                </template>
+              </el-input>
               <el-button
-                type="warning"
+                type="info"
                 :loading="sendCodeLoading"
                 :disabled="countdown > 0 || redirectCountdown > 0"
                 class="send-code-button"
@@ -84,11 +92,10 @@
           </el-form-item>
           <div class="unlock-link-container">
               <el-link 
-                type="warning" 
+                type="info"
                 @click="handleLogin"
-                class="unlock-link"
-              >{{ $t('login.backToLogin') }}
-            </el-link>
+                >{{ $t('login.backToLogin') }}
+              </el-link>
           </div>
         </el-form>
       </div>
@@ -103,6 +110,7 @@ import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { UNLOCKEXPIRATION_SEND_API, UNLOCK_API } from '@/config/api/login/api'
 import { useI18n } from 'vue-i18n'
+import { User, Message } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -188,17 +196,32 @@ const handleSendCode = () => {
     .then(res => {
       console.log(res.code)
           if (res.code === '200') {
-            ElMessage.success(res.message)
+            ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true,
+            })
             // 禁用用户名输入框
             userNoDisabled.value = true
             // 开始倒计时
             startCountdown()
           } else {
-            ElMessage.error(res.message)
+            ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
           }
         })
         .catch(error => {
-          ElMessage.error(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
         })
     .finally(() => {
       sendCodeLoading.value = false
@@ -247,15 +270,30 @@ const handleUnlock = () => {
       })
         .then(res => {
           if (res.code === '200') {
-            ElMessage.success(res.message)
+            ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true,
+            })
             // 开始跳转倒计时
             startRedirectCountdown()
           } else {
-            ElMessage.error(res.message)
+            ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
           }
         })
         .catch(error => {
-          ElMessage.error(error.message || t('unlock.unlockRequestFailed'))
+          ElMessage({
+            message: error.message || t('unlock.unlockRequestFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
         })
         .finally(() => {
           unlockLoading.value = false
@@ -296,7 +334,7 @@ const handleUnlock = () => {
   flex-direction: column;
   align-items: center;
   padding: 30px 0;
-  background: linear-gradient(135deg, #FFA726 0%, #FF8A65 100%);
+  background: linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%);
   color: white;
 }
 
@@ -470,7 +508,7 @@ const handleUnlock = () => {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #FFA726 0%, #FF8A65 100%);
+  background: linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%);
   border: none;
   margin-left: 0;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
@@ -479,7 +517,7 @@ const handleUnlock = () => {
 .unlock-button:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 8px rgba(50, 50, 93, 0.15);
-  background: linear-gradient(135deg, #FFB74D 0%, #FFAB91 100%);
+  background: linear-gradient(135deg, #48D1CC 0%, #40E0D0 100%);
 }
 
 .unlock-button:not(:disabled):active {
@@ -495,7 +533,7 @@ const handleUnlock = () => {
 }
 
 .unlock-button:disabled:hover {
-  background: linear-gradient(135deg, #FFA726 0%, #FF8A65 100%) !important;
+  background: linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%) !important;
   transform: none !important;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
 }
@@ -572,4 +610,5 @@ const handleUnlock = () => {
 .unlock-form :deep(.el-form-item:first-child) {
   margin-top: -5px;
 }
+
 </style>

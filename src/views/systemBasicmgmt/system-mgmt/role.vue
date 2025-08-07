@@ -320,7 +320,12 @@
           resetForm()
           fetchRolePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -339,11 +344,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchRolePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -354,18 +369,33 @@
       }
 
       if (isNaN(params.roleId)) {
-          ElMessage.error(t('SystemBasicMgmt.invalidId'))
+          ElMessage({
+              message: t('SystemBasicMgmt.invalidId'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
       const res = await post(DELETE_ROLE_API.DELETE_ROLE, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchRolePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

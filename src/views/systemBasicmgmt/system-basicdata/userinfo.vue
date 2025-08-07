@@ -294,7 +294,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
                     <el-upload
                         class="avatar-uploader"
-                        action="https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/File/UploadAvatar"
+                        :action="UPLOAD_CONFIG.url"
+                        :headers="UPLOAD_CONFIG.headers"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         :before-upload="beforeAvatarUpload"
@@ -338,9 +339,27 @@
   } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
+  import { useUserStore } from '@/stores/user'
 
   // 初始化i18n
   const { t } = useI18n()
+  
+  // 初始化用户存储
+  const userStore = useUserStore()
+  
+  // 统一的文件上传配置
+  const UPLOAD_CONFIG = reactive({
+    url: 'https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile',
+    headers: {
+      'Accept-Language': '',
+      'Authorization': `Bearer ${userStore.token}`
+    }
+  })
+  
+  // 监听 token 变化，更新上传配置
+  watch(() => userStore.token, (newToken) => {
+    UPLOAD_CONFIG.headers.Authorization = `Bearer ${newToken}`
+  })
 
   // 员工数据
   const userList = ref([])
@@ -652,7 +671,12 @@
           userList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.getFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
       loading.value = false
   }
@@ -745,11 +769,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.saveSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.saveSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -762,11 +796,21 @@
       
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.updateSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.updateSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -779,10 +823,20 @@
       const res = await post(DELETE_USER_API.DELETE_USER, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || t('SystemBasicMgmt.userInfo.deleteSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.deleteSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           fetchUserPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.operationFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -863,11 +917,21 @@
     const isLt5M = file.size / 1024 / 1024 < 5
 
     if (!isJPG) {
-        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!')
+        ElMessage({
+            message: t('SystemBasicMgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!',
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
         return false
     }
     if (!isLt5M) {
-        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!')
+        ElMessage({
+            message: t('SystemBasicMgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!',
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
         return false
     }
 
@@ -883,6 +947,7 @@
           
           const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
               headers: {
+                  ...UPLOAD_CONFIG.headers,
                   'Content-Type': 'multipart/form-data'
               }
           })
@@ -902,12 +967,22 @@
     editForm.avatarAddress = res.data
     avatarUrl.value = res.data
 
-    ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess') || '头像上传成功')
+    ElMessage({
+        message: t('SystemBasicMgmt.userInfo.avatarUploadSuccess') || '头像上传成功',
+        type: 'success',
+        plain: true,
+        showClose: true
+    })
 }
 
   // 头像上传失败
   const handleAvatarError = (error) => {
-      ElMessage.error(error.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'))
+      ElMessage({
+          message: error.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'),
+          type: 'error',
+          plain: true,
+          showClose: true
+      })
   }
 
   // 关闭对话框

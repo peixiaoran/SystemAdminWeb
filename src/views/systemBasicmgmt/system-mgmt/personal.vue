@@ -317,11 +317,21 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPG) {
-        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarFormatError'))
+        ElMessage({
+            message: t('SystemBasicMgmt.userInfo.avatarFormatError'),
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
         return false
       }
       if (!isLt2M) {
-        ElMessage.error(t('SystemBasicMgmt.userInfo.avatarSizeError'))
+        ElMessage({
+            message: t('SystemBasicMgmt.userInfo.avatarSizeError'),
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
         return false
       }
 
@@ -333,9 +343,19 @@ export default {
       if (res && res.code === '200') {
         personalInfoForm.avatarAddress = res.data
         avatarUrl.value = res.data
-        ElMessage.success(t('SystemBasicMgmt.userInfo.avatarUploadSuccess'))
+        ElMessage({
+            message: t('SystemBasicMgmt.userInfo.avatarUploadSuccess'),
+            type: 'success',
+            plain: true,
+            showClose: true
+        })
       } else {
-        ElMessage.error(res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'))
+        ElMessage({
+            message: res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
       }
     }
 
@@ -356,11 +376,21 @@ export default {
           Object.assign(originalFormData, response.data)
           originalFormData.password = ''
         } else {
-          ElMessage.error(response.message || t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'))
+          ElMessage({
+              message: response.message || t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
         }
       } catch (error) {
         console.error('获取个人信息失败:', error)
-        ElMessage.error(t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'))
+        ElMessage({
+            message: t('SystemBasicMgmt.personalInfo.getPersonalInfoFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
       } finally {
         loading.value = false
       }
@@ -461,15 +491,30 @@ export default {
         const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
         
         if (response.code === '200') {
-          ElMessage.success(response.message || t('common.saveSuccess'))
+          ElMessage({
+              message: response.message || t('common.saveSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           // 重新获取最新数据
           await getPersonalInfo()
         } else {
-          ElMessage.error(response.message || t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'))
+          ElMessage({
+              message: response.message || t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
         }
       } catch (error) {
         console.error('保存个人信息失败:', error)
-        ElMessage.error(t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'))
+        ElMessage({
+            message: t('SystemBasicMgmt.personalInfo.savePersonalInfoFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true
+        })
       } finally {
         saving.value = false
       }

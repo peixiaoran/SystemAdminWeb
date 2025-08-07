@@ -296,7 +296,12 @@
           domainList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
       loading.value = false
   }
@@ -374,11 +379,21 @@
       const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDomainPages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -391,11 +406,21 @@
       const res = await post(UPDATE_DOMAIN_API.UPDATE_DOMAIN, params)
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDomainPages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -406,18 +431,33 @@
       }
 
       if (isNaN(params.domainId)) {
-          ElMessage.error(t('SystemBasicMgmt.invalidId'))
+          ElMessage({
+              message: t('SystemBasicMgmt.invalidId'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
       const res = await post(DELETE_DOMAIN_API.DELETE_DOMAIN, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDomainPages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

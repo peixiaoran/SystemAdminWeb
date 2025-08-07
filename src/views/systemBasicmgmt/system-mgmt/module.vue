@@ -297,7 +297,12 @@
               return
           }
           console.error('获取网域数据失败:', error)
-          ElMessage.error('获取网域数据失败，请刷新页面重试')
+          ElMessage({
+            message: '获取网域数据失败，请刷新页面重试',
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -317,7 +322,12 @@
               return
           }
           console.error('获取网域数据失败:', error)
-          ElMessage.error('获取网域数据失败，请刷新页面重试')
+          ElMessage({
+            message: '获取网域数据失败，请刷新页面重试',
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -372,7 +382,12 @@
               return
           }
           console.error('获取模块实体数据失败:', error)
-          ElMessage.error('获取模块数据失败，请重试')
+          ElMessage({
+            message: '获取模块数据失败，请重试',
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -395,7 +410,12 @@
               return
           }
           console.error('获取模块列表失败:', error)
-          ElMessage.error('获取数据失败，请重试')
+          ElMessage({
+            message: '获取数据失败，请重试',
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       } finally {
           loading.value = false
       }
@@ -489,7 +509,12 @@
   const insertModule = async () => {
       // 检查必填字段
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.module.pleaseSelectDomain'))
+          ElMessage({
+            message: t('SystemBasicMgmt.module.pleaseSelectDomain'),
+            type: 'warning',
+            plain: true,
+            showClose: true,
+          })
           return
       }
 
@@ -498,16 +523,24 @@
           ...editForm,
           redirect: editForm.redirect
       }
-
-
-              const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
+      const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           fetchModulePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -515,7 +548,12 @@
   const updateModule = async () => {
       // 检查必填字段
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.module.pleaseSelectDomain'))
+          ElMessage({
+            message: t('SystemBasicMgmt.module.pleaseSelectDomain'),
+            type: 'warning',
+            plain: true,
+            showClose: true,
+          })
           return
       }
 
@@ -528,11 +566,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           dialogVisible.value = false
           fetchModulePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -543,18 +591,33 @@
       }
 
       if (isNaN(params.menuId)) {
-          ElMessage.error(t('SystemBasicMgmt.invalidId'))
+          ElMessage({
+            message: t('SystemBasicMgmt.invalidId'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
           return
       }
 
       const res = await post(DELETE_MODULE_API.DELETE_MODULE, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           dialogVisible.value = false
           fetchModulePages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+            message: res.message,
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 

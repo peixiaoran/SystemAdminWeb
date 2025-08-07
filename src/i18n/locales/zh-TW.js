@@ -47,6 +47,41 @@ export default {
     itemsPerPage: '條/頁'
   },
   
+  // 密碼過期修改頁面
+  passwordExpiration: {
+    title: '密碼過期修改',
+    account: '賬號',
+    newPassword: '新密碼',
+    confirmPassword: '確認密碼',
+    verificationCode: '驗證碼',
+    language: '語言',
+    accountPlaceholder: '請輸入賬號',
+    newPasswordPlaceholder: '請輸入新密碼',
+    confirmPasswordPlaceholder: '請再次輸入新密碼',
+    verificationCodePlaceholder: '請輸入驗證碼',
+    languagePlaceholder: '請選擇語言',
+    sendCode: '發送驗證碼',
+    submitButton: '修改密碼',
+    accountRequired: '請輸入賬號',
+    newPasswordRequired: '請輸入新密碼',
+    confirmPasswordRequired: '請確認密碼',
+    verificationCodeRequired: '請輸入驗證碼',
+    passwordMismatch: '兩次輸入的密碼不一致',
+    seconds: '秒',
+    sendCodeSuccess: '驗證碼發送成功',
+    sendCodeFailed: '驗證碼發送失敗',
+    submitSuccess: '密碼修改成功',
+    submitFailed: '密碼修改失敗',
+    updateSuccess: '密碼修改成功',
+    updateFailed: '密碼修改失敗',
+    redirectCountdownText: '秒後跳轉到登入頁面',
+    backToLogin: '返回登入頁面',
+    languages: {
+      'zh-TW': '中文繁體',
+      'en-US': 'English'
+    }
+  },
+  
   // 錯誤頁面
   error: {
     pageNotFound: '抱歉，您訪問的頁面不存在或已被移除',
@@ -64,6 +99,7 @@ export default {
     language: '語言',
     loginButton: '登錄',
     unlockAccount: '賬號解鎖',
+    passwordExpiration: '密碼過期',
     backToLogin: '返回登入',
     usernamePlaceholder: '請輸入員工名',
     passwordPlaceholder: '請輸入密碼',
@@ -132,6 +168,7 @@ export default {
     login: '登錄',
     moduleSelect: '系統模塊',
     unlock: '賬戶解鎖',
+    passwordExpiration: '密碼過期修改',
     notFound: '頁面未找到',
     forbidden: '訪問被拒絕',
     SystemBasicMgmt: '系統基礎管理',

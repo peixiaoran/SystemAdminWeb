@@ -103,10 +103,20 @@
                   fetchRoleDomainList()
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -126,10 +136,20 @@
               // 设置总记录数
               pagination.total = res.data?.length || 0
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       } finally {
           loading.value = false
       }
@@ -148,7 +168,12 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId) {
-          ElMessage.warning(t('SystemBasicMgmt.roleDomain.pleaseSelectRole'))
+          ElMessage({
+              message: t('SystemBasicMgmt.roleDomain.pleaseSelectRole'),
+              type: 'warning',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
@@ -174,16 +199,31 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('SystemBasicMgmt.roleDomain.updateBindingsSuccess'))
+              ElMessage({
+                  message: t('SystemBasicMgmt.roleDomain.updateBindingsSuccess'),
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
               fetchRoleDomainList()
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
           if (error === 'cancel') {
               return
           }
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

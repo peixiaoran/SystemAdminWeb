@@ -215,7 +215,12 @@
           departmentLevelList.value = res.data || []
           pagination.total = res.data ? res.data.length : 0
       } else {
-          ElMessage.error(res?.message || '获取部门级别列表失败')
+          ElMessage({
+              message: res?.message || '获取部门级别列表失败',
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
       loading.value = false
   }
@@ -289,11 +294,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || '新增成功')
+          ElMessage({
+              message: res.message || '新增成功',
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDepartmentLevelList()
       } else {
-          ElMessage.error(res?.message || '操作失败')
+          ElMessage({
+              message: res?.message || '操作失败',
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -306,11 +321,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || '更新成功')
+          ElMessage({
+              message: res.message || '更新成功',
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDepartmentLevelList()
       } else {
-          ElMessage.error(res?.message || '操作失败')
+          ElMessage({
+              message: res?.message || '操作失败',
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -323,10 +348,20 @@
       const res = await post(DELETE_DEPARTMENT_LEVEL_API.DELETE_DEPARTMENT_LEVEL, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || '删除成功')
+          ElMessage({
+              message: res.message || '删除成功',
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           fetchDepartmentLevelList()
       } else {
-          ElMessage.error(res?.message || '删除失败')
+          ElMessage({
+              message: res?.message || '删除失败',
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

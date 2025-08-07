@@ -116,10 +116,20 @@
                   fetchRoleModuleList()
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -134,10 +144,20 @@
                   fetchRoleModuleList()
               }
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -158,10 +178,20 @@
               // 设置总记录数
               pagination.total = res.data?.length || 0
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       } finally {
           loading.value = false
       }
@@ -175,7 +205,12 @@
   // 处理确认操作
   const handleConfirm = async () => {
       if (!filters.roleId || !filters.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.roleModule.pleaseSelectRole') + '和' + t('SystemBasicMgmt.roleModule.pleaseSelectDomain'))
+          ElMessage({
+              message: t('SystemBasicMgmt.roleModule.pleaseSelectRole') + '和' + t('SystemBasicMgmt.roleModule.pleaseSelectDomain'),
+              type: 'warning',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
@@ -202,16 +237,31 @@
           })
 
           if (res && res.code === '200') {
-              ElMessage.success(t('SystemBasicMgmt.roleModule.updateBindingsSuccess'))
+              ElMessage({
+                  message: t('SystemBasicMgmt.roleModule.updateBindingsSuccess'),
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
               fetchRoleModuleList()
           } else {
-              ElMessage.error(res.message)
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
           }
       } catch (error) {
           if (error === 'cancel') {
               return
           }
-          ElMessage.error(error.message)
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

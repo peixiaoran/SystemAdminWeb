@@ -44,6 +44,12 @@ const constantRoutes = [
     component: () => import('../views/unlock/index.vue'),
     meta: { title: 'route.unlock' }
   },
+  {
+    path: '/password-expiration',
+    name: 'PasswordExpiration',
+    component: () => import('../views/password-expiration/index.vue'),
+    meta: { title: 'route.passwordExpiration' }
+  },
   // 根路由重定向
   {
     path: '/',

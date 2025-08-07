@@ -245,7 +245,12 @@
         if (res && res.code === '200') {
             departmentLevelList.value = res.data || []
         } else {
-            ElMessage.error(res?.message || '获取部门级别下拉列表失败')
+            ElMessage({
+                message: res?.message || '获取部门级别下拉列表失败',
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -273,7 +278,12 @@
             editForm.remark = res.data.remark
         }
         else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.departmentInfo.getFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -290,7 +300,12 @@
         if (res && res.code === '200') {
             departmentList.value = res.data || []
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.departmentInfo.getFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
         loading.value = false
     }
@@ -363,11 +378,21 @@
 
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.departmentInfo.saveSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.saveSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             dialogVisible.value = false
             fetchDepartmentTree()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -381,11 +406,21 @@
 
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.departmentInfo.updateSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.updateSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             dialogVisible.value = false
             fetchDepartmentTree()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -398,10 +433,20 @@
         const res = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, params)
 
         if (res && res.code === '200') {
-            ElMessage.success(res.message || t('SystemBasicMgmt.departmentInfo.deleteSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.deleteSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             fetchDepartmentTree()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
 
@@ -453,7 +498,12 @@
     const handleDelete = (index, row) => {
         // 检查是否有子部门
         if (row.departmentChildList && row.departmentChildList.length > 0) {
-            ElMessage.warning(t('SystemBasicMgmt.departmentInfo.hasChildrenCannotDelete'))
+            ElMessage({
+                message: t('SystemBasicMgmt.departmentInfo.hasChildrenCannotDelete'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             return
         }
 

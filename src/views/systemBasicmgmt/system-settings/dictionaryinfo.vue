@@ -219,7 +219,12 @@
           dictionaryList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.dictionaryInfo.getFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
       loading.value = false
   }
@@ -300,11 +305,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.dictionaryInfo.saveSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.saveSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDictionaryPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -317,11 +332,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.dictionaryInfo.updateSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.updateSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchDictionaryPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -334,7 +359,12 @@
       const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || t('SystemBasicMgmt.dictionaryInfo.deleteSuccess'))
+          ElMessage({
+              message: res.message || t('SystemBasicMgmt.dictionaryInfo.deleteSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           fetchDictionaryPages()
       } else {
           ElMessage.error(res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'))

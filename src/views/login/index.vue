@@ -27,7 +27,11 @@
               spellcheck="false"
               data-lpignore="true"
               data-form-type="other"
-            />
+            >
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           
           <el-form-item prop="password">
@@ -43,7 +47,11 @@
               data-lpignore="true"
               data-form-type="other"
               @keyup.enter="handleLogin"
-            />
+            >
+              <template #prefix>
+                <el-icon><Lock /></el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           
           <el-form-item prop="language">
@@ -69,11 +77,16 @@
           </el-form-item>
           <div class="unlock-link-container">
               <el-link 
-                type="primary" 
+                type="info" 
                 @click="handleUnlockAccount"
-                class="unlock-link"
-              >{{ $t('login.unlockAccount') }}
-            </el-link>
+                >{{ $t('login.unlockAccount') }}
+              </el-link>
+              
+              <el-link 
+                type="info" 
+                @click="handlePasswordExpiration"
+                >{{ $t('login.passwordExpiration') }}
+              </el-link>
           </div>
         </el-form>
       </div>
@@ -89,6 +102,7 @@ import { post } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
+import { User, Lock } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -144,6 +158,11 @@ const handleUnlockAccount = () => {
   router.push('/unlock')
 }
 
+// 跳转到密码过期页面
+const handlePasswordExpiration = () => {
+  router.push('/password-expiration')
+}
+
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
 
 const handleLogin = () => {
@@ -190,15 +209,28 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
+          } else if (res.code === '210') {
+            // 密码过期，跳转到密码过期修改页面
+            router.push('/password-expiration')
           } else if (res.code === '220') {
             // 账户被锁定，跳转到解锁页面
             router.push('/unlock')
           } else {
-            ElMessage.error(res.message || t('login.loginFailed'))
+            ElMessage({
+              message: res.message || t('login.loginFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
           }
         })
         .catch(error => {
-          ElMessage.error(t('login.loginFailedTip'))
+          ElMessage({
+            message: t('login.loginFailedTip'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
         })
         .finally(() => {
           loading.value = false
@@ -433,11 +465,10 @@ const handleLogin = () => {
   width: 100%;
   text-align: center;
   margin-top: 10px;
-}
-
-.unlock-link {
-  font-size: 14px;
-  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 /* 移除必填标记 */

@@ -114,10 +114,20 @@ const fetchModules = async () => {
         path: module.path
       }))
     } else {
-      ElMessage.error(res?.message || t('moduleSelect.moduleError'))
+      ElMessage({
+        message: res?.message || t('moduleSelect.moduleError'),
+        type: 'error',
+        plain: true,
+        showClose: true,
+      })
     }
   } catch (error) {
-    ElMessage.error(t('moduleSelect.moduleErrorRetry'))
+    ElMessage({
+      message: t('moduleSelect.moduleErrorRetry'),
+      type: 'error',
+      plain: true,
+      showClose: true,
+    })
   } finally {
     loading.value = false
   }
@@ -141,7 +151,12 @@ function getModuleRemarks(module) {
 // 进入模块
 const enterModule = (module) => {
   if (!module || !module.domainId || !module.path) {
-    ElMessage.error(t('moduleSelect.moduleIncomplete'))
+    ElMessage({
+      message: t('moduleSelect.moduleIncomplete'),
+      type: 'error',
+      plain: true,
+      showClose: true,
+    })
     return
   }
   
@@ -185,7 +200,12 @@ const logout = async () => {
     router.push('/login')
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(t('common.failed'))
+      ElMessage({
+        message: t('common.failed'),
+        type: 'error',
+        plain: true,
+        showClose: true,
+      })
     }
   }
 }

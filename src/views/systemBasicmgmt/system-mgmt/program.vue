@@ -524,7 +524,12 @@
   const insertProgram = async () => {
       // 验证必填项
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.program.pleaseSelectDomain'))
+          ElMessage({
+              message: t('SystemBasicMgmt.program.pleaseSelectDomain'),
+              type: 'warning',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
@@ -537,11 +542,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           fetchProgramPages()
           dialogVisible.value = false
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -549,7 +564,12 @@
   const updateProgram = async () => {
       // 验证必填项
       if (!editForm.domainId) {
-          ElMessage.warning(t('SystemBasicMgmt.program.pleaseSelectDomain'))
+          ElMessage({
+              message: t('SystemBasicMgmt.program.pleaseSelectDomain'),
+              type: 'warning',
+              plain: true,
+              showClose: true
+          })
           return
       }
 
@@ -563,11 +583,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchProgramPages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -578,18 +608,33 @@
       }
 
       if (isNaN(params.menuId)) {
-                     ElMessage.error(t('SystemBasicMgmt.invalidId'))
+                     ElMessage({
+                         message: t('SystemBasicMgmt.invalidId'),
+                         type: 'error',
+                         plain: true,
+                         showClose: true
+                     })
           return
       }
 
       const res = await post(DELETE_PROGRAM_API.DELETE_PROGRAM, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           dialogVisible.value = false
           fetchProgramPages()
       } else {
-          ElMessage.error(res.message)
+          ElMessage({
+              message: res.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 

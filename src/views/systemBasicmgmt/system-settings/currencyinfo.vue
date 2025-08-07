@@ -221,7 +221,12 @@
             currencyList.value = res.data || []
             pagination.total = res.totalNumber || 0
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.currencyInfo.getFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
         loading.value = false
     }
@@ -296,11 +301,21 @@
   
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.currencyInfo.saveSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.saveSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             dialogVisible.value = false
             fetchCurrencyPages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
   
@@ -313,11 +328,21 @@
   
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.currencyInfo.updateSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.updateSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             dialogVisible.value = false
             fetchCurrencyPages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
   
@@ -330,10 +355,20 @@
         const res = await post(DELETE_CURRENCY_API.DELETE_CURRENCY, params)
   
         if (res && res.code === '200') {
-            ElMessage.success(res.message || t('SystemBasicMgmt.currencyInfo.deleteSuccess'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.deleteSuccess'),
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
             fetchCurrencyPages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'))
+            ElMessage({
+                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         }
     }
   

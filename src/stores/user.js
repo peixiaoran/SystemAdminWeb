@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
+import { LOGOUT_API } from '@/config/api/login/api'
 
 // 员工信息存储
 export const useUserStore = defineStore('user', {
@@ -62,6 +63,9 @@ export const useUserStore = defineStore('user', {
     // 登出
     async logout() {
       try {
+        // 调用退出登录API
+        await post(LOGOUT_API.USER_LOGOUT)
+        
         // 路由现在是静态的，不需要清除路由缓存和重置路由
         
         // 清除本地存储
@@ -112,4 +116,4 @@ export const useUserStore = defineStore('user', {
     storage: localStorage,
     paths: ['token', 'userNameCh', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
   }
-}) 
+})

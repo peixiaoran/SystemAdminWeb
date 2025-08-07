@@ -217,7 +217,12 @@
         if (res && res.code === '200') {
             currencyOptions.value = res.data || []
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
     }
   
@@ -237,7 +242,12 @@
             exchangeRateList.value = res.data || []
             pagination.totalCount = res.totalNumber || 0
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
         loading.value = false
     }
@@ -258,7 +268,12 @@
             // 保存原始的兑换币别
             originalExchangeCurrencyCode.value = res.data.exchangeCurrencyCode
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
     }
   
@@ -332,11 +347,21 @@
   
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.exchangeRateInfo.saveSuccess'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.saveSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true,
+            })
             dialogVisible.value = false
             fetchExchangeRatePages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
     }
 
@@ -350,11 +375,21 @@
 
         if (res && res.code === '200') {
             resetForm()
-            ElMessage.success(res.message || t('SystemBasicMgmt.exchangeRateInfo.updateSuccess'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.updateSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true,
+            })
             dialogVisible.value = false
             fetchExchangeRatePages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
     }
   
@@ -370,10 +405,20 @@
         const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, params)
   
         if (res && res.code === '200') {
-            ElMessage.success(res.message || t('SystemBasicMgmt.exchangeRateInfo.deleteSuccess'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.deleteSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true,
+            })
             fetchExchangeRatePages()
         } else {
-            ElMessage.error(res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'))
+            ElMessage({
+              message: res.message || t('SystemBasicMgmt.exchangeRateInfo.operationFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
         }
     }
   

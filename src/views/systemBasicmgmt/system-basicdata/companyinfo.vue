@@ -213,7 +213,12 @@
           companyList.value = res.data || []
           pagination.total = res.totalNumber || 0
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.getFailed'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.getFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
       loading.value = false
   }
@@ -292,11 +297,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.saveSuccess'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.saveSuccess'),
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           dialogVisible.value = false
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -309,11 +324,21 @@
 
       if (res && res.code === '200') {
           resetForm()
-          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.updateSuccess'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.updateSuccess'),
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           dialogVisible.value = false
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
@@ -326,10 +351,20 @@
       const res = await post(DELETE_COMPANY_API.DELETE_COMPANY, params)
 
       if (res && res.code === '200') {
-          ElMessage.success(res.message || t('SystemBasicMgmt.companyInfo.deleteSuccess'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.deleteSuccess'),
+            type: 'success',
+            plain: true,
+            showClose: true,
+          })
           fetchCompanyPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.companyInfo.operationFailed'))
+          ElMessage({
+            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
       }
   }
 
