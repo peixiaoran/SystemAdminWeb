@@ -108,7 +108,7 @@ import { ref, reactive, onMounted, computed, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { UNLOCKEXPIRATION_SEND_API, UNLOCK_API } from '@/config/api/login/api'
+import { UNLOCK_SEND_API, UNLOCK_API } from '@/config/api/login/api'
 import { useI18n } from 'vue-i18n'
 import { User, Message } from '@element-plus/icons-vue' // 新增图标引入
 
@@ -188,7 +188,7 @@ const handleSendCode = () => {
 
   sendCodeLoading.value = true
 
-  post(UNLOCKEXPIRATION_SEND_API.UNLOCK_EXPIRATION_SEND, null, {
+  post(UNLOCK_SEND_API.UNLOCK_SEND, null, {
     params: {
       userNo: unlockForm.userNo
     }

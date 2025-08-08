@@ -160,7 +160,7 @@ import { ElMessage } from 'element-plus'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
-import { UNLOCKEXPIRATION_SEND_API, PWD_EXPIRATION_UPDATE_API } from '@/config/api/login/api'
+import { PWD_EXPIRATION_SEND_API, PWD_EXPIRATION_UPDATE_API } from '@/config/api/login/api'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -211,13 +211,53 @@ const languages = computed(() => {
   }
 })
 
+// 密码强度验证函数
+const validatePassword = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error(t('passwordExpiration.newPasswordRequired')))
+    return
+  }
+  
+  // 长度验证：8-16位
+  if (value.length < 8 || value.length > 16) {
+    callback(new Error(t('passwordExpiration.passwordLengthError')))
+    return
+  }
+  
+  // 包含小写字母
+  if (!/[a-z]/.test(value)) {
+    callback(new Error(t('passwordExpiration.passwordLowercaseError')))
+    return
+  }
+  
+  // 包含大写字母
+  if (!/[A-Z]/.test(value)) {
+    callback(new Error(t('passwordExpiration.passwordUppercaseError')))
+    return
+  }
+  
+  // 包含数字
+  if (!/[0-9]/.test(value)) {
+    callback(new Error(t('passwordExpiration.passwordNumberError')))
+    return
+  }
+  
+  // 包含特殊字符
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+    callback(new Error(t('passwordExpiration.passwordSpecialCharError')))
+    return
+  }
+  
+  callback()
+}
+
 // 表单验证规则
 const rules = computed(() => ({
   userNo: [
     { required: true, message: t('passwordExpiration.accountRequired'), trigger: 'blur' }
   ],
   password: [
-    { required: true, message: t('passwordExpiration.newPasswordRequired'), trigger: 'blur' }
+    { validator: validatePassword, trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, message: t('passwordExpiration.confirmPasswordRequired'), trigger: 'blur' },
@@ -270,7 +310,7 @@ const handleSendCode = async () => {
   
   try {
     sendingCode.value = true
-    const res = await post(UNLOCKEXPIRATION_SEND_API.UNLOCK_EXPIRATION_SEND, null, {
+    const res = await post(PWD_EXPIRATION_SEND_API.PWD_EXPIRATION_SEND, null, {
       params: { userNo: form.userNo }
     })
     

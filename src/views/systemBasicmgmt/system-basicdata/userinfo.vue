@@ -75,15 +75,15 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180">
+                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="180">
                       <template #default="scope">
                           <span :style="{
-                               color: scope.row.employmentType === '1' ? '#faad14' : 
-                                      scope.row.employmentType === '2' ? '#13c2c2' : 
-                                      scope.row.employmentType === '3' ? '#1890ff' : 
-                                      scope.row.employmentType === '4' ? '#722ed1' : '#000'
-                           }">
-                              {{ scope.row.employmentTypeName }}
+                               color: scope.row.laborType === '1' ? '#faad14' : 
+                                      scope.row.laborType === '2' ? '#13c2c2' : 
+                                      scope.row.laborType === '3' ? '#1890ff' : 
+                                      scope.row.laborType === '4' ? '#722ed1' : '#000'
+                                      }">
+                              {{ scope.row.laborName }}
                           </span>
                       </template>
                   </el-table-column>
@@ -150,17 +150,17 @@
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.employmentType')" prop="employmentType">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.laborType')" prop="laborId">
                       <el-select 
-                          v-model="editForm.employmentType" 
+                          v-model="editForm.laborId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType')">
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectLaborType')">
                           <el-option
-                              v-for="item in employmentTypeOptions"
-                              :key="`employment-type-edit-${item.employmentType}`"
-                              :label="item.employmentName"
-                              :value="item.employmentCode" />
+                              v-for="item in laborTypeOptions"
+                              :key="`labor-type-edit-${item.laborId}`"
+                              :label="item.laborName"
+                              :value="item.laborId" />
                       </el-select>
                   </el-form-item>
               </div>
@@ -307,7 +307,6 @@
                       <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
                   </el-form-item>
               </div>
-              
 
           </el-form>
           <template #footer>
@@ -334,7 +333,7 @@
       GET_USER_POSITION_DROPDOWN_API,
       GET_ROLE_DROPDOWN_API,
       GET_GENDER_DROPDOWN_API,
-      GET_EMPLOYMENT_TYPE_DROPDOWN_API,
+      GET_LABOR_TYPE_DROPDOWN_API,
       UPLOAD_AVATAR_API
   } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -373,7 +372,7 @@
   const positionOptions = ref([])
   const roleOptions = ref([])
   const genderOptions = ref([])
-  const employmentTypeOptions = ref([])
+  const laborTypeOptions = ref([])
 
   // 分页信息
   const pagination = reactive({
@@ -414,7 +413,7 @@
       isAgent: 0,
       isEmployed: 1,
       isFreeze: 0,
-      employmentType: '',
+      laborId: '',
       expirationDays: null,
       modifiedBy: '',
       modifiedDate: '',
@@ -451,8 +450,8 @@
       hireDate: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
-      employmentType: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectEmploymentType'), trigger: 'change' }
+      laborId: [
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectLaborType'), trigger: 'change' }
       ],
       departmentId: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
@@ -536,7 +535,7 @@
       await fetchDepartmentDropdown(true, false)
       await fetchPositionDropdown(true, false)
       await fetchGenderDropdown()
-      await fetchEmploymentTypeDropdown()
+      await fetchLaborTypeDropdown()
       // 获取用户列表数据
       fetchUserPages()
   })
@@ -547,6 +546,19 @@
           const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
           if (res && res.code === '200') {
               departmentOptions.value = Array.isArray(res.data) ? res.data : []
+              console.log('departmentOptions:', departmentOptions.value)
+              // 验证数据结构并过滤无效数据（递归验证部门树结构）
+              const validateDepartment = (dept) => {
+                  if (!dept || dept.departmentId === undefined || dept.departmentId === null || 
+                      dept.departmentName === undefined || dept.departmentName === null) {
+                      return false
+                  }
+                  if (dept.departmentChildList && Array.isArray(dept.departmentChildList)) {
+                      dept.departmentChildList = dept.departmentChildList.filter(validateDepartment)
+                  }
+                  return true
+              }
+              departmentOptions.value = departmentOptions.value.filter(validateDepartment)
               // 设置筛选条件默认值
               if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
                   filters.departmentId = departmentOptions.value[0].departmentId
@@ -559,39 +571,66 @@
               departmentOptions.value = []
           }
       } catch (error) {
+          console.error('获取部门选项失败:', error)
           departmentOptions.value = []
       }
   }
 
   // 获取职位下拉数据
   const fetchPositionDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
-      const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-      if (res && res.code === '200') {
-          positionOptions.value = res.data || []
-          // 设置筛选条件默认值
-          if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
-              filters.positionId = positionOptions.value[0].positionId
+      try {
+          const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
+          if (res && res.code === '200') {
+              positionOptions.value = res.data || []
+              console.log('positionOptions:', positionOptions.value)
+              // 验证数据结构并过滤无效数据
+              positionOptions.value = positionOptions.value.filter(item => 
+                  item && item.positionId !== undefined && item.positionId !== null && 
+                  item.positionName !== undefined && item.positionName !== null
+              )
+              // 设置筛选条件默认值
+              if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
+                  filters.positionId = positionOptions.value[0].positionId
+              }
+              // 设置编辑表单默认值
+              if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
+                  editForm.positionId = positionOptions.value[0].positionId
+              }
+          } else {
+              positionOptions.value = []
           }
-          // 设置编辑表单默认值
-          if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
-              editForm.positionId = positionOptions.value[0].positionId
-          }
+      } catch (error) {
+          console.error('获取职位选项失败:', error)
+          positionOptions.value = []
       }
   }
 
   // 获取角色下拉数据
   const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
-      const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-      if (res && res.code === '200') {
-          roleOptions.value = res.data || []
-          // 设置筛选条件默认值
-          if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
-              filters.roleId = roleOptions.value[0].roleId
+      try {
+          const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
+          if (res && res.code === '200') {
+              roleOptions.value = res.data || []
+              console.log('roleOptions:', roleOptions.value)
+              // 验证数据结构并过滤无效数据
+              roleOptions.value = roleOptions.value.filter(item => 
+                  item && item.roleId !== undefined && item.roleId !== null && 
+                  item.roleName !== undefined && item.roleName !== null
+              )
+              // 设置筛选条件默认值
+              if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
+                  filters.roleId = roleOptions.value[0].roleId
+              }
+              // 设置编辑表单默认值
+              if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
+                  editForm.roleId = roleOptions.value[0].roleId
+              }
+          } else {
+              roleOptions.value = []
           }
-          // 设置编辑表单默认值
-          if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
-              editForm.roleId = roleOptions.value[0].roleId
-          }
+      } catch (error) {
+          console.error('获取角色选项失败:', error)
+          roleOptions.value = []
       }
   }
 
@@ -601,30 +640,43 @@
           const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
           if (res && res.code === '200') {
               genderOptions.value = res.data || []
+              console.log('genderOptions:', genderOptions.value)
+              // 验证数据结构并过滤无效数据
+              genderOptions.value = genderOptions.value.filter(item => 
+                  item && item.genderCode !== undefined && item.genderCode !== null && 
+                  item.genderName !== undefined && item.genderName !== null
+              )
           } else {
               genderOptions.value = []
           }
       } catch (error) {
-
+          console.error('获取性别选项失败:', error)
+          genderOptions.value = []
       }
   }
 
   // 获取就业类型下拉数据
-  const fetchEmploymentTypeDropdown = async (setDefaultForm = false) => {
+  const fetchLaborTypeDropdown = async (setDefaultForm = false) => {
       try {
-          const res = await post(GET_EMPLOYMENT_TYPE_DROPDOWN_API.GET_EMPLOYMENT_TYPE_DROPDOWN, {})
+          const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
           if (res && res.code === '200') {
-              employmentTypeOptions.value = res.data || []
+              laborTypeOptions.value = res.data || []
+              console.log('laborTypeOptions:', laborTypeOptions.value)
+              // 验证数据结构并过滤无效数据
+              laborTypeOptions.value = laborTypeOptions.value.filter(item => 
+                  item && item.laborId !== undefined && item.laborId !== null && 
+                  item.laborName !== undefined && item.laborName !== null
+              )
               // 设置编辑表单默认值
-              if (setDefaultForm && employmentTypeOptions.value.length > 0 && !editForm.employmentType) {
-                  editForm.employmentType = employmentTypeOptions.value[0].employmentType
+              if (setDefaultForm && laborTypeOptions.value.length > 0 && !editForm.laborId) {
+                  editForm.laborId = laborTypeOptions.value[0].laborId
               }
           } else {
-              employmentTypeOptions.value = []
+              laborTypeOptions.value = []
           }
       } catch (error) {
           console.error('获取就业类型失败:', error)
-          employmentTypeOptions.value = []
+          laborTypeOptions.value = []
       }
   }
 
@@ -732,7 +784,7 @@
           isAgent: 0,
           isEmployed: 1,
           isFreeze: 0,
-          employmentCode: '',
+          laborId: '',
           expirationDays: null,
           modifiedBy: '',
           modifiedDate: '',
@@ -849,7 +901,7 @@
       await fetchPositionDropdown(false, true)
       await fetchRoleDropdown(false, true)
       await fetchGenderDropdown()
-      await fetchEmploymentTypeDropdown(true)
+      await fetchLaborTypeDropdown(true)
       // 打开对话框
       dialogTitle.value = t('SystemBasicMgmt.userInfo.addUser')
       // 显示对话框
@@ -867,7 +919,7 @@
       await fetchPositionDropdown(false, false)
       await fetchRoleDropdown(false, false)
       await fetchGenderDropdown()
-      await fetchEmploymentTypeDropdown(false)
+      await fetchLaborTypeDropdown(false)
       // 获取员工实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
       await fetchUserEntity(row.userId)
       // 打开对话框

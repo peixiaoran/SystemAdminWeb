@@ -116,13 +116,13 @@
 
       <!-- 第四行：雇佣类型和状态信息 -->
       <div class="form-row">
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.employmentType')" prop="employmentType">
-          <el-select v-model="personalInfoForm.employmentType" :disabled="true" style="width: 100%">
+        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.laborName')" prop="laborId">
+          <el-select v-model="personalInfoForm.laborId" :disabled="true" style="width: 100%">
             <el-option
-              v-for="item in employmentTypeOptions"
-              :key="item.employmentCode"
-              :label="item.employmentName"
-              :value="item.employmentCode"
+              v-for="item in laborTypeOptions"
+              :key="item.laborId"
+              :label="item.laborName"
+              :value="item.laborId"
             />
           </el-select>
         </el-form-item>
@@ -203,7 +203,7 @@ import {
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
   GET_GENDER_DROPDOWN_API,
-  GET_EMPLOYMENT_TYPE_DROPDOWN_API,
+  GET_LABOR_TYPE_DROPDOWN_API,
   UPLOAD_AVATAR_API
 } from '@/config/api/SystemBasicMgmt/System-Mgmt/personal'
 
@@ -242,6 +242,7 @@ export default {
       isPartTime: 0,
       isFreeze: 0,
       employmentType: '',
+      laborId: '',
       avatarAddress: '',
       isRealtimeNotification: 0,
       isScheduledNotification: 0
@@ -254,8 +255,8 @@ export default {
     const departmentOptions = ref([])
     const positionOptions = ref([])
     const roleOptions = ref([])
-    const genderOptions = ref([])
-    const employmentTypeOptions = ref([])
+     const genderOptions = ref([])
+     const laborTypeOptions = ref([])
 
     // 表单验证规则
     const formRules = reactive({
@@ -444,18 +445,26 @@ export default {
       }
     }
 
-    // 获取雇佣类型下拉框数据
-    const getEmploymentTypeDropdown = async () => {
+    // 获取用工类型下拉框数据
+    const getLaborTypeDropdown = async () => {
       try {
-        const response = await post(GET_EMPLOYMENT_TYPE_DROPDOWN_API.GET_EMPLOYMENT_TYPE_DROPDOWN, {})
+        const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
         if (response.code === '200' && response.data) {
-          employmentTypeOptions.value = response.data
+          laborTypeOptions.value = response.data || []
+          // 过滤掉无效数据
+          laborTypeOptions.value = laborTypeOptions.value.filter(item => 
+            item && item.laborId !== undefined && item.laborId !== null && 
+            item.laborName !== undefined && item.laborName !== null
+          )
+        } else {
+          laborTypeOptions.value = []
         }
       } catch (error) {
-        console.error('获取雇佣类型下拉框失败:', error)
+        console.error('获取用工类型下拉框失败:', error)
+        laborTypeOptions.value = []
       }
     }
-
+    
     // 保存个人信息
     const handleSave = async () => {
       // 先进行表单验证，如果验证失败直接返回
@@ -534,7 +543,7 @@ export default {
         getPositionDropdown(),
         getRoleDropdown(),
         getGenderDropdown(),
-        getEmploymentTypeDropdown()
+        getLaborTypeDropdown()
       ])
     }
 
@@ -552,7 +561,7 @@ export default {
       positionOptions,
       roleOptions,
       genderOptions,
-      employmentTypeOptions,
+      laborTypeOptions,
       avatarUrl,
       handleSave,
       handleReset,

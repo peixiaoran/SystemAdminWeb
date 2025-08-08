@@ -35,7 +35,12 @@ export const GET_GENDER_DROPDOWN_API = {
 
 // 雇佣类型下拉框API
 export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
-  GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetEmploymentType'
+  GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetLabor'
+}
+
+// 职业下拉框API
+export const GET_LABOR_TYPE_DROPDOWN_API = {
+  GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetLabor'
 }
 
 // 头像上传API

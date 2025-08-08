@@ -57,15 +57,16 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="employmentTypeName" :label="$t('SystemBasicMgmt.userInfo.employmentType')" align="center" min-width="180">
+                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="180">
+
                         <template #default="scope">
                             <span :style="{
-                                 color: scope.row.employmentType === '1' ? '#faad14' : 
-                                        scope.row.employmentType === '2' ? '#13c2c2' : 
-                                        scope.row.employmentType === '3' ? '#1890ff' : 
-                                        scope.row.employmentType === '4' ? '#722ed1' : '#000'
+                                 color: scope.row.laborId === '1' ? '#faad14' : 
+                                        scope.row.laborId === '2' ? '#13c2c2' : 
+                                        scope.row.laborId === '3' ? '#1890ff' : 
+                                        scope.row.laborId === '4' ? '#722ed1' : '#000'
                              }">
-                                {{ scope.row.employmentTypeName }}
+                                {{ scope.row.laborName }}
                             </span>
                         </template>
                     </el-table-column>

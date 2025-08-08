@@ -11,9 +11,14 @@ export const LOGIN_API = {
   USER_LOGIN: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UserLogin`
 }
 
-// 解锁和过期发送验证码
-export const UNLOCKEXPIRATION_SEND_API = {
-  UNLOCK_EXPIRATION_SEND: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UnLockAndExpirationSendVcCode`
+// 解锁发送验证码
+export const UNLOCK_SEND_API = {
+  UNLOCK_SEND: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UnLockSendVcCode`
+}
+
+// 重置密码发送验证码
+export const PWD_EXPIRATION_SEND_API = {
+  PWD_EXPIRATION_SEND: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UnExpirationSendVcCode`
 }
 
 // 解锁
