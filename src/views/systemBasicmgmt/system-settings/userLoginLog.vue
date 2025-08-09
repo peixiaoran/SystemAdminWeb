@@ -179,11 +179,13 @@
   const getStatusTagType = (statusId) => {
       switch (statusId) {
           case 1:
-              return 'success' // 绿色
+              return 'primary' // 蓝色
           case 2:
               return 'danger'  // 红色
           case 3:
-              return 'warning' // 橘黄色
+              return 'info' // 橘黄色
+          case 4:
+              return 'primary' // 红色
           default:
               return 'info'    // 默认颜色
       }
