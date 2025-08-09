@@ -82,11 +82,7 @@
                 >{{ $t('login.unlockAccount') }}
               </el-link>
               
-              <el-link 
-                type="info" 
-                @click="handlePasswordExpiration"
-                >{{ $t('login.passwordExpiration') }}
-              </el-link>
+            
           </div>
         </el-form>
       </div>
@@ -159,9 +155,9 @@ const handleUnlockAccount = () => {
 }
 
 // 跳转到密码过期页面
-const handlePasswordExpiration = () => {
-  router.push('/password-expiration')
-}
+// const handlePasswordExpiration = () => {
+//   router.push('/password-expiration')
+// }
 
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
 

@@ -106,7 +106,7 @@ export default {
     language: '语言',
     loginButton: '登录',
     unlockAccount: '账号解锁',
-    passwordExpiration: '密码过期',
+    // passwordExpiration: '密码过期',
     backToLogin: '返回登录',
     usernamePlaceholder: '请输入员工名',
     passwordPlaceholder: '请输入密码',
