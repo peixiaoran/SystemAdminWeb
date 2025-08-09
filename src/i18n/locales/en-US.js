@@ -189,6 +189,7 @@ export default {
     userInfo: 'EmployeeInfo',
     userAgent: 'Employee Agent',
     userPosition: 'UserPositions',
+    userLabor: 'UserLabor',
     companyInfo: 'CompanyInfo',
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
@@ -805,6 +806,42 @@ export default {
         ip: 'IP Address',
         startTime: 'Start Time',
         endTime: 'End Time'
+      }
+    },
+
+    userLabor: {
+      title: 'User Labor Type Management',
+      index: 'Index',
+      laborName: 'Labor Name',
+      laborNameCh: 'Chinese Name',
+      laborNameEn: 'English Name',
+      laborDescription: 'Labor Description',
+      laborTypeCode: 'Labor Type Code',
+      laborTypeNameCh: 'Chinese Name',
+      laborTypeNameEn: 'English Name',
+      laborTypeDescribe: 'Labor Type Description',
+      operation: 'Operation',
+      addLabor: 'Add Labor',
+      editLabor: 'Edit Labor',
+      addUserLabor: 'Add Labor Type',
+      editUserLabor: 'Edit Labor Type',
+      deleteConfirm: 'Are you sure you want to delete this labor type?',
+      pleaseInputLaborName: 'Please enter labor name',
+      pleaseInputLaborNameCh: 'Please enter Chinese name',
+      pleaseInputLaborNameEn: 'Please enter English name',
+      pleaseInputLaborDescription: 'Please enter labor description',
+      pleaseInputLaborTypeCode: 'Please enter labor type code',
+      pleaseInputLaborTypeNameCh: 'Please enter Chinese name',
+      pleaseInputLaborTypeNameEn: 'Please enter English name',
+      pleaseInputLaborTypeDescribe: 'Please enter labor type description',
+      saveSuccess: 'Save Successfully',
+      updateSuccess: 'Update Successfully',
+      deleteSuccess: 'Delete Successfully',
+      operationFailed: 'Operation Failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        laborTypeCode: 'Labor Type Code',
+        laborTypeNameCh: 'Chinese Name'
       }
     }
   }

@@ -253,6 +253,17 @@ const moduleRoutes = [
             }
           },
           {
+            path: 'userlabor',
+            name: 'SystemUserLabor',
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/userlabor.vue'),
+            meta: { 
+              title: 'route.userLabor', 
+              icon: 'Postcard',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
             path: 'userinfo',
             name: 'SystemUserInfo',
             component: () => import('../views/SystemBasicMgmt/System-BasicData/userinfo.vue'),

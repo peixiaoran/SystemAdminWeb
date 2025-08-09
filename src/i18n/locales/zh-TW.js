@@ -189,6 +189,7 @@ export default {
     userInfo: '員工資訊維護',
     userAgent: '員工代理維護',
     userPosition: '職位資訊維護',
+    userLabor: '用工類型維護',
     companyInfo: '公司資料維護',
     departmentInfo: '部門資料維護',
     departmentLevel: '部門層級維護',
@@ -855,6 +856,42 @@ export default {
         ip: 'IP地址',
         startTime: '開始時間',
         endTime: '結束時間'
+      }
+    },
+
+    userLabor: {
+      title: '用工類型管理',
+      index: '序號',
+      laborName: '用工名稱',
+      laborNameCh: '中文名稱',
+      laborNameEn: '英文名稱',
+      laborDescription: '用工描述',
+      laborTypeCode: '用工類型編碼',
+      laborTypeNameCh: '中文名稱',
+      laborTypeNameEn: '英文名稱',
+      laborTypeDescribe: '用工類型描述',
+      operation: '操作',
+      addLabor: '新增用工',
+      editLabor: '編輯用工',
+      addUserLabor: '新增用工類型',
+      editUserLabor: '編輯用工類型',
+      deleteConfirm: '確定要刪除該用工類型嗎？',
+      pleaseInputLaborName: '請輸入用工名稱',
+      pleaseInputLaborNameCh: '請輸入中文名稱',
+      pleaseInputLaborNameEn: '請輸入英文名稱',
+      pleaseInputLaborDescription: '請輸入用工描述',
+      pleaseInputLaborTypeCode: '請輸入用工類型編碼',
+      pleaseInputLaborTypeNameCh: '請輸入中文名稱',
+      pleaseInputLaborTypeNameEn: '請輸入英文名稱',
+      pleaseInputLaborTypeDescribe: '請輸入用工類型描述',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '刪除成功',
+      operationFailed: '操作失敗',
+      getFailed: '獲取數據失敗',
+      filter: {
+        laborTypeCode: '用工類型編碼',
+        laborTypeNameCh: '中文名稱'
       }
     }
   }
