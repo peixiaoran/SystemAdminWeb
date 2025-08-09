@@ -43,8 +43,8 @@
             fixed 
           />
           <el-table-column 
-            prop="laborNameCh"
-            :label="$t('SystemBasicMgmt.userLabor.laborNameCh')"
+            prop="laborNameCn"
+            :label="$t('SystemBasicMgmt.userLabor.laborNameCn')"
             align="left" 
             min-width="200" 
           />
@@ -122,10 +122,10 @@
           aria-label="用工类型编辑"
         >
           <div class="form-row">
-            <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborNameCh')" prop="laborNameCh">
+            <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborNameCn')" prop="laborNameCn">
               <el-input 
-                v-model="form.laborNameCh" 
-                :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCh')"
+                v-model="form.laborNameCn" 
+                :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCn')"
                 style="width:100%" 
               />
             </el-form-item>
@@ -202,15 +202,15 @@ const pagination = reactive({
 // 表单数据
 const form = reactive({
   laborId: '',
-  laborNameCh: '',
+  laborNameCn: '',
   laborNameEn: '',
   laborDescription: ''
 })
 
 // 表单验证规则
 const rules = {
-  laborNameCh: [
-    { required: true, message: () => t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCh'), trigger: 'blur' }
+  laborNameCn: [
+    { required: true, message: () => t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
   ],
   laborNameEn: [
     { required: true, message: () => t('SystemBasicMgmt.userLabor.pleaseInputLaborNameEn'), trigger: 'blur' }
@@ -284,7 +284,7 @@ const handleCurrentChange = (val) => {
 // 重置表单
 const resetForm = () => {
   form.laborId = ''
-  form.laborNameCh = ''
+  form.laborNameCn = ''
   form.laborNameEn = ''
   form.laborDescription = ''
 }
@@ -318,7 +318,7 @@ const handleEdit = async (row) => {
     if (response.code === '200') {
       const data = response.data
       form.laborId = data.laborId
-      form.laborNameCh = data.laborNameCh
+      form.laborNameCn = data.laborNameCn
       form.laborNameEn = data.laborNameEn
       form.laborDescription = data.laborDescription
     } else {
@@ -408,7 +408,7 @@ const handleSubmit = async () => {
     
     const params = {
       laborId: form.laborId,
-      laborNameCh: form.laborNameCh,
+      laborNameCn: form.laborNameCn,
       laborNameEn: form.laborNameEn,
       laborDescription: form.laborDescription
     }

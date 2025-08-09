@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from '@/i18n'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
@@ -47,7 +48,7 @@ service.interceptors.request.use(
     }
 
     // 添加语言参数到请求头
-    const language = localStorage.getItem('language') || 'zh-TW'
+    const language = localStorage.getItem('language') || 'zh-CN'
     
     // 设置请求头
     config.headers['Accept-Language'] = language
@@ -109,6 +110,17 @@ service.interceptors.response.use(
     const { config } = error
     if (config && config.requestKey) {
       pendingRequests.delete(config.requestKey)
+    }
+    
+    // 处理超时错误
+    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+      return {
+        code: 408,
+        data: null,
+        message: i18n.global.t('common.requestTimeoutMessage'),
+        success: false,
+        timeout: true
+      }
     }
     
     // 直接返回错误，让具体的请求处理函数处理错误
@@ -205,4 +217,4 @@ export const cancelAllRequests = () => {
 
 // 已移除sanitizeHtml函数，不再需要
 
-export default service 
+export default service

@@ -4,10 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
-              <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.filter.dicNameCh')">
+              <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.filter.dicNameCn')">
                   <el-input v-model="filters.dicName"
                            style="width: 180px;"
-                           :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCh')"
+                           :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCn')"
                            clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -36,7 +36,7 @@
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.dictionaryInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="dicType" :label="$t('SystemBasicMgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
                   <el-table-column prop="dicCode" :label="$t('SystemBasicMgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
-                  <el-table-column prop="dicNameCh" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCh')" align="left" min-width="230" />
+                  <el-table-column prop="dicNameCn" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCn')" align="left" min-width="230" />
                   <el-table-column prop="dicNameEn" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameEn')" align="left" min-width="230" />
                   <el-table-column :label="$t('SystemBasicMgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
@@ -85,8 +85,8 @@
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCh')" prop="dicNameCh">
-                      <el-input v-model="editForm.dicNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
+<el-input v-model="editForm.dicNameCn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
                       <el-input v-model="editForm.dicNameEn" style="width:100%" />
@@ -151,7 +151,7 @@
       dicId: 1,
       dicType: '',
       dicCode: 0,
-      dicNameCh: '',
+      dicNameCn: '',
       dicNameEn: '',
       createdBy: 1,
       createdDate: '',
@@ -170,9 +170,9 @@
       dicCode: [
           { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
       ],
-      dicNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCh'), trigger: 'blur' }
-      ],
+      dicNameCn: [
+{ required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
+],
       dicNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
       ]
@@ -195,7 +195,7 @@
           editForm.dicId = res.data.dicId
           editForm.dicType = res.data.dicType
           editForm.dicCode = res.data.dicCode
-          editForm.dicNameCh = res.data.dicNameCh
+          editForm.dicNameCn = res.data.dicNameCn
           editForm.dicNameEn = res.data.dicNameEn
           editForm.createdBy = res.data.createdBy
           editForm.createdDate = res.data.createdDate
@@ -271,7 +271,7 @@
       editForm.dicId = 1
       editForm.dicType = ''
       editForm.dicCode = 0
-      editForm.dicNameCh = ''
+      editForm.dicNameCn = ''
       editForm.dicNameEn = ''
       editForm.createdBy = 1
       editForm.createdDate = ''
@@ -297,7 +297,7 @@
       const params = {
           dicType: editForm.dicType,
           dicCode: editForm.dicCode,
-          dicNameCh: editForm.dicNameCh,
+          dicNameCn: editForm.dicNameCn,
           dicNameEn: editForm.dicNameEn
       }
       console.log(params);

@@ -114,7 +114,7 @@ const loading = ref(false)
 const loginForm = reactive({
   loginNo: '',
   password: '',
-  language: localStorage.getItem('language') || 'zh-TW' // 从localStorage获取语言设置
+  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
 // 在组件挂载后进行初始化
@@ -128,7 +128,7 @@ onMounted(() => {
 // 使用计算属性获取翻译后的选项
 const languages = computed(() => {
   return {
-    'zh-TW': t('login.languages.zh-TW'),
+    'zh-CN': t('login.languages.zh-CN'),
     'en-US': t('login.languages.en-US')
   }
 })
@@ -200,7 +200,7 @@ const handleLogin = () => {
               // 设置用户信息
               userStore.setUserInfo({
                 userId: res.data.userId || '',
-                userNameCh: res.data.userNameCh || '',
+                userNameCn: res.data.userNameCn || '',
                 userNameEn: res.data.userNameEn || '',
                 loginNo: res.data.loginNo || loginForm.loginNo,
                 avatar: res.data.avatarAddress || ''

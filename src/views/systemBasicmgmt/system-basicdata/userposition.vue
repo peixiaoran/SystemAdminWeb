@@ -28,8 +28,8 @@
             min-width="120" 
           />
           <el-table-column 
-            prop="positionNameCh"
-:label="$t('SystemBasicMgmt.userPosition.positionNameCh')"
+            prop="positionNameCn"
+:label="$t('SystemBasicMgmt.userPosition.positionNameCn')"
             align="left" 
             min-width="200" 
           />
@@ -89,10 +89,10 @@
                 readonly
               />
             </el-form-item>
-            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNameCh')">
+            <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNameCn')">
 <el-input
-v-model="editForm.positionNameCh"
-:placeholder="$t('SystemBasicMgmt.userPosition.positionNameChPlaceholder')"
+v-model="editForm.positionNameCn"
+:placeholder="$t('SystemBasicMgmt.userPosition.positionNameCnPlaceholder')"
                 style="width:100%" 
                 readonly
               />

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="language-switcher">
     <el-dropdown @command="handleCommand" trigger="click">
       <span class="language-selector">
@@ -31,14 +31,14 @@ const { t, locale } = useI18n()
 // 获取所有支持的语言选项
 const languages = computed(() => {
   return {
-    'zh-TW': t('login.languages.zh-TW'),
+    'zh-CN': t('login.languages.zh-CN'),
     'en-US': t('login.languages.en-US')
   }
 })
 
 // 获取当前语言标签
 const currentLanguageLabel = computed(() => {
-  return languages.value[locale.value] || languages.value['zh-TW']
+  return languages.value[locale.value] || languages.value['zh-CN']
 })
 
 // 切换语言
@@ -110,5 +110,5 @@ const handleCommand = (command) => {
   align-items: center;
   justify-content: space-between;
 }
-</style> 
+</style>
 

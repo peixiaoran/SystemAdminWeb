@@ -48,7 +48,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
-                  <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="150" />
+                  <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="150" />
                   <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="230" />
                   <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="180" />
                   <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
@@ -123,8 +123,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
                       <el-input v-model="editForm.userNo" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCh')" prop="userNameCh">
-                      <el-input v-model="editForm.userNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCn')" prop="userNameCn">
+                      <el-input v-model="editForm.userNameCn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameEn')" prop="userNameEn">
                       <el-input v-model="editForm.userNameEn" style="width:100%" />
@@ -396,7 +396,7 @@
       departmentId: '',
       positionId: '',
       userNo: '',
-      userNameCh: '',
+      userNameCn: '',
       userNameEn: '',
       roleId: '',
       gender: '',
@@ -438,8 +438,8 @@
       userNo: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNo'), trigger: 'blur' }
       ],
-      userNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameCh'), trigger: 'blur' }
+      userNameCn: [
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameCn'), trigger: 'blur' }
       ],
       userNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameEn'), trigger: 'blur' }
@@ -769,7 +769,7 @@
       Object.assign(editForm, {
           userId: '',
           userNo: '',
-          userNameCh: '',
+          userNameCn: '',
           userNameEn: '',
           hireDate: '',
           email: '',

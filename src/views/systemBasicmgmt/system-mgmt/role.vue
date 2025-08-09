@@ -46,8 +46,8 @@
                                    :label="$t('SystemBasicMgmt.role.roleCode')"
                                    align="left"
                                    min-width="240" />
-                  <el-table-column prop="roleNameCh"
-                                   :label="$t('SystemBasicMgmt.role.roleNameCh')"
+                  <el-table-column prop="roleNameCn"
+                                   :label="$t('SystemBasicMgmt.role.roleNameCn')"
                                    align="left"
                                    min-width="200" />
                   <el-table-column prop="roleNameEn"
@@ -109,8 +109,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.role.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.role.roleNameCh')" prop="roleNameCh">
-                      <el-input v-model="editForm.roleNameCh" style="width:100%"/>
+                  <el-form-item :label="$t('SystemBasicMgmt.role.roleNameCn')" prop="roleNameCn">
+                      <el-input v-model="editForm.roleNameCn" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -182,7 +182,7 @@
   const editForm = reactive({
       roleId: '',
       roleCode: '',
-      roleNameCh: '',
+      roleNameCn: '',
       roleNameEn: '',
       description: '',
       isEnabled: 1,
@@ -196,8 +196,8 @@
       roleCode: [
           { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleCode'), trigger: 'blur' }
       ],
-      roleNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleNameCh'), trigger: 'blur' }
+      roleNameCn: [
+          { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleNameCn'), trigger: 'blur' }
       ],
       roleNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleNameEn'), trigger: 'blur' }
@@ -237,7 +237,7 @@
           // 对字符串类型的字段进行防护XSS清洗
           editForm.roleId = res.data.roleId
           editForm.roleCode = res.data.roleCode || ''
-          editForm.roleNameCh = res.data.roleNameCh || ''
+          editForm.roleNameCn = res.data.roleNameCn || ''
           editForm.roleNameEn = res.data.roleNameEn || ''
           editForm.description = res.data.description || ''
           editForm.isEnabled = res.data.isEnabled
@@ -283,7 +283,7 @@
       
       editForm.roleId = ''
       editForm.roleCode = ''
-      editForm.roleNameCh = ''
+      editForm.roleNameCn = ''
       editForm.roleNameEn = ''
       editForm.description = ''
       editForm.isEnabled = 1
@@ -308,7 +308,7 @@
       const params = {
           roleId: '',
           roleCode: editForm.roleCode,
-          roleNameCh: editForm.roleNameCh,
+          roleNameCn: editForm.roleNameCn,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
@@ -334,7 +334,7 @@
       const params = {
           roleId: editForm.roleId,
           roleCode: editForm.roleCode,
-          roleNameCh: editForm.roleNameCh,
+          roleNameCn: editForm.roleNameCn,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,

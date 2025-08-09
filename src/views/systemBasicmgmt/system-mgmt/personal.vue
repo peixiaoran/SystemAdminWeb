@@ -17,10 +17,10 @@
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.loginNo')" prop="loginNo">
           <el-input v-model="personalInfoForm.loginNo" :disabled="true" />
         </el-form-item>
-        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.userNameCh')" prop="userNameCh">
-          <el-input 
-            v-model="personalInfoForm.userNameCh" 
-            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputUserNameCh')" 
+        <el-form-item :label="$t('SystemBasicMgmt.personalInfo.userNameCn')" prop="userNameCn">
+          <el-input
+            v-model="personalInfoForm.userNameCn"
+            :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputUserNameCn')" 
             :disabled="loading"
           />
         </el-form-item>
@@ -228,7 +228,7 @@ export default {
       positionId: '',
       roleId: '',
       userNo: '',
-      userNameCh: '',
+      userNameCn: '',
       userNameEn: '',
       gender: '',
       hireDate: '',
@@ -260,9 +260,9 @@ export default {
 
     // 表单验证规则
     const formRules = reactive({
-      userNameCh: [
-        { required: true, message: t('SystemBasicMgmt.personalInfo.userNameChRequired'), trigger: 'blur' }
-      ],
+      userNameCn: [
+      { required: true, message: t('SystemBasicMgmt.personalInfo.userNameCnRequired'), trigger: 'blur' }
+    ],
       userNameEn: [
         { required: true, message: t('SystemBasicMgmt.personalInfo.userNameEnRequired'), trigger: 'blur' }
       ],
@@ -487,7 +487,7 @@ export default {
         // 只提交允许修改的字段
         const updateData = {
           userId: personalInfoForm.userId,
-          userNameCh: personalInfoForm.userNameCh,
+          userNameCn: personalInfoForm.userNameCn,
           userNameEn: personalInfoForm.userNameEn,
           email: personalInfoForm.email,
           phoneNumber: personalInfoForm.phoneNumber,

@@ -86,7 +86,7 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="handleLanguageChange('zh-TW')">中文繁体</el-dropdown-item>
+                <el-dropdown-item @click="handleLanguageChange('zh-CN')">中文简体</el-dropdown-item>
                 <el-dropdown-item @click="handleLanguageChange('en-US')">English</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -216,7 +216,7 @@ const currentSystemName = computed(() => {
   if (locale.value === 'en-US') {
     return moduleStore.currentSystemNameEn || moduleStore.currentSystemName || ''
   } else {
-    return moduleStore.currentSystemNameCh || moduleStore.currentSystemName || ''
+    return moduleStore.currentSystemNameCn || moduleStore.currentSystemName || ''
   }
 })
 
@@ -247,10 +247,10 @@ watch(() => locale.value, () => {
 
 const currentLanguageLabel = computed(() => {
   const languageMap = {
-    'zh-TW': '中文繁体', 
+    'zh-CN': '中文简体', 
     'en-US': 'English'
   }
-  return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文繁体'
+  return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文简体'
 })
 
 const handleLanguageChange = (lang) => {
@@ -448,9 +448,6 @@ const fetchMenuData = async () => {
       router.push('/module-select')
       return
     }
-    
-    // 不再手动赋值 currentSystemName，直接依赖 computed
-    
     // 请求菜单数据
     const res = await post(MENU_API.GET_MENU, { domainId })
     
@@ -458,10 +455,10 @@ const fetchMenuData = async () => {
       // 处理菜单数据，将其与路由数据对应起来
       menuList.value = processMenuData(res.data || [])
     } else {
-      ElMessage.error(res?.message || '获取菜单数据失败')
+
     }
   } catch (error) {
-    ElMessage.error('获取菜单数据失败，请稍后重试')
+
   }
 }
 
@@ -615,9 +612,7 @@ const addTab = async (menu) => {
     // 跳转到对应路由
     router.push(formattedPath)
   } catch (error) {
-    // 处理导航错误
-    console.error('导航错误:', error)
-    ElMessage.error('导航失败，请检查路由配置')
+
   }
 }
 
@@ -743,13 +738,9 @@ const refreshSelectedTag = () => {
       if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
         cachedTabs.value.push(currentPath.replace(/\//g, '-'))
       }
-      
-      // 显示刷新成功提示
-      ElMessage.success('页面刷新成功')
     })
   }).catch(() => {
-            // 如果路由刷新失败，提示员工
-    ElMessage.error('页面刷新失败，请稍后重试')
+    
   })
 }
 

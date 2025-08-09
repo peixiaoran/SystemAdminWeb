@@ -65,13 +65,12 @@
       </div>
     </div>
 
-    <!-- 添加加载状态 -->
+    <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
-      <el-empty :description="$t('moduleSelect.moduleLoading')" :image-size="100">
-        <template #image>
-          <el-icon :size="60" class="rotating-icon"><Loading /></el-icon>
-        </template>
-      </el-empty>
+      <div class="loading-content">
+        <el-icon class="loading-icon" :size="60"><Loading /></el-icon>
+        <div class="loading-text">{{ $t('moduleSelect.moduleLoading') }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -141,7 +140,7 @@ onMounted(() => {
 // 多语言字段获取
 function getModuleName(module) {
   if (!module) return ''
-  return locale.value === 'en-US' ? (module.domainNameEn || module.domainNameCh || module.domainName) : (module.domainNameCh || module.domainNameEn || module.domainName)
+  return locale.value === 'en-US' ? (module.domainNameEn || module.domainNameCn || module.domainName) : (module.domainNameCn || module.domainNameEn || module.domainName)
 }
 function getModuleRemarks(module) {
   if (!module) return ''
@@ -168,7 +167,7 @@ const enterModule = (module) => {
     String(module.domainId),
     getModuleName(module),
     moduleIdentifier,
-    module.domainNameCh || '',
+    module.domainNameCn || '',
     module.domainNameEn || ''
   )
   
@@ -433,13 +432,25 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(245, 247, 250, 0.9);
+  background-color: rgba(255, 255, 255, 0.9);
   z-index: 10;
-  backdrop-filter: blur(5px);
 }
 
-.rotating-icon {
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-text {
+  color: #606266;
+  font-size: 14px;
+}
+
+.loading-icon {
   animation: rotate 1s linear infinite;
+  color: #409EFF;
 }
 
 @keyframes rotate {

@@ -172,7 +172,7 @@ const form = reactive({
   password: '',
   confirmPassword: '',
   verificationCode: '',
-  language: localStorage.getItem('language') || 'zh-TW' // 从localStorage获取语言设置
+  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
 // 状态管理
@@ -206,7 +206,7 @@ onUnmounted(() => {
 // 使用计算属性获取翻译后的语言选项
 const languages = computed(() => {
   return {
-    'zh-TW': t('passwordExpiration.languages.zh-TW'),
+    'zh-CN': t('passwordExpiration.languages.zh-CN'),
     'en-US': t('passwordExpiration.languages.en-US')
   }
 })

@@ -50,7 +50,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.userLoginLog.index')" width="70" align="center" fixed />
                   <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userLoginLog.userNo')" align="center" min-width="120"/>
-                  <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userLoginLog.userNameCh')" align="left" min-width="150" />
+                  <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userLoginLog.userNameCn')" align="left" min-width="150" />
                   <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userLoginLog.userNameEn')" align="left" min-width="150" />
                   <el-table-column prop="ip" :label="$t('SystemBasicMgmt.userLoginLog.ip')" align="center" min-width="140" />
                   <el-table-column :label="$t('SystemBasicMgmt.userLoginLog.status')" align="center" min-width="130">

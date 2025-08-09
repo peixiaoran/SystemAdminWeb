@@ -34,7 +34,7 @@
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('SystemBasicMgmt.currencyInfo.index')" width="70" align="center" fixed />
                     <el-table-column prop="currencyCode" :label="$t('SystemBasicMgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
-                    <el-table-column prop="currencyNameCh" :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCh')" align="left" min-width="150" />
+                    <el-table-column prop="currencyNameCn" :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
                     <el-table-column prop="currencyNameEn" :label="$t('SystemBasicMgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
                     <el-table-column prop="currencyState" :label="$t('SystemBasicMgmt.currencyInfo.currencyState')" align="center" min-width="100">
                         <template #default="scope">
@@ -91,8 +91,8 @@
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCh')" prop="currencyNameCh">
-                        <el-input v-model="editForm.currencyNameCh" style="width:100%" />
+                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
+<el-input v-model="editForm.currencyNameCn" style="width:100%" />
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
                         <el-input v-model="editForm.currencyNameEn" style="width:100%" />
@@ -160,7 +160,7 @@
     const editForm = reactive({
         currencyId: '',
         currencyCode: '',
-        currencyNameCh: '',
+        currencyNameCn: '',
         currencyNameEn: '',
         currencyState: 1,
         remark: ''
@@ -174,9 +174,9 @@
         currencyCode: [
             { required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode'), trigger: 'blur' }
         ],
-        currencyNameCh: [
-            { required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyNameCh'), trigger: 'blur' }
-        ],
+        currencyNameCn: [
+{ required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyNameCn'), trigger: 'blur' }
+],
         currencyNameEn: [
             { required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyNameEn'), trigger: 'blur' }
         ]
@@ -198,7 +198,7 @@
         if (res && res.code === '200') {
             editForm.currencyId = res.data.currencyId
             editForm.currencyCode = res.data.currencyCode
-            editForm.currencyNameCh = res.data.currencyNameCh
+            editForm.currencyNameCn = res.data.currencyNameCn
             editForm.currencyNameEn = res.data.currencyNameEn
             editForm.currencyState = res.data.currencyState
             editForm.remark = res.data.remark || ''
@@ -272,7 +272,7 @@
         
         editForm.currencyId = ''
         editForm.currencyCode = ''
-        editForm.currencyNameCh = ''
+        editForm.currencyNameCn = ''
         editForm.currencyNameEn = ''
         editForm.currencyState = 1
         editForm.remark = ''

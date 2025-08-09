@@ -37,10 +37,9 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentLevel.index')" width="70" align="center" fixed />
                   <el-table-column prop="departmentLevelCode" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
-                  <el-table-column prop="departmentLevelNameCh" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" align="left" min-width="200" />
+                  <el-table-column prop="departmentLevelNameCn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelNameEn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
                   <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
-                  <el-table-column prop="sortOrder" :label="$t('SystemBasicMgmt.departmentLevel.sortOrder')" align="center" min-width="100" />
                   <el-table-column :label="$t('SystemBasicMgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -78,8 +77,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
                       <el-input v-model="editForm.departmentLevelCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCh')" prop="departmentLevelNameCh">
-                      <el-input v-model="editForm.departmentLevelNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
+                      <el-input v-model="editForm.departmentLevelNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -149,7 +148,7 @@
   const editForm = reactive({
       departmentLevelId: '',
       departmentLevelCode: '',
-      departmentLevelNameCh: '',
+      departmentLevelNameCn: '',
       departmentLevelNameEn: '',
       departmentLevelDescribe: '',
       sortOrder: 1
@@ -163,8 +162,8 @@
       departmentLevelCode: [
           { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelCode'), trigger: 'blur' }
       ],
-      departmentLevelNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameCh'), trigger: 'blur' }
+      departmentLevelNameCn: [
+          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameCn'), trigger: 'blur' }
       ],
       departmentLevelNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
@@ -186,13 +185,15 @@
       }
       const res = await post(GET_DEPARTMENT_LEVEL_ENTITY_API.GET_DEPARTMENT_LEVEL_ENTITY, params)
 
+      console.log(res.data)
+
       if (res && res.code === '200') {
           editForm.departmentLevelId = res.data.departmentLevelId
           editForm.departmentLevelCode = res.data.departmentLevelCode
-          editForm.departmentLevelNameCh = res.data.departmentLevelNameCh
+          editForm.departmentLevelNameCn = res.data.departmentLevelNameCn
           editForm.departmentLevelNameEn = res.data.departmentLevelNameEn
           editForm.departmentLevelDescribe = res.data.departmentLevelDescribe
-          editForm.sortOrder = res.data.sortOrder || 1
+          editForm.sortOrder = res.data.sortOrder
       }
   }
 
@@ -265,7 +266,7 @@
       
       editForm.departmentLevelId = ''
       editForm.departmentLevelCode = ''
-      editForm.departmentLevelNameCh = ''
+      editForm.departmentLevelNameCn = ''
       editForm.departmentLevelNameEn = ''
       editForm.departmentLevelDescribe = ''
       editForm.sortOrder = 1

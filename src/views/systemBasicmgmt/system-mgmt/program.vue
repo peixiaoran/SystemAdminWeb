@@ -47,7 +47,7 @@
                         class="conventional-table">
                                       <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.program.programCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.program.programNameCh')" align="left" min-width="260" />
+                  <el-table-column prop="menuNameCn" :label="$t('SystemBasicMgmt.program.programNameCn')" align="left" min-width="260" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.program.programNameEn')" align="left" min-width="230" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.program.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('SystemBasicMgmt.program.pagePath')" align="left" min-width="420" />
@@ -107,8 +107,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.program.programCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.program.programNameCh')" prop="menuNameCh">
-<el-input v-model="editForm.menuNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.program.programNameCn')" prop="menuNameCn">
+                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -240,7 +240,7 @@
       parentMenuId: '',
       domainId: '',
       menuCode: '',
-      menuNameCh: '',
+      menuNameCn: '',
       menuNameEn: '',
       menuType: '',
       menuUrl: '',
@@ -263,8 +263,8 @@
       menuCode: [
           { required: true, message: () => t('SystemBasicMgmt.program.pleaseInputProgramCode'), trigger: 'blur' }
       ],
-      menuNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.program.pleaseInputProgramNameCh'), trigger: 'blur' }
+      menuNameCn: [
+{ required: true, message: () => t('SystemBasicMgmt.program.pleaseInputProgramNameCn'), trigger: 'blur' }
       ],
       menuNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.program.pleaseInputProgramNameEn'), trigger: 'blur' }
@@ -382,7 +382,7 @@
               // 填充表单数据
               editForm.menuId = res.data.menuId
               editForm.menuCode = res.data.menuCode || ''
-              editForm.menuNameCh = res.data.menuNameCh || ''
+              editForm.menuNameCn = res.data.menuNameCn || ''
               editForm.menuNameEn = res.data.menuNameEn || ''
               editForm.domainId = res.data.domainId
               editForm.menuType = String(res.data.menuType || '')
@@ -491,7 +491,7 @@
       Object.assign(editForm, {
           menuId: '',
           menuCode: '',
-          menuNameCh: '',
+          menuNameCn: '',
           menuNameEn: '',
           menuType: '',
           menuUrl: '',

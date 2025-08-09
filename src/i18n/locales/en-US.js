@@ -44,7 +44,9 @@ export default {
     total: 'Total {total}',
     goto: 'Go to',
     page: '',
-    itemsPerPage: '/ page'
+    itemsPerPage: '/ page',
+    requestTimeout: 'Request timeout, please try again',
+    requestTimeoutMessage: 'Request timeout'
   },
   
   // Password Expiration Page
@@ -82,9 +84,9 @@ export default {
     redirectCountdownText: 's to redirect to login page',
     backToLogin: 'Back to Login',
     languages: {
-      'zh-TW': '中文繁體',
-      'en-US': 'English'
-    }
+        'zh-CN': '中文简体',
+        'en-US': 'English'
+      }
   },
   
   // Error Pages
@@ -130,7 +132,7 @@ export default {
       MTY: 'Singapore ESONSG'
     },
     languages: {
-      'zh-TW': '中文繁體',
+      'zh-CN': '中文简体',
       'en-US': 'English'
     }
   },
@@ -152,7 +154,7 @@ export default {
     unlockRequestFailed: 'Unlock request failed',
     redirectCountdownText: 's to redirect to login page',
     languages: {
-      'zh-TW': '中文繁體',
+      'zh-CN': '中文简体',
       'en-US': 'English'
     }
   },
@@ -208,7 +210,7 @@ export default {
       title: 'Currency Information Management',
       index: 'Index',
       currencyCode: 'Currency Code',
-      currencyNameCh: 'Currency Chinese Name',
+      currencyNameCn: 'Currency Chinese Name',
       currencyNameEn: 'Currency English Name',
       currencyState: 'Enable Status',
       remark: 'Remark',
@@ -217,7 +219,7 @@ export default {
       editCurrency: 'Edit Currency Information',
       deleteConfirm: 'Are you sure you want to delete this record?',
       pleaseInputCurrencyCode: 'Please enter currency code',
-      pleaseInputCurrencyNameCh: 'Please enter currency Chinese name',
+      pleaseInputCurrencyNameCn: 'Please enter currency Chinese name',
       pleaseInputCurrencyNameEn: 'Please enter currency English name',
       pleaseInputRemark: 'Please enter remark',
       saveSuccess: 'Save Successfully',
@@ -262,7 +264,7 @@ export default {
       title: 'Employee Information Management',
       userNo: 'Employee No.',
       userName: 'Employee Name',
-      userNameCh: 'Chinese Name',
+      userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
       department: 'Department',
       position: 'Position',
@@ -316,7 +318,7 @@ export default {
       exportPdfFileName: 'Employee Information Export',
       pleaseInputUserNo: 'Please enter employee number',
       pleaseInputUserName: 'Please enter employee name',
-      pleaseInputUserNameCh: 'Please enter Chinese name',
+      pleaseInputUserNameCn: 'Please enter Chinese name',
       pleaseInputUserNameEn: 'Please enter English name',
       pleaseInputLoginNo: 'Please enter login account',
       pleaseInputPassword: 'Please enter password',
@@ -381,7 +383,7 @@ export default {
     companyInfo: {
       title: 'Company Information Management',
       index: 'Index',
-      companyNameCh: 'Company Name (Ch)',
+      companyNameCn: 'Company Name (Cn)',
       companyNameEn: 'Company Name (En)',
       companyPhone: 'Company Phone',
       companyFax: 'Company Fax',
@@ -392,7 +394,7 @@ export default {
       editCompany: 'Edit Company Information',
       deleteConfirm: 'Are you sure you want to delete this company?',
       pleaseInputName: 'Please enter company name',
-      pleaseInputNameCh: 'Please enter company name (Ch)',
+      pleaseInputNameCn: 'Please enter company name (Cn)',
       pleaseInputNameEn: 'Please enter company name (En)',
       pleaseInputPhone: 'Please enter company phone',
       pleaseInputFax: 'Please enter company fax',
@@ -409,7 +411,7 @@ export default {
       title: 'Department Information Management',
       index: 'Index',
       departmentCode: 'Department Code',
-      departmentNameCh: 'Department Name (Ch)',
+      departmentNameCn: 'Department Name (Cn)',
       departmentNameEn: 'Department Name (En)',
       departmentLevelName: 'Department Level',
       departmentLevelId: 'Department Level',
@@ -430,7 +432,7 @@ export default {
       pleaseInputSortOrder: 'Please enter sort order',
       pleaseInputCode: 'Please enter department code',
       pleaseInputName: 'Please enter department name',
-      pleaseInputNameCh: 'Please enter department name (Ch)',
+      pleaseInputNameCn: 'Please enter department name (Cn)',
       pleaseInputNameEn: 'Please enter department name (En)',
       pleaseInputLandline: 'Please enter landline',
       pleaseInputEmail: 'Please enter email',
@@ -452,7 +454,7 @@ export default {
       index: 'Index',
       departmentLevelCode: 'Department Level Code',
       departmentLevelName: 'Department Level Name',
-      departmentLevelNameCh: 'Department Level Name (Ch)',
+      departmentLevelNameCn: 'Department Level Name (Cn)',
       departmentLevelNameEn: 'Department Level Name (En)',
       departmentLevelDescribe: 'Description',
       sortOrder: 'Sort Order',
@@ -461,7 +463,7 @@ export default {
       editDepartmentLevel: 'Edit Department Level',
       deleteConfirm: 'Are you sure you want to delete this department level?',
       pleaseInputDepartmentLevelCode: 'Please enter department level code',
-      pleaseInputDepartmentLevelNameCh: 'Please enter department level name (Ch)',
+      pleaseInputDepartmentLevelNameCn: 'Please enter department level name (Cn)',
       pleaseInputDepartmentLevelNameEn: 'Please enter department level name (En)',
       pleaseInputSortOrder: 'Please enter sort order',
       saveSuccess: 'Save Successfully',
@@ -473,16 +475,16 @@ export default {
     userPosition: {
       index: 'Index',
       positionNo: 'Position No.',
-      positionNameCh: 'Position Name (Ch)',
+      positionNameCn: 'Position Name (Ch)',
       positionNameEn: 'Position Name (En)',
       positionDescribe: 'Description',
       operation: 'Operation',
       editPosition: 'Edit Position',
       pleaseInputPositionNo: 'Please enter position number',
-      pleaseInputPositionNameCh: 'Please enter position name (Ch)',
+      pleaseInputPositionNameCn: 'Please enter position name (Ch)',
       pleaseInputPositionNameEn: 'Please enter position name (En)',
       positionNoPlaceholder: 'Please enter position number',
-      positionNameChPlaceholder: 'Please enter position name (Ch)',
+      positionNameCnPlaceholder: 'Please enter position name (Ch)',
       positionNameEnPlaceholder: 'Please enter position name (En)',
       positionDescribePlaceholder: 'Please enter description',
       getFailed: 'Failed to get data'
@@ -492,7 +494,7 @@ export default {
       index: 'Index',
       dicType: 'Dictionary Type',
       dicCode: 'Dictionary Code',
-      dicNameCh: 'Dictionary Name (Ch)',
+      dicNameCn: 'Dictionary Name (Ch)',
       dicNameEn: 'Dictionary Name (En)',
       operation: 'Operation',
       addDictionary: 'Add Dictionary',
@@ -501,7 +503,7 @@ export default {
       pleaseInputDicType: 'Please enter dictionary type',
       pleaseSelectDicType: 'Please select dictionary type',
       pleaseInputDicCode: 'Please enter dictionary code',
-      pleaseInputDicNameCh: 'Please enter dictionary name (Ch)',
+      pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
       saveSuccess: 'Save Successfully',
       updateSuccess: 'Update Successfully',
@@ -509,7 +511,7 @@ export default {
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {
-        dicNameCh: 'Dictionary Name (Ch)',
+        dicNameCn: 'Dictionary Name (Ch)',
         dicNameEn: 'Dictionary Name (En)'
       }
     },
@@ -534,21 +536,21 @@ export default {
     role: {
       roleCode: 'Role Code',
       roleName: 'Role Name',
-      roleNameCh: 'Role Name (Ch)',
+      roleNameCn: 'Role Name (Ch)',
       roleNameEn: 'Role Name (En)',
       addRole: 'Add Role',
       editRole: 'Edit Role',
       deleteConfirm: 'Are you sure you want to delete this role?',
       pleaseInputRoleCode: 'Please enter role code',
       pleaseInputRoleName: 'Please enter role name',
-      pleaseInputRoleNameCh: 'Please enter role name (Ch)',
+      pleaseInputRoleNameCn: 'Please enter role name (Ch)',
       pleaseInputRoleNameEn: 'Please enter role name (En)'
     },
     // Domain
     domain: {
       domainCode: 'Domain Code',
       domainName: 'Domain Name',
-      domainNameCh: 'Domain Name (Ch)',
+      domainNameCn: 'Domain Name (Ch)',
       domainNameEn: 'Domain Name (En)',
       domainIcon: 'Domain Icon',
       sortOrder: 'Sort Order',
@@ -560,7 +562,7 @@ export default {
       deleteConfirm: 'Are you sure you want to delete this domain?',
       pleaseInputDomainCode: 'Please enter domain code',
       pleaseInputDomainName: 'Please enter domain name',
-      pleaseInputDomainNameCh: 'Please enter domain name (Ch)',
+      pleaseInputDomainNameCn: 'Please enter domain name (Ch)',
       pleaseInputDomainNameEn: 'Please enter domain name (En)',
       pleaseInputDomainIcon: 'Please enter domain icon',
       pleaseInputSortOrder: 'Please enter sort order',
@@ -576,7 +578,7 @@ export default {
       domain: 'Domain',
       menuCode: 'Module Code',
       menuName: 'Module Name',
-      menuNameCh: 'Module Name (Ch)',
+      menuNameCn: 'Module Name (Ch)',
       menuNameEn: 'Module Name (En)',
       menuType: 'Menu Type',
       menuTypeName: 'Menu Type',
@@ -590,7 +592,7 @@ export default {
       deleteConfirm: 'Are you sure you want to delete this module?',
       pleaseInputMenuCode: 'Please enter module code',
       pleaseInputMenuName: 'Please enter module name',
-      pleaseInputMenuNameCh: 'Please enter module name (Ch)',
+      pleaseInputMenuNameCn: 'Please enter module name (Ch)',
       pleaseInputMenuNameEn: 'Please enter module name (En)',
       pleaseInputMenuIcon: 'Please enter menu icon',
       pleaseInputSortOrder: 'Please enter sort order',
@@ -603,7 +605,7 @@ export default {
     program: {
       programCode: 'Program Code',
       programName: 'Program Name',
-      programNameCh: 'Program Name (Ch)',
+      programNameCn: 'Program Name (Ch)',
       programNameEn: 'Program Name (En)',
       domain: 'Domain',
       module: 'Module',
@@ -619,7 +621,7 @@ export default {
       deleteConfirm: 'Are you sure you want to delete this program?',
       pleaseInputProgramCode: 'Please enter program code',
       pleaseInputProgramName: 'Please enter program name',
-      pleaseInputProgramNameCh: 'Please enter program name (Ch)',
+      pleaseInputProgramNameCn: 'Please enter program name (Ch)',
       pleaseInputProgramNameEn: 'Please enter program name (En)',
       pleaseInputProgramIcon: 'Please enter program icon',
       pleaseInputSortOrder: 'Please enter sort order',
@@ -671,7 +673,7 @@ export default {
       title: 'Personal Info Management',
       userNo: 'Employee No.',
       loginNo: 'Login Account',
-      userNameCh: 'Chinese Name',
+      userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
       email: 'Email',
       phoneNumber: 'Phone Number',
@@ -691,13 +693,13 @@ export default {
       isRealtimeNotification: 'Real-time Email Notification',
       isScheduledNotification: 'Scheduled Email Notification',
       remark: 'Remark',
-      pleaseInputUserNameCh: 'Please enter Chinese name',
+      pleaseInputUserNameCn: 'Please enter Chinese name',
       pleaseInputUserNameEn: 'Please enter English name',
       pleaseInputEmail: 'Please enter email',
       pleaseInputPhoneNumber: 'Please enter phone number',
       pleaseInputPassword: 'Please enter password',
       pleaseInputRemark: 'Please enter remark',
-      userNameChRequired: 'Chinese name is required',
+      userNameCnRequired: 'Chinese name is required',
       userNameEnRequired: 'English name is required',
       emailRequired: 'Email is required',
       emailFormatError: 'Invalid email format',
@@ -793,7 +795,7 @@ export default {
       title: 'User Login Log',
       index: 'Index',
       userNo: 'Employee No.',
-      userNameCh: 'Chinese Name',
+      userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
       ip: 'IP Address',
       status: 'Login Status',
@@ -813,11 +815,11 @@ export default {
       title: 'User Labor Type Management',
       index: 'Index',
       laborName: 'Labor Name',
-      laborNameCh: 'Chinese Name',
+      laborNameCn: 'Chinese Name',
       laborNameEn: 'English Name',
       laborDescription: 'Labor Description',
       laborTypeCode: 'Labor Type Code',
-      laborTypeNameCh: 'Chinese Name',
+      laborTypeNameCn: 'Chinese Name',
       laborTypeNameEn: 'English Name',
       laborTypeDescribe: 'Labor Type Description',
       operation: 'Operation',
@@ -827,11 +829,11 @@ export default {
       editUserLabor: 'Edit Labor Type',
       deleteConfirm: 'Are you sure you want to delete this labor type?',
       pleaseInputLaborName: 'Please enter labor name',
-      pleaseInputLaborNameCh: 'Please enter Chinese name',
+      pleaseInputLaborNameCn: 'Please enter Chinese name',
       pleaseInputLaborNameEn: 'Please enter English name',
       pleaseInputLaborDescription: 'Please enter labor description',
       pleaseInputLaborTypeCode: 'Please enter labor type code',
-      pleaseInputLaborTypeNameCh: 'Please enter Chinese name',
+      pleaseInputLaborTypeNameCn: 'Please enter Chinese name',
       pleaseInputLaborTypeNameEn: 'Please enter English name',
       pleaseInputLaborTypeDescribe: 'Please enter labor type description',
       saveSuccess: 'Save Successfully',
@@ -841,7 +843,7 @@ export default {
       getFailed: 'Failed to get data',
       filter: {
         laborTypeCode: 'Labor Type Code',
-        laborTypeNameCh: 'Chinese Name'
+        laborTypeNameCn: 'Chinese Name'
       }
     }
   }

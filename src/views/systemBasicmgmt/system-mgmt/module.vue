@@ -44,7 +44,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.module.menuCode')" align="left" min-width="230" />
-                  <el-table-column prop="menuNameCh" :label="$t('SystemBasicMgmt.module.menuNameCh')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameCn" :label="$t('SystemBasicMgmt.module.menuNameCn')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.module.menuNameEn')" align="left" min-width="200" />
                   <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="130" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.module.roleCode')" align="center" min-width="130" />
@@ -105,8 +105,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.module.menuCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.module.menuNameCh')" prop="menuNameCh">
-                      <el-input v-model="editForm.menuNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.module.menuNameCn')" prop="menuNameCn">
+                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -222,7 +222,7 @@
       parentMenuId: '0',
       domainId: '',
       menuCode: '',
-      menuNameCh: '',
+      menuNameCn: '',
       menuNameEn: '',
       menuType: '',
       menuUrl: '',
@@ -243,8 +243,8 @@
       menuCode: [
           { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuCode'), trigger: 'blur' }
       ],
-      menuNameCh: [
-{ required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuNameCh'), trigger: 'blur' }
+      menuNameCn: [
+{ required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuNameCn'), trigger: 'blur' }
       ],
       menuNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.module.pleaseInputMenuNameEn'), trigger: 'blur' }
@@ -361,7 +361,7 @@
           if (res && res.code === '200') {
               editForm.menuId = res.data.menuId
               editForm.menuCode = res.data.menuCode
-              editForm.menuNameCh = res.data.menuNameCh
+              editForm.menuNameCn = res.data.menuNameCn
               editForm.menuNameEn = res.data.menuNameEn
               editForm.parentMenuId = res.data.parentMenuId
               editForm.domainId = res.data.domainId
@@ -477,7 +477,7 @@
           menuId: '',
           parentMenuId: '0',
           menuCode: '',
-          menuNameCh: '',
+          menuNameCn: '',
           menuNameEn: '',
           menuType: '',
           menuUrl: '',

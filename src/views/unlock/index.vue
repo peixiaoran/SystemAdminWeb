@@ -126,7 +126,7 @@ let redirectTimer = null
 const unlockForm = reactive({
   userNo: '',
   verificationCode: '',
-  language: localStorage.getItem('language') || 'zh-TW' // 从localStorage获取语言设置
+  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
 
 // 在组件挂载后进行初始化
@@ -150,7 +150,7 @@ onUnmounted(() => {
 // 使用计算属性获取翻译后的选项
 const languages = computed(() => {
   return {
-    'zh-TW': t('unlock.languages.zh-TW'),
+    'zh-CN': t('unlock.languages.zh-CN'),
     'en-US': t('unlock.languages.en-US')
   }
 })

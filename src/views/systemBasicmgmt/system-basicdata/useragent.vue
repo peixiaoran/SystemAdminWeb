@@ -45,7 +45,7 @@
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
-                    <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="180" />
+                    <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="180" />
                     <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
                     <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
                     <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
@@ -132,7 +132,7 @@
 
         <!-- 员工选择对话框 -->
         <el-dialog v-model="userSelectDialogVisible"
-                   :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCh || currentUserInfo.userNameEn}`"
+                   :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCn || currentUserInfo.userNameEn}`"
                    width="70%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
@@ -173,7 +173,7 @@
                             style="width: 180px;"
                             :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserNo')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCh')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCn')">
                         <el-input 
                             v-model="userSelectFilters.userName" 
                             style="width: 180px;"
@@ -196,7 +196,7 @@
                           @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="120" />
-                    <el-table-column prop="userNameCh" :label="$t('SystemBasicMgmt.userInfo.userNameCh')" align="left" min-width="120" />
+                    <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="120" />
                     <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="120" />
                     <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="120" />
                     <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="100" />
@@ -458,7 +458,7 @@
         // 处理配置代理人操作
     const handleConfigureAgent = async (index, row) => {
         currentUserId.value = row.userId
-        agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userNameCh || row.userNameEn}`
+        agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userNameCn || row.userNameEn}`
         agentDialogVisible.value = true
         // 获取代理人列表
         await fetchUserAgentList(row.userId)
@@ -713,7 +713,7 @@
                     // 成功添加代理人
                 } else {
                     ElMessage({
-                        message: res.message || `添加代理人失败 ${user.userNameCh || user.userNameEn}`,
+                        message: res.message || `添加代理人失败 ${user.userNameCn || user.userNameEn}`,
                         type: 'error',
                         plain: true,
                         showClose: true

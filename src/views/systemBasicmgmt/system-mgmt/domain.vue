@@ -7,8 +7,8 @@
               <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')">
                   <el-input v-model="filters.domainCode" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainCode')" style="width:170px" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCh')">
-                  <el-input v-model="filters.domainName" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameCh')" style="width:200px" />
+              <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCn')">
+          <el-input v-model="filters.domainName" :placeholder="$t('SystemBasicMgmt.domain.pleaseInputDomainNameCn')" style="width:200px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -35,7 +35,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
                   <el-table-column prop="domainCode" :label="$t('SystemBasicMgmt.domain.domainCode')" align="left" min-width="230" />
-                  <el-table-column prop="domainNameCh" :label="$t('SystemBasicMgmt.domain.domainNameCh')" align="left" min-width="280" />
+                  <el-table-column prop="domainNameCn" :label="$t('SystemBasicMgmt.domain.domainNameCn')" align="left" min-width="280" />
                   <el-table-column prop="domainNameEn" :label="$t('SystemBasicMgmt.domain.domainNameEn')" align="left" min-width="280" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.domain.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('SystemBasicMgmt.domain.pagePath')" align="left" min-width="230" />
@@ -98,8 +98,8 @@
                   <el-form-item :label="$t('SystemBasicMgmt.domain.domainCode')" prop="domainCode">
                       <el-input v-model="editForm.domainCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCh')" prop="domainNameCh">
-                      <el-input v-model="editForm.domainNameCh" style="width:100%" />
+                  <el-form-item :label="$t('SystemBasicMgmt.domain.domainNameCn')" prop="domainNameCn">
+          <el-input v-model="editForm.domainNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -189,7 +189,7 @@
   // 过滤条件
   const filters = reactive({
       domainCode: '',
-      domainNameCh: '',
+      domainNameCn: '',
       domainNameEn: '',
       domainUrl: ''
   })
@@ -201,7 +201,7 @@
   const editForm = reactive({
       domainId: '0',
       domainCode: '',
-      domainNameCh: '',
+      domainNameCn: '',
       domainNameEn: '',
       domainIcon: '',
       sortOrder: 1,
@@ -222,8 +222,8 @@
       domainCode: [
           { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainCode'), trigger: 'blur' }
       ],
-      domainNameCh: [
-          { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainNameCh'), trigger: 'blur' }
+      domainNameCn: [
+      { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainNameCn'), trigger: 'blur' }
       ],
       domainNameEn: [
           { required: true, message: () => t('SystemBasicMgmt.domain.pleaseInputDomainNameEn'), trigger: 'blur' }
@@ -266,7 +266,7 @@
       if (res && res.code === '200') {
           editForm.domainId = res.data.domainId
           editForm.domainCode = res.data.domainCode
-          editForm.domainNameCh = res.data.domainNameCh
+          editForm.domainNameCn = res.data.domainNameCn
           editForm.domainNameEn = res.data.domainNameEn
           editForm.domainIcon = res.data.domainIcon
           editForm.sortOrder = res.data.sortOrder
@@ -315,7 +315,7 @@
   // 重置
   const handleReset = () => {
       filters.domainCode = ''
-      filters.domainNameCh = ''
+      filters.domainNameCn = ''
       filters.domainNameEn = ''
       pagination.pageIndex = 1
   }
@@ -352,7 +352,7 @@
       editForm.isVisible = 1
       editForm.domainId = '0'
       editForm.domainCode = ''
-      editForm.domainNameCh = ''
+      editForm.domainNameCn = ''
       editForm.domainNameEn = ''
       editForm.remarksCh = ''
       editForm.remarksEn = ''

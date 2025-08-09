@@ -7,7 +7,7 @@ import { LOGOUT_API } from '@/config/api/login/api'
 export const useUserStore = defineStore('user', {
   state: () => ({
     userId: '',
-    userNameCh: '',
+    userNameCn: '',
     userNameEn: '',
     loginNo: '',
     avatar: '',
@@ -22,11 +22,11 @@ export const useUserStore = defineStore('user', {
     
     // 根据当前语言获取用户名
     getDisplayName: (state) => {
-      const currentLanguage = localStorage.getItem('language') || 'zh-TW'
-      if (currentLanguage === 'zh-TW') {
-        return state.userNameCh || state.loginNo || '管理员'
+      const currentLanguage = localStorage.getItem('language') || 'zh-CN'
+    if (currentLanguage === 'zh-CN') {
+        return state.userNameCn || state.loginNo || '管理员'
       } else {
-        return state.userNameEn || state.userNameCh || state.loginNo || 'Admin'
+        return state.userNameEn || state.userNameCn || state.loginNo || 'Admin'
       }
     }
   },
@@ -37,13 +37,13 @@ export const useUserStore = defineStore('user', {
       if (!userInfo) return
       
       this.userId = userInfo.userId
-      this.userNameCh = userInfo.userNameCh
+      this.userNameCn = userInfo.userNameCn
       this.userNameEn = userInfo.userNameEn
       this.loginNo = userInfo.loginNo
       this.avatar = userInfo.avatar
       
       // 保存用户信息到localStorage
-      localStorage.setItem('userNameCh', userInfo.userNameCh)
+      localStorage.setItem('userNameCn', userInfo.userNameCn)
       localStorage.setItem('userNameEn', userInfo.userNameEn)
       localStorage.setItem('loginNo', userInfo.loginNo)
     },
@@ -70,7 +70,7 @@ export const useUserStore = defineStore('user', {
         
         // 清除本地存储
         localStorage.removeItem('token')
-        localStorage.removeItem('userNameCh')
+        localStorage.removeItem('userNameCn')
         localStorage.removeItem('userNameEn')
         localStorage.removeItem('loginNo')
         localStorage.removeItem('currentDomainId')
@@ -80,7 +80,7 @@ export const useUserStore = defineStore('user', {
         // 重置状态
         this.token = ''
         this.userId = ''
-        this.userNameCh = ''
+        this.userNameCn = ''
         this.userNameEn = ''
         this.loginNo = ''
         this.avatar = ''
@@ -101,7 +101,7 @@ export const useUserStore = defineStore('user', {
     resetState() {
       this.token = ''
       this.userId = ''
-      this.userNameCh = ''
+      this.userNameCn = ''
       this.userNameEn = ''
       this.loginNo = ''
       this.avatar = ''
@@ -114,6 +114,6 @@ export const useUserStore = defineStore('user', {
   persist: {
     key: 'user-store',
     storage: localStorage,
-    paths: ['token', 'userNameCh', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
+    paths: ['token', 'userNameCn', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
   }
 })
