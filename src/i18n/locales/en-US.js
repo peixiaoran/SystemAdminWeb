@@ -46,7 +46,9 @@ export default {
     page: '',
     itemsPerPage: '/ page',
     requestTimeout: 'Request timeout, please try again',
-    requestTimeoutMessage: 'Request timeout'
+    requestTimeoutMessage: 'Request timeout',
+    yes: 'Yes',
+    no: 'No'
   },
   
   // Password Expiration Page

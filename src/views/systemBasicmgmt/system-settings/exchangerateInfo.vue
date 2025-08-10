@@ -12,7 +12,8 @@
                         <el-option v-for="item in currencyOptions"
                                    :key="item.currencyCode"
                                    :label="item.currencyName"
-                                   :value="item.currencyCode" />
+                                   :value="item.currencyCode"
+                                   :disabled="item.isDisabled" />
                     </el-select>
                 </el-form-item>
                 <el-form-item class="form-button-group">
@@ -88,7 +89,8 @@
                             <el-option v-for="item in currencyOptions"
                                        :key="item.currencyCode"
                                        :label="item.currencyName"
-                                       :value="item.currencyCode" />
+                                       :value="item.currencyCode"
+                                       :disabled="item.isDisabled" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
@@ -98,7 +100,8 @@
                             <el-option v-for="item in currencyOptions"
                                        :key="item.currencyCode"
                                        :label="item.currencyName"
-                                       :value="item.currencyCode" />
+                                       :value="item.currencyCode"
+                                       :disabled="item.isDisabled" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeRate')" prop="exchangeRate">

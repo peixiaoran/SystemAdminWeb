@@ -86,13 +86,16 @@
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyState')" prop="currencyState">
                         <el-switch v-model="editForm.currencyState" 
                                   :active-value="1"
-                                  :inactive-value="0" 
+                                  :inactive-value="0"
+                                  :active-text="$t('common.yes')"
+                                  :inactive-text="$t('common.no')"
+                                  inline-prompt
                                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399"/>
                     </el-form-item>
                 </div>
                 <div class="form-row">
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
-<el-input v-model="editForm.currencyNameCn" style="width:100%" />
+                    <el-input v-model="editForm.currencyNameCn" style="width:100%" />
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
                         <el-input v-model="editForm.currencyNameEn" style="width:100%" />

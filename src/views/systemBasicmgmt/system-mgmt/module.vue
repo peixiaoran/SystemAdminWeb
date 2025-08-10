@@ -46,7 +46,7 @@
                   <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.module.menuCode')" align="left" min-width="230" />
                   <el-table-column prop="menuNameCn" :label="$t('SystemBasicMgmt.module.menuNameCn')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.module.menuNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="130" />
+                  <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="150" />
                   <el-table-column prop="roleCode" :label="$t('SystemBasicMgmt.module.roleCode')" align="center" min-width="130" />
                   <el-table-column prop="path" :label="$t('SystemBasicMgmt.module.pagePath')" align="left" min-width="280" />
                   <el-table-column prop="menuIcon" :label="$t('SystemBasicMgmt.module.menuIcon')" align="center" min-width="170" />
@@ -159,12 +159,18 @@
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
+                                 :active-text="$t('common.yes')"
+                                 :inactive-text="$t('common.no')"
+                                 inline-prompt
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
+                                 :active-text="$t('common.yes')"
+                                 :inactive-text="$t('common.no')"
+                                 inline-prompt
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>

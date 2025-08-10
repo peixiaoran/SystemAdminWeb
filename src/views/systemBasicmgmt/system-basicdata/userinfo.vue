@@ -235,6 +235,9 @@
                           v-model="editForm.isEmployed"
                           :active-value="1"
                           :inactive-value="0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>
@@ -245,6 +248,9 @@
                           v-model="editForm.isApproval"
                           :active-value="1"
                           :inactive-value="0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isRealtimeNotification')">
@@ -253,6 +259,9 @@
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="editForm.isApproval === 0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isScheduledNotification')">
@@ -261,6 +270,9 @@
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="editForm.isApproval === 0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>
@@ -272,6 +284,9 @@
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="true"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isParttimed')">
@@ -279,6 +294,9 @@
                           v-model="editForm.isParttimed"
                           :active-value="1"
                           :inactive-value="0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
@@ -286,6 +304,9 @@
                           v-model="editForm.isFreeze"
                           :active-value="1"
                           :inactive-value="0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>

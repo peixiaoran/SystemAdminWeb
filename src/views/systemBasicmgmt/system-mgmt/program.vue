@@ -171,12 +171,18 @@
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
+                                 :active-text="$t('common.yes')"
+                                 :inactive-text="$t('common.no')"
+                                 inline-prompt
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
                                      <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
+                                 :active-text="$t('common.yes')"
+                                 :inactive-text="$t('common.no')"
+                                 inline-prompt
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
               </div>

@@ -116,6 +116,9 @@
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.status')">
                         <el-switch v-model="editForm.status" 
+                                   :active-text="$t('common.yes')"
+                                   :inactive-text="$t('common.no')"
+                                   inline-prompt
                                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                     </el-form-item>
                 </div>
