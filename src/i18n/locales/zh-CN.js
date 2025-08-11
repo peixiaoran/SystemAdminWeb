@@ -192,7 +192,7 @@ export default {
     systemBasicData: '基本资料模块',
     userInfo: '员工资料维护',
     userAgent: '员工代理维护',
-    userPosition: '职位资料维护',
+    userPosition: '职业资料维护',
     userLabor: '用工类型维护',
     companyInfo: '公司资料维护',
     departmentInfo: '部门资料维护',
@@ -379,7 +379,7 @@ export default {
       userNameCn: '中文姓名',
       userNameEn: '英文姓名',
       department: '部门',
-      position: '职位',
+      position: '职业',
       role: '角色',
       gender: '性别',
       hireDate: '入职日期',
@@ -438,7 +438,7 @@ export default {
       pleaseSelectGender: '请选择性别',
       pleaseSelectLaborType: '请选择用工类型',
       pleaseSelectDepartment: '请选择部门',
-      pleaseSelectPosition: '请选择职位',
+      pleaseSelectPosition: '请选择职业',
       pleaseSelectRole: '请选择角色',
       pleaseSelectHireDate: '请选择入职日期',
       saveSuccess: '保存成功',
@@ -453,7 +453,7 @@ export default {
       passwordSpecialCharError: '密码必须包含特殊字符',
       filter: {
         department: '部门',
-        position: '职位',
+        position: '职业',
         role: '角色',
         userNo: '员工编号',
         userName: '员工姓名'
@@ -489,18 +489,18 @@ export default {
       startTimeCannotLaterThanEndTime: '开始时间不能大于结束时间',
       endTimeCannotEarlierThanStartTime: '结束时间不能小于开始时间'
     },
-    // 员工职位
-    userPosition: {
-      title: '员工职位管理',
-      positionNo: '职位编号',
-      positionNameCn: '中文名称',
-      positionNameEn: '英文名称',
-      positionDescribe: '职位描述',
-      editPosition: '查看职位详情',
-      positionNoPlaceholder: '请输入职位编号',
-      positionNameCnPlaceholder: '请输入中文名称',
-      positionNameEnPlaceholder: '请输入英文名称',
-      positionDescribePlaceholder: '请输入职位描述',
+    // 员工职业
+      userPosition: {
+        title: '员工职业管理',
+        positionNo: '职业编号',
+        positionName: '职业名称',
+        positionNameCn: '中文名称',
+        positionDescribe: '职业描述',
+        editPosition: '查看职业详情',
+        positionNoPlaceholder: '请输入职业编号',
+        positionNamePlaceholder: '请输入职业名称',
+        positionNameCnPlaceholder: '请输入中文名称',
+        positionDescribePlaceholder: '请输入职业描述',
       index: '序号',
       operation: '操作',
       saveSuccess: '保存成功',
@@ -522,7 +522,7 @@ export default {
       gender: '性别',
       hireDate: '入职日期',
       department: '部门',
-      position: '职位',
+      position: '职业',
       role: '角色',
       laborType: '用工类型',
       laborName: '用工类型',
@@ -762,7 +762,7 @@ export default {
       }
     },
     
-    // 币别资讯管理
+    // 币别信息管理
      currencyInfo: {
        title: '币别资料管理',
        index: '序号',
@@ -824,6 +824,7 @@ export default {
       currencyCode: '本位币别',
       exchangeCurrencyCode: '兑换币别',
       exchangeRate: '汇率',
+      yearMonth: '年月',
       remark: '备注',
       operation: '操作',
       addExchangeRate: '新增汇率',
@@ -833,6 +834,7 @@ export default {
       pleaseInputExchangeCurrencyCode: '请输入兑换币别',
       pleaseSelectExchangeCurrencyCode: '请选择兑换币别',
       pleaseInputExchangeRate: '请输入汇率',
+      pleaseSelectYearMonth: '请选择年月',
       pleaseInputRemark: '请输入备注',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
@@ -840,7 +842,8 @@ export default {
       operationFailed: '操作失败',
       getFailed: '获取数据失败',
       filter: {
-        currencyCode: '本位币别'
+        currencyCode: '本位币别',
+        yearMonth: '年月'
       }
     },
 

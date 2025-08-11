@@ -7,7 +7,7 @@
                 <el-tree-select 
                       v-model="filters.departmentId"
                       :data="departmentOptions || []"
-                      :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
+                      :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                       check-strictly
                       filterable
                       :filter-node-method="filterNodeMethod"
@@ -23,7 +23,8 @@
                           v-for="item in positionOptions"
                           :key="`position-filter-${item.positionId}`"
                           :label="item.positionName"
-                          :value="item.positionId" />
+                          :value="item.positionId"
+                          :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
 
@@ -170,7 +171,7 @@
                       <el-tree-select
                           v-model="editForm.departmentId"
                           :data="departmentOptions || []"
-                          :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
+                          :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                           check-strictly
                           filterable
                           clearable
@@ -188,7 +189,8 @@
                               v-for="item in positionOptions"
                               :key="`position-edit-${item.positionId}`"
                               :label="item.positionName"
-                              :value="item.positionId" />
+                              :value="item.positionId"
+                              :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.role')" prop="roleId">
@@ -201,7 +203,8 @@
                               v-for="item in roleOptions"
                               :key="`role-edit-${item.roleId}`"
                               :label="item.roleName"
-                              :value="item.roleId" />
+                              :value="item.roleId"
+                              :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
               </div>
@@ -580,13 +583,19 @@
                   return true
               }
               departmentOptions.value = departmentOptions.value.filter(validateDepartment)
-              // 设置筛选条件默认值
+              // 设置筛选条件默认值 - 选择第一个未禁用的选项
               if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
-                  filters.departmentId = departmentOptions.value[0].departmentId
+                  const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+                  if (firstEnabledDept) {
+                      filters.departmentId = firstEnabledDept.departmentId
+                  }
               }
-              // 设置编辑表单默认值
+              // 设置编辑表单默认值 - 选择第一个未禁用的选项
               if (setDefaultForm && departmentOptions.value.length > 0 && !editForm.departmentId) {
-                  editForm.departmentId = departmentOptions.value[0].departmentId
+                  const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+                  if (firstEnabledDept) {
+                      editForm.departmentId = firstEnabledDept.departmentId
+                  }
               }
           } else {
               departmentOptions.value = []
@@ -597,7 +606,7 @@
       }
   }
 
-  // 获取职位下拉数据
+  // 获取职业下拉数据
   const fetchPositionDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       try {
           const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
@@ -609,19 +618,25 @@
                   item && item.positionId !== undefined && item.positionId !== null && 
                   item.positionName !== undefined && item.positionName !== null
               )
-              // 设置筛选条件默认值
+              // 设置筛选条件默认值 - 选择第一个未禁用的选项
               if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
-                  filters.positionId = positionOptions.value[0].positionId
+                  const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
+                  if (firstEnabledPosition) {
+                      filters.positionId = firstEnabledPosition.positionId
+                  }
               }
-              // 设置编辑表单默认值
+              // 设置编辑表单默认值 - 选择第一个未禁用的选项
               if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
-                  editForm.positionId = positionOptions.value[0].positionId
+                  const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
+                  if (firstEnabledPosition) {
+                      editForm.positionId = firstEnabledPosition.positionId
+                  }
               }
           } else {
               positionOptions.value = []
           }
       } catch (error) {
-          console.error('获取职位选项失败:', error)
+          console.error('获取职业选项失败:', error)
           positionOptions.value = []
       }
   }
@@ -638,13 +653,19 @@
                   item && item.roleId !== undefined && item.roleId !== null && 
                   item.roleName !== undefined && item.roleName !== null
               )
-              // 设置筛选条件默认值
+              // 设置筛选条件默认值 - 选择第一个未禁用的选项
               if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
-                  filters.roleId = roleOptions.value[0].roleId
+                  const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+                  if (firstEnabledRole) {
+                      filters.roleId = firstEnabledRole.roleId
+                  }
               }
-              // 设置编辑表单默认值
+              // 设置编辑表单默认值 - 选择第一个未禁用的选项
               if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
-                  editForm.roleId = roleOptions.value[0].roleId
+                  const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+                  if (firstEnabledRole) {
+                      editForm.roleId = firstEnabledRole.roleId
+                  }
               }
           } else {
               roleOptions.value = []
@@ -688,9 +709,12 @@
                   item && item.laborId !== undefined && item.laborId !== null && 
                   item.laborName !== undefined && item.laborName !== null
               )
-              // 设置编辑表单默认值
+              // 设置编辑表单默认值 - 选择第一个未禁用的选项
               if (setDefaultForm && laborTypeOptions.value.length > 0 && !editForm.laborId) {
-                  editForm.laborId = laborTypeOptions.value[0].laborId
+                  const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
+                  if (firstEnabledLaborType) {
+                      editForm.laborId = firstEnabledLaborType.laborId
+                  }
               }
           } else {
               laborTypeOptions.value = []

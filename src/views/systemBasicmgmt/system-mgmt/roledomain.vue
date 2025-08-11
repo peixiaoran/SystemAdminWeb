@@ -9,7 +9,7 @@
                              v-model="filters.roleId"
                              :placeholder="$t('SystemBasicMgmt.selectPlaceholder')" 
                              @change="handleRoleChange">
-                      <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
+                      <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -99,8 +99,11 @@
           if (res && res.code === '200') {
               roleOptions.value = res.data || []
               if (roleOptions.value.length > 0) {
-                  filters.roleId = roleOptions.value[0].roleId
-                  fetchRoleDomainList()
+                  const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+                  if (firstEnabledRole) {
+                      filters.roleId = firstEnabledRole.roleId
+                      fetchRoleDomainList()
+                  }
               }
           } else {
               ElMessage({

@@ -9,12 +9,12 @@
                                v-model="filters.roleId"
                                :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleModule.role')"
                                @change="handleRoleChange">
-                        <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
+                        <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('SystemBasicMgmt.roleModule.domain')">
                     <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleModule.domain')" style="width:180px" @change="handleDomainChange">
-                        <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                        <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
                     </el-select>
                 </el-form-item>
                 <el-form-item class="form-button-group">
@@ -112,8 +112,11 @@
           if (res && res.code === '200') {
               roleOptions.value = res.data || []
               if (roleOptions.value.length > 0) {
-                  filters.roleId = roleOptions.value[0].roleId
-                  fetchRoleModuleList()
+                  const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+                  if (firstEnabledRole) {
+                      filters.roleId = firstEnabledRole.roleId
+                      fetchRoleModuleList()
+                  }
               }
           } else {
               ElMessage({
@@ -140,8 +143,11 @@
           if (res && res.code === '200') {
               domainOptions.value = res.data || []
               if (domainOptions.value.length > 0) {
-                  filters.domainId = domainOptions.value[0].domainId
-                  fetchRoleModuleList()
+                  const firstEnabledDomain = domainOptions.value.find(item => !item.disabled)
+                  if (firstEnabledDomain) {
+                      filters.domainId = firstEnabledDomain.domainId
+                      fetchRoleModuleList()
+                  }
               }
           } else {
               ElMessage({

@@ -332,7 +332,7 @@
         }
     }
   
-    // 获取职位下拉框数据
+    // 获取职业下拉框数据
     const fetchPositionDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
         if (res && res.code === '200') {

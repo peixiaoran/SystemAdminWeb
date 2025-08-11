@@ -241,6 +241,7 @@ export default {
       currencyCode: 'Base Currency',
       exchangeCurrencyCode: 'Exchange Currency',
       exchangeRate: 'Exchange Rate',
+      yearMonth: 'Year Month',
       remark: 'Remark',
       operation: 'Operation',
       addExchangeRate: 'Add Exchange Rate',
@@ -250,6 +251,7 @@ export default {
       pleaseInputExchangeCurrencyCode: 'Please enter exchange currency',
       pleaseSelectExchangeCurrencyCode: 'Please select exchange currency',
       pleaseInputExchangeRate: 'Please enter exchange rate',
+      pleaseSelectYearMonth: 'Please select year month',
       pleaseInputRemark: 'Please enter remark',
       saveSuccess: 'Save Successfully',
       updateSuccess: 'Update Successfully',
@@ -257,7 +259,8 @@ export default {
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {
-        currencyCode: 'Base Currency'
+        currencyCode: 'Base Currency',
+        yearMonth: 'Year Month'
       }
     },
     

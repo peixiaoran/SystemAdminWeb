@@ -8,7 +8,7 @@
                   <el-select style="width: 180px" 
                             v-model="filters.domainId" 
                             :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.module.domain')">
-                      <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                      <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.module.menuCode')">
@@ -43,7 +43,7 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.module.menuCode')" align="left" min-width="230" />
+                  <el-table-column prop="menuCode" :label="$t('SystemBasicMgmt.module.menuCode')" align="left" min-width="180" />
                   <el-table-column prop="menuNameCn" :label="$t('SystemBasicMgmt.module.menuNameCn')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('SystemBasicMgmt.module.menuNameEn')" align="left" min-width="200" />
                   <el-table-column prop="menuTypeName" :label="$t('SystemBasicMgmt.module.menuType')" align="center" min-width="150" />
@@ -68,7 +68,7 @@
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="180" fixed="right" align="center">
+                  <el-table-column :label="$t('SystemBasicMgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -115,7 +115,7 @@
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.module.domain')" prop="domainId">
                       <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.module.pleaseSelectDomain')">
-                          <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                          <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
               </div>
@@ -290,9 +290,12 @@
           const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
           domainDropList.value = res.data || []
 
-          // 默认选中第一个网域（用于查询表单）
+          // 默认选中第一个未禁用的网域（用于查询表单）
           if (domainDropList.value.length > 0) {
-              filters.domainId = domainDropList.value[0].domainId
+              const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+              if (firstEnabledDomain) {
+                  filters.domainId = firstEnabledDomain.domainId
+              }
           }
 
           // 应用默认值进行初始查询
@@ -318,9 +321,12 @@
           const res = await post(GET_DOMAIN_DROP_API.GET_DOMAIN_TYPE)
           domainDropList.value = res.data || []
 
-          // 如果是新增操作，默认选中第一个网域
+          // 如果是新增操作，默认选中第一个未禁用的网域
           if (dialogTitle.value === t('SystemBasicMgmt.module.addModule') && domainDropList.value.length > 0) {
-              editForm.domainId = domainDropList.value[0].domainId
+              const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+              if (firstEnabledDomain) {
+                  editForm.domainId = firstEnabledDomain.domainId
+              }
           }
       } catch (error) {
           if (error.name === 'CanceledError') {
@@ -439,9 +445,14 @@
       filters.menuName = ''
       filters.menuUrl = ''
       
-      // 重置为默认的第一个网域
+      // 重置为默认的第一个未禁用的网域
       if (domainDropList.value.length > 0) {
-          filters.domainId = domainDropList.value[0].domainId
+          const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+          if (firstEnabledDomain) {
+              filters.domainId = firstEnabledDomain.domainId
+          } else {
+              filters.domainId = ''
+          }
       } else {
           filters.domainId = ''
       }

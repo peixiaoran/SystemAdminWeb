@@ -163,7 +163,7 @@ const positionList = ref([])
 const dialogVisible = ref(false)
 const editForm = ref(null)
 
-// 获取职位列表
+// 获取职业列表
 const getPositionList = async () => {
   loading.value = true
   try {
@@ -180,7 +180,7 @@ const getPositionList = async () => {
       positionList.value = []
     }
   } catch (error) {
-    console.error('获取职位列表失败:', error)
+    console.error('获取职业列表失败:', error)
     ElMessage({
       message: t('SystemBasicMgmt.userPosition.getFailed'),
       type: 'error',
@@ -220,7 +220,7 @@ const handleEdit = async (index, row) => {
       dialogVisible.value = false
     }
   } catch (error) {
-    console.error('获取职位详情失败:', error)
+    console.error('获取职业详情失败:', error)
     ElMessage({
       message: t('SystemBasicMgmt.userPosition.getFailed'),
       type: 'error',

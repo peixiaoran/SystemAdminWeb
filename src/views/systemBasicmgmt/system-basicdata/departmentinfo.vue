@@ -46,8 +46,8 @@
                         <el-table-column prop="departmentLevelName" :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
                         <el-table-column prop="status" :label="$t('SystemBasicMgmt.departmentInfo.status')" align="center" min-width="110">
                             <template #default="scope">
-                                <el-tag :type="scope.row.status ? 'success' : 'danger'">
-                                    {{ scope.row.status ? $t('SystemBasicMgmt.departmentInfo.active') : $t('SystemBasicMgmt.departmentInfo.inactive') }}
+                                <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
+                                    {{ scope.row.status === 1 ? $t('SystemBasicMgmt.departmentInfo.active') : $t('SystemBasicMgmt.departmentInfo.inactive') }}
                                 </el-tag>
                             </template>
                         </el-table-column>
@@ -116,6 +116,8 @@
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.status')">
                         <el-switch v-model="editForm.status" 
+                                   :active-value="1"
+                                   :inactive-value="0"
                                    :active-text="$t('common.yes')"
                                    :inactive-text="$t('common.no')"
                                    inline-prompt
@@ -197,7 +199,7 @@
         landline: '',
         email: '',
         address: '',
-        status: true,
+        status: 1,
         remark: ''
     })
 
@@ -353,7 +355,7 @@
             landline: '',
             email: '',
             address: '',
-            status: true,
+            status: 1,
             remark: ''
         })
         
@@ -404,6 +406,7 @@
         const params = {
             ...editForm
         }
+        console.log(params)
 
         const res = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
 

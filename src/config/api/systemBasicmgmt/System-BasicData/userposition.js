@@ -17,12 +17,12 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 职位实体API
+// 职业实体API
 export const GET_USER_POSITION_ENTITY_API = {
     GET_USER_POSITION_ENTITY: 'SystemBasicMgmt/SystemBasicData/UserPosition/GetUserPositionEntity'
 }
 
-// 职位列表API
+// 职业列表API
 export const GET_USER_POSITION_LIST_API = {
   GET_USER_POSITION_LIST: 'SystemBasicMgmt/SystemBasicData/UserPosition/GetUserPositionList'
 }

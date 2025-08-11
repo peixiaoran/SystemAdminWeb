@@ -12,12 +12,12 @@
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.program.domain')">
                       <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.domain')" style="width:180px" @change="handleFilterDomainChange">
-                      <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                      <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('SystemBasicMgmt.program.module')">
                       <el-select v-model="filters.parentMenuId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.program.module')" style="width:180px">
-                      <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
+                      <el-option v-for="item in filterModuleList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item>
@@ -117,14 +117,14 @@
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.program.domain')" prop="domainId">
                       <el-select v-model="editForm.domainId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.program.pleaseSelectDomain')" @change="handleDomainChange">
-                          <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" />
+                          <el-option v-for="item in domainDropList" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.program.module')" prop="parentMenuId">
                       <el-select v-model="editForm.parentMenuId" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.program.pleaseSelectModule')">
-                          <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" />
+                          <el-option v-for="item in moduleDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.program.programIcon')" prop="menuIcon">
@@ -317,11 +317,14 @@
           // 对获取的数据进行XSS清洗
           domainDropList.value = res.data || []
 
-          // 默认选中第一个网域（用于查询条件）
+          // 默认选中第一个未禁用的网域（用于查询条件）
           if (domainDropList.value.length > 0) {
-              filters.domainId = domainDropList.value[0].domainId
-              // 获取对应的模块列表
-              await fetchFilterModuleDrop()
+              const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+              if (firstEnabledDomain) {
+                  filters.domainId = firstEnabledDomain.domainId
+                  // 获取对应的模块列表
+                  await fetchFilterModuleDrop()
+              }
           }
 
           // 应用默认值进行初始查询
@@ -338,11 +341,14 @@
           // 对获取的数据进行XSS清洗
           domainDropList.value = res.data || []
 
-          // 新增时默认选中第一个网域
+          // 新增时默认选中第一个未禁用的网域
           if (dialogTitle.value === t('SystemBasicMgmt.program.addProgram') && domainDropList.value.length > 0) {
-              editForm.domainId = domainDropList.value[0].domainId
-              // 根据选中的网域获取模块列表
-              fetchModuleDrop(true)
+              const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+              if (firstEnabledDomain) {
+                  editForm.domainId = firstEnabledDomain.domainId
+                  // 根据选中的网域获取模块列表
+                  fetchModuleDrop(true)
+              }
           }
       } catch (error) {
 
@@ -366,7 +372,10 @@
 
           // 只有当需要设置默认值且是新增时才设置默认值
           if (setDefaultValue && dialogTitle.value === t('SystemBasicMgmt.program.addProgram') && moduleDropList.value.length > 0) {
-              editForm.parentMenuId = moduleDropList.value[0].menuId
+              const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
+              if (firstEnabledModule) {
+                  editForm.parentMenuId = firstEnabledModule.menuId
+              }
           }
       } catch (error) {
 
@@ -450,11 +459,18 @@
       filters.programName = ''
       filters.programUrl = ''
       
-      // 设置为默认的第一个模块
+      // 设置为默认的第一个未禁用的网域
       if (domainDropList.value.length > 0) {
-          filters.domainId = domainDropList.value[0].domainId
-          // 获取对应的模块列表
-          await fetchFilterModuleDrop()
+          const firstEnabledDomain = domainDropList.value.find(item => !item.disabled)
+          if (firstEnabledDomain) {
+              filters.domainId = firstEnabledDomain.domainId
+              // 获取对应的模块列表
+              await fetchFilterModuleDrop()
+          } else {
+              filters.domainId = ''
+              filters.parentMenuId = ''
+              filterModuleList.value = []
+          }
       } else {
           filters.domainId = ''
           filters.parentMenuId = ''
@@ -770,9 +786,12 @@
           const res = await post(GET_MODULE_DROP_API.GET_MODULE_TYPE, params)
           filterModuleList.value = res.data || []
 
-          // 默认选中第一个模块
+          // 默认选中第一个未禁用的模块
           if (filterModuleList.value.length > 0) {
-              filters.parentMenuId = filterModuleList.value[0].menuId
+              const firstEnabledModule = filterModuleList.value.find(item => !item.disabled)
+              if (firstEnabledModule) {
+                  filters.parentMenuId = firstEnabledModule.menuId
+              }
           }
       } catch (error) {
         

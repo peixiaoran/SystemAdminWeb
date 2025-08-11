@@ -409,7 +409,7 @@ export default {
       }
     }
 
-    // 获取职位下拉框数据
+    // 获取职业下拉框数据
     const getPositionDropdown = async () => {
       try {
         const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
@@ -417,7 +417,7 @@ export default {
           positionOptions.value = response.data
         }
       } catch (error) {
-        console.error('获取职位下拉框失败:', error)
+        console.error('获取职业下拉框失败:', error)
       }
     }
 

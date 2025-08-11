@@ -13,8 +13,17 @@
                                    :key="item.currencyCode"
                                    :label="item.currencyName"
                                    :value="item.currencyCode"
-                                   :disabled="item.isDisabled" />
+                                   :disabled="item.disabled" />
                     </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.filter.yearMonth')">
+                    <el-date-picker v-model="filters.yearMonth"
+                                   type="month"
+                                   style="width: 180px;"
+                                   :placeholder="$t('SystemBasicMgmt.exchangeRateInfo.pleaseSelectYearMonth')"
+                                   format="YYYY-MM"
+                                   value-format="YYYY-MM"
+                                   clearable />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -47,6 +56,7 @@
                             {{ scope.row.exchangeRate?.toFixed(6) }}
                         </template>
                     </el-table-column>
+                    <el-table-column prop="yearMonth" :label="$t('SystemBasicMgmt.exchangeRateInfo.yearMonth')" align="center" min-width="120" />
                     <el-table-column prop="remark" :label="$t('SystemBasicMgmt.exchangeRateInfo.remark')" align="left" min-width="200" />
                     <el-table-column :label="$t('SystemBasicMgmt.exchangeRateInfo.operation')" min-width="130" fixed="right" align="center">
                         <template #default="scope">
@@ -74,7 +84,7 @@
         <!-- 汇率编辑对话框 -->
         <el-dialog v-model="dialogVisible"
                    :title="dialogTitle"
-                   width="55%"
+                   width="45%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"
@@ -90,7 +100,7 @@
                                        :key="item.currencyCode"
                                        :label="item.currencyName"
                                        :value="item.currencyCode"
-                                       :disabled="item.isDisabled" />
+                                       :disabled="item.disabled" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
@@ -101,8 +111,18 @@
                                        :key="item.currencyCode"
                                        :label="item.currencyName"
                                        :value="item.currencyCode"
-                                       :disabled="item.isDisabled" />
+                                       :disabled="item.disabled" />
                         </el-select>
+                    </el-form-item>
+                </div>
+                <div class="form-row">
+                    <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.yearMonth')" prop="yearMonth">
+                        <el-date-picker v-model="editForm.yearMonth"
+                                       type="month"
+                                       style="width:100%"
+                                       :placeholder="$t('SystemBasicMgmt.exchangeRateInfo.pleaseSelectYearMonth')"
+                                       format="YYYY-MM"
+                                       value-format="YYYY-MM" />
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.exchangeRateInfo.exchangeRate')" prop="exchangeRate">
                         <el-input-number v-model="editForm.exchangeRate" 
@@ -172,6 +192,7 @@
     // 过滤条件
     const filters = reactive({
         currencyCode: '',
+        yearMonth: ''
     })
   
     // 对话框显示状态
@@ -188,6 +209,7 @@
         currencyCode: '',
         exchangeCurrencyCode: '',
         exchangeRate: 1,
+        yearMonth: '',
         remark: ''
     })
 
@@ -204,6 +226,9 @@
         ],
         exchangeRate: [
             { required: true, message: () => t('SystemBasicMgmt.exchangeRateInfo.pleaseInputExchangeRate'), trigger: 'blur' }
+        ],
+        yearMonth: [
+            { required: true, message: () => t('SystemBasicMgmt.exchangeRateInfo.pleaseSelectYearMonth'), trigger: 'change' }
         ]
     })
   
@@ -234,6 +259,7 @@
         loading.value = true
         const params = {
             currencyCode: filters.currencyCode,
+            yearMonth: filters.yearMonth,
             pageIndex: pagination.pageIndex,
             pageSize: pagination.pageSize,
             totalCount: pagination.totalCount
@@ -256,9 +282,10 @@
     }
 
     // 获取汇率详情数据
-    const fetchExchangeRateEntity = async (currencyCode) => {
+    const fetchExchangeRateEntity = async (currencyCode, yearMonth) => {
         const params = {
-            currencyCode: currencyCode
+            currencyCode: currencyCode,
+            yearMonth: yearMonth
         }
         
         const res = await post(GET_EXCHANGE_RATE_ENTITY_API.GET_EXCHANGE_RATE_ENTITY, params)
@@ -267,6 +294,7 @@
             editForm.currencyCode = res.data.currencyCode
             editForm.exchangeCurrencyCode = res.data.exchangeCurrencyCode
             editForm.exchangeRate = res.data.exchangeRate
+            editForm.yearMonth = res.data.yearMonth || ''
             editForm.remark = res.data.remark || ''
             // 保存原始的兑换币别
             originalExchangeCurrencyCode.value = res.data.exchangeCurrencyCode
@@ -293,7 +321,9 @@
     // 重置搜索条件
     const handleReset = () => {
         filters.currencyCode = ''
+        filters.yearMonth = ''
         pagination.pageIndex = 1
+        fetchExchangeRatePages()
     }
   
     // 处理页码变化
@@ -322,6 +352,7 @@
         editForm.currencyCode = ''
         editForm.exchangeCurrencyCode = ''
         editForm.exchangeRate = 1
+        editForm.yearMonth = ''
         editForm.remark = ''
         // 清空原始兑换币别
         originalExchangeCurrencyCode.value = ''
@@ -402,6 +433,7 @@
             currencyCode: row.currencyCode,
             exchangeCurrencyCode: row.exchangeCurrencyCode,
             exchangeRate: row.exchangeRate,
+            yearMonth: row.yearMonth || '',
             remark: row.remark || ''
         }
   
@@ -441,7 +473,7 @@
         // 重置表单数据
         resetForm()
         // 获取汇率详情数据
-        await fetchExchangeRateEntity(row.currencyCode)
+        await fetchExchangeRateEntity(row.currencyCode, row.yearMonth)
         // 设置为编辑模式
         isEditMode.value = true
         dialogTitle.value = t('SystemBasicMgmt.exchangeRateInfo.editExchangeRate')
