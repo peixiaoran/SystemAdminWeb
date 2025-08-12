@@ -61,7 +61,7 @@
                                v-model:page-size="pagination.pageSize"
                                :page-sizes="[10, 20, 50, 100]"
                                layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.total"
+                               :total="pagination.totalCount"
                                @size-change="handleSizeChange"
                                @current-change="handlePageChange"/>
             </div>
@@ -148,7 +148,7 @@
     const pagination = reactive({
         pageIndex: 1,
         pageSize: 10,
-        total: 0
+        totalCount: 0
     })
   
     // 过滤条件
@@ -198,7 +198,7 @@
         
         const res = await post(GET_CURRENCY_ENTITY_API.GET_CURRENCY_ENTITY, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             editForm.currencyId = res.data.currencyId
             editForm.currencyCode = res.data.currencyCode
             editForm.currencyNameCn = res.data.currencyNameCn
@@ -215,14 +215,14 @@
             currencyCode: filters.currencyCode,
             pageIndex: pagination.pageIndex,
             pageSize: pagination.pageSize,
-            total: pagination.total
+            totalCount: pagination.totalCount
         }
   
         const res = await post(GET_CURRENCY_PAGES_API.GET_CURRENCY_PAGES, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             currencyList.value = res.data || []
-            pagination.total = res.totalNumber || 0
+            pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.currencyInfo.getFailed'),
@@ -302,7 +302,7 @@
   
         const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.currencyInfo.saveSuccess'),
@@ -329,7 +329,7 @@
         }
         const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.currencyInfo.updateSuccess'),
@@ -357,7 +357,7 @@
   
         const res = await post(DELETE_CURRENCY_API.DELETE_CURRENCY, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.currencyInfo.deleteSuccess'),
                 type: 'success',
