@@ -28,6 +28,6 @@
     "eslint-plugin-vue": "^10.2.0",
     "terser": "^5.43.1",
     "vite": "^7.0.6",
-    "vite-imagetools": "^7.1.0"
+    "vite-imagetools": "^8.0.0"
   }
 }
