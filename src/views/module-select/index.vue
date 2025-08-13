@@ -104,7 +104,7 @@ const fetchModules = async () => {
     // 使用post方法请求模块数据，不需要请求参数
     const res = await post(MODULE_API.GET_MODULES)
     
-    if (res && res.code === '200') {
+    if (res && res.code === 200) {
       modules.value = res.data || []
       // 提取所有模块路径
       const modulePaths = modules.value.map(module => ({

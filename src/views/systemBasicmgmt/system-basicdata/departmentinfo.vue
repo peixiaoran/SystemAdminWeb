@@ -247,7 +247,7 @@
     const fetchDepartmentLevelDropdown = async () => {
         const res = await post(GET_DEPARTMENTLEVEL_DROPDOWN_API.GET_DEPARTMENTLEVEL_DROPDOWN, {})
         
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             departmentLevelList.value = res.data || []
         } else {
             ElMessage({
@@ -267,7 +267,7 @@
         }
         const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             editForm.departmentId = res.data.departmentId
             editForm.departmentCode = res.data.departmentCode
             editForm.departmentNameCn = res.data.departmentNameCn
@@ -302,7 +302,7 @@
 
         const res = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             departmentList.value = res.data || []
         } else {
             ElMessage({
@@ -381,7 +381,7 @@
 
         const res = await post(INSERT_DEPARTMENT_API.INSERT_DEPARTMENT, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.departmentInfo.saveSuccess'),
@@ -410,7 +410,7 @@
 
         const res = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.departmentInfo.updateSuccess'),
@@ -438,7 +438,7 @@
 
         const res = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.departmentInfo.deleteSuccess'),
                 type: 'success',

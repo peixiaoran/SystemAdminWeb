@@ -56,7 +56,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -125,7 +125,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -184,7 +184,7 @@
       
       const res = await post(GET_COMPANY_ENTITY_API.GET_COMPANY_ENTITY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           editForm.companyId = res.data.companyId
           editForm.companyNameCn = res.data.companyNameCn
           editForm.companyNameEn = res.data.companyNameEn
@@ -209,9 +209,9 @@
 
       const res = await post(GET_COMPANY_PAGES_API.GET_COMPANY_PAGES, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           companyList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
             message: res.message || t('SystemBasicMgmt.companyInfo.getFailed'),
@@ -295,7 +295,7 @@
 
       const res = await post(INSERT_COMPANY_API.INSERT_COMPANY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
             message: res.message || t('SystemBasicMgmt.companyInfo.saveSuccess'),
@@ -322,7 +322,7 @@
       }
       const res = await post(UPDATE_COMPANY_API.UPDATE_COMPANY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
             message: res.message || t('SystemBasicMgmt.companyInfo.updateSuccess'),
@@ -350,7 +350,7 @@
 
       const res = await post(DELETE_COMPANY_API.DELETE_COMPANY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
             message: res.message || t('SystemBasicMgmt.companyInfo.deleteSuccess'),
             type: 'success',

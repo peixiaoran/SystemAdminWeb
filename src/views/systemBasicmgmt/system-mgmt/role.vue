@@ -89,7 +89,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -169,7 +169,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -225,7 +225,7 @@
 
       // 在处理数据前确保使用sanitizeHtml清洗相关字段
       roleList.value = res.data || []
-      pagination.total = res.totalNumber || 0
+      pagination.totalCount = res.totalCount || 0
       loading.value = false
   }
 
@@ -236,7 +236,7 @@
       }
       const res = await post(GET_ROLE_ENTITY_API.GET_ROLE_ENTITY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           // 对字符串类型的字段进行防护XSS清洗
           editForm.roleId = res.data.roleId
           editForm.roleCode = res.data.roleCode || ''
@@ -319,7 +319,7 @@
       }
       const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           fetchRolePages()
       } else {
@@ -345,7 +345,7 @@
       }
       const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message,
@@ -383,7 +383,7 @@
 
       const res = await post(DELETE_ROLE_API.DELETE_ROLE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
               message: res.message,
               type: 'success',

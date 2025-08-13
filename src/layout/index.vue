@@ -451,7 +451,7 @@ const fetchMenuData = async () => {
     // 请求菜单数据
     const res = await post(MENU_API.GET_MENU, { domainId })
     
-    if (res && res.code === '200') {
+    if (res && res.code === 200) {
       // 处理菜单数据，将其与路由数据对应起来
       menuList.value = processMenuData(res.data || [])
     } else {

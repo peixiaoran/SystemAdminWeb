@@ -85,7 +85,7 @@
                                v-model:page-size="pagination.pageSize"
                                :page-sizes="[10, 20, 50, 100]"
                                layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.total"
+                               :total="pagination.totalCount"
                                @size-change="handleSizeChange"
                                @current-change="handlePageChange" />
             </div>
@@ -208,7 +208,7 @@
                                    v-model:page-size="userSelectPagination.pageSize"
                                    :page-sizes="[10, 20, 50]"
                                    layout="total, sizes, prev, pager, next, jumper"
-                                   :total="userSelectPagination.total"
+                                   :total="userSelectPagination.totalCount"
                                    @size-change="handleUserSelectSizeChange"
                                    @current-change="handleUserSelectPageChange" />
                 </div>
@@ -258,7 +258,7 @@
     const pagination = reactive({
         pageIndex: 1,
         pageSize: 10,
-        total: 0
+        totalCount: 0
     })
   
     // 过滤条件
@@ -299,7 +299,7 @@
     const userSelectPagination = reactive({
         pageIndex: 1,
         pageSize: 10,
-        total: 0
+        totalCount: 0
     })
   
     // 部门搜索过滤方法
@@ -318,7 +318,7 @@
     const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-            if (res && res.code === '200') {
+            if (res && res.code === 200) {
                 departmentOptions.value = Array.isArray(res.data) ? res.data : []
                 // 设置筛选条件默认值
                 if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
@@ -335,7 +335,7 @@
     // 获取职业下拉框数据
     const fetchPositionDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             positionOptions.value = res.data || []
             // 设置筛选条件默认值
             if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
@@ -347,7 +347,7 @@
     // 获取角色下拉框数据
     const fetchRoleDropdown = async (setDefaultFilter = false) => {
         const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             roleOptions.value = res.data || []
             // 设置筛选条件默认值
             if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
@@ -367,7 +367,7 @@
             }
             const res = await post(GET_USER_AGENT_API.GET_USER_AGENT, params)
             
-            if (res && res.code === '200') {
+            if (res && res.code === 200) {
                 agentList.value = res.data || []
             } else {
                 agentList.value = []
@@ -403,10 +403,10 @@
         }
         const res = await post(GET_USER_PAGES_API.GET_USER_PAGES, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
   
             userList.value = res.data || []
-            pagination.total = res.totalNumber || 0
+            pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
                 message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
@@ -537,7 +537,7 @@
             
             const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, params)
             
-            if (res && res.code === '200') {
+            if (res && res.code === 200) {
                 ElMessage({
                     message: res.message || t('common.deleteSuccess'),
                     type: 'success',
@@ -578,17 +578,17 @@
                 userName: userSelectFilters.userName,
                 pageIndex: userSelectPagination.pageIndex,
                 pageSize: userSelectPagination.pageSize,
-                totalCount: userSelectPagination.total,
+                totalCount: userSelectPagination.totalCount,
                 SubstituteUserId: currentUserId.value // 排除自己不能代理自己
             }
             const res = await post(GET_USER_VIEW_API.GET_USER_VIEW, params)
             
-            if (res && res.code === '200') {
+            if (res && res.code === 200) {
                 userSelectList.value = res.data || []
-                userSelectPagination.total = res.totalNumber || 0
+                userSelectPagination.totalCount = res.totalCount || 0
             } else {
                 userSelectList.value = []
-                userSelectPagination.total = 0
+                userSelectPagination.totalCount = 0
                 ElMessage({
                     message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
                     type: 'error',
@@ -599,7 +599,7 @@
         } catch (error) {
             console.error('获取用户列表失败:', error)
             userSelectList.value = []
-            userSelectPagination.total = 0
+            userSelectPagination.totalCount = 0
             ElMessage({
                 message: t('SystemBasicMgmt.userInfo.getFailed'),
                 type: 'error',
@@ -709,7 +709,7 @@
                 
                 const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
                 
-                if (res && res.code === '200') {
+                if (res && res.code === 200) {
                     // 成功添加代理人
                 } else {
                     ElMessage({

@@ -35,6 +35,50 @@
             </el-input>
           </el-form-item>
           
+          <!-- 新密码输入框 -->
+          <el-form-item prop="password">
+            <el-input
+              v-model="unlockForm.password"
+              type="password"
+              :placeholder="$t('unlock.newPasswordPlaceholder')"
+              :disabled="passwordDisabled || redirectCountdown > 0"
+              show-password
+              clearable
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              data-lpignore="true"
+              data-form-type="other"
+            >
+              <template #prefix>
+                <el-icon><Lock /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          
+          <!-- 确认密码输入框 -->
+          <el-form-item prop="confirmPassword">
+            <el-input
+              v-model="unlockForm.confirmPassword"
+              type="password"
+              :placeholder="$t('unlock.confirmPasswordPlaceholder')"
+              :disabled="passwordDisabled || redirectCountdown > 0"
+              show-password
+              clearable
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              data-lpignore="true"
+              data-form-type="other"
+            >
+              <template #prefix>
+                <el-icon><Lock /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          
           <el-form-item prop="verificationCode">
             <div class="verification-input-group">
               <el-input
@@ -93,6 +137,7 @@
           <div class="unlock-link-container">
               <el-link 
                 type="info"
+                :disabled="redirectCountdown > 0"
                 @click="handleLogin"
                 >{{ $t('login.backToLogin') }}
               </el-link>
@@ -110,7 +155,7 @@ import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { UNLOCK_SEND_API, UNLOCK_API } from '@/config/api/login/api'
 import { useI18n } from 'vue-i18n'
-import { User, Message } from '@element-plus/icons-vue' // 新增图标引入
+import { User, Lock, Message } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -120,11 +165,14 @@ const sendCodeLoading = ref(false)
 const countdown = ref(0)
 const redirectCountdown = ref(0)
 const userNoDisabled = ref(false)
+const passwordDisabled = ref(false)
 let countdownTimer = null
 let redirectTimer = null
 
 const unlockForm = reactive({
   userNo: '',
+  password: '',
+  confirmPassword: '',
   verificationCode: '',
   language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
 })
@@ -155,11 +203,67 @@ const languages = computed(() => {
   }
 })
 
+// 密码强度验证函数
+const validatePassword = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error(t('unlock.newPasswordRequired')))
+    return
+  }
+  
+  // 长度验证：8-16位
+  if (value.length < 8 || value.length > 16) {
+    callback(new Error(t('unlock.passwordLengthError')))
+    return
+  }
+  
+  // 包含小写字母
+  if (!/[a-z]/.test(value)) {
+    callback(new Error(t('unlock.passwordLowercaseError')))
+    return
+  }
+  
+  // 包含大写字母
+  if (!/[A-Z]/.test(value)) {
+    callback(new Error(t('unlock.passwordUppercaseError')))
+    return
+  }
+  
+  // 包含数字
+  if (!/[0-9]/.test(value)) {
+    callback(new Error(t('unlock.passwordNumberError')))
+    return
+  }
+  
+  // 包含特殊字符
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+    callback(new Error(t('unlock.passwordSpecialCharError')))
+    return
+  }
+  
+  callback()
+}
+
 // 解锁表单验证规则
 const unlockRules = computed(() => {
   return {
     userNo: [
       { required: true, message: t('unlock.userNoRequired'), trigger: 'blur' }
+    ],
+    password: [
+      { validator: validatePassword, trigger: 'blur' }
+    ],
+    confirmPassword: [
+      { required: true, message: t('unlock.confirmPasswordRequired'), trigger: 'blur' },
+      {
+        validator: (rule, value, callback) => {
+          if (value !== unlockForm.password) {
+            callback(new Error(t('unlock.passwordMismatch')))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur'
+      }
     ],
     verificationCode: [
       { required: true, message: t('unlock.verificationCodeRequired'), trigger: 'blur' }
@@ -182,7 +286,7 @@ const handleLogin = () => {
 
 // 发送验证码
 const handleSendCode = () => {
-  if (!unlockForm.userNo) {
+  if (!unlockForm.userNo || !unlockForm.password || !unlockForm.confirmPassword) {
     return
   }
 
@@ -195,7 +299,7 @@ const handleSendCode = () => {
   })
     .then(res => {
       console.log(res.code)
-          if (res.code === '200') {
+          if (res.code === 200) {
             ElMessage({
               message: res.message,
               type: 'success',
@@ -217,7 +321,7 @@ const handleSendCode = () => {
         })
         .catch(error => {
           ElMessage({
-            message: res.message,
+            message: error.message || t('unlock.sendCodeFailed'),
             type: 'error',
             plain: true,
             showClose: true,
@@ -262,20 +366,22 @@ const handleUnlock = () => {
       // 保存语言选择到localStorage
       localStorage.setItem('language', unlockForm.language)
 
-      post(UNLOCK_API.UNLOCK, null, {
-        params: {
-          userNo: unlockForm.userNo,
-          verificationCode: unlockForm.verificationCode
-        }
+      post(UNLOCK_API.UNLOCK, {
+        userNo: unlockForm.userNo,
+        password: unlockForm.password,
+        verificationCode: unlockForm.verificationCode
       })
         .then(res => {
-          if (res.code === '200') {
+          if (res.code === 200) {
             ElMessage({
               message: res.message,
               type: 'success',
               plain: true,
               showClose: true,
             })
+            // 禁用返回登录链接
+            userNoDisabled.value = true
+            passwordDisabled.value = true
             // 开始跳转倒计时
             startRedirectCountdown()
           } else {

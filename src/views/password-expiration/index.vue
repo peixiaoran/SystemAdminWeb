@@ -314,7 +314,7 @@ const handleSendCode = async () => {
       params: { userNo: form.userNo }
     })
     
-    if (res && res.code === '200') {
+    if (res && res.code === 200) {
       ElMessage({
         message: res.message || t('passwordExpiration.sendCodeSuccess'),
         type: 'success',
@@ -365,7 +365,7 @@ const handleSubmit = async () => {
         verificationCode: form.verificationCode
       })
       
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
         ElMessage({
           message: res.message || t('passwordExpiration.submitSuccess'),
           type: 'success',

@@ -85,7 +85,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -207,7 +207,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -347,7 +347,7 @@
   const fetchMenuTypeOptions = async () => {
       try {
           const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               // 确保 menuTypeCode 为字符串类型
               menuTypeOptions.value = (res.data || []).map(item => ({
                   ...item,
@@ -370,7 +370,7 @@
           }
           const res = await post(GET_MODULE_ENTITY_API.GET_MODULE_ENTITY, params)
 
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               editForm.menuId = res.data.menuId
               editForm.menuCode = res.data.menuCode
               editForm.menuNameCn = res.data.menuNameCn
@@ -415,7 +415,7 @@
           const res = await post(GET_MODULE_PAGES_API.GET_MODULE_PAGES, params)
 
           moduleList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } catch (error) {
           if (error.name === 'CanceledError') {
               // 请求被取消，不显示错误信息
@@ -542,7 +542,7 @@
       }
       const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
             message: res.message,
@@ -581,7 +581,7 @@
       }
       const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
             message: res.message,
@@ -619,7 +619,7 @@
 
       const res = await post(DELETE_MODULE_API.DELETE_MODULE, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
             message: res.message,
             type: 'success',

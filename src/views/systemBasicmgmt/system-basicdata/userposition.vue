@@ -168,7 +168,7 @@ const getPositionList = async () => {
   loading.value = true
   try {
     const response = await post(GET_USER_POSITION_LIST_API.GET_USER_POSITION_LIST, {})
-    if (response.code === '200') {
+    if (response.code === 200) {
       positionList.value = response.data || []
     } else {
       ElMessage({
@@ -208,7 +208,7 @@ const handleEdit = async (index, row) => {
     
     const response = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, requestData)
     
-    if (response.code === '200') {
+    if (response.code === 200) {
       editForm.value = { ...response.data }
     } else {
       ElMessage({

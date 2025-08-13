@@ -52,7 +52,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -84,7 +84,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 组件挂载后获取角色数据
@@ -96,7 +96,7 @@
   const fetchRoleDropdown = async () => {
       try {
           const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN)
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               roleOptions.value = res.data || []
               if (roleOptions.value.length > 0) {
                   const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
@@ -134,10 +134,10 @@
 
       try {
           const res = await post(GET_ROLE_DOMAIN_API.GET_ROLE_DOMAIN, params)
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               roleDomainList.value = res.data || []
               // 设置总记录数
-              pagination.total = res.data?.length || 0
+              pagination.totalCount = res.data?.length || 0
           } else {
               ElMessage({
                   message: res.message,
@@ -201,7 +201,7 @@
               roleDomainUpserts
           })
 
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               ElMessage({
                   message: t('SystemBasicMgmt.roleDomain.updateBindingsSuccess'),
                   type: 'success',

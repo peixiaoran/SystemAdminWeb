@@ -92,7 +92,7 @@
           v-model:current-page="pagination.pageIndex"
           v-model:page-size="pagination.pageSize"
           :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.total"
+          :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -196,7 +196,7 @@ const searchForm = reactive({
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 10,
-  total: 0
+  totalCount: 0
 })
 
 // 表单数据
@@ -229,9 +229,9 @@ const getLaborList = async () => {
     }
     
     const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
-    if (response.code === '200') {
+    if (response.code === 200) {
       laborList.value = response.data || []
-      pagination.total = response.totalNumber || 0
+      pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
         message: response.message || t('SystemBasicMgmt.userLabor.getFailed'),
@@ -315,7 +315,7 @@ const handleEdit = async (row) => {
     
     const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, params)
     
-    if (response.code === '200') {
+    if (response.code === 200) {
       const data = response.data
       form.laborId = data.laborId
       form.laborNameCn = data.laborNameCn
@@ -366,7 +366,7 @@ const handleDelete = async (row) => {
     
     const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, params)
     
-    if (response.code === '200') {
+    if (response.code === 200) {
       ElMessage({
         message: response.message || t('SystemBasicMgmt.userLabor.deleteSuccess'),
         type: 'success',
@@ -416,7 +416,7 @@ const handleSubmit = async () => {
     const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
     const response = await post(api, params)
     
-    if (response.code === '200') {
+    if (response.code === 200) {
       ElMessage({
         message: response.message || (isEdit.value ? t('SystemBasicMgmt.userLabor.updateSuccess') : t('SystemBasicMgmt.userLabor.saveSuccess')),
         type: 'success',

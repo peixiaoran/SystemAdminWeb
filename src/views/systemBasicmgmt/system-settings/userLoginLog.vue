@@ -71,7 +71,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -101,7 +101,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 20,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -125,14 +125,14 @@
           endTime: filters.endTime,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
-          totalCount: pagination.total
+          totalCount: pagination.totalCount
       }
 
       const res = await post(GET_USER_LOGIN_LOG_PAGES_API.GET_USER_LOGIN_LOG_PAGES, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           userLoginLogList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
               message: res.message || t('SystemBasicMgmt.userLoginLog.getFailed'),

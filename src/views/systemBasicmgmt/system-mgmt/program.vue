@@ -87,7 +87,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -221,7 +221,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -390,7 +390,7 @@
           }
           const res = await post(GET_PROGRAM_ENTITY_API.GET_PROGRAM_ENTITY, params)
 
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               // 还原原始的 parentMenuId 值
               const originalParentMenuId = res.data.parentMenuId
               
@@ -439,7 +439,7 @@
 
           // 确保使用sanitizeHtml清洗数据
           programList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } catch (error) {
 
       } finally {
@@ -562,7 +562,7 @@
       }
               const res = await post(INSERT_PROGRAM_API.INSERT_PROGRAM, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message,
@@ -603,7 +603,7 @@
 
       const res = await post(UPDATE_PROGRAM_API.UPDATE_PROGRAM, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message,
@@ -641,7 +641,7 @@
 
       const res = await post(DELETE_PROGRAM_API.DELETE_PROGRAM, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
               message: res.message,
               type: 'success',
@@ -802,7 +802,7 @@
   const fetchMenuTypeOptions = async () => {
       try {
           const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               // 确保 menuTypeCode 为字符串
               menuTypeOptions.value = (res.data || []).map(item => ({
                   ...item,

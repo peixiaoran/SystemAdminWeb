@@ -78,7 +78,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange"/>
           </div>
@@ -189,7 +189,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -269,7 +269,7 @@
       }
       const res = await post(GET_DOMAIN_ENTITY_API.GET_DOMAIN_ENTITY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           editForm.domainId = res.data.domainId
           editForm.domainCode = res.data.domainCode
           editForm.domainNameCn = res.data.domainNameCn
@@ -298,9 +298,9 @@
 
       const res = await post(GET_DOMAIN_PAGES_API.GET_DOMAIN_PAGES, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           domainList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
               message: res.message,
@@ -383,7 +383,7 @@
           redirect: editForm.redirect
       }
       const res = await post(INSERT_DOMAIN_API.INSERT_DOMAIN, params)
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message,
@@ -410,7 +410,7 @@
           redirect: editForm.redirect
       }
       const res = await post(UPDATE_DOMAIN_API.UPDATE_DOMAIN, params)
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message,
@@ -448,7 +448,7 @@
 
       const res = await post(DELETE_DOMAIN_API.DELETE_DOMAIN, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
               message: res.message,
               type: 'success',

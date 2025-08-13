@@ -176,7 +176,7 @@ const handleLogin = () => {
       })
         .then(res => {
           
-          if (res.code === '200') {
+          if (res.code === 200) {
             // 设置标题
             document.title = t('common.systemTitle')
             
@@ -205,10 +205,10 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
-          } else if (res.code === '210') {
+          } else if (res.code === 210) {
             // 密码过期，跳转到密码过期修改页面
             router.push('/password-expiration')
-          } else if (res.code === '220') {
+          } else if (res.code === 220) {
             // 账户被锁定，跳转到解锁页面
             router.push('/unlock')
           } else {

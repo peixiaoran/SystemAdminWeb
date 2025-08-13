@@ -242,7 +242,7 @@
     const fetchCurrencyDropdown = async () => {
         const res = await post(GET_CURRENCY_DROPDOWN_API.GET_CURRENCY_DROPDOWN, {})
         
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             currencyOptions.value = res.data || []
         } else {
             ElMessage({
@@ -267,9 +267,9 @@
   
         const res = await post(GET_EXCHANGE_RATE_PAGES_API.GET_EXCHANGE_RATE_PAGES, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             exchangeRateList.value = res.data || []
-            pagination.totalCount = res.totalNumber || 0
+            pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
               message: res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'),
@@ -290,7 +290,7 @@
         
         const res = await post(GET_EXCHANGE_RATE_ENTITY_API.GET_EXCHANGE_RATE_ENTITY, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             editForm.currencyCode = res.data.currencyCode
             editForm.exchangeCurrencyCode = res.data.exchangeCurrencyCode
             editForm.exchangeRate = res.data.exchangeRate
@@ -379,7 +379,7 @@
   
         const res = await post(INSERT_EXCHANGE_RATE_API.INSERT_EXCHANGE_RATE, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
               message: res.message || t('SystemBasicMgmt.exchangeRateInfo.saveSuccess'),
@@ -407,7 +407,7 @@
 
         const res = await post(UPDATE_EXCHANGE_RATE_API.UPDATE_EXCHANGE_RATE, params)
 
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             resetForm()
             ElMessage({
               message: res.message || t('SystemBasicMgmt.exchangeRateInfo.updateSuccess'),
@@ -439,7 +439,7 @@
   
         const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, params)
   
-        if (res && res.code === '200') {
+        if (res && res.code === 200) {
             ElMessage({
               message: res.message || t('SystemBasicMgmt.exchangeRateInfo.deleteSuccess'),
               type: 'success',

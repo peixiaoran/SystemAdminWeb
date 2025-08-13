@@ -104,7 +104,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange" />
           </div>
@@ -402,7 +402,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -568,7 +568,7 @@
   const fetchDepartmentDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       try {
           const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               departmentOptions.value = Array.isArray(res.data) ? res.data : []
               console.log('departmentOptions:', departmentOptions.value)
               // 验证数据结构并过滤无效数据（递归验证部门树结构）
@@ -610,7 +610,7 @@
   const fetchPositionDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       try {
           const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               positionOptions.value = res.data || []
               console.log('positionOptions:', positionOptions.value)
               // 验证数据结构并过滤无效数据
@@ -645,7 +645,7 @@
   const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
       try {
           const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               roleOptions.value = res.data || []
               console.log('roleOptions:', roleOptions.value)
               // 验证数据结构并过滤无效数据
@@ -680,7 +680,7 @@
   const fetchGenderDropdown = async () => {
       try {
           const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               genderOptions.value = res.data || []
               console.log('genderOptions:', genderOptions.value)
               // 验证数据结构并过滤无效数据
@@ -701,7 +701,7 @@
   const fetchLaborTypeDropdown = async (setDefaultForm = false) => {
       try {
           const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               laborTypeOptions.value = res.data || []
               console.log('laborTypeOptions:', laborTypeOptions.value)
               // 验证数据结构并过滤无效数据
@@ -732,7 +732,7 @@
       }
       const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           // 先保存通知状态，以便在 watch 触发前记录原始值
           if (res.data.isRealtimeNotification !== undefined && res.data.isScheduledNotification !== undefined) {
               previousNotificationState.isRealtimeNotification = res.data.isRealtimeNotification
@@ -763,10 +763,10 @@
       }
       const res = await post(GET_USER_PAGES_API.GET_USER_PAGES, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
 
           userList.value = res.data || []
-          pagination.total = res.totalNumber || 0
+          pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
               message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
@@ -864,7 +864,7 @@
       
       const res = await post(INSERT_USER_API.INSERT_USER, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message || t('SystemBasicMgmt.userInfo.saveSuccess'),
@@ -891,7 +891,7 @@
       }
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
       
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message || t('SystemBasicMgmt.userInfo.updateSuccess'),
@@ -919,7 +919,7 @@
 
       const res = await post(DELETE_USER_API.DELETE_USER, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
               message: res.message || t('SystemBasicMgmt.userInfo.deleteSuccess'),
               type: 'success',
@@ -1049,7 +1049,7 @@
               }
           })
           
-          if (res && res.code === '200') {
+          if (res && res.code === 200) {
               options.onSuccess(res)
           } else {
               options.onError(new Error(res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed')))

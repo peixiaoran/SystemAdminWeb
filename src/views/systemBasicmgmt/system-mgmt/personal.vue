@@ -341,7 +341,7 @@ export default {
 
     // 头像上传成功
     const handleAvatarSuccess = (res) => {
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
         personalInfoForm.avatarAddress = res.data
         avatarUrl.value = res.data
         ElMessage({
@@ -366,7 +366,7 @@ export default {
         loading.value = true
         const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
         
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           Object.assign(personalInfoForm, response.data)
           // 密码字段在查询时设置为空字符串
           personalInfoForm.password = ''
@@ -401,7 +401,7 @@ export default {
     const getDepartmentDropdown = async () => {
       try {
         const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           departmentOptions.value = response.data
         }
       } catch (error) {
@@ -413,7 +413,7 @@ export default {
     const getPositionDropdown = async () => {
       try {
         const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           positionOptions.value = response.data
         }
       } catch (error) {
@@ -425,7 +425,7 @@ export default {
     const getRoleDropdown = async () => {
       try {
         const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           roleOptions.value = response.data
         }
       } catch (error) {
@@ -437,7 +437,7 @@ export default {
     const getGenderDropdown = async () => {
       try {
         const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           genderOptions.value = response.data
         }
       } catch (error) {
@@ -449,7 +449,7 @@ export default {
     const getLaborTypeDropdown = async () => {
       try {
         const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
-        if (response.code === '200' && response.data) {
+        if (response.code === 200 && response.data) {
           laborTypeOptions.value = response.data || []
           // 过滤掉无效数据
           laborTypeOptions.value = laborTypeOptions.value.filter(item => 
@@ -499,7 +499,7 @@ export default {
 
         const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
         
-        if (response.code === '200') {
+        if (response.code === 200) {
           ElMessage({
               message: response.message || t('common.saveSuccess'),
               type: 'success',

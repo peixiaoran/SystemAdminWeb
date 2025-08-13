@@ -57,7 +57,7 @@
                              v-model:page-size="pagination.pageSize"
                              :page-sizes="[10, 20, 50, 100]"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.total"
+                             :total="pagination.totalCount"
                              @size-change="handleSizeChange"
                              @current-change="handlePageChange"/>
           </div>
@@ -132,7 +132,7 @@
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
-      total: 0
+      totalCount: 0
   })
 
   // 过滤条件
@@ -187,7 +187,7 @@
 
       console.log(res.data)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           editForm.departmentLevelId = res.data.departmentLevelId
           editForm.departmentLevelCode = res.data.departmentLevelCode
           editForm.departmentLevelNameCn = res.data.departmentLevelNameCn
@@ -212,9 +212,9 @@
 
       const res = await post(GET_DEPARTMENT_LEVEL_LIST_API.GET_DEPARTMENT_LEVEL_LIST, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           departmentLevelList.value = res.data || []
-          pagination.total = res.data ? res.data.length : 0
+          pagination.totalCount = res.data ? res.data.length : 0
       } else {
           ElMessage({
               message: res?.message || '获取部门级别列表失败',
@@ -293,7 +293,7 @@
 
       const res = await post(INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message || '新增成功',
@@ -320,7 +320,7 @@
       }
       const res = await post(UPDATE_DEPARTMENT_LEVEL_API.UPDATE_DEPARTMENT_LEVEL, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           resetForm()
           ElMessage({
               message: res.message || '更新成功',
@@ -348,7 +348,7 @@
 
       const res = await post(DELETE_DEPARTMENT_LEVEL_API.DELETE_DEPARTMENT_LEVEL, params)
 
-      if (res && res.code === '200') {
+      if (res && res.code === 200) {
           ElMessage({
               message: res.message || '删除成功',
               type: 'success',
