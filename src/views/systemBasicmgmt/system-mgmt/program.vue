@@ -167,7 +167,7 @@
                   </el-form-item>
               </div>
               <div class="form-row">
-                                     <el-form-item :label="$t('SystemBasicMgmt.isEnabled')">
+                <el-form-item :label="$t('SystemBasicMgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
@@ -176,7 +176,7 @@
                                  inline-prompt
                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                                     <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
+                  <el-form-item :label="$t('SystemBasicMgmt.isVisible')">
                       <el-switch v-model="editForm.isVisible"
                                  :active-value="1"
                                  :inactive-value="0"
