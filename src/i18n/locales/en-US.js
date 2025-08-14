@@ -108,7 +108,6 @@ export default {
     language: 'Language',
     loginButton: 'Login',
     unlockAccount: 'Unlock Account',
-    // passwordExpiration: 'Password Expiration',
     backToLogin: 'Back to Login',
     usernamePlaceholder: 'Please enter employee name',
     passwordPlaceholder: 'Please enter password',
