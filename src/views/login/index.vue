@@ -202,11 +202,29 @@ const handleLogin = () => {
             // 直接跳转到模块选择页
             router.push('/module-select')
           } else if (res.code === 210) {
-            // 密码过期，跳转到密码过期修改页面
-            router.push('/password-expiration')
+            // 密码过期，显示警告消息后跳转到密码过期修改页面
+            ElMessage({
+              message: res.message || t('login.passwordExpired'),
+              type: 'warning',
+              plain: true,
+              showClose: true,
+              duration: 3000
+            })
+            setTimeout(() => {
+              router.push('/password-expiration')
+            }, 1500)
           } else if (res.code === 220) {
-            // 账户被锁定，跳转到解锁页面
-            router.push('/unlock')
+            // 账户被锁定，显示警告消息后跳转到解锁页面
+            ElMessage({
+              message: res.message || t('login.accountLocked'),
+              type: 'warning',
+              plain: true,
+              showClose: true,
+              duration: 3000
+            })
+            setTimeout(() => {
+              router.push('/unlock')
+            }, 1500)
           } else {
             ElMessage({
               message: res.message || t('login.loginFailed'),

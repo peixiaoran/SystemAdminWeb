@@ -119,6 +119,8 @@ export default {
     factoryRequired: 'Please select factory',
     loginFailed: 'Login Failed',
     loginFailedTip: 'Login request failed, please try again later',
+    passwordExpired: 'Password has expired, redirecting to password change page',
+    accountLocked: 'Account has been locked, redirecting to unlock page',
     factories: {
       ESK: 'Kunshan Yisheng',
       ETW: 'Yisheng Taiwan',

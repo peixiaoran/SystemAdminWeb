@@ -107,36 +107,24 @@ export default {
     factory: '厂区',
     language: '语言',
     loginButton: '登录',
-    unlockAccount: '账号解锁',
-    // passwordExpiration: '密码过期',
-    backToLogin: '返回登录',
-    usernamePlaceholder: '请输入员工名',
-    passwordPlaceholder: '请输入密码',
-    factoryPlaceholder: '请选择厂区',
-    languagePlaceholder: '请选择语言',
-    usernameRequired: '请输入员工名',
-    passwordRequired: '请输入密码',
-    factoryRequired: '请选择厂区',
-    loginFailed: '登录失败',
-    loginFailedTip: '登录请求失败，请稍后重试',
-    factories: {
-      ESK: '昆山乙盛',
-      ETW: '乙盛台湾',
-      ESW: '无锡欣冠',
-      ESD: '东莞乙宏',
-      ESC: '烟台正乙',
-      EMY: '马来西亚',
-      EMJ: '马来西亚',
-      ESV: '越南厂',
-      EST: '墨西哥MUSG',
-      ESH: '新加坡ESONSG',
-      ESM: '蒙特雷',
-      MTY: '新加坡ESONSG'
-    },
-    languages: {
-      'zh-CN': '中文简体',
-      'en-US': 'English'
-    }
+      unlockAccount: '账号解锁',
+      // passwordExpiration: '密码过期',
+      backToLogin: '返回登录',
+      usernamePlaceholder: '请输入员工名',
+      passwordPlaceholder: '请输入密码',
+      factoryPlaceholder: '请选择厂区',
+      languagePlaceholder: '请选择语言',
+      usernameRequired: '请输入员工名',
+      passwordRequired: '请输入密码',
+      factoryRequired: '请选择厂区',
+      loginFailed: '登录失败',
+      loginFailedTip: '登录请求失败，请稍后重试',
+      passwordExpired: '密码已过期，即将跳转到密码修改页面',
+      accountLocked: '账户已被锁定，即将跳转到解锁页面',
+      languages: {
+        'zh-CN': '中文简体',
+        'en-US': 'English'
+      }
   },
   
   // 登录页解锁页面
