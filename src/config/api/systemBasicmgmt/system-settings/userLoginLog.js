@@ -17,7 +17,7 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 查询用户登录日志分页API
+// 查询员工操作日志分页API
 export const GET_USER_LOGIN_LOG_PAGES_API = {
   GET_USER_LOGIN_LOG_PAGES: 'SystemBasicMgmt/SystemSettings/UserLoginLog/GetUserLoginLogPage'
 }

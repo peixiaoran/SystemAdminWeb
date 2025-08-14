@@ -44,10 +44,10 @@
                         <el-table-column prop="departmentNameCn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-                        <el-table-column prop="status" :label="$t('SystemBasicMgmt.departmentInfo.status')" align="center" min-width="110">
+                        <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.departmentInfo.isEnabled')" align="center" min-width="110">
                             <template #default="scope">
-                                <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-                                    {{ scope.row.status === 1 ? $t('SystemBasicMgmt.departmentInfo.active') : $t('SystemBasicMgmt.departmentInfo.inactive') }}
+                                <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
+                                    {{ scope.row.isEnabled === 1 ? $t('SystemBasicMgmt.departmentInfo.active') : $t('SystemBasicMgmt.departmentInfo.inactive') }}
                                 </el-tag>
                             </template>
                         </el-table-column>

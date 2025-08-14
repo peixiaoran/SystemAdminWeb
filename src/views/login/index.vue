@@ -173,16 +173,12 @@ const handleLogin = () => {
       post(LOGIN_API.USER_LOGIN, {
         loginNo: loginForm.loginNo,
         password: loginForm.password
-      })
-        .then(res => {
-          
+      }).then(res => {
           if (res.code === 200) {
             // 设置标题
             document.title = t('common.systemTitle')
-            
             // 获取员工store
             const userStore = useUserStore()
-            
             // 处理返回的数据
             if (res.data) {
               // 设置token

@@ -445,7 +445,7 @@ export default {
       }
     }
 
-    // 获取用工类型下拉框数据
+    // 获取员工职业下拉框数据
     const getLaborTypeDropdown = async () => {
       try {
         const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
@@ -460,7 +460,7 @@ export default {
           laborTypeOptions.value = []
         }
       } catch (error) {
-        console.error('获取用工类型下拉框失败:', error)
+        console.error('获取员工职业下拉框失败:', error)
         laborTypeOptions.value = []
       }
     }

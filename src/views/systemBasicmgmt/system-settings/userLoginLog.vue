@@ -3,7 +3,7 @@
       <el-card class="conventional-card">
 
           <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户登录日志搜索表单">
+          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工操作日志搜索表单">
               <el-form-item :label="$t('SystemBasicMgmt.userLoginLog.filter.ip')">
                   <el-input v-model="filters.ip"
                            style="width: 180px;"
@@ -93,7 +93,7 @@
   // 初始化i18n
   const { t } = useI18n()
 
-  // 用户登录日志数据
+  // 员工操作日志数据
   const userLoginLogList = ref([])
   const loading = ref(false)
 
@@ -111,12 +111,12 @@
       endTime: ''
   })
 
-  // 在组件挂载后获取用户登录日志数据
+  // 在组件挂载后获取员工操作日志数据
   onMounted(() => {
       fetchUserLoginLogPages()
   })
 
-  // 获取用户登录日志列表数据
+  // 获取员工操作日志列表数据
   const fetchUserLoginLogPages = async () => {
       loading.value = true
       const params = {
