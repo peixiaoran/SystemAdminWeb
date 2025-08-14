@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Layout from '../layout/index.vue'
+import Layout from '../views/layout/index.vue'
 import i18n from '../i18n'
 
 // 获取翻译函数

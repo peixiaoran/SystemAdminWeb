@@ -441,11 +441,6 @@ const handleLogin = () => {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
 }
 
-.login-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 8px rgba(50, 50, 93, 0.15);
-}
-
 .login-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);

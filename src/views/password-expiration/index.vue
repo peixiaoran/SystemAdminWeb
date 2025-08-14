@@ -589,12 +589,6 @@ const handleBackToLogin = () => {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
 }
 
-.submit-button:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 8px rgba(50, 50, 93, 0.15);
-  background: linear-gradient(135deg, #FFB74D 0%, #FFAB91 100%);
-}
-
 .submit-button:not(:disabled):active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);
@@ -603,12 +597,6 @@ const handleBackToLogin = () => {
 .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
-}
-
-.submit-button:disabled:hover {
-  background: linear-gradient(135deg, #FFA726 0%, #FF8A65 100%) !important;
   transform: none !important;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
 }

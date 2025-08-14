@@ -178,8 +178,8 @@ const enterModule = (module) => {
     console.error('清空标签数据失败:', error)
   }
   
-  // 直接跳转到模块首页
-  router.push(`/${moduleIdentifier}/index`)
+  // 跳转到layout页面，然后由layout处理模块路由
+  router.push(`/${moduleIdentifier}`)
 }
 
 // 退出登录

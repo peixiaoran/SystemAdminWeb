@@ -620,12 +620,6 @@ const handleUnlock = () => {
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
 }
 
-.unlock-button:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 8px rgba(50, 50, 93, 0.15);
-  background: linear-gradient(135deg, #48D1CC 0%, #40E0D0 100%);
-}
-
 .unlock-button:not(:disabled):active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);
@@ -634,12 +628,6 @@ const handleUnlock = () => {
 .unlock-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
-}
-
-.unlock-button:disabled:hover {
-  background: linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%) !important;
   transform: none !important;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
 }
