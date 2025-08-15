@@ -14,18 +14,17 @@
                       style="width: 200px;"
                       :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.position')">
-                  <el-select 
-                      v-model="filters.positionId" 
+              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.userNo')">
+                  <el-input 
+                      v-model="filters.userNo" 
                       style="width: 180px;"
-                      :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
-                      <el-option
-                          v-for="item in positionOptions"
-                          :key="`position-filter-${item.positionId}`"
-                          :label="item.positionName"
-                          :value="item.positionId"
-                          :disabled="item.disabled" />
-                  </el-select>
+                      :placeholder="$t('SystemBasicMgmt.userInfo.filter.userNoPlaceholder')" />
+              </el-form-item>
+              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.userName')">
+                  <el-input 
+                      v-model="filters.userName" 
+                      style="width: 180px;"
+                      :placeholder="$t('SystemBasicMgmt.userInfo.filter.userNamePlaceholder')" />
               </el-form-item>
 
               <el-form-item class="form-button-group">
@@ -408,7 +407,8 @@
   // 过滤条件
   const filters = reactive({
       departmentId: '',
-      positionId: '',
+      userNo: '',
+      userName: '',
   })
 
   // 对话框显示状态
@@ -556,7 +556,7 @@
   // 组件挂载后获取数据
   onMounted(async () => {
       // 获取下拉数据并设置筛选条件默认值
-      await fetchDepartmentDropdown(true, false)
+      await fetchDepartmentDropdown(false, false)
       await fetchPositionDropdown(true, false)
       await fetchGenderDropdown()
       await fetchLaborTypeDropdown()
@@ -757,7 +757,8 @@
       loading.value = true
       const params = {
           departmentId: filters.departmentId,
-          positionId: filters.positionId,
+          userNo: filters.userNo,
+          userName: filters.userName,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize
       }
@@ -788,10 +789,8 @@
   const handleReset = () => {
       Object.assign(filters, {
           departmentId: '',
-          positionId: '',
           userNo: '',
-          userName: '',
-          gender: ''
+          userName: ''
       })
       pagination.pageIndex = 1
   }

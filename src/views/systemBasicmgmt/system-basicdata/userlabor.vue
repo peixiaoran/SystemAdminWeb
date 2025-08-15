@@ -62,7 +62,7 @@
           />
           <el-table-column 
             :label="$t('common.operation')" 
-            min-width="200" 
+            min-width="120" 
             fixed="right"
             align="center"
           >
@@ -195,7 +195,7 @@ const searchForm = reactive({
 // 分页信息
 const pagination = reactive({
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 20,
   totalCount: 0
 })
 

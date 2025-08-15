@@ -159,7 +159,8 @@
           <div class="avatar-container">
             <el-upload
               class="avatar-uploader"
-              action="https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/File/UploadAvatar"
+              :action="UPLOAD_CONFIG.url"
+              :headers="UPLOAD_CONFIG.headers"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
@@ -191,11 +192,12 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { get, post } from '@/utils/request'
+import { useUserStore } from '@/stores/user'
 import {
   GET_PERSONAL_INFO_ENTITY_API,
   UPDATE_PERSONAL_INFO_API,
@@ -204,7 +206,6 @@ import {
   GET_ROLE_DROPDOWN_API,
   GET_GENDER_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
-  UPLOAD_AVATAR_API
 } from '@/config/api/SystemBasicMgmt/System-Mgmt/personal'
 
 export default {
@@ -214,9 +215,24 @@ export default {
   },
   setup() {
     const { t } = useI18n()
+    const userStore = useUserStore()
     const personalInfoFormRef = ref(null)
     const loading = ref(false)
     const saving = ref(false)
+
+    // 统一的文件上传配置
+    const UPLOAD_CONFIG = reactive({
+      url: 'https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile',
+      headers: {
+        'Accept-Language': '',
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    })
+    
+    // 监听 token 变化，更新上传配置
+    watch(() => userStore.token, (newToken) => {
+      UPLOAD_CONFIG.headers.Authorization = `Bearer ${newToken}`
+    })
 
     // 头像相关
     const avatarUrl = ref('')
@@ -563,6 +579,7 @@ export default {
       genderOptions,
       laborTypeOptions,
       avatarUrl,
+      UPLOAD_CONFIG,
       handleSave,
       handleReset,
       beforeAvatarUpload,

@@ -42,8 +42,3 @@ export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
 export const GET_LABOR_TYPE_DROPDOWN_API = {
   GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetLabor'
 }
-
-// 头像上传API
-export const UPLOAD_AVATAR_API = {
-  UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar'
-}

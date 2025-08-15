@@ -71,8 +71,3 @@ export const GET_LABOR_TYPE_DROPDOWN_API = {
 export const EXPORT_USERS_API = {
   EXPORT_USERS: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToExcel'
 }
-
-// 上传头像API
-export const UPLOAD_AVATAR_API = {
-  UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar'
-}
