@@ -4,28 +4,19 @@
   
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
-               <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
-                  <el-tree-select 
-                        v-model="filters.departmentId"
-                        :data="departmentOptions || []"
-                        :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
-                        check-strictly
-                        filterable
-                        :filter-node-method="filterNodeMethod"
+                <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
+                    <el-input 
+                        v-model="filters.userNo"
                         style="width: 200px;"
-                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
+                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseEnterUserNo')"
+                        clearable />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.position')">
-                    <el-select 
-                        v-model="filters.positionId" 
-                        style="width: 180px;"
-                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
-                        <el-option
-                            v-for="item in positionOptions"
-                            :key="`position-filter-${item.positionId}`"
-                            :label="item.positionName"
-                            :value="item.positionId" />
-                    </el-select>
+                <el-form-item :label="$t('SystemBasicMgmt.userInfo.userName')">
+                    <el-input 
+                        v-model="filters.userName"
+                        style="width: 200px;"
+                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseEnterUserName')"
+                        clearable />
                 </el-form-item>
 
                 <el-form-item class="form-button-group">
@@ -47,7 +38,7 @@
                     <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
                     <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="180" />
                     <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="150" />
+                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="230" />
                     <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
                     <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
                     <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="120">
@@ -57,19 +48,7 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="180">
-
-                        <template #default="scope">
-                            <span :style="{
-                                 color: scope.row.laborId === '1' ? '#faad14' : 
-                                        scope.row.laborId === '2' ? '#13c2c2' : 
-                                        scope.row.laborId === '3' ? '#1890ff' : 
-                                        scope.row.laborId === '4' ? '#722ed1' : '#000'
-                             }">
-                                {{ scope.row.laborName }}
-                            </span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280" />
                     <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.addAgent') }}</el-button>
@@ -109,7 +88,7 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           height="370"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userAgent.index')" width="60" align="center" />
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userAgent.index')" width="70" align="center" />
                     <el-table-column prop="agentUserNo" :label="$t('SystemBasicMgmt.userAgent.agentUserNo')" align="left" min-width="110" />
                     <el-table-column prop="agentUserName" :label="$t('SystemBasicMgmt.userAgent.agentUser')" align="left" min-width="200" />
                     <el-table-column prop="startTime" :label="$t('SystemBasicMgmt.userAgent.startTime')" align="center" min-width="110" />
@@ -228,12 +207,7 @@
     import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 
-        GET_USER_PAGES_API, 
-        GET_DEPARTMENT_DROPDOWN_API,
-        GET_USER_POSITION_DROPDOWN_API,
-        GET_ROLE_DROPDOWN_API
-    } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
-    import { 
+        GET_USER_PAGES_API,
         GET_USER_AGENT_API,
         GET_USER_AGENT_INSERT_API,
         GET_USER_AGENT_DELETE_API,
@@ -248,11 +222,6 @@
         // 员工数据
     const userList = ref([])
     const loading = ref(false)
-
-    // 下拉框选项（仅用于筛选）
-    const departmentOptions = ref([])
-    const positionOptions = ref([])
-    const roleOptions = ref([])
   
     // 分页信息
     const pagination = reactive({
@@ -263,19 +232,17 @@
   
     // 过滤条件
     const filters = reactive({
-        departmentId: '',
-        positionId: '',
+        userNo: '',
+        userName: '',
     })
   
-        // 代理人相关数据
+    // 代理人相关数据
     const agentDialogVisible = ref(false)
     const agentDialogTitle = ref('')
     const agentList = ref([])
     const agentLoading = ref(false)
     const currentUserId = ref('')
     const currentUserInfo = ref({})
-
-
     // 员工选择对话框相关数据
     const userSelectDialogVisible = ref(false)
     const userSelectLoading = ref(false)
@@ -302,61 +269,11 @@
         totalCount: 0
     })
   
-    // 部门搜索过滤方法
-    const filterNodeMethod = (value, data) => data.departmentName.includes(value)
-  
     // 在组件挂载后获取数据
     onMounted(async () => {
-        // 获取下拉框数据并设置筛选条件默认值
-        await fetchDepartmentDropdown(true)
-        await fetchPositionDropdown(true)
         // 获取员工列表数据
         fetchUserPages()
     })
-  
-    // 获取部门下拉框数据
-    const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
-        try {
-            const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-            if (res && res.code === 200) {
-                departmentOptions.value = Array.isArray(res.data) ? res.data : []
-                // 设置筛选条件默认值
-                if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
-                    filters.departmentId = departmentOptions.value[0].departmentId
-                }
-            } else {
-                departmentOptions.value = []
-            }
-        } catch (error) {
-            departmentOptions.value = []
-        }
-    }
-  
-    // 获取职业下拉框数据
-    const fetchPositionDropdown = async (setDefaultFilter = false) => {
-        const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-        if (res && res.code === 200) {
-            positionOptions.value = res.data || []
-            // 设置筛选条件默认值
-            if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
-                filters.positionId = positionOptions.value[0].positionId
-            }
-        }
-    }
-  
-    // 获取角色下拉框数据
-    const fetchRoleDropdown = async (setDefaultFilter = false) => {
-        const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-        if (res && res.code === 200) {
-            roleOptions.value = res.data || []
-            // 设置筛选条件默认值
-            if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
-                filters.roleId = roleOptions.value[0].roleId
-            }
-        }
-    }
-  
-    
   
     // 获取代理人列表数据
     const fetchUserAgentList = async (substituteUserId) => {
@@ -379,7 +296,6 @@
                 })
             }
         } catch (error) {
-            console.error('获取代理人列表失败', error)
             agentList.value = []
             ElMessage({
                 message: t('SystemBasicMgmt.userAgent.getFailed'),
@@ -396,13 +312,14 @@
     const fetchUserPages = async () => {
         loading.value = true
         const params = {
-            departmentId: filters.departmentId,
-            positionId: filters.positionId,
+            userNo: filters.userNo,
+            userName: filters.userName,
             pageIndex: pagination.pageIndex,
-            pageSize: pagination.pageSize
+            pageSize: pagination.pageSize,
+            totalCount: pagination.totalCount
         }
         const res = await post(GET_USER_PAGES_API.GET_USER_PAGES, params)
-  
+
         if (res && res.code === 200) {
   
             userList.value = res.data || []
@@ -427,11 +344,8 @@
     // 重置搜索条件
     const handleReset = () => {
         Object.assign(filters, {
-            departmentId: '',
-            positionId: '',
             userNo: '',
-            userName: '',
-            gender: ''
+            userName: ''
         })
         pagination.pageIndex = 1
     }
@@ -559,7 +473,6 @@
                 // 用户取消删除
                 return
             }
-            console.error('删除代理人失败', error)
             ElMessage({
                 message: t('common.operationFailed'),
                 type: 'error',
@@ -597,7 +510,6 @@
                 })
             }
         } catch (error) {
-            console.error('获取用户列表失败:', error)
             userSelectList.value = []
             userSelectPagination.totalCount = 0
             ElMessage({
@@ -749,7 +661,6 @@
             currentUserInfo.value = {}
             
         } catch (error) {
-            console.error('添加代理人失败', error)
             ElMessage({
                 message: t('common.operationFailed'),
                 type: 'error',

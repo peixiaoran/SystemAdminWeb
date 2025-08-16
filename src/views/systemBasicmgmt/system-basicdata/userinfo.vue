@@ -50,7 +50,7 @@
                   <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
                   <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="150" />
                   <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="230" />
-                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="180" />
+                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="220" />
                   <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
                   <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
                   <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
@@ -75,7 +75,7 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="180">
+                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280">
                       <template #default="scope">
                           <span :style="{
                                color: scope.row.laborType === '1' ? '#faad14' : 

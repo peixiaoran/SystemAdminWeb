@@ -185,26 +185,33 @@ const enterModule = (module) => {
 // 退出登录
 const logout = async () => {
   try {
-    // 确认对话框
     await ElMessageBox.confirm(t('common.confirmLogout'), t('common.tip'), {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel'),
       type: 'warning'
     })
     
-    // 调用退出登录接口
-    await userStore.logout()
+    const result = await userStore.logout()
     
-    // 跳转到登录页
-    router.push('/login')
+    console.log(result)
+    // 根据登出结果处理
+    if (result && result.success) {
+      // 显示后端返回的退出成功信息，如果没有message则使用默认提示
+      const successMessage = result.message || t('common.logoutSuccess')
+      ElMessage.success(successMessage)
+      
+      // 清空所有localStorage
+      localStorage.clear()
+      
+      router.push('/login')
+    } else {
+      // 登出失败，错误信息已在 userStore.logout() 中显示
+      console.error('Logout failed:', result?.message)
+    }
   } catch (error) {
+    // 用户取消，不处理
     if (error !== 'cancel') {
-      ElMessage({
-        message: t('common.failed'),
-        type: 'error',
-        plain: true,
-        showClose: true,
-      })
+      console.error('Logout error:', error)
     }
   }
 }

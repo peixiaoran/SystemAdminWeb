@@ -220,7 +220,7 @@ export default {
     currencyInfo: 'CurrencyInfo',
     personalInfo: 'PersonalInfo',
     exchangerateInfo: 'ExchangeRateInfo',
-    userLoginLog: 'Employee Operation Log'
+    userLoginLog: 'LogOut Info'
   },
   
   // System Basic Management

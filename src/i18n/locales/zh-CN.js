@@ -439,6 +439,8 @@ export default {
       userNamePlaceholder: '请输入员工姓名',
       pleaseInputUserNameCn: '请输入中文姓名',
       pleaseInputUserNameEn: '请输入英文姓名',
+      pleaseEnterUserNo: '请输入员工编号',
+      pleaseEnterUserName: '请输入员工姓名',
       pleaseInputLoginNo: '请输入登录账号',
       pleaseInputPassword: '请输入密码',
       pleaseInputEmail: '请输入邮箱',
