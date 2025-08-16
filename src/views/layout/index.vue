@@ -523,13 +523,28 @@ const logout = async () => {
       type: 'warning'
     })
     
-    // 清除标签缓存
-    localStorage.removeItem('tabs-store')
+    const result = await userStore.logout()
     
-    await userStore.logout()
-    router.push('/login')
+    console.log(result)
+    // 根据登出结果处理
+    if (result && result.success) {
+      // 显示后端返回的退出成功信息，如果没有message则使用默认提示
+      const successMessage = result.message || t('common.logoutSuccess')
+      ElMessage.success(successMessage)
+      
+      // 清空所有localStorage
+      localStorage.clear()
+      
+      router.push('/login')
+    } else {
+      // 登出失败，错误信息已在 userStore.logout() 中显示
+      console.error('Logout failed:', result?.message)
+    }
   } catch (error) {
-            // 员工取消，不处理
+    // 员工取消，不处理
+    if (error !== 'cancel') {
+      console.error('Logout error:', error)
+    }
   }
 }
 

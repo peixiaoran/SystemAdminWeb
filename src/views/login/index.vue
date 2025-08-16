@@ -69,6 +69,7 @@
             <el-button
               type="primary"
               :loading="loading"
+              :disabled="loading"
               class="login-button"
               @click="handleLogin"
             >
@@ -201,8 +202,10 @@ const handleLogin = () => {
             
             // 直接跳转到模块选择页
             router.push('/module-select')
+            loading.value = false
           } else if (res.code === 210) {
             // 密码过期，显示警告消息后跳转到密码过期修改页面
+            // 保持loading状态为true，禁用登录按钮
             ElMessage({
               message: res.message || t('login.passwordExpired'),
               type: 'warning',
@@ -215,6 +218,7 @@ const handleLogin = () => {
             }, 1500)
           } else if (res.code === 220) {
             // 账户被锁定，显示警告消息后跳转到解锁页面
+            // 保持loading状态为true，禁用登录按钮
             ElMessage({
               message: res.message || t('login.accountLocked'),
               type: 'warning',
@@ -232,6 +236,7 @@ const handleLogin = () => {
               plain: true,
               showClose: true,
             })
+            loading.value = false
           }
         })
         .catch(error => {
@@ -241,9 +246,11 @@ const handleLogin = () => {
             plain: true,
             showClose: true,
           })
+          loading.value = false
         })
         .finally(() => {
-          loading.value = false
+          // 只有在非密码过期和非账户锁定的情况下才重置loading状态
+          // 密码过期(210)和账户锁定(220)需要保持按钮禁用状态
         })
     }
   })

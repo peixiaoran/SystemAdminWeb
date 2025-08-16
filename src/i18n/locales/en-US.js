@@ -18,6 +18,8 @@ export default {
     logout: 'Logout',
     safeLogout: 'Safe Logout',
     confirmLogout: 'Are you sure you want to logout?',
+    logoutSuccess: 'Logout Successfully',
+    retryAfterSeconds: 's to retry',
     tip: 'Tip',
     warning: 'Warning',
     enter: 'Enter',

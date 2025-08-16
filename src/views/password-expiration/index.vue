@@ -109,7 +109,7 @@
                 @click="handleSendCode"
                 plain
               >
-                {{ countdown > 0 ? `${countdown}s` : $t('passwordExpiration.sendCode') }}
+                {{ countdown > 0 ? `${countdown}${$t('common.retryAfterSeconds')}` : $t('passwordExpiration.sendCode') }}
               </el-button>
             </div>
           </el-form-item>
@@ -594,9 +594,19 @@ const handleBackToLogin = () => {
   box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);
 }
 
+.submit-button:not(:disabled):hover {
+  background: linear-gradient(135deg, #FFB74D 0%, #FF9575 100%);
+}
+
 .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
+}
+
+.submit-button:disabled:hover {
+  background: linear-gradient(135deg, #FFA726 0%, #FF8A65 100%) !important;
   transform: none !important;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1) !important;
 }

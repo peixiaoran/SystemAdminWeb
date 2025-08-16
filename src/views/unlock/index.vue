@@ -107,7 +107,7 @@
                 @click="handleSendCode"
                 plain
               >
-                {{ countdown > 0 ? `${countdown}${$t('unlock.seconds')}` : $t('unlock.sendCode') }}
+                {{ countdown > 0 ? `${countdown}${$t('common.retryAfterSeconds')}` : $t('unlock.sendCode') }}
               </el-button>
             </div>
           </el-form-item>

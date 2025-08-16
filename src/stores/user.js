@@ -64,33 +64,40 @@ export const useUserStore = defineStore('user', {
     async logout() {
       try {
         // 调用退出登录API
-        await post(LOGOUT_API.USER_LOGOUT)
+        const response = await post(LOGOUT_API.USER_LOGOUT)
         
-        // 路由现在是静态的，不需要清除路由缓存和重置路由
-        
-        // 清除本地存储
-        localStorage.removeItem('token')
-        localStorage.removeItem('userNameCn')
-        localStorage.removeItem('userNameEn')
-        localStorage.removeItem('loginNo')
-        localStorage.removeItem('currentDomainId')
-        localStorage.removeItem('currentSystemName')
-        localStorage.removeItem('currentSystemPath')
-        
-        // 重置状态
-        this.token = ''
-        this.userId = ''
-        this.userNameCn = ''
-        this.userNameEn = ''
-        this.loginNo = ''
-        this.avatar = ''
-        this.roles = []
-        this.permissions = []
-        
-        return true
+        // 检查返回结果
+        if (response && response.code === 200) {
+          // 清除本地存储
+          localStorage.removeItem('token')
+          localStorage.removeItem('userNameCn')
+          localStorage.removeItem('userNameEn')
+          localStorage.removeItem('loginNo')
+          localStorage.removeItem('currentDomainId')
+          localStorage.removeItem('currentSystemName')
+          localStorage.removeItem('currentSystemPath')
+          
+          // 重置状态
+          this.token = ''
+          this.userId = ''
+          this.userNameCn = ''
+          this.userNameEn = ''
+          this.loginNo = ''
+          this.avatar = ''
+          this.roles = []
+          this.permissions = []
+          
+          return { success: true, data: response.data, message: response.message }
+        } else {
+          // 如果返回码不是200，显示错误信息
+          const errorMsg = response?.message || '登出失败，请重试'
+          ElMessage.error(errorMsg)
+          return { success: false, message: errorMsg }
+        }
       } catch (error) {
+        console.error('Logout error:', error)
         ElMessage.error('登出失败，请重试')
-        return false
+        return { success: false, message: '登出失败，请重试' }
       } finally {
         // 确保状态被重置，即使出错也执行
         this.resetState()
