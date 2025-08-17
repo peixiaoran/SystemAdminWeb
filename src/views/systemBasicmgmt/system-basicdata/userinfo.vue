@@ -75,18 +75,7 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280">
-                      <template #default="scope">
-                          <span :style="{
-                               color: scope.row.laborType === '1' ? '#faad14' : 
-                                      scope.row.laborType === '2' ? '#13c2c2' : 
-                                      scope.row.laborType === '3' ? '#1890ff' : 
-                                      scope.row.laborType === '4' ? '#722ed1' : '#000'
-                                      }">
-                              {{ scope.row.laborName }}
-                          </span>
-                      </template>
-                  </el-table-column>
+                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280" />
                   <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
