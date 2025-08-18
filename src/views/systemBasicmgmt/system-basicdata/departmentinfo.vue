@@ -114,8 +114,8 @@
                                        :value="item.departmentLevelId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.status')">
-                        <el-switch v-model="editForm.status" 
+                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.isEnabled')">
+                        <el-switch v-model="editForm.isEnabled" 
                                    :active-value="1"
                                    :inactive-value="0"
                                    :active-text="$t('common.yes')"
@@ -199,7 +199,7 @@
         landline: '',
         email: '',
         address: '',
-        status: 1,
+        isEnabled: 1,
         remark: ''
     })
 
@@ -279,7 +279,7 @@
             editForm.landline = res.data.landline
             editForm.email = res.data.email
             editForm.address = res.data.address
-            editForm.status = res.data.status
+            editForm.isEnabled = res.data.isEnabled
             editForm.remark = res.data.remark
         }
         else {
@@ -355,7 +355,7 @@
             landline: '',
             email: '',
             address: '',
-            status: 1,
+            isEnabled: 1,
             remark: ''
         })
         
