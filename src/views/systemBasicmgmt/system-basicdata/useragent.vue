@@ -48,11 +48,12 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="250" fixed="right" align="center">
+                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="270" />
+                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="380" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.addAgent') }}</el-button>
                             <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.viewAgentList') }}</el-button>
+                            <el-button size="small" type="info" @click="handleViewProactiveAgent(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.viewProactiveAgent') }}</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -200,6 +201,38 @@
                 </span>
             </template>
         </el-dialog>
+
+        <!-- 查看员工代理了哪些人对话框 -->
+        <el-dialog v-model="proactiveAgentDialogVisible"
+                   :title="proactiveAgentDialogTitle"
+                   width="65%"
+                   height="500px"
+                   :close-on-click-modal="false"
+                   :append-to-body="true"
+                   :modal-append-to-body="true"
+                   :lock-scroll="true"
+                   @closed="handleProactiveAgentDialogClosed"
+                   class="proactive-agent-dialog">
+            <div v-loading="proactiveAgentLoading" style="height: 380px; padding-top: 20px;">
+                <el-table :data="proactiveAgentList"
+                          border
+                          stripe
+                          :header-cell-style="{ background: '#f5f7fa' }"
+                          height="370"
+                          class="conventional-table">
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userAgent.index')" width="70" align="center" />
+                    <el-table-column prop="substituteUserNo" :label="$t('SystemBasicMgmt.userAgent.substituteUserNo')" align="left" min-width="110" />
+                    <el-table-column prop="substituteUserName" :label="$t('SystemBasicMgmt.userAgent.substituteUserName')" align="left" min-width="200" />
+                    <el-table-column prop="startTime" :label="$t('SystemBasicMgmt.userAgent.startTime')" align="center" min-width="110" />
+                    <el-table-column prop="endTime" :label="$t('SystemBasicMgmt.userAgent.endTime')" align="center" min-width="110" />
+                </el-table>
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="proactiveAgentDialogVisible = false">{{ $t('common.close') }}</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
   </template>
   
@@ -268,6 +301,13 @@
         pageSize: 10,
         totalCount: 0
     })
+    
+    // 查看员工代理了哪些人对话框相关数据
+    const proactiveAgentDialogVisible = ref(false)
+    const proactiveAgentDialogTitle = ref('')
+    const proactiveAgentList = ref([])
+    const proactiveAgentLoading = ref(false)
+    const currentProactiveUserId = ref('')
   
     // 在组件挂载后获取数据
     onMounted(async () => {
@@ -670,9 +710,55 @@
         }
     }
 
+    // 获取员工代理了哪些人的列表数据
+    const fetchProactiveAgentList = async (userId) => {
+        proactiveAgentLoading.value = true
+        try {
+            const params = {
+                userId: userId
+            }
+            const res = await post(GET_USER_AGENT_API.GET_USER_PRO_AGENT, params)
+            
+            if (res && res.code === 200) {
+                proactiveAgentList.value = res.data || []
+            } else {
+                proactiveAgentList.value = []
+                ElMessage({
+                    message: res.message || t('SystemBasicMgmt.userAgent.getFailed'),
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
+            }
+        } catch (error) {
+            proactiveAgentList.value = []
+            ElMessage({
+                message: t('SystemBasicMgmt.userAgent.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        } finally {
+            proactiveAgentLoading.value = false
+        }
+    }
 
-  
-    
+    // 处理查看员工代理了哪些人操作
+    const handleViewProactiveAgent = async (index, row) => {
+        currentProactiveUserId.value = row.userId
+        proactiveAgentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.proactiveAgentDetails')} - ${row.userNameCn || row.userNameEn}`
+        proactiveAgentDialogVisible.value = true
+        // 获取员工代理了哪些人的列表
+        await fetchProactiveAgentList(row.userId)
+    }
+
+    // 处理查看员工代理了哪些人对话框完全关闭后的清理
+    const handleProactiveAgentDialogClosed = () => {
+        proactiveAgentList.value = []
+        currentProactiveUserId.value = ''
+        proactiveAgentDialogTitle.value = ''
+    }
+
   </script>
   
   <style scoped>

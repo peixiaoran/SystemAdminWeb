@@ -29,7 +29,8 @@ export const GET_USER_VIEW_API = {
 
 // 员工代理列表API
 export const GET_USER_AGENT_API = {
-    GET_USER_AGENT: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserAgentList'
+    GET_USER_AGENT: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserAgentList',
+    GET_USER_PRO_AGENT: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserAgentProactiveList'
 }
 
 // 员工代理新增API
