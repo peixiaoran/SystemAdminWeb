@@ -33,6 +33,11 @@ export const GET_GENDER_DROPDOWN_API = {
   GET_GENDER_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetGenderDropDown'
 }
 
+// 国籍下拉框API
+export const GET_NATIONALITY_DROPDOWN_API = {
+  GET_NATIONALITY_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetNationalityDropDown'
+}
+
 // 雇佣类型下拉框API
 export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
   GET_EMPLOYMENT_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/PersonalInfo/GetLabor'

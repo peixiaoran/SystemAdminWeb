@@ -196,6 +196,7 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { get, post } from '@/utils/request'
 import { useUserStore } from '@/stores/user'
 import {
@@ -215,6 +216,7 @@ export default {
   },
   setup() {
     const { t } = useI18n()
+    const router = useRouter()
     const userStore = useUserStore()
     const personalInfoFormRef = ref(null)
     const loading = ref(false)
@@ -522,6 +524,16 @@ export default {
               plain: true,
               showClose: true
           })
+          
+          // 如果修改了密码，则退出系统
+          if (personalInfoForm.password && personalInfoForm.password.trim() !== '') {
+            // 清空用户store和localStorage
+            await userStore.logout()
+            // 跳转到登录页面
+            router.push('/login')
+            return
+          }
+          
           // 重新获取最新数据
           await getPersonalInfo()
         } else {

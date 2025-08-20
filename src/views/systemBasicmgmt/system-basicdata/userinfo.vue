@@ -108,7 +108,7 @@
                      @close="handleDialogClose">
               <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="用户编辑">
               
-              <div class="form-row">
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
                       <el-input v-model="editForm.userNo" style="width:100%" />
                   </el-form-item>
@@ -118,9 +118,6 @@
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameEn')" prop="userNameEn">
                       <el-input v-model="editForm.userNameEn" style="width:100%" />
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.gender')" prop="gender">
                       <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectGender')">
                           <el-option 
@@ -130,6 +127,9 @@
                               :value="item.genderCode" />
                       </el-select>
                   </el-form-item>
+              </div>
+              
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.hireDate')" prop="hireDate">
                       <el-date-picker
                           v-model="editForm.hireDate"
@@ -138,6 +138,19 @@
                           :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectHireDate')"
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
+                  </el-form-item>
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.nationality')" prop="nationality">
+                      <el-select 
+                          v-model="editForm.nationality" 
+                          style="width:100%"
+                          clearable
+                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectNationality')">
+                          <el-option
+                              v-for="item in nationalityOptions"
+                              :key="`nationality-${item.genderCode}`"
+                              :label="item.genderName"
+                              :value="item.genderCode" />
+                      </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.laborType')" prop="laborId">
                       <el-select 
@@ -152,9 +165,6 @@
                               :value="item.laborId" />
                       </el-select>
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.department')" prop="departmentId">
                       <el-tree-select
                           v-model="editForm.departmentId"
@@ -167,6 +177,9 @@
                           style="width:100%"
                           :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
                   </el-form-item>
+              </div>
+              
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.position')" prop="positionId">
                       <el-select 
                           v-model="editForm.positionId" 
@@ -195,21 +208,18 @@
                               :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.loginNo')" prop="loginNo">
                       <el-input v-model="editForm.loginNo" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.password')" prop="passWord">
                       <el-input v-model="editForm.passWord" type="password" style="width:100%" show-password />
                   </el-form-item>
+              </div>
+              
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.email')" prop="email">
                       <el-input v-model="editForm.email" style="width:100%" />
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
@@ -221,6 +231,9 @@
                           <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.180')" :value="180" />
                       </el-select>
                   </el-form-item>
+              </div>
+              
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isEmployed')">
                       <el-switch
                           v-model="editForm.isEmployed"
@@ -231,9 +244,6 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-              </div>
-              
-              <div class="form-row">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
                       <el-switch
                           v-model="editForm.isApproval"
@@ -268,7 +278,7 @@
                   </el-form-item>
               </div>
               
-              <div class="form-row">
+              <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.isAgent')">
                       <el-switch
                           v-model="editForm.isAgent"
@@ -300,6 +310,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
+                  <el-form-item></el-form-item>
               </div>
               
               <div class="form-row full-width">
@@ -345,6 +356,7 @@
       GET_USER_POSITION_DROPDOWN_API,
       GET_ROLE_DROPDOWN_API,
       GET_GENDER_DROPDOWN_API,
+      GET_NATIONALITY_DROPDOWN_API,
       GET_LABOR_TYPE_DROPDOWN_API,
       UPLOAD_AVATAR_API
   } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
@@ -384,6 +396,7 @@
   const positionOptions = ref([])
   const roleOptions = ref([])
   const genderOptions = ref([])
+  const nationalityOptions = ref([])
   const laborTypeOptions = ref([])
 
   // 分页信息
@@ -414,6 +427,7 @@
       roleId: '',
       gender: '',
       hireDate: '',
+      nationality: '',
       email: '',
       phoneNumber: '',
       loginNo: '',
@@ -462,6 +476,9 @@
       ],
       hireDate: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
+      ],
+      nationality: [
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectNationality'), trigger: 'change' }
       ],
       laborId: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectLaborType'), trigger: 'change' }
@@ -545,9 +562,10 @@
   // 组件挂载后获取数据
   onMounted(async () => {
       // 获取下拉数据并设置筛选条件默认值
-      await fetchDepartmentDropdown(false, false)
+      await fetchDepartmentDropdown(true, false)
       await fetchPositionDropdown(true, false)
       await fetchGenderDropdown()
+      await fetchNationalityDropdown()
       await fetchLaborTypeDropdown()
       // 获取用户列表数据
       fetchUserPages()
@@ -683,6 +701,27 @@
       } catch (error) {
           console.error('获取性别选项失败:', error)
           genderOptions.value = []
+      }
+  }
+
+  // 获取国籍下拉数据
+  const fetchNationalityDropdown = async () => {
+      try {
+          const res = await post(GET_NATIONALITY_DROPDOWN_API.GET_NATIONALITY_DROPDOWN, {})
+          if (res && res.code === 200) {
+              nationalityOptions.value = res.data || []
+              console.log('nationalityOptions:', nationalityOptions.value)
+              // 验证数据结构并过滤无效数据
+              nationalityOptions.value = nationalityOptions.value.filter(item => 
+                  item && item.genderCode !== undefined && item.genderCode !== null && 
+                  item.genderName !== undefined && item.genderName !== null
+              )
+          } else {
+              nationalityOptions.value = []
+          }
+      } catch (error) {
+          console.error('获取国籍选项失败:', error)
+          nationalityOptions.value = []
       }
   }
 
@@ -1122,6 +1161,16 @@
     margin-top: 8px;
     text-align: right;
     padding-left: 20px;
+  }
+
+  /* 四列布局样式 */
+  .dialog-form .form-row.four-columns .el-form-item {
+    flex: 0 0 calc(25% - 15px);
+    margin-right: 20px;
+  }
+
+  .dialog-form .form-row.four-columns .el-form-item:last-child {
+    margin-right: 0;
   }
 </style>
 
