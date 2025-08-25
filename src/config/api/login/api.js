@@ -33,7 +33,7 @@ export const PWD_EXPIRATION_UPDATE_API = {
 
 // 员工退出
 export const LOGOUT_API = {
-  USER_LOGOUT: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserLogOut/UserLogOut`
+  USER_LOGOUT: `${API_BASE_PATHS.SYSTEM_CORE}/SysUserOperate/UserLogOut`
 }
 
 // 查询模块列表

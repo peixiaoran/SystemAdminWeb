@@ -525,13 +525,17 @@ const logout = async () => {
     
     const result = await userStore.logout()
     
-    console.log(result)
     // 根据登出结果处理
     if (result && result.success) {
       // 显示后端返回的退出成功信息，如果没有message则使用默认提示
       const successMessage = result.message || t('common.logoutSuccess')
-      ElMessage.success(successMessage)
       
+      ElMessage({
+         message: successMessage,
+         type: 'success',
+         plain: true,
+         showClose: true,
+      })
       // 清空所有localStorage
       localStorage.clear()
       
