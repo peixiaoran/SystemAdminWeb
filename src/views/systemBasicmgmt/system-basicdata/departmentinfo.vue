@@ -37,7 +37,7 @@
                           v-loading="loading"
                           class="conventional-table"
                           row-key="departmentId"
-                          :default-expand-all="false"
+                          :default-expand-all="true"
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
                         <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentInfo.index')" width="70" align="center" fixed />
                         <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
