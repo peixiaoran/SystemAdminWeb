@@ -280,7 +280,18 @@ const moduleRoutes = [
             component: () => import('../views/SystemBasicMgmt/System-BasicData/useragent.vue'),
             meta: { 
               title: 'route.userAgent', 
-              icon: 'GoodsFilled',
+              icon: 'Handbag',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userparttime',
+            name: 'SystemUserPartTime',
+            component: () => import('../views/SystemBasicMgmt/System-BasicData/userparttime.vue'),
+            meta: { 
+              title: 'route.userPartTime', 
+              icon: 'ShoppingBag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }

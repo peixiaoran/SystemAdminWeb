@@ -24,7 +24,7 @@ export const GET_PROGRAM_ENTITY_API = {
 
 // 程序分页API
 export const GET_PROGRAM_PAGES_API = {
-  GET_PROGRAM_PAGES: 'SystemBasicMgmt/SystemMgmt/ProgramInfo/GetSysProgramPagesList'
+  GET_PROGRAM_PAGES: 'SystemBasicMgmt/SystemMgmt/ProgramInfo/GetSysProgramPage'
 }
 
 // 程序新增API

@@ -212,6 +212,7 @@ export default {
     userAgent: 'Employee Agent',
     userPosition: 'UserPositions',
     userLabor: 'Employee Career',
+    userPartTime: 'Employee Part-time',
     companyInfo: 'CompanyInfo',
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
@@ -876,6 +877,31 @@ export default {
         laborTypeCode: 'Employee Career Code',
         laborTypeNameCn: 'Chinese Name'
       }
+    },
+
+    userPartTime: {
+      title: 'Employee Part-time Management',
+      department: 'Department',
+      pleaseSelectDepartment: 'Please select department',
+      userNo: 'Employee No.',
+      pleaseEnterUserNo: 'Please enter employee number',
+      userName: 'Employee Name',
+      pleaseEnterUserName: 'Please enter employee name',
+      index: 'Index',
+      position: 'Position',
+      partTimeDepartment: 'Part-time Department',
+      partTimePosition: 'Part-time Position',
+      partTimeLabor: 'Part-time Labor',
+      isApproval: 'Approval Required',
+      isPartTime: 'Part-time',
+      startTime: 'Start Time',
+      endTime: 'End Time',
+      operation: 'Operation',
+      deleteConfirm: 'Are you sure you want to delete this employee part-time record?',
+      deleteSuccess: 'Delete Successfully',
+      deleteFailed: 'Delete Failed',
+      getFailed: 'Failed to get employee part-time data',
+      getDepartmentFailed: 'Failed to get department list'
     }
   }
 }

@@ -24,7 +24,7 @@ export const GET_MODULE_ENTITY_API = {
 
 // 模块分页API
 export const GET_MODULE_PAGES_API = {
-  GET_MODULE_PAGES: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetSysModulePagesList'
+  GET_MODULE_PAGES: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetSysModulePage'
 }
 
 // 模块新增API

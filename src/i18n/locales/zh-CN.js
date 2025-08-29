@@ -199,6 +199,7 @@ export default {
     userAgent: '员工代理维护',
     userPosition: '职业资料维护',
     userLabor: '员工职业维护',
+    userPartTime: '员工兼职维护',
     companyInfo: '公司资料维护',
     departmentInfo: '部门资料维护',
     departmentLevel: '部门层级维护',
@@ -919,6 +920,31 @@ export default {
         laborTypeCode: '员工职业编码',
         laborTypeNameCn: '中文名称'
       }
+    },
+
+    userPartTime: {
+      title: '员工兼任管理',
+      department: '部门',
+      pleaseSelectDepartment: '请选择部门',
+      userNo: '员工编号',
+      pleaseEnterUserNo: '请输入员工编号',
+      userName: '员工姓名',
+      pleaseEnterUserName: '请输入员工姓名',
+      index: '序号',
+      position: '职位',
+      partTimeDepartment: '兼任部门',
+      partTimePosition: '兼任职位',
+      partTimeLabor: '兼任劳务',
+      isApproval: '是否审批',
+      isPartTime: '是否兼任',
+      startTime: '开始时间',
+      endTime: '结束时间',
+      operation: '操作',
+      deleteConfirm: '确定要删除该员工兼任记录吗？',
+      deleteSuccess: '删除成功',
+      deleteFailed: '删除失败',
+      getFailed: '获取员工兼任数据失败',
+      getDepartmentFailed: '获取部门列表失败'
     }
   }
 }

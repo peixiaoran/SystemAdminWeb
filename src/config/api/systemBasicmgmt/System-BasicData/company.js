@@ -24,7 +24,7 @@ export const GET_COMPANY_ENTITY_API = {
 
 // 公司分页API
 export const GET_COMPANY_PAGES_API = {
-  GET_COMPANY_PAGES: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoPagesList'
+  GET_COMPANY_PAGES: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoPage'
 }
 
 // 公司新增API

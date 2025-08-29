@@ -24,7 +24,7 @@ export const GET_DOMAIN_ENTITY_API = {
 
 // 网域分页API
 export const GET_DOMAIN_PAGES_API = {
-  GET_DOMAIN_PAGES: 'SystemBasicMgmt/SystemMgmt/DomainInfo/GetSysDomainPagesList'
+  GET_DOMAIN_PAGES: 'SystemBasicMgmt/SystemMgmt/DomainInfo/GetSysDomainPage'
 }
 
 // 网域新增API

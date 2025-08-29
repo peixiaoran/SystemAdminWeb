@@ -4,6 +4,18 @@
   
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
+                <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
+                    <el-tree-select 
+                        v-model="filters.departmentId"
+                        :data="departmentOptions || []"
+                        :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                        check-strictly
+                        filterable
+                        clearable
+                        :filter-node-method="filterNodeMethod"
+                        style="width: 200px;"
+                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
+                </el-form-item>
                 <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
                     <el-input 
                         v-model="filters.userNo"
@@ -244,7 +256,8 @@
         GET_USER_AGENT_API,
         GET_USER_AGENT_INSERT_API,
         GET_USER_AGENT_DELETE_API,
-        GET_USER_VIEW_API
+        GET_USER_VIEW_API,
+        GET_DEPARTMENT_DROPDOWN_API
     } from '@/config/api/SystemBasicMgmt/System-BasicData/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
@@ -265,9 +278,13 @@
   
     // 过滤条件
     const filters = reactive({
+        departmentId: '',
         userNo: '',
         userName: '',
     })
+
+    // 部门选项数据
+    const departmentOptions = ref([])
   
     // 代理人相关数据
     const agentDialogVisible = ref(false)
@@ -311,9 +328,68 @@
   
     // 在组件挂载后获取数据
     onMounted(async () => {
+        // 获取部门下拉数据
+        fetchDepartmentDropdown(true)
         // 获取员工列表数据
         fetchUserPages()
     })
+
+    // 获取部门下拉数据
+    const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
+        try {
+            const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
+            
+            if (res && res.code === 200) {
+                departmentOptions.value = res.data || []
+                
+                // 设置默认筛选条件
+                if (setDefaultFilter && departmentOptions.value.length > 0) {
+                    // 查找第一个未禁用的部门
+                    const findFirstEnabledDepartment = (departments) => {
+                        for (const dept of departments) {
+                            if (!dept.disabled) {
+                                return dept.departmentId
+                            }
+                            if (dept.departmentChildList && dept.departmentChildList.length > 0) {
+                                const childResult = findFirstEnabledDepartment(dept.departmentChildList)
+                                if (childResult) {
+                                    return childResult
+                                }
+                            }
+                        }
+                        return null
+                    }
+                    
+                    const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
+                    if (firstDepartmentId) {
+                        filters.departmentId = firstDepartmentId
+                    }
+                }
+            } else {
+                departmentOptions.value = []
+                ElMessage({
+                    message: res.message || t('SystemBasicMgmt.userInfo.getDepartmentFailed'),
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
+            }
+        } catch (error) {
+            departmentOptions.value = []
+            ElMessage({
+                message: t('SystemBasicMgmt.userInfo.getDepartmentFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        }
+    }
+
+    // 部门树形选择器过滤方法
+    const filterNodeMethod = (value, data) => {
+        if (!value) return true
+        return data.departmentName && data.departmentName.toLowerCase().includes(value.toLowerCase())
+    }
   
     // 获取代理人列表数据
     const fetchUserAgentList = async (substituteUserId) => {
@@ -352,6 +428,7 @@
     const fetchUserPages = async () => {
         loading.value = true
         const params = {
+            departmentId: filters.departmentId,
             userNo: filters.userNo,
             userName: filters.userName,
             pageIndex: pagination.pageIndex,
@@ -384,6 +461,7 @@
     // 重置搜索条件
     const handleReset = () => {
         Object.assign(filters, {
+            departmentId: '',
             userNo: '',
             userName: ''
         })

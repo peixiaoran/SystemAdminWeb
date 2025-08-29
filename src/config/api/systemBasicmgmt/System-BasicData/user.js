@@ -19,7 +19,7 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 员工分页API
 export const GET_USER_PAGES_API = {
-    GET_USER_PAGES: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserInfoPagesList'
+    GET_USER_PAGES: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserInfoPage'
 }
 
 // 员工新增API

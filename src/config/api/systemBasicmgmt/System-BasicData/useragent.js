@@ -19,7 +19,7 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 员工分页API
 export const GET_USER_PAGES_API = {
-    GET_USER_PAGES: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserInfoPagesList'
+    GET_USER_PAGES: 'SystemBasicMgmt/SystemBasicData/UserAgent/GetUserInfoPage'
 }
 
 // 员工代理人视图API
@@ -41,4 +41,9 @@ export const GET_USER_AGENT_INSERT_API = {
 // 员工代理删除API
 export const GET_USER_AGENT_DELETE_API = {
     GET_USER_AGENT_DELETE: 'SystemBasicMgmt/SystemBasicData/UserAgent/DeleteUserAgent'
+}
+
+// 部门下拉框API
+export const GET_DEPARTMENT_DROPDOWN_API = {
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetDepartmentDropDown'
 }

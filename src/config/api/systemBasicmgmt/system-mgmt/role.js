@@ -24,7 +24,7 @@ export const GET_ROLE_ENTITY_API = {
 
 // 角色分页API
 export const GET_ROLE_PAGES_API = {
-  GET_ROLE_PAGES: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetSysRolePagesList'
+  GET_ROLE_PAGES: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetSysRolePage'
 }
 
 // 角色新增API

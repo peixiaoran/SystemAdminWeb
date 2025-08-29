@@ -24,7 +24,7 @@ export const GET_USER_LABOR_ENTITY_API = {
 
 // 职业列表API
 export const GET_USERLABOR_LIST_API = {
-    GET_USERLABOR_LIST: 'SystemBasicMgmt/SystemBasicData/UserLabor/GetUserLaborPagesList'
+    GET_USERLABOR_LIST: 'SystemBasicMgmt/SystemBasicData/UserLabor/GetUserLaborPage'
 }
 
 // 职业新增API
