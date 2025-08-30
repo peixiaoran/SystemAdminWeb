@@ -33,7 +33,7 @@
               :key="subMenu.menuId" 
               :index="getFormattedPath(subMenu.path)"
               :class="{'custom-active': isMenuActive(subMenu.path)}"
-              @click="addTab(subMenu)"
+              @click="handleMenuClick(subMenu)"
             >
               <el-icon><component :is="subMenu.menuIcon || 'Document'" /></el-icon>
               <span>{{ subMenu.menuName }}</span>
@@ -41,7 +41,7 @@
           </el-sub-menu>
           
           <!-- 一级菜单（无子菜单） -->
-          <el-menu-item v-else :index="menu.path" @click="addTab(menu)">
+          <el-menu-item v-else :index="menu.path" @click="handleMenuClick(menu)">
             <el-icon><component :is="menu.menuIcon || 'Menu'" /></el-icon>
             <span>{{ menu.menuName }}</span>
           </el-menu-item>
@@ -388,40 +388,51 @@ const handleMenuSelect = (index, indexPath) => {
   }
 }
 
-// 保存标签到本地存储
+// 保存标签到本地存储 - 使用防抖优化性能
+let saveTabsTimer = null
+let menuExpandTimer = null
+let menuClickTimer = null
 const saveTabsToStorage = () => {
-  try {
-    const tabsData = {
-      visitedTabs: visitedTabs.value,
-      activeTabName: activeTabName.value,
-      cachedTabs: cachedTabs.value
+  // 使用防抖，避免频繁操作localStorage
+  if (saveTabsTimer) clearTimeout(saveTabsTimer)
+  saveTabsTimer = setTimeout(() => {
+    try {
+      const tabsData = {
+        visitedTabs: visitedTabs.value,
+        activeTabName: activeTabName.value,
+        cachedTabs: cachedTabs.value
+      }
+      localStorage.setItem('tabs-store', JSON.stringify(tabsData))
+    } catch (error) {
+      // 静默处理错误
     }
-    localStorage.setItem('tabs-store', JSON.stringify(tabsData))
-  } catch (error) {
-  }
+  }, 100) // 100ms防抖延迟
 }
 
-// 监听路由变化，保持菜单激活状态和标签选中状态同步
+// 监听路由变化，保持菜单激活状态和标签选中状态同步 - 优化性能
 watch(() => route.path, (newPath, oldPath) => {
+  // 如果路径没有变化，直接返回
+  if (newPath === oldPath) return
+  
   // 始终更新激活的菜单项
   activeMenu.value = newPath
   
-  // 确保展开对应的菜单
-  nextTick(() => {
-    openMenuForPath(newPath)
-  })
-  
-  // 处理特殊路径：模块选择或首页
+  // 处理特殊路径：模块选择或首页 - 提前返回避免后续计算
   if (newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select' || newPath === '/login') {
-    // 特殊路径不处理标签逻辑
     return;
   }
   
-  // 检查新路径是否在现有标签中
-  const isPathInTabs = visitedTabs.value.some(tab => tab.path === newPath);
+  // 使用防抖优化菜单展开操作
+  if (menuExpandTimer) clearTimeout(menuExpandTimer)
+  menuExpandTimer = setTimeout(() => {
+    openMenuForPath(newPath)
+  }, 50) // 50ms防抖延迟
+  
+  // 检查新路径是否在现有标签中 - 使用findIndex优化
+  const existingTabIndex = visitedTabs.value.findIndex(tab => tab.path === newPath);
   
   // 如果新路径在标签中，直接更新活动标签
-  if (isPathInTabs) {
+  if (existingTabIndex !== -1) {
     activeTabName.value = newPath;
     return;
   }
@@ -430,11 +441,9 @@ watch(() => route.path, (newPath, oldPath) => {
   if (oldPath && oldPath !== '/' && oldPath !== '/login') {
     // 尝试获取路由信息以添加新标签
     const matchedRoute = router.resolve(newPath)
-    if (matchedRoute && matchedRoute.name) {
+    if (matchedRoute?.name) {
       // 检查是否有noTag标记
-      const hasNoTagMark = matchedRoute.meta && matchedRoute.meta.noTag
-      if (hasNoTagMark) {
-        // 有noTag标记，不添加标签但更新活动标签
+      if (matchedRoute.meta?.noTag) {
         activeTabName.value = newPath
         return
       }
@@ -443,22 +452,21 @@ watch(() => route.path, (newPath, oldPath) => {
       const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
       const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
       const routeIcon = matchedRoute.meta?.icon || 'Document'
+      const tabName = newPath.replace(/\//g, '-')
       
-      // 添加新标签
+      // 批量更新状态，减少响应式触发次数
       visitedTabs.value.push({
         title: routeTitle,
         titleKey: routeTitleKey,
         path: newPath,
         icon: routeIcon,
-        name: newPath.replace(/\//g, '-')
+        name: tabName
       })
       
-      // 添加到缓存列表
-      if (!cachedTabs.value.includes(newPath.replace(/\//g, '-'))) {
-        cachedTabs.value.push(newPath.replace(/\//g, '-'))
+      if (!cachedTabs.value.includes(tabName)) {
+        cachedTabs.value.push(tabName)
       }
       
-      // 设置为活动标签
       activeTabName.value = newPath
       
       // 保存标签状态
@@ -589,8 +597,17 @@ const logout = async () => {
   }
 }
 
+// 处理菜单点击 - 添加防抖避免快速点击卡顿
+const handleMenuClick = (menu) => {
+  // 防抖处理，避免快速点击造成卡顿
+  if (menuClickTimer) clearTimeout(menuClickTimer)
+  menuClickTimer = setTimeout(() => {
+    addTab(menu)
+  }, 50) // 50ms防抖延迟
+}
+
 // 添加标签
-const addTab = async (menu) => {
+const addTab = (menu) => {
   const { menuName, path, menuIcon } = menu
   
   if (!path) {
@@ -635,8 +652,8 @@ const addTab = async (menu) => {
     const routeIcon = matchedRoute.meta?.icon || menuIcon || 'Document'
     
     // 检查是否已存在相同路径的标签
-    const isExist = visitedTabs.value.some(tab => tab.path === formattedPath)
-    if (!isExist) {
+    const existingTabIndex = visitedTabs.value.findIndex(tab => tab.path === formattedPath)
+    if (existingTabIndex === -1) {
       // 添加新标签
       const newTab = {
         title: routeTitle,
@@ -655,17 +672,14 @@ const addTab = async (menu) => {
       }
     } else {
       // 如果标签已存在，更新标题（可能是因为语言变化）
-      const existingTabIndex = visitedTabs.value.findIndex(tab => tab.path === formattedPath)
-      if (existingTabIndex !== -1) {
-        visitedTabs.value[existingTabIndex].title = routeTitle
-      }
+      visitedTabs.value[existingTabIndex].title = routeTitle
     }
     
     // 设置当前活动标签和菜单
     activeTabName.value = formattedPath
     activeMenu.value = formattedPath
     
-    // 无论是否是新标签，都保存标签状态到本地存储
+    // 批量更新后保存标签状态
     saveTabsToStorage()
     
     // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
@@ -677,9 +691,15 @@ const addTab = async (menu) => {
   }
 }
 
-// 处理标签点击
-const handleTabClick = async (tab) => {
+// 处理标签点击 - 优化性能
+const handleTabClick = (tab) => {
   const path = tab.props.name;
+  
+  // 如果点击的是当前活动标签，直接返回
+  if (activeTabName.value === path) {
+    return
+  }
+  
   activeMenu.value = path;
   activeTabName.value = path;
   
@@ -688,7 +708,7 @@ const handleTabClick = async (tab) => {
 
   // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
   if (route.path !== path) {
-    await router.push(path)
+    router.push(path)
   }
 }
 
@@ -995,41 +1015,44 @@ onMounted(async () => {
 })
 
 // 确保打开对应路径的菜单
+// 缓存路径格式化结果，避免重复计算
+const pathCache = new Map()
+const getCachedFormattedPath = (path) => {
+  if (!pathCache.has(path)) {
+    pathCache.set(path, getFormattedPath(path))
+  }
+  return pathCache.get(path)
+}
+
 const openMenuForPath = (path) => {
-  if (!path) return;
+  if (!path || !menuList.value.length) return;
   
-  // 尝试找到匹配的菜单项
-  const findAndOpenParentMenu = (items, targetPath) => {
+  // 使用缓存的路径格式化
+  const targetPath = getCachedFormattedPath(path)
+  
+  // 简化的菜单查找逻辑
+  const findMatchingMenu = (items) => {
     for (const item of items) {
-      // 如果当前菜单项有子菜单
-      if (item.menuChildList && item.menuChildList.length > 0) {
+      if (item.menuChildList?.length > 0) {
         // 检查子菜单中是否有匹配的路径
-        const hasMatchingChild = item.menuChildList.some(child => 
-          getFormattedPath(child.path) === targetPath ||
-          targetPath.startsWith(getFormattedPath(child.path) + '/')
-        );
+        const hasMatch = item.menuChildList.some(child => {
+          const childPath = getCachedFormattedPath(child.path)
+          return childPath === targetPath || targetPath.startsWith(childPath + '/')
+        })
         
-        // 如果在子菜单中找到匹配项，则打开当前菜单
-        if (hasMatchingChild) {
-          // 这里我们仅需要设置activeMenu，el-menu会根据default-active属性自动展开
-          return true;
-        }
+        if (hasMatch) return true
         
         // 递归检查子菜单
-        if (findAndOpenParentMenu(item.menuChildList, targetPath)) {
-          return true;
-        }
-      } else if (getFormattedPath(item.path) === targetPath) {
-        // 如果当前菜单项路径匹配
-        return true;
+        if (findMatchingMenu(item.menuChildList)) return true
+      } else if (getCachedFormattedPath(item.path) === targetPath) {
+        return true
       }
     }
-    
-    return false;
-  };
+    return false
+  }
   
-  // 对所有顶级菜单项执行查找
-  findAndOpenParentMenu(menuList.value, path);
+  // 执行查找
+  findMatchingMenu(menuList.value)
 }
 </script>
 

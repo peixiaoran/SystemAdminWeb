@@ -29,7 +29,7 @@
           />
           <el-table-column 
             prop="positionNameCn"
-:label="$t('SystemBasicMgmt.userPosition.positionNameCn')"
+            :label="$t('SystemBasicMgmt.userPosition.positionNameCn')"
             align="left" 
             min-width="200" 
           />
@@ -180,7 +180,6 @@ const getPositionList = async () => {
       positionList.value = []
     }
   } catch (error) {
-    console.error('获取职业列表失败:', error)
     ElMessage({
       message: t('SystemBasicMgmt.userPosition.getFailed'),
       type: 'error',
@@ -220,7 +219,6 @@ const handleEdit = async (index, row) => {
       dialogVisible.value = false
     }
   } catch (error) {
-    console.error('获取职业详情失败:', error)
     ElMessage({
       message: t('SystemBasicMgmt.userPosition.getFailed'),
       type: 'error',

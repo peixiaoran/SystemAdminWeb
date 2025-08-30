@@ -249,7 +249,7 @@
   </template>
   
   <script setup>
-    import { ref, reactive, onMounted, nextTick } from 'vue'
+    import { ref, reactive, onMounted } from 'vue'
     import { post } from '@/utils/request'
     import { 
         GET_USER_PAGES_API,

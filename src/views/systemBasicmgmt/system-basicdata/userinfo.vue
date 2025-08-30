@@ -63,15 +63,8 @@
                   </el-table-column>
                   <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="130">
                       <template #default="scope">
-                          <el-tag :type="scope.row.isApproval === 1 ? 'success' : 'info'">
+                          <el-tag :type="scope.row.isApproval === 1 ? 'primary' : 'info'">
                               {{ scope.row.isApprovalName }}
-                          </el-tag>
-                      </template>
-                  </el-table-column>
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isParttimed')" align="center" min-width="130">
-                      <template #default="scope">
-                          <el-tag :type="scope.row.isParttimed === 1 ? 'success' : 'info'">
-                              {{ scope.row.isParttimedName }}
                           </el-tag>
                       </template>
                   </el-table-column>
@@ -295,6 +288,7 @@
                           v-model="editForm.isParttimed"
                           :active-value="1"
                           :inactive-value="0"
+                          :disabled="true"
                           :active-text="$t('common.yes')"
                           :inactive-text="$t('common.no')"
                           inline-prompt
