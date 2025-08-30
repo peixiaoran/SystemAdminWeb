@@ -178,10 +178,12 @@
       
       <!-- 主要内容区域  -->
       <el-main class="main-content">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route }">
           <transition name="page-slide" mode="out-in">
-            <keep-alive :include="cachedTabs">
-              <component :is="markRaw(Component)" class="router-view-component" />
+            <keep-alive :include="keepAliveIncludes">
+              <component 
+                :is="getComponentName(Component, route.path)" 
+                class="router-view-component" />
             </keep-alive>
           </transition>
         </router-view>
@@ -191,7 +193,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, watch, markRaw, computed } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch, markRaw, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
@@ -224,6 +226,41 @@ const currentSystemName = computed(() => {
 const activeTabName = ref('')
 const visitedTabs = ref([])
 const cachedTabs = ref([])
+
+// 计算属性：根据当前打开的标签动态生成缓存列表
+const keepAliveIncludes = computed(() => {
+  return visitedTabs.value.map(tab => {
+    // 使用路径作为组件名称，但需要处理特殊字符
+    return tab.path.replace(/[^a-zA-Z0-9]/g, '_')
+  })
+})
+
+// 组件包装缓存（按路径缓存一个稳定名称的包装组件）
+const componentWrapperMap = new Map()
+
+// 获取或创建用于 keep-alive 的稳定包装组件（基于路径命名）
+const getComponentName = (Component, path) => {
+  if (!Component) return null
+
+  // 基于路径生成稳定且唯一的组件名（只包含字母数字和下划线）
+  const normalizedPath = path.replace(/[^a-zA-Z0-9]/g, '_')
+
+  // 如已存在包装，直接复用，保证同一路径始终是同一个组件类型，从而被 keep-alive 缓存
+  if (componentWrapperMap.has(path)) {
+    return componentWrapperMap.get(path)
+  }
+
+  // 创建一个轻量包装组件：只负责提供稳定的 name，并渲染真实组件
+  const wrapper = {
+    name: normalizedPath,
+    setup() {
+      return () => h(Component)
+    }
+  }
+
+  componentWrapperMap.set(path, wrapper)
+  return wrapper
+}
 
 // 监听语言变化，更新标签标题 - 使用防抖优化性能
 let languageChangeTimer = null
@@ -580,7 +617,10 @@ const addTab = async (menu) => {
     if (hasNoTagMark) {
       activeTabName.value = formattedPath
       activeMenu.value = formattedPath
-      router.push(formattedPath)
+      // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
+      if (route.path !== formattedPath) {
+        router.push(formattedPath)
+      }
       return
     }
     
@@ -628,8 +668,10 @@ const addTab = async (menu) => {
     // 无论是否是新标签，都保存标签状态到本地存储
     saveTabsToStorage()
     
-    // 跳转到对应路由
-    router.push(formattedPath)
+    // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
+    if (route.path !== formattedPath) {
+      router.push(formattedPath)
+    }
   } catch (error) {
 
   }
@@ -644,7 +686,10 @@ const handleTabClick = async (tab) => {
   // 保存当前活动标签
   saveTabsToStorage()
 
-  await router.push(path)
+  // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
+  if (route.path !== path) {
+    await router.push(path)
+  }
 }
 
 // 移除标签
@@ -685,6 +730,11 @@ const removeTab = (targetPath) => {
   const index = cachedTabs.value.indexOf(targetPath.replace(/\//g, '-'))
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
+  }
+  
+  // 强制清除keep-alive缓存：从组件包装映射中删除
+  if (componentWrapperMap.has(targetPath)) {
+    componentWrapperMap.delete(targetPath)
   }
   
   // 保存标签状态到本地存储
@@ -737,29 +787,16 @@ const refreshSelectedTag = () => {
   
   const { path } = tagRightClicked.value
   
-  // 从缓存中移除
-  const index = cachedTabs.value.indexOf(path.replace(/\//g, '-'))
-  if (index > -1) {
-    cachedTabs.value.splice(index, 1)
-  }
-  
-  // 使用更高效的刷新方式
+  // 使用路由参数变化来强制重新渲染组件
   const currentPath = path
   const routeKey = Date.now().toString()
   
-  // 直接替换路由，避免多次跳转
+  // 直接替换路由，通过query参数变化强制组件重新渲染
   router.replace({
     path: currentPath,  
     query: { ...route.query, _refresh: routeKey }
-  }).then(() => {
-    // 重新添加到缓存
-    nextTick(() => {
-      if (!cachedTabs.value.includes(currentPath.replace(/\//g, '-'))) {
-        cachedTabs.value.push(currentPath.replace(/\//g, '-'))
-      }
-    })
   }).catch(() => {
-    
+    // 忽略路由错误
   })
 }
 
@@ -783,10 +820,13 @@ const closeOthersTags = () => {
   
   // 跳转到当前选中的标签
   activeTabName.value = path
-  // 使用nextTick确保DOM更新后再跳转
-  nextTick(() => {
-    router.push(path)
-  })
+  // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
+  if (route.path !== path) {
+    // 使用nextTick确保DOM更新后再跳转
+    nextTick(() => {
+      router.push(path)
+    })
+  }
 }
 
 // 关闭所有标签
@@ -889,8 +929,10 @@ onMounted(async () => {
       } else {
         // 如果当前路径不在恢复的标签中，但有其他标签，保持原有的活动标签
         if (visitedTabs.value.length > 0 && activeTabName.value) {
-          // 跳转到之前的活动标签
-          router.push(activeTabName.value)
+          // 只有当路径与当前路由不同时才进行跳转，避免不必要的刷新
+          if (route.path !== activeTabName.value) {
+            router.push(activeTabName.value)
+          }
         } else {
           // 如果没有活动标签，添加当前路径为新标签
           if (matchedRoute && matchedRoute.name) {

@@ -551,10 +551,10 @@
         // 关闭所有通知
         editForm.isRealtimeNotification = 0
         editForm.isScheduledNotification = 0
-      } else if (oldValue === 0) { // 开启审批权限
-        // 恢复之前的通知状态
-        editForm.isRealtimeNotification = previousNotificationState.isRealtimeNotification
-        editForm.isScheduledNotification = previousNotificationState.isScheduledNotification
+      } else if (newValue === 1 && oldValue === 0) { // 从0变为1时
+        // 自动启用实时和定时通知
+        editForm.isRealtimeNotification = 1
+        editForm.isScheduledNotification = 1
       }
     }
   }, { immediate: false }) // 设置immediate为false，避免初始化时触发
@@ -862,6 +862,52 @@
           modifiedDate: '',
           avatarAddress: ''
       })
+      
+      // 重置下拉框为默认值
+      nextTick(() => {
+          // 部门 - 选择第一个未禁用的选项
+          if (departmentOptions.value.length > 0) {
+              const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+              if (firstEnabledDept) {
+                  editForm.departmentId = firstEnabledDept.departmentId
+              }
+          }
+          
+          // 职位 - 选择第一个未禁用的选项
+          if (positionOptions.value.length > 0) {
+              const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
+              if (firstEnabledPosition) {
+                  editForm.positionId = firstEnabledPosition.positionId
+              }
+          }
+          
+          // 角色 - 选择第一个未禁用的选项
+          if (roleOptions.value.length > 0) {
+              const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+              if (firstEnabledRole) {
+                  editForm.roleId = firstEnabledRole.roleId
+              }
+          }
+          
+          // 性别 - 选择第一个选项
+          if (genderOptions.value.length > 0) {
+              editForm.gender = genderOptions.value[0].genderCode
+          }
+          
+          // 国籍 - 选择第一个选项
+          if (nationalityOptions.value.length > 0) {
+              editForm.nationality = nationalityOptions.value[0].genderCode
+          }
+          
+          // 就业类型 - 选择第一个未禁用的选项
+          if (laborTypeOptions.value.length > 0) {
+              const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
+              if (firstEnabledLaborType) {
+                  editForm.laborId = firstEnabledLaborType.laborId
+              }
+          }
+      })
+      
       // 重置通知状态记录
       previousNotificationState.isRealtimeNotification = 0
       previousNotificationState.isScheduledNotification = 0
