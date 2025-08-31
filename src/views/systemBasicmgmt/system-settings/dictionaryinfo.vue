@@ -300,7 +300,6 @@
           dicNameCn: editForm.dicNameCn,
           dicNameEn: editForm.dicNameEn
       }
-      console.log(params);
       const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
 
       if (res && res.code === 200) {

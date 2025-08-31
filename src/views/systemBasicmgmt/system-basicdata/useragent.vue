@@ -133,7 +133,7 @@
                    @closed="handleUserSelectDialogClosed">
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;">
+                <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;" label-width="120px">
                     <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')">
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
@@ -162,13 +162,13 @@
                     <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
                         <el-input 
                             v-model="userSelectFilters.userNo" 
-                            style="width: 180px;"
+                            style="width: 200px;"
                             :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserNo')" />
                     </el-form-item>
                     <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCn')">
                         <el-input 
                             v-model="userSelectFilters.userName" 
-                            style="width: 180px;"
+                            style="width: 200px;"
                             :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserName')" />
                     </el-form-item>
                     <el-form-item>
@@ -187,7 +187,7 @@
                           height="300"
                           @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="120" />
+                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="80" />
                     <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="120" />
                     <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="120" />
                     <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="120" />

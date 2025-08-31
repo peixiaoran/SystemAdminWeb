@@ -406,7 +406,6 @@
         const params = {
             ...editForm
         }
-        console.log(params)
 
         const res = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
 

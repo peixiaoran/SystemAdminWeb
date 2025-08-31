@@ -145,7 +145,7 @@ export default {
   // Unlock Page
   unlock: {
     title: 'Account Unlock',
-    userNo: 'Employee ID',
+    userNo: 'No.',
     newPassword: 'New Password',
     confirmPassword: 'Confirm Password',
     verificationCode: 'Verification Code',
@@ -208,11 +208,11 @@ export default {
     roleModule: 'RoleModule',
     roleProgram: 'RoleProgram',
     systemBasicData: 'Basic Data Module',
-    userInfo: 'EmployeeInfo',
-    userAgent: 'Employee Agent',
+    userInfo: 'UserInfo',
+    userAgent: 'UserAgent',
     userPosition: 'UserPositions',
-    userLabor: 'Employee Career',
-    userPartTime: 'Employee Part-time',
+    userLabor: 'UserLabor',
+    userPartTime: 'UserPartTime',
     companyInfo: 'CompanyInfo',
     departmentInfo: 'DepartmentInfo',
     departmentLevel: 'DepartmentLevel',
@@ -286,7 +286,7 @@ export default {
     // Employee Information Management
     userInfo: {
       title: 'Employee Information Management',
-      userNo: 'Employee ID',
+      userNo: 'No.',
       userName: 'Employee Name',
       userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
@@ -369,7 +369,7 @@ export default {
         department: 'Department',
         position: 'Position',
         role: 'Role',
-        userNo: 'Employee ID',
+        userNo: 'No.',
         userName: 'Employee Name',
         userNoPlaceholder: 'Please enter employee ID',
         userNamePlaceholder: 'Please enter employee name'
@@ -703,7 +703,7 @@ export default {
     // Personal
     personalInfo: {
       title: 'Personal Info Management',
-      userNo: 'Employee ID',
+      userNo: 'No.',
       loginNo: 'Login Account',
       userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
@@ -826,7 +826,7 @@ export default {
     userLoginLog: {
       title: 'Employee Operation Log',
       index: 'Index',
-      userNo: 'Employee ID',
+      userNo: 'No.',
       userNameCn: 'Chinese Name',
       userNameEn: 'English Name',
       ip: 'IP Address',
@@ -889,16 +889,16 @@ export default {
       pleaseEnterUserName: 'Please enter employee name',
       index: 'Index',
       position: 'Position',
-      partTimeDepartment: 'Part-time Department',
-      partTimePosition: 'Part-time Position',
-      partTimeLabor: 'Part-time Labor',
+      partTimeDepartment: 'Department',
+      partTimePosition: 'Position',
+      partTimeLabor: 'Labor',
       labor: 'Labor',
       isApproval: 'Is Approval',
       isPartTime: 'Part-time',
       startTime: 'Start Time',
       endTime: 'End Time',
       operation: 'Operation',
-      deletePartTime: 'Delete Part-time',
+      deletePartTime: 'Delete',
       deleteConfirm: 'Are you sure you want to delete this employee part-time record?',
       deletePartTimeConfirm: 'Are you sure you want to delete this part-time job?',
       deleteSuccess: 'Delete Successfully',
@@ -926,7 +926,12 @@ export default {
       getPositionFailed: 'Failed to get position list',
       getLaborFailed: 'Failed to get labor list',
       getUserFailed: 'Failed to get user list',
-      pleaseSelectUser: 'Please select user'
+      pleaseSelectUser: 'Please select user',
+      editPartTime: 'Edit',
+      editPartTimeTitle: 'Edit Employee Part-time',
+      editPartTimeSuccess: 'Part-time edited successfully',
+      editPartTimeFailed: 'Failed to edit part-time',
+      getPartTimeDetailFailed: 'Failed to get part-time details'
     }
   }
 }

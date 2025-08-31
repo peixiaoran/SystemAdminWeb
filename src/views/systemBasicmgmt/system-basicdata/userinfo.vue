@@ -571,7 +571,6 @@
           const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
           if (res && res.code === 200) {
               departmentOptions.value = Array.isArray(res.data) ? res.data : []
-              console.log('departmentOptions:', departmentOptions.value)
               // 验证数据结构并过滤无效数据（递归验证部门树结构）
               const validateDepartment = (dept) => {
                   if (!dept || dept.departmentId === undefined || dept.departmentId === null || 
@@ -613,7 +612,6 @@
           const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
           if (res && res.code === 200) {
               positionOptions.value = res.data || []
-              console.log('positionOptions:', positionOptions.value)
               // 验证数据结构并过滤无效数据
               positionOptions.value = positionOptions.value.filter(item => 
                   item && item.positionId !== undefined && item.positionId !== null && 
@@ -648,7 +646,6 @@
           const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
           if (res && res.code === 200) {
               roleOptions.value = res.data || []
-              console.log('roleOptions:', roleOptions.value)
               // 验证数据结构并过滤无效数据
               roleOptions.value = roleOptions.value.filter(item => 
                   item && item.roleId !== undefined && item.roleId !== null && 
@@ -683,7 +680,6 @@
           const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
           if (res && res.code === 200) {
               genderOptions.value = res.data || []
-              console.log('genderOptions:', genderOptions.value)
               // 验证数据结构并过滤无效数据
               genderOptions.value = genderOptions.value.filter(item => 
                   item && item.genderCode !== undefined && item.genderCode !== null && 
@@ -704,7 +700,6 @@
           const res = await post(GET_NATIONALITY_DROPDOWN_API.GET_NATIONALITY_DROPDOWN, {})
           if (res && res.code === 200) {
               nationalityOptions.value = res.data || []
-              console.log('nationalityOptions:', nationalityOptions.value)
               // 验证数据结构并过滤无效数据
               nationalityOptions.value = nationalityOptions.value.filter(item => 
                   item && item.genderCode !== undefined && item.genderCode !== null && 
@@ -725,7 +720,6 @@
           const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
           if (res && res.code === 200) {
               laborTypeOptions.value = res.data || []
-              console.log('laborTypeOptions:', laborTypeOptions.value)
               // 验证数据结构并过滤无效数据
               laborTypeOptions.value = laborTypeOptions.value.filter(item => 
                   item && item.laborId !== undefined && item.laborId !== null && 

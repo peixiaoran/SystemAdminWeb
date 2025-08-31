@@ -185,8 +185,6 @@
       }
       const res = await post(GET_DEPARTMENT_LEVEL_ENTITY_API.GET_DEPARTMENT_LEVEL_ENTITY, params)
 
-      console.log(res.data)
-
       if (res && res.code === 200) {
           editForm.departmentLevelId = res.data.departmentLevelId
           editForm.departmentLevelCode = res.data.departmentLevelCode

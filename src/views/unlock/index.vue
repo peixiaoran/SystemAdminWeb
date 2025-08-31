@@ -298,7 +298,6 @@ const handleSendCode = () => {
     }
   })
     .then(res => {
-      console.log(res.code)
           if (res.code === 200) {
             ElMessage({
               message: res.message,
