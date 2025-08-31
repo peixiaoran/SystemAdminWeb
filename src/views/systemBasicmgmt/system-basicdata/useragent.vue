@@ -133,7 +133,7 @@
                    @closed="handleUserSelectDialogClosed">
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;" label-width="120px">
+                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form"  label-width="120px">
                     <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')" prop="startTime" required>
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
