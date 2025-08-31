@@ -298,8 +298,9 @@ export default {
       nationality: 'Nationality',
       email: 'Email',
       phoneNumber: 'Phone Number',
-      expirationDays: 'Expiration Days',
+      expirationDays: 'Password Expiration Days',
        pleaseInputExpirationDays: 'Please input expiration days',
+       pleaseSelectExpirationDays: 'Please select password expiration days',
        expirationDaysOptions: {
          30: '30 Days',
          60: '60 Days',

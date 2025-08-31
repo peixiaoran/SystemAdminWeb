@@ -133,24 +133,28 @@
                    @closed="handleUserSelectDialogClosed">
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;" label-width="120px">
-                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')">
+                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form" style="margin-bottom: 10px; padding: 20px 16px;" label-width="120px">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')" prop="startTime" required>
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
                             type="datetime"
                             :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectStartTime')"
                             :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
                             @change="handleStartTimeChange"
-                            style="width: 200px;" />
+                            style="width: 200px;"
+                            format="YYYY-MM-DD HH:mm:ss"
+                            value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.endTime')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.endTime')" prop="endTime" required>
                         <el-date-picker
                             v-model="agentTimeRange.endTime"
                             type="datetime"
                             :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectEndTime')"
                             :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
                             @change="handleEndTimeChange"
-                            style="width: 200px;" />
+                            style="width: 200px;"
+                            format="YYYY-MM-DD HH:mm:ss"
+                            value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
                 </el-form>
                 
@@ -299,6 +303,17 @@
     const userSelectList = ref([])
     const selectedUsers = ref([])
     const userSelectTableRef = ref(null)
+    const agentTimeFormRef = ref(null)
+    
+    // 代理时间表单验证规则
+    const agentTimeFormRules = reactive({
+        startTime: [
+            { required: true, message: t('SystemBasicMgmt.userAgent.pleaseSelectStartTime'), trigger: 'change' }
+        ],
+        endTime: [
+            { required: true, message: t('SystemBasicMgmt.userAgent.pleaseSelectEndTime'), trigger: 'change' }
+        ]
+    })
     
     // 代理时间范围
     const agentTimeRange = reactive({
@@ -324,14 +339,16 @@
     const proactiveAgentDialogTitle = ref('')
     const proactiveAgentList = ref([])
     const proactiveAgentLoading = ref(false)
+    
+
     const currentProactiveUserId = ref('')
   
     // 在组件挂载后获取数据
     onMounted(async () => {
         // 获取部门下拉数据
-        fetchDepartmentDropdown(true)
+        await fetchDepartmentDropdown(true)
         // 获取员工列表数据
-        fetchUserPages()
+        await fetchUserPages()
     })
 
     // 获取部门下拉数据
@@ -713,13 +730,10 @@
             return
         }
 
-        if (!agentTimeRange.startTime || !agentTimeRange.endTime) {
-            ElMessage({
-                message: t('SystemBasicMgmt.userAgent.pleaseSelectTimeRange'),
-                type: 'warning',
-                plain: true,
-                showClose: true
-            })
+        // 验证表单
+        try {
+            await agentTimeFormRef.value.validate()
+        } catch (error) {
             return
         }
 

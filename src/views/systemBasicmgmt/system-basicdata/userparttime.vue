@@ -378,7 +378,7 @@
 </template>
   
 <script setup>
-    import { ref, reactive, onMounted } from 'vue'
+    import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 
         GET_USER_PARTTIME_PAGES_API,
@@ -901,6 +901,10 @@
         
         // 显示对话框
         addDialogVisible.value = true
+        
+        // 等待对话框打开后再获取用户列表数据
+        await nextTick()
+        await fetchUserPages()
     }
     
     // 处理用户搜索操作
@@ -1037,6 +1041,12 @@
     const handleSubmitAdd = async () => {
         // 验证是否选择了用户
         if (!addForm.userId) {
+            ElMessage({
+                message: t('SystemBasicMgmt.userPartTime.pleaseSelectUser'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
             return
         }
         
@@ -1170,11 +1180,12 @@
                     totalCount: 0
                 })
                 
-                // 获取编辑对话框的用户列表数据
-                await fetchEditUserPages()
-                
                 // 打开编辑对话框
                 editDialogVisible.value = true
+                
+                // 等待对话框打开后再获取用户列表数据
+                await nextTick()
+                await fetchEditUserPages()
             } else {
                 ElMessage({
                     message: res.message || t('SystemBasicMgmt.userPartTime.getPartTimeDetailFailed'),
@@ -1196,6 +1207,17 @@
     
     // 提交编辑
     const handleSubmitEdit = async () => {
+        // 验证是否选择了用户
+        if (!editForm.userId) {
+            ElMessage({
+                message: t('SystemBasicMgmt.userPartTime.pleaseSelectUser'),
+                type: 'warning',
+                plain: true,
+                showClose: true
+            })
+            return
+        }
+        
         // 验证表单
         if (!editFormRef.value) return
         

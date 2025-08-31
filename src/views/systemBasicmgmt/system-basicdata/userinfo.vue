@@ -93,13 +93,13 @@
       
       <el-dialog v-model="dialogVisible"
                      :title="dialogTitle"
-                     width="70%"
+                     width="75%"
                      :close-on-click-modal="false"
                      :append-to-body="true"
                      :modal-append-to-body="true"
                      :lock-scroll="true"
                      @close="handleDialogClose">
-              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="用户编辑">
+              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="用户编辑">
               
               <div class="form-row four-columns">
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
@@ -216,7 +216,7 @@
                   <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.expirationDays')" prop="expirationDays">
+                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.expirationDays')" prop="expirationDays" required>
                       <el-select v-model="editForm.expirationDays" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputExpirationDays')">
                           <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.30')" :value="30" />
                           <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.60')" :value="60" />
@@ -491,6 +491,9 @@
       ],
       email: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
+      ],
+      expirationDays: [
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }
       ],
       passWord: [
         { 

@@ -392,8 +392,9 @@ export default {
       nationality: '国籍',
       email: '邮箱',
       phoneNumber: '手机号码',
-      expirationDays: '到期天数',
+      expirationDays: '密码到期天数',
        pleaseInputExpirationDays: '请输入到期天数',
+       pleaseSelectExpirationDays: '请选择密码到期天数',
        expirationDaysOptions: {
          30: '30天',
          60: '60天',
