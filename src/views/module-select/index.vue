@@ -39,7 +39,6 @@
       </div>
     </div>
     
-    
     <!-- 模块展示区域 -->
     <div v-if="!loading" class="module-grid">
       <div class="module-row">
@@ -57,7 +56,6 @@
             <div class="module-footer">
               <el-button type="primary" size="small">
                 {{ $t('moduleSelect.enterModule') }}
-                <el-icon class="enter-icon"><ArrowRight /></el-icon>
               </el-button>
             </div>
           </div>

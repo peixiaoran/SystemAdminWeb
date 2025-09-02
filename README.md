@@ -47,25 +47,25 @@
 ### 安装依赖
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 开发环境运行
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### 构建生产环境
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ### 预览生产环境
 
 ```bash
-npm run preview
+pnpm preview
 ```
 
 ## 登录信息

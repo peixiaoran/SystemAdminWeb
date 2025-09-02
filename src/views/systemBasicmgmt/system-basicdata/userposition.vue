@@ -47,7 +47,7 @@
           />
           <el-table-column 
             :label="$t('common.operation')" 
-            min-width="150" 
+            min-width="100" 
             fixed="right"
             align="center"
           >

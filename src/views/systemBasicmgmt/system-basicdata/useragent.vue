@@ -4,7 +4,7 @@
   
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
-                <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
+                <el-form-item :label="$t('SystemBasicMgmt.userAgent.filter.department')">
                     <el-tree-select 
                         v-model="filters.departmentId"
                         :data="departmentOptions || []"
@@ -14,20 +14,20 @@
                         clearable
                         :filter-node-method="filterNodeMethod"
                         style="width: 200px;"
-                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
+                        :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectDepartment')" />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
+                <el-form-item :label="$t('SystemBasicMgmt.userAgent.userNo')">
                     <el-input 
                         v-model="filters.userNo"
                         style="width: 200px;"
-                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseEnterUserNo')"
+                        :placeholder="$t('SystemBasicMgmt.userAgent.pleaseEnterUserNo')"
                         clearable />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.userInfo.userName')">
+                <el-form-item :label="$t('SystemBasicMgmt.userAgent.userName')">
                     <el-input 
                         v-model="filters.userName"
                         style="width: 200px;"
-                        :placeholder="$t('SystemBasicMgmt.userInfo.pleaseEnterUserName')"
+                        :placeholder="$t('SystemBasicMgmt.userAgent.pleaseEnterUserName')"
                         clearable />
                 </el-form-item>
 
@@ -46,22 +46,27 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
-                    <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="180" />
-                    <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="180" />
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="230" />
-                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
-                    <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="120">
+                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userAgent.index')" width="70" align="center" fixed />
+                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userAgent.userNo')" align="center" min-width="150" />
+                    <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userAgent.userName')" align="left" min-width="180" />
+                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userAgent.department')" align="left" min-width="230" />
+                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userAgent.position')" align="left" min-width="120" />
+                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userAgent.laborName')" align="center" min-width="270" />
+                    <el-table-column :label="$t('SystemBasicMgmt.userAgent.isApproval')" align="center" min-width="160">
                         <template #default="scope">
-                            <el-tag :type="scope.row.isApproval === 1 ? 'success' : 'info'">
+                            <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="270" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="380" fixed="right" align="center">
+                    <el-table-column :label="$t('SystemBasicMgmt.userAgent.isAgent')" align="center" min-width="120">
+                        <template #default="scope">
+                            <el-tag :type="scope.row.isAgent === '1' ? 'primary' : 'info'">
+                                {{ scope.row.isAgentName }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="$t('SystemBasicMgmt.userAgent.operation')" min-width="380" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.addAgent') }}</el-button>
                             <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userAgent.viewAgentList') }}</el-button>
@@ -124,7 +129,7 @@
 
         <!-- 员工选择对话框 -->
         <el-dialog v-model="userSelectDialogVisible"
-                   :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userNameCn || currentUserInfo.userNameEn}`"
+                   :title="`${$t('SystemBasicMgmt.userAgent.addAgent')} - ${currentUserInfo.userName || ''}`"
                    width="70%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
@@ -133,7 +138,7 @@
                    @closed="handleUserSelectDialogClosed">
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form"  label-width="120px">
+                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form"  >
                     <el-form-item :label="$t('SystemBasicMgmt.userAgent.startTime')" prop="startTime" required>
                         <el-date-picker
                             v-model="agentTimeRange.startTime"
@@ -163,17 +168,31 @@
 
                 <!-- 搜索区域 -->
                 <el-form :inline="true" :model="userSelectFilters" class="conventional-filter-form" style="margin-top: 10px;">
-                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.filter.department')">
+                        <el-tree-select 
+                            v-model="userSelectFilters.departmentId"
+                            :data="departmentOptions || []"
+                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                            check-strictly
+                            filterable
+                            clearable
+                            :filter-node-method="filterNodeMethod"
+                            style="width: 200px;"
+                            :placeholder="$t('SystemBasicMgmt.userAgent.pleaseSelectDepartment')" />
+                    </el-form-item>
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.userNo')">
                         <el-input 
                             v-model="userSelectFilters.userNo" 
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserNo')" />
+                            :placeholder="$t('SystemBasicMgmt.userAgent.pleaseInputUserNo')" 
+                            clearable />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCn')">
+                    <el-form-item :label="$t('SystemBasicMgmt.userAgent.userNameCn')">
                         <el-input 
                             v-model="userSelectFilters.userName" 
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputUserName')" />
+                            :placeholder="$t('SystemBasicMgmt.userAgent.pleaseInputUserName')" 
+                            clearable />
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="handleUserSelectSearch">{{ $t('common.search') }}</el-button>
@@ -191,11 +210,10 @@
                           height="300"
                           @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="80" />
-                    <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="120" />
-                    <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="120" />
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="120" />
-                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="100" />
+                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userAgent.userNo')" align="center" min-width="80" />
+                    <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userAgent.userNameCn')" align="left" min-width="120" />
+                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userAgent.department')" align="left" min-width="120" />
+                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userAgent.position')" align="left" min-width="100" />
                 </el-table>
 
                 <!-- 分页 -->
@@ -253,7 +271,7 @@
   </template>
   
   <script setup>
-    import { ref, reactive, onMounted } from 'vue'
+    import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 
         GET_USER_PAGES_API,
@@ -323,6 +341,7 @@
     
     // 员工选择筛选条件
     const userSelectFilters = reactive({
+        departmentId: '',
         userNo: '',
         userName: ''
     })
@@ -350,6 +369,12 @@
         // 获取员工列表数据
         await fetchUserPages()
     })
+
+    // 部门树过滤方法
+    const filterNodeMethod = (value, data) => {
+        if (!value) return true
+        return data.departmentName.includes(value)
+    }
 
     // 获取部门下拉数据
     const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
@@ -385,7 +410,7 @@
             } else {
                 departmentOptions.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userInfo.getDepartmentFailed'),
+                    message: res.message || t('SystemBasicMgmt.userAgent.getDepartmentFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -394,7 +419,7 @@
         } catch (error) {
             departmentOptions.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userInfo.getDepartmentFailed'),
+                message: t('SystemBasicMgmt.userAgent.getDepartmentFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -402,11 +427,7 @@
         }
     }
 
-    // 部门树形选择器过滤方法
-    const filterNodeMethod = (value, data) => {
-        if (!value) return true
-        return data.departmentName && data.departmentName.toLowerCase().includes(value.toLowerCase())
-    }
+
   
     // 获取代理人列表数据
     const fetchUserAgentList = async (substituteUserId) => {
@@ -460,7 +481,7 @@
             pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+                message: res.message || t('SystemBasicMgmt.userAgent.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -507,14 +528,14 @@
         // 处理配置代理人操作
     const handleConfigureAgent = async (index, row) => {
         currentUserId.value = row.userId
-        agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userNameCn || row.userNameEn}`
+        agentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.agentDetails')} - ${row.userName || ''}`
         agentDialogVisible.value = true
         // 获取代理人列表
         await fetchUserAgentList(row.userId)
     }
 
     // 处理主页面新增代理人操作
-    const handleAddAgentForUser = (index, row) => {
+    const handleAddAgentForUser = async (index, row) => {
         currentUserId.value = row.userId
         currentUserInfo.value = row
         // 重置时间选择
@@ -524,21 +545,53 @@
         })
         // 重置用户选择
         selectedUsers.value = []
-        userSelectDialogVisible.value = true
-        // 重置搜索条件并获取用户列�?
+        
+        // 重置搜索条件
         Object.assign(userSelectFilters, {
+            departmentId: '',
             userNo: '',
             userName: ''
         })
         userSelectPagination.pageIndex = 1
-        fetchUserSelectList()
+        
+        // 设置默认部门筛选条件
+        if (departmentOptions.value.length > 0) {
+            // 查找第一个未禁用的部门
+            const findFirstEnabledDepartment = (departments) => {
+                for (const dept of departments) {
+                    if (!dept.disabled) {
+                        return dept.departmentId
+                    }
+                    if (dept.departmentChildList && dept.departmentChildList.length > 0) {
+                        const childResult = findFirstEnabledDepartment(dept.departmentChildList)
+                        if (childResult) {
+                            return childResult
+                        }
+                    }
+                }
+                return null
+            }
+            
+            const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
+            if (firstDepartmentId) {
+                userSelectFilters.departmentId = firstDepartmentId
+            }
+        }
+        
+        userSelectDialogVisible.value = true
+        
+        // 等待对话框打开后获取用户列表
+        await nextTick()
+        await fetchUserSelectList()
     }
 
     // 处理代理人对话框完全关闭后的清理
-    const handleAgentDialogClosed = () => {
+    const handleAgentDialogClosed = async () => {
         agentList.value = []
         currentUserId.value = ''
         agentDialogTitle.value = ''
+        // 刷新主页面数据
+        await fetchUserPages()
     }
 
     // 处理员工选择对话框关闭后的清理
@@ -551,6 +604,7 @@
             endTime: ''
         })
         Object.assign(userSelectFilters, {
+            departmentId: '',
             userNo: '',
             userName: ''
         })
@@ -595,6 +649,9 @@
                 })
                 // 重新获取代理人列表
                 await fetchUserAgentList(currentUserId.value)
+                // 关闭弹出框并刷新主页面
+                agentDialogVisible.value = false
+                await fetchUserPages()
             } else {
                 ElMessage({
                     message: res.message || t('common.operationFailed'),
@@ -622,6 +679,7 @@
         userSelectLoading.value = true
         try {
             const params = {
+                departmentId: userSelectFilters.departmentId,
                 userNo: userSelectFilters.userNo,
                 userName: userSelectFilters.userName,
                 pageIndex: userSelectPagination.pageIndex,
@@ -638,7 +696,7 @@
                 userSelectList.value = []
                 userSelectPagination.totalCount = 0
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+                    message: res.message || t('SystemBasicMgmt.userAgent.getFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -648,7 +706,7 @@
             userSelectList.value = []
             userSelectPagination.totalCount = 0
             ElMessage({
-                message: t('SystemBasicMgmt.userInfo.getFailed'),
+                message: t('SystemBasicMgmt.userAgent.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -667,6 +725,7 @@
     // 重置用户选择搜索
     const handleUserSelectReset = () => {
         Object.assign(userSelectFilters, {
+            departmentId: '',
             userNo: '',
             userName: ''
         })
@@ -792,6 +851,9 @@
             // 清理当前用户信息
             currentUserInfo.value = {}
             
+            // 刷新主页面数据
+            await fetchUserPages()
+            
         } catch (error) {
             ElMessage({
                 message: t('common.operationFailed'),
@@ -838,17 +900,19 @@
     // 处理查看员工代理了哪些人操作
     const handleViewProactiveAgent = async (index, row) => {
         currentProactiveUserId.value = row.userId
-        proactiveAgentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.proactiveAgentDetails')} - ${row.userNameCn || row.userNameEn}`
+        proactiveAgentDialogTitle.value = `${t('SystemBasicMgmt.userAgent.proactiveAgentDetails')} - ${row.userName || ''}`
         proactiveAgentDialogVisible.value = true
         // 获取员工代理了哪些人的列表
         await fetchProactiveAgentList(row.userId)
     }
 
     // 处理查看员工代理了哪些人对话框完全关闭后的清理
-    const handleProactiveAgentDialogClosed = () => {
+    const handleProactiveAgentDialogClosed = async () => {
         proactiveAgentList.value = []
         currentProactiveUserId.value = ''
         proactiveAgentDialogTitle.value = ''
+        // 刷新主页面数据
+        await fetchUserPages()
     }
 
   </script>

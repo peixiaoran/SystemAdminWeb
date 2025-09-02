@@ -53,7 +53,7 @@
                     <el-table-column type="index" :label="$t('SystemBasicMgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userPartTime.userNo')" align="center" min-width="110" />
                     <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userPartTime.userName')" align="left" min-width="120" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isApproval')" align="center" min-width="110">
+                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isApproval')" align="center" min-width="150">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
@@ -71,7 +71,7 @@
                     </el-table-column>
                     <el-table-column prop="partTimeDeptName" :label="$t('SystemBasicMgmt.userPartTime.partTimeDepartment')" align="left" min-width="120" />
                     <el-table-column prop="partTimePositionName" :label="$t('SystemBasicMgmt.userPartTime.partTimePosition')" align="left" min-width="120" />
-                    <el-table-column prop="partTimeLaborName" :label="$t('SystemBasicMgmt.userPartTime.partTimeLabor')" align="left" min-width="120" />
+                    <el-table-column prop="partTimeLaborName" :label="$t('SystemBasicMgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
                     <el-table-column prop="startTime" :label="$t('SystemBasicMgmt.userPartTime.startTime')" align="center" min-width="160" />
                     <el-table-column prop="endTime" :label="$t('SystemBasicMgmt.userPartTime.endTime')" align="center" min-width="160" />
                     <el-table-column :label="$t('SystemBasicMgmt.userPartTime.operation')" min-width="200" fixed="right" align="center">
@@ -113,7 +113,7 @@
                    class="parttime-dialog">
             <div v-loading="submitLoading" style="height: 560px;">
                 <!-- 兼任信息区域 -->
-                <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" :inline="true" class="conventional-filter-form" label-width="120px">
+                <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" :inline="true" class="conventional-filter-form" >
                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
                         <el-tree-select 
                             v-model="addForm.partTimeDeptId"

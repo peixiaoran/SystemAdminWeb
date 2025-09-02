@@ -54,14 +54,14 @@
                   <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
                   <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
                   <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="130">
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="120">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'info'">
                               {{ scope.row.isEmployedName }}
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="130">
+                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="150">
                       <template #default="scope">
                           <el-tag :type="scope.row.isApproval === 1 ? 'primary' : 'info'">
                               {{ scope.row.isApprovalName }}
