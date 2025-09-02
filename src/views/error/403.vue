@@ -120,10 +120,10 @@ const goBack = () => {
 .error-page-container {
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.1) 0%, 
-    rgba(251, 146, 60, 0.1) 30%, 
-    rgba(252, 211, 77, 0.1) 60%, 
-    rgba(243, 244, 246, 0.1) 100%);
+    rgba(239, 68, 68, 0.05) 0%, 
+    rgba(251, 146, 60, 0.05) 30%, 
+    rgba(252, 211, 77, 0.05) 60%, 
+    rgba(255, 255, 255, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,12 +138,7 @@ const goBack = () => {
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
   padding: 60px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .text-section {
@@ -238,7 +233,6 @@ const goBack = () => {
   border-radius: 50%;
   position: relative;
   margin: 0 auto 8px;
-  border: 3px solid var(--el-color-danger-light-5);
 }
 
 .eyes {
@@ -264,9 +258,8 @@ const goBack = () => {
   left: 50%;
   transform: translateX(-50%);
   width: 20px;
-  height: 8px;
-  border: 2px solid var(--el-text-color-primary);
-  border-bottom: none;
+  height: 4px;
+  background: var(--el-text-color-primary);
   border-radius: 20px 20px 0 0;
 }
 
@@ -341,7 +334,6 @@ const goBack = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.3);
 }
 
 .shield-icon {
@@ -407,8 +399,7 @@ const goBack = () => {
   width: 100px;
   height: 60px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
   padding: 8px;
   transform: rotate(-8deg);
   animation: card-float 4s ease-in-out infinite;
@@ -694,5 +685,5 @@ const goBack = () => {
     height: 280px;
   }
 }
-</style> 
+</style>
 

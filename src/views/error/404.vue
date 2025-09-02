@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="error-page-container">
     <div class="error-content-wrapper">
       <!-- Text Content Section -->
@@ -103,10 +103,10 @@ const goBack = () => {
 .error-page-container {
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    rgba(99, 102, 241, 0.1) 0%, 
-    rgba(219, 234, 254, 0.1) 30%, 
-    rgba(254, 249, 195, 0.1) 60%, 
-    rgba(243, 244, 246, 0.1) 100%);
+    rgba(99, 102, 241, 0.05) 0%, 
+    rgba(219, 234, 254, 0.05) 30%, 
+    rgba(254, 249, 195, 0.05) 60%, 
+    rgba(255, 255, 255, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,12 +121,7 @@ const goBack = () => {
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
   padding: 60px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .text-section {
@@ -221,7 +216,6 @@ const goBack = () => {
   border-radius: 50%;
   position: relative;
   margin: 0 auto 8px;
-  border: 3px solid var(--el-color-primary-light-5);
 }
 
 .eyes {
@@ -247,9 +241,8 @@ const goBack = () => {
   left: 50%;
   transform: translateX(-50%);
   width: 20px;
-  height: 10px;
-  border: 2px solid var(--el-text-color-primary);
-  border-top: none;
+  height: 5px;
+  background: var(--el-text-color-primary);
   border-radius: 0 0 20px 20px;
 }
 
@@ -315,10 +308,10 @@ const goBack = () => {
 .magnifier-glass {
   width: 50px;
   height: 50px;
-  border: 4px solid var(--el-color-warning);
+  background: linear-gradient(135deg, var(--el-color-warning-light-3), var(--el-color-warning));
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
   position: relative;
+  opacity: 0.9;
 }
 
 .magnifier-handle {
@@ -339,9 +332,8 @@ const goBack = () => {
   left: 15%;
   width: 120px;
   height: 90px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
   padding: 12px;
   transform: rotate(-10deg);
   animation: paper-float 5s ease-in-out infinite;
@@ -600,5 +592,5 @@ const goBack = () => {
     height: 280px;
   }
 }
-</style> 
+</style>
 
