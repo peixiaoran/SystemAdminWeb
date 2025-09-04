@@ -188,7 +188,7 @@ export default {
     SystemBasicMgmt: '系统基础管理',
     systemMgmt: '系统管理一级菜单',
     role: '角色资料维护',
-    domain: '模块资料维护',
+    domain: '模块信息维护',
     module: '一级菜单维护',
     program: '二级菜单维护',
     roleDomain: '角色模块绑定',

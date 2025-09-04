@@ -66,7 +66,7 @@
                   </el-table-column>
 
                   <el-table-column :label="$t('SystemBasicMgmt.operation')"
-                                   min-width="150"
+                                   min-width="120"
                                    fixed="right"
                                    align="center">
                       <template #default="scope">
