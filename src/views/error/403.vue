@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="error-page-container">
     <div class="error-content-wrapper">
       <!-- Text Content Section -->

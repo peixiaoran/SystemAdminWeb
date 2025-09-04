@@ -490,7 +490,27 @@
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
       ],
       email: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputEmail'), trigger: 'blur' }
+          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputEmail'), trigger: 'blur' },
+          { 
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback()
+                return
+              }
+              // 邮箱必须是小写字母
+              if (value !== value.toLowerCase()) {
+                callback(new Error(t('SystemBasicMgmt.userInfo.emailLowercaseError')))
+                return
+              }
+              // 邮箱后缀必须是@eson.tw
+              if (!value.endsWith('@eson.tw')) {
+                callback(new Error(t('SystemBasicMgmt.userInfo.emailDomainError')))
+                return
+              }
+              callback()
+            }, 
+            trigger: 'blur' 
+          }
       ],
       expirationDays: [
           { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }
