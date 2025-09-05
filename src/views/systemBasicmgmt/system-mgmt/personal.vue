@@ -39,7 +39,7 @@
           <el-input 
             v-model="personalInfoForm.email" 
             :placeholder="$t('SystemBasicMgmt.personalInfo.pleaseInputEmail')" 
-            :disabled="loading"
+            :disabled="true"
           />
         </el-form-item>
         <el-form-item :label="$t('SystemBasicMgmt.personalInfo.phoneNumber')" prop="phoneNumber">

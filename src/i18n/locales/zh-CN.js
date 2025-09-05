@@ -50,7 +50,123 @@ export default {
     requestTimeout: '请求超时，请重试',
     requestTimeoutMessage: '请求超时',
     yes: '是',
-    no: '否'
+    no: '否',
+    refresh: '刷新',
+    months: {
+      jan: '1月',
+      feb: '2月',
+      mar: '3月',
+      apr: '4月',
+      may: '5月',
+      jun: '6月',
+      jul: '7月',
+      aug: '8月',
+      sep: '9月',
+      oct: '10月',
+      nov: '11月',
+      dec: '12月'
+    }
+  },
+
+  // 仪表板
+  dashboard: {
+    title: '系统仪表板',
+    subtitle: '欢迎使用SystemsAdmin管理系统',
+    stats: {
+      totalUsers: '总用户数',
+      departments: '部门数量',
+      systemHealth: '系统健康度',
+      activeConnections: '活跃连接'
+    },
+    charts: {
+        userGrowth: '用户增长趋势',
+        departmentStats: '部门统计',
+        roleDistribution: '用户角色分布',
+        systemStatus: '系统状态',
+        performance: '性能指标',
+        newUsers: '新增用户',
+        activeUsers: '活跃用户',
+        employees: '员工数量',
+        currentMonth: '本月',
+        lastMonth: '上月',
+        sales: '销售额',
+        profit: '利润',
+        growth: '增长率',
+        amount: '金额',
+        percentage: '百分比',
+        complexBarChart: '复杂柱状图',
+        simpleBarChart: '简单柱状图',
+        kLineChart: 'K线图',
+         kLine: 'K线',
+         highest: '最高值',
+         lowest: '最低值',
+         open: '开盘',
+         close: '收盘',
+         high: '最高',
+         low: '最低',
+        departmentDistribution: '部门分布',
+        projectStatus: '项目状态',
+        resourceUsage: '资源使用'
+      },
+    departments: {
+      tech: '技术部',
+      sales: '销售部',
+      marketing: '市场部',
+      hr: '人事部',
+      finance: '财务部',
+      operations: '运营部'
+    },
+    stats: {
+        totalUsers: '总用户数',
+        departments: '部门数量',
+        systemHealth: '系统健康度',
+        activeConnections: '活跃连接',
+        cpuUsage: 'CPU使用率',
+        memoryUsage: '内存使用率',
+        diskUsage: '磁盘使用率',
+        networkTraffic: '网络流量'
+    },
+    period: {
+      day: '日',
+      week: '周',
+      year: '年'
+    },
+    recentActivities: '最近活动',
+    quickActions: '快捷操作',
+    table: {
+      time: '时间',
+      user: '用户',
+      action: '操作',
+      status: '状态'
+    },
+    status: {
+      success: '成功',
+      warning: '警告',
+      error: '错误',
+      normal: '正常',
+      critical: '严重',
+      pending: '待处理',
+      processing: '处理中',
+      completed: '已完成',
+      failed: '已失败'
+    },
+    actions: {
+      addUser: '添加用户',
+      addUserDesc: '快速添加新用户到系统',
+      systemSettings: '系统设置',
+      systemSettingsDesc: '配置系统参数和选项',
+      generateReport: '生成报表',
+      generateReportDesc: '生成各类统计报表',
+      notifications: '通知管理',
+      notificationsDesc: '管理系统通知和消息'
+    },
+    activities: {
+      login: '登录系统',
+      updateUser: '修改用户信息',
+      deleteDept: '删除部门',
+      backup: '系统备份',
+      exportReport: '导出报表'
+    }
   },
   
   // 密码过期修改页面
@@ -468,7 +584,7 @@ export default {
       emailRequired: '请输入邮箱',
       emailFormatError: '请输入正确的邮箱格式',
       emailLowercaseError: '邮箱必须为小写字母',
-      emailDomainError: '邮箱后缀必须为@eson.tw',
+      emailDomainError: '邮箱后缀必须为@eson.tw或@eson.vn',
       filter: {
         department: '部门',
         position: '职级',

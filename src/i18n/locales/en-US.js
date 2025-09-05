@@ -50,7 +50,187 @@ export default {
     requestTimeout: 'Request timeout, please try again',
     requestTimeoutMessage: 'Request timeout',
     yes: 'Yes',
-    no: 'No'
+    no: 'No',
+    refresh: 'Refresh',
+    months: {
+      jan: 'Jan',
+      feb: 'Feb',
+      mar: 'Mar',
+      apr: 'Apr',
+      may: 'May',
+      jun: 'Jun',
+      jul: 'Jul',
+      aug: 'Aug',
+      sep: 'Sep',
+      oct: 'Oct',
+      nov: 'Nov',
+      dec: 'Dec'
+    }
+  },
+
+  // Dashboard
+  dashboard: {
+    title: 'System Dashboard',
+    subtitle: 'Real-time monitoring of system status and data overview',
+    
+    // Statistics Cards
+    statistics: {
+      totalUsers: 'Total Users',
+      activeUsers: 'Active Users',
+      systemLoad: 'System Load',
+      memoryUsage: 'Memory Usage',
+      cpuUsage: 'CPU Usage',
+      diskUsage: 'Disk Usage',
+      networkTraffic: 'Network Traffic',
+      onlineUsers: 'Online Users'
+    },
+    
+    // Charts
+    charts: {
+         userTrend: 'User Growth Trend',
+         systemPerformance: 'System Performance',
+         resourceUsage: 'Resource Usage Distribution',
+         trafficAnalysis: 'Traffic Analysis',
+         operationStatistics: 'Operation Statistics',
+         errorRate: 'Error Rate Trend',
+         responseTime: 'Response Time Analysis',
+         sales: 'Sales',
+         profit: 'Profit',
+         growth: 'Growth Rate',
+         amount: 'Amount',
+         percentage: 'Percentage',
+         employees: 'Employees',
+         currentMonth: 'Current Month',
+         lastMonth: 'Last Month',
+         complexBarChart: 'Complex Bar Chart',
+         simpleBarChart: 'Simple Bar Chart',
+         kLineChart: 'K-Line Chart',
+          kLine: 'K-Line',
+          highest: 'Highest',
+          lowest: 'Lowest',
+          open: 'Open',
+          close: 'Close',
+          high: 'High',
+          low: 'Low',
+         departmentDistribution: 'Department Distribution',
+         projectStatus: 'Project Status',
+         resourceUsage: 'Resource Usage'
+       },
+    
+    period: {
+      day: 'Day',
+      week: 'Week',
+      year: 'Year'
+    },
+    
+    // Departments
+    departments: {
+      tech: 'Technology',
+      sales: 'Sales',
+      marketing: 'Marketing',
+      hr: 'Human Resources',
+      finance: 'Finance',
+      operations: 'Operations'
+    },
+    
+    stats: {
+       totalUsers: 'Total Users',
+       departments: 'Departments',
+       systemHealth: 'System Health',
+       activeConnections: 'Active Connections',
+       cpuUsage: 'CPU Usage',
+       memoryUsage: 'Memory Usage',
+       diskUsage: 'Disk Usage',
+       networkTraffic: 'Network Traffic'
+     },
+    
+    // Time Periods
+    timePeriods: {
+      today: 'Today',
+      yesterday: 'Yesterday',
+      last7Days: 'Last 7 Days',
+      last30Days: 'Last 30 Days',
+      thisMonth: 'This Month',
+      lastMonth: 'Last Month',
+      thisYear: 'This Year',
+      custom: 'Custom Range'
+    },
+    
+    // Recent Activities
+    recentActivities: {
+      title: 'Recent Activities',
+      userLogin: 'User Login',
+      systemUpdate: 'System Update',
+      dataBackup: 'Data Backup',
+      securityAlert: 'Security Alert',
+      performanceWarning: 'Performance Warning',
+      viewAll: 'View All',
+      noActivities: 'No recent activities'
+    },
+    
+    // Quick Actions
+    quickActions: {
+      title: 'Quick Actions',
+      systemSettings: 'System Settings',
+      userManagement: 'User Management',
+      dataBackup: 'Data Backup',
+      systemRestart: 'System Restart',
+      logViewer: 'Log Viewer',
+      performanceMonitor: 'Performance Monitor',
+      securityCenter: 'Security Center',
+      reportGeneration: 'Report Generation'
+    },
+    
+    // Data Table
+    table: {
+      recentLogins: 'Recent Logins',
+      systemAlerts: 'System Alerts',
+      performanceMetrics: 'Performance Metrics',
+      user: 'User',
+      time: 'Time',
+      ip: 'IP Address',
+      status: 'Status',
+      action: 'Action',
+      level: 'Level',
+      message: 'Message',
+      metric: 'Metric',
+      value: 'Value',
+      trend: 'Trend'
+    },
+    
+    // Status
+    status: {
+      normal: 'Normal',
+      warning: 'Warning',
+      error: 'Error',
+      critical: 'Critical',
+      success: 'Success',
+      pending: 'Pending',
+      processing: 'Processing',
+      completed: 'Completed',
+      failed: 'Failed'
+    },
+    
+    // Actions
+    actions: {
+      refresh: 'Refresh',
+      export: 'Export',
+      filter: 'Filter',
+      search: 'Search',
+      reset: 'Reset',
+      viewDetails: 'View Details',
+      configure: 'Configure',
+      download: 'Download'
+    },
+    
+    // Activities
+    activities: {
+      login: 'Login System',
+      updateUser: 'Update User Info',
+      deleteDept: 'Delete Department',
+      backup: 'System Backup',
+      exportReport: 'Export Report'
+    }
   },
   
   // Password Expiration Page
@@ -370,7 +550,7 @@ export default {
       emailRequired: 'Email is required',
       emailFormatError: 'Invalid email format',
       emailLowercaseError: 'Email must be lowercase',
-      emailDomainError: 'Email suffix must be @eson.tw',  
+      emailDomainError: 'Email suffix must be @eson.tw or @eson.vn',  
       filter: {
         department: 'Department',
         position: 'Level',

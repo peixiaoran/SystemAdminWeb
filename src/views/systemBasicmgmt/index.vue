@@ -1,782 +1,955 @@
 <template>
-  <div class="page-container">
-    <!-- 系统状态概览 -->
-    <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <el-card class="data-card" shadow="hover">
-          <div class="card-header">
-            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.cpuUsage') }}</div>
-            <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
-          </div>
-          <div class="card-value-with-progress">
-            <span class="value">32%</span>
-            <el-progress :percentage="32" :show-text="false" />
-          </div>
-          <div class="card-footer">
-            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
-            <span class="compare-text">4 {{ $t('SystemBasicMgmt.systemStatus.cores') }} / 8 {{ $t('SystemBasicMgmt.systemStatus.threads') }}</span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <el-card class="data-card" shadow="hover">
-          <div class="card-header">
-            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.memoryUsage') }}</div>
-            <el-icon :size="24" color="#67C23A"><Connection /></el-icon>
-          </div>
-          <div class="card-value-with-progress">
-            <span class="value">65%</span>
-            <el-progress :percentage="65" :show-text="false" color="#67C23A" />
-          </div>
-          <div class="card-footer">
-            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
-            <span class="compare-text">8GB / 16GB</span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <el-card class="data-card" shadow="hover">
-          <div class="card-header">
-            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.diskUsage') }}</div>
-            <el-icon :size="24" color="#E6A23C"><DataAnalysis /></el-icon>
-          </div>
-          <div class="card-value-with-progress">
-            <span class="value">78%</span>
-            <el-progress :percentage="78" :show-text="false" color="#E6A23C" />
-          </div>
-          <div class="card-footer">
-            <span class="status-warning">{{ $t('SystemBasicMgmt.systemStatus.warning') }}</span>
-            <span class="compare-text">780GB / 1TB</span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <el-card class="data-card" shadow="hover">
-          <div class="card-header">
-            <div class="card-title">{{ $t('SystemBasicMgmt.systemStatus.systemLoad') }}</div>
-            <el-icon :size="24" color="#F56C6C"><Loading /></el-icon>
-          </div>
-          <div class="card-value-with-progress">
-            <span class="value">2.35</span>
-            <el-progress :percentage="47" :show-text="false" color="#F56C6C" />
-          </div>
-          <div class="card-footer">
-            <span class="status-normal">{{ $t('SystemBasicMgmt.systemStatus.normal') }}</span>
-            <span class="compare-text">{{ $t('SystemBasicMgmt.systemStatus.lastMinutes') }}</span>
+  <div class="conventional-table-container">
+    <!-- 第一行：四个统计卡片 -->
+    <el-row :gutter="20" class="stats-cards">
+      <el-col :xs="12" :sm="6" v-for="(card, index) in statsCards" :key="index">
+        <el-card class="stat-card" shadow="hover" :style="{ background: `linear-gradient(135deg, ${card.color}35, ${card.color}25)`, borderRadius: '12px' }">
+          <div class="stat-content">
+            <div class="stat-icon" :style="{ backgroundColor: card.color }">
+              <component :is="card.icon" :size="24" />
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ card.value }}</div>
+              <div class="stat-label">{{ $t(card.label) }}</div>
+              <div class="stat-trend" :class="card.trend > 0 ? 'positive' : 'negative'">
+                <el-icon><ArrowUp v-if="card.trend > 0" /><ArrowDown v-else /></el-icon>
+                <span>{{ Math.abs(card.trend) }}%</span>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 资源趋势图 -->
-    <el-row :gutter="20" class="chart-row">
+    <!-- 第二行：复杂K线图 -->
+    <el-row :gutter="20" class="charts-section">
       <el-col :span="24">
-        <el-card class="custom-card" shadow="hover">
+        <el-card class="chart-card" shadow="hover">
           <template #header>
-            <div class="card-header-with-tabs">
-              <div class="card-header-title">{{ $t('SystemBasicMgmt.resourceTrend.title') }}</div>
-              <div class="card-header-tabs">
-                <el-radio-group v-model="resourceTimeRange" size="small">
-                  <el-radio-button value="hour">{{ $t('SystemBasicMgmt.resourceTrend.hour') }}</el-radio-button>
-                  <el-radio-button value="day">{{ $t('SystemBasicMgmt.resourceTrend.day') }}</el-radio-button>
-                  <el-radio-button value="week">{{ $t('SystemBasicMgmt.resourceTrend.week') }}</el-radio-button>
-                  <el-radio-button value="month">{{ $t('SystemBasicMgmt.resourceTrend.month') }}</el-radio-button>
-                </el-radio-group>
-              </div>
-            </div>
-          </template>
-          <div class="resource-chart">
-            <!-- 图表占位符 -->
-            <div class="chart-placeholder">{{ $t('SystemBasicMgmt.resourceTrend.placeholder') }}</div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 系统信息与服务状态 -->
-    <el-row :gutter="20" class="info-row">
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-        <el-card class="custom-card" shadow="hover">
-          <template #header>
-            <div class="system-info-header">
-              <span>{{ $t('SystemBasicMgmt.systemInfo.title') }}</span>
-              <el-button type="primary" size="small" plain>{{ $t('SystemBasicMgmt.systemInfo.refresh') }}</el-button>
-            </div>
-          </template>
-          <el-descriptions :column="1" border class="descriptions-block">
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.os')">CentOS 8.4.2105</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.serverIp')">192.168.1.100</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.systemTime')">2023-05-15 15:30:45</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.uptime')">23 days 5 hours 16 minutes</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.cpuModel')">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.memoryCapacity')">16 GB</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.diskSpace')">1 TB</el-descriptions-item>
-            <el-descriptions-item :label="$t('SystemBasicMgmt.systemInfo.systemVersion')">v2.5.3 (build 20230510)</el-descriptions-item>
-          </el-descriptions>
-        </el-card>
-      </el-col>
-      
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-        <el-card class="custom-card" shadow="hover">
-          <template #header>
-            <div class="service-status-header">
-              <span>{{ $t('SystemBasicMgmt.serviceStatus.title') }}</span>
-              <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="RefreshRight">{{ $t('SystemBasicMgmt.serviceStatus.refresh') }}</el-button>
-                <el-button type="success" size="small" plain>{{ $t('SystemBasicMgmt.serviceStatus.restartAll') }}</el-button>
-              </div>
-            </div>
-          </template>
-          <div class="service-list">
-            <div class="service-item" v-for="(service, index) in serviceStatus" :key="index">
-              <div class="service-info">
-                <div class="service-name">{{ service.name }}</div>
-                <div class="service-desc">{{ service.description }}</div>
-              </div>
-              <div class="service-actions">
-                <el-tag :type="service.status === $t('SystemBasicMgmt.serviceStatus.running') ? 'success' : service.status === $t('SystemBasicMgmt.serviceStatus.stopped') ? 'danger' : 'warning'">
-                  {{ service.status }}
-                </el-tag>
-                <div class="action-buttons">
-                  <el-button 
-                    size="small" 
-                    :type="service.status === $t('SystemBasicMgmt.serviceStatus.running') ? 'danger' : 'success'"
-                    plain
-                  >
-                    {{ service.status === $t('SystemBasicMgmt.serviceStatus.running') ? $t('SystemBasicMgmt.serviceStatus.stop') : $t('SystemBasicMgmt.serviceStatus.start') }}
-                  </el-button>
-                  <el-button size="small" type="primary" plain>{{ $t('SystemBasicMgmt.serviceStatus.restart') }}</el-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 系统日志与备份记录 -->
-    <el-row :gutter="20" class="log-row">
-      <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
-        <el-card class="custom-card" shadow="hover">
-          <template #header>
-            <div class="system-log-header">
-              <span>{{ $t('SystemBasicMgmt.systemLog.title') }}</span>
-              <div class="log-actions">
-                <el-select v-model="logType" placeholder="日志类型" size="small" style="width: 120px; margin-right: 10px;">
-                  <el-option :label="$t('SystemBasicMgmt.systemLog.all')" value="all" />
-                  <el-option :label="$t('SystemBasicMgmt.systemLog.error')" value="error" />
-                  <el-option :label="$t('SystemBasicMgmt.systemLog.warning')" value="warning" />
-                  <el-option :label="$t('SystemBasicMgmt.systemLog.info')" value="info" />
+            <div class="card-header">
+              <h3>{{ $t('dashboard.charts.kLineChart') }}</h3>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <el-select v-model="kLineChartPeriod" size="small" style="width: 120px" @change="onPeriodChange">
+                <el-option :label="$t('dashboard.period.day')" value="day" />
+                <el-option :label="$t('dashboard.period.week')" value="week" />
+                <el-option :label="$t('dashboard.period.year')" value="year" />
                 </el-select>
-                <el-button type="primary" size="small" plain>{{ $t('SystemBasicMgmt.systemLog.viewMore') }}</el-button>
+                <el-button size="small" @click="refreshKLineChart">
+                  <el-icon><Refresh /></el-icon>
+                  {{ $t('common.refresh') }}
+                </el-button>
               </div>
             </div>
           </template>
-          <el-table :data="systemLogs" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="time" :label="$t('SystemBasicMgmt.systemLog.time')" width="180" />
-            <el-table-column prop="level" :label="$t('SystemBasicMgmt.systemLog.level')" width="100">
-              <template #default="scope">
-                <el-tag 
-                  :type="scope.row.level === 'ERROR' ? 'danger' : scope.row.level === 'WARNING' ? 'warning' : 'info'"
-                  size="small"
-                >
-                  {{ scope.row.level }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="module" :label="$t('SystemBasicMgmt.systemLog.module')" width="120" />
-            <el-table-column prop="message" :label="$t('SystemBasicMgmt.systemLog.content')" show-overflow-tooltip />
-                              <el-table-column :label="$t('SystemBasicMgmt.systemLog.operation')" width="120" fixed="right" align="center">
-              <template #default>
-                <el-button size="small" type="primary" plain>{{ $t('SystemBasicMgmt.systemLog.details') }}</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="logPagination.pageIndex"
-              v-model:page-size="logPagination.pageSize"
-              :page-sizes="[5, 10, 20, 50]"
-              layout="total, sizes, prev, pager, next"
-              :total="logPagination.total"
-            />
-          </div>
-        </el-card>
-      </el-col>
-      
-      <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-        <el-card class="custom-card" shadow="hover">
-          <template #header>
-            <div class="backup-header">
-              <span>{{ $t('SystemBasicMgmt.backupRecord.title') }}</span>
-              <div class="header-actions">
-                <el-button type="primary" size="small" icon="Plus">{{ $t('SystemBasicMgmt.backupRecord.backupNow') }}</el-button>
-              </div>
-            </div>
-          </template>
-          <el-scrollbar height="350px">
-            <div class="backup-list">
-              <div class="backup-item" v-for="(backup, index) in backupRecords" :key="index">
-                <div class="backup-info">
-                  <div class="backup-name">{{ backup.name }}</div>
-                  <div class="backup-meta">
-                    <el-tag size="small" type="info">{{ backup.time }}</el-tag>
-                    <el-tag size="small" type="success">{{ backup.size }}</el-tag>
-                  </div>
-                </div>
-                <div class="backup-actions">
-                  <el-button size="small" type="primary" plain icon="Download">{{ $t('SystemBasicMgmt.backupRecord.restore') }}</el-button>
-                  <el-button size="small" type="danger" plain icon="Delete">{{ $t('SystemBasicMgmt.backupRecord.delete') }}</el-button>
-                </div>
-              </div>
-            </div>
-          </el-scrollbar>
+          <div ref="kLineChart" class="chart-container"></div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 系统通知 -->
-    <el-row :gutter="20" class="notice-row">
-      <el-col :span="24">
-        <el-card class="custom-card" shadow="hover">
+    <!-- 第三行：三个饼图 -->
+    <el-row :gutter="20" class="charts-section">
+      <el-col :xs="24" :sm="8" v-for="(pieChart, index) in pieCharts" :key="index">
+        <el-card class="chart-card" shadow="hover">
           <template #header>
-            <div class="system-notice-header">
-              <span>{{ $t('SystemBasicMgmt.systemNotice.title') }}</span>
-              <div class="header-actions">
-                <el-button type="primary" size="small" plain icon="Plus">{{ $t('SystemBasicMgmt.systemNotice.publish') }}</el-button>
-              </div>
+            <div class="card-header">
+              <h3>{{ $t(pieChart.title) }}</h3>
             </div>
           </template>
-          <el-table :data="systemNotices" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-            <el-table-column prop="title" :label="$t('SystemBasicMgmt.systemNotice.noticeTitle')" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="type" :label="$t('SystemBasicMgmt.systemNotice.type')" width="120">
-              <template #default="scope">
-                <el-tag :type="getNoticeType(scope.row.type)">{{ scope.row.type }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="publisher" :label="$t('SystemBasicMgmt.systemNotice.publisher')" width="120" />
-            <el-table-column prop="time" :label="$t('SystemBasicMgmt.systemNotice.publishTime')" width="180" />
-                          <el-table-column :label="$t('SystemBasicMgmt.systemNotice.operation')" width="180" fixed="right" align="center">
-              <template #default>
-                <el-button size="small" type="primary" plain icon="View">{{ $t('SystemBasicMgmt.systemNotice.view') }}</el-button>
-                <el-button size="small" type="danger" plain icon="Delete">{{ $t('SystemBasicMgmt.systemNotice.delete') }}</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="noticePagination.pageIndex"
-              v-model:page-size="noticePagination.pageSize"
-              :page-sizes="[5, 10, 20]"
-              layout="total, sizes, prev, pager, next"
-              :total="noticePagination.total"
-            />
-          </div>
+          <div :ref="el => pieChart.ref = el" class="pie-chart-container"></div>
         </el-card>
       </el-col>
     </el-row>
-
-    <!-- 快捷操作 -->
-    <el-row :gutter="20" class="quick-action-row">
-      <el-col :span="24">
-        <el-card class="custom-card" shadow="hover">
-          <template #header>
-            <div class="quick-action-header">
-              <span>{{ $t('SystemBasicMgmt.quickAction.title') }}</span>
-            </div>
-          </template>
-          <div class="quick-action-list">
-            <el-row :gutter="20">
-              <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" v-for="(action, index) in quickActions" :key="index">
-                <div class="quick-action-item">
-                  <el-button type="primary" plain :icon="action.icon" circle size="large"></el-button>
-                  <div class="action-name">{{ action.name }}</div>
-                </div>
-              </el-col>
-            </el-row>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 路由视图，用于动态加载组件 -->
-    <router-view v-slot="{ Component }">
-      <transition name="fade-transform" mode="out-in">
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
-      </transition>
-    </router-view>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, markRaw } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { 
-  Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
-  Monitor, Connection, Lock, User, Warning, Notification, 
-  Document, Folder, Tools, Upload, Cpu, DataAnalysis, Loading
+import * as echarts from 'echarts'
+import {
+  ArrowUp,
+  ArrowDown,
+  Refresh,
 } from '@element-plus/icons-vue'
 
-// 初始化i18n
 const { t } = useI18n()
 
-// 资源趋势图时间范围
-const resourceTimeRange = ref('day')
+// 图表引用
+const kLineChart = ref(null)
+const complexBarChart = ref(null)
+const simpleBarChart = ref(null)
 
-// 日志分页
-const logPagination = reactive({
-  pageIndex: 1,
-  pageSize: 5,
-  total: 100
-})
+// 响应式数据
+const kLineChartPeriod = ref('day')
 
-// 通知分页
-const noticePagination = reactive({
-  pageIndex: 1,
-  pageSize: 5,
-  total: 50
-})
-
-// 服务状态
-const serviceStatus = reactive([
+// 饼图配置
+const pieCharts = ref([
   {
-    name: 'Web Server',
-    description: 'Nginx 1.20.1',
-    status: 'Running'
+    title: 'dashboard.charts.departmentDistribution',
+    ref: null
   },
   {
-    name: 'Database',
-    description: 'MySQL 8.0.27',
-    status: 'Running'
+    title: 'dashboard.charts.projectStatus',
+    ref: null
   },
   {
-    name: 'Redis',
-    description: 'Redis 6.2.6',
-    status: 'Running'
-  },
-  {
-    name: 'Message Queue',
-    description: 'RabbitMQ 3.9.13',
-    status: 'Stopped'
-  },
-  {
-    name: 'Cron Service',
-    description: 'Cron Service',
-    status: 'Running'
+    title: 'dashboard.charts.resourceUsage',
+    ref: null
   }
 ])
 
-// 系统日志
-const logType = ref('all')
-const systemLogs = reactive([
+// 统计卡片数据
+const statsCards = ref([
   {
-    time: '2023-05-15 15:20:30',
-    level: 'ERROR',
-            module: 'Authentication',
-        message: 'Authentication failed (IP: 192.168.1.5)'
+    icon: 'UserFilled',
+    value: '2,847',
+    label: 'dashboard.stats.totalUsers',
+    trend: 12.5,
+    color: '#409EFF'
   },
   {
-    time: '2023-05-15 15:15:22',
-    level: 'WARNING',
-    module: 'Database',
-    message: 'Database connection reached 80% threshold'
+    icon: 'OfficeBuilding',
+    value: '156',
+    label: 'dashboard.stats.departments',
+    trend: 8.2,
+    color: '#67C23A'
   },
   {
-    time: '2023-05-15 15:10:15',
-    level: 'INFO',
-    module: 'System',
-    message: 'System load increased'
+    icon: 'DataAnalysis',
+    value: '98.5%',
+    label: 'dashboard.stats.systemHealth',
+    trend: 2.1,
+    color: '#E6A23C'
   },
   {
-    time: '2023-05-15 15:05:48',
-    level: 'INFO',
-            module: 'Authentication',
-        message: 'User logged in: user123'
-  },
-  {
-    time: '2023-05-15 15:01:33',
-    level: 'WARNING',
-    module: 'Storage',
-    message: 'Disk space low, remaining 20%'
-  },
-])
-
-// 系统通知
-const systemNotices = reactive([
-  {
-    title: 'System Maintenance Notice on May 20th',
-    type: 'Maintenance',
-    publisher: 'Admin',
-    time: '2023-05-15 10:30:00'
-  },
-  {
-    title: 'Security Update: Critical Vulnerability Fixed',
-    type: 'Security',
-    publisher: 'SecurityTeam',
-    time: '2023-05-14 16:45:20'
-  },
-  {
-    title: 'Database Schema Update',
-    type: 'Update',
-    publisher: 'Admin',
-    time: '2023-05-12 09:15:30'
-  },
-  {
-    title: 'System Update Successful',
-    type: 'Update',
-    publisher: 'SystemAdmin',
-    time: '2023-05-10 14:20:00'
-  },
-  {
-    title: 'System Full Backup Completed',
-    type: 'Security',
-    publisher: 'SecurityTeam',
-    time: '2023-05-08 11:30:45'
+    icon: 'Monitor',
+    value: '1,234',
+    label: 'dashboard.stats.activeConnections',
+    trend: -3.2,
+    color: '#F56C6C'
   }
 ])
 
-// 备份记录
-const backupRecords = reactive([
+// 最近活动数据
+const recentActivities = ref([
   {
-    name: 'System Backup_20230515',
-    time: '2023-05-15 03:00:00',
-    size: '4.2 GB'
+    time: '2024-01-15 14:30:25',
+    user: 'Zhang San',
+    action: t('dashboard.activities.login'),
+    status: 'success'
   },
   {
-    name: 'Database Backup_20230514',
-    time: '2023-05-14 03:00:00',
-    size: '1.8 GB'
+    time: '2024-01-15 14:25:18',
+    user: 'Li Si',
+    action: t('dashboard.activities.updateUser'),
+    status: 'success'
   },
   {
-    name: 'Application Logs_20230513',
-    time: '2023-05-13 03:00:00',
-    size: '156 MB'
+    time: '2024-01-15 14:20:12',
+    user: 'Wang Wu',
+    action: t('dashboard.activities.deleteDept'),
+    status: 'warning'
   },
   {
-    name: 'System Backup_20230510',
-    time: '2023-05-10 03:00:00',
-    size: '4.1 GB'
+    time: '2024-01-15 14:15:08',
+    user: 'Zhao Liu',
+    action: t('dashboard.activities.backup'),
+    status: 'error'
   },
   {
-    name: 'Database Backup_20230507',
-    time: '2023-05-07 03:00:00',
-    size: '1.7 GB'
-  },
-  {
-    name: 'System Backup_20230501',
-    time: '2023-05-01 03:00:00',
-    size: '4.0 GB'
+    time: '2024-01-15 14:10:03',
+    user: 'Qian Qi',
+    action: t('dashboard.activities.exportReport'),
+    status: 'success'
   }
 ])
 
-// 快捷操作
-const quickActions = reactive([
+// 快捷操作数据
+const quickActions = ref([
   {
-    name: 'System Status',
-    icon: markRaw(Setting)
+    key: 'addUser',
+    icon: 'Plus',
+    title: 'dashboard.actions.addUser',
+    description: 'dashboard.actions.addUserDesc',
+    color: '#409EFF'
   },
   {
-          name: 'User Management',
-    icon: markRaw(User)
+    key: 'systemSettings',
+    icon: 'Setting',
+    title: 'dashboard.actions.systemSettings',
+    description: 'dashboard.actions.systemSettingsDesc',
+    color: '#67C23A'
   },
   {
-    name: 'Security',
-    icon: markRaw(Lock)
+    key: 'generateReport',
+    icon: 'Document',
+    title: 'dashboard.actions.generateReport',
+    description: 'dashboard.actions.generateReportDesc',
+    color: '#E6A23C'
   },
   {
-    name: 'System Monitor',
-    icon: markRaw(Monitor)
-  },
-  {
-    name: 'Data Recovery',
-    icon: markRaw(Upload)
-  },
-  {
-    name: 'Log Viewer',
-    icon: markRaw(Document)
-  },
-  {
-    name: 'Storage',
-    icon: markRaw(Folder)
-  },
-  {
-    name: 'Tools',
-    icon: markRaw(Tools)
+    key: 'notifications',
+    icon: 'Bell',
+    title: 'dashboard.actions.notifications',
+    description: 'dashboard.actions.notificationsDesc',
+    color: '#F56C6C'
   }
 ])
 
-// 获取通知类型
-const getNoticeType = (type) => {
-  switch (type) {
-    case 'Maintenance':
-    case 'Maintenance':
-      return 'warning'
-    case 'Security':
-    case 'Security':
-      return 'danger'
-    case 'Update':
-    case 'Update':
-      return 'success'
-    case 'Announcement':
-    case 'Announcement':
-      return 'info'
-    default:
-      return 'info'
+// 初始化K线图
+const initKLineChart = () => {
+  if (!kLineChart.value) {
+    console.error('kLineChart DOM element not found')
+    return
+  }
+  const chart = echarts.init(kLineChart.value)
+  
+  // 生成K线数据（根据周期动态调整）
+  const generateKLineData = (period = 'day') => {
+    const data = []
+    const dates = []
+    let basePrice = 12.0 // 起始价格
+    let lastDayReturn = 0 // 前一日涨跌幅
+    
+    // 根据周期确定数据点数量和时间间隔
+    let dataPoints, timeUnit, timeStep
+    switch (period) {
+      case 'day':
+        dataPoints = 180 // 半年的日数据
+        timeUnit = 'day'
+        timeStep = 1
+        break
+      case 'week':
+        dataPoints = 52 // 一年的周数据
+        timeUnit = 'week'
+        timeStep = 7
+        break
+      case 'year':
+        dataPoints = 10 // 十年的年数据
+        timeUnit = 'year'
+        timeStep = 365
+        break
+      default:
+        dataPoints = 180
+        timeUnit = 'day'
+        timeStep = 1
+    }
+    
+    // 生成数据
+    for (let i = 0; i < dataPoints; i++) {
+      const date = new Date()
+      if (timeUnit === 'day') {
+        date.setDate(date.getDate() - (dataPoints - 1 - i))
+        dates.push(date.toISOString().split('T')[0])
+      } else if (timeUnit === 'week') {
+        date.setDate(date.getDate() - (dataPoints - 1 - i) * 7)
+        const weekStart = new Date(date)
+        weekStart.setDate(date.getDate() - date.getDay())
+        dates.push(weekStart.toISOString().split('T')[0])
+      } else if (timeUnit === 'year') {
+        date.setFullYear(date.getFullYear() - (dataPoints - 1 - i))
+        dates.push(date.getFullYear().toString())
+      }
+      
+      // 根据周期调整波动率
+      let volatilityMultiplier = 1
+      if (timeUnit === 'week') {
+        volatilityMultiplier = 1.5 // 周数据波动更大
+      } else if (timeUnit === 'year') {
+        volatilityMultiplier = 3 // 年数据波动最大
+      }
+      
+      // 生成开盘价（可能跳空）
+      const gapRate = (Math.random() - 0.5) * 0.15 * volatilityMultiplier
+      let open = basePrice * (1 + gapRate)
+      
+      let dailyReturn = 0
+      let close, high, low
+      
+      // 根据周期调整涨跌幅概率和幅度
+      const extremeProb = timeUnit === 'year' ? 0.2 : timeUnit === 'week' ? 0.15 : 0.1
+      const largeProb = timeUnit === 'year' ? 0.15 : timeUnit === 'week' ? 0.12 : 0.08
+      const mediumProb = timeUnit === 'year' ? 0.25 : timeUnit === 'week' ? 0.2 : 0.15
+      
+      // 极端大涨
+      if (Math.random() < extremeProb) {
+        dailyReturn = (0.15 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = close * (1 + Math.random() * 0.03)
+        low = open * (1 - Math.random() * 0.05)
+      }
+      // 大跌
+      else if (Math.random() < largeProb) {
+        dailyReturn = -(0.1 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = close * (1 - Math.random() * 0.03)
+        high = open * (1 + Math.random() * 0.05)
+      }
+      // 中等涨幅
+      else if (Math.random() < mediumProb) {
+        dailyReturn = (0.05 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = Math.max(open, close) * (1 + Math.random() * 0.05)
+        low = Math.min(open, close) * (1 - Math.random() * 0.03)
+      }
+      // 中等跌幅
+      else if (Math.random() < mediumProb) {
+        dailyReturn = -(0.05 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = Math.min(open, close) * (1 - Math.random() * 0.05)
+        high = Math.max(open, close) * (1 + Math.random() * 0.03)
+      }
+      // 反转效应
+      else if (lastDayReturn > 0.1 * volatilityMultiplier && Math.random() < 0.6) {
+        dailyReturn = -(0.02 + Math.random() * 0.08) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = Math.min(open, close) * (1 - Math.random() * 0.03)
+        high = Math.max(open, close) * (1 + Math.random() * 0.02)
+      }
+      else if (lastDayReturn < -0.1 * volatilityMultiplier && Math.random() < 0.4) {
+        dailyReturn = (0.02 + Math.random() * 0.06) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = Math.max(open, close) * (1 + Math.random() * 0.03)
+        low = Math.min(open, close) * (1 - Math.random() * 0.02)
+      }
+      // 其余情况：随机波动
+      else {
+        dailyReturn = (Math.random() - 0.5) * 0.16 * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        
+        const intraVolatility = (Math.random() * 0.08 + 0.02) * volatilityMultiplier
+        high = Math.max(open, close) * (1 + Math.random() * intraVolatility)
+        low = Math.min(open, close) * (1 - Math.random() * intraVolatility)
+      }
+      
+      // 极端日内波动（根据周期调整概率）
+      const shadowProb = timeUnit === 'year' ? 0.1 : timeUnit === 'week' ? 0.08 : 0.05
+      if (Math.random() < shadowProb) {
+        if (Math.random() > 0.5) {
+          // 长上影线：冲高回落
+          high = Math.max(open, close) * (1 + (0.1 + Math.random() * 0.15) * volatilityMultiplier)
+          close = open * (1 + (Math.random() - 0.3) * 0.1 * volatilityMultiplier)
+        } else {
+          // 长下影线：探底回升
+          low = Math.min(open, close) * (1 - (0.1 + Math.random() * 0.15) * volatilityMultiplier)
+          close = open * (1 + (Math.random() - 0.3) * 0.1 * volatilityMultiplier)
+        }
+      }
+      
+      // 超级黑天鹅事件（根据周期调整概率和幅度）
+      const blackSwanProb = timeUnit === 'year' ? 0.05 : timeUnit === 'week' ? 0.03 : 0.02
+      if (Math.random() < blackSwanProb) {
+        const superExtreme = (0.3 + Math.random() * 0.2) * volatilityMultiplier
+        if (Math.random() > 0.5) {
+          // 超级暴涨
+          dailyReturn = superExtreme
+          close = open * (1 + dailyReturn)
+          high = close * (1 + Math.random() * 0.05)
+          low = open * (1 - Math.random() * 0.1)
+        } else {
+          // 超级暴跌
+          dailyReturn = -superExtreme
+          close = open * (1 + dailyReturn)
+          low = close * (1 - Math.random() * 0.05)
+          high = open * (1 + Math.random() * 0.1)
+        }
+      }
+      
+      // 确保价格合理性
+      open = Math.max(0.5, open)
+      close = Math.max(0.5, close)
+      high = Math.max(open, close, high, 0.5)
+      low = Math.min(open, close, low)
+      low = Math.max(0.5, low)
+      
+      // 确保高低价逻辑正确
+      if (high < Math.max(open, close)) high = Math.max(open, close)
+      if (low > Math.min(open, close)) low = Math.min(open, close)
+      
+      basePrice = close
+      lastDayReturn = dailyReturn
+      
+      data.push([open.toFixed(2), close.toFixed(2), low.toFixed(2), high.toFixed(2)])
+    }
+    
+    return { dates, data }
+  }
+  
+  const { dates, data } = generateKLineData(kLineChartPeriod.value)
+  
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      },
+      formatter: function (params) {
+         const param = params[0]
+         const data = param.data
+         return `${param.name}<br/>
+                 ${t('dashboard.charts.open')}: ${data[0]}<br/>
+                 ${t('dashboard.charts.close')}: ${data[1]}<br/>
+                 ${t('dashboard.charts.low')}: ${data[2]}<br/>
+                 ${t('dashboard.charts.high')}: ${data[3]}`
+       }
+    },
+    legend: {
+      data: [t('dashboard.charts.kLine')],
+      bottom: '0%',
+      left: 'center'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '12%',
+      top: '10%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      scale: true,
+      boundaryGap: false,
+      axisLine: { onZero: false },
+      splitLine: { show: false },
+      splitNumber: 20,
+      min: 'dataMin',
+      max: 'dataMax'
+    },
+    yAxis: {
+      scale: true,
+      splitArea: {
+        show: true
+      }
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        show: true,
+        type: 'slider',
+        top: '90%',
+        start: 0,
+        end: 100
+      }
+    ],
+    series: [
+      {
+        name: t('dashboard.charts.kLine'),
+        type: 'candlestick',
+        data: data,
+        itemStyle: {
+          color: '#ef232a',
+          color0: '#14b143',
+          borderColor: '#ef232a',
+          borderColor0: '#14b143'
+        },
+        markPoint: {
+          label: {
+            formatter: function (param) {
+              return param != null ? Math.round(param.value) + '' : ''
+            }
+          },
+          data: [
+            {
+              name: t('dashboard.charts.highest'),
+              type: 'max',
+              valueDim: 'highest'
+            },
+            {
+              name: t('dashboard.charts.lowest'),
+              type: 'min',
+              valueDim: 'lowest'
+            }
+          ],
+          tooltip: {
+            formatter: function (param) {
+              return param.name + '<br>' + (param.data.coord || '')
+            }
+          }
+        },
+
+      }
+    ]
+  }
+  
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+}
+
+// 初始化复杂柱状图
+const initComplexBarChart = () => {
+  if (!complexBarChart.value) {
+    console.error('complexBarChart DOM element not found')
+    return
+  }
+  const chart = echarts.init(complexBarChart.value)
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    legend: {
+      data: [t('dashboard.charts.sales'), t('dashboard.charts.profit'), t('dashboard.charts.growth')],
+      bottom: '0%',
+      left: 'center'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '12%',
+      top: '10%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: [t('common.months.jan'), t('common.months.feb'), t('common.months.mar'), t('common.months.apr'), t('common.months.may'), t('common.months.jun'), t('common.months.jul'), t('common.months.aug'), t('common.months.sep'), t('common.months.oct'), t('common.months.nov'), t('common.months.dec')]
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: t('dashboard.charts.amount'),
+        position: 'left',
+        axisLabel: {
+          formatter: '{value} 万'
+        }
+      },
+      {
+        type: 'value',
+        name: t('dashboard.charts.percentage'),
+        position: 'right',
+        axisLabel: {
+          formatter: '{value} %'
+        }
+      }
+    ],
+    series: [
+      {
+        name: t('dashboard.charts.sales'),
+        type: 'bar',
+        yAxisIndex: 0,
+        data: [320, 332, 301, 334, 390, 330, 320, 332, 301, 334, 390, 330],
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#409EFF' },
+            { offset: 1, color: '#1890ff' }
+          ])
+        }
+      },
+      {
+        name: t('dashboard.charts.profit'),
+        type: 'bar',
+        yAxisIndex: 0,
+        data: [120, 132, 101, 134, 90, 230, 210, 182, 191, 234, 290, 330],
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#67C23A' },
+            { offset: 1, color: '#52c41a' }
+          ])
+        }
+      },
+      {
+        name: t('dashboard.charts.growth'),
+        type: 'line',
+        yAxisIndex: 1,
+        data: [12.5, 8.2, 15.6, 9.8, 22.1, 18.7, 16.3, 14.2, 19.5, 21.8, 25.3, 28.9],
+        itemStyle: {
+          color: '#E6A23C'
+        },
+        lineStyle: {
+          width: 3
+        }
+      }
+    ]
+  }
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+}
+
+// 初始化简单柱状图
+const initSimpleBarChart = () => {
+  if (!simpleBarChart.value) {
+    console.error('simpleBarChart DOM element not found')
+    return
+  }
+  const chart = echarts.init(simpleBarChart.value)
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '15%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: [t('dashboard.departments.tech'), t('dashboard.departments.sales'), t('dashboard.departments.marketing'), t('dashboard.departments.hr'), t('dashboard.departments.finance'), t('dashboard.departments.operations')]
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: t('dashboard.charts.employees'),
+        type: 'bar',
+        data: [45, 38, 25, 18, 22, 31],
+        itemStyle: {
+          color: (params) => {
+            const colors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#C0C4CC']
+            return colors[params.dataIndex % colors.length]
+          }
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
+      }
+    ]
+  }
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+}
+
+// 初始化饼图
+const initPieCharts = () => {
+  // 部门分布饼图
+  if (pieCharts.value[0].ref) {
+    const chart1 = echarts.init(pieCharts.value[0].ref)
+    const option1 = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+      },
+      legend: {
+        bottom: '0%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: t('dashboard.charts.departmentDistribution'),
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '35%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 20,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: [
+            { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
+            { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
+            { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
+            { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
+            { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
+            { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
+          ]
+        }
+      ]
+    }
+    chart1.setOption(option1)
+    window.addEventListener('resize', () => chart1.resize())
+  }
+
+  // 项目状态饼图
+  if (pieCharts.value[1].ref) {
+    const chart2 = echarts.init(pieCharts.value[1].ref)
+    const option2 = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+      },
+      legend: {
+        bottom: '0%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: t('dashboard.charts.projectStatus'),
+          type: 'pie',
+          radius: '65%',
+          center: ['50%', '35%'],
+          data: [
+            { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
+            { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
+            { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
+            { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    }
+    chart2.setOption(option2)
+    window.addEventListener('resize', () => chart2.resize())
+  }
+
+  // 资源使用饼图
+  if (pieCharts.value[2].ref) {
+    const chart3 = echarts.init(pieCharts.value[2].ref)
+    const option3 = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c}% ({d}%)'
+      },
+      legend: {
+        bottom: '0%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: t('dashboard.charts.resourceUsage'),
+          type: 'pie',
+          radius: ['30%', '70%'],
+          center: ['50%', '35%'],
+          roseType: 'area',
+          itemStyle: {
+            borderRadius: 8
+          },
+          data: [
+            { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
+            { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
+            { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
+            { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
+          ]
+        }
+      ]
+    }
+    chart3.setOption(option3)
+    window.addEventListener('resize', () => chart3.resize())
   }
 }
+
+// 刷新K线图
+const refreshKLineChart = () => {
+  initKLineChart()
+}
+
+// 周期变化处理
+const onPeriodChange = () => {
+  initKLineChart()
+}
+
+// 组件挂载后初始化图表
+onMounted(() => {
+  nextTick(() => {
+    // 延迟初始化所有图表，确保DOM元素已完全渲染和国际化加载完成
+    setTimeout(() => {
+      try {
+        initKLineChart()
+        initComplexBarChart()
+        initSimpleBarChart()
+        initPieCharts()
+      } catch (error) {
+        console.error('图表初始化失败:', error)
+      }
+    }, 1000) // 增加延迟时间确保国际化完全加载
+  })
+})
 </script>
 
 <style scoped>
-.page-container {
-  padding: 0;
+@import '@/assets/styles/conventionalTablePage.css';
+
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
 }
 
-.data-card {
-  margin-bottom: 20px;
-  height: 150px;
-  border-radius: 8px;
-  transition: all 0.3s;
+.stat-content {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
 }
 
-.data-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #303133;
+  margin: 0 0 5px 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #909399;
+  margin: 0 0 8px 0;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-trend.positive {
+  color: #67C23A;
+}
+
+.stat-trend.negative {
+  color: #F56C6C;
+}
+
+.stat-trend span {
+  margin-left: 4px;
+}
+
+.chart-card {
+  border-radius: 12px;
+  border: none;
+  min-height: 400px;
+}
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.pie-chart-container {
+  height: 280px;
+  width: 100%;
+}
+
+.pie-charts-section {
+  margin-top: 20px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
 }
 
-.card-title {
-  font-size: 16px;
-  color: #606266;
-  font-weight: 500;
+.card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 
-.card-value-with-progress {
-  margin-bottom: 15px;
+.table-section {
+  margin-bottom: 0px;
 }
 
-.card-value-with-progress .value {
-  font-size: 28px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
+.table-card {
+  border-radius: 12px;
+  border: none;
 }
 
-.card-footer {
-  font-size: 13px;
+.quick-actions-card {
+  border-radius: 12px;
+  border: none;
+}
+
+.quick-actions {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.action-item {
+  display: flex;
   align-items: center;
-}
-
-.status-normal {
-  color: #67C23A;
-  font-weight: 500;
-}
-
-.status-warning {
-  color: #E6A23C;
-  font-weight: 500;
-}
-
-.status-danger {
-  color: #F56C6C;
-  font-weight: 500;
-}
-
-.compare-text {
-  color: #909399;
-}
-
-.info-row, .log-row, .notice-row, .chart-row, .quick-action-row {
-  margin-bottom: 20px;
-}
-
-.custom-card {
+  padding: 15px;
   border-radius: 8px;
-  margin-bottom: 20px;
-  transition: all 0.3s;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.custom-card:hover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.action-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(5px);
 }
 
-.system-info-header, .service-status-header, .system-log-header, .backup-header, .system-notice-header, .quick-action-header, .card-header-with-tabs {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 5px;
-}
-
-.card-header-title {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.log-actions, .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* 图表占位符 */
-.resource-chart {
-  height: 300px;
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 15px;
+  color: white;
 }
 
-.chart-placeholder {
-  color: #909399;
+.action-info h4 {
+  margin: 0 0 5px 0;
   font-size: 14px;
-  text-align: center;
-  width: 100%;
-  padding: 50px 0;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-}
-
-/* 描述列表 */
-.descriptions-block {
-  margin-top: 10px;
-}
-
-/* 服务状态样式 */
-.service-list {
-  max-height: 365px;
-  overflow-y: auto;
-}
-
-.service-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.service-item:last-child {
-  border-bottom: none;
-}
-
-.service-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #303133;
-  margin-bottom: 5px;
-}
-
-.service-desc {
-  font-size: 13px;
-  color: #909399;
-}
-
-.service-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.action-buttons {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-
-/* 分页 */
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* 备份记录样式 */
-.backup-list {
-  padding: 5px 0;
-}
-
-.backup-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 10px;
-  border-bottom: 1px solid #f0f0f0;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.backup-item:hover {
-  background-color: #f9f9f9;
-}
-
-.backup-item:last-child {
-  border-bottom: none;
-}
-
-.backup-name {
-  font-size: 14px;
-  font-weight: bold;
-  color: #303133;
-  margin-bottom: 8px;
-}
-
-.backup-meta {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.backup-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* 快捷操作 */
-.quick-action-list {
-  padding: 15px 0;
-}
-
-.quick-action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.quick-action-item:hover {
-  transform: translateY(-5px);
-}
-
-.action-name {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #606266;
-  text-align: center;
-}
-
-/* 表格样式 */
-:deep(.el-table th) {
-  background-color: #f5f7fa !important;
   font-weight: 600;
+  color: #303133;
 }
 
-:deep(.el-table--border) {
-  border-radius: 4px;
-  overflow: hidden;
+.action-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #909399;
 }
 
-:deep(.el-tag) {
-  font-weight: 500;
+/* 响应式设计 */
+@media (max-width: 768px) {
+  
+  .stat-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .stat-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+  .chart-container {
+    height: 250px;
+  }
 }
-</style> 
-
+</style>

@@ -90,9 +90,9 @@
               />
             </el-form-item>
             <el-form-item :label="$t('SystemBasicMgmt.userPosition.positionNameCn')">
-<el-input
-v-model="editForm.positionNameCn"
-:placeholder="$t('SystemBasicMgmt.userPosition.positionNameCnPlaceholder')"
+            <el-input
+            v-model="editForm.positionNameCn"
+            :placeholder="$t('SystemBasicMgmt.userPosition.positionNameCnPlaceholder')"
                 style="width:100%" 
                 readonly
               />

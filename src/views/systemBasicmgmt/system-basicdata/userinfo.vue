@@ -502,8 +502,8 @@
                 callback(new Error(t('SystemBasicMgmt.userInfo.emailLowercaseError')))
                 return
               }
-              // 邮箱后缀必须是@eson.tw
-              if (!value.endsWith('@eson.tw')) {
+              // 邮箱后缀必须是 @eson.tw 或 @eson.vn
+              if (!value.endsWith('@eson.tw') && !value.endsWith('@eson.vn')) {
                 callback(new Error(t('SystemBasicMgmt.userInfo.emailDomainError')))
                 return
               }

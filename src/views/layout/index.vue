@@ -1343,7 +1343,7 @@ const openMenuForPath = (path) => {
 .tags-view-container:deep(.el-tabs__nav-next) {
   background-color: transparent !important;
   border: none !important;
-  margin: 0 2px !important;
+  margin: 0 -5px !important;
   transition: all 0.3s !important;
 }
 

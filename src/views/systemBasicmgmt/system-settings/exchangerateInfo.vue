@@ -29,9 +29,6 @@
                     <el-button type="primary" @click="handleSearch" plain>
                         {{ $t('common.search') }}
                     </el-button>
-                    <el-button @click="handleReset">
-                        {{ $t('common.reset') }}
-                    </el-button>
                 </el-form-item>
                 <el-form-item class="form-right-button">
                     <el-button type="primary" @click="handleAdd">
@@ -190,9 +187,13 @@
     })
   
     // 过滤条件
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const currentYearMonth = `${year}-${month}`
     const filters = reactive({
         currencyCode: '',
-        yearMonth: ''
+        yearMonth: currentYearMonth
     })
   
     // 对话框显示状态
@@ -233,8 +234,8 @@
     })
   
     // 在组件挂载后获取数据
-    onMounted(() => {
-        fetchCurrencyDropdown()
+    onMounted(async () => {
+        await fetchCurrencyDropdown()
         fetchExchangeRatePages()
     })
 
@@ -244,6 +245,12 @@
         
         if (res && res.code === 200) {
             currencyOptions.value = res.data || []
+            if (currencyOptions.value.length > 0) {
+                const firstEnabledOption = currencyOptions.value.find(option => !option.disabled)
+                if (firstEnabledOption) {
+                    filters.currencyCode = firstEnabledOption.currencyCode
+                }
+            }
         } else {
             ElMessage({
               message: res.message || t('SystemBasicMgmt.exchangeRateInfo.getFailed'),
@@ -282,10 +289,11 @@
     }
 
     // 获取汇率详情数据
-    const fetchExchangeRateEntity = async (currencyCode, yearMonth) => {
+    const fetchExchangeRateEntity = async (currencyCode, yearMonth, exchangeCurrencyCode) => {
         const params = {
             currencyCode: currencyCode,
-            yearMonth: yearMonth
+            yearMonth: yearMonth,
+            exchangeCurrencyCode: exchangeCurrencyCode
         }
         
         const res = await post(GET_EXCHANGE_RATE_ENTITY_API.GET_EXCHANGE_RATE_ENTITY, params)
@@ -318,13 +326,7 @@
         }, 300) // 300ms防抖
     }
   
-    // 重置搜索条件
-    const handleReset = () => {
-        filters.currencyCode = ''
-        filters.yearMonth = ''
-        pagination.pageIndex = 1
-        fetchExchangeRatePages()
-    }
+
   
     // 处理页码变化
     const handlePageChange = (page) => {
@@ -473,7 +475,7 @@
         // 重置表单数据
         resetForm()
         // 获取汇率详情数据
-        await fetchExchangeRateEntity(row.currencyCode, row.yearMonth)
+        await fetchExchangeRateEntity(row.currencyCode, row.yearMonth, row.exchangeCurrencyCode)
         // 设置为编辑模式
         isEditMode.value = true
         dialogTitle.value = t('SystemBasicMgmt.exchangeRateInfo.editExchangeRate')
