@@ -9,7 +9,7 @@
               <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
             </div>
             <div class="card-value-with-progress">
-              <span class="value">32%</span>
+              <span class="value">32%11</span>
               <el-progress :percentage="32" :show-text="false" />
             </div>
             <div class="card-footer">
