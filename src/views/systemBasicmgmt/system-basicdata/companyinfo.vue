@@ -3,10 +3,10 @@
       <el-card class="conventional-card">
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="公司信息">
-              <el-form-item :label="$t('SystemBasicMgmt.companyInfo.filter.companyName')">
+              <el-form-item :label="$t('systembasicmgmt.companyInfo.filter.companyName')">
                   <el-input style="width: 180px;"
                             v-model="filters.companyName"
-                            :placeholder="$t('SystemBasicMgmt.companyInfo.pleaseInputName')"
+                            :placeholder="$t('systembasicmgmt.companyInfo.pleaseInputName')"
                             />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -19,7 +19,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.companyInfo.addCompany') }}
+                      {{ $t('systembasicmgmt.companyInfo.addCompany') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -32,14 +32,14 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.companyInfo.index')" width="70" align="center" fixed />
-                  <el-table-column prop="companyNameCn" :label="$t('SystemBasicMgmt.companyInfo.companyNameCn')" align="left" min-width="240" />
-                  <el-table-column prop="companyNameEn" :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
-                  <el-table-column prop="companyiPhone" :label="$t('SystemBasicMgmt.companyInfo.companyPhone')" align="center" min-width="280" />
-                  <el-table-column prop="companyFax" :label="$t('SystemBasicMgmt.companyInfo.companyFax')" align="center" min-width="300" />
-                  <el-table-column prop="createdDate" :label="$t('SystemBasicMgmt.companyInfo.createdTime')" min-width="180" />
-                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.companyInfo.remark')" align="left" min-width="450" />
-                  <el-table-column :label="$t('SystemBasicMgmt.companyInfo.operation')" min-width="170" fixed="right" align="center">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.companyInfo.index')" width="70" align="center" fixed />
+                  <el-table-column prop="companyNameCn" :label="$t('systembasicmgmt.companyInfo.companyNameCn')" align="left" min-width="240" />
+                  <el-table-column prop="companyNameEn" :label="$t('systembasicmgmt.companyInfo.companyNameEn')" align="left" min-width="360" />
+                  <el-table-column prop="companyiPhone" :label="$t('systembasicmgmt.companyInfo.companyPhone')" align="center" min-width="280" />
+                  <el-table-column prop="companyFax" :label="$t('systembasicmgmt.companyInfo.companyFax')" align="center" min-width="300" />
+                  <el-table-column prop="createdDate" :label="$t('systembasicmgmt.companyInfo.createdTime')" min-width="180" />
+                  <el-table-column prop="remark" :label="$t('systembasicmgmt.companyInfo.remark')" align="left" min-width="450" />
+                  <el-table-column :label="$t('systembasicmgmt.companyInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -73,23 +73,23 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="公司编辑">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameCn')" prop="companyNameCn">
+                  <el-form-item :label="$t('systembasicmgmt.companyInfo.companyNameCn')" prop="companyNameCn">
                       <el-input v-model="editForm.companyNameCn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyNameEn')" prop="companyNameEn">
+                  <el-form-item :label="$t('systembasicmgmt.companyInfo.companyNameEn')" prop="companyNameEn">
                       <el-input v-model="editForm.companyNameEn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyPhone')" prop="companyiPhone">
+                  <el-form-item :label="$t('systembasicmgmt.companyInfo.companyPhone')" prop="companyiPhone">
                       <el-input v-model="editForm.companyiPhone" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.companyFax')" prop="companyFax">
+                  <el-form-item :label="$t('systembasicmgmt.companyInfo.companyFax')" prop="companyFax">
                       <el-input v-model="editForm.companyFax" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.companyInfo.remark')">
+                  <el-form-item :label="$t('systembasicmgmt.companyInfo.remark')">
                       <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
@@ -107,7 +107,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/SystemBasicMgmt/System-BasicData/company'
+  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systembasicmgmt/System-BasicData/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -153,21 +153,21 @@
   })
 
   // 对话框标题
-  const dialogTitle = ref(t('SystemBasicMgmt.companyInfo.editCompany'))
+  const dialogTitle = ref(t('systembasicmgmt.companyInfo.editCompany'))
 
   // 表单验证规则
   const formRules = reactive({
       companyNameCn: [
-          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputNameCn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.companyInfo.pleaseInputNameCn'), trigger: 'blur' }
       ],
       companyNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.companyInfo.pleaseInputNameEn'), trigger: 'blur' }
       ],
       companyiPhone: [
-          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputPhone'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.companyInfo.pleaseInputPhone'), trigger: 'blur' }
       ],
       companyFax: [
-          { required: true, message: () => t('SystemBasicMgmt.companyInfo.pleaseInputFax'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.companyInfo.pleaseInputFax'), trigger: 'blur' }
       ]
   })
 
@@ -214,7 +214,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.getFailed'),
+            message: res.message || t('systembasicmgmt.companyInfo.getFailed'),
             type: 'error',
             plain: true,
             showClose: true,
@@ -298,7 +298,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.saveSuccess'),
+            message: res.message || t('systembasicmgmt.companyInfo.saveSuccess'),
             type: 'success',
             plain: true,
             showClose: true,
@@ -307,7 +307,7 @@
           fetchCompanyPages()
       } else {
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),
             type: 'error',
             plain: true,
             showClose: true,
@@ -325,7 +325,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.updateSuccess'),
+            message: res.message || t('systembasicmgmt.companyInfo.updateSuccess'),
             type: 'success',
             plain: true,
             showClose: true,
@@ -334,7 +334,7 @@
           fetchCompanyPages()
       } else {
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),
             type: 'error',
             plain: true,
             showClose: true,
@@ -352,7 +352,7 @@
 
       if (res && res.code === 200) {
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.deleteSuccess'),
+            message: res.message || t('systembasicmgmt.companyInfo.deleteSuccess'),
             type: 'success',
             plain: true,
             showClose: true,
@@ -360,7 +360,7 @@
           fetchCompanyPages()
       } else {
           ElMessage({
-            message: res.message || t('SystemBasicMgmt.companyInfo.operationFailed'),
+            message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),
             type: 'error',
             plain: true,
             showClose: true,
@@ -373,7 +373,7 @@
       // 重置表单数据
       resetForm()
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.companyInfo.addCompany')
+      dialogTitle.value = t('systembasicmgmt.companyInfo.addCompany')
       // 显示对话框
       dialogVisible.value = true
   }
@@ -385,7 +385,7 @@
       // 获取公司实体数据
       await fetchCompanyEntity(row.companyId)
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.companyInfo.editCompany')
+      dialogTitle.value = t('systembasicmgmt.companyInfo.editCompany')
       // 显示对话框
       dialogVisible.value = true
       
@@ -400,7 +400,7 @@
   // 处理删除事件
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.companyInfo.deleteConfirm'),
+          t('systembasicmgmt.companyInfo.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

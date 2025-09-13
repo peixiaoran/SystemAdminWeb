@@ -2,10 +2,10 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="员工职业筛选">
-          <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborName')">
+          <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
             <el-input
               v-model="searchForm.laborName"
-              :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborName')"
+              :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
               clearable
               style="width: 200px"
             />
@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item class="form-right-button">
             <el-button type="primary" @click="handleAdd">
-              {{ $t('SystemBasicMgmt.userLabor.addLabor') }}
+              {{ $t('systembasicmgmt.userLabor.addLabor') }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -37,26 +37,26 @@
         >
           <el-table-column 
             type="index" 
-            :label="$t('SystemBasicMgmt.userLabor.index')" 
+            :label="$t('systembasicmgmt.userLabor.index')" 
             width="70" 
             align="center" 
             fixed 
           />
           <el-table-column 
             prop="laborNameCn"
-            :label="$t('SystemBasicMgmt.userLabor.laborNameCn')"
+            :label="$t('systembasicmgmt.userLabor.laborNameCn')"
             align="left" 
             min-width="200" 
           />
           <el-table-column 
             prop="laborNameEn" 
-            :label="$t('SystemBasicMgmt.userLabor.laborNameEn')"
+            :label="$t('systembasicmgmt.userLabor.laborNameEn')"
             align="left" 
             min-width="200" 
           />
           <el-table-column 
             prop="laborDescription" 
-            :label="$t('SystemBasicMgmt.userLabor.laborDescription')"
+            :label="$t('systembasicmgmt.userLabor.laborDescription')"
             align="left" 
             min-width="250" 
           />
@@ -102,7 +102,7 @@
     
     <el-dialog 
       v-model="dialogVisible"
-      :title="isEdit ? $t('SystemBasicMgmt.userLabor.editLabor') : $t('SystemBasicMgmt.userLabor.addLabor')"
+      :title="isEdit ? $t('systembasicmgmt.userLabor.editLabor') : $t('systembasicmgmt.userLabor.addLabor')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -122,26 +122,26 @@
           aria-label="员工职业编辑"
         >
           <div class="form-row">
-            <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborNameCn')" prop="laborNameCn">
+            <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameCn')" prop="laborNameCn">
               <el-input 
                 v-model="form.laborNameCn" 
-                :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCn')"
+                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameCn')"
                 style="width:100%" 
               />
             </el-form-item>
-            <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborNameEn')" prop="laborNameEn">
+            <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameEn')" prop="laborNameEn">
               <el-input
                 v-model="form.laborNameEn"
-                :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborNameEn')"
+                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameEn')"
                 style="width:100%" 
               />
             </el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('SystemBasicMgmt.userLabor.laborDescription')" prop="laborDescription">
+            <el-form-item :label="$t('systembasicmgmt.userLabor.laborDescription')" prop="laborDescription">
               <el-input 
                 v-model="form.laborDescription" 
-                :placeholder="$t('SystemBasicMgmt.userLabor.pleaseInputLaborDescription')"
+                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborDescription')"
                 style="width:100%" 
                 type="textarea" 
                 :rows="3" 
@@ -170,7 +170,7 @@ import {
   INSERT_USER_LABOR_API,
   UPDATE_USER_LABOR_API,
   DELETE_USER_LABOR_API
-} from '@/config/api/SystemBasicMgmt/System-BasicData/userlabor.js'
+} from '@/config/api/systembasicmgmt/System-BasicData/userlabor.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n
@@ -210,10 +210,10 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   laborNameCn: [
-    { required: true, message: () => t('SystemBasicMgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
   ],
   laborNameEn: [
-    { required: true, message: () => t('SystemBasicMgmt.userLabor.pleaseInputLaborNameEn'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameEn'), trigger: 'blur' }
   ]
 }
 
@@ -234,7 +234,7 @@ const getLaborList = async () => {
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
-        message: response.message || t('SystemBasicMgmt.userLabor.getFailed'),
+        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -244,7 +244,7 @@ const getLaborList = async () => {
   } catch (error) {
     console.error('获取职业列表失败:', error)
     ElMessage({
-      message: t('SystemBasicMgmt.userLabor.getFailed'),
+      message: t('systembasicmgmt.userLabor.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
@@ -323,7 +323,7 @@ const handleEdit = async (row) => {
       form.laborDescription = data.laborDescription
     } else {
       ElMessage({
-        message: response.message || t('SystemBasicMgmt.userLabor.getFailed'),
+        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -333,7 +333,7 @@ const handleEdit = async (row) => {
   } catch (error) {
     console.error('获取职业详情失败:', error)
     ElMessage({
-      message: t('SystemBasicMgmt.userLabor.getFailed'),
+      message: t('systembasicmgmt.userLabor.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
@@ -349,7 +349,7 @@ const handleEdit = async (row) => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('SystemBasicMgmt.userLabor.deleteConfirm'),
+      t('systembasicmgmt.userLabor.deleteConfirm'),
       t('common.warning'),
       {
         confirmButtonText: t('common.confirm'),
@@ -368,7 +368,7 @@ const handleDelete = async (row) => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || t('SystemBasicMgmt.userLabor.deleteSuccess'),
+        message: response.message || t('systembasicmgmt.userLabor.deleteSuccess'),
         type: 'success',
         plain: true,
         showClose: true
@@ -376,7 +376,7 @@ const handleDelete = async (row) => {
       getLaborList()
     } else {
       ElMessage({
-        message: response.message || t('SystemBasicMgmt.userLabor.operationFailed'),
+        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -386,7 +386,7 @@ const handleDelete = async (row) => {
     if (error !== 'cancel') {
       console.error('删除职业失败:', error)
       ElMessage({
-        message: t('SystemBasicMgmt.userLabor.operationFailed'),
+        message: t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -418,7 +418,7 @@ const handleSubmit = async () => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || (isEdit.value ? t('SystemBasicMgmt.userLabor.updateSuccess') : t('SystemBasicMgmt.userLabor.saveSuccess')),
+        message: response.message || (isEdit.value ? t('systembasicmgmt.userLabor.updateSuccess') : t('systembasicmgmt.userLabor.saveSuccess')),
         type: 'success',
         plain: true,
         showClose: true
@@ -427,7 +427,7 @@ const handleSubmit = async () => {
       getLaborList()
     } else {
       ElMessage({
-        message: response.message || t('SystemBasicMgmt.userLabor.operationFailed'),
+        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -437,7 +437,7 @@ const handleSubmit = async () => {
     if (error !== false) {
       console.error('提交表单失败:', error)
       ElMessage({
-        message: t('SystemBasicMgmt.userLabor.operationFailed'),
+        message: t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true

@@ -76,19 +76,19 @@ const constantRoutes = [
 ]
 
 // 定义模块路由 - 需要登录权限的业务模块路由
-const moduleRoutes = [
+const pmenuRoutes = [
   // 系统基础管理模块路由
   {
-    path: '/SystemBasicMgmt',
+    path: '/systembasicmgmt',
     component: Layout,
-    redirect: '/SystemBasicMgmt/index',
+    redirect: '/systembasicmgmt/index',
     children: [
       {
         path: 'index',
-        name: 'SystemBasicMgmtIndex',
-        component: () => import('../views/SystemBasicMgmt/index.vue'),
+        name: 'systembasicmgmtIndex',
+        component: () => import('../views/systembasicmgmt/index.vue'),
         meta: { 
-          title: 'route.SystemBasicMgmt', 
+          title: 'route.systembasicmgmt', 
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -96,9 +96,9 @@ const moduleRoutes = [
       },
       // 系统管理子模块 - 使用嵌套结构
       {
-        path: 'System-Mgmt',
+        path: 'system-mgmt',
         name: 'SystemMgmt',
-        redirect: '/SystemBasicMgmt/System-Mgmt',
+        redirect: '/systembasicmgmt/system-mgmt',
         meta: { 
           title: 'route.systemMgmt', 
           icon: 'Setting',
@@ -109,7 +109,7 @@ const moduleRoutes = [
           {
             path: 'role',
             name: 'SystemRole',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/role.vue'),
+            component: () => import('../views/systembasicmgmt/system-mgmt/role.vue'),
             meta: { 
               title: 'route.role', 
               icon: 'Avatar',
@@ -118,45 +118,34 @@ const moduleRoutes = [
             }
           },
           {
-            path: 'domain',
-            name: 'SystemDomain',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/domain.vue'),
+            path: 'module',
+            name: 'SystemModule',
+            component: () => import('../views/systembasicmgmt/system-mgmt/module.vue'),
             meta: { 
-              title: 'route.domain', 
+              title: 'route.module', 
               icon: 'Menu',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
           },
           {
-            path: 'module',
-            name: 'SystemModule',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/module.vue'),
+            path: 'pmenu',
+            name: 'SystemPMenu',
+            component: () => import('../views/systembasicmgmt/system-mgmt/pmenu.vue'),
             meta: { 
-              title: 'route.module', 
+              title: 'route.pmenu', 
               icon: 'Operation',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
           },
           {
-            path: 'program',
-            name: 'SystemProgram',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/program.vue'),
+            path: 'smenu',
+            name: 'SystemSMenu',
+            component: () => import('../views/systembasicmgmt/system-mgmt/smenu.vue'),
             meta: { 
-              title: 'route.program', 
+              title: 'route.smenu', 
               icon: 'Share',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'roledomain',
-            name: 'SystemRoleDomain',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/roledomain.vue'),
-            meta: { 
-              title: 'route.roleDomain', 
-              icon: 'MoreFilled',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -164,7 +153,7 @@ const moduleRoutes = [
           {
             path: 'rolemodule',
             name: 'SystemRoleModule',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/rolemodule.vue'),
+            component: () => import('../views/systembasicmgmt/system-mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
               icon: 'MoreFilled',
@@ -173,12 +162,126 @@ const moduleRoutes = [
             }
           },
           {
-            path: 'roleprogram',
-            name: 'SystemRoleProgram',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/roleprogram.vue'),
+            path: 'rolepmenu',
+            name: 'SystemRolePMenu',
+            component: () => import('../views/systembasicmgmt/system-mgmt/rolepmenu.vue'),
             meta: { 
-              title: 'route.roleProgram', 
+              title: 'route.rolePMenu', 
               icon: 'MoreFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'rolesmenu',
+            name: 'SystemRoleSMenu',
+            component: () => import('../views/systembasicmgmt/system-mgmt/rolesmenu.vue'),
+            meta: { 
+              title: 'route.roleSMenu', 
+              icon: 'MoreFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+
+        ]
+      },
+      // 基础数据管理子模块 - 使用嵌套结构
+      {
+        path: 'system-basicdata',
+        name: 'SystemBasicData',
+        redirect: '/systembasicmgmt/system-basicdata',
+        meta: { 
+          title: 'route.systemBasicData',
+          icon: 'List',
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
+        },
+        children: [
+          {
+            path: 'companyinfo',
+            name: 'SystemCompanyInfo',
+            component: () => import('../views/systembasicmgmt/system-basicdata/companyinfo.vue'),
+            meta: { 
+              title: 'route.companyInfo', 
+              icon: 'OfficeBuilding',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'departmentinfo',
+            name: 'SystemDepartmentInfo',
+            component: () => import('../views/systembasicmgmt/system-basicdata/departmentinfo.vue'),
+            meta: { 
+              title: 'route.departmentInfo', 
+              icon: 'School',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'departmentlevel',
+            name: 'SystemDepartmentLevel',
+            component: () => import('../views/systembasicmgmt/system-basicdata/departmentlevel.vue'),
+            meta: { 
+              title: 'route.departmentLevel', 
+              icon: 'CollectionTag',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userposition',
+            name: 'SystemUserPosition',
+            component: () => import('../views/systembasicmgmt/system-basicdata/userposition.vue'),
+            meta: { 
+              title: 'route.userPosition', 
+              icon: 'GoldMedal',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userlabor',
+            name: 'SystemUserLabor',
+            component: () => import('../views/systembasicmgmt/system-basicdata/userlabor.vue'),
+            meta: { 
+              title: 'route.userLabor', 
+              icon: 'Postcard',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userinfo',
+            name: 'SystemUserInfo',
+            component: () => import('../views/systembasicmgmt/system-basicdata/userinfo.vue'),
+            meta: { 
+              title: 'route.userInfo', 
+              icon: 'UserFilled',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'useragent',
+            name: 'SystemUseragent',
+            component: () => import('../views/systembasicmgmt/system-basicdata/useragent.vue'),
+            meta: { 
+              title: 'route.userAgent', 
+              icon: 'Handbag',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userparttime',
+            name: 'SystemUserPartTime',
+            component: () => import('../views/systembasicmgmt/system-basicdata/userparttime.vue'),
+            meta: { 
+              title: 'route.userPartTime', 
+              icon: 'ShoppingBag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -186,7 +289,7 @@ const moduleRoutes = [
           {
             path: 'personal',
             name: 'SystemPersonalInfo',
-            component: () => import('../views/SystemBasicMgmt/System-Mgmt/personal.vue'),
+            component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
             meta: { 
               title: 'route.personalInfo', 
               icon: 'User',
@@ -198,111 +301,9 @@ const moduleRoutes = [
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
-        path: 'System-BasicData',
-        name: 'SystemBasicData',
-        redirect: '/SystemBasicMgmt/System-BasicData',
-        meta: { 
-          title: 'route.systemBasicData',
-          icon: 'List',
-          [ROUTE_CONFIG.META.AUTH]: true,
-          noTag: true
-        },
-        children: [
-          {
-            path: 'companyinfo',
-            name: 'SystemCompanyInfo',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/companyinfo.vue'),
-            meta: { 
-              title: 'route.companyInfo', 
-              icon: 'OfficeBuilding',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'departmentinfo',
-            name: 'SystemDepartmentInfo',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/departmentinfo.vue'),
-            meta: { 
-              title: 'route.departmentInfo', 
-              icon: 'School',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'departmentlevel',
-            name: 'SystemDepartmentLevel',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/departmentlevel.vue'),
-            meta: { 
-              title: 'route.departmentLevel', 
-              icon: 'CollectionTag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userposition',
-            name: 'SystemUserPosition',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/userposition.vue'),
-            meta: { 
-              title: 'route.userPosition', 
-              icon: 'GoldMedal',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userlabor',
-            name: 'SystemUserLabor',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/userlabor.vue'),
-            meta: { 
-              title: 'route.userLabor', 
-              icon: 'Postcard',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userinfo',
-            name: 'SystemUserInfo',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/userinfo.vue'),
-            meta: { 
-              title: 'route.userInfo', 
-              icon: 'UserFilled',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'useragent',
-            name: 'SystemUseragent',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/useragent.vue'),
-            meta: { 
-              title: 'route.userAgent', 
-              icon: 'Handbag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userparttime',
-            name: 'SystemUserPartTime',
-            component: () => import('../views/SystemBasicMgmt/System-BasicData/userparttime.vue'),
-            meta: { 
-              title: 'route.userPartTime', 
-              icon: 'ShoppingBag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          }
-        ]
-      },
-      // 基础数据管理子模块 - 使用嵌套结构
-      {
-        path: 'System-Settings',
+        path: 'system-settings',
         name: 'SystemSettings',
-        redirect: '/SystemBasicMgmt/System-Settings',
+        redirect: '/systembasicmgmt/system-settings',
         meta: { 
           title: 'route.systemSettings',
           icon: 'Setting',
@@ -313,7 +314,7 @@ const moduleRoutes = [
           {
             path: 'dictionaryinfo',
             name: 'DictionaryInfo',
-            component: () => import('../views/SystemBasicMgmt/System-Settings/dictionaryinfo.vue'),
+            component: () => import('../views/systembasicmgmt/system-settings/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryInfo', 
               icon: 'Reading',
@@ -324,7 +325,7 @@ const moduleRoutes = [
           {
             path: 'currencyinfo',
             name: 'CurrencyInfo',
-            component: () => import('../views/SystemBasicMgmt/System-Settings/currencyinfo.vue'),
+            component: () => import('../views/systembasicmgmt/system-settings/currencyinfo.vue'),
             meta: { 
               title: 'route.currencyInfo', 
               icon: 'Money',
@@ -335,7 +336,7 @@ const moduleRoutes = [
           {
             path: 'exchangerateInfo',
             name: 'exchangerateInfo',
-            component: () => import('../views/SystemBasicMgmt/System-Settings/exchangerateInfo.vue'),
+            component: () => import('../views/systembasicmgmt/system-settings/exchangerateInfo.vue'),
             meta: { 
               title: 'route.exchangerateInfo', 
               icon: 'Switch',
@@ -346,7 +347,7 @@ const moduleRoutes = [
           {
             path: 'userLoginLog',
             name: 'userLoginLog',
-            component: () => import('../views/SystemBasicMgmt/System-Settings/userLoginLog.vue'),
+            component: () => import('../views/systembasicmgmt/system-settings/userLoginLog.vue'),
             meta: { 
               title: 'route.userLoginLog', 
               icon: 'Tickets',
@@ -364,7 +365,7 @@ const moduleRoutes = [
 // 创建路由实例，合并所有路由
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [...constantRoutes, ...moduleRoutes],
+  routes: [...constantRoutes, ...pmenuRoutes],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
@@ -381,8 +382,8 @@ router.beforeEach((to, from, next) => {
     if (!token) {
       // 清除本地数据
       localStorage.removeItem('username')
-      localStorage.removeItem('currentDomainId')
-      localStorage.removeItem('currentSystemName')
+      localStorage.removeItem('currentModuleId')
+      localStorage.removeItem('currentModuleName')
       localStorage.removeItem('currentSystemPath')
       
       // 重定向到登录页
@@ -396,7 +397,7 @@ router.beforeEach((to, from, next) => {
 })
 
 // 导出路由配置常量
-export { ROUTE_CONFIG, constantRoutes, moduleRoutes }
+export { ROUTE_CONFIG, constantRoutes, pmenuRoutes }
 
 // 导出路由实例
 export default router

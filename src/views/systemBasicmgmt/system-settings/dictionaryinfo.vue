@@ -4,10 +4,10 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
-              <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.filter.dicNameCn')">
+              <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicNameCn')">
                   <el-input v-model="filters.dicName"
                            style="width: 180px;"
-                           :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCn')"
+                           :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')"
                            clearable />
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -20,7 +20,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.dictionaryInfo.addDictionary') }}
+                      {{ $t('systembasicmgmt.dictionaryInfo.addDictionary') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -33,12 +33,12 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.dictionaryInfo.index')" width="70" align="center" fixed />
-                  <el-table-column prop="dicType" :label="$t('SystemBasicMgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
-                  <el-table-column prop="dicCode" :label="$t('SystemBasicMgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
-                  <el-table-column prop="dicNameCn" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCn')" align="left" min-width="230" />
-                  <el-table-column prop="dicNameEn" :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameEn')" align="left" min-width="230" />
-                  <el-table-column :label="$t('SystemBasicMgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.dictionaryInfo.index')" width="70" align="center" fixed />
+                  <el-table-column prop="dicType" :label="$t('systembasicmgmt.dictionaryInfo.dicType')" align="center" min-width="200"/>
+                  <el-table-column prop="dicCode" :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
+                  <el-table-column prop="dicNameCn" :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" align="left" min-width="230" />
+                  <el-table-column prop="dicNameEn" :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" align="left" min-width="230" />
+                  <el-table-column :label="$t('systembasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -72,23 +72,23 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="字典编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicType')" prop="dicType">
+                  <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicType')" prop="dicType">
                       <el-input v-model="editForm.dicType" 
                                style="width:100%" 
-                               :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicType')" />
+                               :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicCode')" prop="dicCode">
+                  <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
                       <el-input v-model.number="editForm.dicCode" 
                                type="number" 
                                style="width:100%" 
-                               :placeholder="$t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicCode')" />
+                               :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
+                  <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
 <el-input v-model="editForm.dicNameCn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
+                  <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
                       <el-input v-model="editForm.dicNameEn" style="width:100%" />
                   </el-form-item>
               </div>
@@ -112,7 +112,7 @@
     DELETE_DICTIONARY_API, 
     GET_DICTIONARY_ENTITY_API, 
     UPDATE_DICTIONARY_API 
-  } from '@/config/api/SystemBasicMgmt/System-Settings/dictionary'
+  } from '@/config/api/systembasicmgmt/System-Settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -160,21 +160,21 @@
   })
 
   // 对话框标题
-  const dialogTitle = ref(t('SystemBasicMgmt.dictionaryInfo.editDictionary'))
+  const dialogTitle = ref(t('systembasicmgmt.dictionaryInfo.editDictionary'))
 
   // 表单验证规则
   const formRules = reactive({
       dicType: [
-          { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseSelectDicType'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType'), trigger: 'change' }
       ],
       dicCode: [
-          { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
       ],
       dicNameCn: [
-{ required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
+{ required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
 ],
       dicNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
       ]
   })
 
@@ -220,7 +220,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.getFailed'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.getFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -305,7 +305,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.saveSuccess'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.saveSuccess'),
               type: 'success',
               plain: true,
               showClose: true
@@ -314,7 +314,7 @@
           fetchDictionaryPages()
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -332,7 +332,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.updateSuccess'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.updateSuccess'),
               type: 'success',
               plain: true,
               showClose: true
@@ -341,7 +341,7 @@
           fetchDictionaryPages()
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -359,14 +359,14 @@
 
       if (res && res.code === 200) {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.dictionaryInfo.deleteSuccess'),
+              message: res.message || t('systembasicmgmt.dictionaryInfo.deleteSuccess'),
               type: 'success',
               plain: true,
               showClose: true
           })
           fetchDictionaryPages()
       } else {
-          ElMessage.error(res.message || t('SystemBasicMgmt.dictionaryInfo.operationFailed'))
+          ElMessage.error(res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'))
       }
   }
 
@@ -377,7 +377,7 @@
       // 设置为新增模式
       isEditMode.value = false
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.dictionaryInfo.addDictionary')
+      dialogTitle.value = t('systembasicmgmt.dictionaryInfo.addDictionary')
       // 显示对话框
       dialogVisible.value = true
   }
@@ -391,7 +391,7 @@
       // 获取字典实体数据
       await fetchDictionaryEntity(row.dicId)
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.dictionaryInfo.editDictionary')
+      dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
       // 显示对话框
       dialogVisible.value = true
       
@@ -406,7 +406,7 @@
   // 处理删除操作
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.dictionaryInfo.deleteConfirm'),
+          t('systembasicmgmt.dictionaryInfo.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

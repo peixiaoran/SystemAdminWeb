@@ -40,20 +40,20 @@
     </div>
     
     <!-- 模块展示区域 -->
-    <div v-if="!loading" class="module-grid">
-      <div class="module-row">
-        <div v-for="module in modules" :key="module.domainId" class="module-col">
-          <div class="module-card" @click="enterModule(module)">
-            <div class="module-icon">
+    <div v-if="!loading" class="pmenu-grid">
+      <div class="pmenu-row">
+        <div v-for="pmenu in pmenues" :key="pmenu.moduleId" class="pmenu-col">
+          <div class="pmenu-card" @click="enterPMenu(pmenu)">
+            <div class="pmenu-icon">
               <el-icon :size="48">
-                <component :is="module.domainIcon || 'Setting'" />
+                <component :is="pmenu.moduleIcon || 'Setting'" />
               </el-icon>
             </div>
-            <div class="module-info">
-              <h2>{{ getModuleName(module) }}</h2>
-              <p>{{ getModuleRemarks(module) }}</p>
+            <div class="pmenu-info">
+              <h2>{{ getPMenuName(pmenu) }}</h2>
+              <p>{{ getPMenuRemarks(pmenu) }}</p>
             </div>
-            <div class="module-footer">
+            <div class="pmenu-footer">
               <el-button type="primary" size="small">
                 {{ $t('moduleSelect.enterModule') }}
               </el-button>
@@ -79,9 +79,9 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, Loading, User, Setting, ArrowRight } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { MODULE_API } from '@/config/api/domainmenu/menu'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
-import { useModuleStore } from '@/stores/module'
+import { usePMenuStore } from '@/stores/pmenu'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
@@ -90,9 +90,9 @@ const router = useRouter()
 const userStore = useUserStore()
 const username = computed(() => userStore.getDisplayName)
 const userAvatar = computed(() => userStore.avatar || '')
-const modules = ref([])
+const pmenues = ref([])
 const loading = ref(true)
-const moduleStore = useModuleStore()
+const pmenuStore = usePMenuStore()
 
 // 获取模块数据
 const fetchModules = async () => {
@@ -103,12 +103,12 @@ const fetchModules = async () => {
     const res = await post(MODULE_API.GET_MODULES)
     
     if (res && res.code === 200) {
-      modules.value = res.data || []
+      pmenues.value = res.data || []
       // 提取所有模块路径
-      const modulePaths = modules.value.map(module => ({
-        domainId: module.domainId,
-        domainName: module.domainName,
-        path: module.path
+      const pmenuPaths = pmenues.value.map(pmenu => ({
+        moduleId: pmenu.moduleId,
+      moduleName: pmenu.moduleName,
+        path: pmenu.path
       }))
     } else {
       ElMessage({
@@ -136,18 +136,18 @@ onMounted(() => {
 })
 
 // 多语言字段获取
-function getModuleName(module) {
-  if (!module) return ''
-  return locale.value === 'en-US' ? (module.domainNameEn || module.domainNameCn || module.domainName) : (module.domainNameCn || module.domainNameEn || module.domainName)
+function getPMenuName(pmenu) {
+  if (!pmenu) return ''
+  return locale.value === 'en-US' ? (pmenu.moduleNameEn || pmenu.moduleNameCn || pmenu.moduleName) : (pmenu.moduleNameCn || pmenu.moduleNameEn || pmenu.moduleName)
 }
-function getModuleRemarks(module) {
-  if (!module) return ''
-  return locale.value === 'en-US' ? (module.remarksEn || module.remarksCh || module.remarks) : (module.remarksCh || module.remarksEn || module.remarks)
+function getPMenuRemarks(pmenu) {
+  if (!pmenu) return ''
+  return locale.value === 'en-US' ? (pmenu.remarksEn || pmenu.remarksCh || pmenu.remarks) : (pmenu.remarksCh || pmenu.remarksEn || pmenu.remarks)
 }
 
 // 进入模块
-const enterModule = (module) => {
-  if (!module || !module.domainId || !module.path) {
+const enterPMenu = (pmenu) => {
+  if (!pmenu || !pmenu.moduleId || !pmenu.path) {
     ElMessage({
       message: t('moduleSelect.moduleIncomplete'),
       type: 'error',
@@ -158,16 +158,16 @@ const enterModule = (module) => {
   }
   
   // 获取模块标识符（用于构建路由路径）
-  const moduleIdentifier = module.path.split('/').filter(Boolean)[0] // 提取模块标识符
+  const pmenuIdentifier = pmenu.path.split('/').filter(Boolean)[0] // 提取一级菜单标识符
   
   // 使用新的模块存储来保存模块信息
-  moduleStore.setCurrentModule(
-    String(module.domainId),
-    getModuleName(module),
-    moduleIdentifier,
-    module.domainNameCn || '',
-    module.domainNameEn || ''
-  )
+  pmenuStore.setCurrentPMenu(
+          String(pmenu.moduleId),
+          getPMenuName(pmenu),
+          pmenuIdentifier,
+          pmenu.moduleNameCn || '',
+    pmenu.moduleNameEn || ''
+        )
   
   // 清空之前的标签记录
   try {
@@ -177,7 +177,7 @@ const enterModule = (module) => {
   }
   
   // 跳转到layout页面，然后由layout处理模块路由
-  router.push(`/${moduleIdentifier}`)
+  router.push(`/${pmenuIdentifier}`)
 }
 
 // 退出登录
@@ -274,7 +274,7 @@ const logout = async () => {
   font-size: 12px;
 }
 
-.module-grid {
+.pmenu-grid {
   max-width: 1440px;
   margin: 40px auto 0;
   padding: 20px;
@@ -285,7 +285,7 @@ const logout = async () => {
   z-index: 1;
 }
 
-.module-row {
+.pmenu-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
@@ -295,36 +295,36 @@ const logout = async () => {
 }
 
 @media (min-width: 1200px) {
-  .module-row {
+  .pmenu-row {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
-  .module-row {
+  .pmenu-row {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  .module-row {
+  .pmenu-row {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 767px) {
-  .module-row {
+  .pmenu-row {
     grid-template-columns: 1fr;
   }
 }
 
-.module-col {
+.pmenu-col {
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.module-card {
+.pmenu-card {
   width: 100%;
   max-width: 280px;
   height: 320px;
@@ -342,7 +342,7 @@ const logout = async () => {
 
 
 
-.module-icon {
+.pmenu-icon {
   height: 120px;
   display: flex;
   justify-content: center;
@@ -352,7 +352,7 @@ const logout = async () => {
   position: relative;
 }
 
-.module-icon::after {
+.pmenu-icon::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -362,7 +362,7 @@ const logout = async () => {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
-.module-info {
+.pmenu-info {
   flex: 1;
   padding: 24px 20px 16px 20px;
   background: #ffffff;
@@ -372,7 +372,7 @@ const logout = async () => {
   justify-content: space-between;
 }
 
-.module-info h2 {
+.pmenu-info h2 {
   font-size: 18px;
   margin: 0 0 12px 0;
   color: #303133;
@@ -383,7 +383,7 @@ const logout = async () => {
   white-space: nowrap;
 }
 
-.module-info p {
+.pmenu-info p {
   font-size: 13px;
   color: #909399;
   margin: 0;
@@ -397,7 +397,7 @@ const logout = async () => {
   word-wrap: break-word;
 }
 
-.module-footer {
+.pmenu-footer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -405,7 +405,7 @@ const logout = async () => {
   background: #ffffff;
 }
 
-.module-footer .el-button {
+.pmenu-footer .el-button {
   border-radius: 25px;
   padding: 12px 28px;
   font-size: 14px;
@@ -463,7 +463,7 @@ const logout = async () => {
 }
 
 /* 单个模块卡片宽度优化 */
-.single-module-card .module-card {
+.single-module-card .pmenu-card {
   max-width: 450px;
   min-width: 350px;
 }
@@ -484,40 +484,40 @@ const logout = async () => {
     margin: 0 auto;
   }
   
-  .module-grid {
+  .pmenu-grid {
     margin-top: 30px;
     padding: 15px;
   }
   
-  .module-card {
+  .pmenu-card {
     height: 300px;
   }
   
-  .module-icon {
+  .pmenu-icon {
     height: 100px;
   }
   
-  .module-info {
+  .pmenu-info {
     padding: 20px 16px 12px 16px;
   }
   
-  .module-info h2 {
+  .pmenu-info h2 {
     font-size: 16px;
     white-space: normal;
   }
   
-  .module-info p {
+  .pmenu-info p {
     font-size: 12px;
     height: 48px;
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
   
-  .module-footer {
+  .pmenu-footer {
     padding: 12px 16px 16px 16px;
   }
   
-  .module-footer .el-button {
+  .pmenu-footer .el-button {
     padding: 10px 20px;
     font-size: 13px;
     min-width: 100px;
@@ -533,29 +533,29 @@ const logout = async () => {
     padding: 10px 0;
   }
   
-  .module-grid {
+  .pmenu-grid {
     margin-top: 20px;
     padding: 10px;
   }
   
-  .module-card {
+  .pmenu-card {
     height: 280px;
   }
   
-  .module-icon {
+  .pmenu-icon {
     height: 90px;
   }
   
-  .module-info h2 {
+  .pmenu-info h2 {
     font-size: 15px;
   }
   
-  .module-info p {
+  .pmenu-info p {
     font-size: 11px;
     height: 42px;
   }
   
-  .module-footer .el-button {
+  .pmenu-footer .el-button {
     padding: 8px 16px;
     font-size: 12px;
     min-width: 90px;

@@ -45,5 +45,5 @@ export const GET_POSITION_DROPDOWN_API = {
 
 // 职业下拉框API
 export const GET_LABOR_DROPDOWN_API = {
-    GET_LABOR_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserPartTime/GetLabor'
+    GET_LABOR_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserPartTime/GetLaborDropDown'
 }

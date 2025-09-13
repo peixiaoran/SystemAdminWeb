@@ -1,108 +1,100 @@
 <template>
-    <div class="conventional-table-container">
-        <el-card class="conventional-card">
+  <div class="conventional-table-container">
+      <el-card class="conventional-card">
 
-            <!-- 过滤条件 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form">
-                <el-form-item :label="$t('SystemBasicMgmt.roleModule.role')">
-                    <el-select style="width:180px"
-                               v-model="filters.roleId"
-                               :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleModule.role')"
-                               @change="handleRoleChange">
-                        <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.roleModule.domain')">
-                    <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleModule.domain')" style="width:180px" @change="handleDomainChange">
-                        <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item class="form-button-group">
-                    <el-button type="primary" @click="handleSearch" plain>
-                        {{ $t('common.search') }}
-                    </el-button>
-                </el-form-item>
-                <el-form-item class="form-right-button">
-                    <el-button type="primary" @click="handleConfirm">
-                        {{ $t('SystemBasicMgmt.updateBindings') }}
-                    </el-button>
-                </el-form-item>
-            </el-form>
+          <!-- 过滤条件 -->
+          <el-form :inline="true" :model="filters" class="conventional-filter-form">
+                             <el-form-item :label="$t('systembasicmgmt.roleModule.role')">
+                  <el-select style="width:180px" 
+                             v-model="filters.roleId"
+                             :placeholder="$t('systembasicmgmt.selectPlaceholder')" 
+                             @change="handleRoleChange">
+                      <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
+                  </el-select>
+              </el-form-item>
+              <el-form-item class="form-button-group">
+                  <el-button type="primary" @click="handleSearch" plain>
+                      {{ $t('common.search') }}
+                  </el-button>
+              </el-form-item>
+              <el-form-item class="form-right-button">
+                  <el-button type="primary" @click="handleConfirm">
+                      {{ $t('systembasicmgmt.updateBindings') }}
+                  </el-button>
+              </el-form-item>
+          </el-form>
 
-            <!-- 表格数据 -->
-            <div class="table-container">
-                <el-table :data="roleModuleList"
-                          style="width: 100%"
-                          border
-                          stripe
-                          max-height="calc(100vh - 240px)"
-                          :header-cell-style="{ background: '#f5f7fa' }"
-                          v-loading="loading"
-                          class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
-                    <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.roleModule.role')" align="left" min-width="180" />
-                    <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.roleModule.module')" align="left" min-width="180" />
-                    <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.roleModule.isBinding')" align="center" min-width="90">
-                        <template #default="scope">
-                            <div class="checkbox-wrapper">
-                                <el-checkbox v-model="scope.row.isChecked" />
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="remark" :label="$t('SystemBasicMgmt.remark')" min-width="150" />
-                </el-table>
-            </div>
-            <!-- 分页 -->
-            <div class="pagination-wrapper">
-                <el-pagination v-model:current-page="pagination.pageIndex"
-                               v-model:page-size="pagination.pageSize"
-                               :page-sizes="[10, 20, 50, 100]"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.totalCount"
-                               @size-change="handleSizeChange"
-                               @current-change="handlePageChange" />
-            </div>
-        </el-card>
-    </div>
+          <!-- 表格数据 -->
+          <div class="table-container">
+              <el-table :data="roleModuleList"
+                        border
+                        stripe
+                        :header-cell-style="{ background: '#f5f7fa' }"
+                        v-loading="loading"
+                        class="conventional-table">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+                                     <el-table-column prop="roleName" :label="$t('systembasicmgmt.roleModule.role')" align="left" min-width="180" />
+                  <el-table-column prop="moduleName" :label="$t('systembasicmgmt.roleModule.module')" align="left" min-width="180" />
+                  <el-table-column prop="isChecked" :label="$t('systembasicmgmt.roleModule.isBinding')" align="center" min-width="90">
+                      <template #default="scope">
+                          <div class="checkbox-wrapper">
+                              <el-checkbox v-model="scope.row.isChecked" />
+                          </div>
+                      </template>
+                  </el-table-column>
+                  <el-table-column prop="remark" :label="$t('systembasicmgmt.remark')" min-width="150" />
+                  <el-table-column :label="$t('systembasicmgmt.roleModule.operation')" align="center" width="120" fixed="right">
+                      <template #default="scope">
+                          <!-- Operation buttons can be added here -->
+                      </template>
+                  </el-table-column>
+              </el-table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="pagination-wrapper">
+              <el-pagination v-model:current-page="pagination.pageIndex"
+                             v-model:page-size="pagination.pageSize"
+                             :page-sizes="[10, 20, 50, 100]"
+                             layout="total, sizes, prev, pager, next, jumper"
+                             :total="pagination.totalCount"
+                             @size-change="handleSizeChange"
+                             @current-change="handlePageChange" />
+          </div>
+      </el-card>
+  </div>
 </template>
 
 <script setup>
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { GET_ROLE_MODULE_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_MODULE_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/rolemodule'
   import { useI18n } from 'vue-i18n'
-  import {
-      GET_ROLE_MODULE_API,
-      GET_ROLE_DROPDOWN_API,
-      GET_DOMAIN_DROPDOWN_API,
-      UPDATE_ROLE_MODULE_API
-  } from '@/config/api/SystemBasicMgmt/System-Mgmt/rolemodule'
 
+  // 使用i18n
   const { t } = useI18n()
 
   // 角色模块数据
   const roleModuleList = ref([])
   const roleOptions = ref([])
-  const domainOptions = ref([])
   const loading = ref(false)
 
   // 过滤条件
   const filters = reactive({
-      roleId: '',
-      domainId: ''
+      roleId: ''
   })
 
-  // 添加分页信息
+  // 分页信息 - 修复缺失的分页配置
   const pagination = reactive({
       pageIndex: 1,
       pageSize: 10,
       totalCount: 0
   })
 
-  // 组件挂载后获取角色和网域数据
+  // 组件挂载后获取角色数据
   onMounted(() => {
       fetchRoleDropdown()
-      fetchDomainDropdown()
   })
 
   // 获取角色下拉列表
@@ -136,45 +128,13 @@
       }
   }
 
-  // 获取网域下拉列表
-  const fetchDomainDropdown = async () => {
-      try {
-          const res = await post(GET_DOMAIN_DROPDOWN_API.GET_DOMAIN_DROPDOWN)
-          if (res && res.code === 200) {
-              domainOptions.value = res.data || []
-              if (domainOptions.value.length > 0) {
-                  const firstEnabledDomain = domainOptions.value.find(item => !item.disabled)
-                  if (firstEnabledDomain) {
-                      filters.domainId = firstEnabledDomain.domainId
-                      fetchRoleModuleList()
-                  }
-              }
-          } else {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
-      } catch (error) {
-          ElMessage({
-              message: error.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
-      }
-  }
-
   // 获取角色模块列表数据
   const fetchRoleModuleList = async () => {
-      if (!filters.roleId || !filters.domainId) return
+      if (!filters.roleId) return
 
       loading.value = true
       const params = {
-          roleId: filters.roleId,
-          domainId: filters.domainId
+          roleId: filters.roleId
       }
 
       try {
@@ -208,11 +168,16 @@
       fetchRoleModuleList()
   }
 
+  // 处理角色变化事件
+  const handleRoleChange = () => {
+      fetchRoleModuleList()
+  }
+
   // 处理确认操作
   const handleConfirm = async () => {
-      if (!filters.roleId || !filters.domainId) {
+      if (!filters.roleId) {
           ElMessage({
-              message: t('SystemBasicMgmt.roleModule.pleaseSelectRole') + '和' + t('SystemBasicMgmt.roleModule.pleaseSelectDomain'),
+              message: t('systembasicmgmt.roleModule.pleaseSelectRole'),
               type: 'warning',
               plain: true,
               showClose: true
@@ -222,7 +187,7 @@
 
       try {
           await ElMessageBox.confirm(
-              t('SystemBasicMgmt.roleModule.confirmUpdate'),
+              t('systembasicmgmt.roleModule.confirmUpdate'),
               t('common.confirm'),
               {
                   confirmButtonText: t('common.confirm'),
@@ -233,8 +198,7 @@
 
           const roleModuleUpserts = roleModuleList.value.map(item => ({
               roleId: item.roleId,
-              menuId: item.menuId,
-              domainId: item.domainId,
+              moduleId: item.moduleId,
               isChecked: item.isChecked
           }))
 
@@ -244,7 +208,7 @@
 
           if (res && res.code === 200) {
               ElMessage({
-                  message: t('SystemBasicMgmt.roleModule.updateBindingsSuccess'),
+                  message: t('systembasicmgmt.roleModule.updateBindingsSuccess'),
                   type: 'success',
                   plain: true,
                   showClose: true
@@ -271,14 +235,9 @@
       }
   }
 
-  // 处理角色变化
-  const handleRoleChange = () => {
-      fetchRoleModuleList()
-  }
-
-  // 处理网域变化
-  const handleDomainChange = () => {
-      fetchRoleModuleList()
+  // 处理标签点击事件
+  const handleTagClick = (row) => {
+      row.isChecked = !row.isChecked
   }
 
   // 处理缺失的分页事件处理
@@ -294,6 +253,6 @@
 </script>
 
 <style scoped>
-    @import '@/assets/styles/conventionalTablePage.css';
+  @import '@/assets/styles/conventionalTablePage.css';
 </style>
 

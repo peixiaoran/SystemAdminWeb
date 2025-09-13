@@ -4,22 +4,22 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form">
-              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.role')">
+              <el-form-item :label="$t('systembasicmgmt.roleSMenu.role')">
                   <el-select style="width:180px"
                              v-model="filters.roleId"
-                             :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.role')"
+                             :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.roleSMenu.role')"
                              @change="handleRoleChange">
                       <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.domain')">
-                  <el-select v-model="filters.domainId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.domain')" style="width:180px" @change="handleDomainChange">
-                      <el-option v-for="item in domainOptions" :key="item.domainId" :label="item.domainName" :value="item.domainId" :disabled="item.disabled" />
+              <el-form-item :label="$t('systembasicmgmt.roleSMenu.module')">
+                  <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.roleSMenu.module')" style="width:180px" @change="handleModuleChange">
+                      <el-option v-for="item in moduleOptions" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.roleProgram.module')">
-                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('SystemBasicMgmt.selectPlaceholder') + $t('SystemBasicMgmt.roleProgram.module')" style="width:180px" @change="handleModuleChange">
-                      <el-option v-for="item in moduleOptions" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
+              <el-form-item :label="$t('systembasicmgmt.roleSMenu.pmenu')">
+                  <el-select v-model="filters.parmentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.roleSMenu.pmenu')" style="width:180px" @change="handlePMenuChange">
+                      <el-option v-for="item in pmenuOptions" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item class="form-button-group">
@@ -29,30 +29,30 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleConfirm">
-                      {{ $t('SystemBasicMgmt.updateBindings') }}
+                      {{ $t('systembasicmgmt.updateBindings') }}
                   </el-button>
               </el-form-item>
           </el-form>
 
           <!-- 表格数据 -->
           <div class="table-container">
-              <el-table :data="roleProgramList"
+              <el-table :data="roleSMenuList"
                         border
                         stripe
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="roleName" :label="$t('SystemBasicMgmt.roleProgram.role')" align="left" min-width="180" />
-                  <el-table-column prop="menuName" :label="$t('SystemBasicMgmt.roleProgram.program')" align="left" min-width="180" />
-                  <el-table-column prop="isChecked" :label="$t('SystemBasicMgmt.roleProgram.isBinding')" align="center" min-width="90">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+                  <el-table-column prop="roleName" :label="$t('systembasicmgmt.roleSMenu.role')" align="left" min-width="180" />
+                  <el-table-column prop="menuName" :label="$t('systembasicmgmt.roleSMenu.program')" align="left" min-width="180" />
+                  <el-table-column prop="isChecked" :label="$t('systembasicmgmt.roleSMenu.isBinding')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="checkbox-wrapper">
                               <el-checkbox v-model="scope.row.isChecked" />
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="remark" :label="$t('SystemBasicMgmt.remark')" min-width="150" />
+                  <el-table-column prop="remark" :label="$t('systembasicmgmt.remark')" min-width="150" />
               </el-table>
           </div>
 
@@ -76,26 +76,26 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import {
-      GET_ROLE_PROGRAM_API,
+      GET_ROLE_SMENU_API,
       GET_ROLE_DROPDOWN_API,
-      GET_DOMAIN_DROPDOWN_API,
       GET_MODULE_DROPDOWN_API,
-      UPDATE_ROLE_PROGRAM_API
-  } from '@/config/api/SystemBasicMgmt/System-Mgmt/roleprogram'
+      GET_PMENU_DROPDOWN_API,
+      UPDATE_ROLE_SMENU_API
+  } from '@/config/api/SystemBasicMgmt/System-Mgmt/rolesmenu'
 
   const { t } = useI18n()
 
   // 角色程序数据
-  const roleProgramList = ref([])
+  const roleSMenuList = ref([])
   const roleOptions = ref([])
-  const domainOptions = ref([])
   const moduleOptions = ref([])
+  const pmenuOptions = ref([])
   const loading = ref(false)
 
   // 过滤条件
   const filters = reactive({
       roleId: '',
-      domainId: '',
+      moduleId: '',
       parmentMenuId: ''
   })
 
@@ -106,10 +106,10 @@
       totalCount: 0
   })
 
-  // 组件挂载后获取角色和网域数据
+  // 组件挂载后获取角色和模块数据
   onMounted(() => {
       fetchRoleDropdown()
-      fetchDomainDropdown()
+      fetchModuleDropdown()
   })
 
   // 获取角色下拉列表
@@ -122,38 +122,7 @@
                   const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
                   if (firstEnabledRole) {
                       filters.roleId = firstEnabledRole.roleId
-                      fetchRoleProgramList()
-                  }
-              }
-          } else {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
-      } catch (error) {
-          ElMessage({
-              message: error.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
-      }
-  }
-
-  // 获取网域下拉列表
-  const fetchDomainDropdown = async () => {
-      try {
-          const res = await post(GET_DOMAIN_DROPDOWN_API.GET_DOMAIN_DROPDOWN)
-          if (res && res.code === 200) {
-              domainOptions.value = res.data || []
-              if (domainOptions.value.length > 0) {
-                  const firstEnabledDomain = domainOptions.value.find(item => !item.disabled)
-                  if (firstEnabledDomain) {
-                      filters.domainId = firstEnabledDomain.domainId
-                      fetchModuleDropdown()
+                      fetchRoleSMenuList()
                   }
               }
           } else {
@@ -175,32 +144,51 @@
   }
 
   // 获取模块下拉列表
-  const fetchModuleDropdown = async () => {
-      if (!filters.domainId) {
-          moduleOptions.value = []
-          filters.parmentMenuId = ''
-          return
-      }
+    const fetchModuleDropdown = async () => {
+        try {
+            const res = await post(GET_MODULE_DROPDOWN_API.GET_MODULE_DROPDOWN)
+            if (res && res.code === 200) {
+                moduleOptions.value = res.data || []
+                if (moduleOptions.value.length > 0) {
+                    const firstEnabledModule = moduleOptions.value.find(item => !item.disabled)
+                    if (firstEnabledModule) {
+                        filters.moduleId = firstEnabledModule.moduleId
+                        fetchPMenuDropdown()
+                    }
+                }
+            } else {
+                ElMessage({
+                    message: res.message,
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
+            }
+        } catch (error) {
+            ElMessage({
+                message: error.message,
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        }
+    }
 
+  // 获取一级菜单下拉列表
+  const fetchPMenuDropdown = async () => {
       try {
           const params = {
-              DomainId: filters.domainId
+              moduleId: filters.moduleId
           }
-          const res = await post(GET_MODULE_DROPDOWN_API.GET_MODULE_DROPDOWN, params)
+          const res = await post(GET_PMENU_DROPDOWN_API.GET_PMENU_DROPDOWN, params)
           if (res && res.code === 200) {
-              moduleOptions.value = res.data || []
-              if (moduleOptions.value.length > 0) {
-                  const firstEnabledModule = moduleOptions.value.find(item => !item.disabled)
-                  if (firstEnabledModule) {
-                      filters.parmentMenuId = firstEnabledModule.menuId
-                      fetchRoleProgramList()
-                  } else {
-                      filters.parmentMenuId = ''
-                      roleProgramList.value = []
+              pmenuOptions.value = res.data || []
+              if (pmenuOptions.value.length > 0) {
+                  const firstEnabledPMenu = pmenuOptions.value.find(item => !item.disabled)
+                  if (firstEnabledPMenu) {
+                      filters.parmentMenuId = firstEnabledPMenu.menuId
+                      fetchRoleSMenuList()
                   }
-              } else {
-                  filters.parmentMenuId = ''
-                  roleProgramList.value = []
               }
           } else {
               ElMessage({
@@ -221,21 +209,21 @@
   }
 
   // 获取角色程序列表数据
-  const fetchRoleProgramList = async () => {
+  const fetchRoleSMenuList = async () => {
 
-      if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) return
+      if (!filters.roleId || !filters.moduleId || !filters.parmentMenuId) return
 
       loading.value = true
       const params = {
           roleId: filters.roleId,
-          domainId: filters.domainId,
+          moduleId: filters.moduleId,
           parmentMenuId: filters.parmentMenuId
       }
 
       try {
-          const res = await post(GET_ROLE_PROGRAM_API.GET_ROLE_PROGRAM, params)
+          const res = await post(GET_ROLE_SMENU_API.GET_ROLE_SMENU, params)
           if (res && res.code === 200) {
-              roleProgramList.value = res.data || []
+              roleSMenuList.value = res.data || []
               // 设置总记录数
               pagination.totalCount = res.data?.length || 0
           } else {
@@ -260,16 +248,16 @@
 
   // 处理搜索事件
   const handleSearch = () => {
-      fetchRoleProgramList()
+      fetchRoleSMenuList()
   }
 
   // 处理确认操作
   const handleConfirm = async () => {
-      if (!filters.roleId || !filters.domainId || !filters.parmentMenuId) {
+      if (!filters.roleId || !filters.moduleId || !filters.parmentMenuId) {
           ElMessage({
-              message: t('SystemBasicMgmt.roleProgram.pleaseSelectRole') + '和' +
-                  t('SystemBasicMgmt.roleProgram.pleaseSelectDomain') + '和' +
-                  t('SystemBasicMgmt.roleProgram.pleaseSelectModule'),
+              message: t('systembasicmgmt.roleSMenu.pleaseSelectRole') + '、' +
+                  t('systembasicmgmt.roleSMenu.module') + '和' +
+                  t('systembasicmgmt.roleSMenu.pmenu'),
               type: 'warning',
               plain: true,
               showClose: true
@@ -279,7 +267,7 @@
 
       try {
           await ElMessageBox.confirm(
-              t('SystemBasicMgmt.roleProgram.confirmUpdate'),
+              t('systembasicmgmt.roleSMenu.confirmUpdate'),
               t('common.confirm'),
               {
                   confirmButtonText: t('common.confirm'),
@@ -288,26 +276,25 @@
               }
           )
 
-          const roleProgramUpserts = roleProgramList.value.map(item => ({
+          const roleSMenuUpserts = roleSMenuList.value.map(item => ({
               roleId: item.roleId,
               programId: item.programId,
-              domainId: item.domainId,
               menuId: item.menuId,
               isChecked: item.isChecked
           }))
 
-          const res = await post(UPDATE_ROLE_PROGRAM_API.UPDATE_ROLE_PROGRAM, {
-              roleProgramUpserts
+          const res = await post(UPDATE_ROLE_SMENU_API.UPDATE_ROLE_SMENU, {
+              roleSMenuUpserts
           })
 
           if (res && res.code === 200) {
               ElMessage({
-                  message: t('SystemBasicMgmt.roleProgram.updateBindingsSuccess'),
+                  message: t('systembasicmgmt.roleSMenu.updateBindingsSuccess'),
                   type: 'success',
                   plain: true,
                   showClose: true
               })
-              fetchRoleProgramList()
+              fetchRoleSMenuList()
           } else {
               ElMessage({
                   message: res.message,
@@ -331,34 +318,36 @@
 
   // 处理角色变化
   const handleRoleChange = () => {
-      fetchRoleProgramList()
-  }
+        fetchRoleSMenuList()
+    }
 
-  // 处理网域变化
-  const handleDomainChange = () => {
-      moduleOptions.value = []
-      filters.parmentMenuId = ''
-      if (filters.domainId) {
-          fetchModuleDropdown()
-      } else {
-          roleProgramList.value = []
-      }
-  }
+    // 处理模块变化
+    const handleModuleChange = () => {
+        pmenuOptions.value = []
+        filters.parmentMenuId = ''
+        if (filters.moduleId) {
+            fetchPMenuDropdown()
+        } else {
+            roleSMenuList.value = []
+        }
+    }
 
-  // 处理模块变化
-  const handleModuleChange = () => {
-      fetchRoleProgramList()
-  }
+    // 处理一级菜单变化
+    const handlePMenuChange = () => {
+        fetchRoleSMenuList()
+    }
+
+
 
   // 处理缺失的分页事件处理
   const handleSizeChange = (size) => {
       pagination.pageSize = size
-      fetchRoleProgramList()
+      fetchRoleSMenuList()
   }
 
   const handlePageChange = (page) => {
       pagination.pageIndex = page
-      fetchRoleProgramList()
+      fetchRoleSMenuList()
   }
 </script>
 

@@ -17,37 +17,27 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 模块分页API
+// 网域实体API
 export const GET_MODULE_ENTITY_API = {
-    GET_MODULE_ENTITY: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetSysModuleEntity'
+    GET_MODULE_ENTITY: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetModuleEntity'
 }
 
 // 模块分页API
 export const GET_MODULE_PAGES_API = {
-  GET_MODULE_PAGES: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetSysModulePage'
+  GET_MODULE_PAGES: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetModulePage'
 }
 
 // 模块新增API
 export const INSERT_MODULE_API = {
-  INSERT_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/InsertSysModule'
+  INSERT_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/InsertModule'
 }
 
 // 模块删除API
 export const DELETE_MODULE_API = {
-  DELETE_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/DeleteSysModule'
+  DELETE_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/DeleteModule'
 }
 
-// 网域下拉框
-export const GET_DOMAIN_DROP_API = {
-  GET_DOMAIN_TYPE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetDomainDropDown'
-}
-
-// 模块更新API
+// 网域更新API
 export const UPDATE_MODULE_API = {
-  UPDATE_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/UpdateSysModule'
-}
-
-// 菜单类型下拉框
-export const GET_MENU_TYPE_API = {
-  GET_MENU_TYPE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/GetMenuType'
+  UPDATE_MODULE: 'SystemBasicMgmt/SystemMgmt/ModuleInfo/UpdateModule'
 }

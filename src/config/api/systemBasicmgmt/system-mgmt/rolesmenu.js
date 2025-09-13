@@ -17,27 +17,27 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 更新角色程序分页API
-export const UPDATE_ROLE_PROGRAM_API = {
-  UPDATE_ROLE_PROGRAM: 'SystemBasicMgmt/SystemMgmt/RoleProgram/UpdateRoleProgram'
+// 更新角色二级菜单分页API
+export const UPDATE_ROLE_SMENU_API = {
+  UPDATE_ROLE_SMENU: 'SystemBasicMgmt/SystemMgmt/RoleSMenu/UpdateRoleSMenu'
 }
 
-// 获取角色程序列表API
-export const GET_ROLE_PROGRAM_API = {
-  GET_ROLE_PROGRAM: 'SystemBasicMgmt/SystemMgmt/RoleProgram/GetRoleProgramList'
+// 获取角色二级菜单列表API
+export const GET_ROLE_SMENU_API = {
+  GET_ROLE_SMENU: 'SystemBasicMgmt/SystemMgmt/RoleSMenu/GetRoleSMenuList'
 }
 
 // 获取角色下拉列表API
 export const GET_ROLE_DROPDOWN_API = {
-    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleProgram/GetRoleDropDown'
-}
-
-// 获取网域下拉列表API
-export const GET_DOMAIN_DROPDOWN_API = {
-    GET_DOMAIN_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleProgram/GetDomainDropDown'
+    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleSMenu/GetRoleDropDown'
 }
 
 // 获取模块下拉列表API
 export const GET_MODULE_DROPDOWN_API = {
-    GET_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleProgram/GetModuleDropDown'
+    GET_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleSMenu/GetModuleDropDown'
+}
+
+// 获取一级菜单下拉列表API
+export const GET_PMENU_DROPDOWN_API = {
+    GET_PMENU_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleSMenu/GetPMenuDropDown'
 }

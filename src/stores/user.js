@@ -73,8 +73,8 @@ export const useUserStore = defineStore('user', {
           localStorage.removeItem('userNameCn')
           localStorage.removeItem('userNameEn')
           localStorage.removeItem('loginNo')
-          localStorage.removeItem('currentDomainId')
-          localStorage.removeItem('currentSystemName')
+          localStorage.removeItem('currentModuleId')
+          localStorage.removeItem('currentModuleName')
           localStorage.removeItem('currentSystemPath')
           
           // 重置状态

@@ -3,15 +3,15 @@
         <el-card class="conventional-card">
             <!-- 搜索表单 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
-                <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.filter.departmentCode')">
+                <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentCode')">
                     <el-input style="width: 180px;"
                               v-model="filters.departmentCode"
-                              :placeholder="$t('SystemBasicMgmt.departmentInfo.pleaseInputCode')" />
+                              :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.filter.departmentName')">
+                <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentName')">
                     <el-input style="width: 180px;"
                               v-model="filters.departmentName"
-                              :placeholder="$t('SystemBasicMgmt.departmentInfo.pleaseInputName')" />
+                              :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputName')" />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -23,7 +23,7 @@
                 </el-form-item>
                 <el-form-item class="form-right-button">
                     <el-button type="primary" @click="handleAdd">
-                        {{ $t('SystemBasicMgmt.departmentInfo.addDepartment') }}
+                        {{ $t('systembasicmgmt.departmentInfo.addDepartment') }}
                     </el-button>
                 </el-form-item>
             </el-form>
@@ -39,26 +39,26 @@
                           row-key="departmentId"
                           :default-expand-all="true"
                           :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
-                        <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentInfo.index')" width="70" align="center" fixed />
-                        <el-table-column prop="departmentCode" :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
-                        <el-table-column prop="departmentNameCn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
-                        <el-table-column prop="departmentNameEn" :label="$t('SystemBasicMgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
-                        <el-table-column prop="departmentLevelName" :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-                        <el-table-column prop="isEnabled" :label="$t('SystemBasicMgmt.departmentInfo.isEnabled')" align="center" min-width="110">
+                        <el-table-column type="index" :label="$t('systembasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
+                        <el-table-column prop="departmentCode" :label="$t('systembasicmgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
+                        <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
+                        <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
+                        <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
+                        <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" min-width="110">
                             <template #default="scope">
                                 <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
-                                    {{ scope.row.isEnabled === 1 ? $t('SystemBasicMgmt.departmentInfo.active') : $t('SystemBasicMgmt.departmentInfo.inactive') }}
+                                    {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.departmentInfo.active') : $t('systembasicmgmt.departmentInfo.inactive') }}
                                 </el-tag>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="landline" :label="$t('SystemBasicMgmt.departmentInfo.landline')" align="center" min-width="170" />
-                        <el-table-column prop="email" :label="$t('SystemBasicMgmt.departmentInfo.email')" align="left" min-width="230" />
+                        <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
+                        <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="230" />
                         
-                        <el-table-column prop="description" :label="$t('SystemBasicMgmt.departmentInfo.description')" align="left" min-width="230" />
-                        <el-table-column :label="$t('SystemBasicMgmt.departmentInfo.operation')" min-width="300" fixed="right" align="center">
+                        <el-table-column prop="description" :label="$t('systembasicmgmt.departmentInfo.description')" align="left" min-width="230" />
+                        <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="300" fixed="right" align="center">
                             <template #default="scope">
                                 <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                                <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.departmentInfo.addChild') }}</el-button>
+                                <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systembasicmgmt.departmentInfo.addChild') }}</el-button>
                                 <el-button size="small"
                                         type="danger"
                                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
@@ -79,42 +79,42 @@
                    @close="handleDialogClose">
             <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="部门编辑表单">
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.departmentCode')" prop="departmentCode">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
                         <el-input v-model="editForm.departmentCode" style="width:100%" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.sortOrder')" prop="sortOrder">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
                         <el-input-number v-model="editForm.sortOrder" :min="1" style="width:60%" />
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
                         <el-input v-model="editForm.departmentNameCn" style="width:100%" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
                         <el-input v-model="editForm.departmentNameEn" style="width:100%" />
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.landline')" prop="landline">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.landline')" prop="landline">
                         <el-input v-model="editForm.landline" style="width:100%" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.email')" prop="email">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.email')" prop="email">
                         <el-input v-model="editForm.email" style="width:100%" />
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.departmentLevelId')" prop="departmentLevelId">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevelId')" prop="departmentLevelId">
                         <el-select v-model="editForm.departmentLevelId" 
                                    style="width:100%" 
                                    clearable
-                                   :placeholder="$t('SystemBasicMgmt.departmentInfo.pleaseSelectDepartmentLevel')">
+                                   :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
                             <el-option v-for="item in departmentLevelList"
                                        :key="`dept-level-${item.departmentLevelId}`" 
                                        :label="item.departmentLevelName" 
                                        :value="item.departmentLevelId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.isEnabled')">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.isEnabled')">
                         <el-switch v-model="editForm.isEnabled" 
                                    :active-value="1"
                                    :inactive-value="0"
@@ -125,20 +125,16 @@
                     </el-form-item>
                 </div>
                 <div class="form-row full-width">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.address')" prop="address">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.address')" prop="address">
                         <el-input v-model="editForm.address" style="width:100%" />
                     </el-form-item>
                 </div>
                 <div class="form-row full-width">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.description')">
+                    <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')">
                         <el-input v-model="editForm.description" style="width:100%" type="textarea" :rows="3" />
                     </el-form-item>
                 </div>
-                <div class="form-row full-width">
-                    <el-form-item :label="$t('SystemBasicMgmt.departmentInfo.remark')">
-                        <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="2" />
-                    </el-form-item>
-                </div>
+
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
@@ -160,7 +156,7 @@
         DELETE_DEPARTMENT_API, 
         UPDATE_DEPARTMENT_API,
         GET_DEPARTMENTLEVEL_DROPDOWN_API 
-    } from '@/config/api/SystemBasicMgmt/System-BasicData/department'
+    } from '@/config/api/systembasicmgmt/System-BasicData/department'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -199,35 +195,34 @@
         landline: '',
         email: '',
         address: '',
-        isEnabled: 1,
-        remark: ''
+        isEnabled: 1
     })
 
     // 表单验证规则
     const formRules = reactive({
         departmentCode: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
         ],
         departmentNameCn: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputNameCn'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputNameCn'), trigger: 'blur' }
         ],
         departmentNameEn: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
         ],
         sortOrder: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputSortOrder'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputSortOrder'), trigger: 'blur' }
         ],
         landline: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputLandline'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputLandline'), trigger: 'blur' }
         ],
         email: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputEmail'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputEmail'), trigger: 'blur' }
         ],
         departmentLevelId: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseSelectDepartmentLevel'), trigger: 'change' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel'), trigger: 'change' }
         ],
         address: [
-            { required: true, message: () => t('SystemBasicMgmt.departmentInfo.pleaseInputAddress'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputAddress'), trigger: 'blur' }
         ]
     })
 
@@ -280,11 +275,10 @@
             editForm.email = res.data.email
             editForm.address = res.data.address
             editForm.isEnabled = res.data.isEnabled
-            editForm.remark = res.data.remark
         }
         else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.getFailed'),
+                message: res.message || t('systembasicmgmt.departmentInfo.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -306,7 +300,7 @@
             departmentList.value = res.data || []
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.getFailed'),
+                message: res.message || t('systembasicmgmt.departmentInfo.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -355,8 +349,7 @@
             landline: '',
             email: '',
             address: '',
-            isEnabled: 1,
-            remark: ''
+            isEnabled: 1
         })
         
         // 重置完成后再次清除验证状态
@@ -384,7 +377,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.saveSuccess'),
+                message: res.message || t('systembasicmgmt.departmentInfo.saveSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -393,7 +386,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -412,7 +405,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.updateSuccess'),
+                message: res.message || t('systembasicmgmt.departmentInfo.updateSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -421,7 +414,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -439,7 +432,7 @@
 
         if (res && res.code === 200) {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.deleteSuccess'),
+                message: res.message || t('systembasicmgmt.departmentInfo.deleteSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -447,7 +440,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.departmentInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -461,7 +454,7 @@
         resetForm()
         operationType.value = 'add'
         // 设置对话框标题
-        dialogTitle.value = t('SystemBasicMgmt.departmentInfo.addDepartment')
+        dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
         // 显示对话框
         dialogVisible.value = true
     }
@@ -474,7 +467,7 @@
         // 获取部门实体数据
         await fetchDepartmentEntity(row.departmentId)
         // 设置对话框标题
-        dialogTitle.value = t('SystemBasicMgmt.departmentInfo.editDepartment')
+        dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
         // 显示对话框
         dialogVisible.value = true
         
@@ -494,7 +487,7 @@
         // 设置父部门ID（确保为字符串类型）
         editForm.parentId = String(row.departmentId)
         // 设置对话框标题
-        dialogTitle.value = t('SystemBasicMgmt.departmentInfo.addChildDepartment')
+        dialogTitle.value = t('systembasicmgmt.departmentInfo.addChildDepartment')
         // 显示对话框
         dialogVisible.value = true
     }
@@ -504,7 +497,7 @@
         // 检查是否有子部门
         if (row.departmentChildList && row.departmentChildList.length > 0) {
             ElMessage({
-                message: t('SystemBasicMgmt.departmentInfo.hasChildrenCannotDelete'),
+                message: t('systembasicmgmt.departmentInfo.hasChildrenCannotDelete'),
                 type: 'warning',
                 plain: true,
                 showClose: true
@@ -513,7 +506,7 @@
         }
 
         ElMessageBox.confirm(
-            t('SystemBasicMgmt.departmentInfo.deleteConfirm'),
+            t('systembasicmgmt.departmentInfo.deleteConfirm'),
             t('common.tip'),
             {
                 confirmButtonText: t('common.confirm'),

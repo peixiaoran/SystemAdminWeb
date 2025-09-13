@@ -4,15 +4,15 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
-              <el-form-item :label="$t('SystemBasicMgmt.role.roleCode')">
+              <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
                   <el-input style="width: 180px;"
                             v-model="filters.roleCode"
-                            :placeholder="$t('SystemBasicMgmt.role.pleaseInputRoleCode')" />
+                            :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.role.roleName')">
+              <el-form-item :label="$t('systembasicmgmt.role.roleName')">
                   <el-input style="width: 180px;"
                             v-model="filters.roleName"
-                            :placeholder="$t('SystemBasicMgmt.role.pleaseInputRoleName')" />
+                            :placeholder="$t('systembasicmgmt.role.pleaseInputRoleName')" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" plain>
@@ -24,7 +24,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.role.addRole') }}
+                      {{ $t('systembasicmgmt.role.addRole') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -38,34 +38,34 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index"
-                                   :label="$t('SystemBasicMgmt.index')"
+                                   :label="$t('systembasicmgmt.index')"
                                    width="70"
                                    align="center"
                                    fixed />
                   <el-table-column prop="roleCode"
-                                   :label="$t('SystemBasicMgmt.role.roleCode')"
+                                   :label="$t('systembasicmgmt.role.roleCode')"
                                    align="left"
                                    min-width="240" />
                   <el-table-column prop="roleNameCn"
-                                   :label="$t('SystemBasicMgmt.role.roleNameCn')"
+                                   :label="$t('systembasicmgmt.role.roleNameCn')"
                                    align="left"
                                    min-width="200" />
                   <el-table-column prop="roleNameEn"
-                                   :label="$t('SystemBasicMgmt.role.roleNameEn')"
+                                   :label="$t('systembasicmgmt.role.roleNameEn')"
                                    align="left"
                                    min-width="200" />
                   <el-table-column prop="isEnabled"
-                                   :label="$t('SystemBasicMgmt.isEnabled')"
+                                   :label="$t('systembasicmgmt.isEnabled')"
                                    align="center"
                                    min-width="100">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                              {{ scope.row.isEnabled ? $t('SystemBasicMgmt.enabled') : $t('SystemBasicMgmt.disabled') }}
+                              {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
                           </el-tag>
                       </template>
                   </el-table-column>
 
-                  <el-table-column :label="$t('SystemBasicMgmt.operation')"
+                  <el-table-column :label="$t('systembasicmgmt.operation')"
                                    min-width="120"
                                    fixed="right"
                                    align="center">
@@ -106,20 +106,20 @@
                  @close="handleDialogClose">
           <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="角色编辑表单">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.role.roleCode')" prop="roleCode">
+                  <el-form-item :label="$t('systembasicmgmt.role.roleCode')" prop="roleCode">
                       <el-input v-model="editForm.roleCode" style="width:100%"/>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.role.roleNameCn')" prop="roleNameCn">
+                  <el-form-item :label="$t('systembasicmgmt.role.roleNameCn')" prop="roleNameCn">
                       <el-input v-model="editForm.roleNameCn" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.role.roleNameEn')" prop="roleNameEn">
+                  <el-form-item :label="$t('systembasicmgmt.role.roleNameEn')" prop="roleNameEn">
                       <el-input v-model="editForm.roleNameEn" style="width:100%"/>
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.remarks')">
+                  <el-form-item :label="$t('systembasicmgmt.remarks')">
                       <el-input v-model="editForm.remarks"
                                 type="textarea"
                                 style="width:100%"
@@ -127,7 +127,7 @@
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.isEnabled')">
+                  <el-form-item :label="$t('systembasicmgmt.isEnabled')">
                       <el-switch v-model="editForm.isEnabled"
                                  :active-value="1"
                                  :inactive-value="0"
@@ -192,18 +192,18 @@
       remarks: ''
   })
   // 对话框标题
-  const dialogTitle = ref(t('SystemBasicMgmt.role.editRole'))
+  const dialogTitle = ref(t('systembasicmgmt.role.editRole'))
 
   // 表单验证规则
   const formRules = reactive({
       roleCode: [
-          { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleCode'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.role.pleaseInputRoleCode'), trigger: 'blur' }
       ],
       roleNameCn: [
-          { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleNameCn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.role.pleaseInputRoleNameCn'), trigger: 'blur' }
       ],
       roleNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.role.pleaseInputRoleNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.role.pleaseInputRoleNameEn'), trigger: 'blur' }
       ]
   })
 
@@ -373,7 +373,7 @@
 
       if (isNaN(params.roleId)) {
           ElMessage({
-              message: t('SystemBasicMgmt.invalidId'),
+              message: t('systembasicmgmt.invalidId'),
               type: 'error',
               plain: true,
               showClose: true
@@ -411,7 +411,7 @@
       editForm.isEnabled = 1
 
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.role.addRole')
+      dialogTitle.value = t('systembasicmgmt.role.addRole')
 
       // 显示对话框
       dialogVisible.value = true
@@ -423,7 +423,7 @@
       resetForm()
 
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.role.editRole')
+      dialogTitle.value = t('systembasicmgmt.role.editRole')
 
       // 获取角色实体数据
       fetchRoleEntity(row.roleId)
@@ -450,7 +450,7 @@
   // 处理删除事件
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.role.deleteConfirm'),
+          t('systembasicmgmt.role.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

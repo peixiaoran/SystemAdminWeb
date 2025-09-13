@@ -4,7 +4,7 @@
   
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工兼任搜索表单">
-                <el-form-item :label="$t('SystemBasicMgmt.userPartTime.department')">
+                <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
                     <el-tree-select 
                         v-model="filters.departmentId"
                         :data="departmentList || []"
@@ -13,19 +13,19 @@
                         filterable
                         :filter-node-method="filterNodeMethod"
                         style="width: 200px;"
-                        :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectDepartment')" />
+                        :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userNo')">
+                <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                     <el-input 
                         v-model="filters.userNo"
                         style="width: 180px;"
-                        :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserNo')" />
+                        :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')" />
                 </el-form-item>
-                <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userName')">
+                <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
                     <el-input 
                         v-model="filters.userName"
                         style="width: 180px;"
-                        :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserName')" />
+                        :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')" />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -37,7 +37,7 @@
                 </el-form-item>
                 <el-form-item class="form-right-button">
                     <el-button type="primary" @click="handleAdd">
-                        {{ $t('SystemBasicMgmt.userPartTime.addPartTime') }}
+                        {{ $t('systembasicmgmt.userPartTime.addPartTime') }}
                     </el-button>
                 </el-form-item>
             </el-form>
@@ -50,40 +50,40 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.userPartTime.index')" width="70" align="center" fixed />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userPartTime.userNo')" align="center" min-width="110" />
-                    <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userPartTime.userName')" align="left" min-width="120" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isApproval')" align="center" min-width="150">
+                    <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
+                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="110" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="150">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userPartTime.department')" align="left" min-width="180" />
-                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userPartTime.position')" align="left" min-width="100" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isPartTime')" align="center" min-width="120">
+                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="180" />
+                    <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="120">
                         <template #default="scope">
                             <el-tag :type="scope.row.isPartTime === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isPartTimeName }}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="partTimeDeptName" :label="$t('SystemBasicMgmt.userPartTime.partTimeDepartment')" align="left" min-width="120" />
-                    <el-table-column prop="partTimePositionName" :label="$t('SystemBasicMgmt.userPartTime.partTimePosition')" align="left" min-width="120" />
-                    <el-table-column prop="partTimeLaborName" :label="$t('SystemBasicMgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
-                    <el-table-column prop="startTime" :label="$t('SystemBasicMgmt.userPartTime.startTime')" align="center" min-width="160" />
-                    <el-table-column prop="endTime" :label="$t('SystemBasicMgmt.userPartTime.endTime')" align="center" min-width="160" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.operation')" min-width="200" fixed="right" align="center">
+                    <el-table-column prop="partTimeDeptName" :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" align="left" min-width="120" />
+                    <el-table-column prop="partTimePositionName" :label="$t('systembasicmgmt.userPartTime.partTimePosition')" align="left" min-width="120" />
+                    <el-table-column prop="partTimeLaborName" :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
+                    <el-table-column prop="startTime" :label="$t('systembasicmgmt.userPartTime.startTime')" align="center" min-width="160" />
+                    <el-table-column prop="endTime" :label="$t('systembasicmgmt.userPartTime.endTime')" align="center" min-width="160" />
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="200" fixed="right" align="center">
                         <template #default="scope">
                             <el-button v-if="scope.row.isPartTime === '1'"
                                        size="small"
                                        type="primary"
-                                       @click="handleEdit(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userPartTime.editPartTime') }}</el-button>
+                                       @click="handleEdit(scope.$index, scope.row)">{{ $t('systembasicmgmt.userPartTime.editPartTime') }}</el-button>
                             <el-button v-if="scope.row.isPartTime === '1'"
                                        size="small"
                                        type="danger"
-                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('SystemBasicMgmt.userPartTime.deletePartTime') }}</el-button>
+                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('systembasicmgmt.userPartTime.deletePartTime') }}</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -103,7 +103,7 @@
 
         <!-- 新增兼任对话框 -->
         <el-dialog v-model="addDialogVisible" 
-                   :title="$t('SystemBasicMgmt.userPartTime.addPartTime')" 
+                   :title="$t('systembasicmgmt.userPartTime.addPartTime')" 
                    width="70%" 
                    :close-on-click-modal="false" 
                    :append-to-body="true"
@@ -114,7 +114,7 @@
             <div v-loading="submitLoading" style="height: 560px;">
                 <!-- 兼任信息区域 -->
                 <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" :inline="true" class="conventional-filter-form" >
-                   <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
+                   <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
                         <el-tree-select 
                             v-model="addForm.partTimeDeptId"
                             :data="departmentList || []"
@@ -124,33 +124,33 @@
                             clearable
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimePositionId" :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
+                        <el-select v-model="addForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
                              <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimeLaborId" :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
+                        <el-select v-model="addForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
                             <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.startTime')" prop="startTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime" >
                         <el-date-picker
                             v-model="addForm.startTime"
                             type="datetime"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectStartTime')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectStartTime')"
                             :disabled-date="(date) => addForm.endTime && date > new Date(addForm.endTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
                             style="width: 200px;" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.endTime')" prop="endTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.endTime')" prop="endTime" >
                         <el-date-picker
                             v-model="addForm.endTime"
                             type="datetime"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectEndTime')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectEndTime')"
                             :disabled-date="(date) => addForm.startTime && date < new Date(addForm.startTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
@@ -163,7 +163,7 @@
 
                 <!-- 搜索区域 -->
                 <el-form :inline="true" :model="userFilters" class="conventional-filter-form" style="margin-top: 10px;">
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.department')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
                         <el-tree-select 
                             v-model="userFilters.departmentId"
                             :data="departmentList || []"
@@ -173,20 +173,20 @@
                             clearable
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectDepartment')" />
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userNo')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                         <el-input 
                             v-model="userFilters.userNo"
                             style="width: 180px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserNo')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userName')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
                         <el-input 
                             v-model="userFilters.userName"
                             style="width: 180px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserName')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>
                     <el-form-item>
@@ -204,12 +204,12 @@
                           height="310"
                           @selection-change="handleUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userPartTime.userNo')" align="center" min-width="100" />
-                    <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userPartTime.userName')" align="left" min-width="120" />
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userPartTime.department')" align="left" min-width="240" />
-                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userPartTime.position')" align="left" min-width="100" />
-                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isApproval')" align="center" min-width="100">
+                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="100" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
+                    <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
+                    <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
@@ -240,7 +240,7 @@
 
         <!-- 编辑兼任对话框 -->
         <el-dialog v-model="editDialogVisible" 
-                   :title="$t('SystemBasicMgmt.userPartTime.editPartTime')" 
+                   :title="$t('systembasicmgmt.userPartTime.editPartTime')" 
                    width="70%" 
                    :close-on-click-modal="false" 
                    :append-to-body="true"
@@ -251,7 +251,7 @@
             <div v-loading="editSubmitLoading" style="height: 560px;">
                 <!-- 兼任信息区域 -->
                 <el-form ref="editFormRef" :model="editForm" :rules="editFormRules" :inline="true" class="conventional-filter-form" label-width="120px">
-                   <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
+                   <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
                         <el-tree-select 
                             v-model="editForm.partTimeDeptId"
                             :data="departmentList || []"
@@ -261,33 +261,33 @@
                             clearable
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimePositionId" :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
+                        <el-select v-model="editForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
                              <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimeLaborId" :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
+                        <el-select v-model="editForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
                             <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.startTime')" prop="startTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime" >
                         <el-date-picker
                             v-model="editForm.startTime"
                             type="datetime"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectStartTime')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectStartTime')"
                             :disabled-date="(date) => editForm.endTime && date > new Date(editForm.endTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
                             style="width: 200px;" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.endTime')" prop="endTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.endTime')" prop="endTime" >
                         <el-date-picker
                             v-model="editForm.endTime"
                             type="datetime"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectEndTime')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectEndTime')"
                             :disabled-date="(date) => editForm.startTime && date < new Date(editForm.startTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
@@ -300,7 +300,7 @@
 
                 <!-- 搜索区域 -->
                 <el-form :inline="true" :model="editUserFilters" class="conventional-filter-form" style="margin-top: 10px;">
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.department')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
                         <el-tree-select 
                             v-model="editUserFilters.departmentId"
                             :data="departmentList || []"
@@ -310,20 +310,20 @@
                             clearable
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseSelectDepartment')" />
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userNo')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                         <el-input 
                             v-model="editUserFilters.userNo"
                             style="width: 180px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserNo')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.userPartTime.userName')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
                         <el-input 
                             v-model="editUserFilters.userName"
                             style="width: 180px;"
-                            :placeholder="$t('SystemBasicMgmt.userPartTime.pleaseEnterUserName')"
+                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>
                     <el-form-item>
@@ -341,12 +341,12 @@
                           height="310"
                           @selection-change="handleEditUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userPartTime.userNo')" align="center" min-width="100" />
-                    <el-table-column prop="userName" :label="$t('SystemBasicMgmt.userPartTime.userName')" align="left" min-width="120" />
-                    <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userPartTime.department')" align="left" min-width="240" />
-                    <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userPartTime.position')" align="left" min-width="100" />
-                    <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('SystemBasicMgmt.userPartTime.isApproval')" align="center" min-width="100">
+                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="100" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
+                    <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
+                    <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
@@ -389,10 +389,10 @@
         UPDATE_USER_PARTTIME_API,
         GET_POSITION_DROPDOWN_API,
         GET_LABOR_DROPDOWN_API
-    } from '@/config/api/SystemBasicMgmt/System-BasicData/userparttime'
+    } from '@/config/api/systembasicmgmt/System-BasicData/userparttime'
     import {
         GET_DEPARTMENT_DROPDOWN_API
-    } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
+    } from '@/config/api/systembasicmgmt/System-BasicData/user'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -508,38 +508,38 @@
     // 表单验证规则
     const addFormRules = reactive({
         partTimeDeptId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
         ],
         partTimePositionId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimePositionRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimePositionRequired'), trigger: 'change' }
         ],
         partTimeLaborId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimeLaborRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimeLaborRequired'), trigger: 'change' }
         ],
         startTime: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.startTimeRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.startTimeRequired'), trigger: 'change' }
         ],
         endTime: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.endTimeRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.endTimeRequired'), trigger: 'change' }
         ]
     })
     
     // 编辑表单验证规则
     const editFormRules = reactive({
         partTimeDeptId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
         ],
         partTimePositionId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimePositionRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimePositionRequired'), trigger: 'change' }
         ],
         partTimeLaborId: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.partTimeLaborRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.partTimeLaborRequired'), trigger: 'change' }
         ],
         startTime: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.startTimeRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.startTimeRequired'), trigger: 'change' }
         ],
         endTime: [
-            { required: true, message: t('SystemBasicMgmt.userPartTime.endTimeRequired'), trigger: 'change' }
+            { required: true, message: t('systembasicmgmt.userPartTime.endTimeRequired'), trigger: 'change' }
         ]
     })
   
@@ -612,7 +612,7 @@
             } else {
                 departmentList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getDepartmentFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getDepartmentFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -621,7 +621,7 @@
         } catch (error) {
             departmentList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getDepartmentFailed'),
+                message: t('systembasicmgmt.userPartTime.getDepartmentFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -653,7 +653,7 @@
             } else {
                 positionList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getPositionFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getPositionFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -662,7 +662,7 @@
         } catch (error) {
             positionList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getPositionFailed'),
+                message: t('systembasicmgmt.userPartTime.getPositionFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -694,7 +694,7 @@
             } else {
                 laborList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getLaborFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getLaborFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -703,7 +703,7 @@
         } catch (error) {
             laborList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getLaborFailed'),
+                message: t('systembasicmgmt.userPartTime.getLaborFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -731,7 +731,7 @@
             } else {
                 userPartTimeList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -740,7 +740,7 @@
         } catch (error) {
             userPartTimeList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getFailed'),
+                message: t('systembasicmgmt.userPartTime.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -770,7 +770,7 @@
             } else {
                 userList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getUserFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getUserFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -779,7 +779,7 @@
         } catch (error) {
             userList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getUserFailed'),
+                message: t('systembasicmgmt.userPartTime.getUserFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -977,7 +977,7 @@
             } else {
                 editUserList.value = []
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getUserFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getUserFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -986,7 +986,7 @@
         } catch (error) {
             editUserList.value = []
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getUserFailed'),
+                message: t('systembasicmgmt.userPartTime.getUserFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -1042,7 +1042,7 @@
         // 验证是否选择了用户
         if (!addForm.userId) {
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.pleaseSelectUser'),
+                message: t('systembasicmgmt.userPartTime.pleaseSelectUser'),
                 type: 'warning',
                 plain: true,
                 showClose: true
@@ -1070,7 +1070,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.addPartTimeSuccess'),
+                    message: res.message || t('systembasicmgmt.userPartTime.addPartTimeSuccess'),
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -1083,7 +1083,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.addPartTimeFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.addPartTimeFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1188,7 +1188,7 @@
                 await fetchEditUserPages()
             } else {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.getPartTimeDetailFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.getPartTimeDetailFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1197,7 +1197,7 @@
         } catch (error) {
             console.error('获取兼任实体失败:', error)
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.getPartTimeDetailFailed'),
+                message: t('systembasicmgmt.userPartTime.getPartTimeDetailFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -1210,7 +1210,7 @@
         // 验证是否选择了用户
         if (!editForm.userId) {
             ElMessage({
-                message: t('SystemBasicMgmt.userPartTime.pleaseSelectUser'),
+                message: t('systembasicmgmt.userPartTime.pleaseSelectUser'),
                 type: 'warning',
                 plain: true,
                 showClose: true
@@ -1243,7 +1243,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.editPartTimeSuccess'),
+                    message: res.message || t('systembasicmgmt.userPartTime.editPartTimeSuccess'),
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -1256,7 +1256,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.editPartTimeFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.editPartTimeFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1274,7 +1274,7 @@
     const handleDelete = async (index, row) => {
         try {
             await ElMessageBox.confirm(
-                t('SystemBasicMgmt.userPartTime.deletePartTimeConfirm'),
+                t('systembasicmgmt.userPartTime.deletePartTimeConfirm'),
                 t('common.warning'),
                 {
                     confirmButtonText: t('common.confirm'),
@@ -1295,7 +1295,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: t('SystemBasicMgmt.userPartTime.deletePartTimeSuccess'),
+                    message: t('systembasicmgmt.userPartTime.deletePartTimeSuccess'),
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -1304,7 +1304,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('SystemBasicMgmt.userPartTime.deletePartTimeFailed'),
+                    message: res.message || t('systembasicmgmt.userPartTime.deletePartTimeFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1313,7 +1313,7 @@
         } catch (error) {
             if (error !== 'cancel') {
                 ElMessage({
-                    message: t('SystemBasicMgmt.userPartTime.deletePartTimeFailed'),
+                    message: t('systembasicmgmt.userPartTime.deletePartTimeFailed'),
                     type: 'error',
                     plain: true,
                     showClose: true

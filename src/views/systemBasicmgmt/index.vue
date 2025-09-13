@@ -41,7 +41,7 @@
               </div>
             </div>
           </template>
-          <div ref="kLineChart" class="chart-container"></div>
+          <div :ref="el => kLineChart = el" class="chart-container"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -76,8 +76,7 @@ const { t } = useI18n()
 
 // 图表引用
 const kLineChart = ref(null)
-const complexBarChart = ref(null)
-const simpleBarChart = ref(null)
+let kLineChartInstance = null
 
 // 响应式数据
 const kLineChartPeriod = ref('day')
@@ -199,10 +198,17 @@ const quickActions = ref([
 // 初始化K线图
 const initKLineChart = () => {
   if (!kLineChart.value) {
-    console.error('kLineChart DOM element not found')
     return
   }
+  
+  // 如果已存在图表实例，先销毁
+  if (kLineChartInstance) {
+    kLineChartInstance.dispose()
+    kLineChartInstance = null
+  }
+  
   const chart = echarts.init(kLineChart.value)
+  kLineChartInstance = chart
   
   // 生成K线数据（根据周期动态调整）
   const generateKLineData = (period = 'day') => {
@@ -471,154 +477,10 @@ const initKLineChart = () => {
             }
           }
         },
-
       }
     ]
   }
   
-  chart.setOption(option)
-  window.addEventListener('resize', () => chart.resize())
-}
-
-// 初始化复杂柱状图
-const initComplexBarChart = () => {
-  if (!complexBarChart.value) {
-    console.error('complexBarChart DOM element not found')
-    return
-  }
-  const chart = echarts.init(complexBarChart.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    legend: {
-      data: [t('dashboard.charts.sales'), t('dashboard.charts.profit'), t('dashboard.charts.growth')],
-      bottom: '0%',
-      left: 'center'
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '12%',
-      top: '10%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: [t('common.months.jan'), t('common.months.feb'), t('common.months.mar'), t('common.months.apr'), t('common.months.may'), t('common.months.jun'), t('common.months.jul'), t('common.months.aug'), t('common.months.sep'), t('common.months.oct'), t('common.months.nov'), t('common.months.dec')]
-    },
-    yAxis: [
-      {
-        type: 'value',
-        name: t('dashboard.charts.amount'),
-        position: 'left',
-        axisLabel: {
-          formatter: '{value} 万'
-        }
-      },
-      {
-        type: 'value',
-        name: t('dashboard.charts.percentage'),
-        position: 'right',
-        axisLabel: {
-          formatter: '{value} %'
-        }
-      }
-    ],
-    series: [
-      {
-        name: t('dashboard.charts.sales'),
-        type: 'bar',
-        yAxisIndex: 0,
-        data: [320, 332, 301, 334, 390, 330, 320, 332, 301, 334, 390, 330],
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#409EFF' },
-            { offset: 1, color: '#1890ff' }
-          ])
-        }
-      },
-      {
-        name: t('dashboard.charts.profit'),
-        type: 'bar',
-        yAxisIndex: 0,
-        data: [120, 132, 101, 134, 90, 230, 210, 182, 191, 234, 290, 330],
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#67C23A' },
-            { offset: 1, color: '#52c41a' }
-          ])
-        }
-      },
-      {
-        name: t('dashboard.charts.growth'),
-        type: 'line',
-        yAxisIndex: 1,
-        data: [12.5, 8.2, 15.6, 9.8, 22.1, 18.7, 16.3, 14.2, 19.5, 21.8, 25.3, 28.9],
-        itemStyle: {
-          color: '#E6A23C'
-        },
-        lineStyle: {
-          width: 3
-        }
-      }
-    ]
-  }
-  chart.setOption(option)
-  window.addEventListener('resize', () => chart.resize())
-}
-
-// 初始化简单柱状图
-const initSimpleBarChart = () => {
-  if (!simpleBarChart.value) {
-    console.error('simpleBarChart DOM element not found')
-    return
-  }
-  const chart = echarts.init(simpleBarChart.value)
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: [t('dashboard.departments.tech'), t('dashboard.departments.sales'), t('dashboard.departments.marketing'), t('dashboard.departments.hr'), t('dashboard.departments.finance'), t('dashboard.departments.operations')]
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: t('dashboard.charts.employees'),
-        type: 'bar',
-        data: [45, 38, 25, 18, 22, 31],
-        itemStyle: {
-          color: (params) => {
-            const colors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#C0C4CC']
-            return colors[params.dataIndex % colors.length]
-          }
-        },
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  }
   chart.setOption(option)
   window.addEventListener('resize', () => chart.resize())
 }
@@ -768,9 +630,20 @@ onMounted(() => {
     // 延迟初始化所有图表，确保DOM元素已完全渲染和国际化加载完成
     setTimeout(() => {
       try {
-        initKLineChart()
-        initComplexBarChart()
-        initSimpleBarChart()
+        // 确保DOM元素存在后再初始化
+        if (kLineChart.value) {
+          initKLineChart()
+        } else {
+          console.warn('kLineChart DOM element not ready, retrying...')
+          // 如果DOM元素还没准备好，再次尝试
+          setTimeout(() => {
+            if (kLineChart.value) {
+              initKLineChart()
+            } else {
+              console.error('kLineChart DOM element still not found after retry')
+            }
+          }, 500)
+        }
         initPieCharts()
       } catch (error) {
         console.error('图表初始化失败:', error)

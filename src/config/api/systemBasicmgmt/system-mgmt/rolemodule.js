@@ -22,17 +22,17 @@ export const UPDATE_ROLE_MODULE_API = {
   UPDATE_ROLE_MODULE: 'SystemBasicMgmt/SystemMgmt/RoleModule/UpdateRoleModule'
 }
 
-// 获取角色网域列表API
+// 获取角色模块列表API
 export const GET_ROLE_MODULE_API = {
   GET_ROLE_MODULE: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetRoleModuleList'
 }
 
 // 获取角色下拉列表API
 export const GET_ROLE_DROPDOWN_API = {
-    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetRoleDropDown'
+  GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetRoleDropDown'
 }
 
-// 获取网域下拉列表API
-export const GET_DOMAIN_DROPDOWN_API = {
-    GET_DOMAIN_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetDomainDropDown'
+// 获取模块下拉列表API
+export const GET_MODULE_DROPDOWN_API = {
+  GET_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleModule/GetModuleDropDown'
 }

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
-// 模块信息存储
-export const useModuleStore = defineStore('module', {
+// 一级菜单信息存储
+export const usePMenuStore = defineStore('pmenu', {
   state: () => ({
     currentModuleId: localStorage.getItem('currentModuleId') || '',
     currentModuleName: localStorage.getItem('currentModuleName') || '',
@@ -12,10 +12,10 @@ export const useModuleStore = defineStore('module', {
   
   getters: {
     // 是否已选择模块
-    hasSelectedModule: (state) => !!state.currentModuleId,
+    hasSelectedPMenu: (state) => !!state.currentModuleId,
     
     // 获取模块首页路径
-    moduleIndexPath: (state) => {
+    pmenuIndexPath: (state) => {
       if (!state.currentModulePath) return '/module-select'
       
       return state.currentModulePath.endsWith('/') 
@@ -26,7 +26,7 @@ export const useModuleStore = defineStore('module', {
   
   actions: {
     // 设置当前模块信息
-    setCurrentModule(moduleId, moduleName, modulePath, moduleNameCn = '', moduleNameEn = '') {
+    setCurrentPMenu(moduleId, moduleName, modulePath, moduleNameCn = '', moduleNameEn = '') {
       this.currentModuleId = moduleId
       this.currentModuleName = moduleName
       this.currentModulePath = modulePath
@@ -42,10 +42,12 @@ export const useModuleStore = defineStore('module', {
     },
     
     // 清除模块信息
-    clearCurrentModule() {
+    clearCurrentPMenu() {
       this.currentModuleId = ''
       this.currentModuleName = ''
       this.currentModulePath = ''
+      this.currentModuleNameCn = ''
+      this.currentModuleNameEn = ''
       
       // 同时清除localStorage
       localStorage.removeItem('currentModuleId')
@@ -56,7 +58,7 @@ export const useModuleStore = defineStore('module', {
   
   // 启用持久化 - 使用3.x版本API
   persist: {
-    key: 'pmenu-store',
+    key: 'module-store',
     storage: localStorage,
     paths: ['currentModuleId', 'currentModuleName', 'currentModulePath', 'currentModuleNameCn', 'currentModuleNameEn']
   }
