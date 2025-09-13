@@ -17,17 +17,22 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 更新角色网域分页API
-export const UPDATE_ROLE_DOMAIN_API = {
-  UPDATE_ROLE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/RoleDomain/UpdateRoleDomain'
+// 更新角色模块分页API
+export const UPDATE_ROLE_PMENU_API = {
+    UPDATE_ROLE_PMENU: 'SystemBasicMgmt/SystemMgmt/RolePMenu/UpdateRolePMenu'
 }
 
 // 获取角色网域列表API
-export const GET_ROLE_DOMAIN_API = {
-  GET_ROLE_DOMAIN: 'SystemBasicMgmt/SystemMgmt/RoleDomain/GetRoleDomainList'
+export const GET_ROLE_PMENU_API = {
+    GET_ROLE_PMENU: 'SystemBasicMgmt/SystemMgmt/RolePMenu/GetRolePMenuList'
 }
 
 // 获取角色下拉列表API
 export const GET_ROLE_DROPDOWN_API = {
-  GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleDomain/GetRoleDropDown'
+    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RolePMenu/GetRoleDropDown'
+}
+
+// 获取网域下拉列表API
+export const GET_MODULE_DROPDOWN_API = {
+    GET_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RolePMenu/GetModuleDropDown'
 }

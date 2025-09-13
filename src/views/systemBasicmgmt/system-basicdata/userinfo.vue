@@ -3,7 +3,7 @@
       <el-card class="conventional-card">
           
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户筛选">
-             <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.department')">
+             <el-form-item :label="$t('systembasicmgmt.userInfo.filter.department')">
                 <el-tree-select 
                       v-model="filters.departmentId"
                       :data="departmentOptions || []"
@@ -12,19 +12,19 @@
                       filterable
                       :filter-node-method="filterNodeMethod"
                       style="width: 200px;"
-                      :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
+                      :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.userNo')">
+              <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
                   <el-input 
                       v-model="filters.userNo" 
                       style="width: 180px;"
-                      :placeholder="$t('SystemBasicMgmt.userInfo.filter.userNoPlaceholder')" />
+                      :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.userInfo.filter.userName')">
+              <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userName')">
                   <el-input 
                       v-model="filters.userName" 
                       style="width: 180px;"
-                      :placeholder="$t('SystemBasicMgmt.userInfo.filter.userNamePlaceholder')" />
+                      :placeholder="$t('systembasicmgmt.userInfo.filter.userNamePlaceholder')" />
               </el-form-item>
 
               <el-form-item class="form-button-group">
@@ -34,7 +34,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.userInfo.addUser') }}
+                      {{ $t('systembasicmgmt.userInfo.addUser') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -46,30 +46,30 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.userInfo.index')" width="70" align="center" fixed />
-                  <el-table-column prop="userNo" :label="$t('SystemBasicMgmt.userInfo.userNo')" align="center" min-width="150" />
-                  <el-table-column prop="userNameCn" :label="$t('SystemBasicMgmt.userInfo.userNameCn')" align="left" min-width="150" />
-                  <el-table-column prop="userNameEn" :label="$t('SystemBasicMgmt.userInfo.userNameEn')" align="left" min-width="230" />
-                  <el-table-column prop="departmentName" :label="$t('SystemBasicMgmt.userInfo.department')" align="left" min-width="220" />
-                  <el-table-column prop="positionName" :label="$t('SystemBasicMgmt.userInfo.position')" align="left" min-width="120" />
-                  <el-table-column prop="genderName" :label="$t('SystemBasicMgmt.userInfo.gender')" align="center" min-width="100" />
-                  <el-table-column prop="email" :label="$t('SystemBasicMgmt.userInfo.email')" align="left" min-width="200" />
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isEmployed')" align="center" min-width="120">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.userInfo.index')" width="70" align="center" fixed />
+                  <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="center" min-width="150" />
+                  <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="150" />
+                  <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
+                  <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
+                  <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="120" />
+                  <el-table-column prop="genderName" :label="$t('systembasicmgmt.userInfo.gender')" align="center" min-width="100" />
+                  <el-table-column prop="email" :label="$t('systembasicmgmt.userInfo.email')" align="left" min-width="200" />
+                  <el-table-column :label="$t('systembasicmgmt.userInfo.isEmployed')" align="center" min-width="120">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'info'">
                               {{ scope.row.isEmployedName }}
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.isApproval')" align="center" min-width="150">
+                  <el-table-column :label="$t('systembasicmgmt.userInfo.isApproval')" align="center" min-width="150">
                       <template #default="scope">
                           <el-tag :type="scope.row.isApproval === 1 ? 'primary' : 'info'">
                               {{ scope.row.isApprovalName }}
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="laborName" :label="$t('SystemBasicMgmt.userInfo.laborName')" align="center" min-width="280" />
-                  <el-table-column :label="$t('SystemBasicMgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
+                  <el-table-column prop="laborName" :label="$t('systembasicmgmt.userInfo.laborName')" align="center" min-width="280" />
+                  <el-table-column :label="$t('systembasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -102,17 +102,17 @@
               <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="用户编辑">
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNo')" prop="userNo">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.userNo')" prop="userNo">
                       <el-input v-model="editForm.userNo" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameCn')" prop="userNameCn">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.userNameCn')" prop="userNameCn">
                       <el-input v-model="editForm.userNameCn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.userNameEn')" prop="userNameEn">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.userNameEn')" prop="userNameEn">
                       <el-input v-model="editForm.userNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.gender')" prop="gender">
-                      <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectGender')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.gender')" prop="gender">
+                      <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectGender')">
                           <el-option 
                               v-for="item in genderOptions"
                               :key="`gender-${item.genderCode}`"
@@ -123,21 +123,21 @@
               </div>
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.hireDate')" prop="hireDate">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.hireDate')" prop="hireDate">
                       <el-date-picker
                           v-model="editForm.hireDate"
                           type="date"
                           style="width:100%"
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectHireDate')"
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectHireDate')"
                           format="YYYY/MM/DD"
                           value-format="YYYY/MM/DD" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.nationality')" prop="nationality">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.nationality')" prop="nationality">
                       <el-select 
                           v-model="editForm.nationality" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectNationality')">
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNationality')">
                           <el-option
                               v-for="item in nationalityOptions"
                               :key="`nationality-${item.genderCode}`"
@@ -145,12 +145,12 @@
                               :value="item.genderCode" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.laborType')" prop="laborId">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.laborType')" prop="laborId">
                       <el-select 
                           v-model="editForm.laborId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectLaborType')">
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectLaborType')">
                           <el-option
                               v-for="item in laborTypeOptions"
                               :key="`labor-type-edit-${item.laborId}`"
@@ -158,7 +158,7 @@
                               :value="item.laborId" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.department')" prop="departmentId">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.department')" prop="departmentId">
                       <el-tree-select
                           v-model="editForm.departmentId"
                           :data="departmentOptions || []"
@@ -168,17 +168,17 @@
                           clearable
                           :filter-node-method="filterNodeMethod"
                           style="width:100%"
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectDepartment')" />
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
                   </el-form-item>
               </div>
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.position')" prop="positionId">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.position')" prop="positionId">
                       <el-select 
                           v-model="editForm.positionId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectPosition')">
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectPosition')">
                           <el-option
                               v-for="item in positionOptions"
                               :key="`position-edit-${item.positionId}`"
@@ -187,12 +187,12 @@
                               :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.role')" prop="roleId">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.role')" prop="roleId">
                       <el-select 
                           v-model="editForm.roleId" 
                           style="width:100%"
                           clearable
-                          :placeholder="$t('SystemBasicMgmt.userInfo.pleaseSelectRole')">
+                          :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectRole')">
                           <el-option
                               v-for="item in roleOptions"
                               :key="`role-edit-${item.roleId}`"
@@ -201,33 +201,33 @@
                               :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.loginNo')" prop="loginNo">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.loginNo')" prop="loginNo">
                       <el-input v-model="editForm.loginNo" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.password')" prop="passWord">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.password')" prop="passWord">
                       <el-input v-model="editForm.passWord" type="password" style="width:100%" show-password />
                   </el-form-item>
               </div>
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.email')" prop="email">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.email')" prop="email">
                       <el-input v-model="editForm.email" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.phoneNumber')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.phoneNumber')">
                       <el-input v-model="editForm.phoneNumber" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.expirationDays')" prop="expirationDays" required>
-                      <el-select v-model="editForm.expirationDays" style="width:100%" clearable :placeholder="$t('SystemBasicMgmt.userInfo.pleaseInputExpirationDays')">
-                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.30')" :value="30" />
-                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.60')" :value="60" />
-                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.90')" :value="90" />
-                          <el-option :label="$t('SystemBasicMgmt.userInfo.expirationDaysOptions.180')" :value="180" />
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.expirationDays')" prop="expirationDays" required>
+                      <el-select v-model="editForm.expirationDays" style="width:100%" clearable :placeholder="$t('systembasicmgmt.userInfo.pleaseInputExpirationDays')">
+                          <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.30')" :value="30" />
+                          <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.60')" :value="60" />
+                          <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.90')" :value="90" />
+                          <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.180')" :value="180" />
                       </el-select>
                   </el-form-item>
               </div>
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isEmployed')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isEmployed')">
                       <el-switch
                           v-model="editForm.isEmployed"
                           :active-value="1"
@@ -237,7 +237,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isApproval')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isApproval')">
                       <el-switch
                           v-model="editForm.isApproval"
                           :active-value="1"
@@ -247,7 +247,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isRealtimeNotification')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isRealtimeNotification')">
                       <el-switch
                           v-model="editForm.isRealtimeNotification"
                           :active-value="1"
@@ -258,7 +258,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isScheduledNotification')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isScheduledNotification')">
                       <el-switch
                           v-model="editForm.isScheduledNotification"
                           :active-value="1"
@@ -272,7 +272,7 @@
               </div>
               
               <div class="form-row four-columns">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isAgent')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isAgent')">
                       <el-switch
                           v-model="editForm.isAgent"
                           :active-value="1"
@@ -283,7 +283,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isParttimed')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isParttimed')">
                       <el-switch
                           v-model="editForm.isParttimed"
                           :active-value="1"
@@ -294,7 +294,7 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.isFreeze')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isFreeze')">
                       <el-switch
                           v-model="editForm.isFreeze"
                           :active-value="1"
@@ -308,7 +308,7 @@
               </div>
               
               <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.userInfo.avatar')" prop="avatarAddress">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.avatar')" prop="avatarAddress">
                     <el-upload
                         class="avatar-uploader"
                         :action="UPLOAD_CONFIG.url"
@@ -321,7 +321,7 @@
                         <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
                     </el-upload>
-                      <div class="avatar-tip">{{ $t('SystemBasicMgmt.userInfo.avatarTip') }}</div>
+                      <div class="avatar-tip">{{ $t('systembasicmgmt.userInfo.avatarTip') }}</div>
                   </el-form-item>
               </div>
 
@@ -353,7 +353,7 @@
       GET_NATIONALITY_DROPDOWN_API,
       GET_LABOR_TYPE_DROPDOWN_API,
       UPLOAD_AVATAR_API
-  } from '@/config/api/SystemBasicMgmt/System-BasicData/user'
+  } from '@/config/api/systembasicmgmt/System-BasicData/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import { useUserStore } from '@/stores/user'
@@ -366,7 +366,7 @@
   
   // 统一的文件上传配置
   const UPLOAD_CONFIG = reactive({
-    url: 'https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile',
+    url: 'https://localhost:7272/api/systembasicmgmt/SystemBasicCoreApi/SysFile/UploadFile',
     headers: {
       'Accept-Language': '',
       'Authorization': `Bearer ${userStore.token}`
@@ -452,45 +452,45 @@
   })
 
   // 对话框标题
-  const dialogTitle = ref(t('SystemBasicMgmt.userInfo.editUser'))
+  const dialogTitle = ref(t('systembasicmgmt.userInfo.editUser'))
 
   // 表单验证规则
   const formRules = reactive({
       userNo: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNo'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputUserNo'), trigger: 'blur' }
       ],
       userNameCn: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameCn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputUserNameCn'), trigger: 'blur' }
       ],
       userNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputUserNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputUserNameEn'), trigger: 'blur' }
       ],
       gender: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectGender'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectGender'), trigger: 'change' }
       ],
       hireDate: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
       ],
       nationality: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectNationality'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectNationality'), trigger: 'change' }
       ],
       laborId: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectLaborType'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectLaborType'), trigger: 'change' }
       ],
       departmentId: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectDepartment'), trigger: 'change' }
       ],
       positionId: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectPosition'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectPosition'), trigger: 'change' }
       ],
       roleId: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectRole'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectRole'), trigger: 'change' }
       ],
       loginNo: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
       ],
       email: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseInputEmail'), trigger: 'blur' },
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputEmail'), trigger: 'blur' },
           { 
             validator: (rule, value, callback) => {
               if (!value) {
@@ -499,12 +499,12 @@
               }
               // 邮箱必须是小写字母
               if (value !== value.toLowerCase()) {
-                callback(new Error(t('SystemBasicMgmt.userInfo.emailLowercaseError')))
+                callback(new Error(t('systembasicmgmt.userInfo.emailLowercaseError')))
                 return
               }
               // 邮箱后缀必须是 @eson.tw 或 @eson.vn
               if (!value.endsWith('@eson.tw') && !value.endsWith('@eson.vn')) {
-                callback(new Error(t('SystemBasicMgmt.userInfo.emailDomainError')))
+                callback(new Error(t('systembasicmgmt.userInfo.emailModuleError')))
                 return
               }
               callback()
@@ -513,7 +513,7 @@
           }
       ],
       expirationDays: [
-          { required: true, message: () => t('SystemBasicMgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }
+          { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }
       ],
       passWord: [
         { 
@@ -524,27 +524,27 @@
             }
             // 密码长度 8-16 个字符
             if (value.length < 8 || value.length > 16) {
-              callback(new Error(t('SystemBasicMgmt.userInfo.passwordLengthError')))
+              callback(new Error(t('systembasicmgmt.userInfo.passwordLengthError')))
               return
             }
             // 必须包含小写字母
             if (!/[a-z]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.userInfo.passwordLowercaseError')))
+              callback(new Error(t('systembasicmgmt.userInfo.passwordLowercaseError')))
               return
             }
             // 必须包含大写字母
             if (!/[A-Z]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.userInfo.passwordUppercaseError')))
+              callback(new Error(t('systembasicmgmt.userInfo.passwordUppercaseError')))
               return
             }
             // 必须包含数字
             if (!/[0-9]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.userInfo.passwordNumberError')))
+              callback(new Error(t('systembasicmgmt.userInfo.passwordNumberError')))
               return
             }
             // 必须包含特殊字符
             if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
-              callback(new Error(t('SystemBasicMgmt.userInfo.passwordSpecialCharError')))
+              callback(new Error(t('systembasicmgmt.userInfo.passwordSpecialCharError')))
               return
             }
             callback()
@@ -809,7 +809,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.getFailed'),
+              message: res.message || t('systembasicmgmt.userInfo.getFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -951,7 +951,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.saveSuccess'),
+              message: res.message || t('systembasicmgmt.userInfo.saveSuccess'),
               type: 'success',
               plain: true,
               showClose: true
@@ -960,7 +960,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -978,7 +978,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.updateSuccess'),
+              message: res.message || t('systembasicmgmt.userInfo.updateSuccess'),
               type: 'success',
               plain: true,
               showClose: true
@@ -987,7 +987,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -1005,7 +1005,7 @@
 
       if (res && res.code === 200) {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.deleteSuccess'),
+              message: res.message || t('systembasicmgmt.userInfo.deleteSuccess'),
               type: 'success',
               plain: true,
               showClose: true
@@ -1013,7 +1013,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('SystemBasicMgmt.userInfo.operationFailed'),
+              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -1032,7 +1032,7 @@
       await fetchGenderDropdown()
       await fetchLaborTypeDropdown(true)
       // 打开对话框
-      dialogTitle.value = t('SystemBasicMgmt.userInfo.addUser')
+      dialogTitle.value = t('systembasicmgmt.userInfo.addUser')
       // 显示对话框
       dialogVisible.value = true
       // 显示对话框时清除表单验证状态
@@ -1052,7 +1052,7 @@
       // 获取员工实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
       await fetchUserEntity(row.userId)
       // 打开对话框
-      dialogTitle.value = t('SystemBasicMgmt.userInfo.editUser')
+      dialogTitle.value = t('systembasicmgmt.userInfo.editUser')
       // 显示对话框
       dialogVisible.value = true
       // 显示对话框时清除表单验证状态
@@ -1062,7 +1062,7 @@
   // 删除用户
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.userInfo.deleteConfirm'),
+          t('systembasicmgmt.userInfo.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),
@@ -1099,7 +1099,7 @@
 
     if (!isJPG) {
         ElMessage({
-            message: t('SystemBasicMgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!',
+            message: t('systembasicmgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!',
             type: 'error',
             plain: true,
             showClose: true
@@ -1108,7 +1108,7 @@
     }
     if (!isLt5M) {
         ElMessage({
-            message: t('SystemBasicMgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!',
+            message: t('systembasicmgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!',
             type: 'error',
             plain: true,
             showClose: true
@@ -1136,7 +1136,7 @@
           if (res && res.code === 200) {
               options.onSuccess(res)
           } else {
-              options.onError(new Error(res.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed')))
+              options.onError(new Error(res.message || t('systembasicmgmt.userInfo.avatarUploadFailed')))
           }
       } catch (error) {
           options.onError(error)
@@ -1149,7 +1149,7 @@
     avatarUrl.value = res.data
 
     ElMessage({
-        message: t('SystemBasicMgmt.userInfo.avatarUploadSuccess') || '头像上传成功',
+        message: t('systembasicmgmt.userInfo.avatarUploadSuccess') || '头像上传成功',
         type: 'success',
         plain: true,
         showClose: true
@@ -1159,7 +1159,7 @@
   // 头像上传失败
   const handleAvatarError = (error) => {
       ElMessage({
-          message: error.message || t('SystemBasicMgmt.userInfo.avatarUploadFailed'),
+          message: error.message || t('systembasicmgmt.userInfo.avatarUploadFailed'),
           type: 'error',
           plain: true,
           showClose: true

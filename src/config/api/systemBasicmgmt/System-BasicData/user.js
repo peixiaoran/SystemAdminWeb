@@ -69,7 +69,7 @@ export const GET_NATIONALITY_DROPDOWN_API = {
 
 // 员工职业下拉框API
 export const GET_LABOR_TYPE_DROPDOWN_API = {
-  GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetLabor'
+  GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetLaborDropDown'
 }
 
 // 导出员工API

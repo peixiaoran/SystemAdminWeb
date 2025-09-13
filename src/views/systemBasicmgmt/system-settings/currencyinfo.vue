@@ -3,8 +3,8 @@
         <el-card class="conventional-card">
             <!-- 搜索 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
-                <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.filter.currencyCode')">
-                    <el-input v-model="filters.currencyCode" :placeholder="$t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
+                <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
+                    <el-input v-model="filters.currencyCode" :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
                 </el-form-item>
                 <el-form-item style="visibility: hidden; width: 0; margin: 0; padding: 0;">
                     <el-input style="width: 0; height: 0; border: none; padding: 0; margin: 0;" />
@@ -19,7 +19,7 @@
                 </el-form-item>
                 <el-form-item class="form-right-button">
                     <el-button type="primary" @click="handleAdd">
-                        {{ $t('SystemBasicMgmt.currencyInfo.addCurrency') }}
+                        {{ $t('systembasicmgmt.currencyInfo.addCurrency') }}
                     </el-button>
                 </el-form-item>
             </el-form>
@@ -32,19 +32,19 @@
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
                           class="conventional-table">
-                    <el-table-column type="index" :label="$t('SystemBasicMgmt.currencyInfo.index')" width="70" align="center" fixed />
-                    <el-table-column prop="currencyCode" :label="$t('SystemBasicMgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
-                    <el-table-column prop="currencyNameCn" :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
-                    <el-table-column prop="currencyNameEn" :label="$t('SystemBasicMgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-                    <el-table-column prop="currencyState" :label="$t('SystemBasicMgmt.currencyInfo.currencyState')" align="center" min-width="100">
+                    <el-table-column type="index" :label="$t('systembasicmgmt.currencyInfo.index')" width="70" align="center" fixed />
+                    <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
+                    <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
+                    <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
+                    <el-table-column prop="currencyState" :label="$t('systembasicmgmt.currencyInfo.currencyState')" align="center" min-width="100">
                         <template #default="scope">
                             <el-tag :type="scope.row.currencyState === 1 ? 'success' : 'danger'">
                                 {{ scope.row.currencyState === 1 ? $t('common.active') : $t('common.inactive') }}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="remark" :label="$t('SystemBasicMgmt.currencyInfo.remark')" align="left" min-width="200" />
-                    <el-table-column :label="$t('SystemBasicMgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
+                    <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
+                    <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                             <el-button size="small"
@@ -78,12 +78,12 @@
                    @close="handleDialogClose">
             <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyCode')" prop="currencyCode">
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
                         <el-input v-model="editForm.currencyCode" 
                                  style="width:100%" 
-                                 :placeholder="$t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode')" />
+                                 :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyState')" prop="currencyState">
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyState')" prop="currencyState">
                         <el-switch v-model="editForm.currencyState" 
                                   :active-value="1"
                                   :inactive-value="0"
@@ -94,20 +94,20 @@
                     </el-form-item>
                 </div>
                 <div class="form-row">
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
                     <el-input v-model="editForm.currencyNameCn" style="width:100%" />
                     </el-form-item>
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
                         <el-input v-model="editForm.currencyNameEn" style="width:100%" />
                     </el-form-item>
                 </div>
                 <div class="form-row full-width">
-                    <el-form-item :label="$t('SystemBasicMgmt.currencyInfo.remark')" prop="remark">
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
                         <el-input v-model="editForm.remark" 
                                  type="textarea" 
                                  :rows="3"
                                  style="width:100%" 
-                                 :placeholder="$t('SystemBasicMgmt.currencyInfo.pleaseInputRemark')" />
+                                 :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputRemark')" />
                     </el-form-item>
                 </div>
             </el-form>
@@ -130,7 +130,7 @@
       DELETE_CURRENCY_API, 
       GET_CURRENCY_ENTITY_API, 
       UPDATE_CURRENCY_API 
-    } from '@/config/api/SystemBasicMgmt/System-Settings/currency'
+    } from '@/config/api/systembasicmgmt/System-Settings/currency'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   
@@ -170,18 +170,18 @@
     })
   
     // 对话框标题
-    const dialogTitle = ref(t('SystemBasicMgmt.currencyInfo.editCurrency'))
+    const dialogTitle = ref(t('systembasicmgmt.currencyInfo.editCurrency'))
   
     // 表单验证规则
     const formRules = reactive({
         currencyCode: [
-            { required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyCode'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode'), trigger: 'blur' }
         ],
         currencyNameCn: [
-{ required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyNameCn'), trigger: 'blur' }
+{ required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn'), trigger: 'blur' }
 ],
         currencyNameEn: [
-            { required: true, message: () => t('SystemBasicMgmt.currencyInfo.pleaseInputCurrencyNameEn'), trigger: 'blur' }
+            { required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameEn'), trigger: 'blur' }
         ]
     })
   
@@ -225,7 +225,7 @@
             pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.getFailed'),
+                message: res.message || t('systembasicmgmt.currencyInfo.getFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -305,7 +305,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.saveSuccess'),
+                message: res.message || t('systembasicmgmt.currencyInfo.saveSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -314,7 +314,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -332,7 +332,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.updateSuccess'),
+                message: res.message || t('systembasicmgmt.currencyInfo.updateSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -341,7 +341,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -359,7 +359,7 @@
   
         if (res && res.code === 200) {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.deleteSuccess'),
+                message: res.message || t('systembasicmgmt.currencyInfo.deleteSuccess'),
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -367,7 +367,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('SystemBasicMgmt.currencyInfo.operationFailed'),
+                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -380,7 +380,7 @@
         // 重置表单数据
         resetForm()
         // 设置对话框标题
-        dialogTitle.value = t('SystemBasicMgmt.currencyInfo.addCurrency')
+        dialogTitle.value = t('systembasicmgmt.currencyInfo.addCurrency')
         // 显示对话框
         dialogVisible.value = true
     }
@@ -392,7 +392,7 @@
         // 获取币别实体数据
         await fetchCurrencyEntity(row.currencyId)
         // 设置对话框标题
-        dialogTitle.value = t('SystemBasicMgmt.currencyInfo.editCurrency')
+        dialogTitle.value = t('systembasicmgmt.currencyInfo.editCurrency')
         // 显示对话框
         dialogVisible.value = true
         
@@ -407,7 +407,7 @@
     // 处理删除操作
     const handleDelete = (index, row) => {
         ElMessageBox.confirm(
-            t('SystemBasicMgmt.currencyInfo.deleteConfirm'),
+            t('systembasicmgmt.currencyInfo.deleteConfirm'),
             t('common.tip'),
             {
                 confirmButtonText: t('common.confirm'),

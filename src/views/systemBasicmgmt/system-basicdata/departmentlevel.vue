@@ -4,11 +4,11 @@
 
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索部门级别">
-              <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')">
-                  <el-input v-model="filters.departmentLevelCode" :placeholder="$t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:170px" />
+              <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')">
+                  <el-input v-model="filters.departmentLevelCode" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:170px" />
               </el-form-item>
-              <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelName')">
-                  <el-input v-model="filters.departmentLevelName" :placeholder="$t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:170px" />
+              <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelName')">
+                  <el-input v-model="filters.departmentLevelName" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:170px" />
               </el-form-item>
               <el-form-item class="form-button-group">
                   <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -20,7 +20,7 @@
               </el-form-item>
               <el-form-item class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('SystemBasicMgmt.departmentLevel.addDepartmentLevel') }}
+                      {{ $t('systembasicmgmt.departmentLevel.addDepartmentLevel') }}
                   </el-button>
               </el-form-item>
           </el-form>
@@ -35,12 +35,12 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('SystemBasicMgmt.departmentLevel.index')" width="70" align="center" fixed />
-                  <el-table-column prop="departmentLevelCode" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
-                  <el-table-column prop="departmentLevelNameCn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />
-                  <el-table-column prop="departmentLevelNameEn" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="departmentLevelDescribe" :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
-                  <el-table-column :label="$t('SystemBasicMgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.departmentLevel.index')" width="70" align="center" fixed />
+                  <el-table-column prop="departmentLevelCode" :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
+                  <el-table-column prop="departmentLevelNameCn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />
+                  <el-table-column prop="departmentLevelNameEn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
+                  <el-table-column prop="departmentLevelDescribe" :label="$t('systembasicmgmt.departmentLevel.departmentLevelDescribe')" align="left" min-width="250" />
+                  <el-table-column :label="$t('systembasicmgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -74,23 +74,23 @@
                  @close="handleDialogClose">
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="编辑部门级别">
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
+                  <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
                       <el-input v-model="editForm.departmentLevelCode" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
+                  <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
                       <el-input v-model="editForm.departmentLevelNameCn" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
+                  <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
                       <el-input v-model="editForm.departmentLevelNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.sortOrder')" prop="sortOrder">
+                  <el-form-item :label="$t('systembasicmgmt.departmentLevel.sortOrder')" prop="sortOrder">
                       <el-input-number v-model="editForm.sortOrder" :min="1" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                  <el-form-item :label="$t('SystemBasicMgmt.departmentLevel.departmentLevelDescribe')">
+                  <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelDescribe')">
                       <el-input v-model="editForm.departmentLevelDescribe" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
@@ -114,7 +114,7 @@
     INSERT_DEPARTMENT_LEVEL_API, 
     DELETE_DEPARTMENT_LEVEL_API, 
     UPDATE_DEPARTMENT_LEVEL_API 
-  } from '@/config/api/SystemBasicMgmt/System-BasicData/departmentlevel'
+  } from '@/config/api/systembasicmgmt/System-BasicData/departmentlevel'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -160,16 +160,16 @@
   // 表单验证规则
   const formRules = reactive({
       departmentLevelCode: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelCode'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode'), trigger: 'blur' }
       ],
       departmentLevelNameCn: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameCn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCn'), trigger: 'blur' }
       ],
       departmentLevelNameEn: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameEn'), trigger: 'blur' }
       ],
       sortOrder: [
-          { required: true, message: () => t('SystemBasicMgmt.departmentLevel.pleaseInputSortOrder'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.departmentLevel.pleaseInputSortOrder'), trigger: 'blur' }
       ]
   })
 
@@ -369,7 +369,7 @@
       // 重置表单数据
       resetForm()
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.departmentLevel.addDepartmentLevel')
+      dialogTitle.value = t('systembasicmgmt.departmentLevel.addDepartmentLevel')
       // 显示对话框
       dialogVisible.value = true
   }
@@ -381,7 +381,7 @@
       // 获取部门级别实体数据
       fetchDepartmentLevelEntity(row.departmentLevelId)
       // 设置对话框标题
-      dialogTitle.value = t('SystemBasicMgmt.departmentLevel.editDepartmentLevel')
+      dialogTitle.value = t('systembasicmgmt.departmentLevel.editDepartmentLevel')
       // 显示对话框
       dialogVisible.value = true
       
@@ -404,7 +404,7 @@
   // 处理删除事件
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('SystemBasicMgmt.departmentLevel.deleteConfirm'),
+          t('systembasicmgmt.departmentLevel.deleteConfirm'),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),

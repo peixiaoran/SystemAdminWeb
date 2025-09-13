@@ -197,9 +197,9 @@ import { ref, reactive, onMounted, nextTick, watch, markRaw, computed, h } from 
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
-import { MENU_API } from '@/config/api/domainmenu/menu'
+import { MENU_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
-import { useModuleStore } from '@/stores/module'
+import { usePMenuStore } from '@/stores/pmenu'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 
@@ -207,7 +207,7 @@ import { useI18n } from 'vue-i18n'
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
-const moduleStore = useModuleStore()
+const pmenuStore = usePMenuStore()
 const { t, locale } = useI18n()
 const isCollapse = ref(false)
 const menuList = ref([])
@@ -216,9 +216,9 @@ const userAvatar = computed(() => userStore.avatar || '')
 const currentSystemName = computed(() => {
   // 优先用多语言字段
   if (locale.value === 'en-US') {
-    return moduleStore.currentSystemNameEn || moduleStore.currentSystemName || ''
+    return pmenuStore.currentModuleNameEn || pmenuStore.currentModuleName || ''
   } else {
-    return moduleStore.currentSystemNameCn || moduleStore.currentSystemName || ''
+    return pmenuStore.currentModuleNameCn || pmenuStore.currentModuleName || ''
   }
 })
 
@@ -418,7 +418,7 @@ watch(() => route.path, (newPath, oldPath) => {
   activeMenu.value = newPath
   
   // 处理特殊路径：模块选择或首页 - 提前返回避免后续计算
-  if (newPath === moduleStore.moduleIndexPath || newPath === '/' || newPath === '/module-select' || newPath === '/login') {
+  if (newPath === pmenuStore.pmenuIndexPath || newPath === '/' || newPath === '/module-select' || newPath === '/login') {
     return;
   }
   
@@ -486,15 +486,15 @@ const tagRightClicked = ref(null)
 // 获取菜单数据
 const fetchMenuData = async () => {
   try {
-    // 从moduleStore获取当前选择的domainId
-    const domainId = moduleStore.currentDomainId
-    if (!domainId) {
+    // 从pmenuStore获取当前选择的moduleId
+    const moduleId = pmenuStore.currentModuleId
+    if (!moduleId) {
       ElMessage.warning('未选择系统模块，请先选择一个模块')
       router.push('/module-select')
       return
     }
     // 请求菜单数据
-    const res = await post(MENU_API.GET_MENU, { domainId })
+    const res = await post(MENU_API.GET_MENU, { moduleId })
     
     if (res && res.code === 200) {
       // 处理菜单数据，将其与路由数据对应起来
@@ -724,12 +724,12 @@ const removeTab = (targetPath) => {
           router.push(nextTab.path)
         } else {
           // 如果没有其他标签，跳转到当前模块的index首页
-          const moduleIndexPath = moduleStore.moduleIndexPath
-          if (moduleIndexPath !== '/module-select') {
-            activeTabName.value = moduleIndexPath
+          const pmenuIndexPath = pmenuStore.pmenuIndexPath
+        if (pmenuIndexPath !== '/module-select') {
+          activeTabName.value = pmenuIndexPath
             // 使用nextTick确保DOM更新后再跳转
             nextTick(() => {
-              router.push(moduleIndexPath)
+              router.push(pmenuIndexPath)
             })
           } else {
             // 如果没有模块信息，则跳转到模块选择页面
@@ -762,12 +762,12 @@ const removeTab = (targetPath) => {
   
   // 如果移除后没有标签了，也跳转到模块首页
   if (visitedTabs.value.length === 0) {
-    const moduleIndexPath = moduleStore.moduleIndexPath
-    if (moduleIndexPath !== '/module-select') {
-      activeTabName.value = moduleIndexPath
+    const pmenuIndexPath = pmenuStore.pmenuIndexPath
+    if (pmenuIndexPath !== '/module-select') {
+      activeTabName.value = pmenuIndexPath
       // 使用nextTick确保DOM更新后再跳转
       nextTick(() => {
-        router.push(moduleIndexPath)
+        router.push(pmenuIndexPath)
       })
     } else {
       // 使用nextTick确保DOM更新后再跳转
@@ -858,12 +858,12 @@ const closeAllTags = () => {
   saveTabsToStorage()
   
   // 跳转到当前模块的首页
-  const moduleIndexPath = moduleStore.moduleIndexPath
-  if (moduleIndexPath !== '/module-select') {
-    activeTabName.value = moduleIndexPath
+  const pmenuIndexPath = pmenuStore.pmenuIndexPath
+    if (pmenuIndexPath !== '/module-select') {
+      activeTabName.value = pmenuIndexPath
     // 使用nextTick确保DOM更新后再跳转
     nextTick(() => {
-      router.push(moduleIndexPath)
+      router.push(pmenuIndexPath)
     })
   } else {
     // 使用nextTick确保DOM更新后再跳转
