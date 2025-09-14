@@ -197,8 +197,16 @@ const logout = async () => {
       const successMessage = result.message || t('common.logoutSuccess')
       ElMessage.success(successMessage)
       
+      // 保存语言设置
+      const currentLanguage = localStorage.getItem('language')
+      
       // 清空所有localStorage
       localStorage.clear()
+      
+      // 恢复语言设置
+      if (currentLanguage) {
+        localStorage.setItem('language', currentLanguage)
+      }
       
       router.push('/login')
     } else {

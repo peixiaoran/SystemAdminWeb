@@ -581,8 +581,17 @@ const logout = async () => {
          plain: true,
          showClose: true,
       })
+      
+      // 保存语言设置
+      const currentLanguage = localStorage.getItem('language')
+      
       // 清空所有localStorage
       localStorage.clear()
+      
+      // 恢复语言设置
+      if (currentLanguage) {
+        localStorage.setItem('language', currentLanguage)
+      }
       
       router.push('/login')
     } else {
