@@ -224,7 +224,7 @@ export default {
 
     // 统一的文件上传配置
     const UPLOAD_CONFIG = reactive({
-      url: 'https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile',
+      url: 'https://localhost:7272/api/systembasicmgmt/SystemBasicCoreApi/SysFile/UploadFile',
       headers: {
         'Accept-Language': '',
         'Authorization': `Bearer ${userStore.token}`

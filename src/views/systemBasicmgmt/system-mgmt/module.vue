@@ -57,6 +57,7 @@
                           </div>
                       </template>
                   </el-table-column>
+<<<<<<< HEAD
                   <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -168,6 +169,7 @@
   // 网域数据
   const moduleList = ref([])
   const loading = ref(false)
+  const loading = ref(false)
 
   // 表单引用
   const editFormRef = ref(null)
@@ -184,6 +186,9 @@
       moduleCode: '',
       moduleNameCn: '',
       moduleNameEn: '',
+      moduleUrl: '',
+      moduleNameCn: '',
+      moduleNameEn: '',
       moduleUrl: ''
   })
 
@@ -193,6 +198,10 @@
   // 编辑表单
   const editForm = reactive({
       moduleId: '0',
+      moduleCode: '',
+      moduleNameCn: '',
+      moduleNameEn: '',
+      moduleIcon: '',
       moduleCode: '',
       moduleNameCn: '',
       moduleNameEn: '',
@@ -236,8 +245,8 @@
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputPagePath'), trigger: 'blur' }
   ],
   redirect: [
-    // redirect 可為空，移除必填驗證
-  ]
+    { required: false, message: () => t('systembasicmgmt.module.pleaseInputRedirect'), trigger: 'blur' }
+  ],
   })
 
   // 组件挂载后获取网域数据
@@ -530,5 +539,15 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
+  
+  /* 确保分页组件右对齐 */
+  .pagination-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 0;
+    background: white;
+    flex-shrink: 0;
+    margin: 0;
+  }
 </style>
 

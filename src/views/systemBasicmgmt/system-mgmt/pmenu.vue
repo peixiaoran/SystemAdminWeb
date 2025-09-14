@@ -58,6 +58,17 @@
                           </div>
                       </template>
                   </el-table-column>
+                  <el-table-column prop="path" :label="$t('systembasicmgmt.pmenu.pagePath')" align="left" min-width="280" />
+                  <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="170" />
+                  <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="120">
+                      <template #default="scope">
+                          <div class="flex">
+                              <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
+                                  {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
+                              </el-tag>
+                          </div>
+                      </template>
+                  </el-table-column>
                   <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
@@ -126,6 +137,10 @@
                       <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
                   </el-form-item>
               </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0b4a429d474f7aa0cde76ccca9f663c67ce74256
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.pmenu.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />

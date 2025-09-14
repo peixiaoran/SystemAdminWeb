@@ -30,7 +30,11 @@
               </el-form-item>
               <div class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
+<<<<<<< HEAD
                       {{ $t('systembasicmgmt.smenu.addSMenu') }}
+=======
+                      {{ $t('common.add') }}
+>>>>>>> 0b4a429d474f7aa0cde76ccca9f663c67ce74256
                   </el-button>
               </div>
           </el-form>
@@ -46,10 +50,16 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+<<<<<<< HEAD
                   <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="180" />
                   <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="200" />
                   <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.smenu.menuType')" align="center" min-width="150" />
+=======
+                  <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="200" />
+                  <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="260" />
+                  <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="230" />
+>>>>>>> 0b4a429d474f7aa0cde76ccca9f663c67ce74256
                   <el-table-column prop="path" :label="$t('systembasicmgmt.smenu.pagePath')" align="left" min-width="420" />
                   <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.smenu.smenuIcon')" align="center" min-width="180" />
                   <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
