@@ -865,7 +865,6 @@ export default {
       pleaseInputSmenuNameCn: '请输入中文名称',
       pleaseInputSmenuNameEn: '请输入英文名称',
       pleaseInputSmenuIcon: '请输入二级菜单图标',
-      // 表单验证相关
       smenuCodeRequired: '请输入菜单编码',
       smenuNameCnRequired: '请输入中文名称',
       smenuNameEnRequired: '请输入英文名称',
@@ -873,15 +872,6 @@ export default {
       parentMenuIdRequired: '请选择所属一级菜单',
       smenuTypeRequired: '请选择菜单类型',
       sortOrderRequired: '请输入排序',
-      // 其他配置
-      index: '序号',
-      operation: '操作',
-      remark: '备注',
-      isEnabled: '是否启用',
-      enabled: '启用',
-      disabled: '禁用',
-      createdBy: '创建人',
-      createdTime: '创建时间',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
       deleteSuccess: '删除成功',
