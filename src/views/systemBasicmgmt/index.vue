@@ -486,131 +486,151 @@ const initKLineChart = () => {
 }
 
 // 初始化饼图
-const initPieCharts = () => {
-  // 部门分布饼图
-  if (pieCharts.value[0].ref) {
-    const chart1 = echarts.init(pieCharts.value[0].ref)
-    const option1 = {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)'
-      },
-      legend: {
-        bottom: '0%',
-        left: 'center'
-      },
-      series: [
-        {
-          name: t('dashboard.charts.departmentDistribution'),
-          type: 'pie',
-          radius: ['40%', '70%'],
-          center: ['50%', '35%'],
-          avoidLabelOverlap: false,
-          itemStyle: {
-            borderRadius: 10,
-            borderColor: '#fff',
-            borderWidth: 2
-          },
-          label: {
-            show: false,
-            position: 'center'
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: 20,
-              fontWeight: 'bold'
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: [
-            { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
-            { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
-            { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
-            { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
-            { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
-            { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
-          ]
-        }
-      ]
-    }
-    chart1.setOption(option1)
-    window.addEventListener('resize', () => chart1.resize())
-  }
-
-  // 项目状态饼图
-  if (pieCharts.value[1].ref) {
-    const chart2 = echarts.init(pieCharts.value[1].ref)
-    const option2 = {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)'
-      },
-      legend: {
-        bottom: '0%',
-        left: 'center'
-      },
-      series: [
-        {
-          name: t('dashboard.charts.projectStatus'),
-          type: 'pie',
-          radius: '65%',
-          center: ['50%', '35%'],
-          data: [
-            { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
-            { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
-            { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
-            { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
-          ],
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
+const initPieCharts = async () => {
+  try {
+    // 等待所有饼图DOM元素准备好
+    const pieChartPromises = pieCharts.value.map((chart, index) => {
+      return new Promise((resolve) => {
+        const checkElement = () => {
+          if (chart.ref) {
+            resolve(index)
+          } else {
+            setTimeout(checkElement, 100)
           }
         }
-      ]
+        checkElement()
+      })
+    })
+    
+    await Promise.all(pieChartPromises)
+    
+    // 部门分布饼图
+    if (pieCharts.value[0].ref) {
+      const chart1 = echarts.init(pieCharts.value[0].ref)
+      const option1 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.departmentDistribution'),
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '35%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 20,
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
+              { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
+              { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
+              { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
+              { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
+              { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
+            ]
+          }
+        ]
+      }
+      chart1.setOption(option1)
+      window.addEventListener('resize', () => chart1.resize())
     }
-    chart2.setOption(option2)
-    window.addEventListener('resize', () => chart2.resize())
-  }
 
-  // 资源使用饼图
-  if (pieCharts.value[2].ref) {
-    const chart3 = echarts.init(pieCharts.value[2].ref)
-    const option3 = {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c}% ({d}%)'
-      },
-      legend: {
-        bottom: '0%',
-        left: 'center'
-      },
-      series: [
-        {
-          name: t('dashboard.charts.resourceUsage'),
-          type: 'pie',
-          radius: ['30%', '70%'],
-          center: ['50%', '35%'],
-          roseType: 'area',
-          itemStyle: {
-            borderRadius: 8
-          },
-          data: [
-            { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
-            { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
-            { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
-            { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
-          ]
-        }
-      ]
+    // 项目状态饼图
+    if (pieCharts.value[1].ref) {
+      const chart2 = echarts.init(pieCharts.value[1].ref)
+      const option2 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.projectStatus'),
+            type: 'pie',
+            radius: '65%',
+            center: ['50%', '35%'],
+            data: [
+              { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
+              { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
+              { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
+              { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      }
+      chart2.setOption(option2)
+      window.addEventListener('resize', () => chart2.resize())
     }
-    chart3.setOption(option3)
-    window.addEventListener('resize', () => chart3.resize())
+
+    // 资源使用饼图
+    if (pieCharts.value[2].ref) {
+      const chart3 = echarts.init(pieCharts.value[2].ref)
+      const option3 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c}% ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.resourceUsage'),
+            type: 'pie',
+            radius: ['30%', '70%'],
+            center: ['50%', '35%'],
+            roseType: 'area',
+            itemStyle: {
+              borderRadius: 8
+            },
+            data: [
+              { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
+              { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
+              { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
+              { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
+            ]
+          }
+        ]
+      }
+      chart3.setOption(option3)
+      window.addEventListener('resize', () => chart3.resize())
+    }
+  } catch (error) {
+    console.error('饼图初始化失败:', error)
   }
 }
 
@@ -624,31 +644,51 @@ const onPeriodChange = () => {
   initKLineChart()
 }
 
+// 等待DOM元素准备好的辅助函数
+const waitForElement = (elementRef, maxAttempts = 20, interval = 200) => {
+  return new Promise((resolve, reject) => {
+    let attempts = 0
+    
+    const checkElement = () => {
+      attempts++
+      
+      if (elementRef.value) {
+        resolve(elementRef.value)
+      } else if (attempts >= maxAttempts) {
+        reject(new Error(`Element not found after ${maxAttempts} attempts`))
+      } else {
+        setTimeout(checkElement, interval)
+      }
+    }
+    
+    checkElement()
+  })
+}
+
 // 组件挂载后初始化图表
 onMounted(() => {
-  nextTick(() => {
-    // 延迟初始化所有图表，确保DOM元素已完全渲染和国际化加载完成
-    setTimeout(() => {
-      try {
-        // 确保DOM元素存在后再初始化
-        if (kLineChart.value) {
-          initKLineChart()
-        } else {
-          console.warn('kLineChart DOM element not ready, retrying...')
-          // 如果DOM元素还没准备好，再次尝试
-          setTimeout(() => {
-            if (kLineChart.value) {
-              initKLineChart()
-            } else {
-              console.error('kLineChart DOM element still not found after retry')
-            }
-          }, 500)
+  nextTick(async () => {
+    try {
+      // 等待K线图DOM元素准备好
+      await waitForElement(kLineChart)
+      initKLineChart()
+      
+      // 初始化饼图
+      await initPieCharts()
+    } catch (error) {
+      console.error('图表初始化失败:', error)
+      // 如果等待超时，尝试最后一次初始化
+      setTimeout(async () => {
+        try {
+          if (kLineChart.value) {
+            initKLineChart()
+          }
+          await initPieCharts()
+        } catch (retryError) {
+          console.error('图表重试初始化也失败:', retryError)
         }
-        initPieCharts()
-      } catch (error) {
-        console.error('图表初始化失败:', error)
-      }
-    }, 1000) // 增加延迟时间确保国际化完全加载
+      }, 2000)
+    }
   })
 })
 </script>

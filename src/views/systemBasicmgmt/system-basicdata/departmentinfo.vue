@@ -44,7 +44,7 @@
                         <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-                        <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" min-width="110">
+                        <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" width="100">
                             <template #default="scope">
                                 <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
                                     {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.departmentInfo.active') : $t('systembasicmgmt.departmentInfo.inactive') }}
@@ -134,7 +134,6 @@
                         <el-input v-model="editForm.description" style="width:100%" type="textarea" :rows="3" />
                     </el-form-item>
                 </div>
-
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
@@ -156,7 +155,7 @@
         DELETE_DEPARTMENT_API, 
         UPDATE_DEPARTMENT_API,
         GET_DEPARTMENTLEVEL_DROPDOWN_API 
-    } from '@/config/api/systembasicmgmt/System-BasicData/department'
+    } from '@/config/api/systembasicmgmt/system-basicdata/department'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   

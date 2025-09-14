@@ -43,11 +43,6 @@
                       </template>
                   </el-table-column>
                   <el-table-column prop="remark" :label="$t('systembasicmgmt.remark')" min-width="150" />
-                  <el-table-column :label="$t('systembasicmgmt.roleModule.operation')" align="center" width="120" fixed="right">
-                      <template #default="scope">
-                          <!-- Operation buttons can be added here -->
-                      </template>
-                  </el-table-column>
               </el-table>
           </div>
 
@@ -69,7 +64,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { GET_ROLE_MODULE_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_MODULE_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/rolemodule'
+  import { GET_ROLE_MODULE_API, GET_ROLE_DROPDOWN_API, UPDATE_ROLE_MODULE_API } from '@/config/api/systembasicmgmt/system-mgmt/rolemodule'
   import { useI18n } from 'vue-i18n'
 
   // 使用i18n

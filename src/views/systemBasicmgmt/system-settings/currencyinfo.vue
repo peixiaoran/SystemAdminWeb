@@ -130,7 +130,7 @@
       DELETE_CURRENCY_API, 
       GET_CURRENCY_ENTITY_API, 
       UPDATE_CURRENCY_API 
-    } from '@/config/api/systembasicmgmt/System-Settings/currency'
+    } from '@/config/api/systembasicmgmt/system-settings/currency'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   

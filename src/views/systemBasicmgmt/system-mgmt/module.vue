@@ -57,7 +57,7 @@
                           </div>
                       </template>
                   </el-table-column>
-                  <el-table-column :label="$t('systembasicmgmt.operation')" min-width="180" fixed="right" align="center">
+                  <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -89,7 +89,7 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="编辑表单">
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
                       <el-input v-model="editForm.moduleCode" style="width:100%" />
@@ -158,7 +158,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_MODULE_PAGES_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_MODULE_ENTITY_API, UPDATE_MODULE_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/module'
+  import { GET_MODULE_PAGES_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_MODULE_ENTITY_API, UPDATE_MODULE_API } from '@/config/api/systembasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -167,8 +167,7 @@
 
   // 网域数据
   const moduleList = ref([])
-const loading = ref(false)
-const moduleTypeList = ref([])
+  const loading = ref(false)
 
   // 表单引用
   const editFormRef = ref(null)
@@ -183,9 +182,9 @@ const moduleTypeList = ref([])
   // 过滤条件
   const filters = reactive({
       moduleCode: '',
-  moduleNameCn: '',
-  moduleNameEn: '',
-  moduleUrl: ''
+      moduleNameCn: '',
+      moduleNameEn: '',
+      moduleUrl: ''
   })
 
   // 对话框显示状态
@@ -194,10 +193,10 @@ const moduleTypeList = ref([])
   // 编辑表单
   const editForm = reactive({
       moduleId: '0',
-  moduleCode: '',
-  moduleNameCn: '',
-  moduleNameEn: '',
-  moduleIcon: '',
+      moduleCode: '',
+      moduleNameCn: '',
+      moduleNameEn: '',
+      moduleIcon: '',
       sortOrder: 1,
       isEnabled: 1,
       isVisible: 1,
@@ -221,8 +220,8 @@ const moduleTypeList = ref([])
   moduleNameEn: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputModuleNameEn'), trigger: 'blur' }
   ],
-      remarksCh: [
-          { required: false, message: () => t('systembasicmgmt.module.pleaseInputRemarksCh'), trigger: 'blur' }
+  remarksCh: [
+    { required: false, message: () => t('systembasicmgmt.module.pleaseInputRemarksCh'), trigger: 'blur' }
   ],
   remarksEn: [
     { required: false, message: () => t('systembasicmgmt.module.pleaseInputRemarksEn'), trigger: 'blur' }
@@ -230,15 +229,15 @@ const moduleTypeList = ref([])
   moduleIcon: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputModuleIcon'), trigger: 'blur' }
   ],
-      sortOrder: [
-          { required: true, message: () => t('systembasicmgmt.module.pleaseInputSortOrder'), trigger: 'blur' }
+  sortOrder: [
+    { required: true, message: () => t('systembasicmgmt.module.pleaseInputSortOrder'), trigger: 'blur' }
   ],
   path: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputPagePath'), trigger: 'blur' }
   ],
-      redirect: [
-          // redirect 可為空，移除必填驗證
-      ]
+  redirect: [
+    // redirect 可為空，移除必填驗證
+  ]
   })
 
   // 组件挂载后获取网域数据
@@ -255,10 +254,10 @@ const moduleTypeList = ref([])
 
       if (res && res.code === 200) {
           editForm.moduleId = res.data.moduleId
-    editForm.moduleCode = res.data.moduleCode
-    editForm.moduleNameCn = res.data.moduleNameCn
-    editForm.moduleNameEn = res.data.moduleNameEn
-    editForm.moduleIcon = res.data.moduleIcon
+          editForm.moduleCode = res.data.moduleCode
+          editForm.moduleNameCn = res.data.moduleNameCn
+          editForm.moduleNameEn = res.data.moduleNameEn
+          editForm.moduleIcon = res.data.moduleIcon
           editForm.sortOrder = res.data.sortOrder
           editForm.path = res.data.path
           editForm.redirect = res.data.redirect
@@ -304,8 +303,8 @@ const moduleTypeList = ref([])
   // 重置
   const handleReset = () => {
       filters.moduleCode = ''
-  filters.moduleNameCn = ''
-  filters.moduleNameEn = ''
+      filters.moduleNameCn = ''
+      filters.moduleNameEn = ''
       pagination.pageIndex = 1
   }
 
@@ -531,15 +530,5 @@ const moduleTypeList = ref([])
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
-  
-  /* 确保分页组件右对齐 */
-  .pagination-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    padding: 8px 0;
-    background: white;
-    flex-shrink: 0;
-    margin: 0;
-  }
 </style>
 

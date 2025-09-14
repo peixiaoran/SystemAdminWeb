@@ -86,7 +86,7 @@
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
-<el-input v-model="editForm.dicNameCn" style="width:100%" />
+                      <el-input v-model="editForm.dicNameCn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
                       <el-input v-model="editForm.dicNameEn" style="width:100%" />

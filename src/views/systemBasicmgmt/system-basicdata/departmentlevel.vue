@@ -114,7 +114,7 @@
     INSERT_DEPARTMENT_LEVEL_API, 
     DELETE_DEPARTMENT_LEVEL_API, 
     UPDATE_DEPARTMENT_LEVEL_API 
-  } from '@/config/api/systembasicmgmt/System-BasicData/departmentlevel'
+  } from '@/config/api/systembasicmgmt/system-basicdata/departmentlevel'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 

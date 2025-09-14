@@ -149,7 +149,7 @@ import { post } from '@/utils/request'
 import { 
   GET_USER_POSITION_LIST_API, 
   GET_USER_POSITION_ENTITY_API 
-} from '@/config/api/systembasicmgmt/System-BasicData/userposition.js'
+} from '@/config/api/systembasicmgmt/system-basicdata/userposition.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n

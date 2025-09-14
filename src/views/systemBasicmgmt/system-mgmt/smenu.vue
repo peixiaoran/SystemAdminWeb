@@ -30,7 +30,7 @@
               </el-form-item>
               <div class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('common.add') }}
+                      {{ $t('systembasicmgmt.smenu.addSMenu') }}
                   </el-button>
               </div>
           </el-form>
@@ -46,9 +46,10 @@
                         v-loading="loading"
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="200" />
-                  <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="260" />
-                  <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="230" />
+                  <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="180" />
+                  <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="230" />
+                  <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="200" />
+                  <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.smenu.menuType')" align="center" min-width="150" />
                   <el-table-column prop="path" :label="$t('systembasicmgmt.smenu.pagePath')" align="left" min-width="420" />
                   <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.smenu.smenuIcon')" align="center" min-width="180" />
                   <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
@@ -69,7 +70,7 @@
                           </div>
                       </template>
                   </el-table-column>
-                <el-table-column :label="$t('systembasicmgmt.operation')" min-width="170" fixed="right" align="center">
+                <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
                           <el-button size="small"
@@ -101,7 +102,7 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="编辑表单">
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.smenu.smenuCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
@@ -182,9 +183,10 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API, GET_MENU_TYPE_API } from '@/config/api/systembasicmgmt/System-Mgmt/smenu'
+  import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API, GET_MENU_TYPE_API } from '@/config/api/systembasicmgmt/system-mgmt/smenu'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
+  import axios from 'axios'
 
   // 使用i18n
   const { t } = useI18n()
@@ -445,6 +447,10 @@
           smenuList.value = res.data || []
           pagination.totalCount = res.totalCount || 0
       } catch (error) {
+          // 如果是请求被取消的错误，不显示错误信息
+          if (axios.isCancel(error)) {
+              return
+          }
           console.error('获取列表数据失败:', error)
           ElMessage({
               message: '获取列表数据失败，请刷新页面重试',
@@ -553,118 +559,148 @@
 
   // 新增程序
   const insertSMenu = async () => {
-      // 验证必填项
-      if (!editForm.moduleId) {
-          ElMessage({
-              message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
-              type: 'warning',
-              plain: true,
-              showClose: true
-          })
-          return
-      }
+      try {
+          // 验证必填项
+          if (!editForm.moduleId) {
+              ElMessage({
+                  message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
+                  type: 'warning',
+                  plain: true,
+                  showClose: true
+              })
+              return
+          }
 
-      // 设置必填项
-      const params = {
-          ...editForm,
-          redirect: editForm.redirect
-      }
-              const res = await post(INSERT_SMENU_API.INSERT_SMENU, params)
+          // 设置必填项
+          const params = {
+              ...editForm,
+              redirect: editForm.redirect
+          }
+          const res = await post(INSERT_SMENU_API.INSERT_SMENU, params)
 
-      if (res && res.code === 200) {
-          resetForm()
+          if (res && res.code === 200) {
+              resetForm()
+              ElMessage({
+                  message: res.message,
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
+              fetchSMenuPages()
+              dialogVisible.value = false
+          } else {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
+      } catch (error) {
+          console.error('新增二级菜单失败:', error)
           ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          fetchSMenuPages()
-          dialogVisible.value = false
-      } else {
-          ElMessage({
-              message: res.message,
+              message: '新增二级菜单失败，请重试',
               type: 'error',
               plain: true,
-              showClose: true
+              duration: 3000
           })
       }
   }
 
   // 更新程序
   const updateSMenu = async () => {
-      // 验证必填项
-      if (!editForm.moduleId) {
-          ElMessage({
-              message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
-              type: 'warning',
-              plain: true,
-              showClose: true
-          })
-          return
-      }
+      try {
+          // 验证必填项
+          if (!editForm.moduleId) {
+              ElMessage({
+                  message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
+                  type: 'warning',
+                  plain: true,
+                  showClose: true
+              })
+              return
+          }
 
-      // 设置必填项
-      const params = {
-          ...editForm,
-          redirect: editForm.redirect
-      }
+          // 设置必填项
+          const params = {
+              ...editForm,
+              redirect: editForm.redirect
+          }
 
-      const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, params)
+          const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, params)
 
-      if (res && res.code === 200) {
-          resetForm()
+          if (res && res.code === 200) {
+              resetForm()
+              ElMessage({
+                  message: res.message,
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
+              dialogVisible.value = false
+              fetchSMenuPages()
+          } else {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
+      } catch (error) {
+          console.error('更新二级菜单失败:', error)
           ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          dialogVisible.value = false
-          fetchSMenuPages()
-      } else {
-          ElMessage({
-              message: res.message,
+              message: '更新二级菜单失败，请重试',
               type: 'error',
               plain: true,
-              showClose: true
+              duration: 3000
           })
       }
   }
 
   // 删除程序
   const deleteSMenu = async (menuId) => {
-      const params = {
-          menuId: menuId
-      }
+      try {
+          const params = {
+              menuId: menuId
+          }
 
-      if (isNaN(params.menuId)) {
-                     ElMessage({
-                         message: t('systembasicmgmt.invalidId'),
-                         type: 'error',
-                         plain: true,
-                         showClose: true
-                     })
-          return
-      }
+          if (isNaN(params.menuId)) {
+              ElMessage({
+                  message: t('systembasicmgmt.invalidId'),
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+              return
+          }
 
-      const res = await post(DELETE_SMENU_API.DELETE_SMENU, params)
+          const res = await post(DELETE_SMENU_API.DELETE_SMENU, params)
 
-      if (res && res.code === 200) {
+          if (res && res.code === 200) {
+              ElMessage({
+                  message: res.message,
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
+              dialogVisible.value = false
+              fetchSMenuPages()
+          } else {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
+      } catch (error) {
+          console.error('删除二级菜单失败:', error)
           ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          dialogVisible.value = false
-          fetchSMenuPages()
-      } else {
-          ElMessage({
-              message: res.message,
+              message: '删除二级菜单失败，请重试',
               type: 'error',
               plain: true,
-              showClose: true
+              duration: 3000
           })
       }
   }

@@ -389,10 +389,10 @@
         UPDATE_USER_PARTTIME_API,
         GET_POSITION_DROPDOWN_API,
         GET_LABOR_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/System-BasicData/userparttime'
+    } from '@/config/api/systembasicmgmt/system-userconfig/userparttime'
     import {
         GET_DEPARTMENT_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/System-BasicData/user'
+    } from '@/config/api/systembasicmgmt/system-userconfig/userparttime'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   

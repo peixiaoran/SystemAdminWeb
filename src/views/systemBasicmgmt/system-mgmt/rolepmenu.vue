@@ -76,7 +76,7 @@
     GET_ROLE_DROPDOWN_API,
     GET_MODULE_DROPDOWN_API,
     UPDATE_ROLE_PMENU_API
-} from '@/config/api/SystemBasicMgmt/System-Mgmt/rolepmenu'
+} from '@/config/api/systembasicmgmt/system-mgmt/rolepmenu'
 
   const { t } = useI18n()
 

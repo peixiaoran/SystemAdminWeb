@@ -27,7 +27,7 @@
               </el-form-item>
               <div class="form-right-button">
                   <el-button type="primary" @click="handleAdd">
-                      {{ $t('systembasicmgmt.pmenu.addModule') }}
+                      {{ $t('systembasicmgmt.pmenu.addPMenu') }}
                   </el-button>
               </div>
           </el-form>
@@ -46,10 +46,10 @@
                   <el-table-column prop="menuCode" :label="$t('systembasicmgmt.pmenu.menuCode')" align="left" min-width="180" />
                   <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.pmenu.menuNameCn')" align="left" min-width="230" />
                   <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.pmenu.menuNameEn')" align="left" min-width="200" />
-
+                  <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.pmenu.menuType')" align="center" min-width="150" />
                   <el-table-column prop="path" :label="$t('systembasicmgmt.pmenu.pagePath')" align="left" min-width="280" />
-                  <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="170" />
-                  <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="120">
+                  <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="180" />
+                  <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
                       <template #default="scope">
                           <div class="flex">
                               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
@@ -99,7 +99,7 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="模块编辑表单">
+          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="模块编辑表单">
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.pmenu.menuCode')" prop="menuCode">
                       <el-input v-model="editForm.menuCode" style="width:100%" />
@@ -126,7 +126,6 @@
                       <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
                   </el-form-item>
               </div>
-
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.pmenu.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
@@ -236,7 +235,7 @@
           { required: true, message: () => t('systembasicmgmt.pmenu.pleaseInputMenuCode'), trigger: 'blur' }
       ],
       menuNameCn: [
-{ required: true, message: () => t('systembasicmgmt.pmenu.pleaseInputMenuNameCn'), trigger: 'blur' }
+          { required: true, message: () => t('systembasicmgmt.pmenu.pleaseInputMenuNameCn'), trigger: 'blur' }
       ],
       menuNameEn: [
           { required: true, message: () => t('systembasicmgmt.pmenu.pleaseInputMenuNameEn'), trigger: 'blur' }
@@ -285,10 +284,6 @@
           // 应用默认值进行初始查询
           fetchPMenuPages()
       } catch (error) {
-          if (error.name === 'CanceledError') {
-              // 请求被取消，不显示错误信息
-              return
-          }
           console.error('获取模块数据失败:', error)
           ElMessage({
             message: '获取模块数据失败，请刷新页面重试',
@@ -306,17 +301,13 @@
           moduleDropList.value = res.data || []
 
           // 如果是新增操作，默认选中第一个未禁用的模块
-          if (dialogTitle.value === t('systembasicmgmt.pmenu.addModule') && moduleDropList.value.length > 0) {
+          if (dialogTitle.value === t('systembasicmgmt.pmenu.addPMenu') && moduleDropList.value.length > 0) {
               const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
               if (firstEnabledModule) {
                   editForm.moduleId = firstEnabledModule.moduleId
               }
           }
       } catch (error) {
-          if (error.name === 'CanceledError') {
-              // 请求被取消，不显示错误信息
-              return
-          }
           console.error('获取模块数据失败:', error)
           ElMessage({
             message: '获取模块数据失败，请刷新页面重试',
@@ -373,10 +364,6 @@
               editForm.isVisible = res.data.isVisible
           }
       } catch (error) {
-          if (error.name === 'CanceledError') {
-              // 请求被取消，不显示错误信息
-              return
-          }
           console.error('获取模块实体数据失败:', error)
           ElMessage({
             message: '获取模块数据失败，请重试',
@@ -401,10 +388,6 @@
           moduleList.value = res.data || []
           pagination.totalCount = res.totalCount || 0
       } catch (error) {
-          if (error.name === 'CanceledError') {
-              // 请求被取消，不显示错误信息
-              return
-          }
           console.error('获取模块列表失败:', error)
           ElMessage({
             message: '获取数据失败，请重试',
@@ -633,7 +616,7 @@
       editForm.isVisible = 1
 
       // 设置对话框标题
-      dialogTitle.value = t('systembasicmgmt.pmenu.addModule')
+      dialogTitle.value = t('systembasicmgmt.pmenu.addPMenu')
 
       // 获取模块类型和菜单类型
       fetchModuleDropList()
@@ -648,7 +631,7 @@
       resetForm()
 
       // 设置对话框标题
-      dialogTitle.value = t('systembasicmgmt.pmenu.editModule')
+      dialogTitle.value = t('systembasicmgmt.pmenu.editPMenu')
 
       // 获取模块类型和菜单类型
       fetchModuleDropList()

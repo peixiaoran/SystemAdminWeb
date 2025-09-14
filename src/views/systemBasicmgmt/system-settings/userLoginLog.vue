@@ -86,7 +86,7 @@
   import { post } from '@/utils/request'
   import { 
     GET_USER_LOGIN_LOG_PAGES_API
-  } from '@/config/api/systembasicmgmt/System-Settings/userLoginLog'
+  } from '@/config/api/systembasicmgmt/system-settings/userLoginLog'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 

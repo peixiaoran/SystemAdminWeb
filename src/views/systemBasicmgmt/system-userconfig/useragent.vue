@@ -280,7 +280,7 @@
         GET_USER_AGENT_DELETE_API,
         GET_USER_VIEW_API,
         GET_DEPARTMENT_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/System-BasicData/useragent'
+    } from '@/config/api/systembasicmgmt/system-userconfig/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   

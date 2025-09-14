@@ -14,6 +14,8 @@ const CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存
 
 // 防抖Map - 防止重复请求
 const pendingRequests = new Map()
+// 防抖延迟时间（毫秒）
+const DEBOUNCE_DELAY = 100
 
 // 生成请求唯一标识
 const generateRequestKey = (config) => {
@@ -63,13 +65,24 @@ service.interceptors.request.use(
     
     // 检查是否有相同的请求正在进行（防抖）
     if (pendingRequests.has(requestKey)) {
-      // 取消之前的请求
-      const prevSource = pendingRequests.get(requestKey)
-      prevSource.cancel('Request superseded by newer request')
+      const pendingRequest = pendingRequests.get(requestKey)
+      // 检查请求时间间隔，如果间隔太短则取消之前的请求
+      if (Date.now() - pendingRequest.timestamp < DEBOUNCE_DELAY) {
+        // 取消之前的请求
+        pendingRequest.source.cancel('Request superseded by newer request')
+        // 清理已取消的请求
+        pendingRequests.delete(requestKey)
+      } else {
+        // 如果间隔足够长，允许并发请求
+        pendingRequests.delete(requestKey)
+      }
     }
     
-    // 存储当前请求的取消token
-    pendingRequests.set(requestKey, source)
+    // 存储当前请求的取消token和时间戳
+    pendingRequests.set(requestKey, {
+      source: source,
+      timestamp: Date.now()
+    })
     
     return config
   },
@@ -209,8 +222,8 @@ export const clearCache = () => {
 
 // 取消所有pending请求
 export const cancelAllRequests = () => {
-  for (const [key, source] of pendingRequests.entries()) {
-    source.cancel('Request cancelled by user')
+  for (const [key, requestInfo] of pendingRequests.entries()) {
+    requestInfo.source.cancel('Request cancelled by user')
   }
   pendingRequests.clear()
 }

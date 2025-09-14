@@ -45,7 +45,7 @@
                   <el-table-column prop="roleCode"
                                    :label="$t('systembasicmgmt.role.roleCode')"
                                    align="left"
-                                   min-width="240" />
+                                   min-width="140" />
                   <el-table-column prop="roleNameCn"
                                    :label="$t('systembasicmgmt.role.roleNameCn')"
                                    align="left"
@@ -57,7 +57,7 @@
                   <el-table-column prop="isEnabled"
                                    :label="$t('systembasicmgmt.isEnabled')"
                                    align="center"
-                                   min-width="100">
+                                   width="100">
                       <template #default="scope">
                           <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
                               {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
@@ -151,7 +151,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/SystemBasicMgmt/System-Mgmt/role'
+  import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systembasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 

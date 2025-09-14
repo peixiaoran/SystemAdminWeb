@@ -162,7 +162,7 @@
       INSERT_EXCHANGE_RATE_API, 
       UPDATE_EXCHANGE_RATE_API,
       DELETE_EXCHANGE_RATE_API
-    } from '@/config/api/systembasicmgmt/System-Settings/exchangerateInfo'
+    } from '@/config/api/systembasicmgmt/system-settings/exchangerateInfo'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
   

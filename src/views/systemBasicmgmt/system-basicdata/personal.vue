@@ -197,7 +197,7 @@ import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { get, post } from '@/utils/request'
+import { post } from '@/utils/request'
 import { useUserStore } from '@/stores/user'
 import {
   GET_PERSONAL_INFO_ENTITY_API,
@@ -224,7 +224,7 @@ export default {
 
     // 统一的文件上传配置
     const UPLOAD_CONFIG = reactive({
-      url: 'https://localhost:7272/api/systembasicmgmt/SystemBasicCoreApi/SysFile/UploadFile',
+      url: 'https://localhost:7272/api/SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile',
       headers: {
         'Accept-Language': '',
         'Authorization': `Bearer ${userStore.token}`

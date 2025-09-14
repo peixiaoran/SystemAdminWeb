@@ -353,7 +353,7 @@
       GET_NATIONALITY_DROPDOWN_API,
       GET_LABOR_TYPE_DROPDOWN_API,
       UPLOAD_AVATAR_API
-  } from '@/config/api/systembasicmgmt/System-BasicData/user'
+  } from '@/config/api/systembasicmgmt/system-basicdata/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import { useUserStore } from '@/stores/user'

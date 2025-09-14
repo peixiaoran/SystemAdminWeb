@@ -170,7 +170,7 @@ import {
   INSERT_USER_LABOR_API,
   UPDATE_USER_LABOR_API,
   DELETE_USER_LABOR_API
-} from '@/config/api/systembasicmgmt/System-BasicData/userlabor.js'
+} from '@/config/api/systembasicmgmt/system-basicdata/userlabor.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n

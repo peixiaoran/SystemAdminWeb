@@ -156,7 +156,7 @@ const pmenuRoutes = [
             component: () => import('../views/systembasicmgmt/system-mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
-              icon: 'MoreFilled',
+              icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -167,7 +167,7 @@ const pmenuRoutes = [
             component: () => import('../views/systembasicmgmt/system-mgmt/rolepmenu.vue'),
             meta: { 
               title: 'route.rolePMenu', 
-              icon: 'MoreFilled',
+              icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -178,7 +178,7 @@ const pmenuRoutes = [
             component: () => import('../views/systembasicmgmt/system-mgmt/rolesmenu.vue'),
             meta: { 
               title: 'route.roleSMenu', 
-              icon: 'MoreFilled',
+              icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -264,35 +264,14 @@ const pmenuRoutes = [
               noTag: false
             }
           },
-          {
-            path: 'useragent',
-            name: 'SystemUseragent',
-            component: () => import('../views/systembasicmgmt/system-basicdata/useragent.vue'),
-            meta: { 
-              title: 'route.userAgent', 
-              icon: 'Handbag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userparttime',
-            name: 'SystemUserPartTime',
-            component: () => import('../views/systembasicmgmt/system-basicdata/userparttime.vue'),
-            meta: { 
-              title: 'route.userPartTime', 
-              icon: 'ShoppingBag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
+
           {
             path: 'personal',
             name: 'SystemPersonalInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
             meta: { 
               title: 'route.personalInfo', 
-              icon: 'User',
+              icon: 'Postcard',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -351,6 +330,42 @@ const pmenuRoutes = [
             meta: { 
               title: 'route.userLoginLog', 
               icon: 'Tickets',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          }
+        ]
+      },
+      // 用户配置子模块 - 使用嵌套结构
+      {
+        path: 'system-userconfig',
+        name: 'SystemUserConfig',
+        redirect: '/systembasicmgmt/system-userconfig',
+        meta: { 
+          title: 'route.systemUserConfig',
+          icon: 'SetUp',
+          [ROUTE_CONFIG.META.AUTH]: true,
+          noTag: true
+        },
+        children: [
+          {
+            path: 'useragent',
+            name: 'SystemUseragent',
+            component: () => import('../views/systembasicmgmt/system-userconfig/useragent.vue'),
+            meta: { 
+              title: 'route.userAgent', 
+              icon: 'Handbag',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
+            path: 'userparttime',
+            name: 'SystemUserPartTime',
+            component: () => import('../views/systembasicmgmt/system-userconfig/userparttime.vue'),
+            meta: { 
+              title: 'route.userPartTime', 
+              icon: 'ShoppingBag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
