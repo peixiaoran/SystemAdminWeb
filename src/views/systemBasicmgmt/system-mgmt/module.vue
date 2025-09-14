@@ -57,7 +57,6 @@
                           </div>
                       </template>
                   </el-table-column>
-<<<<<<< HEAD
                   <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -538,15 +537,5 @@
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
-  
-  /* 确保分页组件右对齐 */
-  .pagination-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    padding: 8px 0;
-    background: white;
-    flex-shrink: 0;
-    margin: 0;
-  }
 </style>
 

@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
               <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
@@ -430,13 +429,6 @@
 
       // 显示对话框
       dialogVisible.value = true
-      
-      // 数据加载完成后再次清除验证状态
-      setTimeout(() => {
-          if (editFormRef.value) {
-              editFormRef.value.clearValidate()
-          }
-      }, 100)
   }
 
   // 处理对话框关闭

@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
       <el-card class="conventional-card">
-
           <!-- 搜索 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索部门级别">
               <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')">
@@ -384,13 +383,6 @@
       dialogTitle.value = t('systembasicmgmt.departmentLevel.editDepartmentLevel')
       // 显示对话框
       dialogVisible.value = true
-      
-      // 数据加载完成后再次清除验证状态
-      setTimeout(() => {
-          if (editFormRef.value) {
-              editFormRef.value.clearValidate()
-          }
-      }, 100)
   }
 
   // 处理对话框关闭

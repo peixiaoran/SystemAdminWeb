@@ -395,13 +395,6 @@
         dialogTitle.value = t('systembasicmgmt.currencyInfo.editCurrency')
         // 显示对话框
         dialogVisible.value = true
-        
-        // 在数据加载完成后再次清除验证状态
-        setTimeout(() => {
-            if (editFormRef.value) {
-                editFormRef.value.clearValidate()
-            }
-        }, 100)
     }
   
     // 处理删除操作
