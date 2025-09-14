@@ -169,7 +169,6 @@
   // 网域数据
   const moduleList = ref([])
   const loading = ref(false)
-  const loading = ref(false)
 
   // 表单引用
   const editFormRef = ref(null)

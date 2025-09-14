@@ -137,10 +137,6 @@
                       <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
                   </el-form-item>
               </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 0b4a429d474f7aa0cde76ccca9f663c67ce74256
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.pmenu.pagePath')" prop="path">
                       <el-input v-model="editForm.path" style="width:100%" />
