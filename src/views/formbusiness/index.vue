@@ -1,757 +1,868 @@
 ﻿<template>
-    <div class="page-container">
-      <!-- 系统状态卡片 -->
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <el-card class="data-card" shadow="hover">
+  <div class="conventional-table-container">
+    <!-- 第一行：四个统计卡片 -->
+    <el-row :gutter="20" class="stats-cards">
+      <el-col :xs="12" :sm="6" v-for="(card, index) in statsCards" :key="index">
+        <el-card class="stat-card" shadow="hover" :style="{ background: `linear-gradient(135deg, ${card.color}35, ${card.color}25)`, borderRadius: '12px' }">
+          <div class="stat-content">
+            <div class="stat-icon" :style="{ backgroundColor: card.color }">
+              <component :is="card.icon" :size="24" />
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ card.value }}</div>
+              <div class="stat-label">{{ $t(card.label) }}</div>
+              <div class="stat-trend" :class="card.trend > 0 ? 'positive' : 'negative'">
+                <el-icon><ArrowUp v-if="card.trend > 0" /><ArrowDown v-else /></el-icon>
+                <span>{{ Math.abs(card.trend) }}%</span>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 第二行：复杂K线图 -->
+    <el-row :gutter="20" class="charts-section">
+      <el-col :span="24">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
             <div class="card-header">
-              <div class="card-title">CPU使用率EEEE</div>
-              <el-icon :size="24" color="#409EFF"><Cpu /></el-icon>
+              <h3>{{ $t('dashboard.charts.kLineChart') }}</h3>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <el-select v-model="kLineChartPeriod" size="small" style="width: 120px" @change="onPeriodChange">
+                <el-option :label="$t('dashboard.period.day')" value="day" />
+                <el-option :label="$t('dashboard.period.week')" value="week" />
+                <el-option :label="$t('dashboard.period.year')" value="year" />
+                </el-select>
+                <el-button size="small" @click="refreshKLineChart">
+                  <el-icon><Refresh /></el-icon>
+                  {{ $t('common.refresh') }}
+                </el-button>
+              </div>
             </div>
-            <div class="card-value-with-progress">
-              <span class="value">32%11</span>
-              <el-progress :percentage="32" :show-text="false" />
-            </div>
-            <div class="card-footer">
-              <span class="status-normal">正常</span>
-              <span class="compare-text">4核心 / 8线程</span>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <el-card class="data-card" shadow="hover">
+          </template>
+          <div :ref="el => kLineChart = el" class="chart-container"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 第三行：三个饼图 -->
+    <el-row :gutter="20" class="charts-section">
+      <el-col :xs="24" :sm="8" v-for="(pieChart, index) in pieCharts" :key="index">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
             <div class="card-header">
-              <div class="card-title">内存使用率</div>
-              <el-icon :size="24" color="#67C23A"><Connection /></el-icon>
+              <h3>{{ $t(pieChart.title) }}</h3>
             </div>
-            <div class="card-value-with-progress">
-              <span class="value">65%</span>
-              <el-progress :percentage="65" :show-text="false" color="#67C23A" />
-            </div>
-            <div class="card-footer">
-              <span class="status-normal">正常</span>
-              <span class="compare-text">8GB / 16GB</span>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <el-card class="data-card" shadow="hover">
-            <div class="card-header">
-              <div class="card-title">磁盘使用率</div>
-              <el-icon :size="24" color="#E6A23C"><DataAnalysis /></el-icon>
-            </div>
-            <div class="card-value-with-progress">
-              <span class="value">78%</span>
-              <el-progress :percentage="78" :show-text="false" color="#E6A23C" />
-            </div>
-            <div class="card-footer">
-              <span class="status-warning">注意</span>
-              <span class="compare-text">780GB / 1TB</span>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <el-card class="data-card" shadow="hover">
-            <div class="card-header">
-              <div class="card-title">系统负载</div>
-              <el-icon :size="24" color="#F56C6C"><Loading /></el-icon>
-            </div>
-            <div class="card-value-with-progress">
-              <span class="value">2.35</span>
-              <el-progress :percentage="47" :show-text="false" color="#F56C6C" />
-            </div>
-            <div class="card-footer">
-              <span class="status-normal">正常</span>
-              <span class="compare-text">最近15分钟</span>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+          </template>
+          <div :ref="el => pieChart.ref = el" class="pie-chart-container"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
+import * as echarts from 'echarts'
+import {
+  ArrowUp,
+  ArrowDown,
+  Refresh,
+} from '@element-plus/icons-vue'
+
+const { t } = useI18n()
+
+// 图表引用
+const kLineChart = ref(null)
+let kLineChartInstance = null
+
+// 响应式数据
+const kLineChartPeriod = ref('day')
+
+// 饼图配置
+const pieCharts = ref([
+  {
+    title: 'dashboard.charts.departmentDistribution',
+    ref: null
+  },
+  {
+    title: 'dashboard.charts.projectStatus',
+    ref: null
+  },
+  {
+    title: 'dashboard.charts.resourceUsage',
+    ref: null
+  }
+])
+
+// 统计卡片数据
+const statsCards = ref([
+  {
+    icon: 'UserFilled',
+    value: '2,847',
+    label: 'dashboard.stats.totalUsers',
+    trend: 12.5,
+    color: '#409EFF'
+  },
+  {
+    icon: 'OfficeBuilding',
+    value: '156',
+    label: 'dashboard.stats.departments',
+    trend: 8.2,
+    color: '#67C23A'
+  },
+  {
+    icon: 'DataAnalysis',
+    value: '98.5%',
+    label: 'dashboard.stats.systemHealth',
+    trend: 2.1,
+    color: '#E6A23C'
+  },
+  {
+    icon: 'Monitor',
+    value: '1,234',
+    label: 'dashboard.stats.activeConnections',
+    trend: -3.2,
+    color: '#F56C6C'
+  }
+])
+
+// 最近活动数据
+const recentActivities = ref([
+  {
+    time: '2024-01-15 14:30:25',
+    user: 'Zhang San',
+    action: t('dashboard.activities.login'),
+    status: 'success'
+  },
+  {
+    time: '2024-01-15 14:25:18',
+    user: 'Li Si',
+    action: t('dashboard.activities.updateUser'),
+    status: 'success'
+  },
+  {
+    time: '2024-01-15 14:20:12',
+    user: 'Wang Wu',
+    action: t('dashboard.activities.deleteDept'),
+    status: 'warning'
+  },
+  {
+    time: '2024-01-15 14:15:08',
+    user: 'Zhao Liu',
+    action: t('dashboard.activities.backup'),
+    status: 'error'
+  },
+  {
+    time: '2024-01-15 14:10:03',
+    user: 'Qian Qi',
+    action: t('dashboard.activities.exportReport'),
+    status: 'success'
+  }
+])
+
+// 快捷操作数据
+const quickActions = ref([
+  {
+    key: 'addUser',
+    icon: 'Plus',
+    title: 'dashboard.actions.addUser',
+    description: 'dashboard.actions.addUserDesc',
+    color: '#409EFF'
+  },
+  {
+    key: 'systemSettings',
+    icon: 'Setting',
+    title: 'dashboard.actions.systemSettings',
+    description: 'dashboard.actions.systemSettingsDesc',
+    color: '#67C23A'
+  },
+  {
+    key: 'generateReport',
+    icon: 'Document',
+    title: 'dashboard.actions.generateReport',
+    description: 'dashboard.actions.generateReportDesc',
+    color: '#E6A23C'
+  },
+  {
+    key: 'notifications',
+    icon: 'Bell',
+    title: 'dashboard.actions.notifications',
+    description: 'dashboard.actions.notificationsDesc',
+    color: '#F56C6C'
+  }
+])
+
+// 初始化K线图
+const initKLineChart = () => {
+  if (!kLineChart.value) {
+    return
+  }
   
-      <!-- 资源使用趋势图 -->
-      <el-row :gutter="20" class="chart-row">
-        <el-col :span="24">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="card-header-with-tabs">
-                <div class="card-header-title">资源使用趋势</div>
-                <div class="card-header-tabs">
-                  <el-radio-group v-model="resourceTimeRange" size="small">
-                    <el-radio-button value="hour">1小时</el-radio-button>
-                    <el-radio-button value="day">24小时</el-radio-button>
-                    <el-radio-button value="week">7天</el-radio-button>
-                    <el-radio-button value="month">30天</el-radio-button>
-                  </el-radio-group>
-                </div>
-              </div>
-            </template>
-            <div class="resource-chart">
-              <!-- 这里可以放资源趋势图表组件 -->
-              <div class="chart-placeholder">资源使用趋势图表（这里放实际的图表组件）</div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+  // 如果已存在图表实例，先销毁
+  if (kLineChartInstance) {
+    kLineChartInstance.dispose()
+    kLineChartInstance = null
+  }
   
-      <!-- 系统信息和服务状态 -->
-      <el-row :gutter="20" class="info-row">
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="system-info-header">
-                <span>系统信息</span>
-                <el-button type="primary" size="small" plain>刷新</el-button>
-              </div>
-            </template>
-            <el-descriptions :column="1" border class="descriptions-block">
-              <el-descriptions-item label="操作系统">CentOS 8.4.2105</el-descriptions-item>
-              <el-descriptions-item label="服务器IP">192.168.1.100</el-descriptions-item>
-              <el-descriptions-item label="系统时间">2023-05-15 15:30:45</el-descriptions-item>
-              <el-descriptions-item label="运行时间">23天 5小时 16分钟</el-descriptions-item>
-              <el-descriptions-item label="CPU型号">Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</el-descriptions-item>
-              <el-descriptions-item label="内存容量">16 GB</el-descriptions-item>
-              <el-descriptions-item label="磁盘空间">1 TB</el-descriptions-item>
-              <el-descriptions-item label="系统版本">v2.5.3 (build 20230510)</el-descriptions-item>
-            </el-descriptions>
-          </el-card>
-        </el-col>
-        
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="service-status-header">
-                <span>服务状态</span>
-                <div class="header-actions">
-                  <el-button type="primary" size="small" plain icon="RefreshRight">刷新</el-button>
-                  <el-button type="success" size="small" plain>全部重启</el-button>
-                </div>
-              </div>
-            </template>
-            <div class="service-list">
-              <div class="service-item" v-for="(service, index) in serviceStatus" :key="index">
-                <div class="service-info">
-                  <div class="service-name">{{ service.name }}</div>
-                  <div class="service-desc">{{ service.description }}</div>
-                </div>
-                <div class="service-actions">
-                  <el-tag :type="service.status === '运行中' ? 'success' : service.status === '已停止' ? 'danger' : 'warning'">
-                    {{ service.status }}
-                  </el-tag>
-                  <div class="action-buttons">
-                    <el-button 
-                      size="small" 
-                      :type="service.status === '运行中' ? 'danger' : 'success'"
-                      plain
-                    >
-                      {{ service.status === '运行中' ? '停止' : '启动' }}
-                    </el-button>
-                    <el-button size="small" type="primary" plain>重启</el-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+  const chart = echarts.init(kLineChart.value)
+  kLineChartInstance = chart
   
-      <!-- 系统日志和备份记录 -->
-      <el-row :gutter="20" class="log-row">
-        <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="system-log-header">
-                <span>系统日志</span>
-                <div class="log-actions">
-                  <el-select v-model="logType" placeholder="日志类型" size="small" style="width: 120px; margin-right: 10px;">
-                    <el-option label="全部" value="all" />
-                    <el-option label="错误" value="error" />
-                    <el-option label="警告" value="warning" />
-                    <el-option label="信息" value="info" />
-                  </el-select>
-                  <el-button type="primary" size="small" plain>查看更多</el-button>
-                </div>
-              </div>
-            </template>
-            <el-table :data="systemLogs" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-              <el-table-column prop="time" label="时间" width="180" />
-              <el-table-column prop="level" label="级别" width="100">
-                <template #default="scope">
-                  <el-tag 
-                    :type="scope.row.level === 'ERROR' ? 'danger' : scope.row.level === 'WARNING' ? 'warning' : 'info'"
-                    size="small"
-                  >
-                    {{ scope.row.level }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column prop="module" label="模块" width="120" />
-              <el-table-column prop="message" label="内容" show-overflow-tooltip />
-              <el-table-column label="操作" width="120" fixed="right" align="center">
-                <template #default>
-                  <el-button size="small" type="primary" plain>详情</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="pagination-container">
-              <el-pagination
-                v-model:current-page="logPagination.pageIndex"
-                v-model:page-size="logPagination.pageSize"
-                :page-sizes="[5, 10, 20, 50]"
-                layout="total, sizes, prev, pager, next"
-                :total="logPagination.total"
-              />
-            </div>
-          </el-card>
-        </el-col>
-        
-        <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="backup-header">
-                <span>备份记录</span>
-                <div class="header-actions">
-                  <el-button type="primary" size="small" icon="Plus">立即备份</el-button>
-                </div>
-              </div>
-            </template>
-            <el-scrollbar height="350px">
-              <div class="backup-list">
-                <div class="backup-item" v-for="(backup, index) in backupRecords" :key="index">
-                  <div class="backup-info">
-                    <div class="backup-name">{{ backup.name }}</div>
-                    <div class="backup-meta">
-                      <el-tag size="small" type="info">{{ backup.time }}</el-tag>
-                      <el-tag size="small" type="success">{{ backup.size }}</el-tag>
-                    </div>
-                  </div>
-                  <div class="backup-actions">
-                    <el-button size="small" type="primary" plain icon="Download">恢复</el-button>
-                    <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
-                  </div>
-                </div>
-              </div>
-            </el-scrollbar>
-          </el-card>
-        </el-col>
-      </el-row>
-  
-      <!-- 系统通知 -->
-      <el-row :gutter="20" class="notice-row">
-        <el-col :span="24">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="system-notice-header">
-                <span>系统通知</span>
-                <div class="header-actions">
-                  <el-button type="primary" size="small" plain icon="Plus">发布通知</el-button>
-                </div>
-              </div>
-            </template>
-            <el-table :data="systemNotices" style="width: 100%" border stripe :header-cell-style="{ background: '#f5f7fa' }">
-              <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="type" label="类型" width="120">
-                <template #default="scope">
-                  <el-tag :type="getNoticeType(scope.row.type)">{{ scope.row.type }}</el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column prop="publisher" label="发布人" width="120" />
-              <el-table-column prop="time" label="发布时间" width="180" />
-              <el-table-column label="操作" width="180" fixed="right" align="center">
-                <template #default>
-                  <el-button size="small" type="primary" plain icon="View">查看</el-button>
-                  <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="pagination-container">
-              <el-pagination
-                v-model:current-page="noticePagination.pageIndex"
-                v-model:page-size="noticePagination.pageSize"
-                :page-sizes="[5, 10, 20]"
-                layout="total, sizes, prev, pager, next"
-                :total="noticePagination.total"
-              />
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-  
-      <!-- 快捷操作区 -->
-      <el-row :gutter="20" class="quick-action-row">
-        <el-col :span="24">
-          <el-card class="custom-card" shadow="hover">
-            <template #header>
-              <div class="quick-action-header">
-                <span>快捷操作</span>
-              </div>
-            </template>
-            <div class="quick-action-list">
-              <el-row :gutter="20">
-                <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" v-for="(action, index) in quickActions" :key="index">
-                  <div class="quick-action-item">
-                    <el-button type="primary" plain :icon="action.icon" circle size="large"></el-button>
-                    <div class="action-name">{{ action.name }}</div>
-                  </div>
-                </el-col>
-              </el-row>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-  
-      <!-- 添加router-view，用于显示子路由内容 -->
-      <router-view v-slot="{ Component }">
-        <transition name="fade-transform" mode="out-in">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </transition>
-      </router-view>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, reactive } from 'vue'
-  import { 
-    Refresh, Setting, RefreshRight, Plus, View, Download, Delete,
-    Monitor, Connection, Lock, User, Warning, Notification, 
-    Document, Folder, Tools, Upload, Cpu, DataAnalysis, Loading
-  } from '@element-plus/icons-vue'
-  
-  // 资源趋势图时间范围
-  const resourceTimeRange = ref('day')
-  
-  // 日志分页
-  const logPagination = reactive({
-    pageIndex: 1,
-    pageSize: 5,
-    total: 100
-  })
-  
-  // 通知分页
-  const noticePagination = reactive({
-    pageIndex: 1,
-    pageSize: 5,
-    total: 50
-  })
-  
-  // 服务状态
-  const serviceStatus = reactive([
-    {
-      name: 'Web服务器',
-      description: 'Nginx 1.20.1',
-      status: '运行中'
-    },
-    {
-      name: '数据库服务',
-      description: 'MySQL 8.0.27',
-      status: '运行中'
-    },
-    {
-      name: '缓存服务',
-      description: 'Redis 6.2.6',
-      status: '运行中'
-    },
-    {
-      name: '消息队列',
-      description: 'RabbitMQ 3.9.13',
-      status: '已停止'
-    },
-    {
-      name: '定时任务',
-      description: 'Cron Service',
-      status: '运行中'
-    }
-  ])
-  
-  // 系统日志
-  const logType = ref('all')
-  const systemLogs = reactive([
-    {
-      time: '2023-05-15 15:20:30',
-      level: 'ERROR',
-              module: '员工认证',
-        message: '员工登录失败：密码错误 (IP: 192.168.1.5)'
-    },
-    {
-      time: '2023-05-15 15:15:22',
-      level: 'WARNING',
-      module: '数据库',
-      message: '数据库连接池达到80%容量'
-    },
-    {
-      time: '2023-05-15 15:10:15',
-      level: 'INFO',
-      module: '系统',
-      message: '系统配置已更新'
-    },
-    {
-      time: '2023-05-15 15:05:48',
-      level: 'INFO',
-              module: '员工管理',
-        message: '新员工注册：user123'
-    },
-    {
-      time: '2023-05-15 15:01:33',
-      level: 'WARNING',
-      module: '文件存储',
-      message: '磁盘空间不足，剩余空间低于20%'
-    },
-    {
-      time: '2023-05-15 14:55:20',
-      level: 'ERROR',
-      module: 'API服务',
-      message: 'API请求超时：/api/data/report'
-    }
-  ])
-  
-  // 备份记录
-  const backupRecords = reactive([
-    {
-      name: '完整备份_20230515',
-      time: '2023-05-15 03:00:00',
-      size: '2.5 GB'
-    },
-    {
-      name: '完整备份_20230514',
-      time: '2023-05-14 03:00:00',
-      size: '2.4 GB'
-    },
-    {
-      name: '完整备份_20230513',
-      time: '2023-05-13 03:00:00',
-      size: '2.4 GB'
-    },
-    {
-      name: '完整备份_20230512',
-      time: '2023-05-12 03:00:00',
-      size: '2.3 GB'
-    },
-    {
-      name: '完整备份_20230511',
-      time: '2023-05-11 03:00:00',
-      size: '2.3 GB'
-    },
-    {
-      name: '手动备份_20230510',
-      time: '2023-05-10 15:30:00',
-      size: '2.3 GB'
-    },
-    {
-      name: '完整备份_20230510',
-      time: '2023-05-10 03:00:00',
-      size: '2.2 GB'
-    }
-  ])
-  
-  // 系统通知
-  const systemNotices = reactive([
-    {
-      title: '系统将于2023年5月20日凌晨2:00-4:00进行升级维护',
-      type: '维护通知',
-      publisher: '系统管理员',
-      time: '2023-05-15 14:00:00'
-    },
-    {
-      title: '新版本v2.5.3已发布，新增多项功能和优化',
-      type: '版本更新',
-      publisher: '技术团队',
-      time: '2023-05-10 10:30:00'
-    },
-    {
-      title: '安全漏洞修复公告：请及时更新系统',
-      type: '安全公告',
-      publisher: '安全团队',
-      time: '2023-05-05 16:45:00'
-    },
-    {
-      title: '服务器迁移完成公告',
-      type: '系统公告',
-      publisher: '运维团队',
-      time: '2023-04-28 09:15:00'
-    }
-  ])
-  
-  // 快捷操作
-  const quickActions = reactive([
-    { name: '系统监控', icon: 'Monitor' },
-    { name: '网络设置', icon: 'Connection' },
-    { name: '安全设置', icon: 'Lock' },
-          { name: '员工管理', icon: 'User' },
-    { name: '告警设置', icon: 'Warning' },
-    { name: '消息通知', icon: 'Notification' },
-    { name: '日志管理', icon: 'Document' },
-    { name: '存储管理', icon: 'Folder' },
-    { name: '系统维护', icon: 'Tools' },
-    { name: '系统升级', icon: 'Upload' }
-  ])
-  
-  // 获取通知类型对应的标签类型
-  const getNoticeType = (type) => {
-    switch (type) {
-      case '维护通知':
-        return 'warning'
-      case '版本更新':
-        return 'success'
-      case '安全公告':
-        return 'danger'
-      case '系统公告':
-        return 'info'
+  // 生成K线数据（根据周期动态调整）
+  const generateKLineData = (period = 'day') => {
+    const data = []
+    const dates = []
+    let basePrice = 12.0 // 起始价格
+    let lastDayReturn = 0 // 前一日涨跌幅
+    
+    // 根据周期确定数据点数量和时间间隔
+    let dataPoints, timeUnit, timeStep
+    switch (period) {
+      case 'day':
+        dataPoints = 180 // 半年的日数据
+        timeUnit = 'day'
+        timeStep = 1
+        break
+      case 'week':
+        dataPoints = 52 // 一年的周数据
+        timeUnit = 'week'
+        timeStep = 7
+        break
+      case 'year':
+        dataPoints = 10 // 十年的年数据
+        timeUnit = 'year'
+        timeStep = 365
+        break
       default:
-        return 'info'
+        dataPoints = 180
+        timeUnit = 'day'
+        timeStep = 1
     }
+    
+    // 生成数据
+    for (let i = 0; i < dataPoints; i++) {
+      const date = new Date()
+      if (timeUnit === 'day') {
+        date.setDate(date.getDate() - (dataPoints - 1 - i))
+        dates.push(date.toISOString().split('T')[0])
+      } else if (timeUnit === 'week') {
+        date.setDate(date.getDate() - (dataPoints - 1 - i) * 7)
+        const weekStart = new Date(date)
+        weekStart.setDate(date.getDate() - date.getDay())
+        dates.push(weekStart.toISOString().split('T')[0])
+      } else if (timeUnit === 'year') {
+        date.setFullYear(date.getFullYear() - (dataPoints - 1 - i))
+        dates.push(date.getFullYear().toString())
+      }
+      
+      // 根据周期调整波动率
+      let volatilityMultiplier = 1
+      if (timeUnit === 'week') {
+        volatilityMultiplier = 1.5 // 周数据波动更大
+      } else if (timeUnit === 'year') {
+        volatilityMultiplier = 3 // 年数据波动最大
+      }
+      
+      // 生成开盘价（可能跳空）
+      const gapRate = (Math.random() - 0.5) * 0.15 * volatilityMultiplier
+      let open = basePrice * (1 + gapRate)
+      
+      let dailyReturn = 0
+      let close, high, low
+      
+      // 根据周期调整涨跌幅概率和幅度
+      const extremeProb = timeUnit === 'year' ? 0.2 : timeUnit === 'week' ? 0.15 : 0.1
+      const largeProb = timeUnit === 'year' ? 0.15 : timeUnit === 'week' ? 0.12 : 0.08
+      const mediumProb = timeUnit === 'year' ? 0.25 : timeUnit === 'week' ? 0.2 : 0.15
+      
+      // 极端大涨
+      if (Math.random() < extremeProb) {
+        dailyReturn = (0.15 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = close * (1 + Math.random() * 0.03)
+        low = open * (1 - Math.random() * 0.05)
+      }
+      // 大跌
+      else if (Math.random() < largeProb) {
+        dailyReturn = -(0.1 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = close * (1 - Math.random() * 0.03)
+        high = open * (1 + Math.random() * 0.05)
+      }
+      // 中等涨幅
+      else if (Math.random() < mediumProb) {
+        dailyReturn = (0.05 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = Math.max(open, close) * (1 + Math.random() * 0.05)
+        low = Math.min(open, close) * (1 - Math.random() * 0.03)
+      }
+      // 中等跌幅
+      else if (Math.random() < mediumProb) {
+        dailyReturn = -(0.05 + Math.random() * 0.1) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = Math.min(open, close) * (1 - Math.random() * 0.05)
+        high = Math.max(open, close) * (1 + Math.random() * 0.03)
+      }
+      // 反转效应
+      else if (lastDayReturn > 0.1 * volatilityMultiplier && Math.random() < 0.6) {
+        dailyReturn = -(0.02 + Math.random() * 0.08) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        low = Math.min(open, close) * (1 - Math.random() * 0.03)
+        high = Math.max(open, close) * (1 + Math.random() * 0.02)
+      }
+      else if (lastDayReturn < -0.1 * volatilityMultiplier && Math.random() < 0.4) {
+        dailyReturn = (0.02 + Math.random() * 0.06) * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        high = Math.max(open, close) * (1 + Math.random() * 0.03)
+        low = Math.min(open, close) * (1 - Math.random() * 0.02)
+      }
+      // 其余情况：随机波动
+      else {
+        dailyReturn = (Math.random() - 0.5) * 0.16 * volatilityMultiplier
+        close = open * (1 + dailyReturn)
+        
+        const intraVolatility = (Math.random() * 0.08 + 0.02) * volatilityMultiplier
+        high = Math.max(open, close) * (1 + Math.random() * intraVolatility)
+        low = Math.min(open, close) * (1 - Math.random() * intraVolatility)
+      }
+      
+      // 极端日内波动（根据周期调整概率）
+      const shadowProb = timeUnit === 'year' ? 0.1 : timeUnit === 'week' ? 0.08 : 0.05
+      if (Math.random() < shadowProb) {
+        if (Math.random() > 0.5) {
+          // 长上影线：冲高回落
+          high = Math.max(open, close) * (1 + (0.1 + Math.random() * 0.15) * volatilityMultiplier)
+          close = open * (1 + (Math.random() - 0.3) * 0.1 * volatilityMultiplier)
+        } else {
+          // 长下影线：探底回升
+          low = Math.min(open, close) * (1 - (0.1 + Math.random() * 0.15) * volatilityMultiplier)
+          close = open * (1 + (Math.random() - 0.3) * 0.1 * volatilityMultiplier)
+        }
+      }
+      
+      // 超级黑天鹅事件（根据周期调整概率和幅度）
+      const blackSwanProb = timeUnit === 'year' ? 0.05 : timeUnit === 'week' ? 0.03 : 0.02
+      if (Math.random() < blackSwanProb) {
+        const superExtreme = (0.3 + Math.random() * 0.2) * volatilityMultiplier
+        if (Math.random() > 0.5) {
+          // 超级暴涨
+          dailyReturn = superExtreme
+          close = open * (1 + dailyReturn)
+          high = close * (1 + Math.random() * 0.05)
+          low = open * (1 - Math.random() * 0.1)
+        } else {
+          // 超级暴跌
+          dailyReturn = -superExtreme
+          close = open * (1 + dailyReturn)
+          low = close * (1 - Math.random() * 0.05)
+          high = open * (1 + Math.random() * 0.1)
+        }
+      }
+      
+      // 确保价格合理性
+      open = Math.max(0.5, open)
+      close = Math.max(0.5, close)
+      high = Math.max(open, close, high, 0.5)
+      low = Math.min(open, close, low)
+      low = Math.max(0.5, low)
+      
+      // 确保高低价逻辑正确
+      if (high < Math.max(open, close)) high = Math.max(open, close)
+      if (low > Math.min(open, close)) low = Math.min(open, close)
+      
+      basePrice = close
+      lastDayReturn = dailyReturn
+      
+      data.push([open.toFixed(2), close.toFixed(2), low.toFixed(2), high.toFixed(2)])
+    }
+    
+    return { dates, data }
   }
-  </script>
   
-  <style scoped>
-  .page-container {
-    padding: 0;
+  const { dates, data } = generateKLineData(kLineChartPeriod.value)
+  
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      },
+      formatter: function (params) {
+         const param = params[0]
+         const data = param.data
+         return `${param.name}<br/>
+                 ${t('dashboard.charts.open')}: ${data[0]}<br/>
+                 ${t('dashboard.charts.close')}: ${data[1]}<br/>
+                 ${t('dashboard.charts.low')}: ${data[2]}<br/>
+                 ${t('dashboard.charts.high')}: ${data[3]}`
+       }
+    },
+    legend: {
+      data: [t('dashboard.charts.kLine')],
+      bottom: '0%',
+      left: 'center'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '12%',
+      top: '10%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      scale: true,
+      boundaryGap: false,
+      axisLine: { onZero: false },
+      splitLine: { show: false },
+      splitNumber: 20,
+      min: 'dataMin',
+      max: 'dataMax'
+    },
+    yAxis: {
+      scale: true,
+      splitArea: {
+        show: true
+      }
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        show: true,
+        type: 'slider',
+        top: '90%',
+        start: 0,
+        end: 100
+      }
+    ],
+    series: [
+      {
+        name: t('dashboard.charts.kLine'),
+        type: 'candlestick',
+        data: data,
+        itemStyle: {
+          color: '#ef232a',
+          color0: '#14b143',
+          borderColor: '#ef232a',
+          borderColor0: '#14b143'
+        },
+        markPoint: {
+          label: {
+            formatter: function (param) {
+              return param != null ? Math.round(param.value) + '' : ''
+            }
+          },
+          data: [
+            {
+              name: t('dashboard.charts.highest'),
+              type: 'max',
+              valueDim: 'highest'
+            },
+            {
+              name: t('dashboard.charts.lowest'),
+              type: 'min',
+              valueDim: 'lowest'
+            }
+          ],
+          tooltip: {
+            formatter: function (param) {
+              return param.name + '<br>' + (param.data.coord || '')
+            }
+          }
+        },
+      }
+    ]
   }
   
-  .data-card {
-    margin-bottom: 20px;
-    height: 150px;
-    border-radius: 8px;
-    transition: all 0.3s;
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+}
+
+// 初始化饼图
+const initPieCharts = async () => {
+  try {
+    // 等待所有饼图DOM元素准备好
+    const pieChartPromises = pieCharts.value.map((chart, index) => {
+      return new Promise((resolve) => {
+        const checkElement = () => {
+          if (chart.ref) {
+            resolve(index)
+          } else {
+            setTimeout(checkElement, 100)
+          }
+        }
+        checkElement()
+      })
+    })
+    
+    await Promise.all(pieChartPromises)
+    
+    // 部门分布饼图
+    if (pieCharts.value[0].ref) {
+      const chart1 = echarts.init(pieCharts.value[0].ref)
+      const option1 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.departmentDistribution'),
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '35%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 20,
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
+              { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
+              { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
+              { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
+              { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
+              { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
+            ]
+          }
+        ]
+      }
+      chart1.setOption(option1)
+      window.addEventListener('resize', () => chart1.resize())
+    }
+
+    // 项目状态饼图
+    if (pieCharts.value[1].ref) {
+      const chart2 = echarts.init(pieCharts.value[1].ref)
+      const option2 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.projectStatus'),
+            type: 'pie',
+            radius: '65%',
+            center: ['50%', '35%'],
+            data: [
+              { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
+              { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
+              { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
+              { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      }
+      chart2.setOption(option2)
+      window.addEventListener('resize', () => chart2.resize())
+    }
+
+    // 资源使用饼图
+    if (pieCharts.value[2].ref) {
+      const chart3 = echarts.init(pieCharts.value[2].ref)
+      const option3 = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c}% ({d}%)'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: t('dashboard.charts.resourceUsage'),
+            type: 'pie',
+            radius: ['30%', '70%'],
+            center: ['50%', '35%'],
+            roseType: 'area',
+            itemStyle: {
+              borderRadius: 8
+            },
+            data: [
+              { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
+              { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
+              { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
+              { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
+            ]
+          }
+        ]
+      }
+      chart3.setOption(option3)
+      window.addEventListener('resize', () => chart3.resize())
+    }
+  } catch (error) {
+    console.error('饼图初始化失败:', error)
+  }
+}
+
+// 刷新K线图
+const refreshKLineChart = () => {
+  initKLineChart()
+}
+
+// 周期变化处理
+const onPeriodChange = () => {
+  initKLineChart()
+}
+
+// 等待DOM元素准备好的辅助函数
+const waitForElement = (elementRef, maxAttempts = 20, interval = 200) => {
+  return new Promise((resolve, reject) => {
+    let attempts = 0
+    
+    const checkElement = () => {
+      attempts++
+      
+      if (elementRef.value) {
+        resolve(elementRef.value)
+      } else if (attempts >= maxAttempts) {
+        reject(new Error(`Element not found after ${maxAttempts} attempts`))
+      } else {
+        setTimeout(checkElement, interval)
+      }
+    }
+    
+    checkElement()
+  })
+}
+
+// 组件挂载后初始化图表
+onMounted(() => {
+  nextTick(async () => {
+    try {
+      // 等待K线图DOM元素准备好
+      await waitForElement(kLineChart)
+      initKLineChart()
+      
+      // 初始化饼图
+      await initPieCharts()
+    } catch (error) {
+      console.error('图表初始化失败:', error)
+      // 如果等待超时，尝试最后一次初始化
+      setTimeout(async () => {
+        try {
+          if (kLineChart.value) {
+            initKLineChart()
+          }
+          await initPieCharts()
+        } catch (retryError) {
+          console.error('图表重试初始化也失败:', retryError)
+        }
+      }, 2000)
+    }
+  })
+})
+</script>
+
+<style scoped>
+@import '@/assets/styles/conventionalTablePage.css';
+
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #303133;
+  margin: 0 0 5px 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #909399;
+  margin: 0 0 8px 0;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-trend.positive {
+  color: #67C23A;
+}
+
+.stat-trend.negative {
+  color: #F56C6C;
+}
+
+.stat-trend span {
+  margin-left: 4px;
+}
+
+.chart-card {
+  border-radius: 12px;
+  border: none;
+  min-height: 400px;
+}
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.pie-chart-container {
+  height: 280px;
+  width: 100%;
+}
+
+.pie-charts-section {
+  margin-top: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.table-section {
+  margin-bottom: 0px;
+}
+
+.table-card {
+  border-radius: 12px;
+  border: none;
+}
+
+.quick-actions-card {
+  border-radius: 12px;
+  border: none;
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(5px);
+}
+
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: white;
+}
+
+.action-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.action-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #909399;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  
+  .stat-content {
+    flex-direction: column;
+    text-align: center;
   }
   
-  .data-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .card-title {
-    font-size: 16px;
-    color: #606266;
-    font-weight: 500;
-  }
-  
-  .card-value-with-progress {
-    margin-bottom: 15px;
-  }
-  
-  .card-value-with-progress .value {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
+  .stat-icon {
+    margin-right: 0;
     margin-bottom: 10px;
   }
   
-  .card-footer {
-    font-size: 13px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .chart-container {
+    height: 250px;
   }
-  
-  .status-normal {
-    color: #67C23A;
-    font-weight: 500;
-  }
-  
-  .status-warning {
-    color: #E6A23C;
-    font-weight: 500;
-  }
-  
-  .status-danger {
-    color: #F56C6C;
-    font-weight: 500;
-  }
-  
-  .compare-text {
-    color: #909399;
-  }
-  
-  .info-row, .log-row, .notice-row, .chart-row, .quick-action-row {
-    margin-bottom: 20px;
-  }
-  
-  .custom-card {
-    border-radius: 8px;
-    margin-bottom: 20px;
-    transition: all 0.3s;
-  }
-  
-  .custom-card:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .system-info-header, .service-status-header, .system-log-header, .backup-header, .system-notice-header, .quick-action-header, .card-header-with-tabs {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 5px;
-  }
-  
-  .card-header-title {
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  .log-actions, .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* 图表占位 */
-  .resource-chart {
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .chart-placeholder {
-    color: #909399;
-    font-size: 14px;
-    text-align: center;
-    width: 100%;
-    padding: 50px 0;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-  }
-  
-  /* 描述列表 */
-  .descriptions-block {
-    margin-top: 10px;
-  }
-  
-  /* 服务状态样式 */
-  .service-list {
-    max-height: 365px;
-    overflow-y: auto;
-  }
-  
-  .service-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  
-  .service-item:last-child {
-    border-bottom: none;
-  }
-  
-  .service-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #303133;
-    margin-bottom: 5px;
-  }
-  
-  .service-desc {
-    font-size: 13px;
-    color: #909399;
-  }
-  
-  .service-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-  
-  .action-buttons {
-    margin-top: 10px;
-    display: flex;
-    gap: 8px;
-  }
-  
-  /* 分页容器 */
-  .pagination-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  /* 备份记录样式 */
-  .backup-list {
-    padding: 5px 0;
-  }
-  
-  .backup-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 10px;
-    border-bottom: 1px solid #f0f0f0;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .backup-item:hover {
-    background-color: #f9f9f9;
-  }
-  
-  .backup-item:last-child {
-    border-bottom: none;
-  }
-  
-  .backup-name {
-    font-size: 14px;
-    font-weight: bold;
-    color: #303133;
-    margin-bottom: 8px;
-  }
-  
-  .backup-meta {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  
-  .backup-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  /* 快捷操作区 */
-  .quick-action-list {
-    padding: 15px 0;
-  }
-  
-  .quick-action-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .quick-action-item:hover {
-    transform: translateY(-5px);
-  }
-  
-  .action-name {
-    margin-top: 8px;
-    font-size: 13px;
-    color: #606266;
-    text-align: center;
-  }
-  
-  /* 表格样式调整 */
-  :deep(.el-table th) {
-    background-color: #f5f7fa !important;
-    font-weight: 600;
-  }
-  
-  :deep(.el-table--border) {
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  
-  :deep(.el-tag) {
-    font-weight: 500;
-  }
-  </style> 
-
+}
+</style>
