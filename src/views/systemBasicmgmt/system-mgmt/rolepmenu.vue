@@ -4,16 +4,16 @@
 
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form">
-                <el-form-item :label="$t('systembasicmgmt.roleModule.role')">
+                <el-form-item :label="$t('systembasicmgmt.rolePMenu.role')">
                     <el-select style="width:180px"
                                v-model="filters.roleId"
-                               :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.roleModule.role')"
+                               :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.rolePMenu.role')"
                                @change="handleRoleChange">
                         <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.disabled" />
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="$t('systembasicmgmt.roleModule.module')">
-                    <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.roleModule.module')" style="width:180px" @change="handlemoduleChange">
+                <el-form-item :label="$t('systembasicmgmt.rolePMenu.module')">
+                    <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.rolePMenu.module')" style="width:180px" @change="handlemoduleChange">
                         <el-option v-for="item in moduleOptions" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                     </el-select>
                 </el-form-item>
@@ -40,9 +40,9 @@
                           v-loading="loading"
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
-                    <el-table-column prop="roleName" :label="$t('systembasicmgmt.roleModule.role')" align="left" min-width="180" />
-                    <el-table-column prop="menuName" :label="$t('systembasicmgmt.rolepmenu.pmenu')" align="left" min-width="180" />
-                    <el-table-column prop="isChecked" :label="$t('systembasicmgmt.roleModule.isBinding')" align="center" min-width="90">
+                    <el-table-column prop="roleName" :label="$t('systembasicmgmt.rolePMenu.role')" align="left" min-width="180" />
+                    <el-table-column prop="menuName" :label="$t('systembasicmgmt.rolePMenu.pmenu')" align="left" min-width="180" />
+                    <el-table-column prop="isChecked" :label="$t('systembasicmgmt.rolePMenu.isBinding')" align="center" min-width="90">
                         <template #default="scope">
                             <div class="checkbox-wrapper">
                                 <el-checkbox v-model="scope.row.isChecked" />
@@ -212,7 +212,7 @@
   const handleConfirm = async () => {
       if (!filters.roleId || !filters.moduleId) {
           ElMessage({
-              message: t('systembasicmgmt.roleModule.pleaseSelectRole') + '和' + t('systembasicmgmt.roleModule.pleaseSelectmodule'),
+              message: t('systembasicmgmt.rolePMenu.pleaseSelectRole') + '和' + t('systembasicmgmt.rolePMenu.pleaseSelectmodule'),
               type: 'warning',
               plain: true,
               showClose: true
@@ -222,7 +222,7 @@
 
       try {
           await ElMessageBox.confirm(
-              t('systembasicmgmt.roleModule.confirmUpdate'),
+              t('systembasicmgmt.rolePMenu.confirmUpdate'),
               t('common.confirm'),
               {
                   confirmButtonText: t('common.confirm'),
@@ -244,7 +244,7 @@
 
           if (res && res.code === 200) {
               ElMessage({
-                  message: t('systembasicmgmt.roleModule.updateBindingsSuccess'),
+                  message: t('systembasicmgmt.rolePMenu.updateBindingsSuccess'),
                   type: 'success',
                   plain: true,
                   showClose: true

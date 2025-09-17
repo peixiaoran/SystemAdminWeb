@@ -46,7 +46,7 @@
           <div class="pmenu-card" @click="enterPMenu(pmenu)">
             <div class="pmenu-icon">
               <el-icon :size="48">
-                <component :is="pmenu.moduleIcon || 'Setting'" />
+                <component :is="getValidIconName(pmenu.moduleIcon)" />
               </el-icon>
             </div>
             <div class="pmenu-info">
@@ -143,6 +143,24 @@ function getPMenuName(pmenu) {
 function getPMenuRemarks(pmenu) {
   if (!pmenu) return ''
   return locale.value === 'en-US' ? (pmenu.remarksEn || pmenu.remarksCh || pmenu.remarks) : (pmenu.remarksCh || pmenu.remarksEn || pmenu.remarks)
+}
+
+// 获取有效的图标名称
+function getValidIconName(iconName) {
+  if (!iconName || typeof iconName !== 'string') {
+    return 'Setting'
+  }
+  
+  // 移除空格和特殊字符，确保是有效的组件名称
+  const cleanName = iconName.trim().replace(/[^a-zA-Z0-9]/g, '')
+  
+  // 如果清理后为空或不是有效的组件名称，返回默认图标
+  if (!cleanName || cleanName.length === 0) {
+    return 'Setting'
+  }
+  
+  // 确保首字母大写（Vue组件命名规范）
+  return cleanName.charAt(0).toUpperCase() + cleanName.slice(1)
 }
 
 // 进入模块

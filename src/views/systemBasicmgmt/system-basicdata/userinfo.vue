@@ -99,7 +99,7 @@
                      :modal-append-to-body="true"
                      :lock-scroll="true"
                      @close="handleDialogClose">
-              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="用户编辑">
+              <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="用户编辑">
               
               <div class="form-row four-columns">
                   <el-form-item :label="$t('systembasicmgmt.userInfo.userNo')" prop="userNo">

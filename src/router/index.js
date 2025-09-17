@@ -167,7 +167,7 @@ const pmenuRoutes = [
             component: () => import('../views/systembasicmgmt/system-mgmt/rolepmenu.vue'),
             meta: { 
               title: 'route.rolePMenu', 
-              icon: 'MoreFilled',
+              icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -178,7 +178,7 @@ const pmenuRoutes = [
             component: () => import('../views/systembasicmgmt/system-mgmt/rolesmenu.vue'),
             meta: { 
               title: 'route.roleSMenu', 
-              icon: 'MoreFilled',
+              icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -465,6 +465,49 @@ const pmenuRoutes = [
         ]
       }
     ]
+  },
+  {
+      path: '/formbusiness',
+      component: Layout,
+      redirect: '/formbusiness/index',
+      children: [
+        {
+          path: 'index',
+          name: 'formbusinessIndex',
+          component: () => import('../views/formbusiness/index.vue'),
+          meta: { 
+            title: 'route.formbusiness', 
+            icon: 'Notebook',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          }
+        },
+        // 用户配置子模块 - 使用嵌套结构
+        {
+          path: 'form-basicinfo',
+          name: 'FormBasicInfo',
+          redirect: '/formbusiness/form-basicinfo',
+          meta: { 
+            title: 'route.formBasicInfo',
+            icon: 'Tickets',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'formgroup',
+              name: 'FormBasicInfoUseragent',
+              component: () => import('../views/formbusiness/form-basicinfo/formgroup.vue'),
+              meta: { 
+                title: 'route.formGroup', 
+                icon: 'Postcard',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+          ]
+        }
+      ]
   }
   // 可以继续添加其他模块的路由...
 ]

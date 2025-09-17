@@ -232,6 +232,89 @@ export default {
       exportReport: 'Export Report'
     }
   },
+
+  // Form Business Management
+  formbusiness: {
+    title: 'Form Business',
+    formGroup: {
+      title: 'Form Group',
+      groupName: 'Group Name',
+      groupCode: 'Group Code',
+      groupDescription: 'Group Description',
+      sortOrder: 'Sort Order',
+      isEnabled: 'Enable Status',
+      createdTime: 'Created Time',
+      updatedTime: 'Updated Time',
+      operation: 'Operation',
+      index: 'Index',
+      addGroup: 'Add Group',
+      editGroup: 'Edit Group',
+      deleteConfirm: 'Are you sure you want to delete this group?',
+      pleaseInputGroupName: 'Please enter group name',
+      pleaseInputGroupCode: 'Please enter group code',
+      pleaseInputDescription: 'Please enter group description',
+      pleaseInputSortOrder: 'Please enter sort order',
+      saveSuccess: 'Save Successfully',
+      updateSuccess: 'Update Successfully',
+      deleteSuccess: 'Delete Successfully',
+      operationFailed: 'Operation Failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        groupName: 'Group Name',
+        groupCode: 'Group Code'
+      }
+    },
+    
+    // Common Actions
+    actions: {
+      add: 'Add',
+      edit: 'Edit',
+      delete: 'Delete',
+      save: 'Save',
+      cancel: 'Cancel',
+      search: 'Search',
+      reset: 'Reset',
+      export: 'Export',
+      import: 'Import',
+      refresh: 'Refresh'
+    },
+    
+    // Form Validation
+    validation: {
+      required: 'This field is required',
+      minLength: 'Minimum {min} characters required',
+      maxLength: 'Maximum {max} characters allowed',
+      email: 'Please enter a valid email format',
+      phone: 'Please enter a valid phone number',
+      number: 'Please enter a number',
+      integer: 'Please enter an integer'
+    },
+    
+    // Status
+    status: {
+      enabled: 'Enabled',
+      disabled: 'Disabled',
+      active: 'Active',
+      inactive: 'Inactive',
+      pending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected'
+    },
+    
+    // Messages
+    messages: {
+      saveSuccess: 'Save Successfully',
+      saveError: 'Save Failed',
+      deleteSuccess: 'Delete Successfully',
+      deleteError: 'Delete Failed',
+      updateSuccess: 'Update Successfully',
+      updateError: 'Update Failed',
+      loadError: 'Failed to load data',
+      networkError: 'Network error, please try again later',
+      confirmDelete: 'Are you sure you want to delete? This operation cannot be undone',
+      noDataSelected: 'Please select data to operate'
+    }
+  },
   
   // Password Expiration Page
   passwordExpiration: {
@@ -375,37 +458,39 @@ export default {
   // Route Titles
   route: {
     login: 'Login',
-    pmenuSelect: 'System Primary Menus',
+    moduleSelect: 'Module Selection',
     unlock: 'Account Unlock',
     passwordExpiration: 'Password Expiration',
-    notFound: 'Page Not Found',
     forbidden: 'Access Denied',
+    notFound: 'Page Not Found',
     systembasicmgmt: 'System Basic Management',
-    systemMgmt: 'System Management Primary Menu',
-    role: 'Role Info',
+    systemMgmt: 'System Management',
+    role: 'Role Data',
     module: 'Module Info',
     pmenu: 'PMenu Info',
     smenu: 'SMenu Info',
-    moduleSelect: 'Module Selection',
     roleModule: 'Role Module',
-    rolepmenu: 'Role PMenu',
     rolePMenu: 'Role PMenu',
     roleSMenu: 'Role SMenu',
-    systemBasicData: 'Basic Data Primary Menu',
-    userInfo: 'Employee Info',
-    userAgent: 'User Agent',
-    userPosition: 'User Positions',
-    userLabor: 'User Labor',
-    userPartTime: 'User PartTime',
+    systemBasicData: 'System Basic Data',
     companyInfo: 'Company Info',
     departmentInfo: 'Department Info',
     departmentLevel: 'Department Level',
-    SystemSettings: 'System Settings Primary Menu',
+    userPosition: 'User Position',
+    userLabor: 'User Labor',
+    userInfo: 'Employee Info',
+    personalInfo: 'Personal Info',
+    systemSettings: 'System Settings',
     dictionaryInfo: 'Dictionary Info',
     currencyInfo: 'Currency Info',
-    personalInfo: 'Personal Info',
-    exchangerateInfo: 'ExchangeRateInfo',
-    userLoginLog: 'LogOut Info'
+    exchangerateInfo: 'ExchangeRate',
+    userLoginLog: 'LogOut Info',
+    systemUserConfig: 'System User Configuration',
+    userAgent: 'User Agent',
+    userPartTime: 'User PartTime',
+    formbusiness: 'Form Business',
+    formBasicInfo: 'Form Basic Info',
+    formGroup: 'Form Group'
   },
   
   // System Basic Management
@@ -622,9 +707,9 @@ export default {
         index: 'Index'
     },
     
-    // Company Information Management
+    // Company Info 
     companyInfo: {
-      title: 'Company Information Management',
+      title: 'Company Info',
       index: 'Index',
       companyNameCn: 'Company Name (Ch)',
       companyNameEn: 'Company Name (En)',
@@ -634,7 +719,7 @@ export default {
       remark: 'Remark',
       operation: 'Operation',
       addCompany: 'Add Company',
-      editCompany: 'Edit Company Information',
+      editCompany: 'Edit Company Info',
       deleteConfirm: 'Are you sure you want to delete this company?',
       pleaseInputName: 'Please enter company name',
       pleaseInputNameCn: 'Please enter company name (Ch)',
@@ -859,7 +944,7 @@ export default {
     },
     // Secondary Menu
     smenu: {
-      title: 'Secondary Menu Management',
+      title: 'Secondary Menu',
       smenuCode: 'Menu Code',
       smenuName: 'Menu Name',
       menuType: 'Menu Type',
@@ -926,7 +1011,7 @@ export default {
     },
     // Role Secondary Menu
     roleSMenu: {
-      title: 'Role Secondary Menu Management',
+      title: 'Role Secondary Menu',
       role: 'Role',
       module: 'Module',
       pmenu: 'Primary Menu',
@@ -942,7 +1027,7 @@ export default {
     },
     // Personal
     personalInfo: {
-      title: 'Personal Info Management',
+      title: 'Personal Info',
       userNo: 'No.',
       loginNo: 'Login Account',
       userNameCn: 'Chinese Name',

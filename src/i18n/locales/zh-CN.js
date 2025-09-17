@@ -161,11 +161,96 @@ export default {
       notificationsDesc: '管理系统通知和消息'
     },
     activities: {
-      login: '登录系统',
-      updateUser: '修改用户信息',
-      deleteDept: '删除部门',
-      backup: '系统备份',
-      exportReport: '导出报表'
+        login: '登录系统',
+        updateUser: '修改用户信息',
+        deleteDept: '删除部门',
+        backup: '系统备份',
+        exportReport: '导出报表'
+      }
+    },
+
+  // 表单业务管理
+  formbusiness: {
+    title: '表单业务管理',
+    
+    // 表单分组管理
+    formGroup: {
+      title: '表单分组管理',
+      groupName: '分组名称',
+      groupCode: '分组编码',
+      groupDescription: '分组描述',
+      sortOrder: '排序',
+      isEnabled: '启用状态',
+      createdTime: '创建时间',
+      updatedTime: '更新时间',
+      operation: '操作',
+      index: '序号',
+      addGroup: '新增分组',
+      editGroup: '编辑分组',
+      deleteConfirm: '确定要删除该分组吗？',
+      pleaseInputGroupName: '请输入分组名称',
+      pleaseInputGroupCode: '请输入分组编码',
+      pleaseInputDescription: '请输入分组描述',
+      pleaseInputSortOrder: '请输入排序号',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '删除成功',
+      operationFailed: '操作失败',
+      getFailed: '获取数据失败',
+      filter: {
+        groupName: '分组名称',
+        groupCode: '分组编码'
+      }
+    },
+    
+    // 通用操作
+    actions: {
+      add: '新增',
+      edit: '编辑',
+      delete: '删除',
+      save: '保存',
+      cancel: '取消',
+      search: '搜索',
+      reset: '重置',
+      export: '导出',
+      import: '导入',
+      refresh: '刷新'
+    },
+    
+    // 表单验证
+    validation: {
+      required: '此字段为必填项',
+      minLength: '最少输入{min}个字符',
+      maxLength: '最多输入{max}个字符',
+      email: '请输入正确的邮箱格式',
+      phone: '请输入正确的手机号码',
+      number: '请输入数字',
+      integer: '请输入整数'
+    },
+    
+    // 状态
+    status: {
+      enabled: '启用',
+      disabled: '禁用',
+      active: '激活',
+      inactive: '未激活',
+      pending: '待审核',
+      approved: '已审核',
+      rejected: '已拒绝'
+    },
+    
+    // 消息提示
+    messages: {
+      saveSuccess: '保存成功',
+      saveError: '保存失败',
+      deleteSuccess: '删除成功',
+      deleteError: '删除失败',
+      updateSuccess: '更新成功',
+      updateError: '更新失败',
+      loadError: '加载数据失败',
+      networkError: '网络错误，请稍后重试',
+      confirmDelete: '确定要删除吗？此操作不可恢复',
+      noDataSelected: '请选择要操作的数据'
     }
   },
   
@@ -298,38 +383,39 @@ export default {
   // 路由标题
   route: {
     login: '登录',
-    pmenuSelect: '系统一级菜单',
-    unlock: '账户解锁',
+    moduleSelect: '模块选择',
+    unlock: '账号解锁',
     passwordExpiration: '密码过期修改',
-    notFound: '页面未找到',
     forbidden: '访问被拒绝',
+    notFound: '页面未找到',
     systembasicmgmt: '系统基础管理',
-    systemMgmt: '系统管理一级菜单',
+    systemMgmt: '系统管理',
     role: '角色信息维护',
     module: '模块信息维护',
     pmenu: '一级菜单维护',
     smenu: '二级菜单维护',
-    sMenu: '二级菜单维护',
-    moduleSelect: '模块选择',
     roleModule: '角色模块绑定',
-    rolepmenu: '角色一级菜单',
     rolePMenu: '角色一级菜单',
     roleSMenu: '角色二级菜单',
-    systemBasicData: '基本资料一级菜单',
-    userInfo: '员工信息维护',
-    userAgent: '员工代理维护',
-    userPosition: '职级信息维护',
-    userLabor: '员工职业维护',
-    userPartTime: '员工兼任维护',
+    systemBasicData: '系统基础资料',
     companyInfo: '公司信息维护',
     departmentInfo: '部门信息维护',
     departmentLevel: '部门层级维护',
-    SystemSettings: '系统设定一级菜单',
+    userPosition: '职级信息维护',
+    userLabor: '员工职业维护',
+    userInfo: '员工信息维护',
+    personalInfo: '个人信息维护',
+    systemSettings: '系统设置',
     dictionaryInfo: '字典信息维护',
     currencyInfo: '币别信息维护',
-    personalInfo: '个人信息维护',
     exchangerateInfo: '汇率信息维护',
-    userLoginLog: '员工操作日志'
+    userLoginLog: '员工操作日志',
+    systemUserConfig: '系统用户配置',
+    userAgent: '员工代理维护',
+    userPartTime: '员工兼任维护',
+    formbusiness: '表单业务管理',
+    formBasicInfo: '表单基础信息',
+    formGroup: '表单分组管理'
   },
   
   // 系统基础管理
@@ -669,9 +755,9 @@ export default {
       getFailed: '获取数据失败',
       index: '序号'
     },
-    // 员工职业
+    // 职级信息
     userPosition: {
-      title: '员工职级管理',
+      title: '职级信息维护',
       positionNo: '职级编号',
       positionName: '职级名称',
       positionNameCn: '中文名称',
@@ -760,7 +846,7 @@ export default {
     
     // 模块管理
     module: {
-      title: '模块管理',
+      title: '模块信息维护',
       moduleCode: '模块编码',
       moduleName: '模块名称',
       moduleNameCn: '中文名称',
@@ -788,9 +874,9 @@ export default {
       pleaseInputRemarksEn: '请输入英文备注'
     },
     
-    // 一级菜单管理
+    // 一级菜单维护
     pmenu: {
-      title: '一级菜单管理',
+      title: '一级菜单维护',
       module: '所属模块',
       menuCode: '菜单编码',
       menuName: '菜单名称',
@@ -879,9 +965,9 @@ export default {
       getFailed: '获取数据失败'
     },
     
-    // 角色管理
+    // 角色信息维护
     role: {
-      title: '角色管理',
+      title: '角色信息维护',
       roleCode: '角色编码',
       roleName: '角色名称',
       roleNameCn: '中文名称',
@@ -899,7 +985,7 @@ export default {
     
     // 角色一级菜单
     roleModule: {
-      title: '角色模块管理',
+      title: '角色模块绑定',
       role: '角色',
       module: '模块',
       isBinding: '是否绑定',
@@ -912,8 +998,8 @@ export default {
     },
     
     // 角色一级菜单
-    rolepmenu: {
-      title: '角色一级菜单管理',
+    rolePMenu: {
+      title: '角色一级菜单',
       role: '角色',
       module: '模块',
       pmenu: '一级菜单',
@@ -927,7 +1013,7 @@ export default {
     
     // 角色二级菜单
     roleSMenu: {
-      title: '角色二级菜单管理',
+      title: '角色二级菜单',
       role: '角色',
       module: '模块',
       pmenu: '一级菜单',
@@ -944,7 +1030,7 @@ export default {
     
     // 字典信息管理
     dictionaryInfo: {
-      title: '字典信息管理',
+      title: '字典信息维护',
       index: '序号',
       dicType: '字典类型',
       dicCode: '字典编码',
@@ -976,7 +1062,7 @@ export default {
     
     // 币别信息管理
      currencyInfo: {
-       title: '币别资料管理',
+       title: '币别信息维护',
        index: '序号',
        currencyCode: '币别编码',
        currencyNameCn: '中文名称',
@@ -1031,7 +1117,7 @@ export default {
     
     // 汇率信息管理
     exchangeRateInfo: {
-      title: '汇率资料管理',
+      title: '汇率信息维护',
       index: '序号',
       currencyCode: '本位币别',
       exchangeCurrencyCode: '兑换币别',
@@ -1116,7 +1202,7 @@ export default {
     },
 
     userPartTime: {
-      title: '员工兼任管理',
+      title: '员工兼任维护',
       department: '部门',
       pleaseSelectDepartment: '请选择部门',
       userNo: '员工工号',
