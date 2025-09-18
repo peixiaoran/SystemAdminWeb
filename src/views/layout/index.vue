@@ -545,7 +545,7 @@ const toggleCollapse = () => {
 
 // 跳转到个人信息页面
 const goToPersonalInfo = () => {
-  const personalInfoPath = '/SystemBasicMgmt/System-Mgmt/personal'
+  const personalInfoPath = '/systembasicmgmt/system-basicdata/personal'
   
   // 创建个人信息菜单对象
   const personalInfoMenu = {

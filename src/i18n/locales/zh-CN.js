@@ -27,6 +27,7 @@ export default {
     home: '首页',
     personalInfo: '个人信息',
     editPersonalInfo: '修改个人资料',
+    personalInfoTitle: '个人资料',
     changePassword: '修改密码',
     refreshPage: '刷新页面',
     closeCurrentTab: '关闭当前标签',

@@ -269,8 +269,8 @@ const pmenuRoutes = [
             name: 'SystemPersonalInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
             meta: { 
-              title: 'route.roleSMenu', 
-              icon: 'Switch',
+              title: 'route.personalInfo', 
+              icon: 'User',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -362,8 +362,8 @@ const pmenuRoutes = [
             name: 'SystemPersonalInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
             meta: { 
-              title: 'route.personalInfo', 
-              icon: 'Postcard',
+              title: 'route.personalInfoTitle', 
+              icon: 'User',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
