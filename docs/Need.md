@@ -1,35 +1,73 @@
-页面新增编辑员工兼任，点击后弹出新增编辑弹窗，调用接口GET_USER_PARTTIMEENTITY_API，{
-  "userId": "",
-  "old_PartTimeDeptId": "",
-  "old_PartTimePositionId": "",
-  "old_PartTimeLaborId": ""
-}，返回数据{
+1、表单组别新增接口INSERT_FORMGROUP_ENTITY_API，请求参数：{
+  "formGroupId": "",
+  "formGroupNameCn": "",
+  "formGroupNameEn": "",
+  "sortOrder": 1,
+  "isEnabled": 1,
+  "description": ""
+}，formGroupNameCn、formGroupNameEn、sortOrder、isEnabled必填，返回参数{
+  "code": 200,
+  "data": 1,
+  "message": "新增表单组别成功"
+}
+2、删除表单组别接口DELETE_FORMGROUP_ENTITY_API，请求参数：{
+  "formGroupId": "",
+  "formGroupNameCn": "",
+  "formGroupNameEn": "",
+  "sortOrder": 1,
+  "isEnabled": 1,
+  "description": ""
+}，返回参数{
+  "code": 200,
+  "data": 1,
+  "message": "删除表单组别成功"
+}
+3、点击编辑调用GET_FORMGROUP_ENTITY_API，请求参数：{
+  "formGroupId": "1968922852585508864",
+  "formGroupNameCn": "",
+  "formGroupNameEn": "",
+  "sortOrder": 1,
+  "isEnabled": 1,
+  "description": ""
+}返回参数：{
   "code": 200,
   "data": {
-    "userId": 1961846945383321600,
-    "partTimeDeptId": 1929535196076576800,
-    "partTimePositionId": 1351601258426794000,
-    "partTimeLaborId": 1956395917238210600,
-    "startTime": "2025/8/1 0:00:00",
-    "endTime": "2025/8/31 0:00:00",
-    "createdBy": 1903486709602062300,
-    "createdDate": "2025/8/31 2:02:01",
-    "modifiedBy": null,
-    "modifiedDate": null
+    "formGroupId": "1968922852585508864",
+    "formGroupNameCn": "工程管理类",
+    "formGroupNameEn": "Engineering Management",
+    "sortOrder": 1,
+    "description": ""
   },
   "message": ""
-}，员工表格根据userId选中，点击修改调用接口UPDATE_USER_PARTTIME_API，{
-  "userId": "",
-  "old_PartTimeDeptId": "",--点击修改时，旧的部门id
-  "old_PartTimePositionId": "",--点击修改时，旧的职级id
-  "old_PartTimeLaborId": "",--点击修改时，旧的岗位id
-  "partTimeDeptId": "",--点击修改时，新的部门id
-  "partTimePositionId": "",--点击修改时，新的职级id
-  "partTimeLaborId": "",--点击修改时，新的岗位id
-  "startTime": "",--点击修改时，新的开始时间
-  "endTime": ""--点击修改时，新的结束时间
-},返回数据{
+}
+4、点击保存调用UPDATE_FORMGROUP_API，请求参数：{
+  "formGroupId": "",
+  "formGroupNameCn": "",
+  "formGroupNameEn": "",
+  "sortOrder": 1,
+  "isEnabled": 1,
+  "description": ""
+}，返回参数{
   "code": 200,
-  "data": null,
-  "message": ""
-}，i18n配置一下。
+  "data": 1,
+  "message": "更新表单组别成功"
+}
+5、查询表单组别列表接口GET_FORMGROUP_LIST_API，请求参数：{
+  "formGroupName": "",
+  "pageIndex": 1,
+  "pageSize": 1,
+  "totalCount": 1
+}，返回参数：{
+  "code": 200,
+  "message": "",
+  "data": [
+    {
+      "formGroupId": "1968922852585508864",
+      "formGroupNameCn": "工程管理类",
+      "formGroupNameEn": "Engineering Management",
+      "sortOrder": 1,
+      "description": ""
+    }
+  ],
+  "totalCount": 3
+}，以上为表单组别相关接口，增删改提示message，配置i18n

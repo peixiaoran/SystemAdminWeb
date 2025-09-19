@@ -359,32 +359,15 @@ const handleMenuSelect = (index, indexPath) => {
         return;
       }
       
-      // 查找对应的菜单项以获取菜单名称
-      const findMenuByPath = (menus, targetPath) => {
-        for (const menu of menus) {
-          const menuPath = getFormattedPath(menu.path);
-          if (menuPath === targetPath) {
-            return menu;
-          }
-          if (menu.menuChildList && menu.menuChildList.length > 0) {
-            const found = findMenuByPath(menu.menuChildList, targetPath);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-      
-      const menuItem = findMenuByPath(menuList.value, index);
-      
-      // 优先使用菜单名称，如果找不到菜单项则使用路由标题
-      const routeTitleKey = matchedRoute.meta?.title;
-      const routeTitle = menuItem ? menuItem.menuName : (routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey);
-      const routeIcon = (menuItem && menuItem.menuIcon) || matchedRoute.meta?.icon;
+      // 获取路由标题和图标
+      const routeTitleKey = matchedRoute.meta?.title || '未命名页面';
+      const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey;
+      const routeIcon = matchedRoute.meta?.icon || 'Document';
       
       // 添加新标签
       visitedTabs.value.push({
         title: routeTitle,
-        titleKey: menuItem ? '' : routeTitleKey, // 如果使用菜单名称，则不需要titleKey
+        titleKey: routeTitleKey,
         path: index,
         icon: routeIcon,
         name: index.replace(/\//g, '-')
@@ -524,6 +507,16 @@ const fetchMenuData = async () => {
   }
 }
 
+// 清理图标名称，确保是有效的Vue组件名称
+const cleanIconName = (iconName) => {
+  if (!iconName || typeof iconName !== 'string') {
+    return 'Document'
+  }
+  // 移除空格和特殊字符，只保留字母数字和连字符
+  const cleaned = iconName.trim().replace(/[^a-zA-Z0-9-]/g, '')
+  return cleaned || 'Document'
+}
+
 // 处理菜单数据，将API返回的菜单与路由匹配
 const processMenuData = (menuData) => {
   // 获取当前路由器中的所有路由
@@ -539,11 +532,13 @@ const processMenuData = (menuData) => {
     
     // 如果找到匹配的路由，使用路由的meta信息补充菜单数据
     if (matchedRoute && matchedRoute.meta) {
-      menu.menuIcon = menu.menuIcon || matchedRoute.meta.icon || 'Document'
+      const rawIcon = menu.menuIcon || matchedRoute.meta.icon || 'Document'
+      menu.menuIcon = cleanIconName(rawIcon)
       // 可以在这里添加更多路由信息到菜单
     } else {
       // 如果没有匹配的路由，设置默认图标
-      menu.menuIcon = menu.menuIcon || 'Document'
+      const rawIcon = menu.menuIcon || 'Document'
+      menu.menuIcon = cleanIconName(rawIcon)
     }
     
     // 如果有子菜单，递归处理
@@ -672,11 +667,12 @@ const addTab = (menu) => {
       return
     }
     
-    // 只使用菜单名称作为标签标题，完全忽略路由名称
+    // 优先使用路由标题，如果没有则使用菜单名称
     const routeTitleKey = matchedRoute.meta?.title || ''
-    // 只使用menuName作为标签标题
-    const routeTitle = menuName
-    const routeIcon = menuIcon || matchedRoute.meta?.icon || 'Document'
+    // 优先使用路由标题，支持国际化
+    const routeTitle = routeTitleKey ? (routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey) : menuName
+    const rawIcon = matchedRoute.meta?.icon || menuIcon || 'Document'
+    const routeIcon = cleanIconName(rawIcon)
     
     // 检查是否已存在相同路径的标签
     const existingTabIndex = visitedTabs.value.findIndex(tab => tab.path === formattedPath)

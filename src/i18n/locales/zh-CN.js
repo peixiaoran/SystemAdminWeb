@@ -1,3 +1,5 @@
+import { sortOrders } from "element-plus/es/components/table-v2/src/constants.mjs";
+
 export default {
   // 通用
   common: {
@@ -27,7 +29,7 @@ export default {
     home: '首页',
     personalInfo: '个人信息',
     editPersonalInfo: '修改个人资料',
-    personalInfoTitle: '个人资料',
+    personalInfoTitle: '个人信息维护',
     changePassword: '修改密码',
     refreshPage: '刷新页面',
     closeCurrentTab: '关闭当前标签',
@@ -42,6 +44,8 @@ export default {
     confirmDelete: '确认删除',
     active: '启用',
     inactive: '禁用',
+    enabled: '启用',
+    disabled: '禁用',
     prevPage: '上一页',
     nextPage: '下一页',
     total: '共 {total} 条',
@@ -174,36 +178,6 @@ export default {
   formbusiness: {
     title: '表单业务管理',
     
-    // 表单分组管理
-    formGroup: {
-      title: '表单分组管理',
-      groupName: '分组名称',
-      groupCode: '分组编码',
-      groupDescription: '分组描述',
-      sortOrder: '排序',
-      isEnabled: '启用状态',
-      createdTime: '创建时间',
-      updatedTime: '更新时间',
-      operation: '操作',
-      index: '序号',
-      addGroup: '新增分组',
-      editGroup: '编辑分组',
-      deleteConfirm: '确定要删除该分组吗？',
-      pleaseInputGroupName: '请输入分组名称',
-      pleaseInputGroupCode: '请输入分组编码',
-      pleaseInputDescription: '请输入分组描述',
-      pleaseInputSortOrder: '请输入排序号',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
-      filter: {
-        groupName: '分组名称',
-        groupCode: '分组编码'
-      }
-    },
-    
     // 通用操作
     actions: {
       add: '新增',
@@ -217,6 +191,52 @@ export default {
       import: '导入',
       refresh: '刷新'
     },
+
+    // 表单组别页面专用
+    formgroup: {
+        formGroupName: '组别名称',
+        formGroupNameCn: '中文名称',
+        formGroupNameEn: '英文名称',
+        pleaseInputFormGroupName: '请输入表单组别名称',
+        pleaseInputFormGroupNameCn: '请输入中文名称',
+        pleaseInputFormGroupNameEn: '请输入英文名称',
+        description: '描述',
+        pleaseInputDescription: '请输入描述',
+        sortOrder: '排序',
+        isEnabled: '是否启用',
+        index: '序号',
+        addFormGroup: '新增表单组别',
+        editFormGroup: '编辑表单组别',
+        deleteConfirm: '确定要删除这个表单组别吗？',
+        deleteSuccess: '删除成功',
+        saveSuccess: '保存成功',
+        updateSuccess: '更新成功',
+        operationFailed: '操作失败',
+        getFailed: '获取数据失败'
+      },
+
+    // 表单类别页面专用
+    formtype: {
+        formTypeName: '表单类别名称',
+        formTypeNameCn: '表单类别中文名称',
+        formTypeNameEn: '表单类别英文名称',
+        description: '描述',
+        sortOrder: '排序',
+        isEnabled: '是否启用',
+        index: '序号',
+        pleaseInputFormTypeName: '请输入表单类别名称',
+        pleaseInputFormTypeNameCn: '请输入表单类别中文名称',
+        pleaseInputFormTypeNameEn: '请输入表单类别英文名称',
+        pleaseInputDescription: '请输入描述',
+        addFormType: '新增表单类别',
+        editFormType: '编辑表单类别',
+        deleteConfirm: '确定要删除这个表单类别吗？',
+        getFailed: '获取表单类别信息失败',
+        saveSuccess: '保存成功',
+        updateSuccess: '更新成功',
+        deleteSuccess: '删除成功',
+        operationFailed: '操作失败'
+      },
     
     // 表单验证
     validation: {
@@ -416,7 +436,9 @@ export default {
     userPartTime: '员工兼任维护',
     formbusiness: '表单业务管理',
     formBasicInfo: '表单基础信息',
-    formGroup: '表单分组管理'
+    formGroup: '表单组别信息',
+    formType: '表单类别信息',
+    personalInfoTitle: '个人资料'
   },
   
   // 系统基础管理
@@ -1068,7 +1090,7 @@ export default {
        currencyCode: '币别编码',
        currencyNameCn: '中文名称',
        currencyNameEn: '英文名称',
-       currencyState: '启用状态',
+       isEnabled: '启用状态',
        remark: '备注',
        operation: '操作',
        addCurrency: '新增币别',
@@ -1155,11 +1177,13 @@ export default {
       ip: 'IP地址',
       status: '登录状态',
       loginDate: '登录时间',
+      pleaseInputUserNo: '请输入员工工号',
       pleaseInputIp: '请输入IP地址',
       pleaseSelectStartTime: '请选择开始时间',
       pleaseSelectEndTime: '请选择结束时间',
       getFailed: '获取数据失败',
       filter: {
+        userNo: '员工工号',
         ip: 'IP地址',
         startTime: '开始时间',
         endTime: '结束时间'

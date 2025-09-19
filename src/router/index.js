@@ -482,7 +482,7 @@ const pmenuRoutes = [
             noTag: true
           }
         },
-        // 用户配置子模块 - 使用嵌套结构
+        // 表单基础信息子模块 - 使用嵌套结构
         {
           path: 'form-basicinfo',
           name: 'FormBasicInfo',
@@ -500,6 +500,17 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-basicinfo/formgroup.vue'),
               meta: { 
                 title: 'route.formGroup', 
+                icon: 'Collection',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'formtype',
+              name: 'FormBasicInfoFormtype',
+              component: () => import('../views/formbusiness/form-basicinfo/formtype.vue'),
+              meta: { 
+                title: 'route.formType', 
                 icon: 'Postcard',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false

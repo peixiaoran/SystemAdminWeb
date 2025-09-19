@@ -50,7 +50,7 @@
                     <el-table-column prop="exchangeCurrencyCode" :label="$t('systembasicmgmt.exchangeRateInfo.exchangeCurrencyCode')" align="center" min-width="150" />
                     <el-table-column prop="exchangeRate" :label="$t('systembasicmgmt.exchangeRateInfo.exchangeRate')" align="center" min-width="120">
                         <template #default="scope">
-                            {{ scope.row.exchangeRate?.toFixed(6) }}
+                            {{ scope.row.exchangeRate?.toFixed(4) }}
                         </template>
                     </el-table-column>
                     <el-table-column prop="yearMonth" :label="$t('systembasicmgmt.exchangeRateInfo.yearMonth')" align="center" min-width="120" />
@@ -81,13 +81,13 @@
         <!-- 汇率编辑对话框 -->
         <el-dialog v-model="dialogVisible"
                    :title="dialogTitle"
-                   width="45%"
+                   width="50%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"
                    :lock-scroll="true"
                    @close="handleDialogClose">
-            <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="汇率编辑表单">
+            <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="汇率编辑表单">
                 <div class="form-row">
                     <el-form-item :label="$t('systembasicmgmt.exchangeRateInfo.currencyCode')" prop="currencyCode">
                         <el-select v-model="editForm.currencyCode" 
@@ -124,9 +124,9 @@
                     <el-form-item :label="$t('systembasicmgmt.exchangeRateInfo.exchangeRate')" prop="exchangeRate">
                         <el-input-number v-model="editForm.exchangeRate" 
                                         style="width:100%" 
-                                        :precision="6"
+                                        :precision="4"
                                         :min="0"
-                                        :step="0.000001"
+                                        :step="0.0001"
                                         controls-position="right"
                                         :placeholder="$t('systembasicmgmt.exchangeRateInfo.pleaseInputExchangeRate')" />
                     </el-form-item>
@@ -182,7 +182,7 @@
     // 分页信息
     const pagination = reactive({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         totalCount: 0
     })
   
@@ -463,6 +463,8 @@
     const handleAdd = () => {
         // 重置表单数据
         resetForm()
+        // 设置年月默认值为当前年月
+        editForm.yearMonth = currentYearMonth
         // 设置为新增模式
         isEditMode.value = false
         dialogTitle.value = t('systembasicmgmt.exchangeRateInfo.addExchangeRate')

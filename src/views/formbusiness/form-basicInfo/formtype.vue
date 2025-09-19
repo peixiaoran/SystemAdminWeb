@@ -485,8 +485,7 @@ const handleSubmit = async () => {
       })
     }
   } catch (error) {
-    // 如果是表单验证失败，不显示错误提示，让Element Plus自己处理
-    if (error !== false && typeof error === 'object' && error.message) {
+    if (error !== false) {
       console.error('提交表单失败:', error)
       ElMessage({
         message: t('formbusiness.formgroup.operationFailed'),
@@ -495,7 +494,6 @@ const handleSubmit = async () => {
         showClose: true
       })
     }
-    // 表单验证失败时，error通常是false或者验证错误对象，不显示Operation Failed
   } finally {
     submitLoading.value = false
   }

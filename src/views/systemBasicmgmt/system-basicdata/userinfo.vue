@@ -518,6 +518,12 @@
       passWord: [
         { 
           validator: (rule, value, callback) => {
+            // 新增时密码必填，编辑时密码可选
+            const isAdd = !editForm.userId
+            if (isAdd && !value) {
+              callback(new Error(t('systembasicmgmt.userInfo.pleaseInputPassword')))
+              return
+            }
             if (!value) {
               callback()
               return

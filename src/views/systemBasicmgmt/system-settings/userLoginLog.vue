@@ -4,6 +4,12 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工操作日志搜索表单">
+              <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.userNo')" >
+                  <el-input v-model="filters.userNo"
+                           style="width: 180px;"
+                           :placeholder="$t('systembasicmgmt.userLoginLog.pleaseInputUserNo')"
+                           clearable />
+              </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.ip')">
                   <el-input v-model="filters.ip"
                            style="width: 180px;"
@@ -106,6 +112,7 @@
 
   // 过滤条件
   const filters = reactive({
+      userNo: '',
       ip: '',
       startTime: '',
       endTime: ''
@@ -120,6 +127,7 @@
   const fetchUserLoginLogPages = async () => {
       loading.value = true
       const params = {
+          userNo: filters.userNo,
           ip: filters.ip,
           startTime: filters.startTime,
           endTime: filters.endTime,
@@ -156,6 +164,7 @@
 
   // 重置搜索条件
   const handleReset = () => {
+      filters.userNo = ''
       filters.ip = ''
       filters.startTime = ''
       filters.endTime = ''

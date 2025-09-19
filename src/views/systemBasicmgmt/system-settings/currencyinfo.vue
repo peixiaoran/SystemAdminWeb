@@ -36,10 +36,10 @@
                     <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
                     <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
                     <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-                    <el-table-column prop="currencyState" :label="$t('systembasicmgmt.currencyInfo.currencyState')" align="center" min-width="100">
+                    <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="70">
                         <template #default="scope">
-                            <el-tag :type="scope.row.currencyState === 1 ? 'success' : 'danger'">
-                                {{ scope.row.currencyState === 1 ? $t('common.active') : $t('common.inactive') }}
+                            <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
+                                {{ scope.row.isEnabled === 1 ? $t('common.active') : $t('common.inactive') }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -83,10 +83,10 @@
                                  style="width:100%" 
                                  :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
                     </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyState')" prop="currencyState">
-                        <el-switch v-model="editForm.currencyState" 
-                                  :active-value="1"
-                                  :inactive-value="0"
+                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.isEnabled')" prop="isEnabled">
+                        <el-switch v-model="editForm.isEnabled" 
+                                  :active-value="'1'"
+                                  :inactive-value="'0'"
                                   :active-text="$t('common.yes')"
                                   :inactive-text="$t('common.no')"
                                   inline-prompt
@@ -147,7 +147,7 @@
     // 分页信息
     const pagination = reactive({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         totalCount: 0
     })
   
@@ -165,7 +165,7 @@
         currencyCode: '',
         currencyNameCn: '',
         currencyNameEn: '',
-        currencyState: 1,
+        isEnabled: '1',
         remark: ''
     })
   
@@ -178,8 +178,8 @@
             { required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode'), trigger: 'blur' }
         ],
         currencyNameCn: [
-{ required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn'), trigger: 'blur' }
-],
+            { required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn'), trigger: 'blur' }
+        ],
         currencyNameEn: [
             { required: true, message: () => t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameEn'), trigger: 'blur' }
         ]
@@ -203,7 +203,7 @@
             editForm.currencyCode = res.data.currencyCode
             editForm.currencyNameCn = res.data.currencyNameCn
             editForm.currencyNameEn = res.data.currencyNameEn
-            editForm.currencyState = res.data.currencyState
+            editForm.isEnabled = res.data.isEnabled
             editForm.remark = res.data.remark || ''
         }
     }
@@ -277,7 +277,7 @@
         editForm.currencyCode = ''
         editForm.currencyNameCn = ''
         editForm.currencyNameEn = ''
-        editForm.currencyState = 1
+        editForm.isEnabled = '1'
         editForm.remark = ''
         
         // 数据重置后再次清除验证状态

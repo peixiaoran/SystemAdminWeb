@@ -42,6 +42,8 @@ export default {
     confirmDelete: 'Confirm Delete',
     active: 'Active',
     inactive: 'Inactive',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
     prevPage: 'Previous',
     nextPage: 'Next',
     total: 'Total {total}',
@@ -237,34 +239,6 @@ export default {
   // Form Business Management
   formbusiness: {
     title: 'Form Business',
-    formGroup: {
-      title: 'Form Group',
-      groupName: 'Group Name',
-      groupCode: 'Group Code',
-      groupDescription: 'Group Description',
-      sortOrder: 'Sort Order',
-      isEnabled: 'Enable Status',
-      createdTime: 'Created Time',
-      updatedTime: 'Updated Time',
-      operation: 'Operation',
-      index: 'Index',
-      addGroup: 'Add Group',
-      editGroup: 'Edit Group',
-      deleteConfirm: 'Are you sure you want to delete this group?',
-      pleaseInputGroupName: 'Please enter group name',
-      pleaseInputGroupCode: 'Please enter group code',
-      pleaseInputDescription: 'Please enter group description',
-      pleaseInputSortOrder: 'Please enter sort order',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
-      filter: {
-        groupName: 'Group Name',
-        groupCode: 'Group Code'
-      }
-    },
     
     // Common Actions
     actions: {
@@ -278,6 +252,51 @@ export default {
       export: 'Export',
       import: 'Import',
       refresh: 'Refresh'
+    },
+
+    // Form Group Page Specific
+    formgroup: {
+      index: 'Index',
+      formGroupName: 'Group Name',
+      formGroupNameCn: 'Chinese Name',
+      formGroupNameEn: 'English Name',
+      sortOrder: 'Sort Order',
+      description: 'Description',
+      isEnabled: 'Is Enabled',
+      pleaseInputFormGroupName: 'Please enter form group name',
+      pleaseInputFormGroupNameCn: 'Please enter Chinese name',
+      pleaseInputFormGroupNameEn: 'Please enter English name',
+      pleaseInputDescription: 'Please enter description',
+      addFormGroup: 'Add Form Group',
+      editFormGroup: 'Edit Form Group',
+      deleteConfirm: 'Are you sure you want to delete this form group?',
+      saveSuccess: 'Save Successfully',
+      updateSuccess: 'Update Successfully',
+      deleteSuccess: 'Delete Successfully',
+      operationFailed: 'Operation Failed',
+      getFailed: 'Failed to get data'
+    },
+    
+    formtype: {
+      formTypeName: 'Form Type Name',
+      formTypeNameCn: 'Form Type Chinese Name',
+      formTypeNameEn: 'Form Type English Name',
+      description: 'Description',
+      sortOrder: 'Sort Order',
+      isEnabled: 'Is Enabled',
+      index: 'Index',
+      pleaseInputFormTypeName: 'Please input form type name',
+      pleaseInputFormTypeNameCn: 'Please input form type Chinese name',
+      pleaseInputFormTypeNameEn: 'Please input form type English name',
+      pleaseInputDescription: 'Please input description',
+      addFormType: 'Add Form Type',
+      editFormType: 'Edit Form Type',
+      deleteConfirm: 'Are you sure to delete this form type?',
+      getFailed: 'Failed to get form type information',
+      saveSuccess: 'Save successfully',
+      updateSuccess: 'Update successfully',
+      deleteSuccess: 'Delete successfully',
+      operationFailed: 'Operation failed'
     },
     
     // Form Validation
@@ -491,7 +510,9 @@ export default {
     userPartTime: 'User PartTime',
     formbusiness: 'Form Business',
     formBasicInfo: 'Form Basic Info',
-    formGroup: 'Form Group'
+    formGroup: 'Form Group',
+    formType: 'Form Type',
+    personalInfoTitle: 'Personal Profile'
   },
   
   // System Basic Management
@@ -503,7 +524,7 @@ export default {
       currencyCode: 'Currency Code',
       currencyNameCn: 'Currency Chinese Name',
       currencyNameEn: 'Currency English Name',
-      currencyState: 'Enable Status',
+      isEnabled: 'Enable Status',
       remark: 'Remark',
       operation: 'Operation',
       addCurrency: 'Add Currency',
@@ -1160,11 +1181,13 @@ export default {
       ip: 'IP Address',
       status: 'Login Status',
       loginDate: 'Login Time',
+      pleaseInputUserNo: 'Please enter employee number',
       pleaseInputIp: 'Please enter IP address',
       pleaseSelectStartTime: 'Please select start time',
       pleaseSelectEndTime: 'Please select end time',
       getFailed: 'Failed to get data',
       filter: {
+        userNo: 'Employee No.',
         ip: 'IP Address',
         startTime: 'Start Time',
         endTime: 'End Time'
