@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as echarts from 'echarts'
 import {
@@ -77,6 +77,8 @@ const { t } = useI18n()
 // 图表引用
 const kLineChart = ref(null)
 let kLineChartInstance = null
+let pieChartInstances = []
+let resizeHandlers = []
 
 // 响应式数据
 const kLineChartPeriod = ref('day')
@@ -205,6 +207,13 @@ const initKLineChart = () => {
   if (kLineChartInstance) {
     kLineChartInstance.dispose()
     kLineChartInstance = null
+  }
+  
+  // 清理K线图相关的resize处理器
+  // 移除第一个处理器（K线图的）
+  if (resizeHandlers.length > 0) {
+    window.removeEventListener('resize', resizeHandlers[0])
+    resizeHandlers.shift()
   }
   
   const chart = echarts.init(kLineChart.value)
@@ -482,12 +491,31 @@ const initKLineChart = () => {
   }
   
   chart.setOption(option)
-  window.addEventListener('resize', () => chart.resize())
+  
+  // 创建resize处理函数并保存引用
+  const resizeHandler = () => {
+    if (chart && !chart.isDisposed()) {
+      chart.resize()
+    }
+  }
+  window.addEventListener('resize', resizeHandler)
+  resizeHandlers.push(resizeHandler)
 }
 
 // 初始化饼图
 const initPieCharts = async () => {
   try {
+    // 清理之前的饼图实例
+    pieChartInstances.forEach(chart => {
+      if (chart && !chart.isDisposed()) {
+        chart.dispose()
+      }
+    })
+    pieChartInstances = []
+    
+    // 清理之前的resize处理器（只清理饼图相关的）
+    // 注意：这里不清理K线图的resize处理器，因为它在initKLineChart中管理
+    
     // 等待所有饼图DOM元素准备好
     const pieChartPromises = pieCharts.value.map((chart, index) => {
       return new Promise((resolve) => {
@@ -507,6 +535,7 @@ const initPieCharts = async () => {
     // 部门分布饼图
     if (pieCharts.value[0].ref) {
       const chart1 = echarts.init(pieCharts.value[0].ref)
+      pieChartInstances.push(chart1)
       const option1 = {
         tooltip: {
           trigger: 'item',
@@ -554,12 +583,21 @@ const initPieCharts = async () => {
         ]
       }
       chart1.setOption(option1)
-      window.addEventListener('resize', () => chart1.resize())
+      
+      // 创建resize处理函数并保存引用
+      const resizeHandler1 = () => {
+        if (chart1 && !chart1.isDisposed()) {
+          chart1.resize()
+        }
+      }
+      window.addEventListener('resize', resizeHandler1)
+      resizeHandlers.push(resizeHandler1)
     }
 
     // 项目状态饼图
     if (pieCharts.value[1].ref) {
       const chart2 = echarts.init(pieCharts.value[1].ref)
+      pieChartInstances.push(chart2)
       const option2 = {
         tooltip: {
           trigger: 'item',
@@ -592,12 +630,21 @@ const initPieCharts = async () => {
         ]
       }
       chart2.setOption(option2)
-      window.addEventListener('resize', () => chart2.resize())
+      
+      // 创建resize处理函数并保存引用
+      const resizeHandler2 = () => {
+        if (chart2 && !chart2.isDisposed()) {
+          chart2.resize()
+        }
+      }
+      window.addEventListener('resize', resizeHandler2)
+      resizeHandlers.push(resizeHandler2)
     }
 
     // 资源使用饼图
     if (pieCharts.value[2].ref) {
       const chart3 = echarts.init(pieCharts.value[2].ref)
+      pieChartInstances.push(chart3)
       const option3 = {
         tooltip: {
           trigger: 'item',
@@ -627,7 +674,15 @@ const initPieCharts = async () => {
         ]
       }
       chart3.setOption(option3)
-      window.addEventListener('resize', () => chart3.resize())
+      
+      // 创建resize处理函数并保存引用
+      const resizeHandler3 = () => {
+        if (chart3 && !chart3.isDisposed()) {
+          chart3.resize()
+        }
+      }
+      window.addEventListener('resize', resizeHandler3)
+      resizeHandlers.push(resizeHandler3)
     }
   } catch (error) {
     console.error('饼图初始化失败:', error)
@@ -690,6 +745,29 @@ onMounted(() => {
       }, 2000)
     }
   })
+})
+
+// 组件卸载时清理图表实例
+onUnmounted(() => {
+  // 清理K线图实例
+  if (kLineChartInstance && !kLineChartInstance.isDisposed()) {
+    kLineChartInstance.dispose()
+    kLineChartInstance = null
+  }
+  
+  // 清理饼图实例
+  pieChartInstances.forEach(chart => {
+    if (chart && !chart.isDisposed()) {
+      chart.dispose()
+    }
+  })
+  pieChartInstances = []
+  
+  // 移除所有窗口resize事件监听器
+  resizeHandlers.forEach(handler => {
+    window.removeEventListener('resize', handler)
+  })
+  resizeHandlers = []
 })
 </script>
 
