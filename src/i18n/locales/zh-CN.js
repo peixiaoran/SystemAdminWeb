@@ -438,7 +438,7 @@ export default {
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
     formType: '表单类别信息',
-    personalInfoTitle: '个人资料'
+    personalInfoTitle: '个人信息维护'
   },
   
   // 系统基础管理
