@@ -492,18 +492,21 @@
   
     // 处理搜索操作
     const handleSearch = () => {
+        loading.value = true // 显示加载状态
         pagination.pageIndex = 1
         fetchUserPages()
     }
   
     // 重置搜索条件
     const handleReset = () => {
+        loading.value = true // 显示加载状态
         Object.assign(filters, {
             departmentId: '',
             userNo: '',
             userName: ''
         })
         pagination.pageIndex = 1
+        fetchUserPages()
     }
   
 
@@ -512,12 +515,14 @@
   
     // 处理页码变化
     const handlePageChange = (page) => {
+        loading.value = true // 显示加载状态
         pagination.pageIndex = page
         fetchUserPages()
     }
   
     // 处理每页记录数变化
     const handleSizeChange = (size) => {
+        loading.value = true // 显示加载状态
         pagination.pageSize = size
         pagination.pageIndex = 1
         fetchUserPages()

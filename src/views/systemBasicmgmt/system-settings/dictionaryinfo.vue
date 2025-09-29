@@ -4,6 +4,31 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
+              <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.module')">
+                  <el-select v-model="filters.moduleId"
+                            style="width: 180px;"
+                            :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
+                            @change="handleModuleChange">
+                      <el-option
+                          v-for="module in moduleList"
+                          :key="module.moduleId"
+                          :label="module.moduleName"
+                          :value="module.moduleId"
+                          :disabled="module.disabled" />
+                  </el-select>
+              </el-form-item>
+              <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicType')">
+                  <el-select v-model="filters.dicType"
+                            style="width: 180px;"
+                            :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
+                            clearable>
+                      <el-option
+                          v-for="dicType in dicTypeList"
+                          :key="dicType.dicTypeCode"
+                          :label="dicType.dicTypeName"
+                          :value="dicType.dicTypeCode" />
+                  </el-select>
+              </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicNameCn')">
                   <el-input v-model="filters.dicName"
                            style="width: 180px;"
@@ -111,7 +136,9 @@
     INSERT_DICTIONARY_API, 
     DELETE_DICTIONARY_API, 
     GET_DICTIONARY_ENTITY_API, 
-    UPDATE_DICTIONARY_API 
+    UPDATE_DICTIONARY_API,
+    GET_MODULE_DROP_DOWN_API,
+    GET_DIC_TYPE_DROP_DOWN_API
   } from '@/config/api/systembasicmgmt/System-Settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -122,6 +149,10 @@
   // 字典数据
   const dictionaryList = ref([])
   const loading = ref(false)
+
+  // 模块和字典类型数据
+  const moduleList = ref([])
+  const dicTypeList = ref([])
 
   // 表单引用
   const editFormRef = ref(null)
@@ -135,6 +166,8 @@
 
   // 过滤条件
   const filters = reactive({
+      moduleId: '',
+      dicType: '',
       dicName: '',
   })
 
@@ -180,6 +213,11 @@
 
   // 在组件挂载后获取字典数据
   onMounted(() => {
+      getModuleDropDown()
+      // 如果有默认的模块ID，则获取对应的字典类型列表
+      if (filters.moduleId) {
+          getDicTypeDropDown(filters.moduleId)
+      }
       fetchDictionaryPages()
   })
 
@@ -208,6 +246,8 @@
   const fetchDictionaryPages = async () => {
       loading.value = true
       const params = {
+          moduleId: filters.moduleId,
+          dicType: filters.dicType,
           dicName: filters.dicName,
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
@@ -229,10 +269,61 @@
       loading.value = false
   }
 
-  // 防抖搜索优化
+  // 获取模块下拉列表
+  const getModuleDropDown = async () => {
+      try {
+          const response = await post(GET_MODULE_DROP_DOWN_API.GET_MODULE_DROP_DOWN, {})
+          if (response && response.code === 200) {
+              moduleList.value = response.data || []
+              // 如果有模块数据，自动选择第一个模块并获取对应的字典类型列表
+              if (moduleList.value.length > 0) {
+                  filters.moduleId = moduleList.value[0].moduleId
+                  getDicTypeDropDown(filters.moduleId)
+              }
+          } else {
+              ElMessage.error(response.message || '获取模块列表失败')
+          }
+      } catch (error) {
+          console.error('获取模块列表失败:', error)
+          ElMessage.error('获取模块列表失败')
+      }
+  }
+
+  // 获取字典类型下拉列表
+  const getDicTypeDropDown = async (moduleId) => {
+      if (!moduleId) {
+          dicTypeList.value = []
+          return
+      }
+      
+      try {
+          const params = {
+            moduleId: moduleId,
+          }
+          const response = await post(GET_DIC_TYPE_DROP_DOWN_API.GET_DIC_TYPE_DROP_DOWN, params)
+          if (response && response.code === 200) {
+              dicTypeList.value = response.data || []
+          } else {
+              ElMessage.error(response.message || '获取字典类型列表失败')
+          }
+      } catch (error) {
+          console.error('获取字典类型列表失败:', error)
+          ElMessage.error('获取字典类型列表失败')
+      }
+  }
+
+  // 模块变化处理
+  const handleModuleChange = (moduleId) => {
+      filters.dicType = '' // 清空字典类型选择
+      getDicTypeDropDown(moduleId)
+  }
+
+  // 搜索防抖定时器
   let searchTimer = null
+
   const handleSearch = () => {
       if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
       searchTimer = setTimeout(() => {
           pagination.pageIndex = 1
           fetchDictionaryPages()
@@ -241,18 +332,25 @@
 
   // 重置搜索条件
   const handleReset = () => {
+      loading.value = true // 显示加载状态
+      filters.moduleId = ''
+      filters.dicType = ''
       filters.dicName = ''
+      dicTypeList.value = [] // 清空字典类型列表
       pagination.pageIndex = 1
+      fetchDictionaryPages()
   }
 
   // 处理页码变化
   const handlePageChange = (page) => {
+      loading.value = true // 显示加载状态
       pagination.pageIndex = page
       fetchDictionaryPages()
   }
 
   // 处理每页记录数变化
   const handleSizeChange = (size) => {
+      loading.value = true // 显示加载状态
       pagination.pageSize = size
       pagination.pageIndex = 1
       fetchDictionaryPages()

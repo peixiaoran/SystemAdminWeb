@@ -1,73 +1,34 @@
-1、表单组别新增接口INSERT_FORMGROUP_ENTITY_API，请求参数：{
-  "formGroupId": "",
-  "formGroupNameCn": "",
-  "formGroupNameEn": "",
-  "sortOrder": 1,
-  "isEnabled": 1,
-  "description": ""
-}，formGroupNameCn、formGroupNameEn、sortOrder、isEnabled必填，返回参数{
+1、字典页面筛选部分新增模块下拉框：没有请求参数，返回参数：{
   "code": 200,
-  "data": 1,
-  "message": "新增表单组别成功"
-}
-2、删除表单组别接口DELETE_FORMGROUP_ENTITY_API，请求参数：{
-  "formGroupId": "",
-  "formGroupNameCn": "",
-  "formGroupNameEn": "",
-  "sortOrder": 1,
-  "isEnabled": 1,
-  "description": ""
-}，返回参数{
-  "code": 200,
-  "data": 1,
-  "message": "删除表单组别成功"
-}
-3、点击编辑调用GET_FORMGROUP_ENTITY_API，请求参数：{
-  "formGroupId": "1968922852585508864",
-  "formGroupNameCn": "",
-  "formGroupNameEn": "",
-  "sortOrder": 1,
-  "isEnabled": 1,
-  "description": ""
-}返回参数：{
-  "code": 200,
-  "data": {
-    "formGroupId": "1968922852585508864",
-    "formGroupNameCn": "工程管理类",
-    "formGroupNameEn": "Engineering Management",
-    "sortOrder": 1,
-    "description": ""
-  },
+  "data": [
+    {
+      "moduleId": "1350161679034934501",
+      "moduleName": "系统基本管理",
+      "disabled": false
+    },
+    {
+      "moduleId": "1968271760889614336",
+      "moduleName": "表单签核业务",
+      "disabled": false
+    }
+  ],
   "message": ""
 }
-4、点击保存调用UPDATE_FORMGROUP_API，请求参数：{
-  "formGroupId": "",
-  "formGroupNameCn": "",
-  "formGroupNameEn": "",
-  "sortOrder": 1,
-  "isEnabled": 1,
-  "description": ""
-}，返回参数{
+2、字典页面筛选部分新增字典类型下拉框：请求参数moduleId(联动筛选部分模块下拉框的选中值)，返回参数：{
   "code": 200,
-  "data": 1,
-  "message": "更新表单组别成功"
+  "data": [
+    {
+      "dicTypeCode": "ApprovalState",
+      "dicTypeName": "ApprovalState"
+    }
+  ],
+  "message": ""
 }
-5、查询表单组别列表接口GET_FORMGROUP_LIST_API，请求参数：{
-  "formGroupName": "",
+3、查询分页请求参数：{
+  "moduleId": "",
+  "dicName": "",
+  "dicType": "",
   "pageIndex": 1,
   "pageSize": 1,
   "totalCount": 1
-}，返回参数：{
-  "code": 200,
-  "message": "",
-  "data": [
-    {
-      "formGroupId": "1968922852585508864",
-      "formGroupNameCn": "工程管理类",
-      "formGroupNameEn": "Engineering Management",
-      "sortOrder": 1,
-      "description": ""
-    }
-  ],
-  "totalCount": 3
-}，以上为表单组别相关接口，增删改提示message，配置i18n
+}增加了moduleId、dicType参数，筛选部分按照模块、字典类型、字典名称排版。

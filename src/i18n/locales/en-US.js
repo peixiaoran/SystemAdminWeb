@@ -503,7 +503,7 @@ export default {
     systemSettings: 'System Settings',
     dictionaryInfo: 'Dictionary Info',
     currencyInfo: 'Currency Info',
-    exchangerateInfo: 'ExchangeRate',
+    exchangeRate: 'Exchange Rate',
     userLoginLog: 'LogOut Info',
     systemUserConfig: 'System User Configuration',
     userAgent: 'User Agent',
@@ -545,7 +545,7 @@ export default {
     },
     
     // Exchange Rate Information Management
-    exchangeRateInfo: {
+    exchangeRate: {
       title: 'Exchange Rate Information Management',
       index: 'Index',
       currencyCode: 'Base Currency',
@@ -863,7 +863,10 @@ export default {
       getFailed: 'Failed to get data',
       filter: {
         dicNameCn: 'Dictionary Name (Ch)',
-        dicNameEn: 'Dictionary Name (En)'
+        dicNameEn: 'Dictionary Name (En)',
+        module: 'Module',
+        dicType: 'Dictionary Type',
+        pleaseSelectModule: 'Please select module'
       }
     },
     

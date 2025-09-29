@@ -405,20 +405,20 @@ const pmenuRoutes = [
             }
           },
           {
-            path: 'exchangerateInfo',
-            name: 'exchangerateInfo',
-            component: () => import('../views/systembasicmgmt/system-settings/exchangerateInfo.vue'),
+            path: 'exchangerate',
+            name: 'exchangerate',
+            component: () => import('../views/systembasicmgmt/system-settings/exchangerate.vue'),
             meta: { 
-              title: 'route.exchangerateInfo', 
+              title: 'route.exchangeRate', 
               icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
           },
           {
-            path: 'userLoginLog',
-            name: 'userLoginLog',
-            component: () => import('../views/systembasicmgmt/system-settings/userLoginLog.vue'),
+            path: 'userloginlog',
+            name: 'userloginlog',
+            component: () => import('../views/systembasicmgmt/system-settings/userloginlog.vue'),
             meta: { 
               title: 'route.userLoginLog', 
               icon: 'Tickets',

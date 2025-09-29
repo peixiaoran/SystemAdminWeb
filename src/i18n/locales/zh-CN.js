@@ -429,7 +429,7 @@ export default {
     systemSettings: '系统设置',
     dictionaryInfo: '字典信息维护',
     currencyInfo: '币别信息维护',
-    exchangerateInfo: '汇率信息维护',
+    exchangeRate: '汇率信息维护',
     userLoginLog: '员工操作日志',
     systemUserConfig: '系统用户配置',
     userAgent: '员工代理维护',
@@ -1069,12 +1069,15 @@ export default {
       pleaseInputDicNameEn: '请输入英文名称',
       pleaseInputDicType: '请输入字典类型',
       pleaseSelectDicType: '请选择字典类型',
+      pleaseSelectModule: '请选择模块',
       saveSuccess: '保存成功',
       updateSuccess: '更新成功',
       deleteSuccess: '删除成功',
       operationFailed: '操作失败',
       getFailed: '获取数据失败',
       filter: {
+        module: '模块',
+        dicType: '字典类型',
         dicNameCn: '字典中文名称'
       },
       dicTypes: {
@@ -1139,7 +1142,7 @@ export default {
     },
     
     // 汇率信息管理
-    exchangeRateInfo: {
+    exchangeRate: {
       title: '汇率信息维护',
       index: '序号',
       currencyCode: '本位币别',

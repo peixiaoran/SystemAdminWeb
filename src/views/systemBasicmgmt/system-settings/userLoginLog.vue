@@ -92,7 +92,7 @@
   import { post } from '@/utils/request'
   import { 
     GET_USER_LOGIN_LOG_PAGES_API
-  } from '@/config/api/systembasicmgmt/system-settings/userLoginLog'
+  } from '@/config/api/systembasicmgmt/system-settings/userloginlog'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -153,32 +153,37 @@
   }
 
   // 防抖搜索优化
-  let searchTimer = null
-  const handleSearch = () => {
-      if (searchTimer) clearTimeout(searchTimer)
-      searchTimer = setTimeout(() => {
-          pagination.pageIndex = 1
-          fetchUserLoginLogPages()
-      }, 300) // 300ms防抖
-  }
+    let searchTimer = null
+    const handleSearch = () => {
+        if (searchTimer) clearTimeout(searchTimer)
+        loading.value = true // 立即显示加载状态
+        searchTimer = setTimeout(() => {
+            pagination.pageIndex = 1
+            fetchUserLoginLogPages()
+        }, 300) // 300ms防抖
+    }
 
   // 重置搜索条件
   const handleReset = () => {
+      loading.value = true // 显示加载状态
       filters.userNo = ''
       filters.ip = ''
       filters.startTime = ''
       filters.endTime = ''
       pagination.pageIndex = 1
+      fetchUserLoginLogPages()
   }
 
   // 处理页码变化
   const handlePageChange = (page) => {
+      loading.value = true // 显示加载状态
       pagination.pageIndex = page
       fetchUserLoginLogPages()
   }
 
   // 处理每页记录数变化
   const handleSizeChange = (size) => {
+      loading.value = true // 显示加载状态
       pagination.pageSize = size
       pagination.pageIndex = 1
       fetchUserLoginLogPages()

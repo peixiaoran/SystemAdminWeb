@@ -41,3 +41,13 @@ export const UPDATE_DICTIONARY_API = {
 export const DELETE_DICTIONARY_API = {
   DELETE_DICTIONARY: 'SystemBasicMgmt/SystemSettings/DictionaryInfo/DeleteDictionaryInfo'
 }
+
+// 获取模块下拉列表API
+export const GET_MODULE_DROP_DOWN_API = {
+  GET_MODULE_DROP_DOWN: 'SystemBasicMgmt/SystemSettings/DictionaryInfo/GetModuleDropDown'
+}
+
+// 获取字典类型下拉列表API
+export const GET_DIC_TYPE_DROP_DOWN_API = {
+  GET_DIC_TYPE_DROP_DOWN: 'SystemBasicMgmt/SystemSettings/DictionaryInfo/GetDicTypeDropDown'
+}
