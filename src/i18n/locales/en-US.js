@@ -504,7 +504,7 @@ export default {
     dictionaryInfo: 'Dictionary Info',
     currencyInfo: 'Currency Info',
     exchangeRate: 'Exchange Rate',
-    userLoginLog: 'LogOut Info',
+    userloginlog: 'LogOut Info',
     systemUserConfig: 'System User Configuration',
     userAgent: 'User Agent',
     userPartTime: 'User PartTime',
@@ -1195,7 +1195,7 @@ export default {
         startTime: 'Start Time',
         endTime: 'End Time'
       }
-    },"explanation":"更新英文i18n文件中的userLoginLog为userloginlog"}
+    },
 
     userLabor: {
       title: 'Career Management',

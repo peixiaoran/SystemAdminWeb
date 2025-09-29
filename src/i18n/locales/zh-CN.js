@@ -430,7 +430,7 @@ export default {
     dictionaryInfo: '字典信息维护',
     currencyInfo: '币别信息维护',
     exchangeRate: '汇率信息维护',
-    userLoginLog: '员工操作日志',
+    userloginlog: '员工操作日志',
     systemUserConfig: '系统用户配置',
     userAgent: '员工代理维护',
     userPartTime: '员工兼任维护',
@@ -1191,7 +1191,7 @@ export default {
         startTime: '开始时间',
         endTime: '结束时间'
       }
-    },"explanation":"更新中文i18n文件中的userLoginLog为userloginlog"}
+    },
 
     userLabor: {
       title: '员工职业管理',
