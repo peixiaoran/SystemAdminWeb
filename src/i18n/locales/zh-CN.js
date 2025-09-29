@@ -1171,7 +1171,7 @@ export default {
       }
     },
 
-    userLoginLog: {
+    userloginlog: {
       title: '员工操作日志',
       index: '序号',
       userNo: '员工工号',
@@ -1191,7 +1191,7 @@ export default {
         startTime: '开始时间',
         endTime: '结束时间'
       }
-    },
+    },"explanation":"更新中文i18n文件中的userLoginLog为userloginlog"}
 
     userLabor: {
       title: '员工职业管理',

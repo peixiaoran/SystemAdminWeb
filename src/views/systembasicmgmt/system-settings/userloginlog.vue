@@ -4,34 +4,34 @@
 
           <!-- 过滤条件 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工操作日志搜索表单">
-              <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.userNo')" >
+              <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.userNo')" >
                   <el-input v-model="filters.userNo"
                            style="width: 180px;"
-                           :placeholder="$t('systembasicmgmt.userLoginLog.pleaseInputUserNo')"
+                           :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputUserNo')"
                            clearable />
               </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.ip')">
+              <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.ip')">
                   <el-input v-model="filters.ip"
                            style="width: 180px;"
-                           :placeholder="$t('systembasicmgmt.userLoginLog.pleaseInputIp')"
+                           :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputIp')"
                            clearable />
               </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.startTime')">
+              <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.startTime')">
                   <el-date-picker
                       v-model="filters.startTime"
                       type="datetime"
                       style="width: 200px;"
-                      :placeholder="$t('systembasicmgmt.userLoginLog.pleaseSelectStartTime')"
+                      :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectStartTime')"
                       format="YYYY/MM/DD HH:mm:ss"
                       value-format="YYYY/MM/DD HH:mm:ss"
                       clearable />
               </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.userLoginLog.filter.endTime')">
+              <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.endTime')">
                   <el-date-picker
                       v-model="filters.endTime"
                       type="datetime"
                       style="width: 200px;"
-                      :placeholder="$t('systembasicmgmt.userLoginLog.pleaseSelectEndTime')"
+                      :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectEndTime')"
                       format="YYYY/MM/DD HH:mm:ss"
                       value-format="YYYY/MM/DD HH:mm:ss"
                       clearable />
@@ -48,18 +48,18 @@
 
           <!-- 表格区域 -->
           <div class="table-container">
-              <el-table :data="userLoginLogList"
+              <el-table :data="userloginlogList"
                         border
                         stripe
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index" :label="$t('systembasicmgmt.userLoginLog.index')" width="70" align="center" fixed />
-                  <el-table-column prop="userNo" :label="$t('systembasicmgmt.userLoginLog.userNo')" align="center" min-width="120"/>
-                  <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userLoginLog.userNameCn')" align="left" min-width="150" />
-                  <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userLoginLog.userNameEn')" align="left" min-width="150" />
-                  <el-table-column prop="ip" :label="$t('systembasicmgmt.userLoginLog.ip')" align="center" min-width="140" />
-                  <el-table-column :label="$t('systembasicmgmt.userLoginLog.status')" align="center" min-width="130">
+                  <el-table-column type="index" :label="$t('systembasicmgmt.userloginlog.index')" width="70" align="center" fixed />
+                  <el-table-column prop="userNo" :label="$t('systembasicmgmt.userloginlog.userNo')" align="center" min-width="120"/>
+                  <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userloginlog.userNameCn')" align="left" min-width="150" />
+                  <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userloginlog.userNameEn')" align="left" min-width="150" />
+                  <el-table-column prop="ip" :label="$t('systembasicmgmt.userloginlog.ip')" align="center" min-width="140" />
+                  <el-table-column :label="$t('systembasicmgmt.userloginlog.status')" align="center" min-width="130">
                       <template #default="{ row }">
                           <el-tag 
                               :type="getStatusTagType(row.statusId)">
@@ -67,7 +67,7 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-                  <el-table-column prop="loginDate" :label="$t('systembasicmgmt.userLoginLog.loginDate')" align="center" min-width="180" />
+                  <el-table-column prop="loginDate" :label="$t('systembasicmgmt.userloginlog.loginDate')" align="center" min-width="180" />
               </el-table>
           </div>
 
@@ -100,7 +100,7 @@
   const { t } = useI18n()
 
   // 员工操作日志数据
-  const userLoginLogList = ref([])
+  const userloginlogList = ref([])
   const loading = ref(false)
 
   // 分页信息
@@ -139,11 +139,11 @@
       const res = await post(GET_USER_LOGIN_LOG_PAGES_API.GET_USER_LOGIN_LOG_PAGES, params)
 
       if (res && res.code === 200) {
-          userLoginLogList.value = res.data || []
+          userloginlogList.value = res.data || []
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userLoginLog.getFailed'),
+              message: res.message || t('systembasicmgmt.userloginlog.getFailed'),
               type: 'error',
               plain: true,
               showClose: true

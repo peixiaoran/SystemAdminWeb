@@ -420,7 +420,7 @@ const pmenuRoutes = [
             name: 'userloginlog',
             component: () => import('../views/systembasicmgmt/system-settings/userloginlog.vue'),
             meta: { 
-              title: 'route.userLoginLog', 
+              title: 'route.userloginlog', 
               icon: 'Tickets',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false

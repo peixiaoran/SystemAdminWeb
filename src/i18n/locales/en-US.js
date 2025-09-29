@@ -1175,7 +1175,7 @@ export default {
       title: 'Quick Actions'
     },
 
-    userLoginLog: {
+    userloginlog: {
       title: 'Employee Operation Log',
       index: 'Index',
       userNo: 'No.',
@@ -1195,7 +1195,7 @@ export default {
         startTime: 'Start Time',
         endTime: 'End Time'
       }
-    },
+    },"explanation":"更新英文i18n文件中的userLoginLog为userloginlog"}
 
     userLabor: {
       title: 'Career Management',
