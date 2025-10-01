@@ -238,9 +238,7 @@
               isChecked: item.isChecked
           }))
 
-          const res = await post(UPDATE_ROLE_PMENU_API.UPDATE_ROLE_PMENU, {
-            rolePMenuUpserts
-        })
+          const res = await post(UPDATE_ROLE_PMENU_API.UPDATE_ROLE_PMENU, rolePMenuUpserts)
 
           if (res && res.code === 200) {
               ElMessage({

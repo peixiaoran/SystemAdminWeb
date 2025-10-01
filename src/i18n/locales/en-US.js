@@ -496,7 +496,7 @@ export default {
     companyInfo: 'Company Info',
     departmentInfo: 'Department Info',
     departmentLevel: 'Department Level',
-    userPosition: 'User Position',
+    userPosition: 'User Positions',
     userLabor: 'User Labor',
     userInfo: 'Employee Info',
     personalInfo: 'Personal Info',
@@ -862,8 +862,7 @@ export default {
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {
-        dicNameCn: 'Dictionary Name (Ch)',
-        dicNameEn: 'Dictionary Name (En)',
+        dicNameCn: 'Dictionary Name',
         module: 'Module',
         dicType: 'Dictionary Type',
         pleaseSelectModule: 'Please select module'
@@ -1190,7 +1189,7 @@ export default {
       pleaseSelectEndTime: 'Please select end time',
       getFailed: 'Failed to get data',
       filter: {
-        userNo: 'Employee No.',
+        userNo: 'No.',
         ip: 'IP Address',
         startTime: 'Start Time',
         endTime: 'End Time'

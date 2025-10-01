@@ -197,9 +197,7 @@
               isChecked: item.isChecked
           }))
 
-          const res = await post(UPDATE_ROLE_MODULE_API.UPDATE_ROLE_MODULE, {
-              roleModuleUpserts
-          })
+          const res = await post(UPDATE_ROLE_MODULE_API.UPDATE_ROLE_MODULE, roleModuleUpserts)
 
           if (res && res.code === 200) {
               ElMessage({

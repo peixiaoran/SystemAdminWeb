@@ -51,8 +51,3 @@ export const GET_PMENU_DROP_API = {
 export const UPDATE_SMENU_API = {
   UPDATE_SMENU: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/UpdateSMenu'
 }
-
-// 菜单类型下拉框
-export const GET_MENU_TYPE_API = {
-  GET_MENU_TYPE: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/GetMenuTypeDropDown'
-}

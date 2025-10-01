@@ -183,7 +183,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_PMENU_PAGES_API, GET_PMENU_ENTITY_API, INSERT_PMENU_API, DELETE_PMENU_API, GET_MODULE_DROP_API, UPDATE_PMENU_API, GET_MENU_TYPE_API } from '@/config/api/systembasicmgmt/System-Mgmt/pmenu'
+  import { GET_PMENU_PAGES_API, GET_PMENU_ENTITY_API, INSERT_PMENU_API, DELETE_PMENU_API, GET_MODULE_DROP_API, UPDATE_PMENU_API } from '@/config/api/systembasicmgmt/system-mgmt/pmenu'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -330,21 +330,12 @@
 
   // 获取菜单类型选项
   const fetchMenuTypeOptions = async () => {
-      try {
-          const res = await post(GET_MENU_TYPE_API.GET_MENU_TYPE)
-          if (res && res.code === 200) {
-              // 确保 menuTypeCode 为字符串类型
-              menuTypeOptions.value = (res.data || []).map(item => ({
-                  ...item,
-                  menuTypeCode: String(item.menuTypeCode)
-              }))
-          } else {
-              menuTypeOptions.value = []
-          }
-      } catch (error) {
-          console.error('获取菜单类型数据失败:', error)
-          menuTypeOptions.value = []
-      }
+      // 菜单类型选项暂时使用固定数据
+      menuTypeOptions.value = [
+          { menuTypeCode: '1', menuTypeName: '目录' },
+          { menuTypeCode: '2', menuTypeName: '菜单' },
+          { menuTypeCode: '3', menuTypeName: '按钮' }
+      ]
   }
 
   // 获取一级菜单实体数据
