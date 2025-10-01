@@ -422,23 +422,24 @@ export default {
     companyInfo: '公司信息维护',
     departmentInfo: '部门信息维护',
     departmentLevel: '部门层级维护',
-    userPosition: '职级信息维护',
-    userLabor: '员工职业维护',
-    userInfo: '员工信息维护',
-    personalInfo: '个人信息维护',
+    userposition: '职级信息维护',
+    userlabor: '员工职业维护',
+    userinfo: '员工信息维护',
+    personalinfo: '个人信息维护',
     systemSettings: '系统设置',
-    dictionaryInfo: '字典信息维护',
-    currencyInfo: '币别信息维护',
-    exchangeRate: '汇率信息维护',
+    dictionaryinfo: '字典信息维护',
+    currencyinfo: '币别信息维护',
+    exchangerate: '汇率信息维护',
     userloginlog: '员工操作日志',
     systemUserConfig: '系统用户配置',
-    userAgent: '员工代理维护',
-    userPartTime: '员工兼任维护',
+    useragent: '员工代理维护',
+    userparttime: '员工兼任维护',
     formbusiness: '表单业务管理',
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
     formType: '表单类别信息',
-    personalInfoTitle: '个人信息维护'
+    personalInfoTitle: '个人信息维护',
+    nationality: '国籍信息维护'
   },
   
   // 系统基础管理
@@ -719,6 +720,29 @@ export default {
         userName: '员工姓名',
         userNoPlaceholder: '请输入员工工号',
         userNamePlaceholder: '请输入员工姓名'
+      }
+    },
+    nationalityInfo: {
+      title: '国籍信息',
+      index: '序号',
+      nationNameCn: '中文名称',
+      nationNameEn: '英文名称',
+      remark: '备注',
+      operation: '操作',
+      addNationality: '新增国籍',
+      editNationality: '编辑国籍',
+      deleteNationality: '删除国籍',
+      deleteConfirm: '确定要删除该国籍吗？',
+      pleaseInputName: '请输入国籍名称',
+      pleaseInputNameCn: '请输入中文名称',
+      pleaseInputNameEn: '请输入英文名称',
+      saveSuccess: '保存成功',
+      updateSuccess: '更新成功',
+      deleteSuccess: '删除成功',
+      operationFailed: '操作失败',
+      getFailed: '获取数据失败',
+      filter: {
+        nationalityName: '国籍名称'
       }
     },
     // 员工代理

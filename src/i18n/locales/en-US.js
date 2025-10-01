@@ -464,7 +464,7 @@ export default {
   
   // Primary Menu Selection Page
   moduleSelect: {
-    userInfo: 'Personal Info',
+    userInfo: 'Personal Profile',
     accountSettings: 'Account Settings',
     pmenuLoading: 'Loading data...',
     pmenuError: 'Failed to get primary menu data',
@@ -496,23 +496,24 @@ export default {
     companyInfo: 'Company Info',
     departmentInfo: 'Department Info',
     departmentLevel: 'Department Level',
-    userPosition: 'User Positions',
-    userLabor: 'User Labor',
-    userInfo: 'Employee Info',
-    personalInfo: 'Personal Info',
+    userposition: 'User Positions',
+    userlabor: 'User Labor',
+    userinfo: 'Employee Info',
+    personalinfo: 'Personal Profile',
     systemSettings: 'System Settings',
-    dictionaryInfo: 'Dictionary Info',
-    currencyInfo: 'Currency Info',
-    exchangeRate: 'Exchange Rate',
+    dictionaryinfo: 'Dictionary Info',
+    currencyinfo: 'Currency Info',
+    exchangerate: 'Exchange Rate',
     userloginlog: 'LogOut Info',
     systemUserConfig: 'System User Configuration',
-    userAgent: 'User Agent',
-    userPartTime: 'User PartTime',
+    useragent: 'User Agent',
+    userparttime: 'User PartTime',
     formbusiness: 'Form Business',
     formBasicInfo: 'Form Basic Info',
     formGroup: 'Form Group',
     formType: 'Form Type',
-    personalInfoTitle: 'Personal Profile'
+    personalInfoTitle: 'Personal Profile',
+    nationality: 'Nationality Info'
   },
   
   // System Basic Management
@@ -1051,7 +1052,7 @@ export default {
     },
     // Personal
     personalInfo: {
-      title: 'Personal Info',
+      title: 'Personal Profile',
       userNo: 'No.',
       loginNo: 'Login Account',
       userNameCn: 'Chinese Name',
@@ -1231,7 +1232,29 @@ export default {
         laborTypeNameCn: 'Chinese Name'
       }
     },
-
+    nationalityInfo: {
+      title: 'Nationality Information',
+      index: 'Index',
+      nationNameCn: 'Chinese Name',
+      nationNameEn: 'English Name',
+      remark: 'Remark',
+      operation: 'Operation',
+      addNationality: 'Add Nationality',
+      editNationality: 'Edit Nationality',
+      deleteNationality: 'Delete Nationality',
+      deleteConfirm: 'Are you sure you want to delete this nationality?',
+      pleaseInputName: 'Please enter nationality name',
+      pleaseInputNameCn: 'Please enter Chinese name',
+      pleaseInputNameEn: 'Please enter English name',
+      saveSuccess: 'Save Successfully',
+      updateSuccess: 'Update Successfully',
+      deleteSuccess: 'Delete Successfully',
+      operationFailed: 'Operation Failed',
+      getFailed: 'Failed to get data',
+      filter: {
+        nationalityName: 'Nationality Name'
+      }
+    },
     userPartTime: {
       title: 'Employee Part-time Management',
       department: 'Department',

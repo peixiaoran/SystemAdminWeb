@@ -1,34 +1,44 @@
-1、字典页面筛选部分新增模块下拉框：没有请求参数，返回参数：{
+1、新增国籍列表（无分页、不要筛选部分）GET_NATIONALITY_LIST_API，没有请求参数，返回参数：{
   "code": 200,
   "data": [
     {
-      "moduleId": "1350161679034934501",
-      "moduleName": "系统基本管理",
-      "disabled": false
+      "nationId": "1972220728019390464",
+      "nationNameCn": "陆籍",
+      "nationNameEn": "Mainland Chinese",
+      "remark": ""
     },
-    {
-      "moduleId": "1968271760889614336",
-      "moduleName": "表单签核业务",
-      "disabled": false
-    }
   ],
   "message": ""
 }
-2、字典页面筛选部分新增字典类型下拉框：请求参数moduleId(联动筛选部分模块下拉框的选中值)，返回参数：{
+2、新增国籍新增：INSERT_NATIONALITY_API，请求参数：{
+  "nationId": "",
+  "nationNameCn": "",
+  "nationNameEn": "",
+  "remark": ""
+}，返回参数：{
   "code": 200,
-  "data": [
-    {
-      "dicTypeCode": "ApprovalState",
-      "dicTypeName": "ApprovalState"
-    }
-  ],
+  "data": 1,
+  "message": "新增国籍信息成功"
+}
+3、获取国籍详情：GET_NATIONALITY_ENTITY_API，请求参数：{
+  "nationId": ""
+}，返回参数：{
+  "code": 200,
+  "data": {
+    "nationId": "1972220728019390464",
+    "nationNameCn": "陆籍",
+    "nationNameEn": "Mainland Chinese",
+    "remark": ""
+  },
   "message": ""
 }
-3、查询分页请求参数：{
-  "moduleId": "",
-  "dicName": "",
-  "dicType": "",
-  "pageIndex": 1,
-  "pageSize": 1,
-  "totalCount": 1
-}增加了moduleId、dicType参数，筛选部分按照模块、字典类型、字典名称排版。
+4、更新国籍：UPDATE_NATIONALITY_API，请求参数：{
+  "nationId": "",
+  "nationNameCn": "",
+  "nationNameEn": "",
+  "remark": ""
+}，返回参数：{
+  "code": 200,
+  "data": 1,
+  "message": "更新国籍信息成功"
+}

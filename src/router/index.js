@@ -85,10 +85,10 @@ const pmenuRoutes = [
     children: [
       {
         path: 'index',
-        name: 'systembasicmgmtIndex',
+        name: 'SystemBasicMgmtIndex',
         component: () => import('../views/systembasicmgmt/index.vue'),
         meta: { 
-          title: 'route.systembasicmgmt', 
+          title: 'route.systembasicmgmt',
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -97,7 +97,7 @@ const pmenuRoutes = [
       // 系统管理子模块 - 使用嵌套结构
       {
         path: 'system-mgmt',
-        name: 'SystemMgmt',
+        name: 'System-Mgmt',
         redirect: '/systembasicmgmt/system-mgmt',
         meta: { 
           title: 'route.systemMgmt', 
@@ -108,10 +108,10 @@ const pmenuRoutes = [
         children: [
           {
             path: 'role',
-            name: 'SystemRole',
+            name: 'Role',
             component: () => import('../views/systembasicmgmt/system-mgmt/role.vue'),
             meta: { 
-              title: 'route.role', 
+              title: 'route.role',
               icon: 'Avatar',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -119,7 +119,7 @@ const pmenuRoutes = [
           },
           {
             path: 'module',
-            name: 'SystemModule',
+            name: 'Module',
             component: () => import('../views/systembasicmgmt/system-mgmt/module.vue'),
             meta: { 
               title: 'route.module', 
@@ -130,7 +130,7 @@ const pmenuRoutes = [
           },
           {
             path: 'pmenu',
-            name: 'SystemPMenu',
+            name: 'PMenu',
             component: () => import('../views/systembasicmgmt/system-mgmt/pmenu.vue'),
             meta: { 
               title: 'route.pmenu', 
@@ -141,7 +141,7 @@ const pmenuRoutes = [
           },
           {
             path: 'smenu',
-            name: 'SystemSMenu',
+            name: 'SMenu',
             component: () => import('../views/systembasicmgmt/system-mgmt/smenu.vue'),
             meta: { 
               title: 'route.smenu', 
@@ -152,7 +152,7 @@ const pmenuRoutes = [
           },
           {
             path: 'rolemodule',
-            name: 'SystemRoleModule',
+            name: 'RoleModule',
             component: () => import('../views/systembasicmgmt/system-mgmt/rolemodule.vue'),
             meta: { 
               title: 'route.roleModule', 
@@ -163,7 +163,7 @@ const pmenuRoutes = [
           },
           {
             path: 'rolepmenu',
-            name: 'SystemRolePMenu',
+            name: 'RolePMenu',
             component: () => import('../views/systembasicmgmt/system-mgmt/rolepmenu.vue'),
             meta: { 
               title: 'route.rolePMenu', 
@@ -174,7 +174,7 @@ const pmenuRoutes = [
           },
           {
             path: 'rolesmenu',
-            name: 'SystemRoleSMenu',
+            name: 'RoleSMenu',
             component: () => import('../views/systembasicmgmt/system-mgmt/rolesmenu.vue'),
             meta: { 
               title: 'route.roleSMenu', 
@@ -183,13 +183,12 @@ const pmenuRoutes = [
               noTag: false
             }
           }
-
         ]
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
         path: 'system-basicdata',
-        name: 'SystemBasicData',
+        name: 'System-BasicData',
         redirect: '/systembasicmgmt/system-basicdata',
         meta: { 
           title: 'route.systemBasicData',
@@ -200,7 +199,7 @@ const pmenuRoutes = [
         children: [
           {
             path: 'companyinfo',
-            name: 'SystemCompanyInfo',
+            name: 'CompanyInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/companyinfo.vue'),
             meta: { 
               title: 'route.companyInfo', 
@@ -211,7 +210,7 @@ const pmenuRoutes = [
           },
           {
             path: 'departmentinfo',
-            name: 'SystemDepartmentInfo',
+            name: 'DepartmentInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/departmentinfo.vue'),
             meta: { 
               title: 'route.departmentInfo', 
@@ -222,7 +221,7 @@ const pmenuRoutes = [
           },
           {
             path: 'departmentlevel',
-            name: 'SystemDepartmentLevel',
+            name: 'DepartmentLevel',
             component: () => import('../views/systembasicmgmt/system-basicdata/departmentlevel.vue'),
             meta: { 
               title: 'route.departmentLevel', 
@@ -233,21 +232,32 @@ const pmenuRoutes = [
           },
           {
             path: 'userposition',
-            name: 'SystemUserPosition',
+            name: 'UserPosition',
             component: () => import('../views/systembasicmgmt/system-basicdata/userposition.vue'),
             meta: { 
-              title: 'route.userPosition', 
+              title: 'route.userposition', 
               icon: 'GoldMedal',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
           },
           {
+            path: 'nationality',
+            name: 'Nationality',
+            component: () => import('../views/systembasicmgmt/system-basicdata/nationality.vue'),
+            meta: { 
+              title: 'route.nationality', 
+              icon: 'DeleteLocation',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            }
+          },
+          {
             path: 'userlabor',
-            name: 'SystemUserLabor',
+            name: 'UserLabor',
             component: () => import('../views/systembasicmgmt/system-basicdata/userlabor.vue'),
             meta: { 
-              title: 'route.userLabor', 
+              title: 'route.userlabor', 
               icon: 'Postcard',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -255,10 +265,10 @@ const pmenuRoutes = [
           },
           {
             path: 'userinfo',
-            name: 'SystemUserInfo',
+            name: 'UserInfo',
             component: () => import('../views/systembasicmgmt/system-basicdata/userinfo.vue'),
             meta: { 
-              title: 'route.userInfo', 
+              title: 'route.userinfo', 
               icon: 'UserFilled',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -266,104 +276,47 @@ const pmenuRoutes = [
           },
           {
             path: 'personal',
-            name: 'SystemPersonalInfo',
+            name: 'Personal',
             component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
             meta: { 
-              title: 'route.personalInfo', 
+              title: 'route.personalinfo', 
               icon: 'User',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
-          },
-
+          }
         ]
       },
-      // 基础数据管理子模块 - 使用嵌套结构
+      // 用户配置子模块 - 使用嵌套结构
       {
-        path: 'system-basicdata',
-        name: 'SystemBasicData',
-        redirect: '/systembasicmgmt/system-basicdata',
+        path: 'system-userconfig',
+        name: 'System-UserConfig',
+        redirect: '/systembasicmgmt/system-userconfig',
         meta: { 
-          title: 'route.systemBasicData',
-          icon: 'List',
+          title: 'route.userconfig',
+          icon: 'SetUp',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
         },
         children: [
           {
-            path: 'companyinfo',
-            name: 'SystemCompanyInfo',
-            component: () => import('../views/systembasicmgmt/system-basicdata/companyinfo.vue'),
+            path: 'useragent',
+            name: 'UserAgent',
+            component: () => import('../views/systembasicmgmt/system-userconfig/useragent.vue'),
             meta: { 
-              title: 'route.companyInfo', 
-              icon: 'OfficeBuilding',
+              title: 'route.useragent', 
+              icon: 'Handbag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
           },
           {
-            path: 'departmentinfo',
-            name: 'SystemDepartmentInfo',
-            component: () => import('../views/systembasicmgmt/system-basicdata/departmentinfo.vue'),
+            path: 'userparttime',
+            name: 'UserPartTime',
+            component: () => import('../views/systembasicmgmt/system-userconfig/userparttime.vue'),
             meta: { 
-              title: 'route.departmentInfo', 
-              icon: 'School',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'departmentlevel',
-            name: 'SystemDepartmentLevel',
-            component: () => import('../views/systembasicmgmt/system-basicdata/departmentlevel.vue'),
-            meta: { 
-              title: 'route.departmentLevel', 
-              icon: 'CollectionTag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userposition',
-            name: 'SystemUserPosition',
-            component: () => import('../views/systembasicmgmt/system-basicdata/userposition.vue'),
-            meta: { 
-              title: 'route.userPosition', 
-              icon: 'GoldMedal',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userlabor',
-            name: 'SystemUserLabor',
-            component: () => import('../views/systembasicmgmt/system-basicdata/userlabor.vue'),
-            meta: { 
-              title: 'route.userLabor', 
-              icon: 'Postcard',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userinfo',
-            name: 'SystemUserInfo',
-            component: () => import('../views/systembasicmgmt/system-basicdata/userinfo.vue'),
-            meta: { 
-              title: 'route.userInfo', 
-              icon: 'UserFilled',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-
-          {
-            path: 'personal',
-            name: 'SystemPersonalInfo',
-            component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
-            meta: { 
-              title: 'route.personalInfoTitle', 
-              icon: 'User',
+              title: 'route.userparttime', 
+              icon: 'ShoppingBag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
@@ -373,10 +326,10 @@ const pmenuRoutes = [
       // 基础数据管理子模块 - 使用嵌套结构
       {
         path: 'system-settings',
-        name: 'SystemSettings',
+        name: 'System-Settings',
         redirect: '/systembasicmgmt/system-settings',
         meta: { 
-          title: 'route.systemSettings',
+          title: 'route.settings',
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -387,7 +340,7 @@ const pmenuRoutes = [
             name: 'DictionaryInfo',
             component: () => import('../views/systembasicmgmt/system-settings/dictionaryinfo.vue'),
             meta: { 
-              title: 'route.dictionaryInfo', 
+              title: 'route.dictionaryinfo', 
               icon: 'Reading',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -398,7 +351,7 @@ const pmenuRoutes = [
             name: 'CurrencyInfo',
             component: () => import('../views/systembasicmgmt/system-settings/currencyinfo.vue'),
             meta: { 
-              title: 'route.currencyInfo', 
+              title: 'route.currencyinfo', 
               icon: 'Money',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -406,10 +359,10 @@ const pmenuRoutes = [
           },
           {
             path: 'exchangerate',
-            name: 'exchangerate',
+            name: 'ExchangeRate',
             component: () => import('../views/systembasicmgmt/system-settings/exchangerate.vue'),
             meta: { 
-              title: 'route.exchangeRate', 
+              title: 'route.exchangerate', 
               icon: 'Switch',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -417,7 +370,7 @@ const pmenuRoutes = [
           },
           {
             path: 'userloginlog',
-            name: 'userloginlog',
+            name: 'UserLoginLog',
             component: () => import('../views/systembasicmgmt/system-settings/userloginlog.vue'),
             meta: { 
               title: 'route.userloginlog', 
@@ -428,42 +381,6 @@ const pmenuRoutes = [
           }
         ]
       },
-      // 用户配置子模块 - 使用嵌套结构
-      {
-        path: 'system-userconfig',
-        name: 'SystemUserConfig',
-        redirect: '/systembasicmgmt/system-userconfig',
-        meta: { 
-          title: 'route.systemUserConfig',
-          icon: 'SetUp',
-          [ROUTE_CONFIG.META.AUTH]: true,
-          noTag: true
-        },
-        children: [
-          {
-            path: 'useragent',
-            name: 'SystemUseragent',
-            component: () => import('../views/systembasicmgmt/system-userconfig/useragent.vue'),
-            meta: { 
-              title: 'route.userAgent', 
-              icon: 'Handbag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'userparttime',
-            name: 'SystemUserPartTime',
-            component: () => import('../views/systembasicmgmt/system-userconfig/userparttime.vue'),
-            meta: { 
-              title: 'route.userPartTime', 
-              icon: 'ShoppingBag',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          }
-        ]
-      }
     ]
   },
   {
@@ -473,7 +390,7 @@ const pmenuRoutes = [
       children: [
         {
           path: 'index',
-          name: 'formbusinessIndex',
+          name: 'FormBusiness',
           component: () => import('../views/formbusiness/index.vue'),
           meta: { 
             title: 'route.formbusiness', 
@@ -488,7 +405,7 @@ const pmenuRoutes = [
           name: 'FormBasicInfo',
           redirect: '/formbusiness/form-basicinfo',
           meta: { 
-            title: 'route.formBasicInfo',
+            title: 'route.formbasicinfo',
             icon: 'Tickets',
             [ROUTE_CONFIG.META.AUTH]: true,
             noTag: true
@@ -496,7 +413,7 @@ const pmenuRoutes = [
           children: [
             {
               path: 'formgroup',
-              name: 'FormBasicInfoUseragent',
+              name: 'FormGroup',
               component: () => import('../views/formbusiness/form-basicinfo/formgroup.vue'),
               meta: { 
                 title: 'route.formGroup', 
@@ -507,7 +424,7 @@ const pmenuRoutes = [
             },
             {
               path: 'formtype',
-              name: 'FormBasicInfoFormtype',
+              name: 'FormType',
               component: () => import('../views/formbusiness/form-basicinfo/formtype.vue'),
               meta: { 
                 title: 'route.formType', 

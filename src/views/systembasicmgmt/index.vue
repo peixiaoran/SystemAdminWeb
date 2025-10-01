@@ -47,7 +47,7 @@
     </el-row>
 
     <!-- 第三行：三个饼图 -->
-    <el-row :gutter="20" class="charts-section">
+    <el-row :gutter="20" class="charts-section pie-charts-row" align="top">
       <el-col :xs="24" :sm="8" v-for="(pieChart, index) in pieCharts" :key="index">
         <el-card class="chart-card" shadow="hover">
           <template #header>
@@ -852,6 +852,18 @@ onUnmounted(() => {
 
 .pie-charts-section {
   margin-top: 20px;
+}
+
+.pie-charts-row {
+  align-items: flex-start;
+}
+
+/* 确保饼状图容器从顶部开始排列 */
+.charts-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
 }
 
 .card-header {

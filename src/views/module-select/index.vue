@@ -77,7 +77,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown, Loading, User, Setting, ArrowRight } from '@element-plus/icons-vue'
+import { ArrowDown, Loading, User, Setting } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
