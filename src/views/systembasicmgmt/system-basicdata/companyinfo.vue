@@ -50,16 +50,7 @@
               </el-table>
           </div>
 
-          <!-- 分页 -->
-          <div class="pagination-wrapper">
-              <el-pagination v-model:current-page="pagination.pageIndex"
-                             v-model:page-size="pagination.pageSize"
-                             :page-sizes="[10, 20, 50, 100]"
-                             layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.totalCount"
-                             @size-change="handleSizeChange"
-                             @current-change="handlePageChange" />
-          </div>
+
       </el-card>
 
       <!-- 编辑弹窗 -->
@@ -107,7 +98,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_COMPANY_PAGES_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systembasicmgmt/system-basicdata/company'
+import { GET_COMPANY_LIST_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPANY_ENTITY_API, UPDATE_COMPANY_API } from '@/config/api/systembasicmgmt/system-basicdata/company'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -121,12 +112,7 @@
   // 表单引用
   const editFormRef = ref(null)
 
-  // 分页信息
-  const pagination = reactive({
-      pageIndex: 1,
-      pageSize: 10,
-      totalCount: 0
-  })
+
 
   // 过滤条件
   const filters = reactive({
@@ -173,7 +159,7 @@
 
   // 组件挂载后获取公司数据
   onMounted(() => {
-      fetchCompanyPages()
+      fetchCompanyList()
   })
 
   // 获取公司实体数据
@@ -199,19 +185,16 @@
   }
 
   // 获取公司列表数据
-  const fetchCompanyPages = async () => {
+  const fetchCompanyList = async () => {
       loading.value = true
       const params = {
-          companyName: filters.companyName,
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize
+          companyName: filters.companyName
       }
 
-      const res = await post(GET_COMPANY_PAGES_API.GET_COMPANY_PAGES, params)
+      const res = await post(GET_COMPANY_LIST_API.GET_COMPANY_LIST, params)
 
       if (res && res.code === 200) {
           companyList.value = res.data || []
-          pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
             message: res.message || t('systembasicmgmt.companyInfo.getFailed'),
@@ -223,14 +206,9 @@
       loading.value = false
   }
 
-  // 搜索优化
-  let searchTimer = null
+  // 搜索
   const handleSearch = () => {
-      if (searchTimer) clearTimeout(searchTimer)
-      searchTimer = setTimeout(() => {
-          pagination.pageIndex = 1
-          fetchCompanyPages()
-      }, 300) // 300ms防抖
+      fetchCompanyList()
   }
 
   // 处理重置事件
@@ -239,18 +217,7 @@
       pagination.pageIndex = 1
   }
 
-  // 处理页码变化
-  const handlePageChange = (page) => {
-      pagination.pageIndex = page
-      fetchCompanyPages()
-  }
 
-  // 处理每页记录数变化
-  const handleSizeChange = (size) => {
-      pagination.pageSize = size
-      pagination.pageIndex = 1
-      fetchCompanyPages()
-  }
 
   const resetForm = (clearValidation = true) => {
       // 清除验证状态（需要在重置之前）
@@ -304,7 +271,7 @@
             showClose: true,
           })
           dialogVisible.value = false
-          fetchCompanyPages()
+          fetchCompanyList()
       } else {
           ElMessage({
             message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),
@@ -331,7 +298,7 @@
             showClose: true,
           })
           dialogVisible.value = false
-          fetchCompanyPages()
+          fetchCompanyList()
       } else {
           ElMessage({
             message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),
@@ -357,7 +324,7 @@
             plain: true,
             showClose: true,
           })
-          fetchCompanyPages()
+          fetchCompanyList()
       } else {
           ElMessage({
             message: res.message || t('systembasicmgmt.companyInfo.operationFailed'),

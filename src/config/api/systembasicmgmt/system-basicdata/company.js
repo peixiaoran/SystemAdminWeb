@@ -18,13 +18,18 @@ export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 公司分页API
+export const GET_COMPANY_PAGES_API = {
+    GET_COMPANY_PAGES: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoPages'
+}
+
+// 公司实体API
 export const GET_COMPANY_ENTITY_API = {
     GET_COMPANY_ENTITY: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoEntity'
 }
 
-// 公司分页API
-export const GET_COMPANY_PAGES_API = {
-  GET_COMPANY_PAGES: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoPage'
+// 公司列表API
+export const GET_COMPANY_LIST_API = {
+  GET_COMPANY_LIST: 'SystemBasicMgmt/SystemBasicData/CompanyInfo/GetCompanyInfoList'
 }
 
 // 公司新增API
