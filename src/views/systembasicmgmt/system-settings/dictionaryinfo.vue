@@ -139,7 +139,7 @@
     UPDATE_DICTIONARY_API,
     GET_MODULE_DROP_DOWN_API,
     GET_DIC_TYPE_DROP_DOWN_API
-  } from '@/config/api/systembasicmgmt/System-Settings/dictionary'
+  } from '@/config/api/systembasicmgmt/system-settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
