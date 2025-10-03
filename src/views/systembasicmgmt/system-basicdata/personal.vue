@@ -126,14 +126,14 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('systembasicmgmt.personalInfo.isFreeze')" prop="isFreeze">
+          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+        </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isEmployed')" prop="isEmployed">
            <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isAgent')" prop="isAgent">
            <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.isApproval')" prop="isApproval">
-           <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
       </div>
 
@@ -142,8 +142,8 @@
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isPartTime')" prop="isPartTime">
           <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.isFreeze')" prop="isFreeze">
-          <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+         <el-form-item :label="$t('systembasicmgmt.personalInfo.isApproval')" prop="isApproval">
+           <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
           <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="loading" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />

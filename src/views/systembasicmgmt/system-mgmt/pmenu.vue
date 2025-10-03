@@ -6,7 +6,8 @@
               <el-form-item :label="$t('systembasicmgmt.pmenu.module')">
                   <el-select style="width: 180px" 
                             v-model="filters.moduleId" 
-                            :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.pmenu.module')">
+                            :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.pmenu.module')"
+                            @change="handleModuleChange">
                       <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
@@ -455,6 +456,18 @@
   // 处理每页记录数变化
   const handleSizeChange = (size) => {
       pagination.pageSize = size
+      pagination.pageIndex = 1
+      fetchPMenuPages()
+  }
+
+  // 处理模块下拉框变化 - 立即查询table数据
+  const handleModuleChange = () => {
+      // 清除之前的搜索定时器，避免与模块变化冲突
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      loading.value = true // 立即显示加载状态
       pagination.pageIndex = 1
       fetchPMenuPages()
   }

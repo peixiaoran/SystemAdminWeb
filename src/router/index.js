@@ -319,7 +319,18 @@ const pmenuRoutes = [
               icon: 'ShoppingBag',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
-            }
+            },
+          },
+          {
+            path: 'userformbind',
+            name: 'UserFormBind',
+            component: () => import('../views/systembasicmgmt/system-userconfig/userformbind.vue'),
+            meta: { 
+              title: 'route.userformbind', 
+              icon: 'Management',
+              [ROUTE_CONFIG.META.AUTH]: true,
+              noTag: false
+            },
           }
         ]
       },

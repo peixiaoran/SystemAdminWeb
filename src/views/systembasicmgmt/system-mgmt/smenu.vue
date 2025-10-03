@@ -10,12 +10,12 @@
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px">
+                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleParentMenuChange">
                       <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.smenuName')">
-                  <el-input style="width: 200px" 
+                  <el-input style="width: 180px" 
                             v-model="filters.smenuName" 
                             :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.smenu.smenuName')" 
                             />
@@ -829,6 +829,18 @@
           pagination.pageIndex = 1
           fetchSMenuPages()
       }, 100)
+  }
+
+  // 一级菜单变化 - 立即查询表格数据
+  const handleParentMenuChange = () => {
+      // 清除之前的搜索定时器，避免与一级菜单变化冲突
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      loading.value = true
+      pagination.pageIndex = 1
+      fetchSMenuPages()
   }
 
   // 获取过滤条件下的模块数据
