@@ -136,7 +136,6 @@
             :default-checked-keys="checkedKeys"
             :check-strictly="false"
             v-loading="treeLoading"
-            @check-change="handleCheckChange"
           />
         </div>
         
@@ -260,7 +259,7 @@ const fetchDepartmentTree = async (setDefaultFilter = false) => {
       }
     }
   } catch (error) {
-    console.error('获取部门树失败:', error)
+    
   }
 }
 
@@ -291,7 +290,6 @@ const fetchUserPages = async () => {
       })
     }
   } catch (error) {
-    console.error('获取用户数据失败:', error)
     ElMessage({
       message: t('systembasicmgmt.userformbind.getUserPagesFailed'),
       type: 'error',
@@ -359,7 +357,6 @@ const fetchUserFormBindViewTree = async (userId) => {
       })
     }
   } catch (error) {
-    console.error('获取表单配置树失败:', error)
     ElMessage({
       message: t('systembasicmgmt.userformbind.getFormTreeFailed'),
       type: 'error',
@@ -427,15 +424,6 @@ const handleConfigForm = async (row) => {
 }
 
 /**
- * 处理树节点选中状态变化
- * 监控选中状态变化，可用于调试
- */
-const handleCheckChange = (data, checked) => {
-  // 由于check-strictly="false"，Element Plus会自动处理父子关联
-  console.log('节点选中状态变化:', data.formGroupTypeName, checked)
-}
-
-/**
  * 处理保存表单配置
  */
 const handleSaveFormConfig = async () => {
@@ -474,7 +462,6 @@ const handleSaveFormConfig = async () => {
       })
     }
   } catch (error) {
-    console.error('保存表单配置失败:', error)
     ElMessage({
       message: t('systembasicmgmt.userformbind.saveConfigFailed'),
       type: 'error',
