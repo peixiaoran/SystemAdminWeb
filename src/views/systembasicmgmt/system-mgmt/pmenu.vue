@@ -401,14 +401,31 @@
       }
   }
 
-  // 处理搜索操作
+  // 搜索防抖定时器
+  let searchTimer = null
+
+  // 处理搜索操作（带防抖）
   const handleSearch = () => {
-      pagination.pageIndex = 1
-      fetchPMenuPages()
+      // 立即显示加载状态
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          pagination.pageIndex = 1
+          fetchPMenuPages()
+      }, 300)
   }
 
   // 重置搜索条件
   const handleReset = () => {
+      // 立即显示加载状态
+      loading.value = true
+      
       filters.menuCode = ''
       filters.menuName = ''
       filters.menuUrl = ''
@@ -426,6 +443,7 @@
       }
       
       pagination.pageIndex = 1
+      fetchPMenuPages()
   }
 
   // 处理页码变化

@@ -308,16 +308,23 @@
         loading.value = false
     }
 
-    // 处理搜索事件
-    const handleSearch = () => {
-        fetchDepartmentTree()
-    }
+    // 防抖搜索优化
+  let searchTimer = null
+  const handleSearch = () => {
+      if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
+      searchTimer = setTimeout(() => {
+          fetchDepartmentTree()
+      }, 300) // 300ms防抖
+  }
 
-    // 处理重置事件
-    const handleReset = () => {
-        filters.departmentCode = ''
-        filters.departmentName = ''
-    }
+  // 处理重置事件
+  const handleReset = () => {
+      filters.departmentCode = ''
+      filters.departmentName = ''
+      loading.value = true // 立即显示加载状态
+      fetchDepartmentTree()
+  }
 
     const resetForm = (clearValidation = true) => {
         // 清除验证状态（需要在重置之前）

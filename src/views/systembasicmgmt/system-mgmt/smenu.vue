@@ -9,7 +9,7 @@
                       <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.smenu.module')">
+              <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
                       <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px">
                       <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
@@ -183,6 +183,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
+  // import { debounce } from '@/utils/performance' // 移除防抖导入，使用自定义实现
   import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API } from '@/config/api/systembasicmgmt/system-mgmt/smenu'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -463,14 +464,20 @@
       }
   }
 
-  // 搜索
+  // 防抖搜索优化 - 采用与userinfo.vue一致的模式
+  let searchTimer = null
   const handleSearch = () => {
-      pagination.pageIndex = 1
-      fetchSMenuPages()
+      if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
+      searchTimer = setTimeout(() => {
+          pagination.pageIndex = 1
+          fetchSMenuPages()
+      }, 300) // 300ms防抖
   }
 
   // 重置
-  const handleReset = async () => {
+  const handleReset = () => {
+      loading.value = true // 显示加载状态
       filters.smenuCode = ''
       filters.smenuName = ''
       filters.smenuUrl = ''
@@ -481,7 +488,7 @@
           if (firstEnabledmodule) {
               filters.moduleId = firstEnabledmodule.moduleId
               // 获取对应的模块列表
-              await fetchFilterPMenuDrop()
+              fetchFilterPMenuDrop()
           } else {
               filters.moduleId = ''
               filters.parentMenuId = ''
@@ -494,6 +501,7 @@
       }
       
       pagination.pageIndex = 1
+      fetchSMenuPages()
   }
 
   // 分页变化
@@ -809,12 +817,18 @@
       fetchPMenuDrop(true)
   }
 
-  // 过滤域名变化
+  // 过滤域名变化 - 优化响应速度
   const handleFiltermoduleChange = () => {
       // 清除模块选择
       filters.parentMenuId = ''
-      // 当模块选择变化时，设置默认值
+      // 立即获取新的模块列表
       fetchFilterPMenuDrop()
+      // 延迟执行搜索，给用户选择一级菜单的机会
+      setTimeout(() => {
+          loading.value = true
+          pagination.pageIndex = 1
+          fetchSMenuPages()
+      }, 100)
   }
 
   // 获取过滤条件下的模块数据

@@ -246,9 +246,23 @@
       }
   }
 
-  // 处理搜索事件
+  // 搜索防抖定时器
+  let searchTimer = null
+
+  // 处理搜索事件（带防抖）
   const handleSearch = () => {
-      fetchRoleSMenuList()
+      // 立即显示加载状态
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          fetchRoleSMenuList()
+      }, 300)
   }
 
   // 处理确认操作
@@ -314,25 +328,57 @@
       }
   }
 
-  // 处理角色变化
+  // 处理角色变化（带防抖）
   const handleRoleChange = () => {
-        fetchRoleSMenuList()
+      // 立即显示加载状态
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          fetchRoleSMenuList()
+      }, 300)
     }
 
-    // 处理模块变化
+    // 处理模块变化（直接触发，去掉防抖）
     const handleModuleChange = () => {
+        // 立即显示加载状态
+        loading.value = true
+        
+        // 清除之前的定时器
+        if (searchTimer) {
+            clearTimeout(searchTimer)
+        }
+        
         pmenuOptions.value = []
         filters.parmentMenuId = ''
         if (filters.moduleId) {
+            // 直接触发获取一级菜单，无延迟
             fetchPMenuDropdown()
         } else {
             roleSMenuList.value = []
+            loading.value = false
         }
     }
 
-    // 处理一级菜单变化
+    // 处理一级菜单变化（带防抖）
     const handlePMenuChange = () => {
-        fetchRoleSMenuList()
+        // 立即显示加载状态
+        loading.value = true
+        
+        // 清除之前的定时器
+        if (searchTimer) {
+            clearTimeout(searchTimer)
+        }
+        
+        // 设置新的定时器，300ms后执行搜索
+        searchTimer = setTimeout(() => {
+            fetchRoleSMenuList()
+        }, 300)
     }
 
 

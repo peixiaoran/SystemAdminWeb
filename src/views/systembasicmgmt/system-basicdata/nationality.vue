@@ -174,16 +174,22 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
   }
 
   // 搜索
+  // 防抖搜索优化 - 保持与userinfo.vue一致的模式
+  let searchTimer = null
   const handleSearch = () => {
+      if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
+      searchTimer = setTimeout(() => {
+          fetchNationalityList()
+      }, 300) // 300ms防抖
+  }
+
+  // 重置 - 保持与userinfo.vue一致的模式
+  const handleReset = () => {
+      loading.value = true // 显示加载状态
+      filters.nationalityName = ''
       fetchNationalityList()
   }
-
-  // 处理重置事件
-  const handleReset = () => {
-      filters.nationalityName = ''
-  }
-
-
 
   const resetForm = (clearValidation = true) => {
       // 清除验证状态（需要在重置之前）

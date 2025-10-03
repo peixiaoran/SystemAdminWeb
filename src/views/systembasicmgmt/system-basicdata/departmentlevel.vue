@@ -223,14 +223,28 @@
       loading.value = false
   }
 
+  // 搜索定时器
+  let searchTimer = null
+
   // 处理搜索事件
   const handleSearch = () => {
-      pagination.pageIndex = 1
-      fetchDepartmentLevelList()
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          pagination.pageIndex = 1
+          fetchDepartmentLevelList()
+      }, 300)
   }
 
   // 处理重置事件
   const handleReset = () => {
+      loading.value = true
       filters.departmentLevelCode = ''
       filters.departmentLevelName = ''
       pagination.pageIndex = 1

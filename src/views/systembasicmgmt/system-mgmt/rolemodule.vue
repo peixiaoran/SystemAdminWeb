@@ -158,14 +158,39 @@
       }
   }
 
-  // 处理搜索事件
+  // 搜索防抖定时器
+  let searchTimer = null
+
+  // 处理搜索事件（带防抖）
   const handleSearch = () => {
-      fetchRoleModuleList()
+      // 立即显示加载状态
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          fetchRoleModuleList()
+      }, 300)
   }
 
-  // 处理角色变化事件
+  // 处理角色变化事件（带防抖）
   const handleRoleChange = () => {
-      fetchRoleModuleList()
+      // 立即显示加载状态
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          fetchRoleModuleList()
+      }, 300)
   }
 
   // 处理确认操作

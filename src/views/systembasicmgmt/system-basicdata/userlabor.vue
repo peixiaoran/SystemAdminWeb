@@ -11,7 +11,7 @@
             />
           </el-form-item>
           <el-form-item class="form-button-group">
-            <el-button type="primary" @click="handleSearch" :loading="loading" plain>
+            <el-button type="primary" @click="handleSearch" plain>
               {{ $t('common.search') }}
             </el-button>
             <el-button @click="handleReset">

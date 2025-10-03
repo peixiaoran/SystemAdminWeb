@@ -824,20 +824,27 @@
       loading.value = false
   }
 
-  // 搜索
+  // 防抖搜索优化
+  let searchTimer = null
   const handleSearch = () => {
-      pagination.pageIndex = 1
-      fetchUserPages()
+      if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
+      searchTimer = setTimeout(() => {
+          pagination.pageIndex = 1
+          fetchUserPages()
+      }, 300) // 300ms防抖
   }
 
   // 重置
   const handleReset = () => {
+      loading.value = true // 显示加载状态
       Object.assign(filters, {
           departmentId: '',
           userNo: '',
           userName: ''
       })
       pagination.pageIndex = 1
+      fetchUserPages()
   }
 
   // 分页变化

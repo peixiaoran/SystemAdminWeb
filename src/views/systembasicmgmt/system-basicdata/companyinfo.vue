@@ -112,14 +112,10 @@ import { GET_COMPANY_LIST_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPA
   // 表单引用
   const editFormRef = ref(null)
 
-
-
   // 过滤条件
   const filters = reactive({
       companyName: '',
   })
-
-  // Composition API
 
   // 对话框显示状态
   const dialogVisible = ref(false)
@@ -214,11 +210,9 @@ import { GET_COMPANY_LIST_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPA
   // 处理重置事件
   const handleReset = () => {
       filters.companyName = ''
-      pagination.pageIndex = 1
+      fetchCompanyList()
   }
-
-
-
+  
   const resetForm = (clearValidation = true) => {
       // 清除验证状态（需要在重置之前）
       if (clearValidation && editFormRef.value) {

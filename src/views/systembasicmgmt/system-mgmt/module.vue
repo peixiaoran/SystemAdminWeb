@@ -301,18 +301,33 @@
       loading.value = false
   }
 
+  // 搜索定时器
+  let searchTimer = null
+
   // 搜索
   const handleSearch = () => {
-      pagination.pageIndex = 1
-      fetchModulePages()
+      loading.value = true
+      
+      // 清除之前的定时器
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+      }
+      
+      // 设置新的定时器，300ms后执行搜索
+      searchTimer = setTimeout(() => {
+          pagination.pageIndex = 1
+          fetchModulePages()
+      }, 300)
   }
 
   // 重置
   const handleReset = () => {
+      loading.value = true
       filters.moduleCode = ''
       filters.moduleNameCn = ''
       filters.moduleNameEn = ''
       pagination.pageIndex = 1
+      fetchModulePages()
   }
 
   // 分页变化
