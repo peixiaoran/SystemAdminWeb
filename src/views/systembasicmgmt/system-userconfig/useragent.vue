@@ -11,8 +11,8 @@
                         :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                         check-strictly
                         filterable
-                        clearable
                         :filter-node-method="filterNodeMethod"
+                        @change="handleSearch"
                         style="width: 200px;"
                         :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
                 </el-form-item>
@@ -30,7 +30,6 @@
                         :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserName')"
                         clearable />
                 </el-form-item>
-
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
                         {{ $t('common.search') }}
@@ -66,11 +65,11 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column :label="$t('systembasicmgmt.userAgent.operation')" min-width="380" fixed="right" align="center">
+                    <el-table-column :label="$t('systembasicmgmt.userAgent.operation')" min-width="320" fixed="right" align="center">
                         <template #default="scope">
                             <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.addAgent') }}</el-button>
-                            <el-button size="small" type="primary" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewAgentList') }}</el-button>
-                            <el-button size="small" type="info" @click="handleViewProactiveAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewProactiveAgent') }}</el-button>
+                            <el-button size="small" type="primary" @click="handleViewProactiveAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewAgentList') }}</el-button>
+                            <el-button size="small" type="info" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewProactiveAgent') }}</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -175,7 +174,7 @@
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            clearable
+                            @change="handleUserSelectSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
@@ -205,6 +204,7 @@
                           border
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
+                          v-loading="userSelectLoading"
                           class="conventional-table"
                           ref="userSelectTableRef"
                           height="300"
@@ -427,8 +427,6 @@
         }
     }
 
-
-  
     // 获取代理人列表数据
     const fetchUserAgentList = async (substituteUserId) => {
         agentLoading.value = true
@@ -476,7 +474,6 @@
         const res = await post(GET_USER_PAGES_API.GET_USER_PAGES, params)
 
         if (res && res.code === 200) {
-  
             userList.value = res.data || []
             pagination.totalCount = res.totalCount || 0
         } else {
@@ -490,11 +487,19 @@
         loading.value = false
     }
   
-    // 处理搜索操作
+    // 防抖搜索定时器
+    let searchTimer = null
+    // 用户选择搜索防抖定时器
+    let userSelectSearchTimer = null
+
+    // 处理搜索操作（带防抖）
     const handleSearch = () => {
-        loading.value = true // 显示加载状态
-        pagination.pageIndex = 1
-        fetchUserPages()
+        if (searchTimer) clearTimeout(searchTimer)
+        loading.value = true // 立即显示加载状态
+        searchTimer = setTimeout(() => {
+            pagination.pageIndex = 1
+            fetchUserPages()
+        }, 300) // 300ms防抖
     }
   
     // 重置搜索条件
@@ -721,10 +726,14 @@
         }
     }
 
-    // 处理用户选择搜索
+    // 处理用户选择搜索（带防抖）
     const handleUserSelectSearch = () => {
-        userSelectPagination.pageIndex = 1
-        fetchUserSelectList()
+        if (userSelectSearchTimer) clearTimeout(userSelectSearchTimer)
+        userSelectLoading.value = true // 立即显示加载状态
+        userSelectSearchTimer = setTimeout(() => {
+            userSelectPagination.pageIndex = 1
+            fetchUserSelectList()
+        }, 300) // 300ms防抖
     }
 
     // 重置用户选择搜索
@@ -809,8 +818,8 @@
             // 逐个调用新增接口
             for (const user of selectedUsers.value) {
                 const params = {
-                    substituteUserId: currentUserId.value,
-                    agentUserId: user.userId,
+                    substituteUserId: user.userId,
+                    agentUserId: currentUserId.value,
                     startTime: startTime,
                     endTime: endTime
                 }
@@ -924,22 +933,6 @@
   
   <style scoped>
     @import '@/assets/styles/conventionalTablePage.css';
-
-    /* 代理人对话框样式 */
-    :deep(.agent-dialog .el-dialog) {
-      height: 550px;
-      overflow: hidden;
-    }
-
-    :deep(.agent-dialog .el-dialog__body) {
-      height: calc(550px - 120px); /* 减去header和footer的高度 */
-      overflow: auto;
-      padding: 0 20px 20px 20px;
-    }
-
-    :deep(.agent-dialog .el-dialog__header) {
-      padding-bottom: 15px;
-    }
   </style>
   
   

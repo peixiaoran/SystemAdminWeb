@@ -31,3 +31,9 @@ export const GET_USER_FORM_BIND_VIEW_TREE_API = {
 export const UPDATE_USER_FORM_BIND_API = {
     UPDATE_USER_FORM_BIND: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/UpdateUserFormBind'
 }
+
+// 部门下拉框API
+export const GET_DEPARTMENT_DROPDOWN_API = {
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/GetDepartmentDropDown'
+}
+

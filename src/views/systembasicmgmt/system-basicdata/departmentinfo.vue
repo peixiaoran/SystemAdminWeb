@@ -53,7 +53,6 @@
                         </el-table-column>
                         <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
                         <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="230" />
-                        
                         <el-table-column prop="description" :label="$t('systembasicmgmt.departmentInfo.description')" align="left" min-width="230" />
                         <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="300" fixed="right" align="center">
                             <template #default="scope">

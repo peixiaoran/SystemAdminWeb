@@ -68,7 +68,9 @@ export default {
       oct: 'Oct',
       nov: 'Nov',
       dec: 'Dec'
-    }
+    },
+    selectAll: 'Select All',
+    deselectAll: 'Deselect All'
   },
 
   // Dashboard
@@ -507,6 +509,7 @@ export default {
     userloginlog: 'LogOut Info',
     systemUserConfig: 'System User Configuration',
     useragent: 'User Agent',
+    userformbind: 'User Form Bind',
     userparttime: 'User PartTime',
     formbusiness: 'Form Business',
     formBasicInfo: 'Form Basic Info',
@@ -603,7 +606,6 @@ export default {
       password: 'Password',
       IsApproval: 'Approval Status',
       isPartTime: 'Is Part Time',
-      isParttimed: 'Is Part-time',
       isEmployed: 'Is Employed',
       Employed: 'Employed',
       Resigned: 'Resigned',
@@ -678,7 +680,7 @@ export default {
     userAgent: {
       title: 'Employee Agent Management',
       configureAgent: 'Configure Agent',
-      viewAgentList: 'View Agent List',
+      viewAgentList: 'Agent',
       agentList: 'Agent List',
       substituteUserNo: 'Substitute User ID',
       substituteUserName: 'Substitute User Name',
@@ -690,7 +692,7 @@ export default {
       createdDate: 'Created Date',
       noAgentData: 'No agent data available',
       agentDetails: 'Agent Details',
-      viewProactiveAgent: 'View Proactive Agent',
+      viewProactiveAgent: 'Proactively Agent',
       proactiveAgentList: 'Proactive Agent List',
       proactiveAgentDetails: 'Proactive Agent Details',
       index: 'Index',
@@ -728,6 +730,36 @@ export default {
        getDepartmentFailed: 'Failed to get department data',
         getFailed: 'Failed to get data',
         index: 'Index'
+    },
+    userformbind: {
+      index: 'Index',
+      userNo: 'User No.',
+      userName: 'User Name',
+      userNameCn: 'Chinese Name',
+      userNameEn: 'English Name',
+      department: 'Department',
+      departmentName: 'Department',
+      position: 'Position',
+      positionName: 'Position Name',
+      labor: 'Labor Type',
+      laborName: 'Labor Name',
+      isApproval: 'Approval Status',
+      editFormBind: 'Edit Binding',
+      editFormBindTitle: 'Edit Form Binding',
+      selectFormBindings: 'Select Form Bindings',
+      pleaseInputUserNo: 'Please enter user number',
+      pleaseInputUserName: 'Please enter user name',
+      pleaseSelectDepartment: 'Please select department',
+      getUserPagesFailed: 'Failed to get user data',
+      getFormBindTreeFailed: 'Failed to get form binding tree',
+      saveFormBindSuccess: 'Save form binding successfully',
+      saveFormBindFailed: 'Failed to save form binding',
+      formTreeNotReady: 'Form tree component not ready',
+      configForm: 'Configure Form',
+      configFormTitle: 'Configure Form',
+      getFormTreeFailed: 'Failed to get form tree data',
+      saveConfigSuccess: 'Configuration saved successfully',
+      saveConfigFailed: 'Failed to save configuration'
     },
     
     // Company Info 

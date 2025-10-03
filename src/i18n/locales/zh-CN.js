@@ -70,7 +70,9 @@ export default {
       oct: '10月',
       nov: '11月',
       dec: '12月'
-    }
+    },
+    selectAll: '全选',
+    deselectAll: '取消全选'
   },
 
   // 仪表板
@@ -78,19 +80,19 @@ export default {
     title: '系统仪表板',
     subtitle: '欢迎使用SystemsAdmin管理系统',
     stats: {
-      totalUsers: '总用户数',
+      totalUsers: '总员工数',
       departments: '部门数量',
       systemHealth: '系统健康度',
       activeConnections: '活跃连接'
     },
     charts: {
-        userGrowth: '用户增长趋势',
+        userGrowth: '员工增长趋势',
         departmentStats: '部门统计',
-        roleDistribution: '用户角色分布',
+        roleDistribution: '员工角色分布',
         systemStatus: '系统状态',
         performance: '性能指标',
-        newUsers: '新增用户',
-        activeUsers: '活跃用户',
+        newUsers: '新增员工',
+        activeUsers: '活跃员工',
         employees: '员工数量',
         currentMonth: '本月',
         lastMonth: '上月',
@@ -122,7 +124,7 @@ export default {
       operations: '运营部'
     },
     stats: {
-        totalUsers: '总用户数',
+        totalUsers: '总员工数',
         departments: '部门数量',
         systemHealth: '系统健康度',
         activeConnections: '活跃连接',
@@ -140,7 +142,7 @@ export default {
     quickActions: '快捷操作',
     table: {
       time: '时间',
-      user: '用户',
+      user: '员工',
       action: '操作',
       status: '状态'
     },
@@ -156,8 +158,8 @@ export default {
       failed: '已失败'
     },
     actions: {
-      addUser: '添加用户',
-      addUserDesc: '快速添加新用户到系统',
+      addUser: '添加员工',
+      addUserDesc: '快速添加新员工到系统',
       systemSettings: '系统设置',
       systemSettingsDesc: '配置系统参数和选项',
       generateReport: '生成报表',
@@ -167,7 +169,7 @@ export default {
     },
     activities: {
         login: '登录系统',
-        updateUser: '修改用户信息',
+        updateUser: '修改员工信息',
         deleteDept: '删除部门',
         backup: '系统备份',
         exportReport: '导出报表'
@@ -431,9 +433,10 @@ export default {
     currencyinfo: '币别信息维护',
     exchangerate: '汇率信息维护',
     userloginlog: '员工操作日志',
-    systemUserConfig: '系统用户配置',
+    systemUserConfig: '系统员工配置',
     useragent: '员工代理维护',
     userparttime: '员工兼任维护',
+    userformbind: '员工表单绑定',
     formbusiness: '表单业务管理',
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
@@ -648,7 +651,6 @@ export default {
       password: '密码',
       IsApproval: '签核状态',
       isPartTime: '是否兼任',
-      isParttimed: '是否兼任',
       isEmployed: '是否在职',
       Employed: '在职',
       Resigned: '离职',
@@ -657,7 +659,7 @@ export default {
       isRealtimeNotification: '实时邮件通知',
       isScheduledNotification: '定时邮件通知',
       isAgent: '是否代理',
-      avatar: '用户头像',
+      avatar: '员工头像',
       avatarTip: '支持 JPG、PNG 格式，文件大小不超过 2MB',
       avatarFormatError: '头像只能是 JPG 或 PNG 格式！',
       avatarSizeError: '头像大小不能超过 2MB！',
@@ -749,7 +751,7 @@ export default {
     userAgent: {
       title: '员工代理管理',
       configureAgent: '配置代理人',
-      viewAgentList: '查看代理人列表',
+      viewAgentList: '代理了谁',
       agentList: '代理人列表',
       substituteUserNo: '被代理员工工号',
       substituteUserName: '被代理员工姓名',
@@ -761,7 +763,7 @@ export default {
       createdDate: '创建时间',
       noAgentData: '无代理人数据',
       agentDetails: '代理详情',
-      viewProactiveAgent: '查看代理员工',
+      viewProactiveAgent: '被谁代理',
       proactiveAgentList: '代理员工列表',
       proactiveAgentDetails: '代理员工详情',
       // 通用
@@ -772,7 +774,7 @@ export default {
       operationFailed: '操作失败',
       addAgent: '新增代理人',
       addSuccess: '新增成功',
-      pleaseSelectUsers: '请选择用户',
+      pleaseSelectUsers: '请选择员工',
       pleaseSelectTimeRange: '请选择开始和结束时间',
       pleaseSelectStartTime: '请选择开始时间',
       pleaseSelectEndTime: '请选择结束时间',
@@ -801,6 +803,36 @@ export default {
       getDepartmentFailed: '获取部门数据失败',
       getFailed: '获取数据失败',
       index: '序号'
+    },
+    userformbind: {
+      index: '序号',
+      userNo: '员工工号',
+      userName: '员工姓名',
+      userNameCn: '中文姓名',
+      userNameEn: '英文姓名',
+      department: '部门',
+      departmentName: '部门',
+      position: '职位',
+      positionName: '职位',
+      labor: '用工性质',
+      laborName: '职业名称',
+      isApproval: '签核状态',
+      editFormBind: '编辑绑定',
+      editFormBindTitle: '编辑表单绑定',
+      selectFormBindings: '选择表单绑定',
+      configForm: '配置表单',
+      configFormTitle: '配置表单权限',
+      pleaseInputUserNo: '请输入员工编号',
+      pleaseInputUserName: '请输入员工姓名',
+      pleaseSelectDepartment: '请选择部门',
+      getUserPagesFailed: '获取员工数据失败',
+      getFormTreeFailed: '获取表单配置树失败',
+      saveConfigSuccess: '保存配置成功',
+      saveConfigFailed: '保存配置失败',
+      getFormBindTreeFailed: '获取表单绑定树失败',
+      saveFormBindSuccess: '保存表单绑定成功',
+      saveFormBindFailed: '保存表单绑定失败',
+      formTreeNotReady: '表单树组件未准备就绪'
     },
     // 职级信息
     userPosition: {
@@ -1279,7 +1311,7 @@ export default {
       pleaseSelectPartTimeLabor: '请选择兼任职业',
       pleaseSelectStartTime: '请选择开始时间',
       pleaseSelectEndTime: '请选择结束时间',
-      pleaseSelectUser: '请选择用户',
+      pleaseSelectUser: '请选择员工',
       partTimeDepartmentRequired: '请选择兼任部门',
       partTimePositionRequired: '请选择兼任职级',
       partTimeLaborRequired: '请选择兼任职业',
@@ -1303,7 +1335,7 @@ export default {
       getDepartmentFailed: '获取部门列表失败',
       getPositionFailed: '获取职级列表失败',
       getLaborFailed: '获取职业列表失败',
-      getUserFailed: '获取用户列表失败'
+      getUserFailed: '获取员工列表失败'
     }
   }
 }

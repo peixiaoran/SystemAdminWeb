@@ -11,6 +11,7 @@
                       check-strictly
                       filterable
                       :filter-node-method="filterNodeMethod"
+                      @change="handleSearch"
                       style="width: 200px;"
                       :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>
@@ -56,7 +57,7 @@
                   <el-table-column prop="email" :label="$t('systembasicmgmt.userInfo.email')" align="left" min-width="200" />
                   <el-table-column :label="$t('systembasicmgmt.userInfo.isEmployed')" align="center" min-width="120">
                       <template #default="scope">
-                          <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'info'">
+                          <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'danger'">
                               {{ scope.row.isEmployedName }}
                           </el-tag>
                       </template>
@@ -283,9 +284,9 @@
                           inline-prompt
                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                   </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.userInfo.isParttimed')">
+                  <el-form-item :label="$t('systembasicmgmt.userInfo.isPartTime')">
                       <el-switch
-                          v-model="editForm.isParttimed"
+                          v-model="editForm.isPartTime"
                           :active-value="1"
                           :inactive-value="0"
                           :disabled="true"
@@ -428,7 +429,7 @@
       passWord: '',
       pwdSalt: '',
       isApproval: 0,
-      isParttimed: 0,
+      isPartTime: 0,
       isRealtimeNotification: 0,
       isScheduledNotification: 0,
       isAgent: 0,
@@ -835,18 +836,6 @@
       }, 300) // 300ms防抖
   }
 
-  // 重置
-  const handleReset = () => {
-      loading.value = true // 显示加载状态
-      Object.assign(filters, {
-          departmentId: '',
-          userNo: '',
-          userName: ''
-      })
-      pagination.pageIndex = 1
-      fetchUserPages()
-  }
-
   // 分页变化
   const handlePageChange = (page) => {
       pagination.pageIndex = page
@@ -874,7 +863,7 @@
           passWord: '',
           pwdSalt: '',
           isApproval: 0,
-          isParttimed: 0,
+          isPartTime: 0,
           isRealtimeNotification: 0,
           isScheduledNotification: 0,
           isAgent: 0,

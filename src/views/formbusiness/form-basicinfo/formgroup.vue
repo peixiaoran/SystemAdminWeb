@@ -61,18 +61,6 @@
             min-width="250" 
           />
           <el-table-column 
-            prop="isEnabled" 
-            :label="$t('formbusiness.formgroup.isEnabled')"
-            align="center" 
-            width="100" 
-          >
-            <template #default="scope">
-              <el-tag :type="scope.row.isEnabled === '1' ? 'success' : 'danger'">
-                {{ scope.row.isEnabled === '1' ? $t('common.enabled') : $t('common.disabled') }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column 
             :label="$t('common.operation')" 
             min-width="120" 
             fixed="right"
@@ -158,17 +146,6 @@
                 style="width:100%" 
               />
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.formgroup.isEnabled')" prop="isEnabled">
-              <el-switch
-                v-model="form.isEnabled"
-                active-value="1"
-                inactive-value="0"
-                :active-text="$t('common.yes')"
-                :inactive-text="$t('common.no')"
-                inline-prompt
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" 
-              />
-            </el-form-item>
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('formbusiness.formgroup.description')" prop="description">
@@ -238,8 +215,7 @@ const form = reactive({
   formGroupNameCn: '',
   formGroupNameEn: '',
   sortOrder: 1,
-  description: '',
-  isEnabled: '1'
+  description: ''
 })
 
 // 表单验证规则
@@ -323,7 +299,6 @@ const resetForm = () => {
   form.formGroupNameEn = ''
   form.sortOrder = 1
   form.description = ''
-  form.isEnabled = '1'
 }
 
 // 新增
@@ -351,8 +326,7 @@ const handleEdit = async (row) => {
       formGroupNameCn: '',
       formGroupNameEn: '',
       sortOrder: 1,
-      description: '',
-      isEnabled: '1'
+      description: ''
     }
     
     const response = await post(GET_FORMGROUP_ENTITY_API, params)
@@ -364,7 +338,6 @@ const handleEdit = async (row) => {
       form.formGroupNameEn = data.formGroupNameEn
       form.sortOrder = data.sortOrder
       form.description = data.description
-      form.isEnabled = data.isEnabled || '1'
     } else {
       ElMessage({
         message: response.message || t('formbusiness.formgroup.getFailed'),
@@ -409,8 +382,7 @@ const handleDelete = async (row) => {
       formGroupNameCn: row.formGroupNameCn,
       formGroupNameEn: row.formGroupNameEn,
       sortOrder: row.sortOrder,
-      description: row.description,
-      isEnabled: row.isEnabled
+      description: row.description
     }
     
     const response = await post(DELETE_FORMGROUP_ENTITY_API, params)
@@ -460,8 +432,7 @@ const handleSubmit = async () => {
       formGroupNameCn: form.formGroupNameCn,
       formGroupNameEn: form.formGroupNameEn,
       sortOrder: form.sortOrder,
-      description: form.description,
-      isEnabled: form.isEnabled
+      description: form.description
     }
     
     const api = isEdit.value ? UPDATE_FORMGROUP_API : INSERT_FORMGROUP_ENTITY_API
