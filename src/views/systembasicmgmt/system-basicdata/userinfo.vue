@@ -11,6 +11,7 @@
                       check-strictly
                       filterable
                       :filter-node-method="filterNodeMethod"
+                      @change="handleSearch"
                       style="width: 200px;"
                       :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
               </el-form-item>

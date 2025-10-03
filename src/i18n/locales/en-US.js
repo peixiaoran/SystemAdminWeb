@@ -68,7 +68,9 @@ export default {
       oct: 'Oct',
       nov: 'Nov',
       dec: 'Dec'
-    }
+    },
+    selectAll: 'Select All',
+    deselectAll: 'Deselect All'
   },
 
   // Dashboard
@@ -507,6 +509,7 @@ export default {
     userloginlog: 'LogOut Info',
     systemUserConfig: 'System User Configuration',
     useragent: 'User Agent',
+    userformbind: 'User Form Bind',
     userparttime: 'User PartTime',
     formbusiness: 'Form Business',
     formBasicInfo: 'Form Basic Info',
@@ -728,6 +731,35 @@ export default {
        getDepartmentFailed: 'Failed to get department data',
         getFailed: 'Failed to get data',
         index: 'Index'
+    },
+    userformbind: {
+      index: 'Index',
+      userNo: 'User No.',
+      userName: 'User Name',
+      userNameCn: 'Chinese Name',
+      userNameEn: 'English Name',
+      department: 'Department',
+      departmentName: 'Department Name',
+      position: 'Position',
+      positionName: 'Position Name',
+      labor: 'Labor Type',
+      laborName: 'Labor Name',
+      editFormBind: 'Edit Binding',
+      editFormBindTitle: 'Edit Form Binding',
+      selectFormBindings: 'Select Form Bindings',
+      pleaseInputUserNo: 'Please enter user number',
+      pleaseInputUserName: 'Please enter user name',
+      pleaseSelectDepartment: 'Please select department',
+      getUserPagesFailed: 'Failed to get user data',
+      getFormBindTreeFailed: 'Failed to get form binding tree',
+      saveFormBindSuccess: 'Save form binding successfully',
+      saveFormBindFailed: 'Failed to save form binding',
+      formTreeNotReady: 'Form tree component not ready',
+      configForm: 'Configure Form',
+      configFormTitle: 'Configure Form',
+      getFormTreeFailed: 'Failed to get form tree data',
+      saveConfigSuccess: 'Configuration saved successfully',
+      saveConfigFailed: 'Failed to save configuration'
     },
     
     // Company Info 

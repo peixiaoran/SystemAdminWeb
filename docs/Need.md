@@ -1,44 +1,34 @@
-1、新增国籍列表（无分页、不要筛选部分）GET_NATIONALITY_LIST_API，没有请求参数，返回参数：{
+1、新增用户绑定表单页面，只保留用户分页不变，操作列增加编辑绑定功能，点击后将userId作为json参数调用GET_USER_FORM_BIND_VIEW_TREE_API接口，返回json:{
   "code": 200,
   "data": [
     {
-      "nationId": "1972220728019390464",
-      "nationNameCn": "陆籍",
-      "nationNameEn": "Mainland Chinese",
-      "remark": ""
+      "parentId": "0",
+      "formGroupTypeId": "1969051016183812096",
+      "formGroupTypeName": "人事类",
+      "formGroupTypeDescription": "",
+      "disabled": false,
+      "isChecked": true,
+      "children": [
+        {
+          "parentId": "1969051016183812096",
+          "formGroupTypeId": "1971095904945573888",
+          "formGroupTypeName": "员工入职申请单",
+          "formGroupTypeDescription": "新员工入职信息登记、账号与设备申请",
+          "disabled": false,
+          "isChecked": false,
+          "children": []
+        }
+      ]
     },
+    {
+      "parentId": "0",
+      "formGroupTypeId": "1969052085492256768",
+      "formGroupTypeName": "工程类",
+      "formGroupTypeDescription": "",
+      "disabled": false,
+      "isChecked": false,
+      "children": []
+    }
   ],
   "message": ""
-}
-2、新增国籍新增：INSERT_NATIONALITY_API，请求参数：{
-  "nationId": "",
-  "nationNameCn": "",
-  "nationNameEn": "",
-  "remark": ""
-}，返回参数：{
-  "code": 200,
-  "data": 1,
-  "message": "新增国籍信息成功"
-}
-3、获取国籍详情：GET_NATIONALITY_ENTITY_API，请求参数：{
-  "nationId": ""
-}，返回参数：{
-  "code": 200,
-  "data": {
-    "nationId": "1972220728019390464",
-    "nationNameCn": "陆籍",
-    "nationNameEn": "Mainland Chinese",
-    "remark": ""
-  },
-  "message": ""
-}
-4、更新国籍：UPDATE_NATIONALITY_API，请求参数：{
-  "nationId": "",
-  "nationNameCn": "",
-  "nationNameEn": "",
-  "remark": ""
-}，返回参数：{
-  "code": 200,
-  "data": 1,
-  "message": "更新国籍信息成功"
-}
+}使用el-dialog展示，并且使用可选择的树形数据（treeProps.checkStrictly 是false）

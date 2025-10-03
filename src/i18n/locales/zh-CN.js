@@ -70,7 +70,9 @@ export default {
       oct: '10月',
       nov: '11月',
       dec: '12月'
-    }
+    },
+    selectAll: '全选',
+    deselectAll: '取消全选'
   },
 
   // 仪表板
@@ -434,6 +436,7 @@ export default {
     systemUserConfig: '系统用户配置',
     useragent: '员工代理维护',
     userparttime: '员工兼任维护',
+    userformbind: '用户表单绑定',
     formbusiness: '表单业务管理',
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
@@ -801,6 +804,35 @@ export default {
       getDepartmentFailed: '获取部门数据失败',
       getFailed: '获取数据失败',
       index: '序号'
+    },
+    userformbind: {
+      index: '序号',
+      userNo: '用户编号',
+      userName: '用户姓名',
+      userNameCn: '中文姓名',
+      userNameEn: '英文姓名',
+      department: '部门',
+      departmentName: '部门名称',
+      position: '职位',
+      positionName: '职位名称',
+      labor: '用工性质',
+      laborName: '职业名称',
+      editFormBind: '编辑绑定',
+      editFormBindTitle: '编辑表单绑定',
+      selectFormBindings: '选择表单绑定',
+      configForm: '配置表单',
+      configFormTitle: '配置表单权限',
+      pleaseInputUserNo: '请输入用户编号',
+      pleaseInputUserName: '请输入用户姓名',
+      pleaseSelectDepartment: '请选择部门',
+      getUserPagesFailed: '获取用户数据失败',
+      getFormTreeFailed: '获取表单配置树失败',
+      saveConfigSuccess: '保存配置成功',
+      saveConfigFailed: '保存配置失败',
+      getFormBindTreeFailed: '获取表单绑定树失败',
+      saveFormBindSuccess: '保存表单绑定成功',
+      saveFormBindFailed: '保存表单绑定失败',
+      formTreeNotReady: '表单树组件未准备就绪'
     },
     // 职级信息
     userPosition: {

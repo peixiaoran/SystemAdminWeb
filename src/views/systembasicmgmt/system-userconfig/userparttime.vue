@@ -12,6 +12,7 @@
                         check-strictly
                         filterable
                         :filter-node-method="filterNodeMethod"
+                        @change="handleSearch"
                         style="width: 200px;"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
@@ -60,7 +61,7 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="180" />
+                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="200" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="120">
                         <template #default="scope">
@@ -74,7 +75,7 @@
                     <el-table-column prop="partTimeLaborName" :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
                     <el-table-column prop="startTime" :label="$t('systembasicmgmt.userPartTime.startTime')" align="center" min-width="160" />
                     <el-table-column prop="endTime" :label="$t('systembasicmgmt.userPartTime.endTime')" align="center" min-width="160" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="200" fixed="right" align="center">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="190" fixed="right" align="center">
                         <template #default="scope">
                             <el-button v-if="scope.row.isPartTime === '1'"
                                        size="small"
@@ -115,13 +116,13 @@
                 <!-- 兼任信息区域 -->
                 <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" :inline="true" class="conventional-filter-form" >
                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
-                        <el-tree-select 
+                        <el-tree-select
                             v-model="addForm.partTimeDeptId"
                             :data="departmentList || []"
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            clearable
+                            @change="handleAddDeptChange"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
@@ -170,7 +171,7 @@
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            clearable
+                            @change="handleUserSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
@@ -200,6 +201,7 @@
                           border
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
+                          v-loading="userLoading"
                           class="conventional-table"
                           height="310"
                           @selection-change="handleUserSelectionChange">
@@ -258,7 +260,7 @@
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            clearable
+                            @change="handleEditDeptChange"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
@@ -307,7 +309,7 @@
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            clearable
+                            @change="handleEditUserSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
@@ -337,6 +339,7 @@
                           border
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
+                          v-loading="editUserLoading"
                           class="conventional-table"
                           height="310"
                           @selection-change="handleEditUserSelectionChange">
@@ -789,11 +792,21 @@
         }
     }
   
-    // 处理搜索操作
+    // 防抖搜索定时器
+    let searchTimer = null
+    // 对话框用户搜索防抖定时器
+    let userSearchTimer = null
+    // 编辑对话框用户搜索防抖定时器
+    let editUserSearchTimer = null
+
+    // 处理搜索操作（带防抖）
     const handleSearch = () => {
-        loading.value = true // 显示加载状态
-        pagination.pageIndex = 1
-        fetchUserPartTimePages()
+        if (searchTimer) clearTimeout(searchTimer)
+        loading.value = true // 立即显示加载状态
+        searchTimer = setTimeout(() => {
+            pagination.pageIndex = 1
+            fetchUserPartTimePages()
+        }, 300) // 300ms防抖
     }
     
     // 处理重置操作
@@ -911,10 +924,36 @@
         await fetchUserPages()
     }
     
-    // 处理用户搜索操作
+    // 处理用户搜索操作（带防抖）
     const handleUserSearch = () => {
-        userPagination.pageIndex = 1
-        fetchUserPages()
+        if (userSearchTimer) clearTimeout(userSearchTimer)
+        userLoading.value = true // 立即显示加载状态
+        userSearchTimer = setTimeout(() => {
+            userPagination.pageIndex = 1
+            fetchUserPages()
+        }, 300) // 300ms防抖
+    }
+
+    // 处理新增兼任信息区域部门变化（重新加载职位和劳动关系列表）
+    const handleAddDeptChange = () => {
+        // 重置职位和劳动关系选择
+        addForm.partTimePositionId = ''
+        addForm.partTimeLaborId = ''
+        
+        // 重新加载职位和劳动关系列表
+        fetchPositionList(true)
+        fetchLaborList(true)
+    }
+
+    // 处理编辑兼任信息区域部门变化（重新加载职位和劳动关系列表）
+    const handleEditDeptChange = () => {
+        // 重置职位和劳动关系选择
+        editForm.partTimePositionId = ''
+        editForm.partTimeLaborId = ''
+        
+        // 重新加载职位和劳动关系列表
+        fetchPositionList(false)
+        fetchLaborList(false)
     }
     
     // 重置用户搜索条件
@@ -1000,10 +1039,14 @@
         }
     }
     
-    // 处理编辑对话框用户搜索操作
+    // 处理编辑对话框用户搜索操作（带防抖）
     const handleEditUserSearch = () => {
-        editUserPagination.pageIndex = 1
-        fetchEditUserPages()
+        if (editUserSearchTimer) clearTimeout(editUserSearchTimer)
+        editUserLoading.value = true // 立即显示加载状态
+        editUserSearchTimer = setTimeout(() => {
+            editUserPagination.pageIndex = 1
+            fetchEditUserPages()
+        }, 300) // 300ms防抖
     }
     
     // 重置编辑对话框用户搜索条件
