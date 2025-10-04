@@ -22,7 +22,7 @@
                         style="width: 180px;"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')" />
                 </el-form-item>
-                <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
+                <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
                     <el-input 
                         v-model="filters.userName"
                         style="width: 180px;"
@@ -52,8 +52,8 @@
                           v-loading="loading"
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
-                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="110" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="150">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
@@ -183,7 +183,7 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
                         <el-input 
                             v-model="userFilters.userName"
                             style="width: 180px;"
@@ -206,12 +206,12 @@
                           height="310"
                           @selection-change="handleUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="100" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
                     <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="130">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
@@ -321,7 +321,7 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userName')">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
                         <el-input 
                             v-model="editUserFilters.userName"
                             style="width: 180px;"
@@ -345,7 +345,7 @@
                           @selection-change="handleEditUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="100" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.userName')" align="left" min-width="120" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="120" />
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
                     <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />

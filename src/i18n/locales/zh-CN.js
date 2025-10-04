@@ -1293,6 +1293,7 @@ export default {
       pleaseEnterUserNo: '请输入员工工号',
       userName: '员工姓名',
       pleaseEnterUserName: '请输入员工姓名',
+      name: '姓名',
       index: '序号',
       position: '职级',
       labor: '职业',

@@ -44,7 +44,7 @@
                         <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
                         <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
                         <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-                        <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" min-width="110">
+                        <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" min-width="95">
                             <template #default="scope">
                                 <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
                                     {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.departmentInfo.active') : $t('systembasicmgmt.departmentInfo.inactive') }}

@@ -3,60 +3,15 @@
     <el-card class="conventional-card">
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
-          :data="positionList"
-          style="width: 100%"
-          border
-          stripe
-          height="80%"
-          :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
-          :element-loading-text="$t('common.loading')"
-          class="conventional-table"
-        >
-          <el-table-column 
-            type="index" 
-            :label="$t('systembasicmgmt.userPosition.index')" 
-            width="70" 
-            align="center" 
-            fixed 
-          />
-          <el-table-column 
-            prop="positionNo" 
-            :label="$t('systembasicmgmt.userPosition.positionNo')"
-            align="center" 
-            min-width="120" 
-          />
-          <el-table-column 
-            prop="positionNameCn"
-            :label="$t('systembasicmgmt.userPosition.positionNameCn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="positionNameEn" 
-            :label="$t('systembasicmgmt.userPosition.positionNameEn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="positionDescribe" 
-            :label="$t('systembasicmgmt.userPosition.positionDescribe')"
-            align="left" 
-            min-width="250" 
-          />
-          <el-table-column 
-            :label="$t('common.operation')" 
-            min-width="100" 
-            fixed="right"
-            align="center"
-          >
+        <el-table :data="positionList" style="width: 100%" border stripe height="80%" :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" :element-loading-text="$t('common.loading')" class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.userPosition.index')" width="70" align="center" fixed />
+          <el-table-column prop="positionNo" :label="$t('systembasicmgmt.userPosition.positionNo')" align="center" min-width="120" />
+          <el-table-column prop="positionNameCn" :label="$t('systembasicmgmt.userPosition.positionNameCn')" align="left" min-width="200" />
+          <el-table-column prop="positionNameEn" :label="$t('systembasicmgmt.userPosition.positionNameEn')" align="left" min-width="200" />
+          <el-table-column prop="positionDescribe" :label="$t('systembasicmgmt.userPosition.positionDescribe')" align="left" min-width="250" />
+          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
-              <el-button 
-                size="small" 
-                @click="handleEdit(scope.$index, scope.row)"
-                :loading="editingId === scope.row.positionId"
-              >
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)" :loading="editingId === scope.row.positionId">
                 {{ $t('common.edit') }}
               </el-button>
             </template>

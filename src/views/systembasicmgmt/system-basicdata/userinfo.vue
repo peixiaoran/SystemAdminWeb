@@ -49,7 +49,7 @@
                         class="conventional-table">
                   <el-table-column type="index" :label="$t('systembasicmgmt.userInfo.index')" width="70" align="center" fixed />
                   <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="center" min-width="150" />
-                  <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="150" />
+                  <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="180" />
                   <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
                   <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
                   <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="120" />

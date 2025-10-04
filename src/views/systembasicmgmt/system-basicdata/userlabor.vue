@@ -255,15 +255,21 @@ const getLaborList = async () => {
   }
 }
 
-// 搜索
+// 防抖搜索优化
+let searchTimer = null
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  getLaborList()
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true // 立即显示加载状态
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getLaborList()
+  }, 300) // 300ms防抖
 }
 
 // 重置搜索
 const handleReset = () => {
   searchForm.laborName = ''
+  loading.value = true // 立即显示加载状态
   pagination.pageIndex = 1
   getLaborList()
 }

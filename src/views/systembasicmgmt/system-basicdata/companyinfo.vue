@@ -200,14 +200,20 @@ import { GET_COMPANY_LIST_API, INSERT_COMPANY_API, DELETE_COMPANY_API, GET_COMPA
       loading.value = false
   }
 
-  // 搜索
+  // 防抖搜索优化
+  let searchTimer = null
   const handleSearch = () => {
-      fetchCompanyList()
+      if (searchTimer) clearTimeout(searchTimer)
+      loading.value = true // 立即显示加载状态
+      searchTimer = setTimeout(() => {
+          fetchCompanyList()
+      }, 300) // 300ms防抖
   }
 
   // 处理重置事件
   const handleReset = () => {
       filters.companyName = ''
+      loading.value = true // 立即显示加载状态
       fetchCompanyList()
   }
   
