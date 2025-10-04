@@ -1,17 +1,33 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单组别筛选">
-          <el-form-item :label="$t('formbusiness.formgroup.formGroupName')">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
+          <el-form-item :label="$t('formbusiness.formtype.formGroupName')">
+            <el-select
+              v-model="searchForm.formGroupId"
+              :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
+              clearable
+              style="width: 200px"
+              @change="handleSearch"
+            >
+              <el-option
+                v-for="item in formGroupOptions"
+                :key="item.formGroupId"
+                :label="item.formGroupName"
+                :value="item.formGroupId"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('formbusiness.formtype.formTypeName')">
             <el-input
-              v-model="searchForm.formGroupName"
-              :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupName')"
+              v-model="searchForm.formTypeName"
+              :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeName')"
               clearable
               style="width: 200px"
             />
           </el-form-item>
           <el-form-item class="form-button-group">
-            <el-button type="primary" @click="handleSearch" :loading="loading" plain>
+            <el-button type="primary" @click="handleSearch" plain>
               {{ $t('common.search') }}
             </el-button>
             <el-button @click="handleReset">
@@ -20,7 +36,7 @@
           </el-form-item>
           <el-form-item class="form-right-button">
             <el-button type="primary" @click="handleAdd">
-              {{ $t('formbusiness.formgroup.addFormGroup') }}
+              {{ $t('formbusiness.formtype.addFormType') }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -28,61 +44,29 @@
       <!-- 表格区域 -->
       <div class="table-container">
         <el-table 
-          :data="formGroupList"
+          :data="formTypeList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column 
-            type="index" 
-            :label="$t('formbusiness.formgroup.index')" 
-            width="70" 
-            align="center" 
-            fixed 
-          />
-          <el-table-column 
-            prop="formGroupNameCn"
-            :label="$t('formbusiness.formgroup.formGroupNameCn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="formGroupNameEn" 
-            :label="$t('formbusiness.formgroup.formGroupNameEn')"
-            align="left" 
-            min-width="300" 
-          />
-          <el-table-column 
-            prop="description" 
-            :label="$t('formbusiness.formgroup.description')"
-            align="left" 
-            min-width="250" 
-          />
-          <el-table-column 
-            prop="isEnabled" 
-            :label="$t('formbusiness.formgroup.isEnabled')"
-            align="center" 
-            width="100" 
-          >
+          <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
+          <el-table-column prop="formGroupName" :label="$t('formbusiness.formtype.formGroupName')" align="left" min-width="180" />
+          <el-table-column prop="formTypeNameCn" :label="$t('formbusiness.formtype.formTypeNameCn')" align="left" min-width="200" />
+          <el-table-column prop="formTypeNameEn" :label="$t('formbusiness.formtype.formTypeNameEn')" align="left" min-width="240" />
+          <el-table-column prop="prefix" :label="$t('formbusiness.formtype.prefix')" align="center" width="100">
             <template #default="scope">
-              <el-tag :type="scope.row.isEnabled === '1' ? 'success' : 'danger'">
-                {{ scope.row.isEnabled === '1' ? $t('common.enabled') : $t('common.disabled') }}
-              </el-tag>
+              <span style="color: #1890ff; font-weight: 500;">{{ scope.row.prefix }}</span>
             </template>
           </el-table-column>
-          <el-table-column 
-            :label="$t('common.operation')" 
-            min-width="120" 
-            fixed="right"
-            align="center"
-          >
+          <el-table-column prop="descriptionCn" :label="$t('formbusiness.formtype.descriptionCn')" align="left" min-width="300" />
+          <el-table-column prop="descriptionEn" :label="$t('formbusiness.formtype.descriptionEn')" align="left" min-width="300" />
+          <el-table-column :label="$t('common.operation')" min-width="150" fixed="right" align="center">
             <template #default="scope">
               <el-button 
                 size="small" 
                 @click="handleEdit(scope.row)"
-                :loading="editingId === scope.row.formGroupId"
               >
                 {{ $t('common.edit') }}
               </el-button>
@@ -90,7 +74,6 @@
                 size="small" 
                 type="danger"
                 @click="handleDelete(scope.row)"
-                :loading="deletingId === scope.row.formGroupId"
               >
                 {{ $t('common.delete') }}
               </el-button>
@@ -114,8 +97,8 @@
     
     <el-dialog 
       v-model="dialogVisible"
-      :title="isEdit ? $t('formbusiness.formgroup.editFormGroup') : $t('formbusiness.formgroup.addFormGroup')"
-      width="50%"
+      :title="isEdit ? $t('formbusiness.formtype.editFormType') : $t('formbusiness.formtype.addFormType')"
+      width="55%"
       :close-on-click-modal="false"
       :append-to-body="true"
       :modal-append-to-body="true"
@@ -128,56 +111,82 @@
           ref="formRef"
           :model="form" 
           :rules="rules"
-          label-width="120px" 
+          label-width="140px" 
           class="dialog-form"
           role="form" 
-          aria-label="表单组别编辑"
+          aria-label="表单类型编辑"
         >
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formgroup.formGroupNameCn')" prop="formGroupNameCn">
-              <el-input 
-                v-model="form.formGroupNameCn" 
-                :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupNameCn')"
-                style="width:100%" 
-              />
+            <el-form-item :label="$t('formbusiness.formtype.formGroupName')" prop="formGroupId">
+              <el-select
+                v-model="form.formGroupId"
+                :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
+                style="width:100%"
+              >
+                <el-option
+                  v-for="item in formGroupOptions"
+                  :key="item.formGroupId"
+                  :label="item.formGroupName"
+                  :value="item.formGroupId"
+                />
+              </el-select>
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.formgroup.formGroupNameEn')" prop="formGroupNameEn">
-              <el-input
-                v-model="form.formGroupNameEn"
-                :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupNameEn')"
+            <el-form-item :label="$t('formbusiness.formtype.prefix')" prop="prefix">
+              <el-input 
+                v-model="form.prefix" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputPrefix')"
                 style="width:100%" 
               />
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formgroup.sortOrder')" prop="sortOrder">
-              <el-input-number 
-                v-model="form.sortOrder" 
-                :min="1"
-                :max="999"
+            <el-form-item :label="$t('formbusiness.formtype.formTypeNameCn')" prop="formTypeNameCn">
+              <el-input 
+                v-model="form.formTypeNameCn" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameCn')"
                 style="width:100%" 
               />
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.formgroup.isEnabled')" prop="isEnabled">
-              <el-switch
-                v-model="form.isEnabled"
-                active-value="1"
-                inactive-value="0"
-                :active-text="$t('common.yes')"
-                :inactive-text="$t('common.no')"
-                inline-prompt
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" 
+            <el-form-item :label="$t('formbusiness.formtype.formTypeNameEn')" prop="formTypeNameEn">
+              <el-input
+                v-model="form.formTypeNameEn"
+                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameEn')"
+                style="width:100%" 
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('formbusiness.formtype.sortOrder')" prop="sortOrder">
+              <el-input-number 
+                v-model="form.sortOrder" 
+                :min="0"
+                :max="999"
+                style="width:60%" 
+              />
+            </el-form-item>
+            <el-form-item>
+              
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('formbusiness.formtype.descriptionCn')" prop="descriptionCn">
+              <el-input 
+                v-model="form.descriptionCn" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionCn')"
+                style="width:100%" 
+                type="textarea" 
+                :rows="2" 
               />
             </el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.formgroup.description')" prop="description">
+            <el-form-item :label="$t('formbusiness.formtype.descriptionEn')" prop="descriptionEn">
               <el-input 
-                v-model="form.description" 
-                :placeholder="$t('formbusiness.formgroup.pleaseInputDescription')"
+                v-model="form.descriptionEn" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionEn')"
                 style="width:100%" 
                 type="textarea" 
-                :rows="3" 
+                :rows="2" 
               />
             </el-form-item>
           </div>
@@ -198,12 +207,13 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
-  GET_FORMGROUP_LIST_API,
-  GET_FORMGROUP_ENTITY_API,
-  INSERT_FORMGROUP_ENTITY_API,
-  UPDATE_FORMGROUP_API,
-  DELETE_FORMGROUP_ENTITY_API
-} from '@/config/api/formbusiness/form-basicInfo/formgroup.js'
+  GET_FORMTYPE_PAGE_API,
+  GET_FORMTYPE_ENTITY_API,
+  INSERT_FORMTYPE_ENTITY_API,
+  UPDATE_FORMTYPE_API,
+  DELETE_FORMTYPE_ENTITY_API,
+  GET_FORMTYPE_DROPDOWN_API
+} from '@/config/api/formbusiness/form-basicInfo/formtype.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n
@@ -215,14 +225,16 @@ const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editingId = ref(null)
 const deletingId = ref(null)
-const formGroupList = ref([])
+const formTypeList = ref([])
+const formGroupOptions = ref([])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
 
 // 搜索表单
 const searchForm = reactive({
-  formGroupName: ''
+  formGroupId: '',
+  formTypeName: ''
 })
 
 // 分页信息
@@ -234,99 +246,163 @@ const pagination = reactive({
 
 // 表单数据
 const form = reactive({
+  formTypeId: '',
   formGroupId: '',
-  formGroupNameCn: '',
-  formGroupNameEn: '',
-  sortOrder: 1,
-  description: '',
-  isEnabled: '1'
+  formTypeNameCn: '',
+  formTypeNameEn: '',
+  prefix: '',
+  sortOrder: 0,
+  descriptionCn: '',
+  descriptionEn: ''
 })
 
 // 表单验证规则
 const rules = {
-  formGroupNameCn: [
-    { required: true, message: () => t('formbusiness.formgroup.pleaseInputFormGroupNameCn'), trigger: 'blur' }
+  formGroupId: [
+    { required: true, message: () => t('formbusiness.formtype.pleaseSelectFormGroup'), trigger: 'change' }
   ],
-  formGroupNameEn: [
-    { required: true, message: () => t('formbusiness.formgroup.pleaseInputFormGroupNameEn'), trigger: 'blur' }
+  formTypeNameCn: [
+    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameCn'), trigger: 'blur' }
   ],
-
-
+  formTypeNameEn: [
+    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameEn'), trigger: 'blur' }
+  ],
+  prefix: [
+    { required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'), trigger: 'blur' }
+  ]
 }
 
-// 获取表单组别列表
-const getFormGroupList = async () => {
+/**
+ * 获取表单组别下拉选项
+ */
+const getFormGroupOptions = async () => {
+  try {
+    const response = await post(GET_FORMTYPE_DROPDOWN_API, {})
+    if (response.code === 200) {
+      formGroupOptions.value = response.data || []
+      // 默认选中第一个选项
+      if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
+        searchForm.formGroupId = formGroupOptions.value[0].formGroupId
+      }
+    } else {
+      ElMessage({
+        message: response.message || t('formbusiness.formtype.getFormGroupFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
+  } catch (error) {
+    console.error('获取表单组别下拉选项失败:', error)
+    ElMessage({
+      message: t('formbusiness.formtype.getFormGroupFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
+  }
+}
+
+/**
+ * 获取表单类型列表
+ */
+const getFormTypeList = async () => {
   loading.value = true
   try {
     const params = {
-      formGroupName: searchForm.formGroupName,
+      formGroupId: searchForm.formGroupId,
+      formTypeName: searchForm.formTypeName,
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
     }
     
-    const response = await post(GET_FORMGROUP_LIST_API, params)
+    const response = await post(GET_FORMTYPE_PAGE_API, params)
     if (response.code === 200) {
-      formGroupList.value = response.data || []
+      formTypeList.value = response.data || []
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.getFailed'),
+        message: response.message || t('formbusiness.formtype.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
       })
-      formGroupList.value = []
+      formTypeList.value = []
     }
   } catch (error) {
-    console.error('获取表单组别列表失败:', error)
+    console.error('获取表单类型列表失败:', error)
     ElMessage({
-      message: t('formbusiness.formgroup.getFailed'),
+      message: t('formbusiness.formtype.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
     })
-    formGroupList.value = []
+    formTypeList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 搜索
+// 防抖搜索优化
+let searchTimer = null
+
+/**
+ * 搜索
+ */
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  getFormGroupList()
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true // 立即显示加载状态
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getFormTypeList()
+  }, 300) // 300ms防抖
 }
 
-// 重置搜索
+/**
+ * 重置搜索
+ */
 const handleReset = () => {
-  searchForm.formGroupName = ''
+  searchForm.formGroupId = ''
+  searchForm.formTypeName = ''
+  pagination.pageIndex = 1
+  getFormTypeList()
 }
 
-// 分页大小改变
+/**
+ * 分页大小改变
+ */
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  getFormGroupList()
+  getFormTypeList()
 }
 
-// 当前页改变
+/**
+ * 当前页改变
+ */
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
-  getFormGroupList()
+  getFormTypeList()
 }
 
-// 重置表单
+/**
+ * 重置表单
+ */
 const resetForm = () => {
+  form.formTypeId = ''
   form.formGroupId = ''
-  form.formGroupNameCn = ''
-  form.formGroupNameEn = ''
-  form.sortOrder = 1
-  form.description = ''
-  form.isEnabled = '1'
+  form.formTypeNameCn = ''
+  form.formTypeNameEn = ''
+  form.prefix = ''
+  form.sortOrder = 0
+  form.descriptionCn = ''
+  form.descriptionEn = ''
 }
 
-// 新增
+/**
+ * 新增
+ */
 const handleAdd = () => {
   resetForm()
   isEdit.value = false
@@ -338,36 +414,35 @@ const handleAdd = () => {
   })
 }
 
-// 编辑
+/**
+ * 编辑
+ */
 const handleEdit = async (row) => {
-  editingId.value = row.formGroupId
+  editingId.value = row.formTypeId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
   
   try {
     const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: '',
-      formGroupNameEn: '',
-      sortOrder: 1,
-      description: '',
-      isEnabled: '1'
+      formTypeId: row.formTypeId
     }
     
-    const response = await post(GET_FORMGROUP_ENTITY_API, params)
+    const response = await post(GET_FORMTYPE_ENTITY_API, params)
     
     if (response.code === 200) {
       const data = response.data
+      form.formTypeId = data.formTypeId
       form.formGroupId = data.formGroupId
-      form.formGroupNameCn = data.formGroupNameCn
-      form.formGroupNameEn = data.formGroupNameEn
+      form.formTypeNameCn = data.formTypeNameCn
+      form.formTypeNameEn = data.formTypeNameEn
+      form.prefix = data.prefix
       form.sortOrder = data.sortOrder
-      form.description = data.description
-      form.isEnabled = data.isEnabled || '1'
+      form.descriptionCn = data.descriptionCn
+      form.descriptionEn = data.descriptionEn
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.getFailed'),
+        message: response.message || t('formbusiness.formtype.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -375,9 +450,9 @@ const handleEdit = async (row) => {
       dialogVisible.value = false
     }
   } catch (error) {
-    console.error('获取表单组别详情失败:', error)
+    console.error('获取表单类型详情失败:', error)
     ElMessage({
-      message: t('formbusiness.formgroup.getFailed'),
+      message: t('formbusiness.formtype.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
@@ -389,11 +464,13 @@ const handleEdit = async (row) => {
   }
 }
 
-// 删除
+/**
+ * 删除
+ */
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.formgroup.deleteConfirm'),
+      t('formbusiness.formtype.deleteConfirm'),
       t('common.warning'),
       {
         confirmButtonText: t('common.confirm'),
@@ -402,30 +479,25 @@ const handleDelete = async (row) => {
       }
     )
     
-    deletingId.value = row.formGroupId
+    deletingId.value = row.formTypeId
     
     const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: row.formGroupNameCn,
-      formGroupNameEn: row.formGroupNameEn,
-      sortOrder: row.sortOrder,
-      description: row.description,
-      isEnabled: row.isEnabled
+      formTypeId: row.formTypeId
     }
     
-    const response = await post(DELETE_FORMGROUP_ENTITY_API, params)
+    const response = await post(DELETE_FORMTYPE_ENTITY_API, params)
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.deleteSuccess'),
+        message: response.message || t('formbusiness.formtype.deleteSuccess'),
         type: 'success',
         plain: true,
         showClose: true
       })
-      getFormGroupList()
+      getFormTypeList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.operationFailed'),
+        message: response.message || t('formbusiness.formtype.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -433,9 +505,9 @@ const handleDelete = async (row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除表单组别失败:', error)
+      console.error('删除表单类型失败:', error)
       ElMessage({
-        message: t('formbusiness.formgroup.operationFailed'),
+        message: t('formbusiness.formtype.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -446,7 +518,9 @@ const handleDelete = async (row) => {
   }
 }
 
-// 提交表单
+/**
+ * 提交表单
+ */
 const handleSubmit = async () => {
   if (!formRef.value) return
   
@@ -456,29 +530,31 @@ const handleSubmit = async () => {
     submitLoading.value = true
     
     const params = {
+      formTypeId: form.formTypeId,
       formGroupId: form.formGroupId,
-      formGroupNameCn: form.formGroupNameCn,
-      formGroupNameEn: form.formGroupNameEn,
+      formTypeNameCn: form.formTypeNameCn,
+      formTypeNameEn: form.formTypeNameEn,
+      prefix: form.prefix,
       sortOrder: form.sortOrder,
-      description: form.description,
-      isEnabled: form.isEnabled
+      descriptionCn: form.descriptionCn,
+      descriptionEn: form.descriptionEn
     }
     
-    const api = isEdit.value ? UPDATE_FORMGROUP_API : INSERT_FORMGROUP_ENTITY_API
+    const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
     const response = await post(api, params)
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || (isEdit.value ? t('formbusiness.formgroup.updateSuccess') : t('formbusiness.formgroup.saveSuccess')),
+        message: response.message || (isEdit.value ? t('formbusiness.formtype.updateSuccess') : t('formbusiness.formtype.saveSuccess')),
         type: 'success',
         plain: true,
         showClose: true
       })
       dialogVisible.value = false
-      getFormGroupList()
+      getFormTypeList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.operationFailed'),
+        message: response.message || t('formbusiness.formtype.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -488,7 +564,7 @@ const handleSubmit = async () => {
     if (error !== false) {
       console.error('提交表单失败:', error)
       ElMessage({
-        message: t('formbusiness.formgroup.operationFailed'),
+        message: t('formbusiness.formtype.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -499,7 +575,9 @@ const handleSubmit = async () => {
   }
 }
 
-// 对话框关闭
+/**
+ * 对话框关闭
+ */
 const handleDialogClose = () => {
   resetForm()
   if (formRef.value) {
@@ -509,7 +587,8 @@ const handleDialogClose = () => {
 
 // 组件挂载时获取数据
 onMounted(() => {
-  getFormGroupList()
+  getFormGroupOptions()
+  getFormTypeList()
 })
 </script>
 

@@ -35,55 +35,11 @@
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column 
-            type="index" 
-            :label="$t('systembasicmgmt.userLabor.index')" 
-            width="70" 
-            align="center" 
-            fixed 
-          />
-          <el-table-column 
-            prop="laborNameCn"
-            :label="$t('systembasicmgmt.userLabor.laborNameCn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="laborNameEn" 
-            :label="$t('systembasicmgmt.userLabor.laborNameEn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="laborDescription" 
-            :label="$t('systembasicmgmt.userLabor.laborDescription')"
-            align="left" 
-            min-width="250" 
-          />
-          <el-table-column 
-            :label="$t('common.operation')" 
-            min-width="120" 
-            fixed="right"
-            align="center"
-          >
-            <template #default="scope">
-              <el-button 
-                size="small" 
-                @click="handleEdit(scope.row)"
-                :loading="editingId === scope.row.laborId"
-              >
-                {{ $t('common.edit') }}
-              </el-button>
-              <el-button 
-                size="small" 
-                type="danger"
-                @click="handleDelete(scope.row)"
-                :loading="deletingId === scope.row.laborId"
-              >
-                {{ $t('common.delete') }}
-              </el-button>
-            </template>
-          </el-table-column>
+          <el-table-column type="index" :label="$t('systembasicmgmt.userLabor.index')" width="70" align="center" fixed />
+          <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="200" />
+          <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
+          <el-table-column prop="laborDescription" :label="$t('systembasicmgmt.userLabor.laborDescription')" align="left" min-width="250" />
+          <el-table-column :label="$t('common.operation')" min-width="120" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.laborId">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
         </el-table>
       </div>
 

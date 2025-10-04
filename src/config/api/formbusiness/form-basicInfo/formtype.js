@@ -17,17 +17,20 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 新增表单组别实体API
-export const INSERT_FORMGROUP_ENTITY_API = 'FormBusiness/FormBasicInfo/FormGroup/InsertFormGroupInfo'
+// 新增表单类型实体API
+export const INSERT_FORMTYPE_ENTITY_API = 'FormBusiness/FormBasicInfo/FormType/InsertFormTypeInfo'
 
-// 获取表单组别实体API
-export const GET_FORMGROUP_ENTITY_API = 'FormBusiness/FormBasicInfo/FormGroup/GetFormGroupEntity'
+// 获取表单类型实体API
+export const GET_FORMTYPE_ENTITY_API = 'FormBusiness/FormBasicInfo/FormType/GetFormTypeEntity'
 
-// 获取表单组别列表API
-export const GET_FORMGROUP_LIST_API = 'FormBusiness/FormBasicInfo/FormGroup/GetFormGroupPage'
+// 获取表单类型分页列表API
+export const GET_FORMTYPE_PAGE_API = 'FormBusiness/FormBasicInfo/FormType/GetFormTypePage'
 
-// 更新表单组别API
-export const UPDATE_FORMGROUP_API = 'FormBusiness/FormBasicInfo/FormGroup/UpdateFormGroupInfo'
+// 更新表单类型API
+export const UPDATE_FORMTYPE_API = 'FormBusiness/FormBasicInfo/FormType/UpdateFormTypeInfo'
 
-// 删除表单组别API
-export const DELETE_FORMGROUP_ENTITY_API = 'FormBusiness/FormBasicInfo/FormGroup/DeleteFormGroupInfo'
+// 删除表单类型API
+export const DELETE_FORMTYPE_ENTITY_API = 'FormBusiness/FormBasicInfo/FormType/DeleteFormTypeInfo'
+
+// 获取表单组别下拉列表API
+export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormBasicInfo/FormType/GetFormGroupDropDown'

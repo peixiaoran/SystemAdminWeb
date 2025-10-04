@@ -11,7 +11,7 @@
             />
           </el-form-item>
           <el-form-item class="form-button-group">
-            <el-button type="primary" @click="handleSearch" :loading="loading" plain>
+            <el-button type="primary" @click="handleSearch" plain>
               {{ $t('common.search') }}
             </el-button>
             <el-button @click="handleReset">
@@ -35,42 +35,15 @@
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column 
-            type="index" 
-            :label="$t('formbusiness.formgroup.index')" 
-            width="70" 
-            align="center" 
-            fixed 
-          />
-          <el-table-column 
-            prop="formGroupNameCn"
-            :label="$t('formbusiness.formgroup.formGroupNameCn')"
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="formGroupNameEn" 
-            :label="$t('formbusiness.formgroup.formGroupNameEn')"
-            align="left" 
-            min-width="300" 
-          />
-          <el-table-column 
-            prop="description" 
-            :label="$t('formbusiness.formgroup.description')"
-            align="left" 
-            min-width="250" 
-          />
-          <el-table-column 
-            :label="$t('common.operation')" 
-            min-width="120" 
-            fixed="right"
-            align="center"
-          >
+          <el-table-column type="index" :label="$t('formbusiness.formgroup.index')" width="70" align="center" fixed />
+          <el-table-column prop="formGroupNameCn" :label="$t('formbusiness.formgroup.formGroupNameCn')" align="left" min-width="150" />
+          <el-table-column prop="formGroupNameEn" :label="$t('formbusiness.formgroup.formGroupNameEn')" align="left" min-width="150" />
+          <el-table-column prop="description" :label="$t('formbusiness.formgroup.description')" align="left" min-width="300" />
+          <el-table-column :label="$t('common.operation')" min-width="120" fixed="right" align="center">
             <template #default="scope">
               <el-button 
                 size="small" 
                 @click="handleEdit(scope.row)"
-                :loading="editingId === scope.row.formGroupId"
               >
                 {{ $t('common.edit') }}
               </el-button>
@@ -78,7 +51,6 @@
                 size="small" 
                 type="danger"
                 @click="handleDelete(scope.row)"
-                :loading="deletingId === scope.row.formGroupId"
               >
                 {{ $t('common.delete') }}
               </el-button>
@@ -268,10 +240,17 @@ const getFormGroupList = async () => {
   }
 }
 
+// 防抖搜索优化
+let searchTimer = null
+
 // 搜索
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  getFormGroupList()
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true // 立即显示加载状态
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getFormGroupList()
+  }, 300) // 300ms防抖
 }
 
 // 重置搜索

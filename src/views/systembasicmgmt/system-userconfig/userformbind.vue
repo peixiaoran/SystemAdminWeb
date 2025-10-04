@@ -114,6 +114,7 @@
       :modal="true"
       :lock-scroll="true"
       :z-index="2000"
+      @close="handleDialogClose"
     >
       <div v-if="currentUser">
         <div class="user-info">
@@ -504,6 +505,16 @@ const handleSelectAll = () => {
 const handleDeselectAll = () => {
   if (!formTreeRef.value) return
   formTreeRef.value.setCheckedKeys([])
+}
+
+/**
+ * 处理弹框关闭
+ */
+const handleDialogClose = () => {
+  // 重置树组件状态，确保下次打开时显示实时数据
+  formTreeData.value = []
+  checkedKeys.value = []
+  currentUser.value = null
 }
 
 // 页面挂载时初始化数据
