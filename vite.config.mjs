@@ -41,7 +41,7 @@ export default defineConfig(({ command, mode }) => {
     },
     // 构建选项
     build: {
-      outDir: 'E:\\MyCode\\PlayCode\\SystemsWebDist\\dist', // 构建输出到指定目录
+      outDir: 'D:\\MyCode\\PlayCode\\SystemsWebDist', // 构建输出到指定目录
       emptyOutDir: true,
       assetsDir: 'assets',
       sourcemap: env.DEV === 'true', // 只在开发环境启用
