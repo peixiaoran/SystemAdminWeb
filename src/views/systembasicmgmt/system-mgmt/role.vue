@@ -65,18 +65,24 @@
                   </el-table-column>
 
                   <el-table-column :label="$t('systembasicmgmt.operation')"
-                                   min-width="120"
+                                   min-width="260"
                                    fixed="right"
                                    align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-                              {{ $t('common.edit') }}
-                          </el-button>
-                          <el-button size="small"
-                                     type="danger"
-                                     @click="handleDelete(scope.$index, scope.row)">
-                              {{ $t('common.delete') }}
-                          </el-button>
+                      {{ $t('common.edit') }}
+                  </el-button>
+                  <el-button size="small" @click="handleConfigModule(scope.row)">
+                      {{ $t('systembasicmgmt.role.configModule') }}
+                  </el-button>
+                  <el-button size="small" @click="handleConfigMenu(scope.row)">
+                      {{ $t('systembasicmgmt.role.configMenu') }}
+                  </el-button>
+                  <el-button size="small"
+                             type="danger"
+                             @click="handleDelete(scope.$index, scope.row)">
+                      {{ $t('common.delete') }}
+                  </el-button>
                       </template>
                   </el-table-column>
               </el-table>
@@ -144,13 +150,110 @@
               </span>
           </template>
       </el-dialog>
+
+      <!-- 配置模块对话框 -->
+      <el-dialog v-model="moduleDialogVisible"
+                 :title="$t('systembasicmgmt.role.configModule')"
+                 width="30%"
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleModuleDialogClose">
+          <!-- 显示当前角色名称 -->
+          <div class="role-name-display">
+              <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
+          </div>
+          <div class="module-tree-container">
+              <el-tree
+                  ref="moduleTreeRef"
+                  :data="moduleTreeData"
+                  show-checkbox
+                  node-key="moduleId"
+                  :props="moduleTreeProps"
+                  :default-checked-keys="defaultCheckedModules"
+                  @check-change="handleModuleCheckChange">
+              </el-tree>
+          </div>
+          <template #footer>
+              <span class="dialog-footer">
+                  <el-button @click="moduleDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+                  <el-button type="primary" @click="saveModuleConfig">{{ $t('common.confirm') }}</el-button>
+              </span>
+          </template>
+      </el-dialog>
+
+      <!-- 配置菜单对话框 -->
+      <el-dialog v-model="menuDialogVisible"
+                 :title="$t('systembasicmgmt.role.configMenu')"
+                 width="40%"
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :lock-scroll="true"
+                 @close="handleMenuDialogClose">
+          <div class="role-name-display">
+              <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
+          </div>
+          <div class="menu-config-container">
+              <!-- 左侧模块选择区域 -->
+              <div class="module-select-section">
+                  <div class="section-title">{{ $t('systembasicmgmt.role.selectModule') }}</div>
+                  <el-select v-model="selectedModuleId" 
+                             @change="handleModuleChange"
+                             style="width: 100%;"
+                             :placeholder="$t('systembasicmgmt.role.selectModule')">
+                      <el-option
+                          v-for="item in moduleOptions"
+                          :key="item.moduleId"
+                          :label="item.moduleName"
+                          :value="item.moduleId"
+                          :disabled="item.disabled">
+                      </el-option>
+                  </el-select>
+              </div>
+              
+              <!-- 右侧菜单树区域 -->
+              <div class="menu-tree-section">
+                  <div class="section-title">{{ $t('systembasicmgmt.role.configMenu') }}</div>
+                  <el-tree
+                      ref="menuTreeRef"
+                      :data="menuTreeData"
+                      show-checkbox
+                      node-key="menuId"
+                      :props="menuTreeProps"
+                      :default-checked-keys="defaultCheckedMenus"
+                      :check-strictly="false"
+                      check-on-click-node
+                      @check-change="handleMenuCheckChange">
+                  </el-tree>
+              </div>
+          </div>
+          <template #footer>
+              <span class="dialog-footer">
+                  <el-button @click="menuDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+                  <el-button type="primary" @click="saveMenuConfig">{{ $t('common.confirm') }}</el-button>
+              </span>
+          </template>
+      </el-dialog>
   </div>
 </template>
 
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  import { GET_ROLE_PAGES_API, GET_ROLE_ENTITY_API, INSERT_ROLE_API, DELETE_ROLE_API, UPDATE_ROLE_API } from '@/config/api/systembasicmgmt/system-mgmt/role'
+  import { 
+  GET_ROLE_PAGES_API, 
+  GET_ROLE_ENTITY_API, 
+  INSERT_ROLE_API, 
+  DELETE_ROLE_API, 
+  UPDATE_ROLE_API, 
+  GET_ROLE_MODULE_LIST_API, 
+  GET_ROLE_MODULE_DROPDOWN_API,
+  GET_ROLE_MENU_TREE_API,
+  UPDATE_ROLE_MODULE_CONFIG_API,
+  UPDATE_ROLE_MENU_CONFIG_API
+} from '@/config/api/systembasicmgmt/system-mgmt/role'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -192,6 +295,32 @@
   })
   // 对话框标题
   const dialogTitle = ref(t('systembasicmgmt.role.editRole'))
+
+  // 配置模块相关
+  const moduleDialogVisible = ref(false)
+  const moduleTreeRef = ref(null)
+  const moduleTreeData = ref([])
+  const defaultCheckedModules = ref([])
+  const currentRoleId = ref('')
+  const currentRoleName = ref('')
+  const moduleTreeProps = {
+      label: 'moduleName',
+      children: 'children',
+      disabled: (data) => !data.isEnabled
+  }
+
+  // 配置菜单相关
+  const menuDialogVisible = ref(false)
+  const menuTreeRef = ref(null)
+  const menuTreeData = ref([])
+  const defaultCheckedMenus = ref([])
+  const selectedModuleId = ref('')
+  const moduleOptions = ref([])
+  const menuTreeProps = {
+      label: 'menuName',
+      children: 'menuChildren',
+      disabled: (data) => !data.isEnabled
+  }
 
   // 表单验证规则
   const formRules = reactive({
@@ -247,23 +376,56 @@
       }
   }
 
-  // 搜索定时器
+  // 搜索防抖定时器
   let searchTimer = null
 
-  // 处理搜索事件
-  const handleSearch = () => {
+  /**
+   * 清除搜索防抖定时器
+   */
+  const clearSearchTimer = () => {
+      if (searchTimer) {
+          clearTimeout(searchTimer)
+          searchTimer = null
+      }
+  }
+
+  /**
+   * 执行查询数据操作
+   * @param {boolean} resetPage - 是否重置页码到第一页
+   * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
+   */
+  const executeSearch = (resetPage = false, delay = 0) => {
+      // 立即显示加载状态
       loading.value = true
       
       // 清除之前的定时器
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-      }
+      clearSearchTimer()
       
-      // 设置新的定时器，300ms后执行搜索
-      searchTimer = setTimeout(() => {
-          pagination.pageIndex = 1
+      if (delay > 0) {
+          // 设置延迟执行
+          searchTimer = setTimeout(() => {
+              if (resetPage) {
+                  pagination.pageIndex = 1
+              }
+              fetchRolePages()
+          }, delay)
+      } else {
+          // 立即执行
+          if (resetPage) {
+              pagination.pageIndex = 1
+          }
           fetchRolePages()
-      }, 300)
+      }
+  }
+
+  // 处理搜索事件（带防抖）
+  const handleSearch = () => {
+      executeSearch(true, 300) // 重置页码，300ms防抖
+  }
+
+  // 立即查询数据（不使用防抖，用于保存后刷新）
+  const fetchRolePagesImmediate = () => {
+      executeSearch(false, 0) // 不重置页码，立即执行
   }
 
   // 处理重置事件
@@ -454,6 +616,46 @@
       })
   }
 
+  /**
+   * 处理配置模块对话框关闭事件
+   * 清理模块相关数据，确保下次打开时获取最新数据
+   */
+  const handleModuleDialogClose = () => {
+      // 清理模块树数据
+      moduleTreeData.value = []
+      defaultCheckedModules.value = []
+      currentRoleId.value = ''
+      currentRoleName.value = ''
+      
+      // 清理树组件的选中状态
+      nextTick(() => {
+          if (moduleTreeRef.value) {
+              moduleTreeRef.value.setCheckedKeys([])
+          }
+      })
+  }
+
+  /**
+   * 处理配置菜单对话框关闭事件
+   * 清理菜单相关数据，确保下次打开时获取最新数据
+   */
+  const handleMenuDialogClose = () => {
+      // 清理菜单树数据
+      menuTreeData.value = []
+      defaultCheckedMenus.value = []
+      moduleOptions.value = []
+      selectedModuleId.value = ''
+      currentRoleId.value = ''
+      currentRoleName.value = ''
+      
+      // 清理树组件的选中状态
+      nextTick(() => {
+          if (menuTreeRef.value) {
+              menuTreeRef.value.setCheckedKeys([])
+          }
+      })
+  }
+
   // 处理删除事件
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
@@ -494,9 +696,283 @@
           }
       })
   }
+
+  // 配置模块相关函数
+  const handleConfigModule = async (row) => {
+      currentRoleId.value = row.roleId
+      currentRoleName.value = row.roleNameCn || row.roleName || ''
+      await fetchRoleModuleList(row.roleId)
+      moduleDialogVisible.value = true
+  }
+
+  const fetchRoleModuleList = async (roleId) => {
+      try {
+          const params = { roleId: roleId }
+          const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, params)
+          if (res && res.code === 200) {
+              moduleTreeData.value = res.data || []
+              defaultCheckedModules.value = res.data
+                  .filter(item => item.isChecked)
+                  .map(item => item.moduleId)
+          }
+      } catch (error) {
+          ElMessage({
+              message: error.message || t('systembasicmgmt.role.fetchModuleListFail'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      }
+  }
+
+  const handleModuleCheckChange = () => {
+      // 处理模块选择变化
+  }
+
+  const saveModuleConfig = async () => {
+      try {
+          const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
+          // 获取所有模块节点的ID
+          const getAllModuleIds = (nodes) => {
+              let ids = []
+              nodes.forEach(node => {
+                  ids.push(node.moduleId)
+                  if (node.children && node.children.length > 0) {
+                      ids = ids.concat(getAllModuleIds(node.children))
+                  }
+              })
+              return ids
+          }
+          const allModuleIds = getAllModuleIds(moduleTreeData.value)
+          const unCheckedNodes = allModuleIds.filter(id => !checkedNodes.includes(id))
+          
+          const params = {
+              roleId: currentRoleId.value,
+              SelectedModuleIds: checkedNodes,
+              UnSelectedModuleIds: unCheckedNodes
+          }
+          const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
+          if (res && res.code === 200) {
+              ElMessage({
+                  message: res.message,
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
+              moduleDialogVisible.value = false
+          }
+      } catch (error) {
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      }
+  }
+
+  // 配置菜单相关函数
+  const handleConfigMenu = async (row) => {
+      currentRoleId.value = row.roleId
+      currentRoleName.value = row.roleNameCn || row.roleName
+      await fetchRoleModuleDropdown()
+      menuDialogVisible.value = true
+  }
+
+  const fetchRoleModuleDropdown = async () => {
+      try {
+          const params = { roleId: currentRoleId.value }
+          const res = await post(GET_ROLE_MODULE_DROPDOWN_API.GET_ROLE_MODULE_DROPDOWN, params)
+          if (res && res.code === 200) {
+              moduleOptions.value = res.data || []
+              // 默认选中第一个有效值
+              const firstValidModule = moduleOptions.value.find(item => !item.disabled)
+              if (firstValidModule) {
+                  selectedModuleId.value = firstValidModule.moduleId
+                  await fetchRoleMenuTree(currentRoleId.value, firstValidModule.moduleId)
+              }
+          }
+      } catch (error) {
+          ElMessage({
+              message: error.message || t('systembasicmgmt.role.fetchModuleDropdownFail'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      }
+  }
+
+  const handleModuleChange = async (moduleId) => {
+      if (moduleId) {
+          await fetchRoleMenuTree(currentRoleId.value, moduleId)
+      }
+  }
+
+  const fetchRoleMenuTree = async (roleId, moduleId) => {
+      try {
+          const params = { roleId: roleId, moduleId: moduleId }
+          const res = await post(GET_ROLE_MENU_TREE_API.GET_ROLE_MENU_TREE, params)
+          if (res && res.code === 200) {
+              menuTreeData.value = res.data || []
+              // 获取完全选中的菜单ID
+              const checkedIds = getCheckedMenuIds(res.data)
+              defaultCheckedMenus.value = checkedIds
+              
+              // 使用nextTick确保DOM更新后设置选中状态
+              nextTick(() => {
+                  if (menuTreeRef.value) {
+                      // 设置选中的节点
+                      menuTreeRef.value.setCheckedKeys(checkedIds)
+                  }
+              })
+          }
+      } catch (error) {
+          ElMessage({
+              message: error.message || t('systembasicmgmt.role.fetchMenuTreeFail'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      }
+  }
+
+  /**
+   * 获取选中的菜单ID列表
+   * 只返回叶子节点的ID，以确保el-tree正确显示半选中状态
+   * @param {Array} menuList - 菜单列表
+   * @returns {Array} 选中的叶子节点ID数组
+   */
+  const getCheckedMenuIds = (menuList) => {
+      let checkedIds = []
+      menuList.forEach(menu => {
+          // 检查是否为叶子节点（没有子节点或子节点为空）
+          const isLeafNode = !menu.menuChildren || menu.menuChildren.length === 0
+          
+          if (menu.isChecked && isLeafNode) {
+              // 只有叶子节点且被选中时才添加到结果中
+              checkedIds.push(menu.menuId)
+          }
+          
+          // 递归处理子节点
+          if (menu.menuChildren && menu.menuChildren.length > 0) {
+              checkedIds = checkedIds.concat(getCheckedMenuIds(menu.menuChildren))
+          }
+      })
+      return checkedIds
+  }
+
+  const handleMenuCheckChange = () => {
+      // 处理菜单选择变化
+  }
+
+  const saveMenuConfig = async () => {
+      try {
+          const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
+          const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
+          const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
+          
+          const params = {
+              roleId: currentRoleId.value,
+              moduleId: selectedModuleId.value,
+              SelectedMenuIds: allMenuIds
+          }
+          const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
+          if (res && res.code === 200) {
+              ElMessage({
+                  message: res.message || t('systembasicmgmt.role.saveMenuSuccess'),
+                  type: 'success',
+                  plain: true,
+                  showClose: true
+              })
+              menuDialogVisible.value = false
+          }
+      } catch (error) {
+          ElMessage({
+              message: error.message || t('systembasicmgmt.role.saveMenuFail'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      }
+  }
 </script>
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
+  
+  .role-name-display {
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f5f7fa;
+      border-radius: 4px;
+      border-left: 4px solid #409eff;
+  }
+  
+  .role-name-display strong {
+      color: #303133;
+      font-size: 14px;
+  }
+  
+  /* 配置菜单对话框布局样式 */
+  .menu-config-container {
+      display: flex;
+      gap: 20px;
+      min-height: 400px;
+  }
+  
+  .module-select-section {
+      flex: 0 0 200px;
+      padding: 15px;
+      background-color: #fafafa;
+      border-radius: 6px;
+      border: 1px solid #e4e7ed;
+  }
+  
+  .menu-tree-section {
+      flex: 1;
+      padding: 15px;
+      background-color: #fafafa;
+      border-radius: 6px;
+      border: 1px solid #e4e7ed;
+      overflow: auto;
+  }
+  
+  .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #303133;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #409eff;
+  }
+  
+  /* 树形组件样式优化 */
+  .menu-tree-section .el-tree {
+      background-color: transparent;
+  }
+  
+  .menu-tree-section .el-tree-node__content {
+      height: 32px;
+      line-height: 32px;
+  }
+  
+  /* 配置模块对话框样式 */
+  .module-tree-container {
+      padding: 15px;
+      background-color: #fafafa;
+      border-radius: 6px;
+      border: 1px solid #e4e7ed;
+      min-height: 400px;
+      overflow: auto;
+  }
+  
+  .module-tree-container .el-tree {
+      background-color: transparent;
+  }
+  
+  .module-tree-container .el-tree-node__content {
+      height: 32px;
+      line-height: 32px;
+  }
 </style>
 

@@ -499,11 +499,8 @@ export default {
     module: 'Module Info',
     pmenu: 'PMenu Info',
     smenu: 'SMenu Info',
-    roleModule: 'Role Module',
-    rolePMenu: 'Role PMenu',
-    roleSMenu: 'Role SMenu',
     systemBasicData: 'System Basic Data',
-    companyInfo: 'Company Info',
+
     departmentInfo: 'Department Info',
     departmentLevel: 'Department Level',
     userposition: 'User Positions',
@@ -770,34 +767,7 @@ export default {
       saveConfigFailed: 'Failed to save configuration'
     },
     
-    // Company Info 
-    companyInfo: {
-      title: 'Company Info',
-      index: 'Index',
-      companyNameCn: 'Company Name (Ch)',
-      companyNameEn: 'Company Name (En)',
-      companyPhone: 'Company Phone',
-      companyFax: 'Company Fax',
-      createdTime: 'Created Time',
-      remark: 'Remark',
-      operation: 'Operation',
-      addCompany: 'Add Company',
-      editCompany: 'Edit Company Info',
-      deleteConfirm: 'Are you sure you want to delete this company?',
-      pleaseInputName: 'Please enter company name',
-      pleaseInputNameCn: 'Please enter company name (Ch)',
-      pleaseInputNameEn: 'Please enter company name (En)',
-      pleaseInputPhone: 'Please enter company phone',
-      pleaseInputFax: 'Please enter company fax',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
-      filter: {
-        companyName: 'Company Name'
-      }
-    },
+
     departmentInfo: {
       title: 'Department Information Management',
       index: 'Index',
@@ -935,13 +905,24 @@ export default {
       roleName: 'Role Name',
       roleNameCn: 'Role Name (Ch)',
       roleNameEn: 'Role Name (En)',
+      currentRole: 'Current Role',
       addRole: 'Add Role',
       editRole: 'Edit Role',
       deleteConfirm: 'Are you sure you want to delete this role?',
       pleaseInputRoleCode: 'Please enter role code',
       pleaseInputRoleName: 'Please enter role name',
       pleaseInputRoleNameCn: 'Please enter role name (Ch)',
-      pleaseInputRoleNameEn: 'Please enter role name (En)'
+      pleaseInputRoleNameEn: 'Please enter role name (En)',
+      configModule: 'Config Module',
+      configMenu: 'Config Menu',
+      selectModule: 'Select Module',
+      moduleConfigSuccess: 'Module configuration saved successfully',
+      menuConfigSuccess: 'Menu configuration saved successfully',
+      moduleConfigFailed: 'Failed to save module configuration',
+      menuConfigFailed: 'Failed to save menu configuration',
+      getModuleListFailed: 'Failed to get module list',
+      getModuleDropdownFailed: 'Failed to get module dropdown list',
+      getMenuTreeFailed: 'Failed to get menu tree'
     },
     // Module
     module: {
@@ -1048,47 +1029,6 @@ export default {
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       title: 'Secondary Menu Management'
-    },
-    // RoleModule
-    roleModule: {
-      role: 'Role',
-      module: 'Module',
-      isBinding: 'Is Binding',
-      operation: 'Operation',
-      updateBindingsSuccess: 'Update bindings successfully',
-      pleaseSelectRole: 'Please select a role',
-      pleaseSelectModule: 'Please select a module',
-      pleaseSelectmodule: 'Please select a module',
-      deleteConfirm: 'Are you sure you want to delete this role module?',
-      confirmUpdate: 'Are you sure you want to update the role module bindings?'
-    },
-    // Role Primary Menu
-    rolepmenu: {
-      role: 'Role',
-      module: 'Module',
-      pmenu: 'Primary Menu',
-      isBinding: 'Is Binding',
-      updateBindingsSuccess: 'Update bindings successfully',
-      pleaseSelectRole: 'Please select a role',
-      pleaseSelectModule: 'Please select a module',
-      deleteConfirm: 'Are you sure you want to delete this role primary menu?',
-      confirmUpdate: 'Are you sure you want to update the role primary menu bindings?'
-    },
-    // Role Secondary Menu
-    roleSMenu: {
-      title: 'Role Secondary Menu',
-      role: 'Role',
-      module: 'Module',
-      pmenu: 'Primary Menu',
-      smenu: 'Secondary Menu',
-      program: 'Secondary Menu',
-      isBinding: 'Is Binding',
-      pleaseSelectRole: 'Please select a role',
-      pleaseSelectDomain: 'Please select a domain',
-      pleaseSelectModule: 'Please select a module',
-      pleaseSelectPMenu: 'Please select a primary menu',
-      updateBindingsSuccess: 'Update bindings successfully',
-      confirmUpdate: 'Are you sure you want to update the role secondary menu bindings?'
     },
     // Personal
     personalInfo: {

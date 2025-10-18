@@ -41,3 +41,28 @@ export const DELETE_ROLE_API = {
 export const UPDATE_ROLE_API = {
   UPDATE_ROLE: 'SystemBasicMgmt/SystemMgmt/RoleInfo/UpdateRole'
 }
+
+// 角色模块下拉框API
+export const GET_ROLE_MODULE_DROPDOWN_API = {
+  GET_ROLE_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetRoleModuleDropDown'
+}
+
+// 角色模块列表API
+export const GET_ROLE_MODULE_LIST_API = {
+  GET_ROLE_MODULE_LIST: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetRoleModuleList'
+}
+
+// 角色菜单树API
+export const GET_ROLE_MENU_TREE_API = {
+  GET_ROLE_MENU_TREE: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetRoleMenuTree'
+}
+
+// 更新角色模块配置API
+export const UPDATE_ROLE_MODULE_CONFIG_API = {
+  UPDATE_ROLE_MODULE_CONFIG: 'SystemBasicMgmt/SystemMgmt/RoleInfo/UpdateRoleModuleList'
+}
+
+// 更新角色菜单配置API
+export const UPDATE_ROLE_MENU_CONFIG_API = {
+  UPDATE_ROLE_MENU_CONFIG: 'SystemBasicMgmt/SystemMgmt/RoleInfo/UpdateRoleMenuList'
+}

@@ -425,11 +425,8 @@ export default {
     module: '模块信息维护',
     pmenu: '一级菜单维护',
     smenu: '二级菜单维护',
-    roleModule: '角色模块绑定',
-    rolePMenu: '角色一级菜单',
-    roleSMenu: '角色二级菜单',
     systemBasicData: '系统基础资料',
-    companyInfo: '公司信息维护',
+
     departmentInfo: '部门信息维护',
     departmentLevel: '部门层级维护',
     userposition: '职级信息维护',
@@ -557,34 +554,7 @@ export default {
     quickAction: {
       title: '快捷操作'
     },
-    // 公司信息
-    companyInfo: {
-      title: '公司信息',
-      companyNameCn: '中文名称',
-      companyNameEn: '英文名称',
-      companyPhone: '公司电话',
-      companyFax: '公司传真',
-      createdTime: '创建时间',
-      remark: '备注',
-      operation: '操作',
-      addCompany: '新增公司',
-      editCompany: '编辑公司信息',
-      deleteConfirm: '确定要删除该条记录吗？',
-      pleaseInputName: '请输入公司名称',
-      pleaseInputNameCn: '请输入中文名称',
-      pleaseInputNameEn: '请输入英文名称',
-      pleaseInputPhone: '请输入公司电话',
-      pleaseInputFax: '请输入公司传真',
-      index: '序号',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
-      filter: {
-        companyName: '公司名称',
-      }
-    },
+
      // 部门信息
      departmentInfo: {
       title: '部门信息',
@@ -1067,52 +1037,22 @@ export default {
       pleaseInputRoleName: '请输入角色名称',
       pleaseInputRoleNameCn: '请输入中文名称',
       pleaseInputRoleNameEn: '请输入英文名称',
-      pleaseInputDescription: '请输入描述'
-    },
-    
-    // 角色一级菜单
-    roleModule: {
-      title: '角色模块绑定',
-      role: '角色',
-      module: '模块',
-      isBinding: '是否绑定',
-      operation: '操作',
-      pleaseSelectRole: '请先选择角色',
-      pleaseSelectModule: '请先选择模块',
-      pleaseSelectmodule: '请先选择模块',
-      updateBindingsSuccess: '更新绑定成功',
-      confirmUpdate: '确定要更新角色模块绑定关系吗？'
-    },
-    
-    // 角色一级菜单
-    rolePMenu: {
-      title: '角色一级菜单',
-      role: '角色',
-      module: '模块',
-      pmenu: '一级菜单',
-      isBinding: '是否绑定',
-      pleaseSelectRole: '请先选择角色',
-      pleaseSelectModule: '请先选择模块',
-      pleaseSelectPMenu: '请先选择一级菜单',
-      updateBindingsSuccess: '更新绑定成功',
-      confirmUpdate: '确定要更新角色一级菜单绑定关系吗？'
-    },
-    
-    // 角色二级菜单
-    roleSMenu: {
-      title: '角色二级菜单',
-      role: '角色',
-      module: '模块',
-      pmenu: '一级菜单',
-      smenu: '二级菜单',
-      program: '二级菜单',
-      isBinding: '是否绑定',
-      pleaseSelectRole: '请先选择角色',
-      pleaseSelectDomain: '请先选择网域',
-      pleaseSelectModule: '请先选择模块',
-      pleaseSelectPMenu: '请先选择一级菜单',
-      updateBindingsSuccess: '更新绑定成功',
-      confirmUpdate: '确定要更新角色二级菜单绑定关系吗？'
+      pleaseInputDescription: '请输入描述',
+      configModule: '配置模块',
+      configMenu: '配置菜单',
+      selectModule: '选择模块',
+      currentRole: '当前角色',
+      moduleConfigSuccess: '模块配置保存成功',
+      menuConfigSuccess: '菜单配置保存成功',
+      moduleConfigFailed: '模块配置保存失败',
+      menuConfigFailed: '菜单配置保存失败',
+      fetchModuleListFail: '获取模块列表失败',
+      saveModuleSuccess: '保存模块配置成功',
+      saveModuleFail: '保存模块配置失败',
+      fetchModuleDropdownFail: '获取模块下拉列表失败',
+      fetchMenuTreeFail: '获取菜单树失败',
+      saveMenuSuccess: '保存菜单配置成功',
+      saveMenuFail: '保存菜单配置失败'
     },
     
     // 字典信息管理

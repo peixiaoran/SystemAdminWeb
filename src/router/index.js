@@ -149,39 +149,6 @@ const pmenuRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             }
-          },
-          {
-            path: 'rolemodule',
-            name: 'RoleModule',
-            component: () => import('../views/systembasicmgmt/system-mgmt/rolemodule.vue'),
-            meta: { 
-              title: 'route.roleModule', 
-              icon: 'Switch',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'rolepmenu',
-            name: 'RolePMenu',
-            component: () => import('../views/systembasicmgmt/system-mgmt/rolepmenu.vue'),
-            meta: { 
-              title: 'route.rolePMenu', 
-              icon: 'Switch',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
-          {
-            path: 'rolesmenu',
-            name: 'RoleSMenu',
-            component: () => import('../views/systembasicmgmt/system-mgmt/rolesmenu.vue'),
-            meta: { 
-              title: 'route.roleSMenu', 
-              icon: 'Switch',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
           }
         ]
       },
@@ -197,17 +164,7 @@ const pmenuRoutes = [
           noTag: true
         },
         children: [
-          {
-            path: 'companyinfo',
-            name: 'CompanyInfo',
-            component: () => import('../views/systembasicmgmt/system-basicdata/companyinfo.vue'),
-            meta: { 
-              title: 'route.companyInfo', 
-              icon: 'OfficeBuilding',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            }
-          },
+
           {
             path: 'departmentinfo',
             name: 'DepartmentInfo',
