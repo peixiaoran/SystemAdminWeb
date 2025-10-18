@@ -916,8 +916,9 @@
   /* 配置菜单对话框布局样式 */
   .menu-config-container {
       display: flex;
-      gap: 20px;
-      min-height: 400px;
+      gap: 15px;
+      height: 400px;
+      max-height: 400px;
   }
   
   .module-select-section {
@@ -934,7 +935,14 @@
       background-color: #fafafa;
       border-radius: 6px;
       border: 1px solid #e4e7ed;
-      overflow: auto;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .menu-tree-section .el-tree {
+      flex: 1;
+      overflow-y: auto;
   }
   
   .section-title {
@@ -962,8 +970,9 @@
       background-color: #fafafa;
       border-radius: 6px;
       border: 1px solid #e4e7ed;
-      min-height: 400px;
-      overflow: auto;
+      height: 400px;
+      max-height: 400px;
+      overflow-y: auto;
   }
   
   .module-tree-container .el-tree {

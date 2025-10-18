@@ -115,15 +115,12 @@
       @close="handleDialogClose"
     >
       <div v-if="currentUser">
-        <div class="user-info">
-          <p><strong>{{ $t('systembasicmgmt.userformbind.departmentName') }}: </strong> {{ currentUser.departmentName }}</p>
-          <div class="user-details">
-            <span><strong>{{ $t('systembasicmgmt.userformbind.userNo') }}: </strong> {{ currentUser.userNo }}</span>
-            <span style="margin-left: 20px;"><strong>{{ $t('systembasicmgmt.userformbind.userName') }}: </strong> {{ currentUser.userName }}</span>
-          </div>
+        <div class="user-info-display">
+          <strong>{{ $t('systembasicmgmt.userformbind.departmentName') }}: {{ currentUser.departmentName }}</strong>
         </div>
-        
-        <el-divider />
+        <div class="user-info-display">
+          <strong>{{ $t('systembasicmgmt.userformbind.userNo') }}: {{ currentUser.userNo }} | {{ $t('systembasicmgmt.userformbind.userName') }}: {{ currentUser.userName }}</strong>
+        </div>
         
         <div class="form-tree-container">
           <el-tree
@@ -563,12 +560,30 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.user-info-display {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  border-left: 4px solid #409eff;
+}
+
+.user-info-display strong {
+  color: #303133;
+  font-size: 12px;
+}
 .form-tree-container {
   max-height: 300px;
   overflow-y: auto;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  padding: 8px;
+  padding: 15px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  border: 1px solid #e4e7ed;
+}
+
+.form-tree-container .el-tree {
+  background-color: transparent;
 }
 
 .tree-select-buttons {
