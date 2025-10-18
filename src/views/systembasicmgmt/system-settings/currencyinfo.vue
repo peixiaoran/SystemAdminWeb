@@ -36,10 +36,10 @@
                     <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
                     <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
                     <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-                    <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="90">
+                    <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="60">
                         <template #default="scope">
                             <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
-                                {{ scope.row.isEnabled === 1 ? $t('common.active') : $t('common.inactive') }}
+                                {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
                             </el-tag>
                         </template>
                     </el-table-column>

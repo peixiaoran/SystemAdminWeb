@@ -51,14 +51,14 @@
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="230" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="120" />
                     <el-table-column prop="laborName" :label="$t('systembasicmgmt.userAgent.laborName')" align="center" min-width="270" />
-                    <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="160">
+                    <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="150">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column :label="$t('systembasicmgmt.userAgent.isAgent')" align="center" min-width="120">
+                    <el-table-column :label="$t('systembasicmgmt.userAgent.isAgent')" align="center" min-width="130">
                         <template #default="scope">
                             <el-tag :type="scope.row.isAgent === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isAgentName }}

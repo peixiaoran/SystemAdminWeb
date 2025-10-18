@@ -533,7 +533,7 @@ export default {
       currencyCode: 'Currency Code',
       currencyNameCn: 'Currency Chinese Name',
       currencyNameEn: 'Currency English Name',
-      isEnabled: 'Enable Status',
+      isEnabled: 'Enabled',
       remark: 'Remark',
       operation: 'Operation',
       addCurrency: 'Add Currency',
@@ -767,7 +767,6 @@ export default {
       saveConfigFailed: 'Failed to save configuration'
     },
     
-
     departmentInfo: {
       title: 'Department Information Management',
       index: 'Index',

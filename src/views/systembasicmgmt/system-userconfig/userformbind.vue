@@ -62,16 +62,14 @@
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userformbind.departmentName')" align="left" min-width="270" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userformbind.positionName')" align="left" min-width="150" />
           <el-table-column prop="laborName" :label="$t('systembasicmgmt.userformbind.laborName')" align="left" min-width="270" />
-          
           <!-- 签核状态列 -->
-          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="160">
+          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="150">
             <template #default="scope">
               <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                 {{ scope.row.isApprovalName }}
               </el-tag>
             </template>
           </el-table-column>
-          
           <!-- 操作列 -->
           <el-table-column :label="$t('common.operation')" align="center" width="150" fixed="right">
             <template #default="{ row }">
