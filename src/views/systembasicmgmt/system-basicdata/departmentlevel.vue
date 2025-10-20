@@ -340,7 +340,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || '新增成功',
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -349,7 +349,7 @@
           fetchDepartmentLevelList()
       } else {
           ElMessage({
-              message: res?.message || '操作失败',
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -367,7 +367,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || '更新成功',
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -376,7 +376,7 @@
           fetchDepartmentLevelList()
       } else {
           ElMessage({
-              message: res?.message || '操作失败',
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -394,7 +394,7 @@
 
       if (res && res.code === 200) {
           ElMessage({
-              message: res.message || '删除成功',
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -402,7 +402,7 @@
           fetchDepartmentLevelList()
       } else {
           ElMessage({
-              message: res?.message || '删除失败',
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true

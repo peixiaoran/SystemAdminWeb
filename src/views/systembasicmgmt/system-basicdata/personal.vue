@@ -370,7 +370,7 @@ export default {
         })
       } else {
         ElMessage({
-            message: res.message || t('systembasicmgmt.userInfo.avatarUploadFailed'),
+            message: res.message,
             type: 'error',
             plain: true,
             showClose: true
@@ -396,7 +396,7 @@ export default {
           originalFormData.password = ''
         } else {
           ElMessage({
-              message: response.message || t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
+              message: response.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -519,7 +519,7 @@ export default {
         
         if (response.code === 200) {
           ElMessage({
-              message: response.message || t('common.saveSuccess'),
+              message: response.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -538,7 +538,7 @@ export default {
           await getPersonalInfo()
         } else {
           ElMessage({
-              message: response.message || t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
+              message: response.message,
               type: 'error',
               plain: true,
               showClose: true

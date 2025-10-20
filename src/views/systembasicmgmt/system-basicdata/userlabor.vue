@@ -190,7 +190,7 @@ const getLaborList = async () => {
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -326,7 +326,7 @@ const handleEdit = async (row) => {
       form.laborDescription = data.laborDescription
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -371,7 +371,7 @@ const handleDelete = async (row) => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.deleteSuccess'),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -379,7 +379,7 @@ const handleDelete = async (row) => {
       getLaborList()
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -421,7 +421,7 @@ const handleSubmit = async () => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || (isEdit.value ? t('systembasicmgmt.userLabor.updateSuccess') : t('systembasicmgmt.userLabor.saveSuccess')),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -430,7 +430,7 @@ const handleSubmit = async () => {
       getLaborList()
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true

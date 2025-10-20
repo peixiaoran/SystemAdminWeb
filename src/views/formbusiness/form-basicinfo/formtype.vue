@@ -286,7 +286,7 @@ const getFormGroupOptions = async () => {
       }
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.getFormGroupFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -323,7 +323,7 @@ const getFormTypeList = async () => {
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -442,7 +442,7 @@ const handleEdit = async (row) => {
       form.descriptionEn = data.descriptionEn
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -489,7 +489,7 @@ const handleDelete = async (row) => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.deleteSuccess'),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -497,7 +497,7 @@ const handleDelete = async (row) => {
       getFormTypeList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -545,7 +545,7 @@ const handleSubmit = async () => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || (isEdit.value ? t('formbusiness.formtype.updateSuccess') : t('formbusiness.formtype.saveSuccess')),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -554,7 +554,7 @@ const handleSubmit = async () => {
       getFormTypeList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formtype.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true

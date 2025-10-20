@@ -219,7 +219,7 @@ const getFormGroupList = async () => {
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -319,7 +319,7 @@ const handleEdit = async (row) => {
       form.description = data.description
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -368,7 +368,7 @@ const handleDelete = async (row) => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.deleteSuccess'),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -376,7 +376,7 @@ const handleDelete = async (row) => {
       getFormGroupList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -419,7 +419,7 @@ const handleSubmit = async () => {
     
     if (response.code === 200) {
       ElMessage({
-        message: response.message || (isEdit.value ? t('formbusiness.formgroup.updateSuccess') : t('formbusiness.formgroup.saveSuccess')),
+        message: response.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -428,7 +428,7 @@ const handleSubmit = async () => {
       getFormGroupList()
     } else {
       ElMessage({
-        message: response.message || t('formbusiness.formgroup.operationFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true

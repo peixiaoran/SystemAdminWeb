@@ -615,7 +615,7 @@
             } else {
                 departmentList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getDepartmentFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -656,7 +656,7 @@
             } else {
                 positionList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getPositionFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -697,7 +697,7 @@
             } else {
                 laborList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getLaborFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -734,7 +734,7 @@
             } else {
                 userPartTimeList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -773,7 +773,7 @@
             } else {
                 userList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getUserFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1059,7 +1059,7 @@
             } else {
                 editUserList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getUserFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1156,7 +1156,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.addPartTimeSuccess'),
+                    message: res.message,
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -1169,7 +1169,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.addPartTimeFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1274,7 +1274,7 @@
                 await fetchEditUserPages()
             } else {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.getPartTimeDetailFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1329,7 +1329,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.editPartTimeSuccess'),
+                    message: res.message,
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -1342,7 +1342,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.editPartTimeFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -1390,7 +1390,7 @@
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userPartTime.deletePartTimeFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true

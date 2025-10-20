@@ -164,7 +164,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
           nationalityList.value = res.data || []
       } else {
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.getFailed'),
+            message: res.message,
             type: 'error',
             plain: true,
             showClose: true,
@@ -265,7 +265,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.saveSuccess'),
+            message: res.message,
             type: 'success',
             plain: true,
             showClose: true,
@@ -274,7 +274,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
           fetchNationalityList()
       } else {
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.operationFailed'),
+            message: res.message,
             type: 'error',
             plain: true,
             showClose: true,
@@ -292,7 +292,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.updateSuccess'),
+            message: res.message,
             type: 'success',
             plain: true,
             showClose: true,
@@ -301,7 +301,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
           fetchNationalityList()
       } else {
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.operationFailed'),
+            message: res.message,
             type: 'error',
             plain: true,
             showClose: true,
@@ -319,7 +319,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
 
       if (res && res.code === 200) {
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.deleteSuccess'),
+            message: res.message,
             type: 'success',
             plain: true,
             showClose: true,
@@ -327,7 +327,7 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
           fetchNationalityList()
       } else {
           ElMessage({
-            message: res.message || t('systembasicmgmt.nationalityInfo.operationFailed'),
+            message: res.message,
             type: 'error',
             plain: true,
             showClose: true,

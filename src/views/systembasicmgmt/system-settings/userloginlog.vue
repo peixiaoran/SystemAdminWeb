@@ -143,7 +143,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userloginlog.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true

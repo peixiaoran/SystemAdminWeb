@@ -210,12 +210,9 @@ export default {
         addFormGroup: '新增表单组别',
         editFormGroup: '编辑表单组别',
         deleteConfirm: '确定要删除这个表单组别吗？',
-        deleteSuccess: '删除成功',
-        saveSuccess: '保存成功',
-        updateSuccess: '更新成功',
-        operationFailed: '操作失败',
-        getFailed: '获取数据失败'
-      },
+         operationFailed: '操作失败',
+         getFailed: '获取数据失败'
+       },
 
     // 表单类别页面专用
     formtype: {
@@ -242,9 +239,6 @@ export default {
         deleteConfirm: '确定要删除这个表单类型吗？',
         getFailed: '获取表单类型信息失败',
         getFormGroupFailed: '获取表单组别失败',
-        saveSuccess: '保存成功',
-        updateSuccess: '更新成功',
-        deleteSuccess: '删除成功',
         operationFailed: '操作失败'
       },
     
@@ -591,11 +585,6 @@ export default {
       pleaseSelectDepartmentLevel: '请选择部门级别',
       pleaseCompleteForm: '请完善表单信息',
       index: '序号',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
       filter: {
         departmentCode: '部门编码',
         departmentName: '部门名称'
@@ -677,9 +666,6 @@ export default {
       pleaseSelectRole: '请选择角色',
       pleaseSelectHireDate: '请选择入职日期',
       pleaseSelectNationality: '请选择国籍',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
       operationFailed: '操作失败',
       getFailed: '获取数据失败',
       passwordLengthError: '密码必须为8-16个字符',
@@ -716,11 +702,6 @@ export default {
       pleaseInputName: '请输入国籍名称',
       pleaseInputNameCn: '请输入中文名称',
       pleaseInputNameEn: '请输入英文名称',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
       filter: {
         nationalityName: '国籍名称'
       }
@@ -748,10 +729,7 @@ export default {
       index: '序号',
       getFailed: '获取数据失败',
       selectAgent: '选择代理人',
-      saveSuccess: '保存成功',
-      operationFailed: '操作失败',
       addAgent: '新增代理人',
-      addSuccess: '新增成功',
       pleaseSelectUsers: '请选择员工',
       pleaseSelectTimeRange: '请选择开始和结束时间',
       pleaseSelectStartTime: '请选择开始时间',
@@ -828,10 +806,6 @@ export default {
       positionDescribePlaceholder: '请输入职级描述',
       index: '序号',
       operation: '操作',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
       getFailed: '获取数据失败'
     },
     // 个人信息
@@ -1074,11 +1048,6 @@ export default {
       pleaseInputDicType: '请输入字典类型',
       pleaseSelectDicType: '请选择字典类型',
       pleaseSelectModule: '请选择模块',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
       filter: {
         module: '模块',
         dicType: '字典类型',
@@ -1107,11 +1076,6 @@ export default {
        pleaseInputCurrencyNameCn: '请输入中文名称',
        pleaseInputCurrencyNameEn: '请输入英文名称',
        pleaseInputRemark: '请输入备注',
-       saveSuccess: '保存成功',
-       updateSuccess: '更新成功',
-       deleteSuccess: '删除成功',
-       operationFailed: '操作失败',
-       getFailed: '获取数据失败',
        filter: {
          currencyCode: '币别编码'
        }
@@ -1137,12 +1101,7 @@ export default {
       pleaseInputDepartmentLevelNameEn: '请输入英文名称',
       pleaseInputDepartmentLevelDescribe: '请输入级别描述',
       pleaseInputSortOrder: '请输入排序',
-      fillRequiredInfo: '请填写必要信息',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败'
+      fillRequiredInfo: '请填写必要信息'
     },
     
     // 汇率信息管理
@@ -1164,11 +1123,6 @@ export default {
       pleaseInputExchangeRate: '请输入汇率',
       pleaseSelectYearMonth: '请选择年月',
       pleaseInputRemark: '请输入备注',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
-      operationFailed: '操作失败',
-      getFailed: '获取数据失败',
       filter: {
         currencyCode: '本位币别',
         yearMonth: '年月'
@@ -1222,9 +1176,6 @@ export default {
       pleaseInputLaborTypeNameCn: '请输入中文名称',
       pleaseInputLaborTypeNameEn: '请输入英文名称',
       pleaseInputLaborTypeDescribe: '请输入职业描述',
-      saveSuccess: '保存成功',
-      updateSuccess: '更新成功',
-      deleteSuccess: '删除成功',
       operationFailed: '操作失败',
       getFailed: '获取数据失败',
       filter: {

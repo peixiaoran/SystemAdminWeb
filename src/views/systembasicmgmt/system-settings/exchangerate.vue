@@ -253,7 +253,7 @@
             }
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,
@@ -279,7 +279,7 @@
             pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,
@@ -308,7 +308,7 @@
             originalExchangeCurrencyCode.value = res.data.exchangeCurrencyCode
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,
@@ -437,7 +437,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.saveSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true,
@@ -446,7 +446,7 @@
             fetchExchangeRatePages()
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,
@@ -465,7 +465,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.updateSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true,
@@ -474,7 +474,7 @@
             fetchExchangeRatePages()
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,
@@ -496,7 +496,7 @@
   
         if (res && res.code === 200) {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.deleteSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true,
@@ -504,7 +504,7 @@
             fetchExchangeRatePages()
         } else {
             ElMessage({
-              message: res.message || t('systembasicmgmt.exchangeRate.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,

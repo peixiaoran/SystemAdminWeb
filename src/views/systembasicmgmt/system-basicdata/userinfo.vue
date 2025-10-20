@@ -816,7 +816,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -994,7 +994,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.saveSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -1003,7 +1003,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -1021,7 +1021,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.updateSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -1030,7 +1030,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -1048,7 +1048,7 @@
 
       if (res && res.code === 200) {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.deleteSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -1056,7 +1056,7 @@
           fetchUserPages()
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.userInfo.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -1179,7 +1179,7 @@
           if (res && res.code === 200) {
               options.onSuccess(res)
           } else {
-              options.onError(new Error(res.message || t('systembasicmgmt.userInfo.avatarUploadFailed')))
+              options.onError(new Error(res.message))
           }
       } catch (error) {
           options.onError(error)

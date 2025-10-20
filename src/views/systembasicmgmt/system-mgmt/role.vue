@@ -879,7 +879,7 @@
           const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
           if (res && res.code === 200) {
               ElMessage({
-                  message: res.message || t('systembasicmgmt.role.saveMenuSuccess'),
+                  message: res.message,
                   type: 'success',
                   plain: true,
                   showClose: true

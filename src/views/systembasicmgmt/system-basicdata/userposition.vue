@@ -127,7 +127,7 @@ const getPositionList = async () => {
       positionList.value = response.data || []
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userPosition.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -166,7 +166,7 @@ const handleEdit = async (index, row) => {
       editForm.value = { ...response.data }
     } else {
       ElMessage({
-        message: response.message || t('systembasicmgmt.userPosition.getFailed'),
+        message: response.message,
         type: 'error',
         plain: true,
         showClose: true

@@ -276,7 +276,7 @@
         }
         else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.getFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -298,7 +298,7 @@
             departmentList.value = res.data || []
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.getFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -417,7 +417,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.saveSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -426,7 +426,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -445,7 +445,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.updateSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -454,7 +454,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -472,7 +472,7 @@
 
         if (res && res.code === 200) {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.deleteSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -480,7 +480,7 @@
             fetchDepartmentTree()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.departmentInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true

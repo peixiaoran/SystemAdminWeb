@@ -104,6 +104,16 @@ export default defineConfig(({ command, mode }) => {
               if (id.includes('axios')) {
                 return 'axios';
               }
+
+              // echarts 单独打包
+              if (id.includes('echarts')) {
+                return 'echarts';
+              }
+
+              // vue-router 单独打包
+              if (id.includes('vue-router')) {
+                return 'router';
+              }
               
               // 其他依赖
               return 'vendors';
@@ -124,7 +134,8 @@ export default defineConfig(({ command, mode }) => {
         'vue-router',
         'pinia',
         'element-plus',
-        'axios'
+        'axios',
+        'echarts'
       ],
       exclude: ['vue-demi'],
       // 新增vue-i18n预构建以提升启动速度,

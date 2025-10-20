@@ -272,9 +272,6 @@ export default {
       addFormGroup: 'Add Form Group',
       editFormGroup: 'Edit Form Group',
       deleteConfirm: 'Are you sure you want to delete this form group?',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data'
     },
@@ -303,9 +300,6 @@ export default {
       deleteConfirm: 'Are you sure to delete this form type?',
       getFailed: 'Failed to get form type information',
       getFormGroupFailed: 'Failed to get form group information',
-      saveSuccess: 'Save successfully',
-      updateSuccess: 'Update successfully',
-      deleteSuccess: 'Delete successfully',
       operationFailed: 'Operation failed'
     },
     
@@ -543,11 +537,6 @@ export default {
       pleaseInputCurrencyNameCn: 'Please enter currency Chinese name',
       pleaseInputCurrencyNameEn: 'Please enter currency English name',
       pleaseInputRemark: 'Please enter remark',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
       filter: {
         currencyCode: 'Currency Code'
       }
@@ -572,11 +561,6 @@ export default {
       pleaseInputExchangeRate: 'Please enter exchange rate',
       pleaseSelectYearMonth: 'Please select year month',
       pleaseInputRemark: 'Please enter remark',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
       filter: {
         currencyCode: 'Base Currency',
         yearMonth: 'Year Month'
@@ -655,9 +639,7 @@ export default {
       pleaseSelectRole: 'Please select role',
       pleaseSelectHireDate: 'Please select hire date',
       pleaseSelectNationality: 'Please select nationality',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
+      
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       passwordLengthError: 'Password must be 8-16 characters',
@@ -703,10 +685,7 @@ export default {
       index: 'Index',
       getFailed: 'Failed to get data',
       selectAgent: 'Select Agent',
-      saveSuccess: 'Save Successfully',
-      operationFailed: 'Operation Failed',
       addAgent: 'Add Agent',
-      addSuccess: 'Add Successfully',
       pleaseSelectUsers: 'Please select users',
       pleaseSelectTimeRange: 'Please select start and end time',
       pleaseSelectStartTime: 'Please select start time',
@@ -826,12 +805,7 @@ export default {
       pleaseInputDepartmentLevelName: 'Please enter department level name',
       pleaseInputDepartmentLevelNameCn: 'Please enter department level name (Cn)',
       pleaseInputDepartmentLevelNameEn: 'Please enter department level name (En)',
-      pleaseInputSortOrder: 'Please enter sort order',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data'
+      pleaseInputSortOrder: 'Please enter sort order'
     },
     userPosition: {
       index: 'Index',
@@ -866,11 +840,6 @@ export default {
       pleaseInputDicCode: 'Please enter dictionary code',
       pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
       filter: {
         dicNameCn: 'Dictionary Name',
         module: 'Module',
@@ -1201,9 +1170,6 @@ export default {
       pleaseInputLaborTypeNameCn: 'Please enter Chinese name',
       pleaseInputLaborTypeNameEn: 'Please enter English name',
       pleaseInputLaborTypeDescribe: 'Please enter career description',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {
@@ -1225,11 +1191,6 @@ export default {
       pleaseInputName: 'Please enter nationality name',
       pleaseInputNameCn: 'Please enter Chinese name',
       pleaseInputNameEn: 'Please enter English name',
-      saveSuccess: 'Save Successfully',
-      updateSuccess: 'Update Successfully',
-      deleteSuccess: 'Delete Successfully',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
       filter: {
         nationalityName: 'Nationality Name'
       }

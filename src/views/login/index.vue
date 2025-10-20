@@ -207,7 +207,7 @@ const handleLogin = () => {
             // 密码过期，显示警告消息后跳转到密码过期修改页面
             // 保持loading状态为true，禁用登录按钮
             ElMessage({
-              message: res.message || t('login.passwordExpired'),
+              message: res.message,
               type: 'warning',
               plain: true,
               showClose: true,
@@ -220,7 +220,7 @@ const handleLogin = () => {
             // 账户被锁定，显示警告消息后跳转到解锁页面
             // 保持loading状态为true，禁用登录按钮
             ElMessage({
-              message: res.message || t('login.accountLocked'),
+              message: res.message,
               type: 'warning',
               plain: true,
               showClose: true,
@@ -231,7 +231,7 @@ const handleLogin = () => {
             }, 1500)
           } else {
             ElMessage({
-              message: res.message || t('login.loginFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true,

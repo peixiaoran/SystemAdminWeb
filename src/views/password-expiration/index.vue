@@ -316,7 +316,7 @@ const handleSendCode = async () => {
     
     if (res && res.code === 200) {
       ElMessage({
-        message: res.message || t('passwordExpiration.sendCodeSuccess'),
+        message: res.message,
         type: 'success',
         plain: true,
         showClose: true
@@ -329,7 +329,7 @@ const handleSendCode = async () => {
       startCountdown()
     } else {
       ElMessage({
-        message: res.message || t('passwordExpiration.sendCodeFailed'),
+        message: res.message,
         type: 'error',
         plain: true,
         showClose: true
@@ -367,7 +367,7 @@ const handleSubmit = async () => {
       
       if (res && res.code === 200) {
         ElMessage({
-          message: res.message || t('passwordExpiration.submitSuccess'),
+          message: res.message,
           type: 'success',
           plain: true,
           showClose: true
@@ -377,7 +377,7 @@ const handleSubmit = async () => {
         startRedirectCountdown()
       } else {
         ElMessage({
-          message: res.message || t('passwordExpiration.submitFailed'),
+          message: res.message,
           type: 'error',
           plain: true,
           showClose: true

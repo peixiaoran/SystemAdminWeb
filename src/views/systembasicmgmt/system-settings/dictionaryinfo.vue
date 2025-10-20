@@ -260,7 +260,7 @@
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.getFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -281,7 +281,7 @@
                   getDicTypeDropDown(filters.moduleId)
               }
           } else {
-              ElMessage.error(response.message || '获取模块列表失败')
+              ElMessage.error(response.message)
           }
       } catch (error) {
           console.error('获取模块列表失败:', error)
@@ -304,7 +304,7 @@
           if (response && response.code === 200) {
               dicTypeList.value = response.data || []
           } else {
-              ElMessage.error(response.message || '获取字典类型列表失败')
+              ElMessage.error(response.message)
           }
       } catch (error) {
           console.error('获取字典类型列表失败:', error)
@@ -443,7 +443,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.saveSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -452,7 +452,7 @@
           fetchDictionaryPages()
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -470,7 +470,7 @@
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.updateSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
@@ -479,7 +479,7 @@
           fetchDictionaryPages()
       } else {
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'),
+              message: res.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -497,14 +497,14 @@
 
       if (res && res.code === 200) {
           ElMessage({
-              message: res.message || t('systembasicmgmt.dictionaryInfo.deleteSuccess'),
+              message: res.message,
               type: 'success',
               plain: true,
               showClose: true
           })
           fetchDictionaryPages()
       } else {
-          ElMessage.error(res.message || t('systembasicmgmt.dictionaryInfo.operationFailed'))
+          ElMessage.error(res.message)
       }
   }
 

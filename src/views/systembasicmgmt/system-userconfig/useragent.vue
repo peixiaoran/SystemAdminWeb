@@ -410,7 +410,7 @@
             } else {
                 departmentOptions.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userAgent.getDepartmentFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -441,7 +441,7 @@
             } else {
                 agentList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userAgent.getFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -478,7 +478,7 @@
             pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.userAgent.getFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -691,7 +691,7 @@
             
             if (res && res.code === 200) {
                 ElMessage({
-                    message: res.message || t('common.deleteSuccess'),
+                    message: res.message,
                     type: 'success',
                     plain: true,
                     showClose: true
@@ -703,7 +703,7 @@
                 await fetchUserPages()
             } else {
                 ElMessage({
-                    message: res.message || t('common.operationFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -745,7 +745,7 @@
                 userSelectList.value = []
                 userSelectPagination.totalCount = 0
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userAgent.getFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true
@@ -869,7 +869,7 @@
                     // 成功添加代理人
                 } else {
                     ElMessage({
-                        message: res.message || `添加代理人失败 ${user.userNameCn || user.userNameEn}`,
+                        message: res.message,
                         type: 'error',
                         plain: true,
                         showClose: true
@@ -931,7 +931,7 @@
             } else {
                 proactiveAgentList.value = []
                 ElMessage({
-                    message: res.message || t('systembasicmgmt.userAgent.getFailed'),
+                    message: res.message,
                     type: 'error',
                     plain: true,
                     showClose: true

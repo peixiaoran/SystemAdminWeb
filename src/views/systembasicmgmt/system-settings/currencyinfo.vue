@@ -225,7 +225,7 @@
             pagination.totalCount = res.totalCount || 0
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.getFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -351,7 +351,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.saveSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -360,7 +360,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -378,7 +378,7 @@
         if (res && res.code === 200) {
             resetForm()
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.updateSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -387,7 +387,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
@@ -405,7 +405,7 @@
   
         if (res && res.code === 200) {
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.deleteSuccess'),
+                message: res.message,
                 type: 'success',
                 plain: true,
                 showClose: true
@@ -413,7 +413,7 @@
             fetchCurrencyPages()
         } else {
             ElMessage({
-                message: res.message || t('systembasicmgmt.currencyInfo.operationFailed'),
+                message: res.message,
                 type: 'error',
                 plain: true,
                 showClose: true
