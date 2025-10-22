@@ -36,23 +36,10 @@
                         :header-cell-style="{ background: '#f5f7fa' }"
                         v-loading="loading"
                         class="conventional-table">
-                  <el-table-column type="index"
-                                   :label="$t('systembasicmgmt.index')"
-                                   width="70"
-                                   align="center"
-                                   fixed />
-                  <el-table-column prop="roleCode"
-                                   :label="$t('systembasicmgmt.role.roleCode')"
-                                   align="left"
-                                   min-width="140" />
-                  <el-table-column prop="roleNameCn"
-                                   :label="$t('systembasicmgmt.role.roleNameCn')"
-                                   align="left"
-                                   min-width="200" />
-                  <el-table-column prop="roleNameEn"
-                                   :label="$t('systembasicmgmt.role.roleNameEn')"
-                                   align="left"
-                                   min-width="200" />
+                  <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+                  <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
+                  <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
+                  <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
                   <el-table-column prop="isEnabled"
                                    :label="$t('systembasicmgmt.isEnabled')"
                                    align="center"
@@ -63,7 +50,6 @@
                           </el-tag>
                       </template>
                   </el-table-column>
-
                   <el-table-column :label="$t('systembasicmgmt.operation')"
                                    min-width="260"
                                    fixed="right"
