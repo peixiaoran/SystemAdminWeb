@@ -1361,7 +1361,7 @@
         try {
             await ElMessageBox.confirm(
                 t('systembasicmgmt.userPartTime.deletePartTimeConfirm'),
-                t('common.warning'),
+                t('common.tip'),
                 {
                     confirmButtonText: t('common.confirm'),
                     cancelButtonText: t('common.cancel'),

@@ -99,6 +99,7 @@
                      :append-to-body="true"
                      :modal-append-to-body="true"
                      :lock-scroll="true"
+                     draggable
                      @close="handleDialogClose">
               <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="用户编辑">
               
@@ -141,9 +142,9 @@
                           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNationality')">
                           <el-option
                               v-for="item in nationalityOptions"
-                              :key="`nationality-${item.genderCode}`"
-                              :label="item.genderName"
-                              :value="item.genderCode" />
+                              :key="`nationality-${item.nationId}`"
+                              :label="item.nationName"
+                              :value="item.nationId" />
                       </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('systembasicmgmt.userInfo.laborType')" prop="laborId">
@@ -732,8 +733,8 @@
               nationalityOptions.value = res.data || []
               // 验证数据结构并过滤无效数据
               nationalityOptions.value = nationalityOptions.value.filter(item => 
-                  item && item.genderCode !== undefined && item.genderCode !== null && 
-                  item.genderName !== undefined && item.genderName !== null
+                  item && item.nationId !== undefined && item.nationId !== null && 
+                  item.nationName !== undefined && item.nationName !== null
               )
           } else {
               nationalityOptions.value = []
@@ -950,7 +951,7 @@
           
           // 国籍 - 选择第一个选项
           if (nationalityOptions.value.length > 0) {
-              editForm.nationality = nationalityOptions.value[0].genderCode
+              editForm.nationality = nationalityOptions.value[0].nationId
           }
           
           // 就业类型 - 选择第一个未禁用的选项

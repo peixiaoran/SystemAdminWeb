@@ -729,8 +729,22 @@
       // 处理模块选择变化
   }
 
+  /**
+   * 保存模块配置
+   * 在保存前显示确认提示
+   */
   const saveModuleConfig = async () => {
       try {
+          await ElMessageBox.confirm(
+              t('systembasicmgmt.role.confirmSaveModuleConfig'),
+              t('systembasicmgmt.role.confirmTitle'),
+              {
+                  confirmButtonText: t('common.confirm'),
+                  cancelButtonText: t('common.cancel'),
+                  type: 'warning'
+              }
+          )
+
           const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
           // 获取所有模块节点的ID
           const getAllModuleIds = (nodes) => {
@@ -762,12 +776,17 @@
               moduleDialogVisible.value = false
           }
       } catch (error) {
-          ElMessage({
-              message: error.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+          if (error === 'cancel') {
+              // 用户取消操作，不做任何处理
+              console.log('用户取消了模块配置保存操作')
+          } else {
+              ElMessage({
+                  message: error.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
       }
   }
 
@@ -865,8 +884,22 @@
       // 处理菜单选择变化
   }
 
+  /**
+   * 保存菜单配置
+   * 在保存前显示确认提示
+   */
   const saveMenuConfig = async () => {
       try {
+          await ElMessageBox.confirm(
+              t('systembasicmgmt.role.confirmSaveMenuConfig'),
+              t('systembasicmgmt.role.confirmTitle'),
+              {
+                  confirmButtonText: t('common.confirm'),
+                  cancelButtonText: t('common.cancel'),
+                  type: 'warning'
+              }
+          )
+
           const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
           const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
           const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
@@ -887,12 +920,17 @@
               menuDialogVisible.value = false
           }
       } catch (error) {
-          ElMessage({
-              message: error.message || t('systembasicmgmt.role.saveMenuFail'),
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+          if (error === 'cancel') {
+              // 用户取消操作，不做任何处理
+              console.log('用户取消了菜单配置保存操作')
+          } else {
+              ElMessage({
+                  message: error.message || t('systembasicmgmt.role.saveMenuFail'),
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
       }
   }
 </script>

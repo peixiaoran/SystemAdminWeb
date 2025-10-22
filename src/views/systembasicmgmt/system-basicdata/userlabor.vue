@@ -353,7 +353,7 @@ const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.userLabor.deleteConfirm'),
-      t('common.warning'),
+      t('common.tip'),
       {
         confirmButtonText: t('common.confirm'),
         cancelButtonText: t('common.cancel'),

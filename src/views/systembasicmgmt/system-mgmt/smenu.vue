@@ -813,7 +813,7 @@
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
             t('systembasicmgmt.smenu.deleteConfirm'),
-            t('systembasicmgmt.tip'),
+            t('common.tip'),
           {
               confirmButtonText: t('systembasicmgmt.confirm'),
               cancelButtonText: t('systembasicmgmt.cancel'),

@@ -890,7 +890,10 @@ export default {
       menuConfigFailed: 'Failed to save menu configuration',
       getModuleListFailed: 'Failed to get module list',
       getModuleDropdownFailed: 'Failed to get module dropdown list',
-      getMenuTreeFailed: 'Failed to get menu tree'
+      getMenuTreeFailed: 'Failed to get menu tree',
+      confirmSaveModuleConfig: 'Are you sure you want to save the module configuration?',
+      confirmSaveMenuConfig: 'Are you sure you want to save the menu configuration?',
+      confirmTitle: 'Confirm Operation'
     },
     // Module
     module: {

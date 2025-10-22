@@ -1026,7 +1026,10 @@ export default {
       fetchModuleDropdownFail: '获取模块下拉列表失败',
       fetchMenuTreeFail: '获取菜单树失败',
       saveMenuSuccess: '保存菜单配置成功',
-      saveMenuFail: '保存菜单配置失败'
+      saveMenuFail: '保存菜单配置失败',
+      confirmSaveModuleConfig: '确定要保存模块配置吗？',
+      confirmSaveMenuConfig: '确定要保存菜单配置吗？',
+      confirmTitle: '确认操作'
     },
     
     // 字典信息管理

@@ -673,7 +673,7 @@
             // 确认删除
             await ElMessageBox.confirm(
                 t('systembasicmgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
-                t('common.confirmDelete'),
+                t('common.tip'),
                 {
                     confirmButtonText: t('common.confirm'),
                     cancelButtonText: t('common.cancel'),
