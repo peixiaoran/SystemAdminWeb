@@ -398,11 +398,10 @@
     } from '@/config/api/systembasicmgmt/system-userconfig/userparttime'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
+    import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
   
     // 初始化i18n
     const { t } = useI18n()
-  
-
   
     // 员工兼任数据
     const userPartTimeList = ref([])
@@ -792,60 +791,22 @@
         }
     }
   
-    // 搜索防抖定时器
-    let searchTimer = null
-    // 对话框用户搜索防抖定时器
-    let userSearchTimer = null
-    // 编辑对话框用户搜索防抖定时器
-    let editUserSearchTimer = null
-
-    /**
-     * 清除搜索防抖定时器
-     */
-    const clearSearchTimer = () => {
-        if (searchTimer) {
-            clearTimeout(searchTimer)
-            searchTimer = null
-        }
-    }
-
-    /**
-     * 执行查询数据操作
-     * @param {boolean} resetPage - 是否重置页码到第一页
-     * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-     */
-    const executeSearch = (resetPage = false, delay = 0) => {
-        // 立即显示加载状态
-        loading.value = true
-        
-        // 清除之前的定时器
-        clearSearchTimer()
-        
-        if (delay > 0) {
-            // 设置延迟执行
-            searchTimer = setTimeout(() => {
-                if (resetPage) {
-                    pagination.pageIndex = 1
-                }
-                fetchUserPartTimePages()
-            }, delay)
-        } else {
-            // 立即执行
-            if (resetPage) {
-                pagination.pageIndex = 1
-            }
-            fetchUserPartTimePages()
-        }
-    }
+    // 使用通用防抖工具（主列表）
+    const debouncedFetchUserPartTimePages = debounce(() => {
+        fetchUserPartTimePages()
+    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
     // 处理搜索操作（带防抖）
     const handleSearch = () => {
-        executeSearch(true, 300) // 重置页码，300ms防抖
+        pagination.pageIndex = 1
+        loading.value = true // 立即显示加载状态
+        debouncedFetchUserPartTimePages()
     }
 
     // 立即查询数据（不使用防抖，用于保存后刷新）
     const fetchUserPartTimePagesImmediate = () => {
-        executeSearch(false, 0) // 不重置页码，立即执行
+        loading.value = true
+        fetchUserPartTimePages()
     }
     
     // 处理重置操作
@@ -963,14 +924,16 @@
         await fetchUserPages()
     }
     
+    // 使用通用防抖工具（新增对话框用户列表）
+    const debouncedFetchUserPages = debounce(() => {
+        fetchUserPages()
+    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
+
     // 处理用户搜索操作（带防抖）
     const handleUserSearch = () => {
-        if (userSearchTimer) clearTimeout(userSearchTimer)
+        userPagination.pageIndex = 1
         userLoading.value = true // 立即显示加载状态
-        userSearchTimer = setTimeout(() => {
-            userPagination.pageIndex = 1
-            fetchUserPages()
-        }, 300) // 300ms防抖
+        debouncedFetchUserPages()
     }
 
     // 处理新增兼任信息区域部门变化（重新加载职位和劳动关系列表）
@@ -1078,14 +1041,16 @@
         }
     }
     
+    // 使用通用防抖工具（编辑对话框用户列表）
+    const debouncedFetchEditUserPages = debounce(() => {
+        fetchEditUserPages()
+    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
+
     // 处理编辑对话框用户搜索操作（带防抖）
     const handleEditUserSearch = () => {
-        if (editUserSearchTimer) clearTimeout(editUserSearchTimer)
+        editUserPagination.pageIndex = 1
         editUserLoading.value = true // 立即显示加载状态
-        editUserSearchTimer = setTimeout(() => {
-            editUserPagination.pageIndex = 1
-            fetchEditUserPages()
-        }, 300) // 300ms防抖
+        debouncedFetchEditUserPages()
     }
     
     // 重置编辑对话框用户搜索条件

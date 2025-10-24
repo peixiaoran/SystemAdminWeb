@@ -1,34 +1,30 @@
 <template>
     <div class="conventional-table-container">
         <el-card class="conventional-card">
-  
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户搜索表单">
                 <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
-                    <el-tree-select 
-                        v-model="filters.departmentId"
-                        :data="departmentOptions || []"
-                        :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-                        check-strictly
-                        filterable
-                        :filter-node-method="filterNodeMethod"
-                        @change="handleSearch"
-                        style="width: 200px;"
-                        :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
+                    <el-tree-select v-model="filters.departmentId"
+                                    :data="departmentOptions || []"
+                                    :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                                    check-strictly
+                                    filterable
+                                    :filter-node-method="filterNodeMethod"
+                                    @change="handleSearch"
+                                    style="width: 200px;"
+                                    :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
-                    <el-input 
-                        v-model="filters.userNo"
-                        style="width: 200px;"
-                        :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserNo')"
-                        clearable />
+                    <el-input v-model="filters.userNo"
+                              style="width: 200px;"
+                              :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserNo')"
+                              clearable />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userAgent.userName')">
-                    <el-input 
-                        v-model="filters.userName"
-                        style="width: 200px;"
-                        :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserName')"
-                        clearable />
+                    <el-input v-model="filters.userName"
+                              style="width: 200px;"
+                              :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserName')"
+                              clearable />
                 </el-form-item>
                 <el-form-item class="form-button-group">
                     <el-button type="primary" @click="handleSearch" plain>
@@ -36,7 +32,7 @@
                     </el-button>
                 </el-form-item>
             </el-form>
-  
+
             <!-- 表格区域 -->
             <div class="table-container">
                 <el-table :data="userList"
@@ -74,7 +70,7 @@
                     </el-table-column>
                 </el-table>
             </div>
-  
+
             <!-- 分页 -->
             <div class="pagination-wrapper">
                 <el-pagination v-model:current-page="pagination.pageIndex"
@@ -137,61 +133,56 @@
                    @closed="handleUserSelectDialogClosed">
             <div v-loading="userSelectLoading" style="min-height: 500px;">
                 <!-- 时间选择区域 -->
-                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form"  >
+                <el-form ref="agentTimeFormRef" :model="agentTimeRange" :rules="agentTimeFormRules" :inline="true" class="conventional-filter-form">
                     <el-form-item :label="$t('systembasicmgmt.userAgent.startTime')" prop="startTime" required>
-                        <el-date-picker
-                            v-model="agentTimeRange.startTime"
-                            type="datetime"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectStartTime')"
-                            :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
-                            @change="handleStartTimeChange"
-                            style="width: 200px;"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss" />
+                        <el-date-picker v-model="agentTimeRange.startTime"
+                                        type="datetime"
+                                        :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectStartTime')"
+                                        :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
+                                        @change="handleStartTimeChange"
+                                        style="width: 200px;"
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userAgent.endTime')" prop="endTime" required>
-                        <el-date-picker
-                            v-model="agentTimeRange.endTime"
-                            type="datetime"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectEndTime')"
-                            :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
-                            @change="handleEndTimeChange"
-                            style="width: 200px;"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss" />
+                        <el-date-picker v-model="agentTimeRange.endTime"
+                                        type="datetime"
+                                        :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectEndTime')"
+                                        :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
+                                        @change="handleEndTimeChange"
+                                        style="width: 200px;"
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
                 </el-form>
-                
+
                 <!-- 分隔线 -->
                 <el-divider style="margin: 10px 0;"></el-divider>
 
                 <!-- 搜索区域 -->
                 <el-form :inline="true" :model="userSelectFilters" class="conventional-filter-form" style="margin-top: 10px;">
                     <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
-                        <el-tree-select 
-                            v-model="userSelectFilters.departmentId"
-                            :data="departmentOptions || []"
-                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-                            check-strictly
-                            filterable
-                            @change="handleUserSelectSearch"
-                            :filter-node-method="filterNodeMethod"
-                            style="width: 200px;"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
+                        <el-tree-select v-model="userSelectFilters.departmentId"
+                                        :data="departmentOptions || []"
+                                        :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                                        check-strictly
+                                        filterable
+                                        @change="handleUserSelectSearch"
+                                        :filter-node-method="filterNodeMethod"
+                                        style="width: 200px;"
+                                        :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
-                        <el-input 
-                            v-model="userSelectFilters.userNo" 
-                            style="width: 200px;"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')" 
-                            clearable />
+                        <el-input v-model="userSelectFilters.userNo"
+                                  style="width: 200px;"
+                                  :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
+                                  clearable />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
-                        <el-input 
-                            v-model="userSelectFilters.userName" 
-                            style="width: 200px;"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')" 
-                            clearable />
+                        <el-input v-model="userSelectFilters.userName"
+                                  style="width: 200px;"
+                                  :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
+                                  clearable />
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="handleUserSelectSearch">{{ $t('common.search') }}</el-button>
@@ -268,12 +259,12 @@
             </template>
         </el-dialog>
     </div>
-  </template>
-  
-  <script setup>
+</template>
+
+<script setup>
     import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
-    import { 
+    import {
         GET_USER_PAGES_API,
         GET_USER_AGENT_API,
         GET_USER_AGENT_INSERT_API,
@@ -283,21 +274,22 @@
     } from '@/config/api/systembasicmgmt/system-userconfig/useragent'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
-  
+    import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
+
     // 初始化i18n
     const { t } = useI18n()
-  
-        // 员工数据
+
+    // 员工数据
     const userList = ref([])
     const loading = ref(false)
-  
+
     // 分页信息
     const pagination = reactive({
         pageIndex: 1,
         pageSize: 10,
         totalCount: 0
     })
-  
+
     // 过滤条件
     const filters = reactive({
         departmentId: '',
@@ -307,7 +299,7 @@
 
     // 部门选项数据
     const departmentOptions = ref([])
-  
+
     // 代理人相关数据
     const agentDialogVisible = ref(false)
     const agentDialogTitle = ref('')
@@ -322,7 +314,7 @@
     const selectedUsers = ref([])
     const userSelectTableRef = ref(null)
     const agentTimeFormRef = ref(null)
-    
+
     // 代理时间表单验证规则
     const agentTimeFormRules = reactive({
         startTime: [
@@ -332,36 +324,36 @@
             { required: true, message: t('systembasicmgmt.userAgent.pleaseSelectEndTime'), trigger: 'change' }
         ]
     })
-    
+
     // 代理时间范围
     const agentTimeRange = reactive({
         startTime: '',
         endTime: ''
     })
-    
+
     // 员工选择筛选条件
     const userSelectFilters = reactive({
         departmentId: '',
         userNo: '',
         userName: ''
     })
-    
+
     // 员工选择分页信息
     const userSelectPagination = reactive({
         pageIndex: 1,
         pageSize: 10,
         totalCount: 0
     })
-    
+
     // 查看员工代理了哪些人对话框相关数据
     const proactiveAgentDialogVisible = ref(false)
     const proactiveAgentDialogTitle = ref('')
     const proactiveAgentList = ref([])
     const proactiveAgentLoading = ref(false)
-    
+
 
     const currentProactiveUserId = ref('')
-  
+
     // 在组件挂载后获取数据
     onMounted(async () => {
         // 获取部门下拉数据
@@ -380,10 +372,10 @@
     const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-            
+
             if (res && res.code === 200) {
                 departmentOptions.value = res.data || []
-                
+
                 // 设置默认筛选条件
                 if (setDefaultFilter && departmentOptions.value.length > 0) {
                     // 查找第一个未禁用的部门
@@ -401,7 +393,7 @@
                         }
                         return null
                     }
-                    
+
                     const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
                     if (firstDepartmentId) {
                         filters.departmentId = firstDepartmentId
@@ -435,7 +427,7 @@
                 substituteUserId: substituteUserId
             }
             const res = await post(GET_USER_AGENT_API.GET_USER_AGENT, params)
-            
+
             if (res && res.code === 200) {
                 agentList.value = res.data || []
             } else {
@@ -486,61 +478,24 @@
         }
         loading.value = false
     }
-  
-    // 搜索防抖定时器
-    let searchTimer = null
-    // 用户选择搜索防抖定时器
-    let userSelectSearchTimer = null
 
-    /**
-     * 清除搜索防抖定时器
-     */
-    const clearSearchTimer = () => {
-        if (searchTimer) {
-            clearTimeout(searchTimer)
-            searchTimer = null
-        }
-    }
-
-    /**
-     * 执行查询数据操作
-     * @param {boolean} resetPage - 是否重置页码到第一页
-     * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-     */
-    const executeSearch = (resetPage = false, delay = 0) => {
-        // 立即显示加载状态
-        loading.value = true
-        
-        // 清除之前的定时器
-        clearSearchTimer()
-        
-        if (delay > 0) {
-            // 设置延迟执行
-            searchTimer = setTimeout(() => {
-                if (resetPage) {
-                    pagination.pageIndex = 1
-                }
-                fetchUserPages()
-            }, delay)
-        } else {
-            // 立即执行
-            if (resetPage) {
-                pagination.pageIndex = 1
-            }
-            fetchUserPages()
-        }
-    }
+    // 使用通用防抖工具（主列表）
+    const debouncedFetchUserPages = debounce(() => {
+        fetchUserPages()
+    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
     // 处理搜索操作（带防抖）
     const handleSearch = () => {
-        executeSearch(true, 300) // 重置页码，300ms防抖
+        pagination.pageIndex = 1
+        loading.value = true
+        debouncedFetchUserPages()
     }
 
     // 立即查询数据（不使用防抖，用于保存后刷新）
     const fetchUserPagesImmediate = () => {
-        executeSearch(false, 0) // 不重置页码，立即执行
+        fetchUserPages()
     }
-  
+
     // 重置搜索条件
     const handleReset = () => {
         loading.value = true // 显示加载状态
@@ -552,18 +507,18 @@
         pagination.pageIndex = 1
         fetchUserPages()
     }
-  
 
-  
-  
-  
+
+
+
+
     // 处理页码变化
     const handlePageChange = (page) => {
         loading.value = true // 显示加载状态
         pagination.pageIndex = page
         fetchUserPages()
     }
-  
+
     // 处理每页记录数变化
     const handleSizeChange = (size) => {
         loading.value = true // 显示加载状态
@@ -571,10 +526,10 @@
         pagination.pageIndex = 1
         fetchUserPages()
     }
-  
-    
-  
-        // 处理配置代理人操作
+
+
+
+    // 处理配置代理人操作
     const handleConfigureAgent = async (index, row) => {
         currentUserId.value = row.userId
         agentDialogTitle.value = `${t('systembasicmgmt.userAgent.agentDetails')} - ${row.userName || ''}`
@@ -594,7 +549,7 @@
         })
         // 重置用户选择
         selectedUsers.value = []
-        
+
         // 重置搜索条件
         Object.assign(userSelectFilters, {
             departmentId: '',
@@ -602,7 +557,7 @@
             userName: ''
         })
         userSelectPagination.pageIndex = 1
-        
+
         // 设置默认部门筛选条件
         if (departmentOptions.value.length > 0) {
             // 查找第一个未禁用的部门
@@ -620,15 +575,15 @@
                 }
                 return null
             }
-            
+
             const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
             if (firstDepartmentId) {
                 userSelectFilters.departmentId = firstDepartmentId
             }
         }
-        
+
         userSelectDialogVisible.value = true
-        
+
         // 等待对话框打开后获取用户列表
         await nextTick()
         await fetchUserSelectList()
@@ -669,7 +624,7 @@
     const handleDeleteAgent = async (index) => {
         try {
             const agent = agentList.value[index]
-            
+
             // 确认删除
             await ElMessageBox.confirm(
                 t('systembasicmgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
@@ -680,15 +635,15 @@
                     type: 'warning',
                 }
             )
-            
+
             // 调用删除接口
             const params = {
                 substituteUserId: currentUserId.value,
                 agentUserId: agent.agentUserId
             }
-            
+
             const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, params)
-            
+
             if (res && res.code === 200) {
                 ElMessage({
                     message: res.message,
@@ -737,7 +692,7 @@
                 SubstituteUserId: currentUserId.value // 排除自己不能代理自己
             }
             const res = await post(GET_USER_VIEW_API.GET_USER_VIEW, params)
-            
+
             if (res && res.code === 200) {
                 userSelectList.value = res.data || []
                 userSelectPagination.totalCount = res.totalCount || 0
@@ -765,14 +720,16 @@
         }
     }
 
+    // 使用通用防抖工具（用户选择列表）
+    const debouncedFetchUserSelectList = debounce(() => {
+        fetchUserSelectList()
+    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
+
     // 处理用户选择搜索（带防抖）
     const handleUserSelectSearch = () => {
-        if (userSelectSearchTimer) clearTimeout(userSelectSearchTimer)
+        userSelectPagination.pageIndex = 1
         userSelectLoading.value = true // 立即显示加载状态
-        userSelectSearchTimer = setTimeout(() => {
-            userSelectPagination.pageIndex = 1
-            fetchUserSelectList()
-        }, 300) // 300ms防抖
+        debouncedFetchUserSelectList()
     }
 
     // 重置用户选择搜索
@@ -862,9 +819,9 @@
                     startTime: startTime,
                     endTime: endTime
                 }
-                
+
                 const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
-                
+
                 if (res && res.code === 200) {
                     // 成功添加代理人
                 } else {
@@ -885,14 +842,14 @@
                 showClose: true
             })
             userSelectDialogVisible.value = false
-            
+
             // 重置数据
             selectedUsers.value = []
             Object.assign(agentTimeRange, {
                 startTime: '',
                 endTime: ''
             })
-            
+
             // 清空表格选择
             if (userSelectTableRef.value) {
                 userSelectTableRef.value.clearSelection()
@@ -900,13 +857,13 @@
 
             // 重新获取代理人列表
             await fetchUserAgentList(currentUserId.value)
-            
+
             // 清理当前用户信息
             currentUserInfo.value = {}
-            
+
             // 刷新主页面数据
             await fetchUserPages()
-            
+
         } catch (error) {
             ElMessage({
                 message: t('common.operationFailed'),
@@ -925,7 +882,7 @@
                 userId: userId
             }
             const res = await post(GET_USER_AGENT_API.GET_USER_PRO_AGENT, params)
-            
+
             if (res && res.code === 200) {
                 proactiveAgentList.value = res.data || []
             } else {
@@ -968,10 +925,10 @@
         await fetchUserPages()
     }
 
-  </script>
-  
-  <style scoped>
+</script>
+
+<style scoped>
     @import '@/assets/styles/conventionalTablePage.css';
-  </style>
-  
-  
+</style>
+
+

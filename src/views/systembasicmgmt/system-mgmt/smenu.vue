@@ -183,7 +183,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-  // import { debounce } from '@/utils/performance' // 移除防抖导入，使用自定义实现
+  import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
   import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API } from '@/config/api/systembasicmgmt/system-mgmt/smenu'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -464,56 +464,21 @@
       }
   }
 
-  // 搜索防抖定时器
-  let searchTimer = null
-
-  /**
-   * 清除搜索防抖定时器
-   */
-  const clearSearchTimer = () => {
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-          searchTimer = null
-      }
-  }
-
-  /**
-   * 执行查询数据操作
-   * @param {boolean} resetPage - 是否重置页码到第一页
-   * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-   */
-  const executeSearch = (resetPage = false, delay = 0) => {
-      // 立即显示加载状态
-      loading.value = true
-      
-      // 清除之前的定时器
-      clearSearchTimer()
-      
-      if (delay > 0) {
-          // 设置延迟执行
-          searchTimer = setTimeout(() => {
-              if (resetPage) {
-                  pagination.pageIndex = 1
-              }
-              fetchSMenuPages()
-          }, delay)
-      } else {
-          // 立即执行
-          if (resetPage) {
-              pagination.pageIndex = 1
-          }
-          fetchSMenuPages()
-      }
-  }
+  // 使用通用防抖工具
+  const debouncedFetchSMenuPages = debounce(() => {
+      fetchSMenuPages()
+  }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
   // 处理搜索操作（带防抖）
   const handleSearch = () => {
-      executeSearch(true, 300) // 重置页码，300ms防抖
+      pagination.pageIndex = 1
+      loading.value = true
+      debouncedFetchSMenuPages()
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）
   const fetchSMenuPagesImmediate = () => {
-      executeSearch(false, 0) // 不重置页码，立即执行
+      fetchSMenuPages()
   }
 
   // 重置
@@ -874,11 +839,6 @@
 
   // 一级菜单变化 - 立即查询表格数据
   const handleParentMenuChange = () => {
-      // 清除之前的搜索定时器，避免与一级菜单变化冲突
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-      }
-      
       loading.value = true
       pagination.pageIndex = 1
       fetchSMenuPages()

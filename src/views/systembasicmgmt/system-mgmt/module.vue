@@ -158,6 +158,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
+  import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
   import { GET_MODULE_PAGES_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_MODULE_ENTITY_API, UPDATE_MODULE_API } from '@/config/api/systembasicmgmt/system-mgmt/module'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -301,56 +302,21 @@
       loading.value = false
   }
 
-  // 搜索防抖定时器
-  let searchTimer = null
-
-  /**
-   * 清除搜索防抖定时器
-   */
-  const clearSearchTimer = () => {
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-          searchTimer = null
-      }
-  }
-
-  /**
-   * 执行查询数据操作
-   * @param {boolean} resetPage - 是否重置页码到第一页
-   * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-   */
-  const executeSearch = (resetPage = false, delay = 0) => {
-      // 立即显示加载状态
-      loading.value = true
-      
-      // 清除之前的定时器
-      clearSearchTimer()
-      
-      if (delay > 0) {
-          // 设置延迟执行
-          searchTimer = setTimeout(() => {
-              if (resetPage) {
-                  pagination.pageIndex = 1
-              }
-              fetchModulePages()
-          }, delay)
-      } else {
-          // 立即执行
-          if (resetPage) {
-              pagination.pageIndex = 1
-          }
-          fetchModulePages()
-      }
-  }
+  // 使用通用防抖工具
+  const debouncedFetchModulePages = debounce(() => {
+      fetchModulePages()
+  }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
   // 处理搜索操作（带防抖）
   const handleSearch = () => {
-      executeSearch(true, 300) // 重置页码，300ms防抖
+      pagination.pageIndex = 1
+      loading.value = true
+      debouncedFetchModulePages()
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）
   const fetchModulePagesImmediate = () => {
-      executeSearch(false, 0) // 不重置页码，立即执行
+      fetchModulePages()
   }
 
   // 重置

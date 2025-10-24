@@ -228,6 +228,7 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
+  import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
   import { 
   GET_ROLE_PAGES_API, 
   GET_ROLE_ENTITY_API, 
@@ -362,56 +363,21 @@
       }
   }
 
-  // 搜索防抖定时器
-  let searchTimer = null
-
-  /**
-   * 清除搜索防抖定时器
-   */
-  const clearSearchTimer = () => {
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-          searchTimer = null
-      }
-  }
-
-  /**
-   * 执行查询数据操作
-   * @param {boolean} resetPage - 是否重置页码到第一页
-   * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-   */
-  const executeSearch = (resetPage = false, delay = 0) => {
-      // 立即显示加载状态
-      loading.value = true
-      
-      // 清除之前的定时器
-      clearSearchTimer()
-      
-      if (delay > 0) {
-          // 设置延迟执行
-          searchTimer = setTimeout(() => {
-              if (resetPage) {
-                  pagination.pageIndex = 1
-              }
-              fetchRolePages()
-          }, delay)
-      } else {
-          // 立即执行
-          if (resetPage) {
-              pagination.pageIndex = 1
-          }
-          fetchRolePages()
-      }
-  }
+  // 使用通用防抖工具
+  const debouncedFetchRolePages = debounce(() => {
+      fetchRolePages()
+  }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
   // 处理搜索事件（带防抖）
   const handleSearch = () => {
-      executeSearch(true, 300) // 重置页码，300ms防抖
+      pagination.pageIndex = 1
+      loading.value = true
+      debouncedFetchRolePages()
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）
   const fetchRolePagesImmediate = () => {
-      executeSearch(false, 0) // 不重置页码，立即执行
+      fetchRolePages()
   }
 
   // 处理重置事件

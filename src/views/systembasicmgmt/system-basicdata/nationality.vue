@@ -85,9 +85,10 @@
 <script setup>
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
-import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_API, GET_NATIONALITY_ENTITY_API, UPDATE_NATIONALITY_API } from '@/config/api/systembasicmgmt/system-basicdata/nationality'
+  import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_API, GET_NATIONALITY_ENTITY_API, UPDATE_NATIONALITY_API } from '@/config/api/systembasicmgmt/system-basicdata/nationality'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
+  import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
   // 初始化i18n
   const { t } = useI18n()
@@ -98,8 +99,6 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
 
   // 表单引用
   const editFormRef = ref(null)
-
-
 
   // 过滤条件
   const filters = reactive({
@@ -173,49 +172,19 @@ import { GET_NATIONALITY_LIST_API, INSERT_NATIONALITY_API, DELETE_NATIONALITY_AP
       loading.value = false
   }
 
-  // 搜索防抖定时器
-  let searchTimer = null
-
-  /**
-   * 清除搜索防抖定时器
-   */
-  const clearSearchTimer = () => {
-      if (searchTimer) {
-          clearTimeout(searchTimer)
-          searchTimer = null
-      }
-  }
-
-  /**
-   * 执行查询数据操作
-   * @param {boolean} resetPage - 是否重置页码到第一页
-   * @param {number} delay - 延迟执行时间（毫秒），0表示立即执行
-   */
-  const executeSearch = (resetPage = false, delay = 0) => {
-      // 立即显示加载状态
-      loading.value = true
-      
-      // 清除之前的定时器
-      clearSearchTimer()
-      
-      if (delay > 0) {
-          // 设置延迟执行
-          searchTimer = setTimeout(() => {
-              fetchNationalityList()
-          }, delay)
-      } else {
-          // 立即执行
-          fetchNationalityList()
-      }
-  }
+  // 使用通用防抖工具
+  const debouncedFetchNationalityList = debounce(() => {
+      fetchNationalityList()
+  }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
   const handleSearch = () => {
-      executeSearch(false, 300) // 不重置页码，300ms防抖
+      loading.value = true
+      debouncedFetchNationalityList()
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）
   const fetchNationalityListImmediate = () => {
-      executeSearch(false, 0) // 不重置页码，立即执行
+      fetchNationalityList()
   }
 
   // 重置 - 保持与userinfo.vue一致的模式
