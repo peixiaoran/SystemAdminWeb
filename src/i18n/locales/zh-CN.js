@@ -1130,6 +1130,7 @@ export default {
       pleaseInputExchangeCurrencyCode: '请输入兑换币别',
       pleaseSelectExchangeCurrencyCode: '请选择兑换币别',
       pleaseInputExchangeRate: '请输入汇率',
+      exchangeRateMustBeNumber: '汇率必须为数字',
       pleaseSelectYearMonth: '请选择年月',
       pleaseInputRemark: '请输入备注',
       filter: {

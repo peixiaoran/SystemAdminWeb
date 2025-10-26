@@ -208,6 +208,7 @@ import {
   GET_GENDER_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
 } from '@/config/api/systembasicmgmt/system-basicdata/personal'
+import { UPLOAD_AVATAR_API } from '@/config/api/systembasicmgmt/system-basicdata/user'
 
 export default {
   name: 'PersonalInfo',
@@ -224,7 +225,7 @@ export default {
 
     // 统一的文件上传配置
     const UPLOAD_CONFIG = reactive({
-      url: UPLOAD_AVATAR_API.UPLOAD_AVATAR,
+      url: `https://localhost:7272/api/systembasicmgmt/${UPLOAD_AVATAR_API.UPLOAD_AVATAR}`,
       headers: {
         'Accept-Language': '',
         'Authorization': `Bearer ${userStore.token}`
@@ -414,13 +415,14 @@ export default {
           }
           Object.assign(originalFormData, response.data)
           originalFormData.password = ''
-           ElMessage({
-             message: response.message,
-             type: 'error',
-             plain: true,
-             showClose: true
-           })
-         }
+        } else {
+          ElMessage({
+            message: response.message || t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
+            type: 'error',
+            plain: true,
+            showClose: true
+          })
+        }
        } catch (error) {
          console.error('获取个人信息失败:', error)
          ElMessage({

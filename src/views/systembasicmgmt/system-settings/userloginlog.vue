@@ -89,7 +89,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { post } from '@/utils/request'
   import { 
-    GET_USER_LOGIN_LOG_PAGES_API
+  GET_USER_LOGIN_LOG_PAGES_API
   } from '@/config/api/systembasicmgmt/system-settings/userloginlog'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -105,7 +105,7 @@
   // 分页信息
   const pagination = reactive({
       pageIndex: 1,
-      pageSize: 20,
+      pageSize: 10,
       totalCount: 0
   })
 

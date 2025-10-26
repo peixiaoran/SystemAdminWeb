@@ -116,7 +116,12 @@ const filters = reactive({
   nationalityName: '',
 })
 
-// Composition API
+// 分页配置
+const pagination = reactive({
+  pageIndex: 1,
+  pageSize: 10,
+  totalCount: 0
+})
 
 // 对话框显示状态
 const dialogVisible = ref(false)
@@ -376,6 +381,19 @@ const handleDialogClose = () => {
   nextTick(() => {
       resetForm(true)
   })
+}
+
+// 处理分页页码变化
+const handlePageChange = (page) => {
+  pagination.pageIndex = page
+  fetchNationalityList()
+}
+
+// 处理分页大小变化
+const handleSizeChange = (size) => {
+  pagination.pageSize = size
+  pagination.pageIndex = 1
+  fetchNationalityList()
 }
 </script>
 

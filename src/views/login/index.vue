@@ -77,13 +77,13 @@
             </el-button>
           </el-form-item>
           <div class="unlock-link-container">
-              <el-link 
-                type="info" 
-                @click="handleUnlockAccount"
-                >{{ $t('login.unlockAccount') }}
-              </el-link>
-              
-            
+            <el-link 
+              type="info" 
+              :disabled="loading"
+              @click="handleUnlockAccount"
+            >
+              {{ $t('login.unlockAccount') }}
+            </el-link>
           </div>
         </el-form>
       </div>

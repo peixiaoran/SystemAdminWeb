@@ -146,9 +146,9 @@
             </template>
         </el-dialog>
     </div>
-  </template>
-  
-  <script setup>
+</template>
+
+<script setup>
     import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 

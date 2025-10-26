@@ -107,7 +107,7 @@ const fetchModules = async () => {
       // 提取所有模块路径
       const pmenuPaths = pmenues.value.map(pmenu => ({
         moduleId: pmenu.moduleId,
-      moduleName: pmenu.moduleName,
+        moduleName: pmenu.moduleName,
         path: pmenu.path
       }))
     } else {
@@ -180,12 +180,12 @@ const enterPMenu = (pmenu) => {
   
   // 使用新的模块存储来保存模块信息
   pmenuStore.setCurrentPMenu(
-          String(pmenu.moduleId),
-          getPMenuName(pmenu),
-          pmenuIdentifier,
-          pmenu.moduleNameCn || '',
+    String(pmenu.moduleId),
+    getPMenuName(pmenu),
+    pmenuIdentifier,
+    pmenu.moduleNameCn || '',
     pmenu.moduleNameEn || ''
-        )
+  )
   
   // 清空之前的标签记录
   try {
@@ -283,8 +283,6 @@ const logout = async () => {
   transition: background-color 0.3s;
 }
 
-
-
 .user-details {
   margin: 0 8px;
 }
@@ -365,9 +363,6 @@ const logout = async () => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
 }
 
-
-
-
 .pmenu-icon {
   height: 120px;
   display: flex;
@@ -443,15 +438,6 @@ const logout = async () => {
   box-shadow: 0 4px 15px rgba(221, 160, 221, 0.3);
   min-width: 120px;
 }
-
-
-
-.enter-icon {
-  margin-left: 6px;
-  transition: transform 0.2s ease;
-}
-
-
 
 .loading-container {
   position: absolute;

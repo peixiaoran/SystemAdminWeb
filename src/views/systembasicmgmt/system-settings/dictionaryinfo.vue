@@ -98,13 +98,19 @@
           <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="字典编辑表单">
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicType')" prop="dicType">
-                      <el-input v-model="editForm.dicType" 
-                               style="width:100%" 
-                               :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
+                      <el-select v-model="editForm.dicType"
+                                style="width:100%"
+                                :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
+                                clearable>
+                          <el-option
+                              v-for="dicType in dicTypeList"
+                              :key="dicType.dicTypeCode"
+                              :label="dicType.dicTypeName"
+                              :value="dicType.dicTypeCode" />
+                      </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
-                      <el-input v-model.number="editForm.dicCode" 
-                               type="number" 
+                      <el-input v-model="editForm.dicCode" 
                                style="width:100%" 
                                :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
                   </el-form-item>
@@ -120,8 +126,8 @@
           </el-form>
           <template #footer>
               <span class="dialog-footer">
-                  <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+                  <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
+                  <el-button type="primary" @click="handleSave">{{ $t('common.save') }}</el-button>
               </span>
           </template>
       </el-dialog>
@@ -132,14 +138,14 @@
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { post } from '@/utils/request'
   import { 
-    GET_DICTIONARY_PAGES_API, 
-    INSERT_DICTIONARY_API, 
-    DELETE_DICTIONARY_API, 
-    GET_DICTIONARY_ENTITY_API, 
-    UPDATE_DICTIONARY_API,
-    GET_MODULE_DROP_DOWN_API,
-    GET_DIC_TYPE_DROP_DOWN_API
-  } from '@/config/api/systembasicmgmt/system-settings/dictionary'
+  GET_DICTIONARY_PAGES_API,
+  INSERT_DICTIONARY_API,
+  DELETE_DICTIONARY_API,
+  GET_DICTIONARY_ENTITY_API,
+  UPDATE_DICTIONARY_API,
+  GET_MODULE_DROP_DOWN_API,
+  GET_DIC_TYPE_DROP_DOWN_API
+} from '@/config/api/systembasicmgmt/system-settings/dictionary'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
@@ -151,8 +157,10 @@
   const dictionaryList = ref([])
   const loading = ref(false)
 
-  // 模块和字典类型数据
+  // 模块下拉选项
   const moduleList = ref([])
+
+  // 字典类型下拉选项
   const dicTypeList = ref([])
 
   // 表单引用
@@ -161,7 +169,7 @@
   // 分页信息
   const pagination = reactive({
       pageIndex: 1,
-      pageSize: 20,
+      pageSize: 10,
       totalCount: 0
   })
 
@@ -169,28 +177,19 @@
   const filters = reactive({
       moduleId: '',
       dicType: '',
-      dicName: '',
+      dicName: ''
   })
-
-  // Composition API
 
   // 对话框显示状态
   const dialogVisible = ref(false)
 
-  // 编辑模式标志
-  const isEditMode = ref(false)
-
   // 编辑表单
   const editForm = reactive({
-      dicId: 1,
+      dicId: '',
       dicType: '',
-      dicCode: 0,
+      dicCode: '',
       dicNameCn: '',
-      dicNameEn: '',
-      createdBy: 1,
-      createdDate: '',
-      modifiedBy: 1,
-      modifiedDate: ''
+      dicNameEn: ''
   })
 
   // 对话框标题
@@ -199,124 +198,103 @@
   // 表单验证规则
   const formRules = reactive({
       dicType: [
-          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType'), trigger: 'change' }
+          { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType'), trigger: 'change' }
       ],
       dicCode: [
-          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
+          { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
       ],
       dicNameCn: [
-{ required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
-],
-      dicNameEn: [
-          { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
+          { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
       ]
   })
 
-  // 在组件挂载后获取字典数据
-  onMounted(() => {
-      getModuleDropDown()
-      // 如果有默认的模块ID，则获取对应的字典类型列表
-      if (filters.moduleId) {
-          getDicTypeDropDown(filters.moduleId)
-      }
+  // 在组件挂载后获取数据
+  onMounted(async () => {
+      await fetchModuleDropDown()
+      await fetchDicTypeDropDown()
       fetchDictionaryPages()
   })
 
+  // 获取模块下拉框数据
+  const fetchModuleDropDown = async () => {
+      try {
+          const res = await post(GET_MODULE_DROP_DOWN_API.GET_MODULE_DROP_DOWN)
+          if (res && res.code === 200) {
+              moduleList.value = res.data || []
+              // 默认选中第一个模块
+              if (moduleList.value.length > 0 && !filters.moduleId) {
+                  filters.moduleId = moduleList.value[0].moduleId
+              }
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'))
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'))
+      }
+  }
+
+  // 获取字典类型下拉框数据
+  const fetchDicTypeDropDown = async () => {
+      try {
+          const params = {
+              moduleId: filters.moduleId || ''
+          }
+          
+          const res = await post(GET_DIC_TYPE_DROP_DOWN_API.GET_DIC_TYPE_DROP_DOWN, params)
+          if (res && res.code === 200) {
+              dicTypeList.value = res.data || []
+              // 默认选中第一个字典类型
+              if (dicTypeList.value.length > 0 && !filters.dicType) {
+                  filters.dicType = dicTypeList.value[0].dicTypeCode
+              }
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'))
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'))
+      }
+  }
+
   // 获取字典实体数据
   const fetchDictionaryEntity = async (dicId) => {
-      const params = {
-          dicId: String(dicId)
-      }
-      
-      const res = await post(GET_DICTIONARY_ENTITY_API.GET_DICTIONARY_ENTITY, params)
-
-      if (res && res.code === 200) {
-          editForm.dicId = res.data.dicId
-          editForm.dicType = res.data.dicType
-          editForm.dicCode = res.data.dicCode
-          editForm.dicNameCn = res.data.dicNameCn
-          editForm.dicNameEn = res.data.dicNameEn
-          editForm.createdBy = res.data.createdBy
-          editForm.createdDate = res.data.createdDate
-          editForm.modifiedBy = res.data.modifiedBy
-          editForm.modifiedDate = res.data.modifiedDate
+      try {
+          const res = await post(GET_DICTIONARY_ENTITY_API.GET_DICTIONARY_ENTITY, { dicId })
+          if (res && res.code === 200) {
+              return res.data
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
+              return null
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
+          return null
       }
   }
 
   // 获取字典列表数据
   const fetchDictionaryPages = async () => {
-      loading.value = true
-      const params = {
-          moduleId: filters.moduleId,
-          dicType: filters.dicType,
-          dicName: filters.dicName,
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-      }
-
-      const res = await post(GET_DICTIONARY_PAGES_API.GET_DICTIONARY_PAGES, params)
-
-      if (res && res.code === 200) {
-          dictionaryList.value = res.data || []
-          pagination.totalCount = res.totalCount || 0
-      } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
-      }
-      loading.value = false
-  }
-
-  // 获取模块下拉列表
-  const getModuleDropDown = async () => {
       try {
-          const response = await post(GET_MODULE_DROP_DOWN_API.GET_MODULE_DROP_DOWN, {})
-          if (response && response.code === 200) {
-              moduleList.value = response.data || []
-              // 如果有模块数据，自动选择第一个模块并获取对应的字典类型列表
-              if (moduleList.value.length > 0) {
-                  filters.moduleId = moduleList.value[0].moduleId
-                  getDicTypeDropDown(filters.moduleId)
-              }
-          } else {
-              ElMessage.error(response.message)
-          }
-      } catch (error) {
-          console.error('获取模块列表失败:', error)
-          ElMessage.error('获取模块列表失败')
-      }
-  }
-
-  // 获取字典类型下拉列表
-  const getDicTypeDropDown = async (moduleId) => {
-      if (!moduleId) {
-          dicTypeList.value = []
-          return
-      }
-      
-      try {
+          loading.value = true
           const params = {
-            moduleId: moduleId,
+              pageIndex: pagination.pageIndex,
+              pageSize: pagination.pageSize,
+              moduleId: filters.moduleId || '',
+              dicType: filters.dicType || '',
+              dicName: filters.dicName || ''
           }
-          const response = await post(GET_DIC_TYPE_DROP_DOWN_API.GET_DIC_TYPE_DROP_DOWN, params)
-          if (response && response.code === 200) {
-              dicTypeList.value = response.data || []
+          
+          const res = await post(GET_DICTIONARY_PAGES_API.GET_DICTIONARY_PAGES, params)
+          if (res && res.code === 200) {
+              dictionaryList.value = res.data || []
+              pagination.totalCount = res.totalCount || 0
           } else {
-              ElMessage.error(response.message)
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryPagesFailed'))
           }
       } catch (error) {
-          console.error('获取字典类型列表失败:', error)
-          ElMessage.error('获取字典类型列表失败')
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.getDictionaryPagesFailed'))
+      } finally {
+          loading.value = false
       }
-  }
-
-  // 模块变化处理
-  const handleModuleChange = (moduleId) => {
-      filters.dicType = '' // 清空字典类型选择
-      getDicTypeDropDown(moduleId)
   }
 
   // 使用通用防抖工具
@@ -338,59 +316,45 @@
 
   // 重置搜索条件
   const handleReset = () => {
-      loading.value = true // 显示加载状态
+      loading.value = true
       filters.moduleId = ''
       filters.dicType = ''
       filters.dicName = ''
-      dicTypeList.value = [] // 清空字典类型列表
       pagination.pageIndex = 1
       fetchDictionaryPages()
   }
 
+  // 处理模块变化
+  const handleModuleChange = async () => {
+      filters.dicType = ''
+      await fetchDicTypeDropDown()
+      handleSearch()
+  }
+
   // 处理页码变化
   const handlePageChange = (page) => {
-      loading.value = true // 显示加载状态
       pagination.pageIndex = page
       fetchDictionaryPages()
   }
 
   // 处理每页记录数变化
   const handleSizeChange = (size) => {
-      loading.value = true // 显示加载状态
       pagination.pageSize = size
       pagination.pageIndex = 1
       fetchDictionaryPages()
   }
 
   const resetForm = (clearValidation = true) => {
-      // 先清除验证状态（在重置数据之前）
-      if (clearValidation && editFormRef.value) {
-          try {
-              editFormRef.value.clearValidate()
-          } catch (error) {
-              console.warn('清除表单验证状态失败', error)
-          }
-      }
-      
-      editForm.dicId = 1
+      editForm.dicId = ''
       editForm.dicType = ''
-      editForm.dicCode = 0
+      editForm.dicCode = ''
       editForm.dicNameCn = ''
       editForm.dicNameEn = ''
-      editForm.createdBy = 1
-      editForm.createdDate = ''
-      editForm.modifiedBy = 1
-      editForm.modifiedDate = ''
       
-      // 数据重置后再次清除验证状态
       if (clearValidation) {
           nextTick(() => {
               if (editFormRef.value) {
-                  try {
-                      editFormRef.value.clearValidate()
-                  } catch (error) {
-                      console.warn('清除表单验证状态失败', error)
-                  }
+                  editFormRef.value.clearValidate()
               }
           })
       }
@@ -398,133 +362,117 @@
 
   // 新增字典数据
   const insertDictionary = async () => {
-      const params = {
-          dicType: editForm.dicType,
-          dicCode: editForm.dicCode,
-          dicNameCn: editForm.dicNameCn,
-          dicNameEn: editForm.dicNameEn
-      }
-      const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
-
-      if (res && res.code === 200) {
-          resetForm()
-          ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          dialogVisible.value = false
-          fetchDictionaryPages()
-      } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+      try {
+          const params = {
+              dicType: editForm.dicType,
+              dicCode: editForm.dicCode,
+              dicNameCn: editForm.dicNameCn,
+              dicNameEn: editForm.dicNameEn
+          }
+          
+          const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
+          if (res && res.code === 200) {
+              ElMessage.success(t('systembasicmgmt.dictionaryInfo.addDictionarySuccess'))
+              dialogVisible.value = false
+              resetForm()
+              fetchDictionaryPagesImmediate()
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.addDictionaryFailed'))
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.addDictionaryFailed'))
       }
   }
 
   // 更新字典数据
   const updateDictionary = async () => {
-      const params = {
-          ...editForm
-      }
-      const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
-
-      if (res && res.code === 200) {
-          resetForm()
-          ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          dialogVisible.value = false
-          fetchDictionaryPages()
-      } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+      try {
+          const params = {
+              dicId: editForm.dicId,
+              dicType: editForm.dicType,
+              dicCode: editForm.dicCode,
+              dicNameCn: editForm.dicNameCn,
+              dicNameEn: editForm.dicNameEn
+          }
+          
+          const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
+          if (res && res.code === 200) {
+              ElMessage.success(t('systembasicmgmt.dictionaryInfo.updateDictionarySuccess'))
+              dialogVisible.value = false
+              resetForm()
+              fetchDictionaryPagesImmediate()
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
       }
   }
 
   // 删除字典数据
   const deleteDictionary = async (dicId) => {
-      const params = {
-          dicId: dicId
-      }
-
-      const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, params)
-
-      if (res && res.code === 200) {
-          ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          fetchDictionaryPages()
-      } else {
-          ElMessage.error(res.message)
+      try {
+          const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, { dicId })
+          if (res && res.code === 200) {
+              ElMessage.success(t('systembasicmgmt.dictionaryInfo.deleteDictionarySuccess'))
+              
+              // 如果当前页没有数据了，回到上一页
+              if (dictionaryList.value.length === 1 && pagination.pageIndex > 1) {
+                  pagination.pageIndex--
+              }
+              
+              fetchDictionaryPagesImmediate()
+          } else {
+              ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.deleteDictionaryFailed'))
+          }
+      } catch (error) {
+          ElMessage.error(t('systembasicmgmt.dictionaryInfo.deleteDictionaryFailed'))
       }
   }
 
   // 处理新增操作
   const handleAdd = () => {
-      // 重置表单数据
       resetForm()
-      // 设置为新增模式
-      isEditMode.value = false
-      // 设置对话框标题
       dialogTitle.value = t('systembasicmgmt.dictionaryInfo.addDictionary')
-      // 显示对话框
       dialogVisible.value = true
+      
+      nextTick(() => {
+          editFormRef.value?.focus()
+      })
   }
 
   // 处理编辑操作
   const handleEdit = async (index, row) => {
-      // 重置表单数据
-      resetForm()
-      // 设置为编辑模式
-      isEditMode.value = true
-      // 获取字典实体数据
-      await fetchDictionaryEntity(row.dicId)
-      // 设置对话框标题
-      dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
-      // 显示对话框
-      dialogVisible.value = true
+      const dictionaryData = await fetchDictionaryEntity(row.dicId)
+      if (dictionaryData) {
+          Object.assign(editForm, dictionaryData)
+          dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
+          dialogVisible.value = true
+      }
   }
 
   // 处理删除操作
   const handleDelete = (index, row) => {
       ElMessageBox.confirm(
-          t('systembasicmgmt.dictionaryInfo.deleteConfirm'),
+          t('systembasicmgmt.dictionaryInfo.deleteDictionaryConfirm', { dicCode: row.dicCode }),
           t('common.tip'),
           {
               confirmButtonText: t('common.confirm'),
               cancelButtonText: t('common.cancel'),
-              type: 'warning',
+              type: 'warning'
           }
-      )
-          .then(() => {
-              deleteDictionary(row.dicId)
-          })
-          .catch(() => {
-              // 取消删除
-          })
+      ).then(() => {
+          deleteDictionary(row.dicId)
+      }).catch(() => {
+          // 用户取消删除
+      })
   }
 
   // 保存编辑结果
   const handleSave = () => {
-      editFormRef.value?.validate((valid) => {
+      editFormRef.value.validate((valid) => {
           if (valid) {
-              // 判断是新增还是编辑
-              if (isEditMode.value) {
+              if (editForm.dicId) {
                   updateDictionary()
               } else {
                   insertDictionary()
@@ -535,10 +483,8 @@
 
   // 处理对话框关闭
   const handleDialogClose = () => {
-      // 使用 nextTick 确保 DOM 更新完成后再清除验证
-      nextTick(() => {
-          resetForm(true)
-      })
+      dialogVisible.value = false
+      resetForm()
   }
 </script>
 

@@ -559,6 +559,7 @@ export default {
       pleaseInputExchangeCurrencyCode: 'Please enter exchange currency',
       pleaseSelectExchangeCurrencyCode: 'Please select exchange currency',
       pleaseInputExchangeRate: 'Please enter exchange rate',
+      exchangeRateMustBeNumber: 'Exchange rate must be a number',
       pleaseSelectYearMonth: 'Please select year month',
       pleaseInputRemark: 'Please enter remark',
       filter: {
