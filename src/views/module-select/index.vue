@@ -142,7 +142,7 @@ function getPMenuName(pmenu) {
 }
 function getPMenuRemarks(pmenu) {
   if (!pmenu) return ''
-  return locale.value === 'en-US' ? (pmenu.remarksEn || pmenu.remarksCh || pmenu.remarks) : (pmenu.remarksCh || pmenu.remarksEn || pmenu.remarks)
+  return locale.value === 'en-US' ? (pmenu.remarkEn || pmenu.remarkCh || pmenu.remarksEn || pmenu.remarksCh || pmenu.remark) : (pmenu.remarkCh || pmenu.remarkEn || pmenu.remarksCh || pmenu.remarksEn || pmenu.remark)
 }
 
 // 获取有效的图标名称

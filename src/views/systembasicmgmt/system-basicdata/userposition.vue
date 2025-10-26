@@ -8,7 +8,7 @@
           <el-table-column prop="positionNo" :label="$t('systembasicmgmt.userPosition.positionNo')" align="center" min-width="120" />
           <el-table-column prop="positionNameCn" :label="$t('systembasicmgmt.userPosition.positionNameCn')" align="left" min-width="200" />
           <el-table-column prop="positionNameEn" :label="$t('systembasicmgmt.userPosition.positionNameEn')" align="left" min-width="200" />
-          <el-table-column prop="positionDescribe" :label="$t('systembasicmgmt.userPosition.positionDescribe')" align="left" min-width="250" />
+          <el-table-column prop="positionDescription" :label="$t('systembasicmgmt.userPosition.positionDescription')" align="left" min-width="250" />
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)" :loading="editingId === scope.row.positionId">
@@ -45,9 +45,9 @@
               />
             </el-form-item>
             <el-form-item :label="$t('systembasicmgmt.userPosition.positionNameCn')">
-            <el-input
-            v-model="editForm.positionNameCn"
-            :placeholder="$t('systembasicmgmt.userPosition.positionNameCnPlaceholder')"
+              <el-input
+                v-model="editForm.positionNameCn"
+                :placeholder="$t('systembasicmgmt.userPosition.positionNameCnPlaceholder')"
                 style="width:100%" 
                 readonly
               />
@@ -65,10 +65,10 @@
             <el-form-item></el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('systembasicmgmt.userPosition.positionDescribe')">
+            <el-form-item :label="$t('systembasicmgmt.userPosition.positionDescription')">
               <el-input 
-                v-model="editForm.positionDescribe" 
-                :placeholder="$t('systembasicmgmt.userPosition.positionDescribePlaceholder')"
+                v-model="editForm.positionDescription" 
+                :placeholder="$t('systembasicmgmt.userPosition.positionDescriptionPlaceholder')"
                 style="width:100%" 
                 type="textarea" 
                 :rows="3" 

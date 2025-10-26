@@ -53,12 +53,14 @@ export const usePMenuStore = defineStore('pmenu', {
       localStorage.removeItem('currentModuleId')
       localStorage.removeItem('currentModuleName')
       localStorage.removeItem('currentModulePath')
+      localStorage.removeItem('currentModuleNameCn')
+      localStorage.removeItem('currentModuleNameEn')
     }
   },
   
   // 启用持久化 - 使用3.x版本API
   persist: {
-    key: 'module-store',
+    key: 'pmenu-store',
     storage: localStorage,
     paths: ['currentModuleId', 'currentModuleName', 'currentModulePath', 'currentModuleNameCn', 'currentModuleNameEn']
   }

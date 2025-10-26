@@ -1,140 +1,140 @@
 <template>
   <div class="conventional-table-container">
-      <el-card class="conventional-card">
-          <!-- 过滤条件 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
-              <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
-                  <el-input style="width: 180px;"
-                            v-model="filters.roleCode"
-                            :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
-              </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.role.roleName')">
-                  <el-input style="width: 180px;"
-                            v-model="filters.roleName"
-                            :placeholder="$t('systembasicmgmt.role.pleaseInputRoleName')" />
-              </el-form-item>
-              <el-form-item class="form-button-group">
-                  <el-button type="primary" @click="handleSearch" plain>
-                      {{ $t('common.search') }}
-                  </el-button>
-                  <el-button @click="handleReset">
-                      {{ $t('common.reset') }}
-                  </el-button>
-              </el-form-item>
-              <el-form-item class="form-right-button">
-                  <el-button type="primary" @click="handleAdd">
-                      {{ $t('systembasicmgmt.role.addRole') }}
-                  </el-button>
-              </el-form-item>
-          </el-form>
+    <el-card class="conventional-card">
+      <!-- 过滤条件 -->
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
+        <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
+          <el-input style="width: 180px;"
+                    v-model="filters.roleCode"
+                    :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
+        </el-form-item>
+        <el-form-item :label="$t('systembasicmgmt.role.roleName')">
+          <el-input style="width: 180px;"
+                    v-model="filters.roleName"
+                    :placeholder="$t('systembasicmgmt.role.pleaseInputRoleName')" />
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="handleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('systembasicmgmt.role.addRole') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
 
-          <!-- 表格数据 -->
-          <div class="table-container">
-              <el-table :data="roleList"
-                        border
-                        stripe
-                        :header-cell-style="{ background: '#f5f7fa' }"
-                        v-loading="loading"
-                        class="conventional-table">
-                  <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
-                  <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
-                  <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="isEnabled"
-                                   :label="$t('systembasicmgmt.isEnabled')"
-                                   align="center"
-                                   width="100">
-                      <template #default="scope">
-                          <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                              {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-                          </el-tag>
-                      </template>
-                  </el-table-column>
-                  <el-table-column :label="$t('systembasicmgmt.operation')"
-                                   min-width="260"
-                                   fixed="right"
-                                   align="center">
-                      <template #default="scope">
-                          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-                      {{ $t('common.edit') }}
-                  </el-button>
-                  <el-button size="small" @click="handleConfigModule(scope.row)">
-                      {{ $t('systembasicmgmt.role.configModule') }}
-                  </el-button>
-                  <el-button size="small" @click="handleConfigMenu(scope.row)">
-                      {{ $t('systembasicmgmt.role.configMenu') }}
-                  </el-button>
-                  <el-button size="small"
-                             type="danger"
-                             @click="handleDelete(scope.$index, scope.row)">
-                      {{ $t('common.delete') }}
-                  </el-button>
-                      </template>
-                  </el-table-column>
-              </el-table>
+      <!-- 表格数据 -->
+      <div class="table-container">
+        <el-table :data="roleList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+          <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
+          <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
+          <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
+          <el-table-column prop="isEnabled"
+                           :label="$t('systembasicmgmt.isEnabled')"
+                           align="center"
+                           width="100">
+            <template #default="scope">
+              <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
+                {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('systembasicmgmt.operation')"
+                           min-width="260"
+                           fixed="right"
+                           align="center">
+            <template #default="scope">
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
+                {{ $t('common.edit') }}
+              </el-button>
+              <el-button size="small" @click="handleConfigModule(scope.row)">
+                {{ $t('systembasicmgmt.role.configModule') }}
+              </el-button>
+              <el-button size="small" @click="handleConfigMenu(scope.row)">
+                {{ $t('systembasicmgmt.role.configMenu') }}
+              </el-button>
+              <el-button size="small"
+                         type="danger"
+                         @click="handleDelete(scope.$index, scope.row)">
+                {{ $t('common.delete') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <!-- 分页 -->
+      <div class="pagination-wrapper">
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
+      </div>
+    </el-card>
+
+    <!-- 编辑对话框 -->
+    <el-dialog v-model="dialogVisible"
+               :title="dialogTitle"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :modal-append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
+      <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="角色编辑表单">
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.role.roleCode')" prop="roleCode">
+            <el-input v-model="editForm.roleCode" style="width:100%"/>
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.role.roleNameCn')" prop="roleNameCn">
+            <el-input v-model="editForm.roleNameCn" style="width:100%"/>
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.role.roleNameEn')" prop="roleNameEn">
+            <el-input v-model="editForm.roleNameEn" style="width:100%"/>
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.remark')">
+            <el-input v-model="editForm.remark"
+                      type="textarea"
+                      style="width:100%"
+                      :rows="3" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.isEnabled')">
+            <el-switch v-model="editForm.isEnabled"
+                       :active-value="1"
+                       :inactive-value="0"
+                       :active-text="$t('common.yes')"
+                       :inactive-text="$t('common.no')"
+                       inline-prompt
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399; width:100%"/>
+            </el-form-item>
           </div>
-
-          <!-- 分页 -->
-          <div class="pagination-wrapper">
-              <el-pagination v-model:current-page="pagination.pageIndex"
-                             v-model:page-size="pagination.pageSize"
-                             :page-sizes="[10, 20, 50, 100]"
-                             layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.totalCount"
-                             @size-change="handleSizeChange"
-                             @current-change="handlePageChange" />
-          </div>
-      </el-card>
-
-      <!-- 编辑对话框 -->
-      <el-dialog v-model="dialogVisible"
-                 :title="dialogTitle"
-                 width="50%"
-                 :close-on-click-modal="false"
-                 :append-to-body="true"
-                 :modal-append-to-body="true"
-                 :lock-scroll="true"
-                 @close="handleDialogClose">
-          <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="角色编辑表单">
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.role.roleCode')" prop="roleCode">
-                      <el-input v-model="editForm.roleCode" style="width:100%"/>
-                  </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.role.roleNameCn')" prop="roleNameCn">
-                      <el-input v-model="editForm.roleNameCn" style="width:100%"/>
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.role.roleNameEn')" prop="roleNameEn">
-                      <el-input v-model="editForm.roleNameEn" style="width:100%"/>
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.remarks')">
-                      <el-input v-model="editForm.remarks"
-                                type="textarea"
-                                style="width:100%"
-                                :rows="3" />
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.isEnabled')">
-                      <el-switch v-model="editForm.isEnabled"
-                                 :active-value="1"
-                                 :inactive-value="0"
-                                 :active-text="$t('common.yes')"
-                                 :inactive-text="$t('common.no')"
-                                 inline-prompt
-                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399; width:100%"/>
-                  </el-form-item>
-              </div>
-          </el-form>
-          <template #footer>
-              <span class="dialog-footer">
-                  <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
-              </span>
-          </template>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+          </span>
+        </template>
       </el-dialog>
 
       <!-- 配置模块对话框 -->
@@ -146,27 +146,27 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleModuleDialogClose">
-          <!-- 显示当前角色名称 -->
-          <div class="role-name-display">
-              <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
-          </div>
-          <div class="module-tree-container">
-              <el-tree
-                  ref="moduleTreeRef"
-                  :data="moduleTreeData"
-                  show-checkbox
-                  node-key="moduleId"
-                  :props="moduleTreeProps"
-                  :default-checked-keys="defaultCheckedModules"
-                  @check-change="handleModuleCheckChange">
-              </el-tree>
-          </div>
-          <template #footer>
-              <span class="dialog-footer">
-                  <el-button @click="moduleDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="saveModuleConfig">{{ $t('common.confirm') }}</el-button>
-              </span>
-          </template>
+        <!-- 显示当前角色名称 -->
+        <div class="role-name-display">
+          <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
+        </div>
+        <div class="module-tree-container">
+          <el-tree
+              ref="moduleTreeRef"
+              :data="moduleTreeData"
+              show-checkbox
+              node-key="moduleId"
+              :props="moduleTreeProps"
+              :default-checked-keys="defaultCheckedModules"
+              @check-change="handleModuleCheckChange">
+          </el-tree>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="moduleDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" @click="saveModuleConfig">{{ $t('common.confirm') }}</el-button>
+          </span>
+        </template>
       </el-dialog>
 
       <!-- 配置菜单对话框 -->
@@ -178,51 +178,51 @@
                  :modal-append-to-body="true"
                  :lock-scroll="true"
                  @close="handleMenuDialogClose">
-          <div class="role-name-display">
-              <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
+        <div class="role-name-display">
+          <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
+        </div>
+        <div class="menu-config-container">
+          <!-- 左侧模块选择区域 -->
+          <div class="module-select-section">
+            <div class="section-title">{{ $t('systembasicmgmt.role.selectModule') }}</div>
+            <el-select v-model="selectedModuleId" 
+                       @change="handleModuleChange"
+                       style="width: 100%;"
+                       :placeholder="$t('systembasicmgmt.role.selectModule')">
+              <el-option
+                  v-for="item in moduleOptions"
+                  :key="item.moduleId"
+                  :label="item.moduleName"
+                  :value="item.moduleId"
+                  :disabled="item.disabled">
+              </el-option>
+            </el-select>
           </div>
-          <div class="menu-config-container">
-              <!-- 左侧模块选择区域 -->
-              <div class="module-select-section">
-                  <div class="section-title">{{ $t('systembasicmgmt.role.selectModule') }}</div>
-                  <el-select v-model="selectedModuleId" 
-                             @change="handleModuleChange"
-                             style="width: 100%;"
-                             :placeholder="$t('systembasicmgmt.role.selectModule')">
-                      <el-option
-                          v-for="item in moduleOptions"
-                          :key="item.moduleId"
-                          :label="item.moduleName"
-                          :value="item.moduleId"
-                          :disabled="item.disabled">
-                      </el-option>
-                  </el-select>
-              </div>
-              
-              <!-- 右侧菜单树区域 -->
-              <div class="menu-tree-section">
-                  <div class="section-title">{{ $t('systembasicmgmt.role.configMenu') }}</div>
-                  <el-tree
-                      ref="menuTreeRef"
-                      :data="menuTreeData"
-                      show-checkbox
-                      node-key="menuId"
-                      :props="menuTreeProps"
-                      :default-checked-keys="defaultCheckedMenus"
-                      :check-strictly="false"
-                      check-on-click-node
-                      @check-change="handleMenuCheckChange">
-                  </el-tree>
-              </div>
+          
+          <!-- 右侧菜单树区域 -->
+          <div class="menu-tree-section">
+            <div class="section-title">{{ $t('systembasicmgmt.role.configMenu') }}</div>
+            <el-tree
+                ref="menuTreeRef"
+                :data="menuTreeData"
+                show-checkbox
+                node-key="menuId"
+                :props="menuTreeProps"
+                :default-checked-keys="defaultCheckedMenus"
+                :check-strictly="false"
+                check-on-click-node
+                @check-change="handleMenuCheckChange">
+            </el-tree>
           </div>
-          <template #footer>
-              <span class="dialog-footer">
-                  <el-button @click="menuDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="saveMenuConfig">{{ $t('common.confirm') }}</el-button>
-              </span>
-          </template>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="menuDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" @click="saveMenuConfig">{{ $t('common.confirm') }}</el-button>
+          </span>
+        </template>
       </el-dialog>
-  </div>
+    </div>
 </template>
 
 <script setup>
@@ -278,7 +278,7 @@
       roleNameEn: '',
       description: '',
       isEnabled: 1,
-      remarks: ''
+      remark: ''
   })
   // 对话框标题
   const dialogTitle = ref(t('systembasicmgmt.role.editRole'))
@@ -359,7 +359,7 @@
           editForm.roleNameEn = res.data.roleNameEn || ''
           editForm.description = res.data.description || ''
           editForm.isEnabled = res.data.isEnabled
-          editForm.remarks = res.data.remarks || ''
+          editForm.remark = res.data.remark || ''
       }
   }
 
@@ -418,7 +418,7 @@
       editForm.roleNameEn = ''
       editForm.description = ''
       editForm.isEnabled = 1
-      editForm.remarks = ''
+      editForm.remark = ''
       
       // 重置完成后再次清除验证状态
       if (clearValidation) {
@@ -443,7 +443,7 @@
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
-          remarks: editForm.remarks
+          remark: editForm.remark
       }
       const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
 
@@ -469,7 +469,7 @@
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
           isEnabled: editForm.isEnabled,
-          remarks: editForm.remarks
+          remark: editForm.remark
       }
       const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, params)
 

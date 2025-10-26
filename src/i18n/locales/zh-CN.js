@@ -797,13 +797,13 @@ export default {
       positionName: '职级名称',
       positionNameCn: '中文名称',
       positionNameEn: '英文名称',
-      positionDescribe: '职级描述',
+      positionDescription: '职级描述',
       editPosition: '查看职级详情',
       positionNoPlaceholder: '请输入职级编号',
       positionNamePlaceholder: '请输入职级名称',
       positionNameCnPlaceholder: '请输入中文名称',
       positionNameEnPlaceholder: '请输入英文名称',
-      positionDescribePlaceholder: '请输入职级描述',
+      positionDescriptionPlaceholder: '请输入职级描述',
       index: '序号',
       operation: '操作',
       getFailed: '获取数据失败'
@@ -860,7 +860,7 @@ export default {
     index: '序号',
     operation: '操作',
     remark: '备注',
-    remarks: '备注',
+    remark: '备注',
     isEnabled: '是否启用',
     isVisible: '是否显示',
     enabled: '启用',
@@ -902,7 +902,13 @@ export default {
       remarksCh: '中文备注',
       remarksEn: '英文备注',
       pleaseInputRemarksCh: '请输入中文备注',
-      pleaseInputRemarksEn: '请输入英文备注'
+      pleaseInputRemarksEn: '请输入英文备注',
+      filter: {
+        moduleCode: '模块编码',
+        pleaseInputModuleCode: '请输入模块编码',
+        moduleNameCh: '模块名称',
+        pleaseInputModuleNameCh: '请输入中文名称'
+      }
     },
     
     // 一级菜单维护
@@ -1092,7 +1098,7 @@ export default {
       departmentLevelName: '级别名称',
       departmentLevelNameCn: '中文名称',
       departmentLevelNameEn: '英文名称',
-      departmentLevelDescribe: '级别描述',
+      description: '级别描述',
       sortOrder: '排序',
       operation: '操作',
       addDepartmentLevel: '新增部门级别',
@@ -1102,7 +1108,7 @@ export default {
       pleaseInputDepartmentLevelName: '请输入级别名称',
       pleaseInputDepartmentLevelNameCn: '请输入中文名称',
       pleaseInputDepartmentLevelNameEn: '请输入英文名称',
-      pleaseInputDepartmentLevelDescribe: '请输入级别描述',
+      pleaseInputDescription: '请输入级别描述',
       pleaseInputSortOrder: '请输入排序',
       fillRequiredInfo: '请填写必要信息'
     },
@@ -1164,7 +1170,7 @@ export default {
       laborTypeCode: '职业编码',
       laborTypeNameCn: '中文名称',
       laborTypeNameEn: '英文名称',
-      laborTypeDescribe: '职业描述',
+      laborTypeDescription: '职业描述',
       operation: '操作',
       addLabor: '新增职业',
       editLabor: '编辑职业',
@@ -1178,7 +1184,7 @@ export default {
       pleaseInputLaborTypeCode: '请输入职业编码',
       pleaseInputLaborTypeNameCn: '请输入中文名称',
       pleaseInputLaborTypeNameEn: '请输入英文名称',
-      pleaseInputLaborTypeDescribe: '请输入职业描述',
+      pleaseInputLaborTypeDescription: '请输入职业描述',
       operationFailed: '操作失败',
       getFailed: '获取数据失败',
       filter: {

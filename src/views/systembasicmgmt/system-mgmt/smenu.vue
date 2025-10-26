@@ -145,8 +145,8 @@
                   </el-form-item>
               </div>
               <div class="form-row full-width">
-                                     <el-form-item :label="$t('systembasicmgmt.remarks')">
-                      <el-input v-model="editForm.remarks" style="width:100%" type="textarea" :rows="3" />
+                                     <el-form-item :label="$t('systembasicmgmt.remark')">
+                      <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
                   </el-form-item>
               </div>
               <div class="form-row">
@@ -244,7 +244,7 @@
       routePath: '',
       path: '',
       redirect: '',
-      remarks: ''
+      remark: ''
   })
   // 对话框标题
   const dialogTitle = ref('')
@@ -408,7 +408,7 @@
 
               editForm.path = res.data.path || ''
               editForm.redirect = res.data.redirect || ''
-              editForm.remarks = res.data.remarks || ''
+              editForm.remark = res.data.remark || ''
               editForm.isEnabled = res.data.isEnabled
               editForm.isVisible = res.data.isVisible
               editForm.level = res.data.level
@@ -554,7 +554,7 @@
           isEnabled: 1,
           isVisible: 1,
           routePath: '',
-          remarks: ''
+          remark: ''
       })
       
       // 重新设置表单验证状态

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import i18n from '@/i18n'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
+import { handleNetworkError } from '@/utils/errorHandler'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -125,15 +126,9 @@ service.interceptors.response.use(
       pendingRequests.delete(config.requestKey)
     }
     
-    // 处理超时错误
+    // 处理超时错误 → 统一交由 createRequest 捕获处理
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
-      return {
-        code: 408,
-        data: null,
-        message: i18n.global.t('common.requestTimeoutMessage'),
-        success: false,
-        timeout: true
-      }
+      return Promise.reject(error)
     }
     
     // 直接返回错误，让具体的请求处理函数处理错误
@@ -183,29 +178,56 @@ const createRequest = (method) => async (url, data, options = {}) => {
     }
     
     // 处理特定状态码
-    if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          handleLogout()
-          break
-        case 403:
-          handleLogout()
-          break
-        default:
-          // 处理业务错误
-          if (error.response.data?.code && error.response.data.code !== 200) {
-            return {
-              code: error.response.data.code,
-              data: null,
-              message: error.response.data.message,
-              success: false
-            }
-          }
+    if (error && error.response) {
+      const status = error.response.status
+      if (status === 401) {
+        handleLogout()
+        return {
+          code: 401,
+          data: null,
+          message: i18n.global.t('common.tokenExpired'),
+          success: false
+        }
+      }
+      
+      if (status === 403) {
+        const info = handleNetworkError(error, { showMessage: false })
+        return {
+          code: 403,
+          data: null,
+          message: info.message,
+          success: false
+        }
+      }
+      
+      // 处理业务错误
+      if (error.response.data?.code && error.response.data.code !== 200) {
+        return {
+          code: error.response.data.code,
+          data: null,
+          message: error.response.data.message,
+          success: false
+        }
+      }
+      
+      // 其它HTTP错误统一提示
+      const info = handleNetworkError(error, { showMessage: false })
+      return {
+        code: status,
+        data: null,
+        message: info.message,
+        success: false
       }
     }
     
-    // 阻止后续处理
-    return new Promise(() => {})
+    // 非HTTP错误（网络/未知）
+    const info = handleNetworkError(error, { showMessage: false })
+    return {
+      code: -1,
+      data: null,
+      message: info.message,
+      success: false
+    }
   }
 }
 

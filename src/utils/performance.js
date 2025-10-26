@@ -12,17 +12,60 @@ import { nextTick } from 'vue'
  * @returns {Function} 防抖后的函数
  */
 export function debounce(func, wait = 300, immediate = false) {
-  let timeout
-  return function executedFunction(...args) {
-    const later = () => {
-      timeout = null
-      if (!immediate) func.apply(this, args)
+  let timeout = null
+  let lastArgs = null
+  let lastThis = null
+  let result
+
+  const later = () => {
+    const context = lastThis
+    const args = lastArgs
+    timeout = null
+    lastArgs = lastThis = null
+    if (!immediate) {
+      result = func.apply(context, args)
     }
-    const callNow = immediate && !timeout
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-    if (callNow) func.apply(this, args)
   }
+
+  function debounced(...args) {
+    lastArgs = args
+    lastThis = this
+    const callNow = immediate && !timeout
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(later, wait)
+    if (callNow) {
+      lastArgs = lastThis = null
+      result = func.apply(this, args)
+    }
+    return result
+  }
+
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+    lastArgs = lastThis = null
+  }
+
+  debounced.flush = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      const context = lastThis
+      const args = lastArgs
+      timeout = null
+      lastArgs = lastThis = null
+      result = func.apply(context, args)
+      return result
+    }
+    return undefined
+  }
+
+  debounced.pending = () => !!timeout
+
+  return debounced
 }
 
 /**
@@ -339,4 +382,4 @@ export const PERFORMANCE_CONFIG = {
   CACHE_SIZE: 100,
   ASYNC_CONCURRENCY: 3,
   VIRTUAL_SCROLL_OVERSCAN: 5
-} 
+}

@@ -2,28 +2,28 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="员工职业筛选">
-          <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
-            <el-input
-              v-model="searchForm.laborName"
-              :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
-              clearable
-              style="width: 200px"
-            />
-          </el-form-item>
-          <el-form-item class="form-button-group">
-            <el-button type="primary" @click="handleSearch" plain>
-              {{ $t('common.search') }}
-            </el-button>
-            <el-button @click="handleReset">
-              {{ $t('common.reset') }}
-            </el-button>
-          </el-form-item>
-          <el-form-item class="form-right-button">
-            <el-button type="primary" @click="handleAdd">
-              {{ $t('systembasicmgmt.userLabor.addLabor') }}
-            </el-button>
-          </el-form-item>
-        </el-form>
+        <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
+          <el-input
+            v-model="searchForm.laborName"
+            :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
+            clearable
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="handleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('systembasicmgmt.userLabor.addLabor') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
 
       <!-- 表格区域 -->
       <div class="table-container">
@@ -178,26 +178,26 @@ const rules = {
 const getLaborList = async () => {
   loading.value = true
   try {
-    const params = {
-      laborName: searchForm.laborName,
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize,
-      totalCount: pagination.total
-    }
-    
-    const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
-    if (response.code === 200) {
-      laborList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
-    } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-      laborList.value = []
-    }
+  const params = {
+    laborName: searchForm.laborName,
+    pageIndex: pagination.pageIndex,
+    pageSize: pagination.pageSize,
+    totalCount: pagination.total
+  }
+  
+  const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
+  if (response.code === 200) {
+    laborList.value = response.data || []
+    pagination.totalCount = response.totalCount || 0
+  } else {
+    ElMessage({
+      message: response.message,
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
+    laborList.value = []
+  }
   } catch (error) {
     console.error('获取职业列表失败:', error)
     ElMessage({
@@ -214,19 +214,14 @@ const getLaborList = async () => {
 
 // 使用通用防抖工具
 const debouncedGetLaborList = debounce(() => {
-    getLaborList()
+  getLaborList()
 }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
 // 处理搜索操作（带防抖）
 const handleSearch = () => {
-    pagination.pageIndex = 1
-    loading.value = true
-    debouncedGetLaborList()
-}
-
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const getLaborListImmediate = () => {
-    getLaborList()
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedGetLaborList()
 }
 
 // 重置搜索
@@ -369,7 +364,7 @@ const handleDelete = async (row) => {
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     
@@ -402,19 +397,19 @@ const handleSubmit = async () => {
         showClose: true
       })
     }
-  } catch (error) {
-    if (error !== false) {
-      console.error('提交表单失败:', error)
-      ElMessage({
-        message: t('systembasicmgmt.userLabor.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } finally {
-    submitLoading.value = false
-  }
+   } catch (error) {
+     if (error !== false) {
+       console.error('提交表单失败:', error)
+       ElMessage({
+         message: t('systembasicmgmt.userLabor.operationFailed'),
+         type: 'error',
+         plain: true,
+         showClose: true
+       })
+     }
+   } finally {
+     submitLoading.value = false
+   }
 }
 
 // 对话框关闭

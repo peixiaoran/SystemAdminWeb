@@ -9,95 +9,95 @@
         class="personal-info-form"
         v-loading="loading"
       >
-      <!-- 第一行：基本信息 -->
-      <div class="form-row">
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.userNo')" prop="userNo">
-          <el-input v-model="personalInfoForm.userNo" :disabled="true" />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.loginNo')" prop="loginNo">
-          <el-input v-model="personalInfoForm.loginNo" :disabled="true" />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.userNameCn')" prop="userNameCn">
-          <el-input
-            v-model="personalInfoForm.userNameCn"
-            :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputUserNameCn')" 
-            :disabled="loading"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.userNameEn')" prop="userNameEn">
-          <el-input 
-            v-model="personalInfoForm.userNameEn" 
-            :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputUserNameEn')" 
-            :disabled="loading"
-          />
-        </el-form-item>
-      </div>
-
-      <!-- 第二行：联系信息 -->
-      <div class="form-row">
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.email')" prop="email">
-          <el-input 
-            v-model="personalInfoForm.email" 
-            :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputEmail')" 
-            :disabled="true"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.phoneNumber')" prop="phoneNumber">
-          <el-input 
-            v-model="personalInfoForm.phoneNumber" 
-            :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPhoneNumber')" 
-            :disabled="loading"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.password')" prop="password">
-          <el-input 
-            v-model="personalInfoForm.password" 
-            type="password"
-            :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPassword')" 
-            :disabled="loading"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.gender')" prop="gender">
-          <el-select v-model="personalInfoForm.gender" :disabled="true" style="width: 100%">
-            <el-option
-              v-for="item in genderOptions"
-              :key="item.genderCode"
-              :label="item.genderName"
-              :value="item.genderCode"
+        <!-- 第一行：基本信息 -->
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.userNo')" prop="userNo">
+            <el-input v-model="personalInfoForm.userNo" :disabled="true" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.loginNo')" prop="loginNo">
+            <el-input v-model="personalInfoForm.loginNo" :disabled="true" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.userNameCn')" prop="userNameCn">
+            <el-input
+              v-model="personalInfoForm.userNameCn"
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputUserNameCn')" 
+              :disabled="loading"
             />
-          </el-select>
-        </el-form-item>
-      </div>
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.userNameEn')" prop="userNameEn">
+            <el-input 
+              v-model="personalInfoForm.userNameEn" 
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputUserNameEn')" 
+              :disabled="loading"
+            />
+          </el-form-item>
+        </div>
 
-      <!-- 第三行：日期和部门信息 -->
-      <div class="form-row">
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.hireDate')" prop="hireDate">
-          <el-date-picker
-            v-model="personalInfoForm.hireDate"
-            type="date"
-            :disabled="true"
-            style="width: 100%"
-            format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.department')" prop="departmentId">
-          <el-tree-select
-            v-model="personalInfoForm.departmentId"
-            :data="departmentOptions"
-            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
-            check-strictly
-            :disabled="true"
-            style="width: 100%"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.position')" prop="positionId">
-          <el-select v-model="personalInfoForm.positionId" :disabled="true" style="width: 100%">
-            <el-option
-              v-for="item in positionOptions"
-              :key="item.positionId"
-              :label="item.positionName"
+        <!-- 第二行：联系信息 -->
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.email')" prop="email">
+            <el-input 
+              v-model="personalInfoForm.email" 
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputEmail')" 
+              :disabled="true"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.phoneNumber')" prop="phoneNumber">
+            <el-input 
+              v-model="personalInfoForm.phoneNumber" 
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPhoneNumber')" 
+              :disabled="loading"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.password')" prop="password">
+            <el-input 
+              v-model="personalInfoForm.password" 
+              type="password"
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPassword')" 
+              :disabled="loading"
+              show-password
+            />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.gender')" prop="gender">
+            <el-select v-model="personalInfoForm.gender" :disabled="true" style="width: 100%">
+              <el-option
+                v-for="item in genderOptions"
+                :key="item.genderCode"
+                :label="item.genderName"
+                :value="item.genderCode"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <!-- 第三行：日期和部门信息 -->
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.hireDate')" prop="hireDate">
+            <el-date-picker
+              v-model="personalInfoForm.hireDate"
+              type="date"
+              :disabled="true"
+              style="width: 100%"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.department')" prop="departmentId">
+            <el-tree-select
+              v-model="personalInfoForm.departmentId"
+              :data="departmentOptions"
+              :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
+              check-strictly
+              :disabled="true"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.personalInfo.position')" prop="positionId">
+            <el-select v-model="personalInfoForm.positionId" :disabled="true" style="width: 100%">
+              <el-option
+                v-for="item in positionOptions"
+                :key="item.positionId"
+                :label="item.positionName"
               :value="item.positionId"
             />
           </el-select>
@@ -130,10 +130,10 @@
           <el-switch v-model="personalInfoForm.isFreeze" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isEmployed')" prop="isEmployed">
-           <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+          <el-switch v-model="personalInfoForm.isEmployed" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isAgent')" prop="isAgent">
-           <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+          <el-switch v-model="personalInfoForm.isAgent" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
       </div>
 
@@ -142,8 +142,8 @@
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isPartTime')" prop="isPartTime">
           <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
-         <el-form-item :label="$t('systembasicmgmt.personalInfo.isApproval')" prop="isApproval">
-           <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+        <el-form-item :label="$t('systembasicmgmt.personalInfo.isApproval')" prop="isApproval">
+          <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
           <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="loading" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
@@ -187,8 +187,8 @@
         </el-button>
       </div>
     </el-form>
-    </el-card>
-  </div>
+  </el-card>
+</div>
 </template>
 
 <script>
@@ -224,7 +224,7 @@ export default {
 
     // 统一的文件上传配置
     const UPLOAD_CONFIG = reactive({
-      url: 'https://localhost:7272/api/systembasicmgmt/SystemBasicCoreApi/SysFile/UploadFile',
+      url: UPLOAD_AVATAR_API.UPLOAD_AVATAR,
       headers: {
         'Accept-Language': '',
         'Authorization': `Bearer ${userStore.token}`
@@ -268,19 +268,19 @@ export default {
 
     // 原始数据备份（用于重置）
     const originalFormData = reactive({})
-
+    
     // 下拉框选项
     const departmentOptions = ref([])
     const positionOptions = ref([])
     const roleOptions = ref([])
-     const genderOptions = ref([])
-     const laborTypeOptions = ref([])
-
+    const genderOptions = ref([])
+    const laborTypeOptions = ref([])
+    
     // 表单验证规则
     const formRules = reactive({
       userNameCn: [
-      { required: true, message: t('systembasicmgmt.personalInfo.userNameCnRequired'), trigger: 'blur' }
-    ],
+        { required: true, message: t('systembasicmgmt.personalInfo.userNameCnRequired'), trigger: 'blur' }
+      ],
       userNameEn: [
         { required: true, message: t('systembasicmgmt.personalInfo.userNameEnRequired'), trigger: 'blur' }
       ],
@@ -296,6 +296,26 @@ export default {
           validator: (rule, value, callback) => {
             if (!value) {
               callback()
+              return
+            }
+            // 密码必须为8-16个字符
+            if (value.length < 8 || value.length > 16) {
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordLengthError')))
+              return
+            }
+            // 必须包含小写字母
+            if (!/[a-z]/.test(value)) {
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordLowercaseError')))
+              return
+            }
+            // 必须包含大写字母
+            if (!/[A-Z]/.test(value)) {
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordUppercaseError')))
+              return
+            }
+            // 必须包含数字
+            if (!/[0-9]/.test(value)) {
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordNumberError')))
               return
             }
             // 密码必须为8-16个字符
@@ -337,19 +357,19 @@ export default {
 
       if (!isJPG) {
         ElMessage({
-            message: t('systembasicmgmt.userInfo.avatarFormatError'),
-            type: 'error',
-            plain: true,
-            showClose: true
+          message: t('systembasicmgmt.userInfo.avatarFormatError'),
+          type: 'error',
+          plain: true,
+          showClose: true
         })
         return false
       }
       if (!isLt2M) {
         ElMessage({
-            message: t('systembasicmgmt.userInfo.avatarSizeError'),
-            type: 'error',
-            plain: true,
-            showClose: true
+          message: t('systembasicmgmt.userInfo.avatarSizeError'),
+          type: 'error',
+          plain: true,
+          showClose: true
         })
         return false
       }
@@ -363,17 +383,17 @@ export default {
         personalInfoForm.avatarAddress = res.data
         avatarUrl.value = res.data
         ElMessage({
-            message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
-            type: 'success',
-            plain: true,
-            showClose: true
+          message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
+          type: 'success',
+          plain: true,
+          showClose: true
         })
       } else {
         ElMessage({
-            message: res.message,
-            type: 'error',
-            plain: true,
-            showClose: true
+          message: res.message,
+          type: 'error',
+          plain: true,
+          showClose: true
         })
       }
     }
@@ -394,211 +414,210 @@ export default {
           }
           Object.assign(originalFormData, response.data)
           originalFormData.password = ''
-        } else {
-          ElMessage({
-              message: response.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
-        }
-      } catch (error) {
-        console.error('获取个人信息失败:', error)
-        ElMessage({
-            message: t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
-            type: 'error',
-            plain: true,
-            showClose: true
-        })
-      } finally {
-        loading.value = false
-      }
-    }
+           ElMessage({
+             message: response.message,
+             type: 'error',
+             plain: true,
+             showClose: true
+           })
+         }
+       } catch (error) {
+         console.error('获取个人信息失败:', error)
+         ElMessage({
+           message: t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
+           type: 'error',
+           plain: true,
+           showClose: true
+         })
+       } finally {
+         loading.value = false
+       }
+     }
 
-    // 获取部门下拉框数据
-    const getDepartmentDropdown = async () => {
-      try {
-        const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-        if (response.code === 200 && response.data) {
-          departmentOptions.value = response.data
-        }
-      } catch (error) {
-        console.error('获取部门下拉框失败:', error)
-      }
-    }
+     // 获取部门下拉框数据
+     const getDepartmentDropdown = async () => {
+       try {
+         const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
+         if (response.code === 200 && response.data) {
+           departmentOptions.value = response.data
+         }
+       } catch (error) {
+         console.error('获取部门下拉框失败:', error)
+       }
+     }
 
-    // 获取职业下拉框数据
-    const getPositionDropdown = async () => {
-      try {
-        const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-        if (response.code === 200 && response.data) {
-          positionOptions.value = response.data
-        }
-      } catch (error) {
-        console.error('获取职业下拉框失败:', error)
-      }
-    }
+     // 获取职业下拉框数据
+     const getPositionDropdown = async () => {
+       try {
+         const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
+         if (response.code === 200 && response.data) {
+           positionOptions.value = response.data
+         }
+       } catch (error) {
+         console.error('获取职业下拉框失败:', error)
+       }
+     }
 
-    // 获取角色下拉框数据
-    const getRoleDropdown = async () => {
-      try {
-        const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-        if (response.code === 200 && response.data) {
-          roleOptions.value = response.data
-        }
-      } catch (error) {
-        console.error('获取角色下拉框失败:', error)
-      }
-    }
+     // 获取角色下拉框数据
+     const getRoleDropdown = async () => {
+       try {
+         const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
+         if (response.code === 200 && response.data) {
+           roleOptions.value = response.data
+         }
+       } catch (error) {
+         console.error('获取角色下拉框失败:', error)
+       }
+     }
 
-    // 获取性别下拉框数据
-    const getGenderDropdown = async () => {
-      try {
-        const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-        if (response.code === 200 && response.data) {
-          genderOptions.value = response.data
-        }
-      } catch (error) {
-        console.error('获取性别下拉框失败:', error)
-      }
-    }
+     // 获取性别下拉框数据
+     const getGenderDropdown = async () => {
+       try {
+         const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
+         if (response.code === 200 && response.data) {
+           genderOptions.value = response.data
+         }
+       } catch (error) {
+         console.error('获取性别下拉框失败:', error)
+       }
+     }
 
-    // 获取员工职业下拉框数据
-    const getLaborTypeDropdown = async () => {
-      try {
-        const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
-        if (response.code === 200 && response.data) {
-          laborTypeOptions.value = response.data || []
-          // 过滤掉无效数据
-          laborTypeOptions.value = laborTypeOptions.value.filter(item => 
-            item && item.laborId !== undefined && item.laborId !== null && 
-            item.laborName !== undefined && item.laborName !== null
-          )
-        } else {
-          laborTypeOptions.value = []
-        }
-      } catch (error) {
-        console.error('获取员工职业下拉框失败:', error)
-        laborTypeOptions.value = []
-      }
-    }
-    
-    // 保存个人信息
-    const handleSave = async () => {
-      // 先进行表单验证，如果验证失败直接返回
-      try {
-        const valid = await personalInfoFormRef.value.validate()
-        if (!valid) {
-          // 验证失败时不显示额外的错误提示，Element Plus会自动显示字段验证错误
-          return
-        }
-      } catch (validationError) {
-        // 验证过程中出现错误（如验证规则执行失败），不显示保存失败提示
-        console.error('表单验证失败:', validationError)
-        return
-      }
+     // 获取员工职业下拉框数据
+     const getLaborTypeDropdown = async () => {
+       try {
+         const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
+         if (response.code === 200 && response.data) {
+           laborTypeOptions.value = response.data || []
+           // 过滤掉无效数据
+           laborTypeOptions.value = laborTypeOptions.value.filter(item => 
+             item && item.laborId !== undefined && item.laborId !== null && 
+             item.laborName !== undefined && item.laborName !== null
+           )
+         } else {
+           laborTypeOptions.value = []
+         }
+       } catch (error) {
+         console.error('获取员工职业下拉框失败:', error)
+         laborTypeOptions.value = []
+       }
+     }
 
-      // 验证通过后进行保存操作
-      try {
-        saving.value = true
-        
-        // 只提交允许修改的字段
-        const updateData = {
-          userId: personalInfoForm.userId,
-          userNameCn: personalInfoForm.userNameCn,
-          userNameEn: personalInfoForm.userNameEn,
-          email: personalInfoForm.email,
-          phoneNumber: personalInfoForm.phoneNumber,
-          PassWord: personalInfoForm.password,
-          avatarAddress: personalInfoForm.avatarAddress,
-          isRealtimeNotification: personalInfoForm.isRealtimeNotification,
-          isScheduledNotification: personalInfoForm.isScheduledNotification
-        }
+     // 保存个人信息
+     const handleSave = async () => {
+       // 先进行表单验证，如果验证失败直接返回
+       try {
+         const valid = await personalInfoFormRef.value.validate()
+         if (!valid) {
+           // 验证失败时不显示额外的错误提示，Element Plus会自动显示字段验证错误
+           return
+         }
+       } catch (validationError) {
+         // 验证过程中出现错误（如验证规则执行失败），不显示保存失败提示
+         console.error('表单验证失败:', validationError)
+         return
+       }
 
-        const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
-        
-        if (response.code === 200) {
-          ElMessage({
-              message: response.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
-          
-          // 如果修改了密码，则退出系统
-          if (personalInfoForm.password && personalInfoForm.password.trim() !== '') {
-            // 清空用户store和localStorage
-            await userStore.logout()
-            // 跳转到登录页面
-            router.push('/login')
-            return
-          }
-          
-          // 重新获取最新数据
-          await getPersonalInfo()
-        } else {
-          ElMessage({
-              message: response.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
-        }
-      } catch (error) {
-        console.error('保存个人信息失败:', error)
-        ElMessage({
-            message: t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
-            type: 'error',
-            plain: true,
-            showClose: true
-        })
-      } finally {
-        saving.value = false
-      }
-    }
+       // 验证通过后进行保存操作
+       try {
+         saving.value = true
+         
+         // 只提交允许修改的字段
+         const updateData = {
+           userId: personalInfoForm.userId,
+           userNameCn: personalInfoForm.userNameCn,
+           userNameEn: personalInfoForm.userNameEn,
+           email: personalInfoForm.email,
+           phoneNumber: personalInfoForm.phoneNumber,
+           PassWord: personalInfoForm.password,
+           avatarAddress: personalInfoForm.avatarAddress,
+           isRealtimeNotification: personalInfoForm.isRealtimeNotification,
+           isScheduledNotification: personalInfoForm.isScheduledNotification
+         }
 
-    // 重置表单
-    const handleReset = () => {
-      Object.assign(personalInfoForm, originalFormData)
-      personalInfoFormRef.value?.clearValidate()
-    }
+         const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
+         
+         if (response.code === 200) {
+           ElMessage({
+             message: response.message,
+             type: 'success',
+             plain: true,
+             showClose: true
+           })
+           
+           // 如果修改了密码，则退出系统
+           if (personalInfoForm.password && personalInfoForm.password.trim() !== '') {
+             // 清空用户store和localStorage
+             await userStore.logout()
+             // 跳转到登录页面
+             router.push('/login')
+             return
+           }
+           
+           // 重新获取最新数据
+           await getPersonalInfo()
+         } else {
+           ElMessage({
+             message: response.message,
+             type: 'error',
+             plain: true,
+             showClose: true
+           })
+         }
+       } catch (error) {
+         console.error('保存个人信息失败:', error)
+         ElMessage({
+           message: t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
+           type: 'error',
+           plain: true,
+           showClose: true
+         })
+       } finally {
+         saving.value = false
+       }
+     }
 
-    // 初始化数据
-    const initData = async () => {
-      await Promise.all([
-        getPersonalInfo(),
-        getDepartmentDropdown(),
-        getPositionDropdown(),
-        getRoleDropdown(),
-        getGenderDropdown(),
-        getLaborTypeDropdown()
-      ])
-    }
+     // 重置表单
+     const handleReset = () => {
+       Object.assign(personalInfoForm, originalFormData)
+       personalInfoFormRef.value?.clearValidate()
+     }
 
-    onMounted(() => {
-      initData()
-    })
+     // 初始化数据
+     const initData = async () => {
+       await Promise.all([
+         getPersonalInfo(),
+         getDepartmentDropdown(),
+         getPositionDropdown(),
+         getRoleDropdown(),
+         getGenderDropdown(),
+         getLaborTypeDropdown()
+       ])
+     }
 
-    return {
-      personalInfoFormRef,
-      loading,
-      saving,
-      personalInfoForm,
-      formRules,
-      departmentOptions,
-      positionOptions,
-      roleOptions,
-      genderOptions,
-      laborTypeOptions,
-      avatarUrl,
-      UPLOAD_CONFIG,
-      handleSave,
-      handleReset,
-      beforeAvatarUpload,
-      handleAvatarSuccess
-    }
-  }
-}
+     onMounted(() => {
+       initData()
+     })
+
+     return {
+       personalInfoFormRef,
+       loading,
+       saving,
+       personalInfoForm,
+       formRules,
+       departmentOptions,
+       positionOptions,
+       roleOptions,
+       genderOptions,
+       laborTypeOptions,
+       avatarUrl,
+       UPLOAD_CONFIG,
+       handleSave,
+       handleReset,
+       beforeAvatarUpload,
+       handleAvatarSuccess
+     }
+   }
+ }
 </script>
 
 <style scoped>

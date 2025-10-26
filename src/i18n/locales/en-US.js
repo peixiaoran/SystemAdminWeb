@@ -795,7 +795,7 @@ export default {
       departmentLevelName: 'Department Level Name',
       departmentLevelNameCn: 'Department Level Name (Cn)',
       departmentLevelNameEn: 'Department Level Name (En)',
-      departmentLevelDescribe: 'Description',
+      description: 'Description',
       sortOrder: 'Sort Order',
       operation: 'Operation',
       addDepartmentLevel: 'Add Department Level',
@@ -812,7 +812,7 @@ export default {
       positionNo: 'Level No.',
       positionNameCn: 'Chinese Name',
       positionNameEn: 'English Name',
-      positionDescribe: 'Description',
+      positionDescription: 'Description',
       operation: 'Operation',
       editPosition: 'Edit Level',
       pleaseInputPositionNo: 'Please enter level number',
@@ -821,7 +821,7 @@ export default {
       positionNoPlaceholder: 'Please enter level number',
       positionNameCnPlaceholder: 'Please enter Chinese name',
       positionNameEnPlaceholder: 'Please enter English name',
-      positionDescribePlaceholder: 'Please enter description',
+      positionDescriptionPlaceholder: 'Please enter description',
       getFailed: 'Failed to get data'
     },
     dictionaryInfo: {
@@ -859,7 +859,7 @@ export default {
     createdBy: 'Created By',
     createdTime: 'Created Time',
     operation: 'Operation',
-    remarks: 'Remarks',
+    remark: 'Remark',
     updateBindings: 'Update Bindings',
     selectPlaceholder: 'Please select ',
     inputPlaceholder: 'Please input ',
@@ -897,6 +897,7 @@ export default {
     },
     // Module
     module: {
+      title: 'Module Management',
       moduleCode: 'Module Code',
       moduleName: 'Module Name',
       moduleNameCn: 'Module Name (Ch)',
@@ -904,7 +905,7 @@ export default {
       moduleIcon: 'Module Icon',
       moduleType: 'Module Type',
       moduleTypeName: 'Module Type Name',
-      moduleTypeDescribe: 'Module Type Describe',
+      moduleTypeDescription: 'Module Type Description',
       sortOrder: 'Sort Order',
       roleCode: 'Role Code',
       pagePath: 'Page Path',
@@ -922,10 +923,16 @@ export default {
       pleaseInputSortOrder: 'Please enter sort order',
       pleaseInputRoleCode: 'Please enter role code',
       pleaseInputPagePath: 'Please enter page path',
-      remarksCh: 'Remarks (Ch)',
-      remarksEn: 'Remarks (En)',
-      pleaseInputRemarksCh: 'Please enter remarks in Ch',
-      pleaseInputRemarksEn: 'Please enter remarks in En'
+      remarksCh: 'Remark (Ch)',
+      remarksEn: 'Remark (En)',
+      pleaseInputRemarksCh: 'Please enter remark in Ch',
+      pleaseInputRemarksEn: 'Please enter remark in En',
+      filter: {
+        moduleCode: 'Module Code',
+        pleaseInputModuleCode: 'Please enter module code',
+        moduleNameCh: 'Module Name',
+        pleaseInputModuleNameCh: 'Please enter module name'
+      }
     },
     // Primary Menu
     pmenu: {
@@ -1158,7 +1165,7 @@ export default {
       laborTypeCode: 'Career Code',
       laborTypeNameCn: 'Chinese Name',
       laborTypeNameEn: 'English Name',
-      laborTypeDescribe: 'Career Description',
+      laborTypeDescription: 'Career Description',
       operation: 'Operation',
       addLabor: 'Add Career',
       editLabor: 'Edit Career',
@@ -1172,7 +1179,7 @@ export default {
       pleaseInputLaborTypeCode: 'Please enter career code',
       pleaseInputLaborTypeNameCn: 'Please enter Chinese name',
       pleaseInputLaborTypeNameEn: 'Please enter English name',
-      pleaseInputLaborTypeDescribe: 'Please enter career description',
+      pleaseInputLaborTypeDescription: 'Please enter career description',
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {

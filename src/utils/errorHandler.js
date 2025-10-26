@@ -3,7 +3,6 @@
  * 提供更好的错误处理和用户友好的提示
  */
 import { ElMessage, ElNotification } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 
 // 错误类型定义
 export const ERROR_TYPES = {
@@ -193,24 +192,27 @@ export const handleFormValidationError = (errors, formRef) => {
  * 网络错误处理
  * @param {Error} error - 网络错误
  */
-export const handleNetworkError = (error) => {
-  let message = '网络连接失败，请检查网络设置'
-  
-  if (error.code === 'NETWORK_ERROR') {
-    message = '网络连接失败，请检查网络设置'
-  } else if (error.code === 'TIMEOUT') {
-    message = '请求超时，请稍后重试'
-  } else if (error.response?.status === 401) {
-    message = '登录已过期，请重新登录'
-    // 这里可以触发重新登录逻辑
-  } else if (error.response?.status === 403) {
-    message = '没有权限访问此资源'
-  } else if (error.response?.status >= 500) {
-    message = '服务器内部错误，请稍后重试'
+export const handleNetworkError = (error, options = {}) => {
+  const { showMessage = false, showNotification = false, level = ERROR_LEVELS.ERROR } = options
+
+  // 规范化错误信息（超时/权限/服务器错误等）
+  let normalized
+  if (error?.code === 'ECONNABORTED' || error?.code === 'TIMEOUT' || (typeof error?.message === 'string' && error.message.toLowerCase().includes('timeout'))) {
+    normalized = { code: 'TIMEOUT', message: '请求超时，请稍后重试', details: error.response?.data }
+  } else if (error?.response?.status === 401) {
+    normalized = { code: 'HTTP_401', message: '登录已过期，请重新登录', details: error.response?.data }
+  } else if (error?.response?.status === 403) {
+    normalized = { code: 'HTTP_403', message: '没有权限访问此资源', details: error.response?.data }
+  } else if (error?.response?.status >= 500) {
+    normalized = { code: `HTTP_${error.response.status}`, message: '服务器内部错误，请稍后重试', details: error.response?.data }
+  } else {
+    normalized = { code: error?.code || 'NETWORK_ERROR', message: '网络连接失败，请检查网络设置', details: error.response?.data }
   }
-  
-  return handleError(error, '网络请求', {
-    showMessage: true,
+
+  return handleError(normalized, '网络请求', {
+    showMessage,
+    showNotification,
+    level,
     type: ERROR_TYPES.NETWORK
   })
-} 
+}
