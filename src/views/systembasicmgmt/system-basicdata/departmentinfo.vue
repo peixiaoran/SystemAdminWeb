@@ -169,9 +169,6 @@
     // 部门数据
     const departmentList = ref([])
     const loading = ref(false)
-    
-    // 部门级别下拉列表数据
-    const departmentLevelList = ref([])
 
     // 过滤条件
     const filters = reactive({
@@ -272,6 +269,11 @@
     // 防抖获取部门数据
     const debouncedGetDepartmentTree = debounce(getDepartmentTree, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
+    // 立即获取部门数据（不使用防抖，用于保存后刷新）
+    const getDepartmentTreeImmediate = () => {
+        getDepartmentTree()
+    }
+
     // 获取部门级别下拉列表
     const getDepartmentLevelDropdown = async () => {
         try {
@@ -297,8 +299,9 @@
         }
     }
 
-    // 搜索
+    // 处理搜索操作（带防抖）
     const handleSearch = () => {
+        loading.value = true
         debouncedGetDepartmentTree()
     }
 
@@ -306,7 +309,6 @@
     const handleReset = () => {
         filters.departmentCode = ''
         filters.departmentName = ''
-        getDepartmentTree()
     }
 
     // 添加部门
@@ -400,7 +402,7 @@
                     plain: true,
                     showClose: true
                 })
-                getDepartmentTree()
+                getDepartmentTreeImmediate()
             } else {
                 ElMessage({
                     message: response.message,
@@ -455,7 +457,7 @@
                     showClose: true
                 })
                 dialogVisible.value = false
-                getDepartmentTree()
+                getDepartmentTreeImmediate()
             } else {
                 ElMessage({
                     message: response.message,

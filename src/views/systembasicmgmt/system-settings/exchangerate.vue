@@ -1,153 +1,157 @@
 <template>
-    <div class="conventional-table-container">
-        <el-card class="conventional-card">
-  
-            <!-- 过滤条件 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="汇率搜索表单">
-                <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.currencyCode')">
-                    <el-select v-model="filters.currencyCode"
-                              style="width: 180px;"
-                              :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
-                              clearable>
-                        <el-option v-for="item in currencyOptions"
-                                   :key="item.currencyCode"
-                                   :label="item.currencyName"
-                                   :value="item.currencyCode"
-                                   :disabled="item.disabled" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.yearMonth')">
-                    <el-date-picker v-model="filters.yearMonth"
-                                   type="month"
-                                   style="width: 180px;"
-                                   :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
-                                   format="YYYY-MM"
-                                   value-format="YYYY-MM"
-                                   clearable />
-                </el-form-item>
-                <el-form-item class="form-button-group">
-                    <el-button type="primary" @click="handleSearch" plain>
-                        {{ $t('common.search') }}
-                    </el-button>
-                </el-form-item>
-                <el-form-item class="form-right-button">
-                    <el-button type="primary" @click="handleAdd">
-                        {{ $t('systembasicmgmt.exchangeRate.addExchangeRate') }}
-                    </el-button>
-                </el-form-item>
-            </el-form>
-  
-            <!-- 表格区域 -->
-            <div class="table-container">
-                <el-table :data="exchangeRateList"
-                          border
-                          stripe
-                          :header-cell-style="{ background: '#f5f7fa' }"
-                          v-loading="loading"
-                          class="conventional-table">
-                    <el-table-column type="index" :label="$t('systembasicmgmt.exchangeRate.index')" width="70" align="center" fixed />
-                    <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.exchangeRate.currencyCode')" align="center" min-width="120"/>
-                    <el-table-column prop="exchangeCurrencyCode" :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" align="center" min-width="150" />
-                    <el-table-column prop="exchangeRate" :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" align="center" min-width="120">
-                        <template #default="scope">
-                            {{ scope.row.exchangeRate?.toFixed(4) }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="yearMonth" :label="$t('systembasicmgmt.exchangeRate.yearMonth')" align="center" min-width="120" />
-                    <el-table-column prop="remark" :label="$t('systembasicmgmt.exchangeRate.remark')" align="left" min-width="200" />
-                    <el-table-column :label="$t('systembasicmgmt.exchangeRate.operation')" min-width="130" fixed="right" align="center">
-                        <template #default="scope">
-                            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                            <el-button size="small"
-                                       type="danger"
-                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-  
-            <!-- 分页 -->
-            <div class="pagination-wrapper">
-                <el-pagination v-model:current-page="pagination.pageIndex"
-                               v-model:page-size="pagination.pageSize"
-                               :page-sizes="[10, 20, 50, 100]"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.totalCount"
-                               @size-change="handleSizeChange"
-                               @current-change="handlePageChange" />
-            </div>
-        </el-card>
-  
-        <!-- 汇率编辑对话框 -->
-        <el-dialog v-model="dialogVisible"
-                   :title="dialogTitle"
-                   width="50%"
-                   :close-on-click-modal="false"
-                   :append-to-body="true"
-                   :modal-append-to-body="true"
-                   :lock-scroll="true"
-                   @close="handleDialogClose">
-            <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="汇率编辑表单">
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.exchangeRate.currencyCode')" prop="currencyCode">
-                        <el-select v-model="editForm.currencyCode" 
-                                  style="width:100%" 
-                                  :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')">
-                            <el-option v-for="item in currencyOptions"
-                                       :key="item.currencyCode"
-                                       :label="item.currencyName"
-                                       :value="item.currencyCode"
-                                       :disabled="item.disabled" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
-                        <el-select v-model="editForm.exchangeCurrencyCode" 
-                                  style="width:100%" 
-                                  :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')">
-                            <el-option v-for="item in currencyOptions"
-                                       :key="item.currencyCode"
-                                       :label="item.currencyName"
-                                       :value="item.currencyCode"
-                                       :disabled="item.disabled" />
-                        </el-select>
-                    </el-form-item>
-                </div>
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" prop="exchangeRate">
-                        <el-input v-model.number="editForm.exchangeRate" 
-                                     type="number" 
-                                     style="width:100%" 
-                                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate')" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.exchangeRate.yearMonth')" prop="yearMonth">
-                        <el-date-picker v-model="editForm.yearMonth"
-                                       type="month"
-                                       style="width:100%"
-                                       :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
-                                       format="YYYY-MM"
-                                       value-format="YYYY-MM" />
-                    </el-form-item>
-                </div>
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.exchangeRate.remark')" prop="remark">
-                        <el-input v-model="editForm.remark" 
-                                 type="textarea" 
-                                 :rows="3"
-                                 style="width:100%" 
-                                 :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputRemark')" />
-                    </el-form-item>
-                </div>
-            </el-form>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
-                </span>
+  <div class="conventional-table-container">
+    <el-card class="conventional-card">
+
+      <!-- 过滤条件 -->
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="汇率搜索表单">
+        <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.currencyCode')">
+          <el-select v-model="filters.currencyCode"
+                    style="width: 180px;"
+                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
+                    :clearable="false">
+            <el-option v-for="item in currencyOptions"
+                      :key="item.currencyCode"
+                      :label="item.currencyName"
+                      :value="item.currencyCode"
+                      :disabled="item.disabled" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.yearMonth')">
+          <el-date-picker v-model="filters.yearMonth"
+                         type="month"
+                         style="width: 180px;"
+                         :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
+                         format="YYYY-MM"
+                         value-format="YYYY-MM" />
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="handleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset" plain>
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('systembasicmgmt.exchangeRate.addExchangeRate') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 表格区域 -->
+      <div class="table-container">
+        <el-table :data="exchangeRateList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.exchangeRate.index')" width="70" align="center" fixed />
+          <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.exchangeRate.currencyCode')" align="center" min-width="120" />
+          <el-table-column prop="exchangeCurrencyCode" :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" align="center" min-width="150" />
+          <el-table-column prop="exchangeRate" :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" align="center" min-width="120">
+            <template #default="scope">
+              {{ scope.row.exchangeRate?.toFixed(4) }}
             </template>
-        </el-dialog>
-    </div>
+          </el-table-column>
+          <el-table-column prop="yearMonth" :label="$t('systembasicmgmt.exchangeRate.yearMonth')" align="center" min-width="120" />
+          <el-table-column prop="remark" :label="$t('systembasicmgmt.exchangeRate.remark')" align="left" min-width="200" />
+          <el-table-column :label="$t('systembasicmgmt.exchangeRate.operation')" min-width="130" fixed="right" align="center">
+            <template #default="scope">
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small"
+                         type="danger"
+                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <!-- 分页 -->
+      <div class="pagination-wrapper">
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
+      </div>
+    </el-card>
+
+    <!-- 汇率编辑对话框 -->
+    <el-dialog v-model="dialogVisible"
+               :title="dialogTitle"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :modal-append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
+      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="汇率编辑表单">
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.exchangeRate.currencyCode')" prop="currencyCode">
+            <el-select v-model="editForm.currencyCode"
+                    style="width:100%"
+                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
+                    :clearable="false">
+              <el-option v-for="item in currencyOptions"
+                         :key="item.currencyCode"
+                         :label="item.currencyName"
+                         :value="item.currencyCode"
+                         :disabled="item.disabled" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
+            <el-select v-model="editForm.exchangeCurrencyCode"
+                    style="width:100%"
+                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')"
+                    :clearable="false">
+              <el-option v-for="item in currencyOptions"
+                         :key="item.currencyCode"
+                         :label="item.currencyName"
+                         :value="item.currencyCode"
+                         :disabled="item.disabled" />
+            </el-select>
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" prop="exchangeRate">
+            <el-input v-model.number="editForm.exchangeRate" 
+                     type="number" 
+                     style="width:100%" 
+                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate')" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.exchangeRate.yearMonth')" prop="yearMonth">
+            <el-date-picker v-model="editForm.yearMonth"
+                           type="month"
+                           style="width:100%"
+                           :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
+                           format="YYYY-MM"
+                           value-format="YYYY-MM" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.exchangeRate.remark')" prop="remark">
+            <el-input v-model="editForm.remark" 
+                     type="textarea" 
+                     :rows="3"
+                     style="width:100%" 
+                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputRemark')" />
+          </el-form-item>
+        </div>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
-  
+
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { post } from '@/utils/request'
@@ -165,7 +169,7 @@ import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
 // 初始化i18n
 const { t } = useI18n()
-  
+
 // 汇率数据
 const exchangeRateList = ref([])
 const loading = ref(false)
@@ -233,6 +237,13 @@ const fetchCurrencyDropDown = async () => {
   const res = await post(GET_CURRENCY_DROPDOWN_API.GET_CURRENCY_DROPDOWN)
   if (res && res.code === 200) {
     currencyOptions.value = res.data || []
+    // 设置默认选中第一个有效值
+    if (currencyOptions.value.length > 0) {
+      const firstValidOption = currencyOptions.value.find(option => !option.disabled)
+      if (firstValidOption) {
+        filters.currencyCode = firstValidOption.currencyCode
+      }
+    }
   } else {
     ElMessage.error(res?.message || t('systembasicmgmt.exchangeRate.getCurrencyDropDownFailed'))
   }
@@ -309,6 +320,19 @@ const handleSizeChange = (size) => {
   fetchExchangeRatePages()
 }
 
+// 处理重置操作
+const handleReset = () => {
+  // 只清空筛选条件，保持currencyCode为第一个有效值
+  filters.yearMonth = ''
+  // 如果当前没有选中值，设置默认选中第一个有效值
+  if (!filters.currencyCode && currencyOptions.value.length > 0) {
+    const firstValidOption = currencyOptions.value.find(option => !option.disabled)
+    if (firstValidOption) {
+      filters.currencyCode = firstValidOption.currencyCode
+    }
+  }
+}
+
 const resetForm = (clearValidation = true) => {
   editForm.exchangeRateId = ''
   editForm.currencyCode = ''
@@ -316,6 +340,14 @@ const resetForm = (clearValidation = true) => {
   editForm.exchangeRate = ''
   editForm.yearMonth = ''
   editForm.remark = ''
+  
+  // 设置默认选中第一个有效值
+  if (currencyOptions.value.length > 0) {
+    const firstValidOption = currencyOptions.value.find(option => !option.disabled)
+    if (firstValidOption) {
+      editForm.currencyCode = firstValidOption.currencyCode
+    }
+  }
   
   if (clearValidation && editFormRef.value) {
     nextTick(() => {
@@ -448,8 +480,8 @@ const handleDialogClose = () => {
   resetForm()
 }
 </script>
-  
+
 <style scoped>
-    @import '@/assets/styles/conventionalTablePage.css';
+@import '@/assets/styles/conventionalTablePage.css';
 </style>
   

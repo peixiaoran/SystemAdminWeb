@@ -5,15 +5,15 @@
             <!-- 过滤条件 -->
             <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工兼任搜索表单">
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
-                    <el-tree-select 
+                    <el-tree-select
                         v-model="filters.departmentId"
                         :data="departmentList || []"
                         :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                         check-strictly
                         filterable
                         :filter-node-method="filterNodeMethod"
-                        @change="handleSearch"
                         style="width: 200px;"
+                        :clearable="false"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
@@ -63,9 +63,9 @@
                     </el-table-column>
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="200" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="150" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="140">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="100">
                         <template #default="scope">
-                            <el-tag :type="scope.row.isPartTime === '1' ? 'primary' : 'info'">
+                            <el-tag :type="scope.row.isPartTime === '1' ? 'success' : 'info'">
                                 {{ scope.row.isPartTimeName }}
                             </el-tag>
                         </template>
@@ -77,14 +77,12 @@
                     <el-table-column prop="endTime" :label="$t('systembasicmgmt.userPartTime.endTime')" align="center" min-width="160" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="190" fixed="right" align="center">
                         <template #default="scope">
-                            <el-button v-if="scope.row.isPartTime === '1'"
-                                       size="small"
-                                       type="primary"
-                                       @click="handleEdit(scope.$index, scope.row)">{{ $t('systembasicmgmt.userPartTime.editPartTime') }}</el-button>
-                            <el-button v-if="scope.row.isPartTime === '1'"
-                                       size="small"
-                                       type="danger"
-                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('systembasicmgmt.userPartTime.deletePartTime') }}</el-button>
+                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="primary" @click="handleEdit(scope.$index, scope.row)">
+                                {{ $t('systembasicmgmt.userPartTime.editPartTime') }}
+                            </el-button>
+                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">
+                                {{ $t('systembasicmgmt.userPartTime.deletePartTime') }}
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -174,6 +172,7 @@
                             @change="handleUserSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
+                            :clearable="false"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
@@ -211,7 +210,7 @@
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
                     <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="130">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
                                 {{ scope.row.isApprovalName }}
@@ -312,6 +311,7 @@
                             @change="handleEditUserSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
+                            :clearable="false"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
@@ -811,25 +811,11 @@
     
     // 处理重置操作
     const handleReset = () => {
-        loading.value = true // 显示加载状态
-        // 重置筛选条件
+        // 重置筛选条件 - 只清空输入框，不清空下拉框
         Object.assign(filters, {
-            departmentId: '',
             userNo: '',
             userName: ''
         })
-        
-        // 重新设置部门默认值
-        if (departmentList.value.length > 0) {
-            const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
-            if (firstEnabledDept) {
-                filters.departmentId = firstEnabledDept
-            }
-        }
-        // 重置分页
-        pagination.pageIndex = 1
-        // 重新获取数据
-        fetchUserPartTimePages()
     }
   
     // 处理页码变化
@@ -960,22 +946,11 @@
     
     // 重置用户搜索条件
     const handleUserReset = () => {
+        // 重置筛选条件 - 只清空输入框，不清空下拉框
         Object.assign(userFilters, {
-            departmentId: '',
             userNo: '',
             userName: ''
         })
-        
-        // 设置用户搜索部门默认值
-        if (departmentList.value.length > 0) {
-            const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
-            if (firstEnabledDept) {
-                userFilters.departmentId = firstEnabledDept
-            }
-        }
-        
-        userPagination.pageIndex = 1
-        fetchUserPages()
     }
     
     // 处理用户页码变化
@@ -1055,13 +1030,11 @@
     
     // 重置编辑对话框用户搜索条件
     const handleEditUserReset = () => {
+        // 重置筛选条件 - 只清空输入框，不清空下拉框
         Object.assign(editUserFilters, {
-            departmentId: '',
             userNo: '',
             userName: ''
         })
-        editUserPagination.pageIndex = 1
-        fetchEditUserPages()
     }
     
     // 处理编辑对话框用户页码变化

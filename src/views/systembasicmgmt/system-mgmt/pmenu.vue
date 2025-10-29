@@ -7,7 +7,8 @@
           <el-select style="width: 180px" 
                      v-model="filters.moduleId" 
                      :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.pmenu.module')"
-                     @change="handleModuleChange">
+                     @change="handleModuleChange"
+                     :clearable="false">
             <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
           </el-select>
         </el-form-item>
@@ -49,9 +50,7 @@
           <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.pmenu.menuType')" align="center" min-width="150" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.pmenu.pagePath')" align="left" min-width="280" />
           <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="180" />
-          <el-table-column prop="path" :label="$t('systembasicmgmt.pmenu.pagePath')" align="left" min-width="280" />
-          <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="170" />
-          <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="120">
+          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="120">
             <template #default="scope">
               <div class="flex">
                 <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
@@ -60,7 +59,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
+          <el-table-column :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
             <template #default="scope">
               <div class="flex">
                 <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
@@ -115,7 +114,7 @@
             <el-input v-model="editForm.menuNameEn" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.pmenu.module')" prop="moduleId">
-            <el-select v-model="editForm.moduleId" style="width:100%" clearable :placeholder="$t('systembasicmgmt.pmenu.pleaseSelectModule')">
+            <el-select v-model="editForm.moduleId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.pmenu.pleaseSelectModule')">
               <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
             </el-select>
           </el-form-item>
@@ -413,27 +412,8 @@ const fetchPMenuPagesImmediate = () => {
 
 // 重置搜索条件
 const handleReset = () => {
-  // 立即显示加载状态
-  loading.value = true
-  
   filters.menuCode = ''
   filters.menuName = ''
-  filters.menuUrl = ''
-  
-  // 重置为默认的第一个未禁用的模块
-  if (moduleDropList.value.length > 0) {
-    const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
-    if (firstEnabledModule) {
-      filters.moduleId = firstEnabledModule.moduleId
-    } else {
-      filters.moduleId = ''
-    }
-  } else {
-    filters.moduleId = ''
-  }
-  
-  pagination.pageIndex = 1
-  fetchPMenuPages()
 }
 
 // 处理页码变化
@@ -449,11 +429,10 @@ const handleSizeChange = (size) => {
   fetchPMenuPages()
 }
 
-// 处理模块下拉框变化 - 立即查询table数据
+// 处理模块下拉框变化
 const handleModuleChange = () => {
-  loading.value = true
+  // 模块变化时只重置页码，不自动查询数据
   pagination.pageIndex = 1
-  fetchPMenuPages()
 }
 
 const resetForm = (clearValidation = true) => {

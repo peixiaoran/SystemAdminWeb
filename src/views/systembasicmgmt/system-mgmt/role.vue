@@ -40,20 +40,14 @@
           <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
           <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
           <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
-          <el-table-column prop="isEnabled"
-                           :label="$t('systembasicmgmt.isEnabled')"
-                           align="center"
-                           width="100">
+          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" width="100">
             <template #default="scope">
               <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
                 {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('systembasicmgmt.operation')"
-                           min-width="260"
-                           fixed="right"
-                           align="center">
+          <el-table-column :label="$t('systembasicmgmt.operation')" min-width="260" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
                 {{ $t('common.edit') }}
@@ -382,11 +376,8 @@
 
   // 处理重置事件
   const handleReset = () => {
-      loading.value = true
       filters.roleCode = ''
       filters.roleName = ''
-      pagination.pageIndex = 1
-      fetchRolePages()
   }
 
   // 处理页码变化

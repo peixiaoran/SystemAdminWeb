@@ -1,122 +1,122 @@
 <template>
-    <div class="conventional-table-container">
-        <el-card class="conventional-card">
-            <!-- 搜索 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
-                <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
-                    <el-input v-model="filters.currencyCode" :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
-                </el-form-item>
-                <el-form-item style="visibility: hidden; width: 0; margin: 0; padding: 0;">
-                    <el-input style="width: 0; height: 0; border: none; padding: 0; margin: 0;" />
-                </el-form-item>
-                <el-form-item class="form-button-group">
-                    <el-button type="primary" @click="handleSearch" plain>
-                        {{ $t('common.search') }}
-                    </el-button>
-                    <el-button @click="handleReset">
-                        {{ $t('common.reset') }}
-                    </el-button>
-                </el-form-item>
-                <el-form-item class="form-right-button">
-                    <el-button type="primary" @click="handleAdd">
-                        {{ $t('systembasicmgmt.currencyInfo.addCurrency') }}
-                    </el-button>
-                </el-form-item>
-            </el-form>
-  
-            <!-- 表格 -->
-            <div class="table-container">
-                <el-table :data="currencyList"
-                          border
-                          stripe
-                          :header-cell-style="{ background: '#f5f7fa' }"
-                          v-loading="loading"
-                          class="conventional-table">
-                    <el-table-column type="index" :label="$t('systembasicmgmt.currencyInfo.index')" width="70" align="center" fixed />
-                    <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
-                    <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
-                    <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-                    <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="60">
-                        <template #default="scope">
-                            <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
-                                {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
-                    <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
-                        <template #default="scope">
-                            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                            <el-button size="small"
-                                       type="danger"
-                                       @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-  
-            <!-- 分页 -->
-            <div class="pagination-wrapper">
-                <el-pagination v-model:current-page="pagination.pageIndex"
-                               v-model:page-size="pagination.pageSize"
-                               :page-sizes="[10, 20, 50, 100]"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="pagination.totalCount"
-                               @size-change="handleSizeChange"
-                               @current-change="handlePageChange"/>
-            </div>
-        </el-card>
-  
-        <!-- 编辑状态弹窗 -->
-        <el-dialog v-model="dialogVisible"
-                   :title="dialogTitle"
-                   width="50%"
-                   :close-on-click-modal="false"
-                   :append-to-body="true"
-                   :modal-append-to-body="true"
-                   :lock-scroll="true"
-                   @close="handleDialogClose">
-            <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
-                        <el-input v-model="editForm.currencyCode" 
-                                 style="width:100%" 
-                                 :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.isEnabled')" prop="isEnabled">
-                        <el-switch v-model="editForm.isEnabled" 
-                                  :active-value="'1'"
-                                  :inactive-value="'0'"
-                                  :active-text="$t('common.yes')"
-                                  :inactive-text="$t('common.no')"
-                                  inline-prompt
-                                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399"/>
-                    </el-form-item>
-                </div>
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
-                        <el-input v-model="editForm.currencyNameCn" style="width:100%" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
-                        <el-input v-model="editForm.currencyNameEn" style="width:100%" />
-                    </el-form-item>
-                </div>
-                <div class="form-row">
-                    <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
-                        <el-input v-model="editForm.remark" style="width:100%" />
-                    </el-form-item>
-                </div>
-            </el-form>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSave">{{ $t('common.save') }}</el-button>
-                </span>
+  <div class="conventional-table-container">
+    <el-card class="conventional-card">
+      <!-- 搜索 -->
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
+        <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
+          <el-input v-model="filters.currencyCode" :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
+        </el-form-item>
+        <el-form-item style="visibility: hidden; width: 0; margin: 0; padding: 0;">
+          <el-input style="width: 0; height: 0; border: none; padding: 0; margin: 0;" />
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="handleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('systembasicmgmt.currencyInfo.addCurrency') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 表格 -->
+      <div class="table-container">
+        <el-table :data="currencyList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.currencyInfo.index')" width="70" align="center" fixed />
+          <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
+          <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
+          <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
+          <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="60">
+            <template #default="scope">
+              <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
+                {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
+              </el-tag>
             </template>
-        </el-dialog>
-    </div>
+          </el-table-column>
+          <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
+          <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
+            <template #default="scope">
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small"
+                         type="danger"
+                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <!-- 分页 -->
+      <div class="pagination-wrapper">
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange"/>
+      </div>
+    </el-card>
+
+    <!-- 编辑状态弹窗 -->
+    <el-dialog v-model="dialogVisible"
+               :title="dialogTitle"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :modal-append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
+      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
+            <el-input v-model="editForm.currencyCode" 
+                     style="width:100%" 
+                     :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.currencyInfo.isEnabled')" prop="isEnabled">
+            <el-switch v-model="editForm.isEnabled" 
+                      :active-value="'1'"
+                      :inactive-value="'0'"
+                      :active-text="$t('common.yes')"
+                      :inactive-text="$t('common.no')"
+                      inline-prompt
+                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399"/>
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
+            <el-input v-model="editForm.currencyNameCn" style="width:100%" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
+            <el-input v-model="editForm.currencyNameEn" style="width:100%" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
+            <el-input v-model="editForm.remark" style="width:100%" />
+          </el-form-item>
+        </div>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleSave">{{ $t('common.save') }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
-  
+
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { post } from '@/utils/request'
@@ -242,10 +242,7 @@ const fetchCurrencyPagesImmediate = () => {
 
 // 重置搜索条件
 const handleReset = () => {
-  loading.value = true
   filters.currencyCode = ''
-  pagination.pageIndex = 1
-  fetchCurrencyPages()
 }
 
 // 处理页码变化

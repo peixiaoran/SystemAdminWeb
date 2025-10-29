@@ -6,6 +6,7 @@
           <el-input
             v-model="searchForm.laborName"
             :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
+            clearable
             style="width: 200px"
           />
         </el-form-item>
@@ -108,7 +109,6 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button @click="resetForm">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
         </span>
       </template>
@@ -227,6 +227,9 @@ const handleSearch = () => {
 // 重置搜索
 const handleReset = () => {
   searchForm.laborName = ''
+  loading.value = true // 立即显示加载状态
+  pagination.pageIndex = 1
+  getLaborList()
 }
 
 // 分页大小改变

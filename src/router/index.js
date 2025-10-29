@@ -404,8 +404,50 @@ const pmenuRoutes = [
           ]
         }
       ]
+  },
+  {
+      path: '/custmat',
+      component: Layout,
+      redirect: '/custmat/index',
+      children: [
+        {
+          path: 'index',
+          name: 'CustMat',
+          component: () => import('../views/custmat/index.vue'),
+          meta: { 
+            title: 'route.custmat', 
+            icon: 'Notebook',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          }
+        },
+        // 表单基础信息子模块 - 使用嵌套结构
+        {
+          path: 'custmat-basicinfo',
+          name: 'CustMatBasicInfo',
+          redirect: '/custmat/custmat-basicinfo',
+          meta: { 
+            title: 'route.custmatbasicinfo',
+            icon: 'Tickets',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'customerinfo',
+              name: 'CustomerInfo',
+              component: () => import('../views/custmat/custmat-basicinfo/customerinfo.vue'),
+              meta: { 
+                title: 'route.custmatCustomer', 
+                icon: 'Collection',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+          ]
+        }
+      ]
   }
-  // 可以继续添加其他模块的路由...
 ]
 
 // 创建路由实例，合并所有路由

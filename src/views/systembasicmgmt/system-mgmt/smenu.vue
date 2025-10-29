@@ -5,12 +5,12 @@
           <!-- 搜索表单 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
               <el-form-item :label="$t('systembasicmgmt.smenu.module')">
-                      <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange">
+                      <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange" :clearable="false">
                       <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleParentMenuChange">
+                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleParentMenuChange" :clearable="false">
                       <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
@@ -73,9 +73,7 @@
                 <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
                       <template #default="scope">
                           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                          <el-button size="small"
-                                     type="danger"
-                                     @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+                          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
                       </template>
                   </el-table-column>
               </el-table>
@@ -116,14 +114,14 @@
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
-                      <el-select v-model="editForm.moduleId" style="width:100%" clearable :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
+                      <el-select v-model="editForm.moduleId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
                           <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="parentMenuId">
-                      <el-select v-model="editForm.parentMenuId" style="width:100%" clearable :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
+                      <el-select v-model="editForm.parentMenuId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
                           <el-option v-for="item in pmenuDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
@@ -483,31 +481,7 @@
 
   // 重置
   const handleReset = () => {
-      loading.value = true // 显示加载状态
-      filters.smenuCode = ''
       filters.smenuName = ''
-      filters.smenuUrl = ''
-      
-      // 设置为默认的第一个未禁用的网域
-      if (moduleDropList.value.length > 0) {
-          const firstEnabledmodule = moduleDropList.value.find(item => !item.disabled)
-          if (firstEnabledmodule) {
-              filters.moduleId = firstEnabledmodule.moduleId
-              // 获取对应的模块列表
-              fetchFilterPMenuDrop()
-          } else {
-              filters.moduleId = ''
-              filters.parentMenuId = ''
-              filterPMenuList.value = []
-          }
-      } else {
-          filters.moduleId = ''
-          filters.parentMenuId = ''
-          filterPMenuList.value = []
-      }
-      
-      pagination.pageIndex = 1
-      fetchSMenuPages()
   }
 
   // 分页变化
@@ -823,26 +797,21 @@
       fetchPMenuDrop(true)
   }
 
-  // 过滤域名变化 - 优化响应速度
-  const handleFiltermoduleChange = () => {
-      // 清除模块选择
-      filters.parentMenuId = ''
-      // 立即获取新的模块列表
-      fetchFilterPMenuDrop()
-      // 延迟执行搜索，给用户选择一级菜单的机会
-      setTimeout(() => {
-          loading.value = true
-          pagination.pageIndex = 1
-          fetchSMenuPages()
-      }, 100)
-  }
+  // 过滤域名变化
+const handleFiltermoduleChange = () => {
+  // 清除模块选择
+  filters.parentMenuId = ''
+  // 立即获取新的模块列表
+  fetchFilterPMenuDrop()
+  // 模块变化时只重置页码，不自动查询数据
+  pagination.pageIndex = 1
+}
 
-  // 一级菜单变化 - 立即查询表格数据
-  const handleParentMenuChange = () => {
-      loading.value = true
-      pagination.pageIndex = 1
-      fetchSMenuPages()
-  }
+// 一级菜单变化
+const handleParentMenuChange = () => {
+  // 一级菜单变化时只重置页码，不自动查询数据
+  pagination.pageIndex = 1
+}
 
   // 获取过滤条件下的模块数据
   const fetchFilterPMenuDrop = async () => {

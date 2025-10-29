@@ -11,7 +11,6 @@
           check-strictly
           filterable
           :filter-node-method="filterNodeMethod"
-          @change="handleSearch"
           style="width: 200px;"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
@@ -19,18 +18,23 @@
         <el-input 
           v-model="filters.userNo" 
           style="width: 180px;"
-          :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" />
+          :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" 
+         />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userName')">
         <el-input 
           v-model="filters.userName" 
           style="width: 180px;"
-          :placeholder="$t('systembasicmgmt.userInfo.filter.userNamePlaceholder')" />
+          :placeholder="$t('systembasicmgmt.userInfo.filter.userNamePlaceholder')" 
+         />
       </el-form-item>
     
       <el-form-item class="form-button-group">
         <el-button type="primary" @click="handleSearch" plain>
           {{ $t('common.search') }}
+        </el-button>
+        <el-button @click="handleReset" plain>
+          {{ $t('common.reset') }}
         </el-button>
       </el-form-item>
       <el-form-item class="form-right-button">
@@ -330,6 +334,7 @@
        <template #footer>
          <span class="dialog-footer">
            <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+           <el-button @click="resetForm">{{ $t('common.reset') }}</el-button>
            <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
          </span>
       </template>
@@ -836,6 +841,20 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       pagination.pageIndex = 1
       loading.value = true
       debouncedFetchUserPages()
+  }
+
+  // 重置筛选条件
+  const handleReset = () => {
+      // 只清空输入框内容，保留下拉框内容
+      filters.userNo = ''
+      filters.userName = ''
+      // 不再自动查询数据
+      ElMessage({
+          message: t('common.resetSuccess'),
+          type: 'success',
+          plain: true,
+          showClose: true
+      })
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）

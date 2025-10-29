@@ -237,9 +237,15 @@ const fetchDepartmentLevelList = async () => {
 // 防抖获取列表
 const debouncedFetchDepartmentLevelList = debounce(fetchDepartmentLevelList, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
-// 搜索
+// 立即获取部门级别列表（不使用防抖，用于保存后刷新）
+const fetchDepartmentLevelListImmediate = () => {
+  fetchDepartmentLevelList()
+}
+
+// 处理搜索操作（带防抖）
 const handleSearch = () => {
   pagination.pageIndex = 1
+  loading.value = true
   debouncedFetchDepartmentLevelList()
 }
 
@@ -247,21 +253,19 @@ const handleSearch = () => {
 const handleReset = () => {
   filters.departmentLevelCode = ''
   filters.departmentLevelName = ''
-  pagination.pageIndex = 1
-  fetchDepartmentLevelList()
 }
 
 // 分页大小改变
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  fetchDepartmentLevelList()
+  fetchDepartmentLevelListImmediate()
 }
 
 // 页码改变
 const handlePageChange = (val) => {
   pagination.pageIndex = val
-  fetchDepartmentLevelList()
+  fetchDepartmentLevelListImmediate()
 }
 
 // 添加
@@ -321,7 +325,7 @@ const handleDelete = async (index, row) => {
         plain: true,
         showClose: true
       })
-      fetchDepartmentLevelList()
+      fetchDepartmentLevelListImmediate()
     } else {
       ElMessage({
         message: res.message || t('systembasicmgmt.departmentLevel.deleteFailed'),
@@ -368,7 +372,7 @@ const handleSave = async () => {
         showClose: true
       })
       dialogVisible.value = false
-      fetchDepartmentLevelList()
+      fetchDepartmentLevelListImmediate()
     } else {
       ElMessage({
         message: res.message || t('systembasicmgmt.departmentLevel.saveFailed'),

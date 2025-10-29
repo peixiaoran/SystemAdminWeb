@@ -39,7 +39,7 @@
           <el-table-column prop="moduleNameEn" :label="$t('systembasicmgmt.module.moduleNameEn')" align="left" min-width="280" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.module.pagePath')" align="left" min-width="230" />
           <el-table-column prop="moduleIcon" :label="$t('systembasicmgmt.module.moduleIcon')" align="center" min-width="150" />
-          <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
+          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
             <template #default="scope">
               <div class="flex">
                 <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
@@ -48,7 +48,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
+          <el-table-column :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
             <template #default="scope">
               <div class="flex">
                 <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
@@ -313,11 +313,8 @@ const fetchModulePagesImmediate = () => {
 
 // 重置
 const handleReset = () => {
-  loading.value = true
   filters.moduleCode = ''
   filters.moduleName = ''
-  pagination.pageIndex = 1
-  fetchModulePages()
 }
 
 // 分页变化

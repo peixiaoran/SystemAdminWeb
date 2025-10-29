@@ -88,6 +88,7 @@
           <el-button @click="dialogVisible = false">
             {{ $t('common.cancel') }}
           </el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="dialogVisible = false">
             {{ $t('common.confirm') }}
           </el-button>
@@ -184,6 +185,14 @@ const handleEdit = async (index, row) => {
   } finally {
     editLoading.value = false
     editingId.value = null
+  }
+}
+
+// 重置表单
+const handleReset = () => {
+  if (editForm.value) {
+    // 重新获取当前职位数据以重置表单
+    handleEdit(0, editForm.value)
   }
 }
 

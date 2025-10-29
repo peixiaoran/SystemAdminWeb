@@ -178,6 +178,12 @@
       <!-- 操作按钮 -->
       <div class="form-buttons">
         <el-button 
+          @click="handleReset" 
+          :disabled="loading"
+        >
+          {{ $t('common.reset') }}
+        </el-button>
+        <el-button 
           type="primary" 
           @click="handleSave" 
           :loading="saving"
@@ -579,10 +585,16 @@ export default {
      }
 
      // 重置表单
-     const handleReset = () => {
-       Object.assign(personalInfoForm, originalFormData)
-       personalInfoFormRef.value?.clearValidate()
-     }
+    const handleReset = () => {
+      // 只清除表单验证状态，不重新获取数据
+      personalInfoFormRef.value?.clearValidate()
+      ElMessage({
+        message: t('common.resetSuccess'),
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
+    }
 
      // 初始化数据
      const initData = async () => {
