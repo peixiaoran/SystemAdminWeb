@@ -549,6 +549,15 @@ export default {
       title: '快捷操作'
     },
 
+    // 错误处理
+    errorHandler: {
+      timeout: '请求超时，请稍后重试',
+      unauthorized: '登录已过期，请重新登录',
+      forbidden: '没有权限访问此资源',
+      serverError: '服务器内部错误，请稍后重试',
+      networkError: '网络连接失败，请检查网络设置'
+    },
+
      // 部门信息
      departmentInfo: {
       title: '部门信息',
@@ -583,12 +592,15 @@ export default {
       pleaseInputEmail: '请输入邮箱',
       pleaseInputAddress: '请输入地址',
       pleaseSelectDepartmentLevel: '请选择部门级别',
+      pleaseSelectParentDepartment: '请选择上级部门',
       pleaseCompleteForm: '请完善表单信息',
       index: '序号',
       filter: {
         departmentCode: '部门编码',
         departmentName: '部门名称'
-      }
+      },
+      parentDepartment: '上级部门',
+      departmentLevel: '部门级别'
     },
     // 员工信息
     userInfo: {

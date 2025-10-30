@@ -10,7 +10,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleParentMenuChange" :clearable="false">
+                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" :clearable="false">
                       <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
@@ -789,7 +789,7 @@
       })
   }
 
-  // 域名变化
+  // 模块变化
   const handlemoduleChange = () => {
       // 清除模块选择
       editForm.parentMenuId = ''
@@ -797,7 +797,7 @@
       fetchPMenuDrop(true)
   }
 
-  // 过滤域名变化
+  // 过滤模块变化
 const handleFiltermoduleChange = () => {
   // 清除模块选择
   filters.parentMenuId = ''
@@ -806,13 +806,6 @@ const handleFiltermoduleChange = () => {
   // 模块变化时只重置页码，不自动查询数据
   pagination.pageIndex = 1
 }
-
-// 一级菜单变化
-const handleParentMenuChange = () => {
-  // 一级菜单变化时只重置页码，不自动查询数据
-  pagination.pageIndex = 1
-}
-
   // 获取过滤条件下的模块数据
   const fetchFilterPMenuDrop = async () => {
       if (!filters.moduleId) {

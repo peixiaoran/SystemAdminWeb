@@ -88,7 +88,6 @@
           <el-button @click="dialogVisible = false">
             {{ $t('common.cancel') }}
           </el-button>
-          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="dialogVisible = false">
             {{ $t('common.confirm') }}
           </el-button>

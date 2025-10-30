@@ -108,7 +108,6 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button @click="resetForm">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
         </span>
       </template>
@@ -240,14 +239,6 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
   getLaborList()
-}
-
-// 重置表单
-const resetForm = () => {
-  form.laborId = ''
-  form.laborNameCn = ''
-  form.laborNameEn = ''
-  form.laborDescription = ''
 }
 
 // 新增

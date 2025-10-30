@@ -778,6 +778,7 @@ export default {
       pleaseInputEmail: 'Please enter email',
       pleaseInputAddress: 'Please enter address',
       pleaseSelectDepartmentLevel: 'Please select department level',
+      pleaseSelectParentDepartment: 'Please select parent department',
       saveSuccess: 'Save Successfully',
       updateSuccess: 'Update Successfully',
       deleteSuccess: 'Delete Successfully',
@@ -788,7 +789,9 @@ export default {
       filter: {
         departmentCode: 'Department Code',
         departmentName: 'Department Name'
-      }
+      },
+      parentDepartment: 'Parent Department',
+      departmentLevel: 'Department Level'
     },
     departmentLevel: {
       index: 'Index',
@@ -1132,6 +1135,15 @@ export default {
     },
     quickAction: {
       title: 'Quick Actions'
+    },
+
+    // Error Handler
+    errorHandler: {
+      timeout: 'Request timed out, please try again later',
+      unauthorized: 'Login expired, please login again',
+      forbidden: 'You do not have permission to access this resource',
+      serverError: 'Internal server error, please try again later',
+      networkError: 'Network connection failed, please check your network settings'
     },
 
     userloginlog: {

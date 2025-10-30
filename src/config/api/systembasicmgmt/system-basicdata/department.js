@@ -17,32 +17,37 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
-// 公司实体API
+// 部门实体API
 export const GET_DEPARTMENT_ENTITY_API = {
     GET_DEPARTMENT_ENTITY: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentInfoEntity'
 }
 
-// 公司树形API
+// 部门树形API
 export const GET_DEPARTMENT_TREE_API = {
   GET_DEPARTMENT_TREE: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentInfoTree'
 }
 
-// 公司新增API
+// 部门新增API
 export const INSERT_DEPARTMENT_API = {
   INSERT_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/InsertDepartmentInfo'
 }
 
-// 公司删除API
+// 部门删除API
 export const DELETE_DEPARTMENT_API = {
   DELETE_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/DeleteDepartmentInfo'
 }
 
-// 公司更新API
+// 部门更新API
 export const UPDATE_DEPARTMENT_API = {
   UPDATE_DEPARTMENT: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/UpdateDepartmentInfo'
 }
 
-// 公司更新API
+// 上级部门下拉框API
+export const GET_DEPARTMENT_TREE_DROPDOWN_API = {
+  GET_DEPARTMENT_TREE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentDropDown'
+}
+
+// 部门级别下拉框API
 export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
   GET_DEPARTMENTLEVEL_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentLevelDropdown'
 }

@@ -104,7 +104,7 @@
                 <div class="form-row">
                     <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentDepartmentId">
                         <el-tree-select
-                          v-model="editForm.parentDepartmentId"
+                          v-model="editForm.parentId"
                           :data="departmentOptions || []"
                           :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                           check-strictly
@@ -114,7 +114,7 @@
                           :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevel')" prop="departmentLevelId">
-                        <el-select v-model="editForm.departmentLevelId" style="width:100%" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectLevel')">
+                        <el-select v-model="editForm.departmentLevelId" style="width:100%" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
                             <el-option
                               v-for="item in departmentLevelOptions"
                               :key="item.departmentLevelId"
@@ -125,10 +125,14 @@
                 </div>
                 <div class="form-row">
                     <el-form-item :label="$t('systembasicmgmt.departmentInfo.isEnabled')" prop="isEnabled">
-                        <el-radio-group v-model="editForm.isEnabled">
-                            <el-radio :label="1">{{ $t('systembasicmgmt.departmentInfo.active') }}</el-radio>
-                            <el-radio :label="0">{{ $t('systembasicmgmt.departmentInfo.inactive') }}</el-radio>
-                        </el-radio-group>
+                        <el-switch
+                          v-model="editForm.isEnabled"
+                          :active-value="1"
+                          :inactive-value="0"
+                          :active-text="$t('common.yes')"
+                          :inactive-text="$t('common.no')"
+                          inline-prompt
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
                     </el-form-item>
                     <el-form-item></el-form-item>
                 </div>
@@ -152,13 +156,14 @@
     import { ref, reactive, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
     import { 
-        GET_DEPARTMENT_TREE_API, 
-        GET_DEPARTMENT_ENTITY_API, 
-        INSERT_DEPARTMENT_API, 
-        DELETE_DEPARTMENT_API, 
-        UPDATE_DEPARTMENT_API,
-        GET_DEPARTMENTLEVEL_DROPDOWN_API 
-    } from '@/config/api/systembasicmgmt/system-basicdata/department'
+    GET_DEPARTMENT_TREE_API, 
+    GET_DEPARTMENT_ENTITY_API, 
+    INSERT_DEPARTMENT_API, 
+    DELETE_DEPARTMENT_API, 
+    UPDATE_DEPARTMENT_API,
+    GET_DEPARTMENTLEVEL_DROPDOWN_API,
+    GET_DEPARTMENT_TREE_DROPDOWN_API 
+} from '@/config/api/systembasicmgmt/system-basicdata/department'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
     import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
@@ -241,8 +246,6 @@
             const response = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, params)
             if (response.code === 200) {
                 departmentList.value = response.data || []
-                // 同时更新部门选项
-                departmentOptions.value = response.data || []
             } else {
                 ElMessage({
                     message: response.message,
@@ -290,6 +293,31 @@
             }
         } catch (error) {
             console.error('获取部门级别下拉列表失败:', error)
+            ElMessage({
+                message: t('systembasicmgmt.departmentInfo.getFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        }
+    }
+
+    // 获取部门下拉框数据（用于父部门选择）
+    const getDepartmentDropdown = async () => {
+        try {
+            const response = await post(GET_DEPARTMENT_TREE_DROPDOWN_API.GET_DEPARTMENT_TREE_DROPDOWN, {})
+            if (response.code === 200) {
+                departmentOptions.value = response.data || []
+            } else {
+                ElMessage({
+                    message: response.message,
+                    type: 'error',
+                    plain: true,
+                    showClose: true
+                })
+            }
+        } catch (error) {
+            console.error('获取部门下拉框数据失败:', error)
             ElMessage({
                 message: t('systembasicmgmt.departmentInfo.getFailed'),
                 type: 'error',
@@ -518,6 +546,7 @@
     onMounted(() => {
         getDepartmentTree()
         getDepartmentLevelDropdown()
+        getDepartmentDropdown()
     })
 </script>
 
