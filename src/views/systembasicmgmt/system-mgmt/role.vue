@@ -674,20 +674,10 @@
 
   /**
    * 保存模块配置
-   * 在保存前显示确认提示
+   * 函数说明：直接保存当前勾选的模块配置并关闭对话框，不弹出确认或成功提示。
    */
   const saveModuleConfig = async () => {
       try {
-          await ElMessageBox.confirm(
-              t('systembasicmgmt.role.confirmSaveModuleConfig'),
-              t('systembasicmgmt.role.confirmTitle'),
-              {
-                  confirmButtonText: t('common.confirm'),
-                  cancelButtonText: t('common.cancel'),
-                  type: 'warning'
-              }
-          )
-
           const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
           // 获取所有模块节点的ID
           const getAllModuleIds = (nodes) => {
@@ -702,7 +692,7 @@
           }
           const allModuleIds = getAllModuleIds(moduleTreeData.value)
           const unCheckedNodes = allModuleIds.filter(id => !checkedNodes.includes(id))
-          
+
           const params = {
               roleId: currentRoleId.value,
               SelectedModuleIds: checkedNodes,
@@ -710,26 +700,15 @@
           }
           const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
           if (res && res.code === 200) {
-              ElMessage({
-                  message: res.message,
-                  type: 'success',
-                  plain: true,
-                  showClose: true
-              })
               moduleDialogVisible.value = false
           }
       } catch (error) {
-          if (error === 'cancel') {
-              // 用户取消操作，不做任何处理
-              console.log('用户取消了模块配置保存操作')
-          } else {
-              ElMessage({
-                  message: error.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
+          ElMessage({
+              message: error.message,
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 
@@ -829,24 +808,14 @@
 
   /**
    * 保存菜单配置
-   * 在保存前显示确认提示
+   * 函数说明：直接保存当前勾选的菜单配置并关闭对话框，不弹出确认或成功提示。
    */
   const saveMenuConfig = async () => {
       try {
-          await ElMessageBox.confirm(
-              t('systembasicmgmt.role.confirmSaveMenuConfig'),
-              t('systembasicmgmt.role.confirmTitle'),
-              {
-                  confirmButtonText: t('common.confirm'),
-                  cancelButtonText: t('common.cancel'),
-                  type: 'warning'
-              }
-          )
-
           const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
           const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
           const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
-          
+
           const params = {
               roleId: currentRoleId.value,
               moduleId: selectedModuleId.value,
@@ -854,26 +823,15 @@
           }
           const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
           if (res && res.code === 200) {
-              ElMessage({
-                  message: res.message,
-                  type: 'success',
-                  plain: true,
-                  showClose: true
-              })
               menuDialogVisible.value = false
           }
       } catch (error) {
-          if (error === 'cancel') {
-              // 用户取消操作，不做任何处理
-              console.log('用户取消了菜单配置保存操作')
-          } else {
-              ElMessage({
-                  message: error.message || t('systembasicmgmt.role.saveMenuFail'),
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
+          ElMessage({
+              message: error.message || t('systembasicmgmt.role.saveMenuFail'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
       }
   }
 </script>
