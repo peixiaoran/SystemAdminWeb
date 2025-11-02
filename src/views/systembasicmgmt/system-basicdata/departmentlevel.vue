@@ -198,29 +198,15 @@ const fetchDepartmentLevelEntity = async (departmentLevelId) => {
 // 获取部门级别列表数据
 const fetchDepartmentLevelList = async () => {
   loading.value = true
-  try {
-    const params = {
-      departmentLevelCode: filters.departmentLevelCode,
-      departmentLevelName: filters.departmentLevelName,
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize
-    }
+  
+  const params = {
+    departmentLevelCode: filters.departmentLevelCode,
+    departmentLevelName: filters.departmentLevelName,
+    pageIndex: pagination.pageIndex,
+    pageSize: pagination.pageSize
+  }
 
-    const res = await post(GET_DEPARTMENT_LEVEL_LIST_API.GET_DEPARTMENT_LEVEL_LIST, params)
-
-    if (res && res.code === 200) {
-      departmentLevelList.value = res.data || []
-      pagination.totalCount = res.totalCount || 0
-    } else {
-      ElMessage({
-        message: res.message || t('systembasicmgmt.departmentLevel.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-      departmentLevelList.value = []
-    }
-  } catch (error) {
+  const res = await post(GET_DEPARTMENT_LEVEL_LIST_API.GET_DEPARTMENT_LEVEL_LIST, params).catch(error => {
     console.error('获取部门级别列表失败:', error)
     ElMessage({
       message: t('systembasicmgmt.departmentLevel.getFailed'),
@@ -229,9 +215,23 @@ const fetchDepartmentLevelList = async () => {
       showClose: true
     })
     departmentLevelList.value = []
-  } finally {
-    loading.value = false
+    return null
+  })
+
+  if (res && res.code === 200) {
+    departmentLevelList.value = res.data || []
+    pagination.totalCount = res.totalCount || 0
+  } else if (res) {
+    ElMessage({
+      message: res.message || t('systembasicmgmt.departmentLevel.getFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
+    departmentLevelList.value = []
   }
+  
+  loading.value = false
 }
 
 // 防抖获取列表

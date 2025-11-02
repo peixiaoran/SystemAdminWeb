@@ -33,10 +33,10 @@
                 v-loading="loading"
                 class="conventional-table">
         <el-table-column type="index" :label="$t('systembasicmgmt.nationalityInfo.index')" width="70" align="center" fixed />
-      <el-table-column prop="nationNameCn" :label="$t('systembasicmgmt.nationalityInfo.nationNameCn')" align="left" min-width="240" />
-      <el-table-column prop="nationNameEn" :label="$t('systembasicmgmt.nationalityInfo.nationNameEn')" align="left" min-width="360" />
-      <el-table-column prop="remark" :label="$t('systembasicmgmt.nationalityInfo.remark')" align="left" min-width="450" />
-      <el-table-column :label="$t('systembasicmgmt.nationalityInfo.operation')" min-width="170" fixed="right" align="center">
+        <el-table-column prop="nationNameCn" :label="$t('systembasicmgmt.nationalityInfo.nationNameCn')" align="left" min-width="240" />
+        <el-table-column prop="nationNameEn" :label="$t('systembasicmgmt.nationalityInfo.nationNameEn')" align="left" min-width="360" />
+        <el-table-column prop="remark" :label="$t('systembasicmgmt.nationalityInfo.remark')" align="left" min-width="450" />
+        <el-table-column :label="$t('systembasicmgmt.nationalityInfo.operation')" min-width="170" fixed="right" align="center">
           <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
             <el-button size="small"

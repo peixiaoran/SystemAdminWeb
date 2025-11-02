@@ -452,15 +452,12 @@
         }
     }
 
-    // 提交表单
-    const handleSubmit = async () => {
+    // 新增部门
+    const addDepartment = async () => {
+        submitLoading.value = true
+        
         try {
-            await editFormRef.value.validate()
-            
-            submitLoading.value = true
-            
             const params = {
-                departmentId: editForm.departmentId,
                 departmentCode: editForm.departmentCode,
                 departmentNameCn: editForm.departmentNameCn,
                 departmentNameEn: editForm.departmentNameEn,
@@ -474,8 +471,7 @@
                 isEnabled: editForm.isEnabled
             }
             
-            const api = isEdit.value ? UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT : INSERT_DEPARTMENT_API.INSERT_DEPARTMENT
-            const response = await post(api, params)
+            const response = await post(INSERT_DEPARTMENT_API.INSERT_DEPARTMENT, params)
             
             if (response.code === 200) {
                 ElMessage({
@@ -495,17 +491,87 @@
                 })
             }
         } catch (error) {
-            if (error !== false) {
-                console.error('提交表单失败:', error)
+            console.error('新增部门失败:', error)
+            ElMessage({
+                message: t('systembasicmgmt.departmentInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        } finally {
+            submitLoading.value = false
+        }
+    }
+
+    // 修改部门
+    const updateDepartment = async () => {
+        submitLoading.value = true
+        
+        try {
+            const params = {
+                departmentId: editForm.departmentId,
+                departmentCode: editForm.departmentCode,
+                departmentNameCn: editForm.departmentNameCn,
+                departmentNameEn: editForm.departmentNameEn,
+                parentId: editForm.parentId,
+                departmentLevelId: editForm.departmentLevelId,
+                description: editForm.description,
+                sortOrder: editForm.sortOrder,
+                landline: editForm.landline,
+                email: editForm.email,
+                address: editForm.address,
+                isEnabled: editForm.isEnabled
+            }
+            
+            const response = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
+            
+            if (response.code === 200) {
                 ElMessage({
-                    message: t('systembasicmgmt.departmentInfo.operationFailed'),
+                    message: response.message,
+                    type: 'success',
+                    plain: true,
+                    showClose: true
+                })
+                dialogVisible.value = false
+                getDepartmentTreeImmediate()
+            } else {
+                ElMessage({
+                    message: response.message,
                     type: 'error',
                     plain: true,
                     showClose: true
                 })
             }
+        } catch (error) {
+            console.error('修改部门失败:', error)
+            ElMessage({
+                message: t('systembasicmgmt.departmentInfo.operationFailed'),
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
         } finally {
             submitLoading.value = false
+        }
+    }
+
+    // 提交表单
+    const handleSubmit = async () => {
+        // 表单验证
+        const isValid = await editFormRef.value.validate().catch(error => {
+            // 表单验证失败，直接返回，不显示操作失败提示
+            return false
+        })
+        
+        if (!isValid) {
+            return
+        }
+        
+        // 根据编辑状态调用不同的方法
+        if (isEdit.value) {
+            await updateDepartment()
+        } else {
+            await addDepartment()
         }
     }
 

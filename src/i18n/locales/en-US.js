@@ -514,8 +514,9 @@ export default {
     formBasicInfo: 'Form Basic Info',
     formGroup: 'Form Group',
     formType: 'Form Type',
-    personalInfoTitle: 'Personal Profile',
-    nationality: 'Nationality Info'
+    personalInfoTitle: 'Personal Information',
+    nationality: 'Nationality Information',
+    custmatManufacturer: 'Manufacturer Information'
   },
   
   // System Basic Management
@@ -778,6 +779,7 @@ export default {
       pleaseInputEmail: 'Please enter email',
       pleaseInputAddress: 'Please enter address',
       pleaseSelectDepartmentLevel: 'Please select department level',
+      pleaseSelectLevel: 'Please select department level',
       pleaseSelectParentDepartment: 'Please select parent department',
       saveSuccess: 'Save Successfully',
       updateSuccess: 'Update Successfully',
@@ -1274,6 +1276,38 @@ export default {
       editPartTimeSuccess: 'Part-time edited successfully',
       editPartTimeFailed: 'Failed to edit part-time',
       getPartTimeDetailFailed: 'Failed to get part-time details'
+    }
+  },
+  
+  // Manufacturer Information Management
+  custmat: {
+    manufacturer: {
+      title: 'Manufacturer Information Management',
+      index: 'Index',
+      manufacturerCode: 'Manufacturer Code',
+      manufacturerName: 'Manufacturer Name',
+      manufacturerNameCh: 'Chinese Name',
+      manufacturerNameEn: 'English Name',
+      email: 'Email',
+      fax: 'Fax',
+      description: 'Description',
+      operation: 'Operation',
+      addManufacturer: 'Add Manufacturer',
+      editManufacturer: 'Edit Manufacturer Information',
+      deleteConfirm: 'Are you sure you want to delete this manufacturer?',
+      pleaseInputManufacturerCode: 'Please enter manufacturer code',
+      pleaseInputManufacturerName: 'Please enter manufacturer name',
+      pleaseInputManufacturerNameCh: 'Please enter Chinese name',
+      pleaseInputManufacturerNameEn: 'Please enter English name',
+      pleaseInputEmail: 'Please enter email',
+      pleaseInputFax: 'Please enter fax',
+      pleaseInputDescription: 'Please enter description',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed',
+      filter: {
+        manufacturerCode: 'Manufacturer Code',
+        manufacturerName: 'Manufacturer Name'
+      }
     }
   }
 }

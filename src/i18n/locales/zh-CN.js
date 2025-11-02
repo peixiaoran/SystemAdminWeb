@@ -440,8 +440,9 @@ export default {
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
     formType: '表单类别信息',
-    personalInfoTitle: '个人信息维护',
-    nationality: '国籍信息维护'
+    personalInfoTitle: '个人资料',
+    nationality: '国籍信息',
+    custmatManufacturer: '厂商信息'
   },
   
   // 系统基础管理
@@ -592,6 +593,7 @@ export default {
       pleaseInputEmail: '请输入邮箱',
       pleaseInputAddress: '请输入地址',
       pleaseSelectDepartmentLevel: '请选择部门级别',
+      pleaseSelectLevel: '请选择部门级别',
       pleaseSelectParentDepartment: '请选择上级部门',
       pleaseCompleteForm: '请完善表单信息',
       index: '序号',
@@ -663,7 +665,7 @@ export default {
       pleaseInputUserNo: '请输入员工工号',
       pleaseInputUserName: '请输入员工姓名',
       userNoPlaceholder: '请输入员工工号',
-      userNamePlaceholder: '请输入员工姓名',
+      pleaseInputUserName: '请输入员工姓名',
       pleaseInputUserNameCn: '请输入中文姓名',
       pleaseInputUserNameEn: '请输入英文姓名',
       pleaseEnterUserNo: '请输入员工工号',
@@ -1258,6 +1260,38 @@ export default {
       getPositionFailed: '获取职级列表失败',
       getLaborFailed: '获取职业列表失败',
       getUserFailed: '获取员工列表失败'
+    }
+  },
+  
+  // 厂商信息管理
+  custmat: {
+    manufacturer: {
+      title: '厂商信息维护',
+      index: '序号',
+      manufacturerCode: '厂商编码',
+      manufacturerName: '厂商名称',
+      manufacturerNameCh: '中文名称',
+      manufacturerNameEn: '英文名称',
+      email: '邮箱',
+      fax: '传真',
+      description: '描述',
+      operation: '操作',
+      addManufacturer: '新增厂商',
+      editManufacturer: '编辑厂商信息',
+      deleteConfirm: '确定要删除该厂商吗？',
+      pleaseInputManufacturerCode: '请输入厂商编码',
+      pleaseInputManufacturerName: '请输入厂商名称',
+      pleaseInputManufacturerNameCh: '请输入中文名称',
+      pleaseInputManufacturerNameEn: '请输入英文名称',
+      pleaseInputEmail: '请输入邮箱',
+      pleaseInputFax: '请输入传真',
+      pleaseInputDescription: '请输入描述',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败',
+      filter: {
+        manufacturerCode: '厂商编码',
+        manufacturerName: '厂商名称'
+      }
     }
   }
 }

@@ -434,6 +434,17 @@ const pmenuRoutes = [
           },
           children: [
             {
+              path: 'manufacturerinfo',
+              name: 'ManufacturerInfo',
+              component: () => import('../views/custmat/custmat-basicinfo/manufacturerinfo.vue'),
+              meta: { 
+                title: 'route.custmatManufacturer', 
+                icon: 'Collection',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
               path: 'customerinfo',
               name: 'CustomerInfo',
               component: () => import('../views/custmat/custmat-basicinfo/customerinfo.vue'),
