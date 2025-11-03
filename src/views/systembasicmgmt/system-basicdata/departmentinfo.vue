@@ -215,7 +215,8 @@
             { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
         ],
         departmentLevelId: [
-            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'change' }
+            // 说明：将触发从 change 改为 blur，避免点击“新增”时初始值变更导致立即校验弹出
+            { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'blur' }
         ]
     })
 
@@ -339,24 +340,43 @@
         filters.departmentName = ''
     }
 
-    // 添加部门
+    /**
+     * 添加部门
+     * 打开对话框前重置表单，打开后清除校验，避免初始值变更触发"change"校验
+     */
     const handleAdd = () => {
         resetForm()
         dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
         isEdit.value = false
         dialogVisible.value = true
+        nextTick(() => {
+            if (editFormRef.value) {
+                try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+            }
+        })
     }
 
-    // 添加子部门
+    /**
+     * 添加子部门
+     * 预填父部门并打开对话框，打开后清除校验，避免变更触发"change"校验
+     */
     const handleAddChild = (index, row) => {
         resetForm()
         editForm.parentId = row.departmentId
         dialogTitle.value = t('systembasicmgmt.departmentInfo.addChild')
         isEdit.value = false
         dialogVisible.value = true
+        nextTick(() => {
+            if (editFormRef.value) {
+                try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+            }
+        })
     }
 
-    // 编辑部门
+    /**
+     * 编辑部门
+     * 拉取部门详情并填充表单，打开后清除校验，避免变更触发"change"校验
+     */
     const handleEdit = async (index, row) => {
         try {
             const params = {
@@ -385,6 +405,11 @@
                 dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
                 isEdit.value = true
                 dialogVisible.value = true
+                nextTick(() => {
+                    if (editFormRef.value) {
+                        try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+                    }
+                })
             } else {
                 ElMessage({
                     message: response.message,
@@ -575,7 +600,10 @@
         }
     }
 
-    // 重置表单
+    /**
+     * 重置表单
+     * 仅重置字段值，并在 nextTick 清除校验，避免因值变更触发的"change"校验报警
+     */
     const resetForm = () => {
         Object.assign(editForm, {
             departmentId: '',
@@ -591,15 +619,24 @@
             address: '',
             isEnabled: 1
         })
-        
-        if (editFormRef.value) {
-            editFormRef.value.clearValidate()
-        }
+
+        nextTick(() => {
+            if (editFormRef.value) {
+                try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+            }
+        })
     }
 
-    // 对话框关闭处理
+    /**
+     * 对话框关闭处理
+     * 仅清除校验，不重置字段，避免关闭时因下拉/选择值回退触发"change"校验报警
+     */
     const handleDialogClose = () => {
-        resetForm()
+        nextTick(() => {
+            if (editFormRef.value) {
+                try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+            }
+        })
     }
 
     // 树形选择过滤方法

@@ -19,25 +19,25 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 客户实体API
 export const GET_CUSTOMER_ENTITY_API = {
-    GET_CUSTOMER_ENTITY: 'SystemBasicMgmt/SystemBasicData/Customer/GetCustomerEntity'
+    GET_CUSTOMER_ENTITY: 'CustMat/CustMatBasicInfo/CustomerInfo/GetCustomerEntity'
 }
 
 // 客户列表API
 export const GET_CUSTOMER_LIST_API = {
-    GET_CUSTOMER_LIST: 'SystemBasicMgmt/SystemBasicData/Customer/GetCustomerPage'
+    GET_CUSTOMER_LIST: 'CustMat/CustMatBasicInfo/CustomerInfo/GetCustomerPage'
 }
 
 // 客户新增API
 export const INSERT_CUSTOMER_API = {
-    INSERT_CUSTOMER: 'SystemBasicMgmt/SystemBasicData/Customer/InsertCustomerInfo'
+    INSERT_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/InsertCustomerInfo'
 }
 
 // 客户更新API
 export const UPDATE_CUSTOMER_API = {
-    UPDATE_CUSTOMER: 'SystemBasicMgmt/SystemBasicData/Customer/UpdateCustomerInfo'
+    UPDATE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/UpdateCustomerInfo'
 }
 
 // 客户删除API
 export const DELETE_CUSTOMER_API = {
-    DELETE_CUSTOMER: 'SystemBasicMgmt/SystemBasicData/Customer/DeleteCustomerInfo'
+    DELETE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/DeleteCustomerInfo'
 }

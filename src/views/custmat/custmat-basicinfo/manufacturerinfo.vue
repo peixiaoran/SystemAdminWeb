@@ -47,9 +47,9 @@
           <el-table-column prop="manufacturerCode" :label="$t('custmat.manufacturer.manufacturerCode')" align="left" min-width="170" />
           <el-table-column prop="manufacturerNameCh" :label="$t('custmat.manufacturer.manufacturerNameCh')" align="left" min-width="260" />
           <el-table-column prop="manufacturerNameEn" :label="$t('custmat.manufacturer.manufacturerNameEn')" align="left" min-width="450" />
-          <el-table-column prop="email" :label="$t('custmat.manufacturer.email')" align="left" min-width="150" />
-          <el-table-column prop="fax" :label="$t('custmat.manufacturer.fax')" align="left" min-width="120" />
-          <el-table-column prop="description" :label="$t('custmat.manufacturer.description')" align="left" min-width="200" />
+          <el-table-column prop="email" :label="$t('custmat.manufacturer.email')" align="left" min-width="220" />
+          <el-table-column prop="fax" :label="$t('custmat.manufacturer.fax')" align="left" min-width="180" />
+          <el-table-column prop="description" :label="$t('custmat.manufacturer.description')" align="left" min-width="350" />
           <el-table-column :label="$t('common.operation')" min-width="150" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">

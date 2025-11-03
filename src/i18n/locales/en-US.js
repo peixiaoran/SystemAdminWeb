@@ -516,8 +516,8 @@ export default {
     formType: 'Form Type',
     personalInfoTitle: 'Personal Profile',
     nationality: 'Nationality Info',
-    custmat: 'Customer Material Management',
-    custmatbasicinfo: 'Customer Material Basic Info',
+    custmat: 'Customer Production Plan',
+    custmatbasicinfo: 'CustMat Basic',
     custmatManufacturer: 'Manufacturer Info'
   },
   
