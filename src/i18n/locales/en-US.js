@@ -487,13 +487,13 @@ export default {
     passwordExpiration: 'Password Expiration',
     forbidden: 'Access Denied',
     notFound: 'Page Not Found',
-    systembasicmgmt: 'System Basic Management',
+    systembasicmgmt: 'SystemBasic Mgmt',
     systemMgmt: 'System Management',
     role: 'Role Info',
     module: 'Module Info',
     pmenu: 'PMenu Info',
     smenu: 'SMenu Info',
-    systemBasicData: 'System Basic Data',
+    systemBasicData: 'SystemBasic Mgmt',
 
     departmentInfo: 'Department Info',
     departmentLevel: 'Department Level',
@@ -514,14 +514,15 @@ export default {
     formBasicInfo: 'Form Basic Info',
     formGroup: 'Form Group',
     formType: 'Form Type',
-    personalInfoTitle: 'Personal Information',
-    nationality: 'Nationality Information',
-    custmatManufacturer: 'Manufacturer Information'
+    personalInfoTitle: 'Personal Profile',
+    nationality: 'Nationality Info',
+    custmat: 'Customer Material Management',
+    custmatbasicinfo: 'Customer Material Basic Info',
+    custmatManufacturer: 'Manufacturer Info'
   },
   
   // System Basic Management
   systembasicmgmt: {
-    // Currency Information Management
     currencyInfo: {
       title: 'Currency Information Management',
       index: 'Index',
@@ -797,20 +798,20 @@ export default {
     },
     departmentLevel: {
       index: 'Index',
-      departmentLevelCode: 'Department Level Code',
-      departmentLevelName: 'Department Level Name',
-      departmentLevelNameCn: 'Department Level Name (Cn)',
-      departmentLevelNameEn: 'Department Level Name (En)',
+      departmentLevelCode: 'Level Code',
+      departmentLevelName: 'Level Name',
+      departmentLevelNameCn: 'Level Name (Cn)',
+      departmentLevelNameEn: 'Level Name (En)',
       description: 'Description',
       sortOrder: 'Sort Order',
       operation: 'Operation',
       addDepartmentLevel: 'Add Department Level',
       editDepartmentLevel: 'Edit Department Level',
-      deleteConfirm: 'Are you sure you want to delete this department level?',
-      pleaseInputDepartmentLevelCode: 'Please enter department level code',
-      pleaseInputDepartmentLevelName: 'Please enter department level name',
-      pleaseInputDepartmentLevelNameCn: 'Please enter department level name (Cn)',
-      pleaseInputDepartmentLevelNameEn: 'Please enter department level name (En)',
+      deleteConfirm: 'Are you sure you want to delete this level?',
+      pleaseInputDepartmentLevelCode: 'Please enter level code',
+      pleaseInputDepartmentLevelName: 'Please enter level name',
+      pleaseInputDepartmentLevelNameCn: 'Please enter level name (Cn)',
+      pleaseInputDepartmentLevelNameEn: 'Please enter level name (En)',
       pleaseInputSortOrder: 'Please enter sort order'
     },
     userPosition: {
@@ -846,11 +847,11 @@ export default {
       pleaseInputDicCode: 'Please enter dictionary code',
       pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
+      pleaseSelectModule: 'Please select module',
       filter: {
         dicNameCn: 'Dictionary Name',
         module: 'Module',
-        dicType: 'Dictionary Type',
-        pleaseSelectModule: 'Please select module'
+        dicType: 'Dictionary Type'
       }
     },
     
@@ -1176,11 +1177,11 @@ export default {
       laborName: 'Career Name',
       laborNameCn: 'Chinese Name',
       laborNameEn: 'English Name',
-      laborDescription: 'Career Description',
+      laborDescription: 'Description',
       laborTypeCode: 'Career Code',
       laborTypeNameCn: 'Chinese Name',
       laborTypeNameEn: 'English Name',
-      laborTypeDescription: 'Career Description',
+      laborTypeDescription: 'Description',
       operation: 'Operation',
       addLabor: 'Add Career',
       editLabor: 'Edit Career',
@@ -1190,11 +1191,11 @@ export default {
       pleaseInputLaborName: 'Please enter career name',
       pleaseInputLaborNameCn: 'Please enter Chinese name',
       pleaseInputLaborNameEn: 'Please enter English name',
-      pleaseInputLaborDescription: 'Please enter career description',
+      pleaseInputLaborDescription: 'Please enter Description',
       pleaseInputLaborTypeCode: 'Please enter career code',
       pleaseInputLaborTypeNameCn: 'Please enter Chinese name',
       pleaseInputLaborTypeNameEn: 'Please enter English name',
-      pleaseInputLaborTypeDescription: 'Please enter career description',
+      pleaseInputLaborTypeDescription: 'Please enter Description',
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data',
       filter: {
@@ -1279,10 +1280,10 @@ export default {
     }
   },
   
-  // Manufacturer Information Management
+  // Manufacturer Info Management
   custmat: {
     manufacturer: {
-      title: 'Manufacturer Information Management',
+      title: 'Manufacturer Info Management',
       index: 'Index',
       manufacturerCode: 'Manufacturer Code',
       manufacturerName: 'Manufacturer Name',
@@ -1293,7 +1294,7 @@ export default {
       description: 'Description',
       operation: 'Operation',
       addManufacturer: 'Add Manufacturer',
-      editManufacturer: 'Edit Manufacturer Information',
+      editManufacturer: 'Edit Manufacturer Info',
       deleteConfirm: 'Are you sure you want to delete this manufacturer?',
       pleaseInputManufacturerCode: 'Please enter manufacturer code',
       pleaseInputManufacturerName: 'Please enter manufacturer name',

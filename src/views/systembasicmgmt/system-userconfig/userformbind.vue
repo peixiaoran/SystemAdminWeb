@@ -54,10 +54,21 @@
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userformbind.departmentName')" align="left" min-width="270" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userformbind.positionName')" align="left" min-width="150" />
           <el-table-column prop="laborName" :label="$t('systembasicmgmt.userformbind.laborName')" align="left" min-width="270" />
-          <!-- 签核状态列 -->
-          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="150"><template #default="scope"><el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">{{ scope.row.isApprovalName }}</el-tag></template></el-table-column>
+          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="150">
+            <template #default="scope">
+              <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
+                {{ scope.row.isApprovalName }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <!-- 操作列 -->
-          <el-table-column :label="$t('common.operation')" align="center" width="150" fixed="right"><template #default="{ row }"><el-button type="primary" size="small" @click="handleConfigForm(row)" plain>{{ $t('systembasicmgmt.userformbind.configForm') }}</el-button></template></el-table-column>
+          <el-table-column :label="$t('common.operation')" align="center" width="150" fixed="right">
+            <template #default="{ row }">
+              <el-button type="primary" size="small" @click="handleConfigForm(row)" plain>
+                {{ $t('systembasicmgmt.userformbind.configForm') }}
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -355,7 +366,7 @@ const fetchUserPagesImmediate = () => {
 }
 
 /**
- * 处理重置
+ * 处理重置 - 只清空输入框，不清空下拉框
  */
 const handleReset = () => {
   Object.assign(filters, {
@@ -399,47 +410,39 @@ const handleSaveFormConfig = async () => {
   if (!currentUser.value || !formTreeRef.value) return
 
   saveLoading.value = true
-  try {
-    // 获取选中的节点
-    const checkedNodes = formTreeRef.value.getCheckedNodes()
-    const halfCheckedNodes = formTreeRef.value.getHalfCheckedNodes()
+  
+  // 获取选中的节点
+  const checkedNodes = formTreeRef.value.getCheckedNodes()
+  const halfCheckedNodes = formTreeRef.value.getHalfCheckedNodes()
 
-    // 合并全选和半选节点
-    const allSelectedNodes = [...checkedNodes, ...halfCheckedNodes]
-    const selectedFormIds = allSelectedNodes.map(node => node.formGroupTypeId)
+  // 合并全选和半选节点
+  const allSelectedNodes = [...checkedNodes, ...halfCheckedNodes]
+  const selectedFormIds = allSelectedNodes.map(node => node.formGroupTypeId)
 
-    const params = {
-      userId: currentUser.value.userId,
-      formGroupTypeId: selectedFormIds
-    }
+  const params = {
+    userId: currentUser.value.userId,
+    formGroupTypeId: selectedFormIds
+  }
 
-    const res = await post(UPDATE_USER_FORM_BIND_API.UPDATE_USER_FORM_BIND, params)
-    if (res && res.code === 200) {
-      ElMessage({
-        message: t('systembasicmgmt.userformbind.saveConfigSuccess'),
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      configDialogVisible.value = false
-    } else {
-      ElMessage({
-        message: res?.message || t('systembasicmgmt.userformbind.saveConfigFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } catch (error) {
+  const res = await post(UPDATE_USER_FORM_BIND_API.UPDATE_USER_FORM_BIND, params)
+  if (res && res.code === 200) {
     ElMessage({
-      message: t('systembasicmgmt.userformbind.saveConfigFailed'),
+      message: t('systembasicmgmt.userformbind.saveConfigSuccess'),
+      type: 'success',
+      plain: true,
+      showClose: true
+    })
+    configDialogVisible.value = false
+  } else {
+    ElMessage({
+      message: res?.message || t('systembasicmgmt.userformbind.saveConfigFailed'),
       type: 'error',
       plain: true,
       showClose: true
     })
-  } finally {
-    saveLoading.value = false
   }
+  
+  saveLoading.value = false
 }
 
 /**

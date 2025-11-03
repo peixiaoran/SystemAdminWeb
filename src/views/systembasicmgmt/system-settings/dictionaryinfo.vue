@@ -128,7 +128,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave">{{ $t('common.save') }}</el-button>
+          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -157,6 +157,8 @@ const { t } = useI18n()
 // 字典数据
 const dictionaryList = ref([])
 const loading = ref(false)
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 模块下拉选项
 const moduleList = ref([])
@@ -359,51 +361,57 @@ const resetForm = (clearValidation = true) => {
 
 // 新增字典数据
 const insertDictionary = async () => {
-  try {
-    const params = {
-      dicType: editForm.dicType,
-      dicCode: editForm.dicCode,
-      dicNameCn: editForm.dicNameCn,
-      dicNameEn: editForm.dicNameEn
-    }
-    
-    const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
-    if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.dictionaryInfo.addDictionarySuccess'))
+  submitLoading.value = true
+  const params = {
+    dicType: editForm.dicType,
+    dicCode: editForm.dicCode,
+    dicNameCn: editForm.dicNameCn,
+    dicNameEn: editForm.dicNameEn
+  }
+  
+  const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
+  if (res && res.code === 200) {
+      ElMessage({ 
+        message: t('systembasicmgmt.dictionaryInfo.addDictionarySuccess'), 
+        type: 'success', 
+        plain: true, 
+        showClose: true 
+      })
       dialogVisible.value = false
       resetForm()
       fetchDictionaryPagesImmediate()
     } else {
       ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.addDictionaryFailed'))
     }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.dictionaryInfo.addDictionaryFailed'))
-  }
+  submitLoading.value = false
 }
 
 // 更新字典数据
 const updateDictionary = async () => {
-  try {
-    const params = {
-      dicId: editForm.dicId,
-      dicType: editForm.dicType,
-      dicCode: editForm.dicCode,
-      dicNameCn: editForm.dicNameCn,
-      dicNameEn: editForm.dicNameEn
-    }
-    
-    const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
-    if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.dictionaryInfo.updateDictionarySuccess'))
-      dialogVisible.value = false
-      resetForm()
-      fetchDictionaryPagesImmediate()
-    } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
-    }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
+  submitLoading.value = true
+  const params = {
+    dicId: editForm.dicId,
+    dicType: editForm.dicType,
+    dicCode: editForm.dicCode,
+    dicNameCn: editForm.dicNameCn,
+    dicNameEn: editForm.dicNameEn
   }
+  
+  const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
+  if (res && res.code === 200) {
+     ElMessage({ 
+       message: t('systembasicmgmt.dictionaryInfo.updateDictionarySuccess'), 
+       type: 'success', 
+       plain: true, 
+       showClose: true 
+     })
+     dialogVisible.value = false
+     resetForm()
+     fetchDictionaryPagesImmediate()
+   } else {
+     ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
+   }
+  submitLoading.value = false
 }
 
 // 删除字典数据
@@ -411,13 +419,16 @@ const deleteDictionary = async (dicId) => {
   try {
     const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, { dicId })
     if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.dictionaryInfo.deleteDictionarySuccess'))
-      
+      ElMessage({ 
+        message: t('systembasicmgmt.dictionaryInfo.deleteDictionarySuccess'), 
+        type: 'success', 
+        plain: true, 
+        showClose: true 
+      })
       // 如果当前页没有数据了，回到上一页
       if (dictionaryList.value.length === 1 && pagination.pageIndex > 1) {
         pagination.pageIndex--
       }
-      
       fetchDictionaryPagesImmediate()
     } else {
       ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.deleteDictionaryFailed'))
@@ -434,7 +445,9 @@ const handleAdd = () => {
   dialogVisible.value = true
   
   nextTick(() => {
-    editFormRef.value?.focus()
+    if (editFormRef.value) {
+      editFormRef.value.clearValidate()
+    }
   })
 }
 

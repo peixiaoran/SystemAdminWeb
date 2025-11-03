@@ -36,7 +36,7 @@
         <el-table-column prop="nationNameCn" :label="$t('systembasicmgmt.nationalityInfo.nationNameCn')" align="left" min-width="240" />
         <el-table-column prop="nationNameEn" :label="$t('systembasicmgmt.nationalityInfo.nationNameEn')" align="left" min-width="360" />
         <el-table-column prop="remark" :label="$t('systembasicmgmt.nationalityInfo.remark')" align="left" min-width="450" />
-        <el-table-column :label="$t('systembasicmgmt.nationalityInfo.operation')" min-width="170" fixed="right" align="center">
+        <el-table-column :label="$t('systembasicmgmt.nationalityInfo.operation')" min-width="150" fixed="right" align="center">
           <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
             <el-button size="small"
@@ -86,7 +86,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </span>
     </template>
   </el-dialog>
@@ -125,6 +125,9 @@ const pagination = reactive({
 
 // 对话框显示状态
 const dialogVisible = ref(false)
+
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 编辑表单
 const editForm = reactive({
@@ -263,6 +266,7 @@ const insertNationality = async () => {
       showClose: true,
     })
   }
+  submitLoading.value = false
 }
 
 // 更新国籍操作
@@ -290,6 +294,7 @@ const updateNationality = async () => {
       showClose: true,
     })
   }
+  submitLoading.value = false
 }
 
 // 删除国籍操作
@@ -363,6 +368,7 @@ const handleDelete = (index, row) => {
 const handleSave = () => {
   editFormRef.value?.validate((valid) => {
       if (valid) {
+          submitLoading.value = true
           // 判断是新增还是编辑
           if (!editForm.nationId) {
               insertNationality()

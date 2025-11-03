@@ -164,7 +164,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -186,6 +186,8 @@ const moduleList = ref([])
 const loading = ref(false)
 const moduleDropList = ref([])
 const menuTypeOptions = ref([])
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 表单引用
 const editFormRef = ref(null)
@@ -485,6 +487,8 @@ const resetForm = (clearValidation = true) => {
 
 // 新增一级菜单
 const insertPMenu = async () => {
+  submitLoading.value = true
+  
   // 检查必填字段
   if (!editForm.moduleId) {
     ElMessage({
@@ -493,6 +497,7 @@ const insertPMenu = async () => {
       plain: true,
       showClose: true,
     })
+    submitLoading.value = false
     return
   }
 
@@ -520,10 +525,13 @@ const insertPMenu = async () => {
       showClose: true,
     })
   }
+  submitLoading.value = false
 }
 
 // 更新一级菜单
 const updatePMenu = async () => {
+  submitLoading.value = true
+  
   // 检查必填字段
   if (!editForm.moduleId) {
     ElMessage({
@@ -532,6 +540,7 @@ const updatePMenu = async () => {
       plain: true,
       showClose: true,
     })
+    submitLoading.value = false
     return
   }
 
@@ -560,6 +569,7 @@ const updatePMenu = async () => {
       showClose: true,
     })
   }
+  submitLoading.value = false
 }
 
 // 删除一级菜单

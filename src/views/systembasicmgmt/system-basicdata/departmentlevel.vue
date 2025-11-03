@@ -97,7 +97,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </span>
     </template>
   </el-dialog>
@@ -124,6 +124,7 @@ const { t } = useI18n()
 // 级别列表
 const departmentLevelList = ref([])
 const loading = ref(false)
+const submitLoading = ref(false)
 
 // 表单引用
 const editFormRef = ref(null)
@@ -349,48 +350,53 @@ const handleDelete = async (index, row) => {
 
 // 保存
 const handleSave = async () => {
-  try {
-    await editFormRef.value.validate()
+  // 表单验证
+  const isValid = await editFormRef.value.validate().catch(() => false)
+  if (!isValid) return
 
-    const params = {
-      departmentLevelId: editForm.departmentLevelId,
-      departmentLevelCode: editForm.departmentLevelCode,
-      departmentLevelNameCn: editForm.departmentLevelNameCn,
-      departmentLevelNameEn: editForm.departmentLevelNameEn,
-      description: editForm.description,
-      sortOrder: editForm.sortOrder
-    }
+  submitLoading.value = true
+  
+  const params = {
+    departmentLevelId: editForm.departmentLevelId,
+    departmentLevelCode: editForm.departmentLevelCode,
+    departmentLevelNameCn: editForm.departmentLevelNameCn,
+    departmentLevelNameEn: editForm.departmentLevelNameEn,
+    description: editForm.description,
+    sortOrder: editForm.sortOrder
+  }
 
-    const api = editForm.departmentLevelId ? UPDATE_DEPARTMENT_LEVEL_API.UPDATE_DEPARTMENT_LEVEL : INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL
-    const res = await post(api, params)
+  const api = editForm.departmentLevelId ? UPDATE_DEPARTMENT_LEVEL_API.UPDATE_DEPARTMENT_LEVEL : INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL
+  
+  // 发送请求并处理响应
+  const res = await post(api, params).catch(error => {
+    console.error('保存部门级别失败:', error)
+    ElMessage({
+      message: t('systembasicmgmt.departmentLevel.saveFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
+    return null
+  }).finally(() => {
+    submitLoading.value = false
+  })
 
-    if (res && res.code === 200) {
-      ElMessage({
-        message: res.message || t('systembasicmgmt.departmentLevel.saveSuccess'),
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      dialogVisible.value = false
-      fetchDepartmentLevelListImmediate()
-    } else {
-      ElMessage({
-        message: res.message || t('systembasicmgmt.departmentLevel.saveFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } catch (error) {
-    if (error !== false) {
-      console.error('保存部门级别失败:', error)
-      ElMessage({
-        message: t('systembasicmgmt.departmentLevel.saveFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
+  if (res && res.code === 200) {
+    ElMessage({
+      message: res.message || t('systembasicmgmt.departmentLevel.saveSuccess'),
+      type: 'success',
+      plain: true,
+      showClose: true
+    })
+    dialogVisible.value = false
+    fetchDepartmentLevelListImmediate()
+  } else if (res) {
+    ElMessage({
+      message: res.message || t('systembasicmgmt.departmentLevel.saveFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
   }
 }
 

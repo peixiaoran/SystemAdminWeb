@@ -176,9 +176,9 @@ export default {
       }
     },
 
-  // 表单业务管理
+  // 表单签核业务
   formbusiness: {
-    title: '表单业务管理',
+    title: '表单签核业务',
     
     // 通用操作
     actions: {
@@ -436,13 +436,15 @@ export default {
     useragent: '员工代理维护',
     userparttime: '员工兼任维护',
     userformbind: '员工表单绑定',
-    formbusiness: '表单业务管理',
+    formbusiness: '表单签核业务',
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
     formType: '表单类别信息',
     personalInfoTitle: '个人资料',
-    nationality: '国籍信息',
-    custmatManufacturer: '厂商信息'
+    nationality: '国籍信息维护',
+    custmat: '客户生产计划',
+    custmatbasicinfo: '客户物料基础信息',
+    custmatManufacturer: '厂商信息维护'
   },
   
   // 系统基础管理
@@ -703,7 +705,7 @@ export default {
       }
     },
     nationalityInfo: {
-      title: '国籍信息',
+      title: '国籍信息维护',
       index: '序号',
       nationNameCn: '中文名称',
       nationNameEn: '英文名称',
@@ -1243,14 +1245,14 @@ export default {
       endTimeRequired: '请选择结束时间',
       addPartTimeSuccess: '新增兼任成功',
       addPartTimeFailed: '新增兼任失败',
-      deletePartTime: '删除兼任',
+      deletePartTime: '删除',
       deletePartTimeConfirm: '确定要删除该员工兼任记录吗？',
       deletePartTimeSuccess: '删除兼任成功',
       deletePartTimeFailed: '删除兼任失败',
       deleteConfirm: '确定要删除该员工兼任记录吗？',
       deleteSuccess: '删除成功',
       deleteFailed: '删除失败',
-      editPartTime: '编辑兼任',
+      editPartTime: '编辑',
       editPartTimeTitle: '编辑员工兼任',
       editPartTimeSuccess: '编辑兼任成功',
       editPartTimeFailed: '编辑兼任失败',

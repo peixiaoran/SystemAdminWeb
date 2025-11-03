@@ -148,7 +148,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -188,6 +188,9 @@ const filters = reactive({
 
 // 对话框显示状态
 const dialogVisible = ref(false)
+
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 编辑表单
 const editForm = reactive({
@@ -359,10 +362,12 @@ const resetForm = (clearValidation = true) => {
 
 // 插入网域
 const insertModule = async () => {
+  submitLoading.value = true
   const params = {
     ...editForm,
     redirect: editForm.redirect
   }
+  
   const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
   if (res && res.code === 200) {
     resetForm()
@@ -382,14 +387,17 @@ const insertModule = async () => {
       showClose: true
     })
   }
+  submitLoading.value = false
 }
 
 // 更新网域
 const updateModule = async () => {
+  submitLoading.value = true
   const params = {
     ...editForm,
     redirect: editForm.redirect
   }
+  
   const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, params)
   if (res && res.code === 200) {
     resetForm()
@@ -409,6 +417,7 @@ const updateModule = async () => {
       showClose: true
     })
   }
+  submitLoading.value = false
 }
 
 // 删除网域

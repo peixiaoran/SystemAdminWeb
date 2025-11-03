@@ -126,7 +126,7 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-            <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+            <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
           </span>
         </template>
       </el-dialog>
@@ -240,11 +240,13 @@
 
   // 使用i18n
   const { t } = useI18n()
-
+  
   // 角色数据
   const roleList = ref([])
   const loading = ref(false)
-
+  // 提交加载状态
+  const submitLoading = ref(false)
+  
   // 表单引用
   const editFormRef = ref(null)
 
@@ -427,6 +429,8 @@
 
   // 新增角色操作
   const insertRole = async () => {
+      submitLoading.value = true
+      
       const params = {
           roleId: '',
           roleCode: editForm.roleCode,
@@ -437,9 +441,15 @@
           remark: editForm.remark
       }
       const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
-
+  
       if (res && res.code === 200) {
           resetForm()
+          ElMessage({
+              message: res.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
           fetchRolePages()
       } else {
           ElMessage({
@@ -449,10 +459,13 @@
               showClose: true
           })
       }
+      submitLoading.value = false
   }
-
+  
   // 更新角色操作
   const updateRole = async () => {
+      submitLoading.value = true
+      
       const params = {
           roleId: editForm.roleId,
           roleCode: editForm.roleCode,
@@ -463,7 +476,7 @@
           remark: editForm.remark
       }
       const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, params)
-
+  
       if (res && res.code === 200) {
           resetForm()
           ElMessage({
@@ -482,6 +495,7 @@
               showClose: true
           })
       }
+      submitLoading.value = false
   }
 
   // 删除角色操作
@@ -841,7 +855,7 @@
   
   .role-name-display {
       margin-bottom: 15px;
-      padding: 10px;
+      padding: 15px;
       background-color: #f5f7fa;
       border-radius: 4px;
       border-left: 4px solid #409eff;

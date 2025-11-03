@@ -53,7 +53,7 @@
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="200" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="150">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
@@ -63,7 +63,7 @@
                     </el-table-column>
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="200" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="150" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="100">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="130">
                         <template #default="scope">
                             <el-tag :type="scope.row.isPartTime === '1' ? 'success' : 'info'">
                                 {{ scope.row.isPartTimeName }}
@@ -75,12 +75,12 @@
                     <el-table-column prop="partTimeLaborName" :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
                     <el-table-column prop="startTime" :label="$t('systembasicmgmt.userPartTime.startTime')" align="center" min-width="160" />
                     <el-table-column prop="endTime" :label="$t('systembasicmgmt.userPartTime.endTime')" align="center" min-width="160" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="190" fixed="right" align="center">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="150" fixed="right" align="center">
                         <template #default="scope">
-                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="primary" @click="handleEdit(scope.$index, scope.row)">
+                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="primary" @click="handleEdit(scope.$index, scope.row)" plain>
                                 {{ $t('systembasicmgmt.userPartTime.editPartTime') }}
                             </el-button>
-                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">
+                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>
                                 {{ $t('systembasicmgmt.userPartTime.deletePartTime') }}
                             </el-button>
                         </template>
@@ -1077,48 +1077,50 @@
         // 验证表单
         if (!addFormRef.value) return
         
+        // 表单验证
         try {
             await addFormRef.value.validate()
-            
-            submitLoading.value = true
-            
-            const params = {
-                userId: addForm.userId,
-                partTimeDeptId: addForm.partTimeDeptId,
-                partTimePositionId: addForm.partTimePositionId,
-                partTimeLaborId: addForm.partTimeLaborId,
-                startTime: addForm.startTime,
-                endTime: addForm.endTime
-            }
-            const res = await post(INSERT_USER_PARTTIME_API.INSERT_USER_PARTTIME, params)
-            
-            if (res && res.code === 200) {
-                ElMessage({
-                    message: res.message,
-                    type: 'success',
-                    plain: true,
-                    showClose: true
-                })
-                
-                // 关闭对话框
-                addDialogVisible.value = false
-                
-                // 刷新列表
-                await fetchUserPartTimePages()
-            } else {
-                ElMessage({
-                    message: res.message,
-                    type: 'error',
-                    plain: true,
-                    showClose: true
-                })
-            }
         } catch (error) {
             // 表单验证失败时静默返回，不显示任何提示
             return
-        } finally {
-            submitLoading.value = false
         }
+        
+        submitLoading.value = true
+        
+        const params = {
+            userId: addForm.userId,
+            partTimeDeptId: addForm.partTimeDeptId,
+            partTimePositionId: addForm.partTimePositionId,
+            partTimeLaborId: addForm.partTimeLaborId,
+            startTime: addForm.startTime,
+            endTime: addForm.endTime
+        }
+        
+        const res = await post(INSERT_USER_PARTTIME_API.INSERT_USER_PARTTIME, params)
+        
+        if (res && res.code === 200) {
+            ElMessage({
+                message: res.message,
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
+            
+            // 关闭对话框
+            addDialogVisible.value = false
+            
+            // 刷新列表
+            await fetchUserPartTimePages()
+        } else {
+            ElMessage({
+                message: res.message,
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        }
+        
+        submitLoading.value = false
     }
     
     // 编辑兼任
@@ -1245,53 +1247,54 @@
         // 验证表单
         if (!editFormRef.value) return
         
+        // 表单验证
         try {
             await editFormRef.value.validate()
-            
-            editSubmitLoading.value = true
-            
-            const params = {
-                Old_UserId: editForm.old_UserId,
-                userId: editForm.userId,
-                partTimeDeptId: editForm.partTimeDeptId,
-                partTimePositionId: editForm.partTimePositionId,
-                partTimeLaborId: editForm.partTimeLaborId,
-                old_PartTimeDeptId: editForm.old_PartTimeDeptId,
-                old_PartTimePositionId: editForm.old_PartTimePositionId,
-                old_PartTimeLaborId: editForm.old_PartTimeLaborId,
-                startTime: editForm.startTime,
-                endTime: editForm.endTime
-            }
-            
-            const res = await post(UPDATE_USER_PARTTIME_API.UPDATE_USER_PARTTIME, params)
-            
-            if (res && res.code === 200) {
-                ElMessage({
-                    message: res.message,
-                    type: 'success',
-                    plain: true,
-                    showClose: true
-                })
-                
-                // 关闭对话框
-                editDialogVisible.value = false
-                
-                // 刷新列表
-                await fetchUserPartTimePages()
-            } else {
-                ElMessage({
-                    message: res.message,
-                    type: 'error',
-                    plain: true,
-                    showClose: true
-                })
-            }
         } catch (error) {
             // 表单验证失败时静默返回，不显示任何提示
             return
-        } finally {
-            editSubmitLoading.value = false
         }
+        
+        editSubmitLoading.value = true
+        
+        const params = {
+            Old_UserId: editForm.old_UserId,
+            userId: editForm.userId,
+            partTimeDeptId: editForm.partTimeDeptId,
+            partTimePositionId: editForm.partTimePositionId,
+            partTimeLaborId: editForm.partTimeLaborId,
+            old_PartTimeDeptId: editForm.old_PartTimeDeptId,
+            old_PartTimePositionId: editForm.old_PartTimePositionId,
+            old_PartTimeLaborId: editForm.old_PartTimeLaborId,
+            startTime: editForm.startTime,
+            endTime: editForm.endTime
+        }
+        
+        const res = await post(UPDATE_USER_PARTTIME_API.UPDATE_USER_PARTTIME, params)
+        
+        if (res && res.code === 200) {
+            ElMessage({
+                message: res.message,
+                type: 'success',
+                plain: true,
+                showClose: true
+            })
+            
+            // 关闭对话框
+            editDialogVisible.value = false
+            
+            // 刷新列表
+            await fetchUserPartTimePages()
+        } else {
+            ElMessage({
+                message: res.message,
+                type: 'error',
+                plain: true,
+                showClose: true
+            })
+        }
+        
+        editSubmitLoading.value = false
     }
     
     // 处理删除操作

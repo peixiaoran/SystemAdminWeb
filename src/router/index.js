@@ -428,7 +428,7 @@ const pmenuRoutes = [
           redirect: '/custmat/custmat-basicinfo',
           meta: { 
             title: 'route.custmatbasicinfo',
-            icon: 'Tickets',
+            icon: 'Promotion',
             [ROUTE_CONFIG.META.AUTH]: true,
             noTag: true
           },
@@ -439,7 +439,7 @@ const pmenuRoutes = [
               component: () => import('../views/custmat/custmat-basicinfo/manufacturerinfo.vue'),
               meta: { 
                 title: 'route.custmatManufacturer', 
-                icon: 'Collection',
+                icon: 'Van',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

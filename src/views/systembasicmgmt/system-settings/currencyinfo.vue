@@ -85,8 +85,8 @@
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.isEnabled')" prop="isEnabled">
             <el-switch v-model="editForm.isEnabled" 
-                      :active-value="'1'"
-                      :inactive-value="'0'"
+                      :active-value="1"
+                      :inactive-value="0"
                       :active-text="$t('common.yes')"
                       :inactive-text="$t('common.no')"
                       inline-prompt
@@ -110,7 +110,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave">{{ $t('common.save') }}</el-button>
+          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -137,6 +137,8 @@ const { t } = useI18n()
 // 币别数据
 const currencyList = ref([])
 const loading = ref(false)
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 表单引用
 const editFormRef = ref(null)
@@ -162,6 +164,7 @@ const editForm = reactive({
   currencyCode: '',
   currencyNameCn: '',
   currencyNameEn: '',
+  isEnabled: 1,
   remark: ''
 })
 
@@ -190,11 +193,20 @@ const fetchCurrencyEntity = async (currencyId) => {
     if (res && res.code === 200) {
       return res.data
     } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'))
-      return null
+      ElMessage({ 
+        message: res?.message || t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'), 
+        type: 'error', 
+        plain: true, 
+        showClose: true 
+      })
     }
   } catch (error) {
-    ElMessage.error(t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'))
+    ElMessage({ 
+      message: t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'), 
+      type: 'error', 
+      plain: true, 
+      showClose: true 
+    })
     return null
   }
 }
@@ -214,11 +226,21 @@ const fetchCurrencyPages = async () => {
       currencyList.value = res.data || []
       pagination.totalCount = res.data?.totalCount || 0
     } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'))
-    }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'))
-  } finally {
+    ElMessage({ 
+      message: res?.message || t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'), 
+      type: 'error', 
+      plain: true, 
+      showClose: true 
+    })
+  }
+} catch (error) {
+  ElMessage({ 
+    message: t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'), 
+    type: 'error', 
+    plain: true, 
+    showClose: true 
+  })
+} finally {
     loading.value = false
   }
 }
@@ -263,6 +285,7 @@ const resetForm = (clearValidation = true) => {
   editForm.currencyCode = ''
   editForm.currencyNameCn = ''
   editForm.currencyNameEn = ''
+  editForm.isEnabled = 1
   editForm.remark = ''
   
   if (clearValidation && editFormRef.value) {
@@ -272,59 +295,81 @@ const resetForm = (clearValidation = true) => {
   }
 }
 
-// 新增币别数据
-const insertCurrency = async () => {
-  try {
-    const params = {
-      currencyCode: editForm.currencyCode,
-      currencyNameCn: editForm.currencyNameCn,
-      currencyNameEn: editForm.currencyNameEn || '',
-      remark: editForm.remark || ''
+ // 新增币别数据
+ const insertCurrency = async () => {
+   submitLoading.value = true
+   const params = {
+     currencyCode: editForm.currencyCode,
+     currencyNameCn: editForm.currencyNameCn,
+     currencyNameEn: editForm.currencyNameEn || '',
+     remark: editForm.remark || ''
+   }
+   
+   const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, params)
+   if (res && res.code === 200) {
+     ElMessage({ 
+       message: t('systembasicmgmt.currencyInfo.insertCurrencySuccess'), 
+       type: 'success', 
+       plain: true, 
+       showClose: true 
+     })
+     dialogVisible.value = false
+     fetchCurrencyPagesImmediate()
+   } else {
+      ElMessage({ 
+        message: res?.message || t('systembasicmgmt.currencyInfo.insertCurrencyFailed'), 
+        type: 'error', 
+        plain: true, 
+        showClose: true 
+      })
     }
-    
-    const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, params)
-    if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.currencyInfo.insertCurrencySuccess'))
-      dialogVisible.value = false
-      fetchCurrencyPagesImmediate()
-    } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.currencyInfo.insertCurrencyFailed'))
-    }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.currencyInfo.insertCurrencyFailed'))
-  }
-}
+   submitLoading.value = false
+ }
 
-// 更新币别数据
-const updateCurrency = async () => {
-  try {
-    const params = {
-      currencyId: editForm.currencyId,
-      currencyCode: editForm.currencyCode,
-      currencyNameCn: editForm.currencyNameCn,
-      currencyNameEn: editForm.currencyNameEn || '',
-      remark: editForm.remark || ''
-    }
-    
-    const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, params)
-    if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.currencyInfo.updateCurrencySuccess'))
-      dialogVisible.value = false
-      fetchCurrencyPagesImmediate()
-    } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.currencyInfo.updateCurrencyFailed'))
-    }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.currencyInfo.updateCurrencyFailed'))
-  }
-}
+ // 更新币别数据
+ const updateCurrency = async () => {
+   submitLoading.value = true
+   const params = {
+     currencyId: editForm.currencyId,
+     currencyCode: editForm.currencyCode,
+     currencyNameCn: editForm.currencyNameCn,
+     currencyNameEn: editForm.currencyNameEn || '',
+     isEnabled: editForm.isEnabled,
+     remark: editForm.remark || ''
+   }
+   
+   const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, params)
+   if (res && res.code === 200) {
+     ElMessage({ 
+       message: res.message, 
+       type: 'success', 
+       plain: true, 
+       showClose: true 
+     })
+     dialogVisible.value = false
+     fetchCurrencyPagesImmediate()
+   } else {
+     ElMessage({ 
+       message: res?.message || t('systembasicmgmt.currencyInfo.updateCurrencyFailed'), 
+       type: 'error', 
+       plain: true, 
+       showClose: true 
+     })
+   }
+   submitLoading.value = false
+ }
 
 // 删除币别数据
 const deleteCurrency = async (currencyId) => {
   try {
     const res = await post(DELETE_CURRENCY_API.DELETE_CURRENCY, { currencyId })
     if (res && res.code === 200) {
-      ElMessage.success(t('systembasicmgmt.currencyInfo.deleteCurrencySuccess'))
+      ElMessage({ 
+        message: t('systembasicmgmt.currencyInfo.deleteCurrencySuccess'), 
+        type: 'success', 
+        plain: true, 
+        showClose: true 
+      })
       // 如果当前页没有数据了，回到上一页
       if (currencyList.value.length === 1 && pagination.pageIndex > 1) {
         pagination.pageIndex--
@@ -392,6 +437,7 @@ const handleSave = () => {
 // 处理对话框关闭
 const handleDialogClose = () => {
   resetForm()
+  dialogVisible.value = false
 }
 </script>
 

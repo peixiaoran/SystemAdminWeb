@@ -29,15 +29,15 @@ export const GET_USERLABOR_LIST_API = {
 
 // 职业新增API
 export const INSERT_USER_LABOR_API = {
-    INSERT_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/InsertUserLaborInfo'
+    INSERT_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/InsertUserLabor'
 }
 
 // 职业更新API
 export const UPDATE_USER_LABOR_API = {
-    UPDATE_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/UpdateUserLaborInfo'
+    UPDATE_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/UpdateUserLabor'
 }
 
 // 职业删除API
 export const DELETE_USER_LABOR_API = {
-    DELETE_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/DeleteUserLaborInfo'
+    DELETE_USER_LABOR: 'SystemBasicMgmt/SystemBasicData/UserLabor/DeleteUserLabor'
 }

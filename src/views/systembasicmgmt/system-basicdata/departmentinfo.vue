@@ -70,7 +70,7 @@
         <!-- 编辑对话框 -->
         <el-dialog v-model="dialogVisible"
                    :title="dialogTitle"
-                   width="50%"
+                   width="55%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"

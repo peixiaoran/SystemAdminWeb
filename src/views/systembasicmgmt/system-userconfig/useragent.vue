@@ -59,51 +59,13 @@
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
-          :data="userList"
-          border
-          stripe
-          :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
-          class="conventional-table"
-        >
-          <el-table-column 
-            type="index" 
-            :label="$t('systembasicmgmt.userAgent.index')" 
-            width="70" 
-            align="center" 
-            fixed 
-          />
-          <el-table-column 
-            prop="userNo" 
-            :label="$t('systembasicmgmt.userAgent.userNo')" 
-            align="center" 
-            min-width="150" 
-          />
-          <el-table-column 
-            prop="userName" 
-            :label="$t('systembasicmgmt.userAgent.userName')" 
-            align="left" 
-            min-width="180" 
-          />
-          <el-table-column 
-            prop="departmentName" 
-            :label="$t('systembasicmgmt.userAgent.department')" 
-            align="left" 
-            min-width="230" 
-          />
-          <el-table-column 
-            prop="positionName" 
-            :label="$t('systembasicmgmt.userAgent.position')" 
-            align="left" 
-            min-width="120" 
-          />
-          <el-table-column 
-            prop="laborName" 
-            :label="$t('systembasicmgmt.userAgent.laborName')" 
-            align="center" 
-            min-width="270" 
-          />
+        <el-table :data="userList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" fixed />
+          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="150" />
+          <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userName')" align="left" min-width="180" />
+          <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="230" />
+          <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="120" />
+          <el-table-column prop="laborName" :label="$t('systembasicmgmt.userAgent.laborName')" align="center" min-width="270" />
           <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="150">
             <template #default="scope">
               <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">{{ scope.row.isApprovalName }}</el-tag>
@@ -116,9 +78,9 @@
           </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.userAgent.operation')" min-width="320" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.addAgent') }}</el-button>
-              <el-button size="small" type="primary" @click="handleViewProactiveAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewAgentList') }}</el-button>
-              <el-button size="small" type="info" @click="handleConfigureAgent(scope.$index, scope.row)">{{ $t('systembasicmgmt.userAgent.viewProactiveAgent') }}</el-button>
+              <el-button size="small" type="success" @click="handleAddAgentForUser(scope.$index, scope.row)" plain>{{ $t('systembasicmgmt.userAgent.addAgent') }}</el-button>
+              <el-button size="small" type="primary" @click="handleViewProactiveAgent(scope.$index, scope.row)" plain>{{ $t('systembasicmgmt.userAgent.viewAgentList') }}</el-button>
+              <el-button size="small" type="info" @click="handleConfigureAgent(scope.$index, scope.row)" plain>{{ $t('systembasicmgmt.userAgent.viewProactiveAgent') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -152,44 +114,12 @@
       class="agent-dialog"
     >
       <div v-loading="agentLoading" style="height: 380px; padding-top: 20px;">
-        <el-table 
-          :data="agentList"
-          border
-          stripe
-          :header-cell-style="{ background: '#f5f7fa' }"
-          height="370"
-          class="conventional-table"
-        >
-          <el-table-column 
-            type="index" 
-            :label="$t('systembasicmgmt.userAgent.index')" 
-            width="70" 
-            align="center" 
-          />
-          <el-table-column 
-            prop="agentUserNo" 
-            :label="$t('systembasicmgmt.userAgent.agentUserNo')" 
-            align="left" 
-            min-width="110" 
-          />
-          <el-table-column 
-            prop="agentUserName" 
-            :label="$t('systembasicmgmt.userAgent.agentUser')" 
-            align="left" 
-            min-width="200" 
-          />
-          <el-table-column 
-            prop="startTime" 
-            :label="$t('systembasicmgmt.userAgent.startTime')" 
-            align="center" 
-            min-width="110" 
-          />
-          <el-table-column 
-            prop="endTime" 
-            :label="$t('systembasicmgmt.userAgent.endTime')" 
-            align="center" 
-            min-width="110" 
-          />
+        <el-table :data="agentList" border stripe :header-cell-style="{ background: '#f5f7fa' }" height="370" class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
+          <el-table-column prop="agentUserNo" :label="$t('systembasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
+          <el-table-column prop="agentUserName" :label="$t('systembasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
+          <el-table-column prop="startTime" :label="$t('systembasicmgmt.userAgent.startTime')" align="center" min-width="110" />
+          <el-table-column prop="endTime" :label="$t('systembasicmgmt.userAgent.endTime')" align="center" min-width="110" />
           <el-table-column 
             :label="$t('common.operation')" 
             align="center" 
@@ -302,7 +232,7 @@
           <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
             <el-input 
               v-model="userSelectFilters.userNo"
-              style="width: 200px;"
+              style="width: 150px;"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
               clearable 
             />
@@ -370,6 +300,7 @@
             type="primary" 
             @click="handleConfirmUserSelect" 
             :disabled="selectedUsers.length === 0"
+            :loading="confirmLoading"
           >
             {{ $t('common.confirm') }}
           </el-button>
@@ -471,6 +402,7 @@ const userSelectList = ref([])
 const selectedUsers = ref([])
 const userSelectTableRef = ref(null)
 const agentTimeFormRef = ref(null)
+const confirmLoading = ref(false) // 确认按钮加载状态
 
 // 代理时间表单验证规则
 const agentTimeFormRules = reactive({
@@ -739,8 +671,8 @@ const handleAgentDialogClosed = async () => {
   agentList.value = []
   currentUserId.value = ''
   agentDialogTitle.value = ''
-  // 刷新主页面数据
-  await fetchUserPages()
+  // 只有在代理人列表有变化时才刷新主页面数据
+  // await fetchUserPages() // 移除自动刷新，避免不必要的表格重载
 }
 
 // 处理员工选择对话框关闭后的清理
@@ -875,15 +807,12 @@ const handleUserSelectSearch = () => {
   debouncedFetchUserSelectList()
 }
 
-// 重置用户选择搜索
+// 重置用户选择搜索 - 只清空输入框，不清空下拉框，不触发查询
 const handleUserSelectReset = () => {
   Object.assign(userSelectFilters, {
-    departmentId: '',
     userNo: '',
     userName: ''
   })
-  userSelectPagination.pageIndex = 1
-  fetchUserSelectList()
 }
 
 // 处理用户选择分页
@@ -949,72 +878,67 @@ const handleConfirmUserSelect = async () => {
     return
   }
 
-  try {
-    // 格式化时间
-    const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
-    const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
+  confirmLoading.value = true
+  
+  // 格式化时间
+  const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
+  const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
 
-    // 逐个调用新增接口
-    for (const user of selectedUsers.value) {
-      const params = {
-        substituteUserId: user.userId,
-        agentUserId: currentUserId.value,
-        startTime: startTime,
-        endTime: endTime
-      }
-
-      const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
-
-      if (res && res.code === 200) {
-        // 成功添加代理人
-      } else {
-        ElMessage({
-          message: res.message,
-          type: 'error',
-          plain: true,
-          showClose: true
-        })
-        return
-      }
+  // 逐个调用新增接口
+  for (const user of selectedUsers.value) {
+    const params = {
+      substituteUserId: user.userId,
+      agentUserId: currentUserId.value,
+      startTime: startTime,
+      endTime: endTime
     }
 
-    ElMessage({
-      message: t('common.saveSuccess'),
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
-    userSelectDialogVisible.value = false
+    const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
 
-    // 重置数据
-    selectedUsers.value = []
-    Object.assign(agentTimeRange, {
-      startTime: '',
-      endTime: ''
-    })
-
-    // 清空表格选择
-    if (userSelectTableRef.value) {
-      userSelectTableRef.value.clearSelection()
+    if (res && res.code === 200) {
+      // 成功添加代理人
+    } else {
+      ElMessage({
+        message: res.message,
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+      confirmLoading.value = false
+      return
     }
-
-    // 重新获取代理人列表
-    await fetchUserAgentList(currentUserId.value)
-
-    // 清理当前用户信息
-    currentUserInfo.value = {}
-
-    // 刷新主页面数据
-    await fetchUserPages()
-
-  } catch (error) {
-    ElMessage({
-      message: t('common.operationFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
   }
+
+  ElMessage({
+    message: t('common.saveSuccess'),
+    type: 'success',
+    plain: true,
+    showClose: true
+  })
+  userSelectDialogVisible.value = false
+
+  // 重置数据
+  selectedUsers.value = []
+  Object.assign(agentTimeRange, {
+    startTime: '',
+    endTime: ''
+  })
+
+  // 清空表格选择
+  if (userSelectTableRef.value) {
+    userSelectTableRef.value.clearSelection()
+  }
+
+  // 重新获取代理人列表
+  await fetchUserAgentList(currentUserId.value)
+
+  // 清理当前用户信息
+  currentUserInfo.value = {}
+
+  // 刷新主页面数据
+  await fetchUserPages()
+  
+  confirmLoading.value = false
 }
 
 // 获取员工代理了哪些人的列表数据
@@ -1064,8 +988,8 @@ const handleProactiveAgentDialogClosed = async () => {
   proactiveAgentList.value = []
   currentProactiveUserId.value = ''
   proactiveAgentDialogTitle.value = ''
-  // 刷新主页面数据
-  await fetchUserPages()
+  // 只有在主动代理人列表有变化时才刷新主页面数据
+  // await fetchUserPages() // 移除自动刷新，避免不必要的表格重载
 }
 </script>
 

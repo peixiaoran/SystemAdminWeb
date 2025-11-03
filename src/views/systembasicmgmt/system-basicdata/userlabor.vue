@@ -38,7 +38,7 @@
           <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="200" />
           <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
           <el-table-column prop="laborDescription" :label="$t('systembasicmgmt.userLabor.laborDescription')" align="left" min-width="250" />
-          <el-table-column :label="$t('common.operation')" min-width="120" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.laborId">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
+          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
         </el-table>
       </div>
 
@@ -136,7 +136,6 @@ const { t } = useI18n()
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
 const deletingId = ref(null)
 const laborList = ref([])
 const dialogVisible = ref(false)
@@ -255,7 +254,6 @@ const handleAdd = () => {
 
 // 编辑
 const handleEdit = async (row) => {
-  editingId.value = row.laborId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
@@ -293,7 +291,6 @@ const handleEdit = async (row) => {
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
   }
 }
 
@@ -398,6 +395,14 @@ const handleSubmit = async () => {
    } finally {
      submitLoading.value = false
    }
+}
+
+// 重置表单
+const resetForm = () => {
+  form.laborId = ''
+  form.laborNameCn = ''
+  form.laborNameEn = ''
+  form.laborDescription = ''
 }
 
 // 对话框关闭

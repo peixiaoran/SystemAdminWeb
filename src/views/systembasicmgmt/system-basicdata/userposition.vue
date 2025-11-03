@@ -9,9 +9,9 @@
           <el-table-column prop="positionNameCn" :label="$t('systembasicmgmt.userPosition.positionNameCn')" align="left" min-width="200" />
           <el-table-column prop="positionNameEn" :label="$t('systembasicmgmt.userPosition.positionNameEn')" align="left" min-width="200" />
           <el-table-column prop="positionDescription" :label="$t('systembasicmgmt.userPosition.positionDescription')" align="left" min-width="250" />
-          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
+          <el-table-column :label="$t('common.operation')" min-width="80" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)" :loading="editingId === scope.row.positionId">
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
             </template>
@@ -86,10 +86,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">
-            {{ $t('common.cancel') }}
-          </el-button>
-          <el-button type="primary" @click="dialogVisible = false">
-            {{ $t('common.confirm') }}
+            {{ $t('common.close') }}
           </el-button>
         </span>
       </template>
@@ -113,7 +110,6 @@ const { t } = useI18n()
 // 响应式数据
 const loading = ref(false)
 const editLoading = ref(false)
-const editingId = ref(null)
 const positionList = ref([])
 const dialogVisible = ref(false)
 const editForm = ref(null)
@@ -149,7 +145,6 @@ const getPositionList = async () => {
 
 // 处理编辑
 const handleEdit = async (index, row) => {
-  editingId.value = row.positionId
   editLoading.value = true
   dialogVisible.value = true
   editForm.value = null
@@ -183,15 +178,6 @@ const handleEdit = async (index, row) => {
     dialogVisible.value = false
   } finally {
     editLoading.value = false
-    editingId.value = null
-  }
-}
-
-// 重置表单
-const handleReset = () => {
-  if (editForm.value) {
-    // 重新获取当前职位数据以重置表单
-    handleEdit(0, editForm.value)
   }
 }
 

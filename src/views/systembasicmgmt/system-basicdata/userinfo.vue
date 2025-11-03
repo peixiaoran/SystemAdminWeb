@@ -334,7 +334,7 @@
        <template #footer>
          <span class="dialog-footer">
            <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-           <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+           <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
          </span>
       </template>
     </el-dialog>
@@ -415,6 +415,9 @@ const filters = reactive({
 
 // 对话框显示状态
 const dialogVisible = ref(false)
+
+// 提交加载状态
+const submitLoading = ref(false)
 
 // 编辑表单
 const editForm = reactive({
@@ -969,6 +972,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
   // 插入员工
   const insertUser = async () => {
+      submitLoading.value = true
       const params = {
           ...editForm
       }
@@ -993,10 +997,12 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
               showClose: true
           })
       }
+      submitLoading.value = false
   }
-
+  
   // 更新员工
   const updateUser = async () => {
+      submitLoading.value = true
       const params = {
           ...editForm
       }
@@ -1020,6 +1026,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
               showClose: true
           })
       }
+      submitLoading.value = false
   }
 
   // 删除员工

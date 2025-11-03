@@ -171,7 +171,7 @@
           <template #footer>
               <span class="dialog-footer">
                   <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="handleSave">{{ $t('common.confirm') }}</el-button>
+                  <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
               </span>
           </template>
       </el-dialog>
@@ -193,6 +193,9 @@
   // 二级菜单数据
   const smenuList = ref([])
   const loading = ref(false)
+  // 提交加载状态
+  const submitLoading = ref(false)
+  
   const moduleDropList = ref([])
   const pmenuDropList = ref([])
   const menuTypeOptions = ref([])
@@ -547,103 +550,91 @@
 
   // 新增程序
   const insertSMenu = async () => {
-      try {
-          // 验证必填项
-          if (!editForm.moduleId) {
-              ElMessage({
-                  message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
-                  type: 'warning',
-                  plain: true,
-                  showClose: true
-              })
-              return
-          }
-
-          // 设置必填项
-          const params = {
-              ...editForm,
-              redirect: editForm.redirect
-          }
-          const res = await post(INSERT_SMENU_API.INSERT_SMENU, params)
-
-          if (res && res.code === 200) {
-              resetForm()
-              ElMessage({
-                  message: res.message,
-                  type: 'success',
-                  plain: true,
-                  showClose: true
-              })
-              fetchSMenuPages()
-              dialogVisible.value = false
-          } else {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
-      } catch (error) {
-          console.error('新增二级菜单失败:', error)
-          ElMessage({
-              message: '新增二级菜单失败，请重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
-      }
+    submitLoading.value = true
+    
+    // 验证必填项
+    if (!editForm.moduleId) {
+      ElMessage({
+        message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
+        type: 'warning',
+        plain: true,
+        showClose: true
+      })
+      submitLoading.value = false
+      return
+    }
+  
+    // 设置必填项
+    const params = {
+      ...editForm,
+      redirect: editForm.redirect
+    }
+    const res = await post(INSERT_SMENU_API.INSERT_SMENU, params)
+  
+    if (res && res.code === 200) {
+      resetForm()
+      ElMessage({
+        message: res.message,
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
+      fetchSMenuPages()
+      dialogVisible.value = false
+    } else {
+      ElMessage({
+        message: res.message,
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
+    submitLoading.value = false
   }
-
+  
   // 更新程序
   const updateSMenu = async () => {
-      try {
-          // 验证必填项
-          if (!editForm.moduleId) {
-              ElMessage({
-                  message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
-                  type: 'warning',
-                  plain: true,
-                  showClose: true
-              })
-              return
-          }
-
-          // 设置必填项
-          const params = {
-              ...editForm,
-              redirect: editForm.redirect
-          }
-
-          const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, params)
-
-          if (res && res.code === 200) {
-              resetForm()
-              ElMessage({
-                  message: res.message,
-                  type: 'success',
-                  plain: true,
-                  showClose: true
-              })
-              dialogVisible.value = false
-              fetchSMenuPages()
-          } else {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
-      } catch (error) {
-          console.error('更新二级菜单失败:', error)
-          ElMessage({
-              message: '更新二级菜单失败，请重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
-      }
+    submitLoading.value = true
+    
+    // 验证必填项
+    if (!editForm.moduleId) {
+      ElMessage({
+        message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
+        type: 'warning',
+        plain: true,
+        showClose: true
+      })
+      submitLoading.value = false
+      return
+    }
+  
+    // 设置必填项
+    const params = {
+      ...editForm,
+      redirect: editForm.redirect
+    }
+  
+    const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, params)
+  
+    if (res && res.code === 200) {
+      resetForm()
+      ElMessage({
+        message: res.message,
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
+      dialogVisible.value = false
+      fetchSMenuPages()
+    } else {
+      ElMessage({
+        message: res.message,
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
+    submitLoading.value = false
   }
 
   // 删除程序
