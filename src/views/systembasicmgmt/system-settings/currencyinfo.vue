@@ -227,7 +227,7 @@ const fetchCurrencyPages = async () => {
       pagination.totalCount = res.data?.totalCount || 0
     } else {
     ElMessage({ 
-      message: res?.message || t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'), 
+      message: res.message, 
       type: 'error', 
       plain: true, 
       showClose: true 
@@ -317,7 +317,7 @@ const resetForm = (clearValidation = true) => {
      fetchCurrencyPagesImmediate()
    } else {
       ElMessage({ 
-        message: res?.message || t('systembasicmgmt.currencyInfo.insertCurrencyFailed'), 
+        message: res.message, 
         type: 'error', 
         plain: true, 
         showClose: true 
@@ -350,7 +350,7 @@ const resetForm = (clearValidation = true) => {
      fetchCurrencyPagesImmediate()
    } else {
      ElMessage({ 
-       message: res?.message || t('systembasicmgmt.currencyInfo.updateCurrencyFailed'), 
+       message: res.message, 
        type: 'error', 
        plain: true, 
        showClose: true 
@@ -361,25 +361,26 @@ const resetForm = (clearValidation = true) => {
 
 // 删除币别数据
 const deleteCurrency = async (currencyId) => {
-  try {
-    const res = await post(DELETE_CURRENCY_API.DELETE_CURRENCY, { currencyId })
-    if (res && res.code === 200) {
-      ElMessage({ 
-        message: t('systembasicmgmt.currencyInfo.deleteCurrencySuccess'), 
-        type: 'success', 
-        plain: true, 
-        showClose: true 
-      })
-      // 如果当前页没有数据了，回到上一页
-      if (currencyList.value.length === 1 && pagination.pageIndex > 1) {
-        pagination.pageIndex--
-      }
-      fetchCurrencyPagesImmediate()
-    } else {
-      ElMessage.error(res?.message || t('systembasicmgmt.currencyInfo.deleteCurrencyFailed'))
+  const res = await post(DELETE_CURRENCY_API.DELETE_CURRENCY, { currencyId })
+  if (res && res.code === 200) {
+    ElMessage({ 
+      message: res.message, 
+      type: 'success', 
+      plain: true, 
+      showClose: true 
+    })
+    // 如果当前页没有数据了，回到上一页
+    if (currencyList.value.length === 1 && pagination.pageIndex > 1) {
+      pagination.pageIndex--
     }
-  } catch (error) {
-    ElMessage.error(t('systembasicmgmt.currencyInfo.deleteCurrencyFailed'))
+    fetchCurrencyPagesImmediate()
+  } else {
+    ElMessage({ 
+      message: res.message, 
+      type: 'error', 
+      plain: true, 
+      showClose: true 
+    })
   }
 }
 

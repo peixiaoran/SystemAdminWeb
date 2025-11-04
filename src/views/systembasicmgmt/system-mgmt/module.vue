@@ -468,11 +468,11 @@ const handleAdd = () => {
 }
 
 // 编辑网域
-const handleEdit = (index, row) => {
+const handleEdit = async (index, row) => {
   // 重置表单
   resetForm()
   // 获取网域实体数据
-  fetchModuleEntity(row.moduleId)
+  await fetchModuleEntity(row.moduleId)
 
   // 设置对话框标题
   dialogTitle.value = t('systembasicmgmt.module.editModule')
@@ -480,11 +480,11 @@ const handleEdit = (index, row) => {
   dialogVisible.value = true
   
   // 数据加载完成后清除表单验证状态
-  setTimeout(() => {
+  nextTick(() => {
     if (editFormRef.value) {
       editFormRef.value.clearValidate()
     }
-  }, 100)
+  })
 }
 
 // 关闭对话框

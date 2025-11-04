@@ -312,13 +312,12 @@ const fetchModuleDropList = async () => {
       }
     }
   } catch (error) {
-    console.error('获取模块数据失败:', error)
-    ElMessage({
-      message: '获取模块数据失败，请刷新页面重试',
-      type: 'error',
-      plain: true,
-      showClose: true,
-  })
+        ElMessage({
+          message: '获取模块数据失败，请刷新页面重试',
+          type: 'error',
+          plain: true,
+          showClose: true,
+      })
     }
 }
 

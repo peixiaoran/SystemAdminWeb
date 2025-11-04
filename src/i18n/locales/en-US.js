@@ -838,6 +838,7 @@ export default {
       dicCode: 'Dictionary Code',
       dicNameCn: 'Dictionary Name (Ch)',
       dicNameEn: 'Dictionary Name (En)',
+      module: 'Module',
       operation: 'Operation',
       addDictionary: 'Add Dictionary',
       editDictionary: 'Edit Dictionary',

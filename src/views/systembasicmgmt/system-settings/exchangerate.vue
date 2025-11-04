@@ -249,36 +249,11 @@ const fetchCurrencyDropDown = async () => {
     }
   } else {
     ElMessage({ 
-      message: res?.message || t('systembasicmgmt.exchangeRate.getCurrencyDropDownFailed'), 
+      message: res.message, 
       type: 'error', 
       plain: true, 
       showClose: true 
     })
-  }
-}
-
-// 获取汇率实体数据
-const fetchExchangeRateEntity = async (exchangeRateId) => {
-  try {
-    const res = await post(GET_EXCHANGE_RATE_ENTITY_API.GET_EXCHANGE_RATE_ENTITY, { exchangeRateId })
-    if (res && res.code === 200) {
-      return res.data
-    } else {
-      ElMessage({ 
-        message: res?.message || t('systembasicmgmt.exchangeRate.getExchangeRateEntityFailed'), 
-        type: 'error', 
-        plain: true, 
-        showClose: true 
-      })
-    }
-  } catch (error) {
-    ElMessage({ 
-      message: t('systembasicmgmt.exchangeRate.getExchangeRateEntityFailed'), 
-      type: 'error', 
-      plain: true, 
-      showClose: true 
-    })
-    return null
   }
 }
 
@@ -299,7 +274,7 @@ const fetchExchangeRatePages = async () => {
       pagination.totalCount = res.data?.totalCount || 0
     } else {
     ElMessage({ 
-      message: res?.message || t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'), 
+      message: res.message, 
       type: 'error', 
       plain: true, 
       showClose: true 
@@ -406,7 +381,7 @@ const insertExchangeRate = async () => {
       fetchExchangeRatePagesImmediate()
     } else {
       ElMessage({ 
-        message: res?.message || t('systembasicmgmt.exchangeRate.insertExchangeRateFailed'), 
+        message: res.message, 
         type: 'error', 
         plain: true, 
         showClose: true 
@@ -438,7 +413,7 @@ const updateExchangeRate = async () => {
      fetchExchangeRatePagesImmediate()
    } else {
      ElMessage({ 
-       message: res?.message || t('systembasicmgmt.exchangeRate.updateExchangeRateFailed'), 
+       message: res.message, 
        type: 'error', 
        plain: true, 
        showClose: true 
@@ -449,31 +424,22 @@ const updateExchangeRate = async () => {
 
 // 删除汇率数据
 const deleteExchangeRate = async (exchangeRateId) => {
-  try {
-    const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, { exchangeRateId })
-    if (res && res.code === 200) {
-      ElMessage({ 
-        message: t('systembasicmgmt.exchangeRate.deleteExchangeRateSuccess'), 
-        type: 'success', 
-        plain: true, 
-        showClose: true 
-      })
-      // 如果当前页没有数据了，回到上一页
-      if (exchangeRateList.value.length === 1 && pagination.pageIndex > 1) {
-        pagination.pageIndex--
-      }
-      fetchExchangeRatePagesImmediate()
-    } else {
-      ElMessage({ 
-        message: res?.message || t('systembasicmgmt.exchangeRate.deleteExchangeRateFailed'), 
-        type: 'error', 
-        plain: true, 
-        showClose: true 
-      })
-    }
-  } catch (error) {
+  const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, { exchangeRateId })
+  if (res && res.code === 200) {
     ElMessage({ 
-      message: t('systembasicmgmt.exchangeRate.deleteExchangeRateFailed'), 
+      message: res.message, 
+      type: 'success', 
+      plain: true, 
+      showClose: true 
+    })
+    // 如果当前页没有数据了，回到上一页
+    if (exchangeRateList.value.length === 1 && pagination.pageIndex > 1) {
+      pagination.pageIndex--
+    }
+    fetchExchangeRatePagesImmediate()
+  } else {
+    ElMessage({ 
+      message: res.message, 
       type: 'error', 
       plain: true, 
       showClose: true 

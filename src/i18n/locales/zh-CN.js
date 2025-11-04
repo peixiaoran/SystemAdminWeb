@@ -422,7 +422,7 @@ export default {
     systemBasicData: '系统基础资料',
 
     departmentInfo: '部门信息维护',
-    departmentLevel: '部门层级维护',
+    departmentLevel: '部门级别维护',
     userposition: '职级信息维护',
     userlabor: '员工职业维护',
     userinfo: '员工信息维护',
@@ -1062,6 +1062,7 @@ export default {
       dicCode: '字典编码',
       dicNameCn: '中文名称',
       dicNameEn: '英文名称',
+      module: '模块',
       createdDate: '创建时间',
       operation: '操作',
       addDictionary: '新增字典',

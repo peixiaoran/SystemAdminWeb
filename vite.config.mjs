@@ -1,15 +1,36 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { imagetools } from 'vite-imagetools' // 新增图片优化插件
+import { imagetools } from 'vite-imagetools' // 图片优化
+import viteCompression from 'vite-plugin-compression' // 产物压缩 (gzip & brotli)
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 根据当前工作目录中的 `mode` 加载 .env 文件
   const env = loadEnv(mode, process.cwd(), '')
+  const isProd = mode === 'production'
   
   return {
-    plugins: [vue(), imagetools()], // 启用图片优化插件
+    plugins: [
+      vue(),
+      // 构建阶段按需启用图片优化，提升 dev 启动速度
+      isProd && imagetools(),
+      // 仅在生产环境生成 .gz/.br 双格式压缩包，降低线上带宽与首屏加载时长
+      isProd && viteCompression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        deleteOriginFile: false, // 保留原始文件，交给服务器按需选择
+        threshold: 10240, // 仅压缩 10kb 以上文件
+        verbose: false
+      }),
+      isProd && viteCompression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        deleteOriginFile: false,
+        threshold: 10240,
+        verbose: false
+      })
+    ].filter(Boolean),
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src')
