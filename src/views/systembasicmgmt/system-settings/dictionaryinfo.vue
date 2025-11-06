@@ -64,6 +64,7 @@
           <el-table-column prop="dicCode" :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />
           <el-table-column prop="dicNameCn" :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" align="left" min-width="230" />
           <el-table-column prop="dicNameEn" :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" align="left" min-width="230" />
+          <el-table-column prop="sortOrder" :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" align="center" min-width="120" />
           <el-table-column :label="$t('systembasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -129,6 +130,14 @@
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
             <el-input v-model="editForm.dicNameEn" style="width:100%" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" prop="sortOrder">
+            <el-input-number v-model="editForm.sortOrder" 
+                           :min="0" 
+                           :max="999" 
+                           :step="1" 
+                           style="width:50%"
+                           :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
           </el-form-item>
         </div>
       </el-form>
@@ -200,7 +209,8 @@ const editForm = reactive({
   dicType: '',
   dicCode: '',
   dicNameCn: '',
-  dicNameEn: ''
+  dicNameEn: '',
+  sortOrder: 0
 })
 
 // 对话框标题
@@ -219,6 +229,10 @@ const formRules = reactive({
   ],
   dicNameCn: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
+  ],
+  sortOrder: [
+    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' },
+    { type: 'number', message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' }
   ]
 })
 
@@ -363,6 +377,7 @@ const resetForm = (clearValidation = true) => {
   editForm.dicCode = ''
   editForm.dicNameCn = ''
   editForm.dicNameEn = ''
+  editForm.sortOrder = 0
   
   if (clearValidation) {
     nextTick(() => {
@@ -381,7 +396,8 @@ const insertDictionary = async () => {
     dicType: editForm.dicType,
     dicCode: editForm.dicCode,
     dicNameCn: editForm.dicNameCn,
-    dicNameEn: editForm.dicNameEn
+    dicNameEn: editForm.dicNameEn,
+    sortOrder: editForm.sortOrder
   }
   
   const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
@@ -415,7 +431,8 @@ const updateDictionary = async () => {
     dicType: editForm.dicType,
     dicCode: editForm.dicCode,
     dicNameCn: editForm.dicNameCn,
-    dicNameEn: editForm.dicNameEn
+    dicNameEn: editForm.dicNameEn,
+    sortOrder: editForm.sortOrder
   }
   
   const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)

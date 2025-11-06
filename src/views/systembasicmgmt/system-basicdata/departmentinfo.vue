@@ -105,7 +105,7 @@
                     <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentDepartmentId">
                         <el-tree-select
                           v-model="editForm.parentId"
-                          :data="departmentOptions || []"
+                          :data="departmentOptionsWithNone || []"
                           :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                           check-strictly
                           filterable
@@ -153,7 +153,7 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted, nextTick } from 'vue'
+    import { ref, reactive, onMounted, nextTick, computed } from 'vue'
     import { post } from '@/utils/request'
     import { 
     GET_DEPARTMENT_TREE_API, 
@@ -231,6 +231,18 @@
 
     // 部门选项（用于父部门选择）
     const departmentOptions = ref([])
+    
+    // 包含"顶级部门"选项的部门数据
+    const departmentOptionsWithNone = computed(() => {
+      const options = [...departmentOptions.value]
+      // 添加"顶级部门"选项，departmentId为0
+      options.unshift({
+        departmentId: '0',
+        departmentName: t('systembasicmgmt.departmentInfo.topLevel'),
+        departmentChildList: []
+      })
+      return options
+    })
 
     // 部门级别选项
     const departmentLevelOptions = ref([])

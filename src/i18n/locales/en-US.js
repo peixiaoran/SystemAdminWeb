@@ -476,7 +476,8 @@ export default {
     pmenuIncomplete: 'Primary menu information incomplete',
     enterPMenu: 'Enter Primary Menu',
     moduleLoading: 'Loading module data...',
-    enterModule: 'Enter Module'
+    enterModule: 'Enter Module',
+    selectModuleFirst: 'No system module selected, please select a module first'
   },
   
   // Route Titles
@@ -794,7 +795,8 @@ export default {
         departmentName: 'Department Name'
       },
       parentDepartment: 'Parent Department',
-      departmentLevel: 'Department Level'
+      departmentLevel: 'Department Level',
+      topLevel: 'Top Level'
     },
     departmentLevel: {
       index: 'Index',
@@ -838,6 +840,7 @@ export default {
       dicCode: 'Dictionary Code',
       dicNameCn: 'Dictionary Name (Ch)',
       dicNameEn: 'Dictionary Name (En)',
+      sortOrder: 'Sort Order',
       module: 'Module',
       operation: 'Operation',
       addDictionary: 'Add Dictionary',
@@ -848,6 +851,7 @@ export default {
       pleaseInputDicCode: 'Please enter dictionary code',
       pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
+      pleaseInputSortOrder: 'Please enter sort order',
       pleaseSelectModule: 'Please select module',
       filter: {
         dicNameCn: 'Dictionary Name',

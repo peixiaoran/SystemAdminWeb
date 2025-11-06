@@ -489,7 +489,6 @@ const fetchMenuData = async () => {
     // 从pmenuStore获取当前选择的moduleId
     const moduleId = pmenuStore.currentModuleId
     if (!moduleId) {
-      ElMessage.warning('未选择系统模块，请先选择一个模块')
       router.push('/module-select')
       return
     }

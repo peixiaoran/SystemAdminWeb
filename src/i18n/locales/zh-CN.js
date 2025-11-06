@@ -402,7 +402,8 @@ export default {
     pmenuIncomplete: '一级菜单信息不完整',
     enterPMenu: '进入一级菜单',
     moduleLoading: '正在加载模块数据...',
-    enterModule: '进入模块'
+    enterModule: '进入模块',
+    selectModuleFirst: '未选择系统模块，请先选择一个模块'
   },
   
   // 路由标题
@@ -604,7 +605,8 @@ export default {
         departmentName: '部门名称'
       },
       parentDepartment: '上级部门',
-      departmentLevel: '部门级别'
+      departmentLevel: '部门级别',
+      topLevel: '顶级部门'
     },
     // 员工信息
     userInfo: {
@@ -1062,7 +1064,8 @@ export default {
       dicCode: '字典编码',
       dicNameCn: '中文名称',
       dicNameEn: '英文名称',
-      module: '模块',
+      sortOrder: '排序',
+      module: '所属模块',
       createdDate: '创建时间',
       operation: '操作',
       addDictionary: '新增字典',
@@ -1071,11 +1074,12 @@ export default {
       pleaseInputDicCode: '请输入字典编码',
       pleaseInputDicNameCn: '请输入中文名称',
       pleaseInputDicNameEn: '请输入英文名称',
+      pleaseInputSortOrder: '请输入排序',
       pleaseInputDicType: '请输入字典类型',
       pleaseSelectDicType: '请选择字典类型',
       pleaseSelectModule: '请选择模块',
       filter: {
-        module: '模块',
+        module: '所属模块',
         dicType: '字典类型',
         dicNameCn: '字典中文名称'
       },

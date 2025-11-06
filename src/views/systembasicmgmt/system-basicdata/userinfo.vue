@@ -102,6 +102,7 @@
                      :close-on-click-modal="false"
                      :append-to-body="true"
                    :modal-append-to-body="true"
+                   :modal="true"
                    :lock-scroll="true"
                    draggable
                    @close="handleDialogClose">
