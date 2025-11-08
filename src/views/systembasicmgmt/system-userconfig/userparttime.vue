@@ -13,7 +13,7 @@
                         filterable
                         :filter-node-method="filterNodeMethod"
                         style="width: 200px;"
-                        :clearable="false"
+                        @change="handleDepartmentChange"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
@@ -126,12 +126,12 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
+                        <el-select v-model="addForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;">
                              <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
+                        <el-select v-model="addForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;">
                             <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
                         </el-select>
                     </el-form-item>
@@ -265,12 +265,12 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;" clearable>
+                        <el-select v-model="editForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;">
                              <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;" clearable>
+                        <el-select v-model="editForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;">
                             <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
                         </el-select>
                     </el-form-item>
@@ -816,8 +816,19 @@
             userNo: '',
             userName: ''
         })
+        // 重置分页到第一页并触发查询
+        pagination.pageIndex = 1
+        loading.value = true
+        debouncedFetchUserPartTimePages()
     }
-  
+
+    /**
+     * 处理部门下拉框变化
+     */
+    const handleDepartmentChange = () => {
+        handleSearch()
+    }
+
     // 处理页码变化
     const handlePageChange = (page) => {
         loading.value = true // 显示加载状态
@@ -951,6 +962,9 @@
             userNo: '',
             userName: ''
         })
+        // 重置分页并触发查询
+        userPagination.pageIndex = 1
+        debouncedFetchUserPages()
     }
     
     // 处理用户页码变化
@@ -1035,6 +1049,9 @@
             userNo: '',
             userName: ''
         })
+        // 重置分页并触发查询
+        editUserPagination.pageIndex = 1
+        debouncedFetchEditUserPages()
     }
     
     // 处理编辑对话框用户页码变化

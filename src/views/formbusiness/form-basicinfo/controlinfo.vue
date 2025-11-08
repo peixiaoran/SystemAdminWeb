@@ -1,11 +1,11 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单组别筛选">
-          <el-form-item :label="$t('formbusiness.formgroup.formGroupName')">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="控件信息筛选">
+          <el-form-item :label="$t('formbusiness.controlinfo.controlCode')">
             <el-input
-              v-model="searchForm.formGroupName"
-              :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupName')"
+              v-model="searchForm.controlCode"
+              :placeholder="$t('formbusiness.controlinfo.pleaseInputControlCode')"
               clearable
               style="width: 200px"
             />
@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item class="form-right-button">
             <el-button type="primary" @click="handleAdd">
-              {{ $t('formbusiness.formgroup.addFormGroup') }}
+              {{ $t('formbusiness.controlinfo.addControl') }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -28,25 +28,19 @@
       <!-- 表格区域 -->
       <div class="table-container">
         <el-table 
-          :data="formGroupList"
+          :data="controlList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('formbusiness.formgroup.index')" width="70" align="center" fixed />
-          <el-table-column prop="formGroupNameCn" :label="$t('formbusiness.formgroup.formGroupNameCn')" align="left" min-width="150" />
-          <el-table-column prop="formGroupNameEn" :label="$t('formbusiness.formgroup.formGroupNameEn')" align="left" min-width="150" />
-          <el-table-column prop="description" :label="$t('formbusiness.formgroup.description')" align="left" min-width="300" />
-          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
+          <el-table-column type="index" :label="$t('formbusiness.controlinfo.index')" width="70" align="center" fixed />
+          <el-table-column prop="controlCode" :label="$t('formbusiness.controlinfo.controlCode')" align="left" min-width="150" />
+          <el-table-column prop="controlName" :label="$t('formbusiness.controlinfo.controlName')" align="left" min-width="150" />
+          <el-table-column prop="description" :label="$t('formbusiness.controlinfo.description')" align="left" min-width="300" />
+          <el-table-column :label="$t('common.operation')" min-width="60" fixed="right" align="center">
             <template #default="scope">
-              <el-button 
-                size="small" 
-                @click="handleEdit(scope.row)"
-              >
-                {{ $t('common.edit') }}
-              </el-button>
               <el-button 
                 size="small" 
                 type="danger"
@@ -74,7 +68,7 @@
     
     <el-dialog 
       v-model="dialogVisible"
-      :title="isEdit ? $t('formbusiness.formgroup.editFormGroup') : $t('formbusiness.formgroup.addFormGroup')"
+      :title="isEdit ? $t('formbusiness.controlinfo.editControl') : $t('formbusiness.controlinfo.addControl')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -91,42 +85,30 @@
           label-width="120px" 
           class="dialog-form"
           role="form" 
-          aria-label="表单组别编辑"
+          aria-label="控件信息编辑"
         >
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formgroup.formGroupNameCn')" prop="formGroupNameCn">
+            <el-form-item :label="$t('formbusiness.controlinfo.controlCode')" prop="controlCode">
               <el-input 
-                v-model="form.formGroupNameCn" 
-                :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupNameCn')"
+                v-model="form.controlCode" 
+                :placeholder="$t('formbusiness.controlinfo.pleaseInputControlCode')"
                 style="width:100%" 
+                :disabled="isEdit"
               />
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.formgroup.formGroupNameEn')" prop="formGroupNameEn">
+            <el-form-item :label="$t('formbusiness.controlinfo.controlName')" prop="controlName">
               <el-input
-                v-model="form.formGroupNameEn"
-                :placeholder="$t('formbusiness.formgroup.pleaseInputFormGroupNameEn')"
+                v-model="form.controlName"
+                :placeholder="$t('formbusiness.controlinfo.pleaseInputControlName')"
                 style="width:100%" 
               />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formgroup.sortOrder')" prop="sortOrder">
-              <el-input-number 
-                v-model="form.sortOrder" 
-                :min="1"
-                :max="999"
-                style="width:100%" 
-              />
-            </el-form-item>
-            <el-form-item>
-              
             </el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.formgroup.description')" prop="description">
+            <el-form-item :label="$t('formbusiness.controlinfo.description')" prop="description">
               <el-input 
                 v-model="form.description" 
-                :placeholder="$t('formbusiness.formgroup.pleaseInputDescription')"
+                :placeholder="$t('formbusiness.controlinfo.pleaseInputDescription')"
                 style="width:100%" 
                 type="textarea" 
                 :rows="3" 
@@ -150,12 +132,10 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
-  GET_FORMGROUP_LIST_API,
-  GET_FORMGROUP_ENTITY_API,
-  INSERT_FORMGROUP_ENTITY_API,
-  UPDATE_FORMGROUP_API,
-  DELETE_FORMGROUP_ENTITY_API
-} from '@/config/api/formbusiness/form-basicInfo/formgroup.js'
+  GET_CONTROL_PAGE_API,
+  INSERT_CONTROL_ENTITY_API,
+  DELETE_CONTROL_API
+} from '@/config/api/formbusiness/form-basicInfo/controlinfo.js'
 import { useI18n } from 'vue-i18n'
 
 // 使用i18n
@@ -165,16 +145,14 @@ const { t } = useI18n()
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
 const deletingId = ref(null)
-const formGroupList = ref([])
+const controlList = ref([])
 const dialogVisible = ref(false)
-const isEdit = ref(false)
 const formRef = ref(null)
 
 // 搜索表单
 const searchForm = reactive({
-  formGroupName: ''
+  controlCode: ''
 })
 
 // 分页信息
@@ -186,39 +164,38 @@ const pagination = reactive({
 
 // 表单数据
 const form = reactive({
-  formGroupId: '',
-  formGroupNameCn: '',
-  formGroupNameEn: '',
-  sortOrder: 1,
+  controlCode: '',
+  controlName: '',
   description: ''
 })
 
 // 表单验证规则
 const rules = {
-  formGroupNameCn: [
-    { required: true, message: () => t('formbusiness.formgroup.pleaseInputFormGroupNameCn'), trigger: 'blur' }
+  controlCode: [
+    { required: true, message: () => t('formbusiness.controlinfo.pleaseInputControlCode'), trigger: 'blur' }
   ],
-  formGroupNameEn: [
-    { required: true, message: () => t('formbusiness.formgroup.pleaseInputFormGroupNameEn'), trigger: 'blur' }
-  ],
-
-
+  controlName: [
+    { required: true, message: () => t('formbusiness.controlinfo.pleaseInputControlName'), trigger: 'blur' }
+  ]
 }
 
-// 获取表单组别列表
-const getFormGroupList = async () => {
+/**
+ * 获取控件信息列表
+ * 调用分页查询接口获取控件信息数据
+ */
+const getControlList = async () => {
   loading.value = true
   try {
     const params = {
-      formGroupName: searchForm.formGroupName,
+      controlCode: searchForm.controlCode,
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
     }
     
-    const response = await post(GET_FORMGROUP_LIST_API, params)
+    const response = await post(GET_CONTROL_PAGE_API, params)
     if (response.code === 200) {
-      formGroupList.value = response.data || []
+      controlList.value = response.data || []
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
@@ -227,17 +204,17 @@ const getFormGroupList = async () => {
         plain: true,
         showClose: true
       })
-      formGroupList.value = []
+      controlList.value = []
     }
   } catch (error) {
-    console.error('获取表单组别列表失败:', error)
+    console.error('获取控件信息列表失败:', error)
     ElMessage({
-      message: t('formbusiness.formgroup.getFailed'),
+      message: t('formbusiness.controlinfo.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
     })
-    formGroupList.value = []
+    controlList.value = []
   } finally {
     loading.value = false
   }
@@ -246,47 +223,64 @@ const getFormGroupList = async () => {
 // 防抖搜索优化
 let searchTimer = null
 
-// 搜索
+/**
+ * 处理搜索操作
+ * 触发控件信息搜索，带有防抖功能
+ */
 const handleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   loading.value = true // 立即显示加载状态
   searchTimer = setTimeout(() => {
     pagination.pageIndex = 1
-    getFormGroupList()
+    getControlList()
   }, 300) // 300ms防抖
 }
 
-// 重置搜索
+/**
+ * 重置搜索条件
+ * 清空搜索表单并重新获取数据
+ */
 const handleReset = () => {
-  searchForm.formGroupName = ''
+  searchForm.controlCode = ''
+  pagination.pageIndex = 1
+  getControlList()
 }
 
-// 分页大小改变
+/**
+ * 处理分页大小改变
+ * @param {number} val - 新的分页大小
+ */
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  getFormGroupList()
+  getControlList()
 }
 
-// 当前页改变
+/**
+ * 处理当前页改变
+ * @param {number} val - 新的页码
+ */
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
-  getFormGroupList()
+  getControlList()
 }
 
-// 重置表单
+/**
+ * 重置表单数据
+ * 清空表单字段为初始值
+ */
 const resetForm = () => {
-  form.formGroupId = ''
-  form.formGroupNameCn = ''
-  form.formGroupNameEn = ''
-  form.sortOrder = 1
+  form.controlCode = ''
+  form.controlName = ''
   form.description = ''
 }
 
-// 新增
+/**
+ * 处理新增操作
+ * 打开新增对话框并重置表单
+ */
 const handleAdd = () => {
   resetForm()
-  isEdit.value = false
   dialogVisible.value = true
   nextTick(() => {
     if (formRef.value) {
@@ -295,60 +289,16 @@ const handleAdd = () => {
   })
 }
 
-// 编辑
-const handleEdit = async (row) => {
-  editingId.value = row.formGroupId
-  dialogLoading.value = true
-  dialogVisible.value = true
-  isEdit.value = true
-  
-  try {
-    const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: '',
-      formGroupNameEn: '',
-      sortOrder: 1,
-      description: ''
-    }
-    
-    const response = await post(GET_FORMGROUP_ENTITY_API, params)
-    
-    if (response.code === 200) {
-      const data = response.data
-      form.formGroupId = data.formGroupId
-      form.formGroupNameCn = data.formGroupNameCn
-      form.formGroupNameEn = data.formGroupNameEn
-      form.sortOrder = data.sortOrder
-      form.description = data.description
-    } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-      dialogVisible.value = false
-    }
-  } catch (error) {
-    console.error('获取表单组别详情失败:', error)
-    ElMessage({
-      message: t('formbusiness.formgroup.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
-    dialogVisible.value = false
-  } finally {
-    dialogLoading.value = false
-    editingId.value = null
-  }
-}
 
-// 删除
+
+/**
+ * 处理删除操作
+ * @param {Object} row - 要删除的控件信息行数据
+ */
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.formgroup.deleteConfirm'),
+      t('formbusiness.controlinfo.deleteConfirm'),
       t('common.warning'),
       {
         confirmButtonText: t('common.confirm'),
@@ -357,17 +307,13 @@ const handleDelete = async (row) => {
       }
     )
     
-    deletingId.value = row.formGroupId
+    deletingId.value = row.controlCode
     
     const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: row.formGroupNameCn,
-      formGroupNameEn: row.formGroupNameEn,
-      sortOrder: row.sortOrder,
-      description: row.description
+      controlCode: row.controlCode
     }
     
-    const response = await post(DELETE_FORMGROUP_ENTITY_API, params)
+    const response = await post(DELETE_CONTROL_API, params)
     
     if (response.code === 200) {
       ElMessage({
@@ -376,7 +322,7 @@ const handleDelete = async (row) => {
         plain: true,
         showClose: true
       })
-      getFormGroupList()
+      getControlList()
     } else {
       ElMessage({
         message: response.message,
@@ -387,9 +333,9 @@ const handleDelete = async (row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除表单组别失败:', error)
+      console.error('删除控件信息失败:', error)
       ElMessage({
-        message: t('formbusiness.formgroup.operationFailed'),
+        message: t('formbusiness.controlinfo.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -400,7 +346,10 @@ const handleDelete = async (row) => {
   }
 }
 
-// 提交表单
+/**
+ * 处理表单提交
+ * 提交新增的控件信息
+ */
 const handleSubmit = async () => {
   if (!formRef.value) return
   
@@ -410,15 +359,12 @@ const handleSubmit = async () => {
     submitLoading.value = true
     
     const params = {
-      formGroupId: form.formGroupId,
-      formGroupNameCn: form.formGroupNameCn,
-      formGroupNameEn: form.formGroupNameEn,
-      sortOrder: form.sortOrder,
+      controlCode: form.controlCode,
+      controlName: form.controlName,
       description: form.description
     }
     
-    const api = isEdit.value ? UPDATE_FORMGROUP_API : INSERT_FORMGROUP_ENTITY_API
-    const response = await post(api, params)
+    const response = await post(INSERT_CONTROL_ENTITY_API, params)
     
     if (response.code === 200) {
       ElMessage({
@@ -428,7 +374,7 @@ const handleSubmit = async () => {
         showClose: true
       })
       dialogVisible.value = false
-      getFormGroupList()
+      getControlList()
     } else {
       ElMessage({
         message: response.message,
@@ -442,7 +388,7 @@ const handleSubmit = async () => {
     if (error !== false && typeof error === 'object' && error.message) {
       console.error('提交表单失败:', error)
       ElMessage({
-        message: t('formbusiness.formgroup.operationFailed'),
+        message: t('formbusiness.controlinfo.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -454,7 +400,10 @@ const handleSubmit = async () => {
   }
 }
 
-// 对话框关闭
+/**
+ * 处理对话框关闭
+ * 重置表单数据
+ */
 const handleDialogClose = () => {
   resetForm()
   if (formRef.value) {
@@ -464,7 +413,7 @@ const handleDialogClose = () => {
 
 // 组件挂载时获取数据
 onMounted(() => {
-  getFormGroupList()
+  getControlList()
 })
 </script>
 

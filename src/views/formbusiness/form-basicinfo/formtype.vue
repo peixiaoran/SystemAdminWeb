@@ -6,7 +6,6 @@
             <el-select
               v-model="searchForm.formGroupId"
               :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
-              clearable
               style="width: 200px"
               @change="handleSearch"
             >
@@ -52,17 +51,15 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
-          <el-table-column prop="formGroupName" :label="$t('formbusiness.formtype.formGroupName')" align="left" min-width="180" />
-          <el-table-column prop="formTypeNameCn" :label="$t('formbusiness.formtype.formTypeNameCn')" align="left" min-width="200" />
+          <el-table-column prop="formGroupName" :label="$t('formbusiness.formtype.formGroupName')" align="left" min-width="130" />
+          <el-table-column prop="formTypeNameCn" :label="$t('formbusiness.formtype.formTypeNameCn')" align="left" min-width="170" />
           <el-table-column prop="formTypeNameEn" :label="$t('formbusiness.formtype.formTypeNameEn')" align="left" min-width="240" />
-          <el-table-column prop="prefix" :label="$t('formbusiness.formtype.prefix')" align="center" width="100">
+          <el-table-column prop="prefix" :label="$t('formbusiness.formtype.prefix')" align="center" width="130">
             <template #default="scope">
               <span style="color: #1890ff; font-weight: 500;">{{ scope.row.prefix }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="descriptionCn" :label="$t('formbusiness.formtype.descriptionCn')" align="left" min-width="300" />
-          <el-table-column prop="descriptionEn" :label="$t('formbusiness.formtype.descriptionEn')" align="left" min-width="300" />
-          <el-table-column :label="$t('common.operation')" min-width="150" fixed="right" align="center">
+          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button 
                 size="small" 
@@ -156,12 +153,28 @@
             </el-form-item>
           </div>
           <div class="form-row">
+            <el-form-item :label="$t('formbusiness.formtype.reviewPath')" prop="reviewPath">
+              <el-input 
+                v-model="form.reviewPath" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputReviewPath')"
+                style="width:100%" 
+              />
+            </el-form-item>
+            <el-form-item :label="$t('formbusiness.formtype.viewPath')" prop="viewPath">
+              <el-input 
+                v-model="form.viewPath" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputViewPath')"
+                style="width:100%" 
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.sortOrder')" prop="sortOrder">
               <el-input-number 
                 v-model="form.sortOrder" 
                 :min="0"
                 :max="999"
-                style="width:60%" 
+                style="width:100%" 
               />
             </el-form-item>
             <el-form-item>
@@ -190,6 +203,7 @@
               />
             </el-form-item>
           </div>
+
         </el-form>
       </div>
       <template #footer>
@@ -253,7 +267,9 @@ const form = reactive({
   prefix: '',
   sortOrder: 0,
   descriptionCn: '',
-  descriptionEn: ''
+  descriptionEn: '',
+  reviewPath: '',
+  viewPath: ''
 })
 
 // 表单验证规则
@@ -269,6 +285,12 @@ const rules = {
   ],
   prefix: [
     { required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'), trigger: 'blur' }
+  ],
+  reviewPath: [
+    { required: false, trigger: 'blur' }
+  ],
+  viewPath: [
+    { required: false, trigger: 'blur' }
   ]
 }
 
@@ -361,11 +383,12 @@ const handleSearch = () => {
 
 /**
  * 重置搜索
+ * 不清空下拉框值，只清空文本框并重新获取数据
  */
 const handleReset = () => {
-  searchForm.formGroupId = ''
   searchForm.formTypeName = ''
   pagination.pageIndex = 1
+  loading.value = true // 立即显示加载状态
   getFormTypeList()
 }
 
@@ -398,6 +421,8 @@ const resetForm = () => {
   form.sortOrder = 0
   form.descriptionCn = ''
   form.descriptionEn = ''
+  form.reviewPath = ''
+  form.viewPath = ''
 }
 
 /**
@@ -440,6 +465,15 @@ const handleEdit = async (row) => {
       form.sortOrder = data.sortOrder
       form.descriptionCn = data.descriptionCn
       form.descriptionEn = data.descriptionEn
+      form.reviewPath = data.reviewPath || ''
+      form.viewPath = data.viewPath || ''
+      
+      // 数据加载完成后清除验证，避免瞬间显示验证错误
+      nextTick(() => {
+        if (formRef.value) {
+          formRef.value.clearValidate()
+        }
+      })
     } else {
       ElMessage({
         message: response.message,
@@ -520,11 +554,13 @@ const handleDelete = async (row) => {
 
 /**
  * 提交表单
+ * 只进行非空验证判断，验证失败时不显示弹出框
  */
 const handleSubmit = async () => {
   if (!formRef.value) return
   
   try {
+    // 只进行表单验证，不显示错误消息
     await formRef.value.validate()
     
     submitLoading.value = true
@@ -537,7 +573,9 @@ const handleSubmit = async () => {
       prefix: form.prefix,
       sortOrder: form.sortOrder,
       descriptionCn: form.descriptionCn,
-      descriptionEn: form.descriptionEn
+      descriptionEn: form.descriptionEn,
+      reviewPath: form.reviewPath,
+      viewPath: form.viewPath
     }
     
     const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
@@ -561,14 +599,10 @@ const handleSubmit = async () => {
       })
     }
   } catch (error) {
+    // 验证失败时只进行非空判断，不显示弹出框错误消息
     if (error !== false) {
-      console.error('提交表单失败:', error)
-      ElMessage({
-        message: t('formbusiness.formtype.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      console.error('表单验证失败:', error)
+      // 这里不显示错误消息，只进行非空判断
     }
   } finally {
     submitLoading.value = false

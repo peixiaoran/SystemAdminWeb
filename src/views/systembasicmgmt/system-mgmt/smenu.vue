@@ -5,18 +5,18 @@
           <!-- 搜索表单 -->
           <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
               <el-form-item :label="$t('systembasicmgmt.smenu.module')">
-                      <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange" :clearable="false">
+                      <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange">
                       <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" :clearable="false">
+                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFilterParentMenuChange">
                       <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                   </el-select>
               </el-form-item>
               <el-form-item :label="$t('systembasicmgmt.smenu.smenuName')">
                   <el-input style="width: 180px" 
-                            v-model="filters.smenuName" 
+                            v-model="filters.menuName" 
                             :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.smenu.smenuName')" 
                             />
               </el-form-item>
@@ -114,14 +114,14 @@
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
                   <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
-                      <el-select v-model="editForm.moduleId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
+                      <el-select v-model="editForm.moduleId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
                           <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
               </div>
               <div class="form-row">
                   <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="parentMenuId">
-                      <el-select v-model="editForm.parentMenuId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
+                      <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
                           <el-option v-for="item in pmenuDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
@@ -212,10 +212,10 @@
 
   // 过滤条件
   const filters = reactive({
-      smenuCode: '',
-      smenuName: '',
-      smenuNameEn: '',
-      smenuUrl: '',
+      menuCode: '',
+      menuName: '',
+      menuNameEn: '',
+      menuUrl: '',
       moduleId: '',
       parentMenuId: ''
   })
@@ -482,10 +482,15 @@
       fetchSMenuPages()
   }
 
-  // 重置
-  const handleReset = () => {
-      filters.smenuName = ''
-  }
+  // 重置搜索条件（只重置输入字段，保留下拉框值）
+const handleReset = () => {
+  filters.menuName = ''
+  
+  // 重置后自动触发查询
+  pagination.pageIndex = 1
+  loading.value = true
+  handleSearch()
+}
 
   // 分页变化
   const handlePageChange = (page) => {
@@ -794,8 +799,16 @@ const handleFiltermoduleChange = () => {
   filters.parentMenuId = ''
   // 立即获取新的模块列表
   fetchFilterPMenuDrop()
-  // 模块变化时只重置页码，不自动查询数据
+  // 模块变化时重置页码并自动查询数据
   pagination.pageIndex = 1
+  handleSearch()
+}
+
+  // 过滤父菜单变化
+const handleFilterParentMenuChange = () => {
+  // 父菜单变化时重置页码并自动查询数据
+  pagination.pageIndex = 1
+  handleSearch()
 }
   // 获取过滤条件下的模块数据
   const fetchFilterPMenuDrop = async () => {

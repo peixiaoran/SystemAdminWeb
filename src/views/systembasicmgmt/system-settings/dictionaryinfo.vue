@@ -22,7 +22,8 @@
           <el-select v-model="filters.dicType"
                     style="width: 180px;"
                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
-                    :clearable="false">
+                    :clearable="false"
+                    @change="handleDicTypeChange">
             <el-option
                 v-for="dicType in dicTypeList"
                 :key="dicType.dicTypeCode"
@@ -344,18 +345,30 @@ const fetchDictionaryPagesImmediate = () => {
 
 // 重置搜索条件
 const handleReset = () => {
+  // 只清空输入框，保留下拉框值
   filters.dicName = ''
+  // 重置分页并触发查询
+  pagination.pageIndex = 1
+  debouncedFetchDictionaryPages()
 }
 
 // 处理筛选模块变化
 const handleModuleChange = async () => {
   filters.dicType = ''
   await fetchDicTypeDropDown()
-  // 模块变化时只重置页码，不自动查询数据
+  // 模块变化时重置页码并立即显示加载状态，然后触发防抖查询
   pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchDictionaryPages()
 }
 
-
+// 处理字典类型变化
+const handleDicTypeChange = () => {
+  // 字典类型变化时重置页码并立即显示加载状态，然后触发防抖查询
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchDictionaryPages()
+}
 
 // 处理页码变化
 const handlePageChange = (page) => {

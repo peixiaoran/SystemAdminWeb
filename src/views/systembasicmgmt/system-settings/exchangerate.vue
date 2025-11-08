@@ -8,7 +8,8 @@
           <el-select v-model="filters.currencyCode"
                     style="width: 180px;"
                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
-                    :clearable="false">
+                    :clearable="false"
+                    @change="handleCurrencyChange">
             <el-option v-for="item in currencyOptions"
                       :key="item.currencyCode"
                       :label="item.currencyName"
@@ -27,9 +28,6 @@
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
             {{ $t('common.search') }}
-          </el-button>
-          <el-button @click="handleReset" plain>
-            {{ $t('common.reset') }}
           </el-button>
         </el-form-item>
         <el-form-item class="form-right-button">
@@ -94,8 +92,7 @@
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.currencyCode')" prop="currencyCode">
             <el-select v-model="editForm.currencyCode"
                     style="width:100%"
-                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
-                    :clearable="false">
+                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')">
               <el-option v-for="item in currencyOptions"
                          :key="item.currencyCode"
                          :label="item.currencyName"
@@ -106,8 +103,7 @@
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
             <el-select v-model="editForm.exchangeCurrencyCode"
                     style="width:100%"
-                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')"
-                    :clearable="false">
+                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')">
               <el-option v-for="item in currencyOptions"
                          :key="item.currencyCode"
                          :label="item.currencyName"
@@ -190,10 +186,18 @@ const pagination = reactive({
   totalCount: 0
 })
 
+// 获取当前年月（格式：YYYY-MM）
+const getCurrentYearMonth = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  return `${year}-${month}`
+}
+
 // 过滤条件
 const filters = reactive({
   currencyCode: '',
-  yearMonth: ''
+  yearMonth: getCurrentYearMonth()
 })
 
 // 对话框显示状态
@@ -322,18 +326,7 @@ const handleSizeChange = (size) => {
   fetchExchangeRatePages()
 }
 
-// 处理重置操作
-const handleReset = () => {
-  // 只清空筛选条件，保持currencyCode为第一个有效值
-  filters.yearMonth = ''
-  // 如果当前没有选中值，设置默认选中第一个有效值
-  if (!filters.currencyCode && currencyOptions.value.length > 0) {
-    const firstValidOption = currencyOptions.value.find(option => !option.disabled)
-    if (firstValidOption) {
-      filters.currencyCode = firstValidOption.currencyCode
-    }
-  }
-}
+
 
 const resetForm = (clearValidation = true) => {
   editForm.exchangeRateId = ''
@@ -503,6 +496,11 @@ const handleSave = () => {
 // 处理对话框关闭
 const handleDialogClose = () => {
   resetForm()
+}
+
+// 处理币别下拉框变化事件（带防抖）
+const handleCurrencyChange = () => {
+  handleSearch()
 }
 </script>
 

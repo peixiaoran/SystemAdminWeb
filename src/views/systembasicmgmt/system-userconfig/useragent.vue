@@ -24,7 +24,7 @@
             :filter-node-method="filterNodeMethod"
             style="width: 200px;"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
-            :clearable="false"
+            @change="handleDepartmentChange"
           />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
@@ -589,6 +589,10 @@ const handleReset = () => {
     userNo: '',
     userName: ''
   })
+  // 重置分页到第一页并触发查询
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchUserPages()
 }
 
 // 处理页码变化
@@ -807,12 +811,14 @@ const handleUserSelectSearch = () => {
   debouncedFetchUserSelectList()
 }
 
-// 重置用户选择搜索 - 只清空输入框，不清空下拉框，不触发查询
+// 重置用户选择搜索 - 只清空输入框，不清空下拉框，触发查询
 const handleUserSelectReset = () => {
   Object.assign(userSelectFilters, {
     userNo: '',
     userName: ''
   })
+  userSelectPagination.pageIndex = 1
+  debouncedFetchUserSelectList()
 }
 
 // 处理用户选择分页
@@ -990,6 +996,11 @@ const handleProactiveAgentDialogClosed = async () => {
   proactiveAgentDialogTitle.value = ''
   // 只有在主动代理人列表有变化时才刷新主页面数据
   // await fetchUserPages() // 移除自动刷新，避免不必要的表格重载
+}
+
+// 处理部门下拉框变化事件（带防抖）
+const handleDepartmentChange = () => {
+  handleSearch()
 }
 </script>
 

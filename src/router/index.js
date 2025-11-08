@@ -199,11 +199,11 @@ const pmenuRoutes = [
             }
           },
           {
-            path: 'nationality',
-            name: 'Nationality',
-            component: () => import('../views/systembasicmgmt/system-basicdata/nationality.vue'),
+            path: 'nationalityinfo',
+            name: 'NationalityInfo',
+            component: () => import('../views/systembasicmgmt/system-basicdata/nationalityinfo.vue'),
             meta: { 
-              title: 'route.nationality', 
+              title: 'route.nationalityInfo', 
               icon: 'DeleteLocation',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -379,6 +379,28 @@ const pmenuRoutes = [
             noTag: true
           },
           children: [
+            {
+              path: 'controlInfo',
+              name: 'ControlInfo',
+              component: () => import('../views/formbusiness/form-basicinfo/controlinfo.vue'),
+              meta: { 
+                title: 'route.controlInfo', 
+                icon: 'Link',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'eventInfo',
+              name: 'EventInfo',
+              component: () => import('../views/formbusiness/form-basicinfo/eventinfo.vue'),
+              meta: { 
+                title: 'route.eventInfo', 
+                icon: 'Link',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
             {
               path: 'formgroup',
               name: 'FormGroup',

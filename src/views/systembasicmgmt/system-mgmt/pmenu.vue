@@ -7,8 +7,7 @@
           <el-select style="width: 180px" 
                      v-model="filters.moduleId" 
                      :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.pmenu.module')"
-                     @change="handleModuleChange"
-                     :clearable="false">
+                     @change="handleModuleChange">
             <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
           </el-select>
         </el-form-item>
@@ -114,7 +113,7 @@
             <el-input v-model="editForm.menuNameEn" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.pmenu.module')" prop="moduleId">
-            <el-select v-model="editForm.moduleId" style="width:100%" :clearable="false" :placeholder="$t('systembasicmgmt.pmenu.pleaseSelectModule')">
+            <el-select v-model="editForm.moduleId" style="width:100%" :placeholder="$t('systembasicmgmt.pmenu.pleaseSelectModule')">
               <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
             </el-select>
           </el-form-item>
@@ -411,10 +410,15 @@ const fetchPMenuPagesImmediate = () => {
   fetchPMenuPages()
 }
 
-// 重置搜索条件
+// 重置搜索条件（只重置输入字段，保留下拉框值）
 const handleReset = () => {
   filters.menuCode = ''
   filters.menuName = ''
+  
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchPMenuPages()
 }
 
 // 处理页码变化
@@ -432,8 +436,9 @@ const handleSizeChange = (size) => {
 
 // 处理模块下拉框变化
 const handleModuleChange = () => {
-  // 模块变化时只重置页码，不自动查询数据
+  // 模块变化时重置页码并自动查询数据
   pagination.pageIndex = 1
+  handleSearch()
 }
 
 const resetForm = (clearValidation = true) => {

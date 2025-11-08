@@ -11,6 +11,7 @@
           check-strictly
           filterable
           :filter-node-method="filterNodeMethod"
+          @change="handleDepartmentChange"
           style="width: 200px;"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
@@ -846,18 +847,23 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       debouncedFetchUserPages()
   }
 
+  // 处理部门下拉框变化事件，自动触发查询
+  const handleDepartmentChange = () => {
+      pagination.pageIndex = 1
+      loading.value = true
+      debouncedFetchUserPages()
+  }
+
   // 重置筛选条件
   const handleReset = () => {
       // 只清空输入框内容，保留下拉框内容
       filters.userNo = ''
       filters.userName = ''
-      // 不再自动查询数据
-      ElMessage({
-          message: t('common.resetSuccess'),
-          type: 'success',
-          plain: true,
-          showClose: true
-      })
+      
+      // 重置后自动触发查询（使用防抖）
+      pagination.pageIndex = 1
+      loading.value = true
+      debouncedFetchUserPages()
   }
 
   // 立即查询数据（不使用防抖，用于保存后刷新）

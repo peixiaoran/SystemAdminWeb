@@ -13,7 +13,7 @@
             :filter-node-method="filterNodeMethod"
             style="width: 200px;"
             :placeholder="$t('systembasicmgmt.userformbind.pleaseSelectDepartment')"
-            :clearable="false" />
+            @change="handleDepartmentChange" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userformbind.userNo')">
           <el-input v-model="filters.userNo"
@@ -366,13 +366,24 @@ const fetchUserPagesImmediate = () => {
 }
 
 /**
- * 处理重置 - 只清空输入框，不清空下拉框
+ * 处理重置 - 只清空输入框，不清空下拉框，并触发查询
  */
 const handleReset = () => {
   Object.assign(filters, {
     userNo: '',
     userName: ''
   })
+  // 重置分页到第一页并触发查询
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchUserPages()
+}
+
+/**
+ * 处理部门下拉框变化
+ */
+const handleDepartmentChange = () => {
+  handleSearch()
 }
 
 /**
