@@ -398,7 +398,8 @@ const handleDelete = async (row) => {
     deletingId.value = row.eventCode
     
     const params = {
-      eventCode: row.eventCode
+      eventCode: row.eventCode,
+      controlCode: row.controlCode
     }
     
     const response = await post(DELETE_EVENT_API, params)

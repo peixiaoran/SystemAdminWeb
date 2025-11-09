@@ -189,7 +189,7 @@ const editFormRef = ref(null)
 // 分页信息
 const pagination = reactive({
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 20,
   totalCount: 0
 })
 
