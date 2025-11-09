@@ -297,6 +297,34 @@ export default {
         getFormGroupFailed: '获取表单组别失败',
         operationFailed: '操作失败'
       },
+
+    // 请假单页面专用
+    leaveform: {
+        title: '请假申请',
+        leaveId: '请假单ID',
+        leaveNo: '请假单号',
+        leaveApplicantId: '申请人',
+        leaveTypeId: '请假类型',
+        leaveReason: '请假事由',
+        leaveStartTime: '开始时间',
+        leaveEndTime: '结束时间',
+        leaveDays: '请假天数',
+        leaveHours: '请假小时',
+        leaveHandoverUserId: '交接人',
+        types: {
+          annual: '年假',
+          sick: '病假',
+          personal: '事假'
+        },
+        pleaseInputLeaveId: '请输入请假单ID',
+        pleaseInputLeaveNo: '请输入请假单号',
+        pleaseSelectLeaveApplicant: '请选择申请人',
+        pleaseSelectLeaveType: '请选择请假类型',
+        pleaseInputLeaveReason: '请输入请假事由',
+        pleaseSelectStartTime: '请选择开始时间',
+        pleaseSelectEndTime: '请选择结束时间',
+        pleaseSelectHandoverUser: '请选择交接人'
+      },
     
     // 表单验证
     validation: {
@@ -466,6 +494,7 @@ export default {
   route: {
     login: '登录',
     moduleSelect: '模块选择',
+    leaveform_r: '请假单申请',
     unlock: '账号解锁',
     passwordExpiration: '密码过期修改',
     forbidden: '访问被拒绝',

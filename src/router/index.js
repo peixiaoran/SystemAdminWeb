@@ -427,6 +427,17 @@ const pmenuRoutes = [
         }
       ]
   },
+  // 独立请假单申请页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/leaveform/leaveform_r',
+    name: 'LeaveFormR',
+    component: () => import('../views/formbusiness/forms/leaveform/leaveform_r.vue'),
+    meta: {
+      title: 'route.leaveform_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   {
       path: '/custmat',
       component: Layout,

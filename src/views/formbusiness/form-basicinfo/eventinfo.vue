@@ -8,6 +8,7 @@
             v-model="searchForm.controlCode"
             :placeholder="$t('formbusiness.eventinfo.pleaseSelectControlCode')"
             filterable
+            clearable
             style="width: 180px"
             @change="handleSearch"
           >
@@ -324,9 +325,10 @@ const handleSearch = () => {
 
 /**
  * 重置搜索条件
- * 不清空下拉框值，只清空文本框并重新获取数据
+ * 清空所有筛选条件并重新获取数据
  */
 const handleReset = () => {
+  searchForm.controlCode = ''
   searchForm.eventCode = ''
   pagination.pageIndex = 1
   loading.value = true // 立即显示加载状态

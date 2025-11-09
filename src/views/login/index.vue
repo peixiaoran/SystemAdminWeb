@@ -155,11 +155,6 @@ const handleUnlockAccount = () => {
   router.push('/unlock')
 }
 
-// 跳转到密码过期页面
-// const handlePasswordExpiration = () => {
-//   router.push('/password-expiration')
-// }
-
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
 
 const handleLogin = () => {

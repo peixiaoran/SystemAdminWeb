@@ -358,6 +358,34 @@ export default {
       getFormGroupFailed: 'Failed to get form group information',
       operationFailed: 'Operation failed'
     },
+
+    // Leave Form Page Specific
+    leaveform: {
+      title: 'Leave Application',
+      leaveId: 'Leave ID',
+      leaveNo: 'Leave No.',
+      leaveApplicantId: 'Applicant',
+      leaveTypeId: 'Leave Type',
+      leaveReason: 'Reason',
+      leaveStartTime: 'Start Time',
+      leaveEndTime: 'End Time',
+      leaveDays: 'Days',
+      leaveHours: 'Hours',
+      leaveHandoverUserId: 'Handover User',
+      types: {
+        annual: 'Annual Leave',
+        sick: 'Sick Leave',
+        personal: 'Personal Leave'
+      },
+      pleaseInputLeaveId: 'Please enter leave ID',
+      pleaseInputLeaveNo: 'Please enter leave number',
+      pleaseSelectLeaveApplicant: 'Please select applicant',
+      pleaseSelectLeaveType: 'Please select leave type',
+      pleaseInputLeaveReason: 'Please enter leave reason',
+      pleaseSelectStartTime: 'Please select start time',
+      pleaseSelectEndTime: 'Please select end time',
+      pleaseSelectHandoverUser: 'Please select handover user'
+    },
     
     // Form Validation
     validation: {
@@ -539,6 +567,7 @@ export default {
   // Route Titles
   route: {
     login: 'Login',
+    leaveform_r: 'Leave Application',
     moduleSelect: 'Module Selection',
     unlock: 'Account Unlock',
     passwordExpiration: 'Password Expiration',
