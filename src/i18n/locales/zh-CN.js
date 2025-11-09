@@ -1304,6 +1304,7 @@ export default {
 
     userPartTime: {
       title: '员工兼任维护',
+      mergedDialogTitle: '员工兼任维护',
       department: '部门',
       pleaseSelectDepartment: '请选择部门',
       userNo: '员工工号',

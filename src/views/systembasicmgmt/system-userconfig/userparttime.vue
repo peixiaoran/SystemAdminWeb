@@ -100,110 +100,110 @@
             </div>
         </el-card>
 
-        <!-- 新增兼任对话框 -->
-        <el-dialog v-model="addDialogVisible" 
-                   :title="$t('systembasicmgmt.userPartTime.addPartTime')" 
-                   width="70%" 
-                   :close-on-click-modal="false" 
+        <!-- 合并后的新增/编辑兼任对话框 -->
+        <el-dialog v-model="dialogVisible"
+                   :title="`${$t('systembasicmgmt.userPartTime.mergedDialogTitle')} - ${isEditMode ? $t('systembasicmgmt.userPartTime.editPartTimeTitle') : $t('systembasicmgmt.userPartTime.addPartTimeTitle')}`"
+                   width="70%"
+                   :close-on-click-modal="false"
                    :append-to-body="true"
                    :modal-append-to-body="true"
                    :lock-scroll="true"
                    append-to-body
                    class="parttime-dialog">
-            <div v-loading="submitLoading" style="height: 560px;">
+            <div style="height: 560px;">
                 <!-- 兼任信息区域 -->
-                <el-form ref="addFormRef" :model="addForm" :rules="addFormRules" :inline="true" class="conventional-filter-form" >
-                   <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
+                <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogFormRules" :inline="true" class="conventional-filter-form">
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
                         <el-tree-select
-                            v-model="addForm.partTimeDeptId"
+                            v-model="dialogForm.partTimeDeptId"
                             :data="departmentList || []"
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            @change="handleAddDeptChange"
+                            @change="handleDialogDeptChange"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;">
-                             <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
+                        <el-select v-model="dialogForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;">
+                            <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
                         </el-select>
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="addForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;">
+                        <el-select v-model="dialogForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;">
                             <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime">
                         <el-date-picker
-                            v-model="addForm.startTime"
+                            v-model="dialogForm.startTime"
                             type="datetime"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectStartTime')"
-                            :disabled-date="(date) => addForm.endTime && date > new Date(addForm.endTime)"
+                            :disabled-date="(date) => dialogForm.endTime && date > new Date(dialogForm.endTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
                             style="width: 200px;" />
                     </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.endTime')" prop="endTime" >
+                    <el-form-item :label="$t('systembasicmgmt.userPartTime.endTime')" prop="endTime">
                         <el-date-picker
-                            v-model="addForm.endTime"
+                            v-model="dialogForm.endTime"
                             type="datetime"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectEndTime')"
-                            :disabled-date="(date) => addForm.startTime && date < new Date(addForm.startTime)"
+                            :disabled-date="(date) => dialogForm.startTime && date < new Date(dialogForm.startTime)"
                             format="YYYY-MM-DD HH:mm:ss"
                             value-format="YYYY-MM-DD HH:mm:ss"
                             style="width: 200px;" />
-                        </el-form-item>
+                    </el-form-item>
                 </el-form>
-                
+
                 <!-- 分隔线 -->
                 <el-divider style="margin: 10px 0 8px;"></el-divider>
 
                 <!-- 搜索区域 -->
-                <el-form :inline="true" :model="userFilters" class="conventional-filter-form" style="margin-top: 10px;">
+                <el-form :inline="true" :model="dialogUserFilters" class="conventional-filter-form" style="margin-top: 10px;">
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
-                        <el-tree-select 
-                            v-model="userFilters.departmentId"
+                        <el-tree-select
+                            v-model="dialogUserFilters.departmentId"
                             :data="departmentList || []"
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            @change="handleUserSearch"
+                            @change="handleDialogUserSearch"
                             :filter-node-method="filterNodeMethod"
                             style="width: 200px;"
                             :clearable="false"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
-                        <el-input 
-                            v-model="userFilters.userNo"
+                        <el-input
+                            v-model="dialogUserFilters.userNo"
                             style="width: 180px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
-                        <el-input 
-                            v-model="userFilters.userName"
+                        <el-input
+                            v-model="dialogUserFilters.userName"
                             style="width: 180px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="handleUserSearch">{{ $t('common.search') }}</el-button>
-                        <el-button @click="handleUserReset">{{ $t('common.reset') }}</el-button>
+                        <el-button type="primary" @click="handleDialogUserSearch">{{ $t('common.search') }}</el-button>
+                        <el-button @click="handleDialogUserReset">{{ $t('common.reset') }}</el-button>
                     </el-form-item>
                 </el-form>
 
                 <!-- 员工表格 -->
-                <el-table :data="userList"
+                <el-table :data="dialogUserList"
                           border
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
-                          v-loading="userLoading"
+                          v-loading="dialogUserLoading || dialogSubmitLoading"
                           class="conventional-table"
                           height="310"
-                          @selection-change="handleUserSelectionChange">
+                          @selection-change="handleDialogUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
                     <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
@@ -221,159 +221,20 @@
 
                 <!-- 分页 -->
                 <div class="pagination-wrapper">
-                    <el-pagination v-model:current-page="userPagination.pageIndex"
-                                   v-model:page-size="userPagination.pageSize"
+                    <el-pagination v-model:current-page="dialogUserPagination.pageIndex"
+                                   v-model:page-size="dialogUserPagination.pageSize"
                                    :page-sizes="[10, 20, 50]"
                                    layout="total, sizes, prev, pager, next, jumper"
-                                   :total="userPagination.totalCount"
-                                   @size-change="handleUserSizeChange"
-                                   @current-change="handleUserPageChange" />
+                                   :total="dialogUserPagination.totalCount"
+                                   @size-change="handleDialogUserSizeChange"
+                                   @current-change="handleDialogUserPageChange" />
                 </div>
             </div>
 
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="addDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSubmitAdd" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-                </span>
-            </template>
-        </el-dialog>
-
-        <!-- 编辑兼任对话框 -->
-        <el-dialog v-model="editDialogVisible" 
-                   :title="$t('systembasicmgmt.userPartTime.editPartTime')" 
-                   width="70%" 
-                   :close-on-click-modal="false" 
-                   :append-to-body="true"
-                   :modal-append-to-body="true"
-                   :lock-scroll="true"
-                   append-to-body
-                   class="parttime-dialog">
-            <div v-loading="editSubmitLoading" style="height: 560px;">
-                <!-- 兼任信息区域 -->
-                <el-form ref="editFormRef" :model="editForm" :rules="editFormRules" :inline="true" class="conventional-filter-form" label-width="120px">
-                   <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId" style="margin-bottom:20px;">
-                        <el-tree-select 
-                            v-model="editForm.partTimeDeptId"
-                            :data="departmentList || []"
-                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-                            check-strictly
-                            filterable
-                            @change="handleEditDeptChange"
-                            :filter-node-method="filterNodeMethod"
-                            style="width: 200px;"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeDepartment')" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimePosition')" prop="partTimePositionId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimePositionId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimePosition')" style="width: 200px;">
-                             <el-option v-for="item in positionList" :key="item.positionId" :label="item.positionName" :value="item.positionId" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" prop="partTimeLaborId" style="margin-bottom:20px;">
-                        <el-select v-model="editForm.partTimeLaborId" :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectPartTimeLabor')" style="width: 200px;">
-                            <el-option v-for="item in laborList" :key="item.laborId" :label="item.laborName" :value="item.laborId" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime" >
-                        <el-date-picker
-                            v-model="editForm.startTime"
-                            type="datetime"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectStartTime')"
-                            :disabled-date="(date) => editForm.endTime && date > new Date(editForm.endTime)"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss"
-                            style="width: 200px;" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.endTime')" prop="endTime" >
-                        <el-date-picker
-                            v-model="editForm.endTime"
-                            type="datetime"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectEndTime')"
-                            :disabled-date="(date) => editForm.startTime && date < new Date(editForm.startTime)"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss"
-                            style="width: 200px;" />
-                        </el-form-item>
-                </el-form>
-                
-                <!-- 分隔线 -->
-                <el-divider style="margin: 10px 0 8px;"></el-divider>
-
-                <!-- 搜索区域 -->
-                <el-form :inline="true" :model="editUserFilters" class="conventional-filter-form" style="margin-top: 10px;">
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
-                        <el-tree-select 
-                            v-model="editUserFilters.departmentId"
-                            :data="departmentList || []"
-                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-                            check-strictly
-                            filterable
-                            @change="handleEditUserSearch"
-                            :filter-node-method="filterNodeMethod"
-                            style="width: 200px;"
-                            :clearable="false"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
-                        <el-input 
-                            v-model="editUserFilters.userNo"
-                            style="width: 180px;"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
-                            clearable />
-                    </el-form-item>
-                    <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
-                        <el-input 
-                            v-model="editUserFilters.userName"
-                            style="width: 180px;"
-                            :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
-                            clearable />
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="handleEditUserSearch">{{ $t('common.search') }}</el-button>
-                        <el-button @click="handleEditUserReset">{{ $t('common.reset') }}</el-button>
-                    </el-form-item>
-                </el-form>
-
-                <!-- 员工表格 -->
-                <el-table :data="editUserList"
-                          border
-                          stripe
-                          :header-cell-style="{ background: '#f5f7fa' }"
-                          v-loading="editUserLoading"
-                          class="conventional-table"
-                          height="310"
-                          @selection-change="handleEditUserSelectionChange">
-                    <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="center" min-width="100" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="120" />
-                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
-                    <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
-                    <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
-                        <template #default="scope">
-                            <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                                {{ scope.row.isApprovalName }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
-                </el-table>
-
-                <!-- 分页 -->
-                <div class="pagination-wrapper">
-                    <el-pagination v-model:current-page="editUserPagination.pageIndex"
-                                   v-model:page-size="editUserPagination.pageSize"
-                                   :page-sizes="[10, 20, 50]"
-                                   layout="total, sizes, prev, pager, next, jumper"
-                                   :total="editUserPagination.totalCount"
-                                   @size-change="handleEditUserSizeChange"
-                                   @current-change="handleEditUserPageChange" />
-                </div>
-            </div>
-
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSubmitEdit" :loading="editSubmitLoading">{{ $t('common.confirm') }}</el-button>
+                    <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+                    <el-button type="primary" @click="handleDialogSubmit" :loading="dialogSubmitLoading">{{ $t('common.confirm') }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -410,15 +271,11 @@
     // 部门下拉列表
     const departmentList = ref([])
     
-    // 新增兼任相关数据
-    const addDialogVisible = ref(false)
-    const submitLoading = ref(false)
-    const addFormRef = ref(null)
-    
-    // 编辑兼任相关数据
-    const editDialogVisible = ref(false)
-    const editSubmitLoading = ref(false)
-    const editFormRef = ref(null)
+    // 合并后的通用对话框状态
+    const dialogVisible = ref(false)
+    const isEditMode = ref(false)
+    const dialogSubmitLoading = ref(false)
+    const dialogFormRef = ref(null)
     
     // 职级下拉列表
     const positionList = ref([])
@@ -426,10 +283,10 @@
     // 职业下拉列表
     const laborList = ref([])
     
-    // 用户信息相关数据
-    const userList = ref([])
-    const userLoading = ref(false)
-    const selectedUsers = ref([])
+    // 通用对话框内的用户信息列表与加载状态
+    const dialogUserList = ref([])
+    const dialogUserLoading = ref(false)
+    const selectedDialogUsers = ref([])
   
     // 分页信息
     const pagination = reactive({
@@ -445,18 +302,8 @@
         userName: ''
     })
     
-    // 新增表单数据
-    const addForm = reactive({
-        partTimeDeptId: '',
-        partTimePositionId: '',
-        partTimeLaborId: '',
-        startTime: '',
-        endTime: '',
-        userId: ''
-    })
-    
-    // 编辑表单数据
-    const editForm = reactive({
+    // 合并后的通用表单数据（包含新增与编辑所需字段）
+    const dialogForm = reactive({
         userId: '',
         old_UserId: '',
         old_PartTimeDeptId: '',
@@ -474,60 +321,20 @@
         laborName: ''
     })
     
-    // 用户搜索条件
-    const userFilters = reactive({
+    // 合并后的对话框内用户搜索条件与分页
+    const dialogUserFilters = reactive({
         departmentId: '',
         userNo: '',
         userName: ''
     })
-    
-    // 用户分页信息
-    const userPagination = reactive({
+    const dialogUserPagination = reactive({
         pageIndex: 1,
         pageSize: 10,
         totalCount: 0
     })
     
-    // 编辑对话框用户搜索条件
-    const editUserFilters = reactive({
-        departmentId: '',
-        userNo: '',
-        userName: ''
-    })
-    
-    // 编辑对话框用户列表
-    const editUserList = ref([])
-    const editUserLoading = ref(false)
-    const selectedEditUsers = ref([])
-    
-    // 编辑对话框用户分页信息
-    const editUserPagination = reactive({
-        pageIndex: 1,
-        pageSize: 10,
-        totalCount: 0
-    })
-    
-    // 表单验证规则
-    const addFormRules = reactive({
-        partTimeDeptId: [
-            { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
-        ],
-        partTimePositionId: [
-            { required: true, message: t('systembasicmgmt.userPartTime.partTimePositionRequired'), trigger: 'change' }
-        ],
-        partTimeLaborId: [
-            { required: true, message: t('systembasicmgmt.userPartTime.partTimeLaborRequired'), trigger: 'change' }
-        ],
-        startTime: [
-            { required: true, message: t('systembasicmgmt.userPartTime.startTimeRequired'), trigger: 'change' }
-        ],
-        endTime: [
-            { required: true, message: t('systembasicmgmt.userPartTime.endTimeRequired'), trigger: 'change' }
-        ]
-    })
-    
-    // 编辑表单验证规则
-    const editFormRules = reactive({
+    // 通用表单验证规则（新增/编辑一致）
+    const dialogFormRules = reactive({
         partTimeDeptId: [
             { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
         ],
@@ -557,7 +364,11 @@
         }, 200) // 稍微延长等待时间，确保默认值设置完成
     })
     
-    // 递归查找第一个未禁用的部门
+    /**
+     * 递归查找第一个未禁用的部门ID
+     * @param {Array} departments 部门树形列表
+     * @returns {string|null} 返回第一个未禁用的部门ID，若不存在返回 null
+     */
     const findFirstEnabledDepartment = (departments) => {
         for (const dept of departments) {
             // 检查当前部门是否未禁用
@@ -575,7 +386,12 @@
         return null
     }
     
-    // 获取部门下拉列表
+    /**
+     * 获取部门下拉列表
+     * @param {boolean} [setDefaultFilter=false] 是否为主列表筛选设置默认值
+     * @param {boolean} [setDefaultForm=false] 是否为对话框表单设置默认值
+     * @returns {Promise<void>}
+     */
     const fetchDepartmentList = async (setDefaultFilter = false, setDefaultForm = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
@@ -605,10 +421,10 @@
                 }
                 
                 // 设置表单默认值 - 选择第一个未禁用的选项
-                if (setDefaultForm && departmentList.value.length > 0 && !addForm.partTimeDeptId) {
+                if (setDefaultForm && departmentList.value.length > 0 && !dialogForm.partTimeDeptId) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
-                        addForm.partTimeDeptId = firstEnabledDept
+                        dialogForm.partTimeDeptId = firstEnabledDept
                     }
                 }
             } else {
@@ -631,7 +447,11 @@
         }
     }
     
-    // 获取职级下拉列表
+    /**
+     * 获取职级下拉列表
+     * @param {boolean} [setDefaultForm=false] 是否为对话框表单设置默认值
+     * @returns {Promise<void>}
+     */
     const fetchPositionList = async (setDefaultForm = false) => {
         try {
             const res = await post(GET_POSITION_DROPDOWN_API.GET_POSITION_DROPDOWN, {})
@@ -646,10 +466,10 @@
                 )
                 
                 // 设置表单默认值 - 选择第一个未禁用的选项
-                if (setDefaultForm && positionList.value.length > 0 && !addForm.partTimePositionId) {
+                if (setDefaultForm && positionList.value.length > 0 && !dialogForm.partTimePositionId) {
                     const firstEnabledPosition = positionList.value.find(item => !item.disabled)
                     if (firstEnabledPosition) {
-                        addForm.partTimePositionId = firstEnabledPosition.positionId
+                        dialogForm.partTimePositionId = firstEnabledPosition.positionId
                     }
                 }
             } else {
@@ -672,7 +492,11 @@
         }
     }
     
-    // 获取职业下拉列表
+    /**
+     * 获取职业下拉列表
+     * @param {boolean} [setDefaultForm=false] 是否为对话框表单设置默认值
+     * @returns {Promise<void>}
+     */
     const fetchLaborList = async (setDefaultForm = false) => {
         try {
             const res = await post(GET_LABOR_DROPDOWN_API.GET_LABOR_DROPDOWN, {})
@@ -687,10 +511,10 @@
                 )
                 
                 // 设置表单默认值 - 选择第一个未禁用的选项
-                if (setDefaultForm && laborList.value.length > 0 && !addForm.partTimeLaborId) {
+                if (setDefaultForm && laborList.value.length > 0 && !dialogForm.partTimeLaborId) {
                     const firstEnabledLabor = laborList.value.find(item => !item.disabled)
                     if (firstEnabledLabor) {
-                        addForm.partTimeLaborId = firstEnabledLabor.laborId
+                        dialogForm.partTimeLaborId = firstEnabledLabor.laborId
                     }
                 }
             } else {
@@ -713,7 +537,10 @@
         }
     }
   
-    // 获取员工兼任列表数据
+    /**
+     * 获取员工兼任主列表数据
+     * @returns {Promise<void>}
+     */
     const fetchUserPartTimePages = async () => {
         loading.value = true
         try {
@@ -752,64 +579,37 @@
         }
     }
     
-    // 获取用户信息列表数据
-    const fetchUserPages = async () => {
-        userLoading.value = true
-        try {
-            const params = {
-                departmentId: userFilters.departmentId,
-                userNo: userFilters.userNo,
-                userName: userFilters.userName,
-                pageIndex: userPagination.pageIndex,
-                pageSize: userPagination.pageSize,
-                totalCount: userPagination.totalCount
-            }
-            const res = await post(GET_USER_PARTTIMEVIEW_API.GET_USER_PARTTIMEVIEW, params)
-
-            if (res && res.code === 200) {
-                userList.value = res.data || []
-                userPagination.totalCount = res.totalCount || 0
-            } else {
-                userList.value = []
-                ElMessage({
-                    message: res.message,
-                    type: 'error',
-                    plain: true,
-                    showClose: true
-                })
-            }
-        } catch (error) {
-            userList.value = []
-            ElMessage({
-                message: t('systembasicmgmt.userPartTime.getUserFailed'),
-                type: 'error',
-                plain: true,
-                showClose: true
-            })
-        } finally {
-            userLoading.value = false
-        }
-    }
+    // 已合并为 fetchDialogUserPages，移除旧的 fetchUserPages 以避免未定义变量引用
   
-    // 使用通用防抖工具（主列表）
+    /**
+     * 主列表查询的防抖函数
+     * 通过防抖避免频繁请求接口
+     */
     const debouncedFetchUserPartTimePages = debounce(() => {
         fetchUserPartTimePages()
     }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
-    // 处理搜索操作（带防抖）
+    /**
+     * 处理主列表搜索（使用防抖）
+     * 重置到第一页并触发查询
+     */
     const handleSearch = () => {
         pagination.pageIndex = 1
         loading.value = true // 立即显示加载状态
         debouncedFetchUserPartTimePages()
     }
 
-    // 立即查询数据（不使用防抖，用于保存后刷新）
+    /**
+     * 立即查询主列表（不使用防抖，用于保存后刷新）
+     */
     const fetchUserPartTimePagesImmediate = () => {
         loading.value = true
         fetchUserPartTimePages()
     }
     
-    // 处理重置操作
+    /**
+     * 重置主列表筛选条件，仅清空输入框并重新查询
+     */
     const handleReset = () => {
         // 重置筛选条件 - 只清空输入框，不清空下拉框
         Object.assign(filters, {
@@ -823,20 +623,26 @@
     }
 
     /**
-     * 处理部门下拉框变化
+     * 处理主列表部门下拉框变化，重新触发查询
      */
     const handleDepartmentChange = () => {
         handleSearch()
     }
 
-    // 处理页码变化
+    /**
+     * 处理主列表页码变化
+     * @param {number} page 新页码
+     */
     const handlePageChange = (page) => {
         loading.value = true // 显示加载状态
         pagination.pageIndex = page
         fetchUserPartTimePages()
     }
   
-    // 处理每页记录数变化
+    /**
+     * 处理主列表每页记录数变化
+     * @param {number} size 新的每页条数
+     */
     const handleSizeChange = (size) => {
         loading.value = true // 显示加载状态
         pagination.pageSize = size
@@ -844,172 +650,193 @@
         fetchUserPartTimePages()
     }
     
-    // 部门树形选择器过滤方法
+    /**
+     * 部门树选择器过滤方法
+     * @param {string} value 输入值
+     * @param {object} data 节点数据
+     * @returns {boolean} 是否匹配
+     */
     const filterNodeMethod = (value, data) => {
         if (!value) return true
         return data.departmentName && data.departmentName.toLowerCase().includes(value.toLowerCase())
     }
     
-    // 处理新增操作
+    /**
+     * 打开新增模式：初始化对话框表单、搜索与分页，并加载数据
+     * @returns {Promise<void>}
+     */
     const handleAdd = async () => {
-        // 重置表单数据
-        Object.assign(addForm, {
+        // 重置通用表单
+        Object.assign(dialogForm, {
+            userId: '',
+            old_UserId: '',
+            old_PartTimeDeptId: '',
+            old_PartTimePositionId: '',
+            old_PartTimeLaborId: '',
             partTimeDeptId: '',
             partTimePositionId: '',
             partTimeLaborId: '',
             startTime: '',
             endTime: '',
-            userId: ''
+            userNo: '',
+            userName: '',
+            departmentName: '',
+            positionName: '',
+            laborName: ''
         })
-        
-        // 重置用户搜索条件
-        Object.assign(userFilters, {
+
+        // 重置搜索条件
+        Object.assign(dialogUserFilters, {
             departmentId: '',
             userNo: '',
             userName: ''
         })
-        
+
         // 设置用户搜索部门默认值
         if (departmentList.value.length > 0) {
             const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
             if (firstEnabledDept) {
-                userFilters.departmentId = firstEnabledDept
+                dialogUserFilters.departmentId = firstEnabledDept
             }
         }
-        
-        // 重置用户分页
-        userPagination.pageIndex = 1
-        userPagination.pageSize = 10
-        userPagination.totalCount = 0
-        
-        // 清空用户列表和选中状态
-        userList.value = []
-        selectedUsers.value = []
-        
-        // 获取下拉列表数据
+
+        // 重置分页
+        Object.assign(dialogUserPagination, {
+            pageIndex: 1,
+            pageSize: 10,
+            totalCount: 0
+        })
+
+        // 清空列表与选择
+        dialogUserList.value = []
+        selectedDialogUsers.value = []
+
+        // 加载下拉数据
         await fetchDepartmentList(false, false)
         await fetchPositionList(false)
         await fetchLaborList(false)
-        
+
         // 设置默认值
         if (departmentList.value.length > 0) {
             const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
             if (firstEnabledDept) {
-                addForm.partTimeDeptId = firstEnabledDept
+                dialogForm.partTimeDeptId = firstEnabledDept
             }
         }
-        
         if (positionList.value.length > 0) {
             const firstEnabledPosition = positionList.value.find(item => !item.disabled)
             if (firstEnabledPosition) {
-                addForm.partTimePositionId = firstEnabledPosition.positionId
+                dialogForm.partTimePositionId = firstEnabledPosition.positionId
             }
         }
-        
         if (laborList.value.length > 0) {
             const firstEnabledLabor = laborList.value.find(item => !item.disabled)
             if (firstEnabledLabor) {
-                addForm.partTimeLaborId = firstEnabledLabor.laborId
+                dialogForm.partTimeLaborId = firstEnabledLabor.laborId
             }
         }
-        
-        // 显示对话框
-        addDialogVisible.value = true
-        
-        // 等待对话框打开后再获取用户列表数据
+
+        // 打开对话框并加载列表
+        isEditMode.value = false
+        dialogVisible.value = true
         await nextTick()
-        await fetchUserPages()
+        await fetchDialogUserPages()
     }
     
-    // 使用通用防抖工具（新增对话框用户列表）
-    const debouncedFetchUserPages = debounce(() => {
-        fetchUserPages()
+    /**
+     * 对话框用户列表查询的防抖函数
+     */
+    const debouncedFetchDialogUserPages = debounce(() => {
+        fetchDialogUserPages()
     }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
-    // 处理用户搜索操作（带防抖）
-    const handleUserSearch = () => {
-        userPagination.pageIndex = 1
-        userLoading.value = true // 立即显示加载状态
-        debouncedFetchUserPages()
+    /**
+     * 处理对话框用户搜索（使用防抖）
+     */
+    const handleDialogUserSearch = () => {
+        dialogUserPagination.pageIndex = 1
+        dialogUserLoading.value = true
+        debouncedFetchDialogUserPages()
     }
 
-    // 处理新增兼任信息区域部门变化（重新加载职位和劳动关系列表）
-    const handleAddDeptChange = () => {
-        // 重置职位和劳动关系选择
-        addForm.partTimePositionId = ''
-        addForm.partTimeLaborId = ''
-        
-        // 重新加载职位和劳动关系列表
-        fetchPositionList(true)
-        fetchLaborList(true)
-    }
-
-    // 处理编辑兼任信息区域部门变化（重新加载职位和劳动关系列表）
-    const handleEditDeptChange = () => {
-        // 重置职位和劳动关系选择
-        editForm.partTimePositionId = ''
-        editForm.partTimeLaborId = ''
-        
-        // 重新加载职位和劳动关系列表
-        fetchPositionList(false)
-        fetchLaborList(false)
+    /**
+     * 处理对话框表单部门变化
+     * 新增模式加载默认职位/工种，编辑模式保持现有选择
+     */
+    const handleDialogDeptChange = () => {
+        dialogForm.partTimePositionId = ''
+        dialogForm.partTimeLaborId = ''
+        if (isEditMode.value) {
+            fetchPositionList(false)
+            fetchLaborList(false)
+        } else {
+            fetchPositionList(true)
+            fetchLaborList(true)
+        }
     }
     
-    // 重置用户搜索条件
-    const handleUserReset = () => {
-        // 重置筛选条件 - 只清空输入框，不清空下拉框
-        Object.assign(userFilters, {
+    /**
+     * 重置对话框用户搜索条件，并重新查询
+     */
+    const handleDialogUserReset = () => {
+        Object.assign(dialogUserFilters, {
             userNo: '',
             userName: ''
         })
-        // 重置分页并触发查询
-        userPagination.pageIndex = 1
-        debouncedFetchUserPages()
+        dialogUserPagination.pageIndex = 1
+        dialogUserLoading.value = true
+        debouncedFetchDialogUserPages()
     }
     
-    // 处理用户页码变化
-    const handleUserPageChange = (page) => {
-        userPagination.pageIndex = page
-        fetchUserPages()
+    /**
+     * 处理对话框用户分页页码变化
+     * @param {number} page 新页码
+     */
+    const handleDialogUserPageChange = (page) => {
+        dialogUserPagination.pageIndex = page
+        fetchDialogUserPages()
+    }
+
+    /**
+     * 处理对话框用户每页大小变化
+     * @param {number} size 新的每页条数
+     */
+    const handleDialogUserSizeChange = (size) => {
+        dialogUserPagination.pageSize = size
+        dialogUserPagination.pageIndex = 1
+        fetchDialogUserPages()
+    }
+
+    /**
+     * 处理对话框用户选择变化（单选）
+     * @param {Array} selection 当前选中的用户列表
+     */
+    const handleDialogUserSelectionChange = (selection) => {
+        selectedDialogUsers.value = selection
+        dialogForm.userId = selection.length > 0 ? selection[0].userId : ''
     }
     
-    // 处理用户每页记录数变化
-    const handleUserSizeChange = (size) => {
-        userPagination.pageSize = size
-        userPagination.pageIndex = 1
-        fetchUserPages()
-    }
-    
-    // 处理用户选择变化
-    const handleUserSelectionChange = (selection) => {
-        selectedUsers.value = selection
-        // 只允许选择一个用户
-        if (selection.length > 0) {
-            addForm.userId = selection[0].userId
-        } else {
-            addForm.userId = ''
-        }
-    }
-    
-    // 获取编辑对话框用户信息列表数据
-    const fetchEditUserPages = async () => {
-        editUserLoading.value = true
+    /**
+     * 获取对话框用户列表数据
+     * @returns {Promise<void>}
+     */
+    const fetchDialogUserPages = async () => {
+        dialogUserLoading.value = true
         try {
             const params = {
-                departmentId: editUserFilters.departmentId,
-                userNo: editUserFilters.userNo,
-                userName: editUserFilters.userName,
-                pageIndex: editUserPagination.pageIndex,
-                pageSize: editUserPagination.pageSize,
-                totalCount: editUserPagination.totalCount
+                departmentId: dialogUserFilters.departmentId,
+                userNo: dialogUserFilters.userNo,
+                userName: dialogUserFilters.userName,
+                pageIndex: dialogUserPagination.pageIndex,
+                pageSize: dialogUserPagination.pageSize,
+                totalCount: dialogUserPagination.totalCount
             }
             const res = await post(GET_USER_PARTTIMEVIEW_API.GET_USER_PARTTIMEVIEW, params)
-
             if (res && res.code === 200) {
-                editUserList.value = res.data || []
-                editUserPagination.totalCount = res.totalCount || 0
+                dialogUserList.value = res.data || []
+                dialogUserPagination.totalCount = res.totalCount || 0
             } else {
-                editUserList.value = []
+                dialogUserList.value = []
                 ElMessage({
                     message: res.message,
                     type: 'error',
@@ -1018,7 +845,7 @@
                 })
             }
         } catch (error) {
-            editUserList.value = []
+            dialogUserList.value = []
             ElMessage({
                 message: t('systembasicmgmt.userPartTime.getUserFailed'),
                 type: 'error',
@@ -1026,62 +853,19 @@
                 showClose: true
             })
         } finally {
-            editUserLoading.value = false
+            dialogUserLoading.value = false
         }
     }
     
-    // 使用通用防抖工具（编辑对话框用户列表）
-    const debouncedFetchEditUserPages = debounce(() => {
-        fetchEditUserPages()
-    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-    // 处理编辑对话框用户搜索操作（带防抖）
-    const handleEditUserSearch = () => {
-        editUserPagination.pageIndex = 1
-        editUserLoading.value = true // 立即显示加载状态
-        debouncedFetchEditUserPages()
-    }
+    // 以下编辑对话框专用方法已合并至通用方法（handleDialogUserSearch/Reset/PageChange/SizeChange/SelectionChange）
     
-    // 重置编辑对话框用户搜索条件
-    const handleEditUserReset = () => {
-        // 重置筛选条件 - 只清空输入框，不清空下拉框
-        Object.assign(editUserFilters, {
-            userNo: '',
-            userName: ''
-        })
-        // 重置分页并触发查询
-        editUserPagination.pageIndex = 1
-        debouncedFetchEditUserPages()
-    }
-    
-    // 处理编辑对话框用户页码变化
-    const handleEditUserPageChange = (page) => {
-        editUserPagination.pageIndex = page
-        fetchEditUserPages()
-    }
-    
-    // 处理编辑对话框用户每页记录数变化
-    const handleEditUserSizeChange = (size) => {
-        editUserPagination.pageSize = size
-        editUserPagination.pageIndex = 1
-        fetchEditUserPages()
-    }
-    
-    // 处理编辑对话框用户选择变化
-    const handleEditUserSelectionChange = (selection) => {
-        selectedEditUsers.value = selection
-        // 只允许选择一个用户
-        if (selection.length > 0) {
-            editForm.userId = selection[0].userId
-        } else {
-            editForm.userId = ''
-        }
-    }
-    
-    // 提交新增
-    const handleSubmitAdd = async () => {
-        // 验证是否选择了用户
-        if (!addForm.userId) {
+    /**
+     * 提交对话框（支持新增与编辑模式）
+     * @returns {Promise<void>}
+     */
+    const handleDialogSubmit = async () => {
+        // 检查用户选择
+        if (!dialogForm.userId) {
             ElMessage({
                 message: t('systembasicmgmt.userPartTime.pleaseSelectUser'),
                 type: 'warning',
@@ -1090,31 +874,44 @@
             })
             return
         }
-        
+
         // 验证表单
-        if (!addFormRef.value) return
-        
-        // 表单验证
+        if (!dialogFormRef.value) return
         try {
-            await addFormRef.value.validate()
+            await dialogFormRef.value.validate()
         } catch (error) {
-            // 表单验证失败时静默返回，不显示任何提示
             return
         }
-        
-        submitLoading.value = true
-        
-        const params = {
-            userId: addForm.userId,
-            partTimeDeptId: addForm.partTimeDeptId,
-            partTimePositionId: addForm.partTimePositionId,
-            partTimeLaborId: addForm.partTimeLaborId,
-            startTime: addForm.startTime,
-            endTime: addForm.endTime
+
+        dialogSubmitLoading.value = true
+
+        let res
+        if (isEditMode.value) {
+            const params = {
+                Old_UserId: dialogForm.old_UserId,
+                userId: dialogForm.userId,
+                partTimeDeptId: dialogForm.partTimeDeptId,
+                partTimePositionId: dialogForm.partTimePositionId,
+                partTimeLaborId: dialogForm.partTimeLaborId,
+                old_PartTimeDeptId: dialogForm.old_PartTimeDeptId,
+                old_PartTimePositionId: dialogForm.old_PartTimePositionId,
+                old_PartTimeLaborId: dialogForm.old_PartTimeLaborId,
+                startTime: dialogForm.startTime,
+                endTime: dialogForm.endTime
+            }
+            res = await post(UPDATE_USER_PARTTIME_API.UPDATE_USER_PARTTIME, params)
+        } else {
+            const params = {
+                userId: dialogForm.userId,
+                partTimeDeptId: dialogForm.partTimeDeptId,
+                partTimePositionId: dialogForm.partTimePositionId,
+                partTimeLaborId: dialogForm.partTimeLaborId,
+                startTime: dialogForm.startTime,
+                endTime: dialogForm.endTime
+            }
+            res = await post(INSERT_USER_PARTTIME_API.INSERT_USER_PARTTIME, params)
         }
-        
-        const res = await post(INSERT_USER_PARTTIME_API.INSERT_USER_PARTTIME, params)
-        
+
         if (res && res.code === 200) {
             ElMessage({
                 message: res.message,
@@ -1122,11 +919,7 @@
                 plain: true,
                 showClose: true
             })
-            
-            // 关闭对话框
-            addDialogVisible.value = false
-            
-            // 刷新列表
+            dialogVisible.value = false
             await fetchUserPartTimePages()
         } else {
             ElMessage({
@@ -1136,11 +929,15 @@
                 showClose: true
             })
         }
-        
-        submitLoading.value = false
+        dialogSubmitLoading.value = false
     }
     
-    // 编辑兼任
+    /**
+     * 打开编辑模式并加载当前记录详情
+     * @param {number} index 表格行索引
+     * @param {object} row 当前行数据
+     * @returns {Promise<void>}
+     */
     const handleEdit = async (index, row) => {
         try {
             // 先获取下拉列表数据
@@ -1159,52 +956,52 @@
             const res = await post(GET_USER_PARTTIMEENTITY_API.GET_USER_PARTTIMEENTITY, params)
             
             if (res && res.code === 200 && res.data) {
-                // 填充编辑表单数据
-                editForm.userId = ''
-                editForm.old_UserId = res.data.userId
-                editForm.old_PartTimeDeptId = res.data.partTimeDeptId
-                editForm.old_PartTimePositionId = res.data.partTimePositionId
-                editForm.old_PartTimeLaborId = res.data.partTimeLaborId
-                editForm.partTimeDeptId = res.data.partTimeDeptId
-                editForm.partTimePositionId = res.data.partTimePositionId
-                editForm.partTimeLaborId = res.data.partTimeLaborId
+                // 填充通用表单为编辑模式数据
+                dialogForm.userId = ''
+                dialogForm.old_UserId = res.data.userId
+                dialogForm.old_PartTimeDeptId = res.data.partTimeDeptId
+                dialogForm.old_PartTimePositionId = res.data.partTimePositionId
+                dialogForm.old_PartTimeLaborId = res.data.partTimeLaborId
+                dialogForm.partTimeDeptId = res.data.partTimeDeptId
+                dialogForm.partTimePositionId = res.data.partTimePositionId
+                dialogForm.partTimeLaborId = res.data.partTimeLaborId
                 // 处理时间格式，确保与日期选择器兼容
-                editForm.startTime = res.data.startTime ? new Date(res.data.startTime).toISOString().slice(0, 19).replace('T', ' ') : ''
-                editForm.endTime = res.data.endTime ? new Date(res.data.endTime).toISOString().slice(0, 19).replace('T', ' ') : ''
+                dialogForm.startTime = res.data.startTime ? new Date(res.data.startTime).toISOString().slice(0, 19).replace('T', ' ') : ''
+                dialogForm.endTime = res.data.endTime ? new Date(res.data.endTime).toISOString().slice(0, 19).replace('T', ' ') : ''
                 
                 // 检查并设置部门默认值
-                if (!editForm.partTimeDeptId && departmentList.value.length > 0) {
+                if (!dialogForm.partTimeDeptId && departmentList.value.length > 0) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
-                        editForm.partTimeDeptId = firstEnabledDept
+                        dialogForm.partTimeDeptId = firstEnabledDept
                     }
                 }
                 
                 // 检查并设置职位默认值
-                if (!editForm.partTimePositionId && positionList.value.length > 0) {
+                if (!dialogForm.partTimePositionId && positionList.value.length > 0) {
                     const firstEnabledPosition = positionList.value.find(item => !item.disabled)
                     if (firstEnabledPosition) {
-                        editForm.partTimePositionId = firstEnabledPosition.positionId
+                        dialogForm.partTimePositionId = firstEnabledPosition.positionId
                     }
                 }
                 
                 // 检查并设置工种默认值
-                if (!editForm.partTimeLaborId && laborList.value.length > 0) {
+                if (!dialogForm.partTimeLaborId && laborList.value.length > 0) {
                     const firstEnabledLabor = laborList.value.find(item => !item.disabled)
                     if (firstEnabledLabor) {
-                        editForm.partTimeLaborId = firstEnabledLabor.laborId
+                        dialogForm.partTimeLaborId = firstEnabledLabor.laborId
                     }
                 }
                 
                 // 填充用户信息
-                editForm.userNo = row.userNo
-                editForm.userName = row.userName
-                editForm.departmentName = row.departmentName
-                editForm.positionName = row.positionName
-                editForm.laborName = row.laborName
+                dialogForm.userNo = row.userNo
+                dialogForm.userName = row.userName
+                dialogForm.departmentName = row.departmentName
+                dialogForm.positionName = row.positionName
+                dialogForm.laborName = row.laborName
                 
                 // 初始化编辑对话框的用户搜索条件和分页
-                Object.assign(editUserFilters, {
+                Object.assign(dialogUserFilters, {
                     departmentId: '',
                     userNo: '',
                     userName: ''
@@ -1214,21 +1011,22 @@
                 if (departmentList.value.length > 0) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
-                        editUserFilters.departmentId = firstEnabledDept
+                        dialogUserFilters.departmentId = firstEnabledDept
                     }
                 }
-                Object.assign(editUserPagination, {
+                Object.assign(dialogUserPagination, {
                     pageIndex: 1,
                     pageSize: 10,
                     totalCount: 0
                 })
                 
-                // 打开编辑对话框
-                editDialogVisible.value = true
+                // 打开通用对话框（编辑模式）
+                isEditMode.value = true
+                dialogVisible.value = true
                 
                 // 等待对话框打开后再获取用户列表数据
                 await nextTick()
-                await fetchEditUserPages()
+                await fetchDialogUserPages()
             } else {
                 ElMessage({
                     message: res.message,
@@ -1248,73 +1046,14 @@
         }
     }
     
-    // 提交编辑
-    const handleSubmitEdit = async () => {
-        // 验证是否选择了用户
-        if (!editForm.userId) {
-            ElMessage({
-                message: t('systembasicmgmt.userPartTime.pleaseSelectUser'),
-                type: 'warning',
-                plain: true,
-                showClose: true
-            })
-            return
-        }
-        
-        // 验证表单
-        if (!editFormRef.value) return
-        
-        // 表单验证
-        try {
-            await editFormRef.value.validate()
-        } catch (error) {
-            // 表单验证失败时静默返回，不显示任何提示
-            return
-        }
-        
-        editSubmitLoading.value = true
-        
-        const params = {
-            Old_UserId: editForm.old_UserId,
-            userId: editForm.userId,
-            partTimeDeptId: editForm.partTimeDeptId,
-            partTimePositionId: editForm.partTimePositionId,
-            partTimeLaborId: editForm.partTimeLaborId,
-            old_PartTimeDeptId: editForm.old_PartTimeDeptId,
-            old_PartTimePositionId: editForm.old_PartTimePositionId,
-            old_PartTimeLaborId: editForm.old_PartTimeLaborId,
-            startTime: editForm.startTime,
-            endTime: editForm.endTime
-        }
-        
-        const res = await post(UPDATE_USER_PARTTIME_API.UPDATE_USER_PARTTIME, params)
-        
-        if (res && res.code === 200) {
-            ElMessage({
-                message: res.message,
-                type: 'success',
-                plain: true,
-                showClose: true
-            })
-            
-            // 关闭对话框
-            editDialogVisible.value = false
-            
-            // 刷新列表
-            await fetchUserPartTimePages()
-        } else {
-            ElMessage({
-                message: res.message,
-                type: 'error',
-                plain: true,
-                showClose: true
-            })
-        }
-        
-        editSubmitLoading.value = false
-    }
+    // 编辑提交逻辑已合并至 handleDialogSubmit
     
-    // 处理删除操作
+    /**
+     * 删除员工兼任记录
+     * @param {number} index 表格行索引
+     * @param {object} row 当前行数据
+     * @returns {Promise<void>}
+     */
     const handleDelete = async (index, row) => {
         try {
             await ElMessageBox.confirm(

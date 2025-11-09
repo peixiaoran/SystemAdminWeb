@@ -113,8 +113,8 @@
       @closed="handleAgentDialogClosed"
       class="agent-dialog"
     >
-      <div v-loading="agentLoading" style="height: 380px; padding-top: 20px;">
-        <el-table :data="agentList" border stripe :header-cell-style="{ background: '#f5f7fa' }" height="370" class="conventional-table">
+      <div style="height: 380px; padding-top: 20px;">
+        <el-table :data="agentList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="agentLoading" height="370" class="conventional-table">
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
           <el-table-column prop="agentUserNo" :label="$t('systembasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
           <el-table-column prop="agentUserName" :label="$t('systembasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
@@ -157,7 +157,7 @@
       :lock-scroll="true"
       @closed="handleUserSelectDialogClosed"
     >
-      <div v-loading="userSelectLoading" style="min-height: 500px;">
+      <div style="min-height: 500px;">
         <!-- 时间选择区域 -->
         <el-form 
           ref="agentTimeFormRef" 
@@ -321,12 +321,13 @@
       @closed="handleProactiveAgentDialogClosed"
       class="proactive-agent-dialog"
     >
-      <div v-loading="proactiveAgentLoading" style="height: 380px; padding-top: 20px;">
+      <div style="height: 380px; padding-top: 20px;">
         <el-table 
           :data="proactiveAgentList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
+          v-loading="proactiveAgentLoading"
           height="370"
           class="conventional-table"
         >
@@ -818,6 +819,7 @@ const handleUserSelectReset = () => {
     userName: ''
   })
   userSelectPagination.pageIndex = 1
+  userSelectLoading.value = true // 显示加载状态
   debouncedFetchUserSelectList()
 }
 

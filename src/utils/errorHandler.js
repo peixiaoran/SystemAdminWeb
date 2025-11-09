@@ -105,6 +105,7 @@ const showErrorMessage = (errorInfo, level) => {
     type: messageType,
     message: errorInfo.message,
     duration: 5000,
+    plain: true,
     showClose: true
   })
 }

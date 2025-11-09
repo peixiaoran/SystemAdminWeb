@@ -1315,6 +1315,7 @@ export default {
     },
     userPartTime: {
       title: 'Employee Part-time Management',
+      mergedDialogTitle: 'Employee Part-time Management',
       department: 'Department',
       pleaseSelectDepartment: 'Please select department',
       userNo: 'No.',
