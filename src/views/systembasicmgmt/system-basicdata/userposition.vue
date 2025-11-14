@@ -114,71 +114,54 @@ const positionList = ref([])
 const dialogVisible = ref(false)
 const editForm = ref(null)
 
-// 获取职业列表
+/**
+ * 获取职业列表（查询）
+ * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+ */
 const getPositionList = async () => {
   loading.value = true
-  try {
-    const response = await post(GET_USER_POSITION_LIST_API.GET_USER_POSITION_LIST, {})
-    if (response.code === 200) {
-      positionList.value = response.data || []
-    } else {
+  const response = await post(GET_USER_POSITION_LIST_API.GET_USER_POSITION_LIST, {})
+  if (response.code === 200) {
+    positionList.value = response.data || []
+  } else {
+    if (response.code !== 401 && response.code !== 403) {
       ElMessage({
-        message: response.message,
+        message: response.message || t('systembasicmgmt.userPosition.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
       })
-      positionList.value = []
     }
-  } catch (error) {
-    ElMessage({
-      message: t('systembasicmgmt.userPosition.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
     positionList.value = []
-  } finally {
-    loading.value = false
   }
+  loading.value = false
 }
 
-// 处理编辑
+/**
+ * 编辑职业（查询实体）
+ * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+ */
 const handleEdit = async (index, row) => {
   editLoading.value = true
   dialogVisible.value = true
   editForm.value = null
-  
-  try {
-    // 构造请求参数 - 使用JSON格式发送positionId
-    const requestData = {
-      positionId: row.positionId
-    }
-    
-    const response = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, requestData)
-    
-    if (response.code === 200) {
-      editForm.value = { ...response.data }
-    } else {
+
+  const requestData = { positionId: row.positionId }
+  const response = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, requestData)
+  if (response.code === 200) {
+    editForm.value = { ...response.data }
+  } else {
+    if (response.code !== 401 && response.code !== 403) {
       ElMessage({
-        message: response.message,
+        message: response.message || t('systembasicmgmt.userPosition.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
       })
-      dialogVisible.value = false
     }
-  } catch (error) {
-    ElMessage({
-      message: t('systembasicmgmt.userPosition.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
     dialogVisible.value = false
-  } finally {
-    editLoading.value = false
   }
+  editLoading.value = false
 }
 
 // 组件挂载时获取数据

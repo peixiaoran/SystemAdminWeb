@@ -24,7 +24,7 @@ const generateRequestKey = (config) => {
   return `${method}:${url}:${JSON.stringify(params || {})}:${JSON.stringify(data || {})}`
 }
 
-// 统一处理登出逻辑
+// 统一处理登出逻辑（不再显示登录过期提示）
 const handleLogout = () => {
   localStorage.removeItem('token')
   // 清除缓存
@@ -149,7 +149,17 @@ const cleanExpiredCache = () => {
 // 定期清理缓存
 setInterval(cleanExpiredCache, 60000) // 每分钟清理一次
 
-// 封装HTTP请求方法，添加全局错误处理和缓存
+/**
+ * 封装HTTP请求方法，添加全局错误处理和缓存
+ * 错误处理策略：
+ * - HTTP 401：不提示，立即清理登录状态并跳转到登录页
+ * - 业务码 401（data.code === 401）：不提示，行为与HTTP 401一致
+ * - HTTP 403：不提示，直接跳转到403错误页
+ * - 其它HTTP错误：返回标准错误对象，由调用方自行处理提示
+ * - 取消与超时：透传错误供调用方自行处理
+ * @param {string} method - 请求方法：get | post | put | delete
+ * @returns {Function} 发起请求的异步函数
+ */
 const createRequest = (method) => async (url, data, options = {}) => {
   try {
     const config = {
@@ -181,26 +191,44 @@ const createRequest = (method) => async (url, data, options = {}) => {
     if (error && error.response) {
       const status = error.response.status
       if (status === 401) {
+        // 认证失效（HTTP 401）：直接登出并跳转登录，不再显示过期提示
         handleLogout()
+        // 不显示额外的错误提示
+        handleNetworkError(error, { showMessage: false })
         return {
           code: 401,
           data: null,
-          message: i18n.global.t('common.tokenExpired'),
+          message: '认证已过期，请重新登录',
           success: false
         }
       }
       
       if (status === 403) {
-        const info = handleNetworkError(error, { showMessage: false })
+        // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
+        window.location.href = '/#/403'
+        // 记录错误但不返回提示文案
+        handleNetworkError(error, { showMessage: false })
         return {
           code: 403,
           data: null,
-          message: info.message,
+          message: '权限不足，无法访问该资源',
           success: false
         }
       }
       
       // 处理业务错误
+      // 业务码401：直接登出并跳转登录，不再显示过期提示
+      if (error.response.data?.code === 401) {
+        handleLogout()
+        // 不显示额外的错误提示
+        handleNetworkError(error, { showMessage: false })
+        return {
+          code: 401,
+          data: null,
+          message: '认证已过期，请重新登录',
+          success: false
+        }
+      }
       if (error.response.data?.code && error.response.data.code !== 200) {
         return {
           code: error.response.data.code,

@@ -410,10 +410,18 @@ const fetchPMenuPagesImmediate = () => {
   fetchPMenuPages()
 }
 
-// 重置搜索条件（只重置输入字段，保留下拉框值）
+// 重置搜索条件（重置输入字段，并将下拉框恢复为默认选中第一个未禁用的模块）
 const handleReset = () => {
   filters.menuCode = ''
   filters.menuName = ''
+  
+  // 将模块下拉框恢复为默认选中第一个未禁用的模块
+  if (moduleDropList.value.length > 0) {
+    const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
+    if (firstEnabledModule) {
+      filters.moduleId = firstEnabledModule.moduleId
+    }
+  }
   
   // 重置后自动触发查询（使用防抖）
   pagination.pageIndex = 1

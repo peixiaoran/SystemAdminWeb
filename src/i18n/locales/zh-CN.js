@@ -269,6 +269,8 @@ export default {
     // 表单类别页面专用
     formtype: {
         formTypeName: '类型名称',
+        formName: '表单名称',
+        apply: '申请',
         formTypeNameCn: '中文名称',
         formTypeNameEn: '英文名称',
         formGroupName: '表单组别',
@@ -301,6 +303,17 @@ export default {
     // 请假单页面专用
     leaveform: {
         title: '请假申请',
+        formNo: '表单编号',
+        description: '描述',
+        importanceCode: '重要程度',
+        applicantUserNo: '申请人编号',
+        applicantUserName: '申请人姓名',
+        applicantDeptName: '申请人部门',
+        applicantPositionNo: '申请人职位编号',
+        applicantPositionName: '申请人职位名称',
+        applicantPhone: '申请人电话',
+        leaveTypeCode: '请假类型',
+        leaveHandoverUserName: '交接人姓名',
         leaveId: '请假单ID',
         leaveNo: '请假单号',
         leaveApplicantId: '申请人',
@@ -316,8 +329,11 @@ export default {
           sick: '病假',
           personal: '事假'
         },
-        pleaseInputLeaveId: '请输入请假单ID',
         pleaseInputLeaveNo: '请输入请假单号',
+        pleaseInputDescription: '请输入描述',
+        pleaseSelectImportance: '请选择重要程度',
+        pleaseInputHandoverUserName: '请输入交接人姓名',
+        pleaseInputLeaveId: '请输入请假单ID',
         pleaseSelectLeaveApplicant: '请选择申请人',
         pleaseSelectLeaveType: '请选择请假类型',
         pleaseInputLeaveReason: '请输入请假事由',
@@ -433,6 +449,7 @@ export default {
       loginFailedTip: '登录请求失败，请稍后重试',
       passwordExpired: '密码已过期，即将跳转到密码修改页面',
       accountLocked: '账户已被锁定，即将跳转到解锁页面',
+      sessionExpired: '登录已过期，请重新登录',
       languages: {
         'zh-CN': '中文简体',
         'en-US': 'English'
@@ -526,6 +543,8 @@ export default {
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
     formType: '表单类别信息',
+    formoperate: '表单操作',
+    applyform: '申请表单',
     controlInfo: '控件信息维护',
     eventInfo: '事件信息维护',
     personalInfoTitle: '个人资料',

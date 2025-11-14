@@ -606,179 +606,174 @@ onMounted(async () => {
 })
 
 // 获取下拉数据
+/**
+ * 获取部门下拉数据（移除 try/catch，按返回码处理）
+ * @param {boolean} setDefaultFilter 是否设置筛选默认值
+ * @param {boolean} setDefaultForm 是否设置编辑表单默认值
+ */
 const fetchDepartmentDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
-  try {
-    const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-    if (res && res.code === 200) {
-      departmentOptions.value = Array.isArray(res.data) ? res.data : []
-      // 验证数据结构并过滤无效数据（递归验证部门树结构）
-      const validateDepartment = (dept) => {
-        if (!dept || dept.departmentId === undefined || dept.departmentId === null || 
-            dept.departmentName === undefined || dept.departmentName === null) {
-          return false
-        }
-        if (dept.departmentChildList && Array.isArray(dept.departmentChildList)) {
-          dept.departmentChildList = dept.departmentChildList.filter(validateDepartment)
-        }
-        return true
+  const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
+  if (res && res.code === 200) {
+    departmentOptions.value = Array.isArray(res.data) ? res.data : []
+    // 验证数据结构并过滤无效数据（递归验证部门树结构）
+    const validateDepartment = (dept) => {
+      if (!dept || dept.departmentId === undefined || dept.departmentId === null ||
+          dept.departmentName === undefined || dept.departmentName === null) {
+        return false
       }
-      departmentOptions.value = departmentOptions.value.filter(validateDepartment)
-      // 设置筛选条件默认值 - 选择第一个未禁用的选项
-      if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
-        const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
-        if (firstEnabledDept) {
-          filters.departmentId = firstEnabledDept.departmentId
-        }
+      if (dept.departmentChildList && Array.isArray(dept.departmentChildList)) {
+        dept.departmentChildList = dept.departmentChildList.filter(validateDepartment)
       }
-      // 设置编辑表单默认值 - 选择第一个未禁用的选项
-      if (setDefaultForm && departmentOptions.value.length > 0 && !editForm.departmentId) {
-        const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
-        if (firstEnabledDept) {
-          editForm.departmentId = firstEnabledDept.departmentId
-        }
-      }
-    } else {
-      departmentOptions.value = []
+      return true
     }
-  } catch (error) {
-    console.error('获取部门选项失败:', error)
+    departmentOptions.value = departmentOptions.value.filter(validateDepartment)
+    // 设置筛选条件默认值 - 选择第一个未禁用的选项
+    if (setDefaultFilter && departmentOptions.value.length > 0 && !filters.departmentId) {
+      const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+      if (firstEnabledDept) {
+        filters.departmentId = firstEnabledDept.departmentId
+      }
+    }
+    // 设置编辑表单默认值 - 选择第一个未禁用的选项
+    if (setDefaultForm && departmentOptions.value.length > 0 && !editForm.departmentId) {
+      const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+      if (firstEnabledDept) {
+        editForm.departmentId = firstEnabledDept.departmentId
+      }
+    }
+  } else {
     departmentOptions.value = []
   }
 }
 
 // 获取职业下拉数据
+/**
+ * 获取职业下拉数据（移除 try/catch，按返回码处理）
+ * @param {boolean} setDefaultFilter 是否设置筛选默认值
+ * @param {boolean} setDefaultForm 是否设置编辑表单默认值
+ */
 const fetchPositionDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
-  try {
-    const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-    if (res && res.code === 200) {
-      positionOptions.value = res.data || []
-      // 验证数据结构并过滤无效数据
-      positionOptions.value = positionOptions.value.filter(item => 
-        item && item.positionId !== undefined && item.positionId !== null && 
-        item.positionName !== undefined && item.positionName !== null
-      )
-      // 设置筛选条件默认值 - 选择第一个未禁用的选项
-      if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
-        const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
-        if (firstEnabledPosition) {
-          filters.positionId = firstEnabledPosition.positionId
-        }
+  const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
+  if (res && res.code === 200) {
+    positionOptions.value = res.data || []
+    // 验证数据结构并过滤无效数据
+    positionOptions.value = positionOptions.value.filter(item =>
+      item && item.positionId !== undefined && item.positionId !== null &&
+      item.positionName !== undefined && item.positionName !== null
+    )
+    // 设置筛选条件默认值 - 选择第一个未禁用的选项
+    if (setDefaultFilter && positionOptions.value.length > 0 && !filters.positionId) {
+      const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
+      if (firstEnabledPosition) {
+        filters.positionId = firstEnabledPosition.positionId
       }
-      // 设置编辑表单默认值 - 选择第一个未禁用的选项
-      if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
-        const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
-        if (firstEnabledPosition) {
-          editForm.positionId = firstEnabledPosition.positionId
-        }
-      }
-    } else {
-      positionOptions.value = []
     }
-  } catch (error) {
-    console.error('获取职业选项失败:', error)
+    // 设置编辑表单默认值 - 选择第一个未禁用的选项
+    if (setDefaultForm && positionOptions.value.length > 0 && !editForm.positionId) {
+      const firstEnabledPosition = positionOptions.value.find(item => !item.disabled)
+      if (firstEnabledPosition) {
+        editForm.positionId = firstEnabledPosition.positionId
+      }
+    }
+  } else {
     positionOptions.value = []
   }
 }
 
 // 获取角色下拉数据
+/**
+ * 获取角色下拉数据（移除 try/catch，按返回码处理）
+ * @param {boolean} setDefaultFilter 是否设置筛选默认值
+ * @param {boolean} setDefaultForm 是否设置编辑表单默认值
+ */
 const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
-  try {
-    const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-    if (res && res.code === 200) {
-      roleOptions.value = res.data || []
-      // 验证数据结构并过滤无效数据
-      roleOptions.value = roleOptions.value.filter(item => 
-        item && item.roleId !== undefined && item.roleId !== null && 
-        item.roleName !== undefined && item.roleName !== null
-      )
-      // 设置筛选条件默认值 - 选择第一个未禁用的选项
-      if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
-        const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
-        if (firstEnabledRole) {
-          filters.roleId = firstEnabledRole.roleId
-        }
+  const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
+  if (res && res.code === 200) {
+    roleOptions.value = res.data || []
+    // 验证数据结构并过滤无效数据
+    roleOptions.value = roleOptions.value.filter(item =>
+      item && item.roleId !== undefined && item.roleId !== null &&
+      item.roleName !== undefined && item.roleName !== null
+    )
+    // 设置筛选条件默认值 - 选择第一个未禁用的选项
+    if (setDefaultFilter && roleOptions.value.length > 0 && !filters.roleId) {
+      const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+      if (firstEnabledRole) {
+        filters.roleId = firstEnabledRole.roleId
       }
-      // 设置编辑表单默认值 - 选择第一个未禁用的选项
-      if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
-        const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
-        if (firstEnabledRole) {
-          editForm.roleId = firstEnabledRole.roleId
-        }
+    }
+    // 设置编辑表单默认值 - 选择第一个未禁用的选项
+    if (setDefaultForm && roleOptions.value.length > 0 && !editForm.roleId) {
+      const firstEnabledRole = roleOptions.value.find(item => !item.disabled)
+      if (firstEnabledRole) {
+        editForm.roleId = firstEnabledRole.roleId
       }
-    } else {
-      roleOptions.value = []
-          }
-      } catch (error) {
-          console.error('获取角色选项失败:', error)
-          roleOptions.value = []
-      }
+    }
+  } else {
+    roleOptions.value = []
   }
+}
 
   // 获取性别下拉数据
+  /**
+   * 获取性别下拉数据（移除 try/catch，按返回码处理）
+   */
   const fetchGenderDropdown = async () => {
-      try {
-          const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-          if (res && res.code === 200) {
-              genderOptions.value = res.data || []
-              // 验证数据结构并过滤无效数据
-              genderOptions.value = genderOptions.value.filter(item => 
-                  item && item.genderCode !== undefined && item.genderCode !== null && 
-                  item.genderName !== undefined && item.genderName !== null
-              )
-          } else {
-              genderOptions.value = []
-          }
-      } catch (error) {
-          console.error('获取性别选项失败:', error)
-          genderOptions.value = []
-      }
+    const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
+    if (res && res.code === 200) {
+      genderOptions.value = res.data || []
+      // 验证数据结构并过滤无效数据
+      genderOptions.value = genderOptions.value.filter(item =>
+        item && item.genderCode !== undefined && item.genderCode !== null &&
+        item.genderName !== undefined && item.genderName !== null
+      )
+    } else {
+      genderOptions.value = []
+    }
   }
 
   // 获取国籍下拉数据
+  /**
+   * 获取国籍下拉数据（移除 try/catch，按返回码处理）
+   */
   const fetchNationalityDropdown = async () => {
-      try {
-          const res = await post(GET_NATIONALITY_DROPDOWN_API.GET_NATIONALITY_DROPDOWN, {})
-          if (res && res.code === 200) {
-              nationalityOptions.value = res.data || []
-              // 验证数据结构并过滤无效数据
-              nationalityOptions.value = nationalityOptions.value.filter(item => 
-                  item && item.nationId !== undefined && item.nationId !== null && 
-                  item.nationName !== undefined && item.nationName !== null
-              )
-          } else {
-              nationalityOptions.value = []
-          }
-      } catch (error) {
-          console.error('获取国籍选项失败:', error)
-          nationalityOptions.value = []
-      }
+    const res = await post(GET_NATIONALITY_DROPDOWN_API.GET_NATIONALITY_DROPDOWN, {})
+    if (res && res.code === 200) {
+      nationalityOptions.value = res.data || []
+      // 验证数据结构并过滤无效数据
+      nationalityOptions.value = nationalityOptions.value.filter(item =>
+        item && item.nationId !== undefined && item.nationId !== null &&
+        item.nationName !== undefined && item.nationName !== null
+      )
+    } else {
+      nationalityOptions.value = []
+    }
   }
 
   // 获取就业类型下拉数据
+  /**
+   * 获取就业类型下拉数据（移除 try/catch，按返回码处理）
+   * @param {boolean} setDefaultForm 是否设置编辑表单默认值
+   */
   const fetchLaborTypeDropdown = async (setDefaultForm = false) => {
-      try {
-          const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
-          if (res && res.code === 200) {
-              laborTypeOptions.value = res.data || []
-              // 验证数据结构并过滤无效数据
-              laborTypeOptions.value = laborTypeOptions.value.filter(item => 
-                  item && item.laborId !== undefined && item.laborId !== null && 
-                  item.laborName !== undefined && item.laborName !== null
-              )
-              // 设置编辑表单默认值 - 选择第一个未禁用的选项
-              if (setDefaultForm && laborTypeOptions.value.length > 0 && !editForm.laborId) {
-                  const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
-                  if (firstEnabledLaborType) {
-                      editForm.laborId = firstEnabledLaborType.laborId
-                  }
-              }
-          } else {
-              laborTypeOptions.value = []
-          }
-      } catch (error) {
-          console.error('获取就业类型失败:', error)
-          laborTypeOptions.value = []
+    const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
+    if (res && res.code === 200) {
+      laborTypeOptions.value = res.data || []
+      // 验证数据结构并过滤无效数据
+      laborTypeOptions.value = laborTypeOptions.value.filter(item =>
+        item && item.laborId !== undefined && item.laborId !== null &&
+        item.laborName !== undefined && item.laborName !== null
+      )
+      // 设置编辑表单默认值 - 选择第一个未禁用的选项
+      if (setDefaultForm && laborTypeOptions.value.length > 0 && !editForm.laborId) {
+        const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
+        if (firstEnabledLaborType) {
+          editForm.laborId = firstEnabledLaborType.laborId
+        }
       }
+    } else {
+      laborTypeOptions.value = []
+    }
   }
 
   // 获取员工实体
@@ -977,7 +972,10 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       })
   }
 
-  // 插入员工
+  /**
+   * 插入员工（新增）
+   * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+   */
   const insertUser = async () => {
       submitLoading.value = true
       const params = {
@@ -997,17 +995,22 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+          if (res.code !== 401 && res.code !== 403) {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
       }
       submitLoading.value = false
   }
   
-  // 更新员工
+  /**
+   * 更新员工（编辑）
+   * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+   */
   const updateUser = async () => {
       submitLoading.value = true
       const params = {
@@ -1026,17 +1029,22 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           dialogVisible.value = false
           fetchUserPages()
       } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+          if (res.code !== 401 && res.code !== 403) {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
       }
       submitLoading.value = false
   }
 
-  // 删除员工
+  /**
+   * 删除员工
+   * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+   */
   const deleteUser = async (userId) => {
       const params = {
           userId: userId
@@ -1053,12 +1061,14 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           })
           fetchUserPages()
       } else {
-          ElMessage({
-              message: res.message,
-              type: 'error',
-              plain: true,
-              showClose: true
-          })
+          if (res.code !== 401 && res.code !== 403) {
+              ElMessage({
+                  message: res.message,
+                  type: 'error',
+                  plain: true,
+                  showClose: true
+              })
+          }
       }
   }
 

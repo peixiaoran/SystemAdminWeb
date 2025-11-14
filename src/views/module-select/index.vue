@@ -113,7 +113,7 @@ const fetchModules = async () => {
     } else {
       ElMessage({
         message: res?.message || t('moduleSelect.moduleError'),
-        type: 'error',
+        type: 'warning',
         plain: true,
         showClose: true,
       })
@@ -121,7 +121,7 @@ const fetchModules = async () => {
   } catch (error) {
     ElMessage({
       message: t('moduleSelect.moduleErrorRetry'),
-      type: 'error',
+      type: 'warning',
       plain: true,
       showClose: true,
     })

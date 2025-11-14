@@ -116,6 +116,9 @@ const loginForm = reactive({
 
 // 在组件挂载后进行初始化
 onMounted(() => {
+  // 清除登录过期提示标志（不再显示警告提示）
+  localStorage.removeItem('sessionExpired')
+  
   // 重置表单验证状态
   nextTick(() => {
     loginFormRef.value?.resetFields()
@@ -235,12 +238,15 @@ const handleLogin = () => {
           }
         })
         .catch(error => {
-          ElMessage({
-            message: t('login.loginFailedTip'),
-            type: 'error',
-            plain: true,
-            showClose: true,
-          })
+          // 401错误已经在请求拦截器中处理，不再显示额外的错误提示
+          if (error?.response?.status !== 401 && error?.code !== 401) {
+            ElMessage({
+              message: t('login.loginFailedTip'),
+              type: 'error',
+              plain: true,
+              showClose: true,
+            })
+          }
           loading.value = false
         })
         .finally(() => {

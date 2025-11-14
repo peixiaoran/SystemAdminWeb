@@ -663,18 +663,16 @@
   }
 
   const fetchRoleModuleList = async (roleId) => {
-      try {
-          const params = { roleId: roleId }
-          const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, params)
-          if (res && res.code === 200) {
-              moduleTreeData.value = res.data || []
-              defaultCheckedModules.value = res.data
-                  .filter(item => item.isChecked)
-                  .map(item => item.moduleId)
-          }
-      } catch (error) {
+      const params = { roleId }
+      const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, params)
+      if (res && res.code === 200) {
+          moduleTreeData.value = res.data || []
+          defaultCheckedModules.value = (res.data || [])
+              .filter(item => item.isChecked)
+              .map(item => item.moduleId)
+      } else {
           ElMessage({
-              message: error.message || t('systembasicmgmt.role.fetchModuleListFail'),
+              message: res?.message || t('systembasicmgmt.role.fetchModuleListFail'),
               type: 'error',
               plain: true,
               showClose: true
@@ -682,43 +680,33 @@
       }
   }
 
-  const handleModuleCheckChange = () => {
-      // 处理模块选择变化
-  }
-
-  /**
-   * 保存模块配置
-   * 函数说明：直接保存当前勾选的模块配置并关闭对话框，不弹出确认或成功提示。
-   */
   const saveModuleConfig = async () => {
-      try {
-          const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
-          // 获取所有模块节点的ID
-          const getAllModuleIds = (nodes) => {
-              let ids = []
-              nodes.forEach(node => {
-                  ids.push(node.moduleId)
-                  if (node.children && node.children.length > 0) {
-                      ids = ids.concat(getAllModuleIds(node.children))
-                  }
-              })
-              return ids
-          }
-          const allModuleIds = getAllModuleIds(moduleTreeData.value)
-          const unCheckedNodes = allModuleIds.filter(id => !checkedNodes.includes(id))
+      const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
+      // 获取所有模块节点的ID
+      const getAllModuleIds = (nodes) => {
+          let ids = []
+          nodes.forEach(node => {
+              ids.push(node.moduleId)
+              if (node.children && node.children.length > 0) {
+                  ids = ids.concat(getAllModuleIds(node.children))
+              }
+          })
+          return ids
+      }
+      const allModuleIds = getAllModuleIds(moduleTreeData.value)
+      const unCheckedNodes = allModuleIds.filter(id => !checkedNodes.includes(id))
 
-          const params = {
-              roleId: currentRoleId.value,
-              SelectedModuleIds: checkedNodes,
-              UnSelectedModuleIds: unCheckedNodes
-          }
-          const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
-          if (res && res.code === 200) {
-              moduleDialogVisible.value = false
-          }
-      } catch (error) {
+      const params = {
+          roleId: currentRoleId.value,
+          SelectedModuleIds: checkedNodes,
+          UnSelectedModuleIds: unCheckedNodes
+      }
+      const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
+      if (res && res.code === 200) {
+          moduleDialogVisible.value = false
+      } else {
           ElMessage({
-              message: error.message,
+              message: res?.message,
               type: 'error',
               plain: true,
               showClose: true
@@ -735,21 +723,19 @@
   }
 
   const fetchRoleModuleDropdown = async () => {
-      try {
-          const params = { roleId: currentRoleId.value }
-          const res = await post(GET_ROLE_MODULE_DROPDOWN_API.GET_ROLE_MODULE_DROPDOWN, params)
-          if (res && res.code === 200) {
-              moduleOptions.value = res.data || []
-              // 默认选中第一个有效值
-              const firstValidModule = moduleOptions.value.find(item => !item.disabled)
-              if (firstValidModule) {
-                  selectedModuleId.value = firstValidModule.moduleId
-                  await fetchRoleMenuTree(currentRoleId.value, firstValidModule.moduleId)
-              }
+      const params = { roleId: currentRoleId.value }
+      const res = await post(GET_ROLE_MODULE_DROPDOWN_API.GET_ROLE_MODULE_DROPDOWN, params)
+      if (res && res.code === 200) {
+          moduleOptions.value = res.data || []
+          // 默认选中第一个有效值
+          const firstValidModule = moduleOptions.value.find(item => !item.disabled)
+          if (firstValidModule) {
+              selectedModuleId.value = firstValidModule.moduleId
+              await fetchRoleMenuTree(currentRoleId.value, firstValidModule.moduleId)
           }
-      } catch (error) {
+      } else {
           ElMessage({
-              message: error.message || t('systembasicmgmt.role.fetchModuleDropdownFail'),
+              message: res?.message || t('systembasicmgmt.role.fetchModuleDropdownFail'),
               type: 'error',
               plain: true,
               showClose: true
@@ -764,26 +750,29 @@
   }
 
   const fetchRoleMenuTree = async (roleId, moduleId) => {
-      try {
-          const params = { roleId: roleId, moduleId: moduleId }
-          const res = await post(GET_ROLE_MENU_TREE_API.GET_ROLE_MENU_TREE, params)
-          if (res && res.code === 200) {
-              menuTreeData.value = res.data || []
-              // 获取完全选中的菜单ID
-              const checkedIds = getCheckedMenuIds(res.data)
-              defaultCheckedMenus.value = checkedIds
-              
-              // 使用nextTick确保DOM更新后设置选中状态
-              nextTick(() => {
-                  if (menuTreeRef.value) {
-                      // 设置选中的节点
-                      menuTreeRef.value.setCheckedKeys(checkedIds)
-                  }
-              })
-          }
-      } catch (error) {
+      /**
+       * 获取菜单树数据（无 try/catch，按返回码处理）
+       * @param {string|number} roleId 角色ID
+       * @param {string|number} moduleId 模块ID
+       */
+      const params = { roleId, moduleId }
+      const res = await post(GET_ROLE_MENU_TREE_API.GET_ROLE_MENU_TREE, params)
+      if (res && res.code === 200) {
+          menuTreeData.value = res.data || []
+          // 获取完全选中的菜单ID
+          const checkedIds = getCheckedMenuIds(res.data || [])
+          defaultCheckedMenus.value = checkedIds
+          
+          // 使用nextTick确保DOM更新后设置选中状态
+          nextTick(() => {
+              if (menuTreeRef.value) {
+                  // 设置选中的节点
+                  menuTreeRef.value.setCheckedKeys(checkedIds)
+              }
+          })
+      } else {
           ElMessage({
-              message: error.message || t('systembasicmgmt.role.fetchMenuTreeFail'),
+              message: res?.message || t('systembasicmgmt.role.fetchMenuTreeFail'),
               type: 'error',
               plain: true,
               showClose: true
@@ -825,23 +814,27 @@
    * 函数说明：直接保存当前勾选的菜单配置并关闭对话框，不弹出确认或成功提示。
    */
   const saveMenuConfig = async () => {
-      try {
-          const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
-          const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
-          const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
+      const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
+      const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
+      const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
 
-          const params = {
-              roleId: currentRoleId.value,
-              moduleId: selectedModuleId.value,
-              SelectedMenuIds: allMenuIds
-          }
-          const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
-          if (res && res.code === 200) {
-              menuDialogVisible.value = false
-          }
-      } catch (error) {
+      const params = {
+          roleId: currentRoleId.value,
+          moduleId: selectedModuleId.value,
+          SelectedMenuIds: allMenuIds
+      }
+      const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
+      if (res && res.code === 200) {
+          menuDialogVisible.value = false
           ElMessage({
-              message: error.message || t('systembasicmgmt.role.saveMenuFail'),
+              message: res?.message,
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
+      } else {
+          ElMessage({
+              message: res?.message || t('systembasicmgmt.role.saveMenuFail'),
               type: 'error',
               plain: true,
               showClose: true

@@ -207,24 +207,13 @@ const fetchDepartmentLevelList = async () => {
     pageSize: pagination.pageSize
   }
 
-  const res = await post(GET_DEPARTMENT_LEVEL_LIST_API.GET_DEPARTMENT_LEVEL_LIST, params).catch(error => {
-    console.error('获取部门级别列表失败:', error)
-    ElMessage({
-      message: t('systembasicmgmt.departmentLevel.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
-    departmentLevelList.value = []
-    return null
-  })
-
+  const res = await post(GET_DEPARTMENT_LEVEL_LIST_API.GET_DEPARTMENT_LEVEL_LIST, params)
   if (res && res.code === 200) {
     departmentLevelList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else if (res) {
     ElMessage({
-      message: res.message || t('systembasicmgmt.departmentLevel.getFailed'),
+      message: res.message,
       type: 'error',
       plain: true,
       showClose: true

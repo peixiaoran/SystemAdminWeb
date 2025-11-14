@@ -405,23 +405,23 @@ export default {
       }
     }
 
-    // 获取个人信息
+    /**
+     * 获取个人信息（查询）
+     * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+     */
     const getPersonalInfo = async () => {
-      try {
-        loading.value = true
-        const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
-        
-        if (response.code === 200 && response.data) {
-          Object.assign(personalInfoForm, response.data)
-          // 密码字段在查询时设置为空字符串
-          personalInfoForm.password = ''
-          // 设置头像显示
-          if (response.data.avatarAddress) {
-            avatarUrl.value = response.data.avatarAddress
-          }
-          Object.assign(originalFormData, response.data)
-          originalFormData.password = ''
-        } else {
+      loading.value = true
+      const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
+      if (response.code === 200 && response.data) {
+        Object.assign(personalInfoForm, response.data)
+        personalInfoForm.password = ''
+        if (response.data.avatarAddress) {
+          avatarUrl.value = response.data.avatarAddress
+        }
+        Object.assign(originalFormData, response.data)
+        originalFormData.password = ''
+      } else {
+        if (response.code !== 401 && response.code !== 403) {
           ElMessage({
             message: response.message || t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
             type: 'error',
@@ -429,159 +429,123 @@ export default {
             showClose: true
           })
         }
-       } catch (error) {
-         console.error('获取个人信息失败:', error)
-         ElMessage({
-           message: t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
-           type: 'error',
-           plain: true,
-           showClose: true
-         })
-       } finally {
-         loading.value = false
-       }
-     }
+      }
+      loading.value = false
+    }
 
-     // 获取部门下拉框数据
+     /**
+      * 获取部门下拉（查询）
+      * 无 try/catch；异常由请求封装返回标准对象
+      */
      const getDepartmentDropdown = async () => {
-       try {
-         const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
-         if (response.code === 200 && response.data) {
-           departmentOptions.value = response.data
-         }
-       } catch (error) {
-         console.error('获取部门下拉框失败:', error)
+       const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
+       if (response.code === 200 && response.data) {
+         departmentOptions.value = response.data
+       } else {
+         departmentOptions.value = []
        }
      }
 
-     // 获取职业下拉框数据
+     /**
+      * 获取职位下拉（查询）
+      */
      const getPositionDropdown = async () => {
-       try {
-         const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
-         if (response.code === 200 && response.data) {
-           positionOptions.value = response.data
-         }
-       } catch (error) {
-         console.error('获取职业下拉框失败:', error)
+       const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
+       if (response.code === 200 && response.data) {
+         positionOptions.value = response.data
+       } else {
+         positionOptions.value = []
        }
      }
 
-     // 获取角色下拉框数据
+     /**
+      * 获取角色下拉（查询）
+      */
      const getRoleDropdown = async () => {
-       try {
-         const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
-         if (response.code === 200 && response.data) {
-           roleOptions.value = response.data
-         }
-       } catch (error) {
-         console.error('获取角色下拉框失败:', error)
+       const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
+       if (response.code === 200 && response.data) {
+         roleOptions.value = response.data
+       } else {
+         roleOptions.value = []
        }
      }
 
-     // 获取性别下拉框数据
+     /**
+      * 获取性别下拉（查询）
+      */
      const getGenderDropdown = async () => {
-       try {
-         const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-         if (response.code === 200 && response.data) {
-           genderOptions.value = response.data
-         }
-       } catch (error) {
-         console.error('获取性别下拉框失败:', error)
+       const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
+       if (response.code === 200 && response.data) {
+         genderOptions.value = response.data
+       } else {
+         genderOptions.value = []
        }
      }
 
-     // 获取员工职业下拉框数据
+     /**
+      * 获取用工类型下拉（查询）
+      */
      const getLaborTypeDropdown = async () => {
-       try {
-         const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
-         if (response.code === 200 && response.data) {
-           laborTypeOptions.value = response.data || []
-           // 过滤掉无效数据
-           laborTypeOptions.value = laborTypeOptions.value.filter(item => 
-             item && item.laborId !== undefined && item.laborId !== null && 
-             item.laborName !== undefined && item.laborName !== null
-           )
-         } else {
-           laborTypeOptions.value = []
-         }
-       } catch (error) {
-         console.error('获取员工职业下拉框失败:', error)
+       const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
+       if (response.code === 200 && response.data) {
+         laborTypeOptions.value = (response.data || []).filter(item => 
+           item && item.laborId !== undefined && item.laborId !== null &&
+           item.laborName !== undefined && item.laborName !== null
+         )
+       } else {
          laborTypeOptions.value = []
        }
      }
 
-     // 保存个人信息
+     /**
+      * 保存个人信息（编辑）
+      * 移除 try/catch；错误处理遵循全局策略：code 401/403 不提示
+      */
      const handleSave = async () => {
-       // 先进行表单验证，如果验证失败直接返回
-       try {
-         const valid = await personalInfoFormRef.value.validate()
-         if (!valid) {
-           // 验证失败时不显示额外的错误提示，Element Plus会自动显示字段验证错误
-           return
-         }
-       } catch (validationError) {
-         // 验证过程中出现错误（如验证规则执行失败），不显示保存失败提示
-         console.error('表单验证失败:', validationError)
-         return
+       const valid = await personalInfoFormRef.value.validate().catch(() => false)
+       if (!valid) return
+
+       saving.value = true
+       const updateData = {
+         userId: personalInfoForm.userId,
+         userNameCn: personalInfoForm.userNameCn,
+         userNameEn: personalInfoForm.userNameEn,
+         email: personalInfoForm.email,
+         phoneNumber: personalInfoForm.phoneNumber,
+         PassWord: personalInfoForm.password,
+         avatarAddress: personalInfoForm.avatarAddress,
+         isRealtimeNotification: personalInfoForm.isRealtimeNotification,
+         isScheduledNotification: personalInfoForm.isScheduledNotification
        }
 
-       // 验证通过后进行保存操作
-       try {
-         saving.value = true
-         
-         // 只提交允许修改的字段
-         const updateData = {
-           userId: personalInfoForm.userId,
-           userNameCn: personalInfoForm.userNameCn,
-           userNameEn: personalInfoForm.userNameEn,
-           email: personalInfoForm.email,
-           phoneNumber: personalInfoForm.phoneNumber,
-           PassWord: personalInfoForm.password,
-           avatarAddress: personalInfoForm.avatarAddress,
-           isRealtimeNotification: personalInfoForm.isRealtimeNotification,
-           isScheduledNotification: personalInfoForm.isScheduledNotification
+       const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
+       if (response.code === 200) {
+         ElMessage({
+           message: response.message,
+           type: 'success',
+           plain: true,
+           showClose: true
+         })
+
+         if (personalInfoForm.password && personalInfoForm.password.trim() !== '') {
+           await userStore.logout()
+           router.push('/login')
+           saving.value = false
+           return
          }
 
-         const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)
-         
-         if (response.code === 200) {
+         await getPersonalInfo()
+       } else {
+         if (response.code !== 401 && response.code !== 403) {
            ElMessage({
-             message: response.message,
-             type: 'success',
-             plain: true,
-             showClose: true
-           })
-           
-           // 如果修改了密码，则退出系统
-           if (personalInfoForm.password && personalInfoForm.password.trim() !== '') {
-             // 清空用户store和localStorage
-             await userStore.logout()
-             // 跳转到登录页面
-             router.push('/login')
-             return
-           }
-           
-           // 重新获取最新数据
-           await getPersonalInfo()
-         } else {
-           ElMessage({
-             message: response.message,
+             message: response.message || t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
              type: 'error',
              plain: true,
              showClose: true
            })
          }
-       } catch (error) {
-         console.error('保存个人信息失败:', error)
-         ElMessage({
-           message: t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
-           type: 'error',
-           plain: true,
-           showClose: true
-         })
-       } finally {
-         saving.value = false
        }
+       saving.value = false
      }
 
      // 重置表单

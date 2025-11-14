@@ -424,6 +424,31 @@ const pmenuRoutes = [
               }
             },
           ]
+        },
+         // 表单基础信息子模块 - 使用嵌套结构
+        {
+          path: 'form-operate',
+          name: 'FormOperate',
+          redirect: '/formbusiness/form-operate',
+          meta: { 
+            title: 'route.formoperate',
+            icon: 'Notebook',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'applyform',
+              name: 'ApplyForm',
+              component: () => import('../views/formbusiness/form-operate/applyform.vue'),
+              meta: { 
+                title: 'route.applyform', 
+                icon: 'DocumentAdd',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
         }
       ]
   },

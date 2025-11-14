@@ -172,42 +172,35 @@ const rules = {
   ]
 }
 
-// 获取职业列表
+/**
+ * 获取职业列表（查询）
+ * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+ */
 const getLaborList = async () => {
   loading.value = true
-  try {
   const params = {
     laborName: searchForm.laborName,
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     totalCount: pagination.total
   }
-  
+
   const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
   if (response.code === 200) {
     laborList.value = response.data || []
     pagination.totalCount = response.totalCount || 0
   } else {
-    ElMessage({
-      message: response.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    if (response.code !== 401 && response.code !== 403) {
+      ElMessage({
+        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
     laborList.value = []
   }
-  } catch (error) {
-    console.error('获取职业列表失败:', error)
-    ElMessage({
-      message: t('systembasicmgmt.userLabor.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
-    laborList.value = []
-  } finally {
-    loading.value = false
-  }
+  loading.value = false
 }
 
 // 使用通用防抖工具
@@ -252,46 +245,35 @@ const handleAdd = () => {
   })
 }
 
-// 编辑
+/**
+ * 编辑职业（查询实体）
+ * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
+ */
 const handleEdit = async (row) => {
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
-  
-  try {
-    const params = {
-      laborId: row.laborId
-    }
-    
-    const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, params)
-    
-    if (response.code === 200) {
-      const data = response.data
-      form.laborId = data.laborId
-      form.laborNameCn = data.laborNameCn
-      form.laborNameEn = data.laborNameEn
-      form.laborDescription = data.laborDescription
-    } else {
+
+  const params = { laborId: row.laborId }
+  const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, params)
+  if (response.code === 200) {
+    const data = response.data
+    form.laborId = data.laborId
+    form.laborNameCn = data.laborNameCn
+    form.laborNameEn = data.laborNameEn
+    form.laborDescription = data.laborDescription
+  } else {
+    if (response.code !== 401 && response.code !== 403) {
       ElMessage({
-        message: response.message,
+        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
         type: 'error',
         plain: true,
         showClose: true
       })
-      dialogVisible.value = false
     }
-  } catch (error) {
-    console.error('获取职业详情失败:', error)
-    ElMessage({
-      message: t('systembasicmgmt.userLabor.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
     dialogVisible.value = false
-  } finally {
-    dialogLoading.value = false
   }
+  dialogLoading.value = false
 }
 
 // 删除
@@ -324,12 +306,14 @@ const handleDelete = async (row) => {
       })
       getLaborList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      if (response.code !== 401 && response.code !== 403) {
+        ElMessage({
+          message: response.message,
+          type: 'error',
+          plain: true,
+          showClose: true
+        })
+      }
     }
   } catch (error) {
     if (error !== 'cancel') {
@@ -346,55 +330,46 @@ const handleDelete = async (row) => {
   }
 }
 
-// 提交表单
+/**
+ * 提交表单（新增/编辑）
+ * 表单验证使用 Promise 捕获；错误处理遵循全局策略：code 401/403 不提示
+ */
 const handleSubmit = async () => {
   if (!formRef.value) return
 
-  try {
-    await formRef.value.validate()
-    
-    submitLoading.value = true
-    
-    const params = {
-      laborId: form.laborId,
-      laborNameCn: form.laborNameCn,
-      laborNameEn: form.laborNameEn,
-      laborDescription: form.laborDescription
-    }
-    
-    const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
-    const response = await post(api, params)
-    
-    if (response.code === 200) {
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
+
+  submitLoading.value = true
+  const params = {
+    laborId: form.laborId,
+    laborNameCn: form.laborNameCn,
+    laborNameEn: form.laborNameEn,
+    laborDescription: form.laborDescription
+  }
+
+  const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
+  const response = await post(api, params)
+  if (response.code === 200) {
+    ElMessage({
+      message: response.message,
+      type: 'success',
+      plain: true,
+      showClose: true
+    })
+    dialogVisible.value = false
+    getLaborList()
+  } else {
+    if (response.code !== 401 && response.code !== 403) {
       ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      dialogVisible.value = false
-      getLaborList()
-    } else {
-      ElMessage({
-        message: response.message,
+        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
       })
     }
-   } catch (error) {
-     if (error !== false) {
-       console.error('提交表单失败:', error)
-       ElMessage({
-         message: t('systembasicmgmt.userLabor.operationFailed'),
-         type: 'error',
-         plain: true,
-         showClose: true
-       })
-     }
-   } finally {
-     submitLoading.value = false
-   }
+  }
+  submitLoading.value = false
 }
 
 // 重置表单

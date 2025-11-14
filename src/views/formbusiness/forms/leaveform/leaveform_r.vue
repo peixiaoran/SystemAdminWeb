@@ -1,42 +1,92 @@
 <template>
   <div class="leave-form-page">
     <el-card class="leave-form-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>{{ t('formbusiness.leaveform.title') }}</span>
-        </div>
-      </template>
+      <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
+      <div class="system-title-row">
+        <h2 class="system-title">SystemAdmin 管理系统</h2>
+      </div>
+      
+      <!-- 第二行：请假单文字（独占一行居中） -->
+      <div class="form-title-row">
+        <h3 class="form-title">{{ t('formbusiness.leaveform.title') }}</h3>
+      </div>
 
-      <!-- 表单主体 -->
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" class="leave-form" status-icon>
+      <!-- 表单主体（表格化排版） -->
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" status-icon>
 
         <!-- 基本信息 -->
         <el-row :gutter="16" class="form-row">
           <el-col :span="12">
-            <el-form-item :label="t('formbusiness.leaveform.leaveId')" prop="leaveId">
-              <el-input v-model="form.leaveId" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveId')" disabled />
+            <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
+              <el-input v-model="form.formNo" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveNo')" disabled />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="t('formbusiness.leaveform.leaveNo')" prop="leaveNo">
-              <el-input v-model="form.leaveNo" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveNo')" clearable />
+            <el-form-item :label="t('formbusiness.leaveform.description')" prop="description">
+              <el-input v-model="form.description" :placeholder="t('formbusiness.leaveform.pleaseInputDescription')" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="16" class="form-row">
           <el-col :span="12">
-            <el-form-item :label="t('formbusiness.leaveform.leaveApplicantId')" prop="leaveApplicantId">
-              <el-select v-model="form.leaveApplicantId" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveApplicant')" filterable clearable>
-                <el-option v-for="user in applicantOptions" :key="user.value" :label="user.label" :value="user.value" />
+            <el-form-item :label="t('formbusiness.leaveform.importanceCode')" prop="importanceCode">
+              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" filterable clearable>
+                <el-option v-for="opt in importanceOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 申请人信息（只读） -->
+        <el-row :gutter="16" class="form-row">
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')" prop="applicantUserNo">
+              <el-input v-model="form.applicantUserNo" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantUserName')" prop="applicantUserName">
+              <el-input v-model="form.applicantUserName" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantDeptName')" prop="applicantDeptName">
+              <el-input v-model="form.applicantDeptName" disabled />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="16" class="form-row">
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantPositionNo')" prop="applicantPositionNo">
+              <el-input v-model="form.applicantPositionNo" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantPositionName')" prop="applicantPositionName">
+              <el-input v-model="form.applicantPositionName" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applicantPhone')" prop="applicantPhone">
+              <el-input v-model="form.applicantPhone" disabled />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 请假信息 -->
+        <el-row :gutter="16" class="form-row">
+          <el-col :span="12">
+            <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveTypeCode">
+              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" filterable clearable>
+                <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="t('formbusiness.leaveform.leaveTypeId')" prop="leaveTypeId">
-              <el-select v-model="form.leaveTypeId" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" filterable clearable>
-                <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
-              </el-select>
+            <el-form-item :label="t('formbusiness.leaveform.leaveHandoverUserName')" prop="leaveHandoverUserName">
+              <el-input v-model="form.leaveHandoverUserName" :placeholder="t('formbusiness.leaveform.pleaseInputHandoverUserName')" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -83,16 +133,9 @@
           </el-col>
         </el-row>
 
-        <!-- 交接与事由 -->
+        <!-- 事由 -->
         <el-row :gutter="16" class="form-row">
-          <el-col :span="12">
-            <el-form-item :label="t('formbusiness.leaveform.leaveHandoverUserId')" prop="leaveHandoverUserId">
-              <el-select v-model="form.leaveHandoverUserId" :placeholder="t('formbusiness.leaveform.pleaseSelectHandoverUser')" filterable clearable>
-                <el-option v-for="user in handoverOptions" :key="user.value" :label="user.label" :value="user.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="leaveReason">
               <el-input v-model="form.leaveReason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" />
             </el-form-item>
@@ -111,9 +154,11 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
+import { post } from '@/utils/request'
+import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DROPDOWN_API, GET_IMPORTANCE_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
 
 // 获取翻译函数
 const { t } = i18n.global
@@ -121,48 +166,40 @@ const { t } = i18n.global
 // 表单引用
 const formRef = ref(null)
 
-// 表单模型
+// 默认formtypeId（需求指定）
+const defaultFormTypeId = '1987217256446300160'
+
+// 表单模型（与Need.md一致）
 const form = reactive({
-  leaveId: '',
-  leaveNo: '',
-  leaveApplicantId: '',
-  leaveTypeId: '',
+  formId: '',
+  formNo: '',
+  description: '',
+  importanceCode: '',
+  applicantUserNo: '',
+  applicantUserName: '',
+  applicantDeptName: '',
+  applicantPositionNo: '',
+  applicantPositionName: '',
+  applicantPhone: '',
+  leaveTypeCode: '',
   leaveReason: '',
   leaveStartTime: '',
   leaveEndTime: '',
   leaveDays: 0,
   leaveHours: 0,
-  leaveHandoverUserId: ''
+  leaveHandoverUserName: ''
 })
 
-// 下拉选项（占位数据，可后续替换为接口）
-const applicantOptions = [
-  { label: 'U1001 - Alice', value: 'U1001' },
-  { label: 'U1002 - Bob', value: 'U1002' },
-  { label: 'U1003 - Carol', value: 'U1003' }
-]
-
-const handoverOptions = [
-  { label: 'U2001 - David', value: 'U2001' },
-  { label: 'U2002 - Emily', value: 'U2002' },
-  { label: 'U2003 - Frank', value: 'U2003' }
-]
-
-const leaveTypeOptions = [
-  { label: t('formbusiness.leaveform.types.annual'), value: 'annual' },
-  { label: t('formbusiness.leaveform.types.sick'), value: 'sick' },
-  { label: t('formbusiness.leaveform.types.personal'), value: 'personal' }
-]
+// 下拉选项（来自接口）
+const leaveTypeOptions = ref([])
+const importanceOptions = ref([])
 
 // 校验规则
 const rules = {
-  leaveNo: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
-  ],
-  leaveApplicantId: [
+  importanceCode: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
-  leaveTypeId: [
+  leaveTypeCode: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
   leaveStartTime: [
@@ -209,35 +246,134 @@ function handleTimeChange () {
 }
 
 /**
+ * 初始化请假单
+ * 入参：固定formtypeId；出参：绑定返回的data到表单
+ * 错误处理：401/403不提示，其他错误提示加载失败
+ */
+async function initLeaveForm () {
+  try {
+    // 创建FormData对象，使用FormFrom格式而不是JSON
+    const formData = new FormData()
+    formData.append('formTypeId', defaultFormTypeId)
+    
+    const res = await post(INIT_LEAVEFORM_API, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    if (!res) return
+    if (res.code !== 200) {
+      ElMessage.error(res.message || t('messages.loadError'))
+      return
+    }
+    const data = res.data || {}
+    Object.assign(form, {
+      formId: data.formId || '',
+      formNo: data.formNo || '',
+      description: data.description || '',
+      importanceCode: data.importanceCode || '',
+      applicantUserNo: data.applicantUserNo || '',
+      applicantUserName: data.applicantUserName || '',
+      applicantDeptName: data.applicantDeptName || '',
+      applicantPositionNo: data.applicantPositionNo || '',
+      applicantPositionName: data.applicantPositionName || '',
+      applicantPhone: data.applicantPhone || '',
+      leaveTypeCode: data.leaveTypeCode || '',
+      leaveReason: data.leaveReason || '',
+      leaveStartTime: data.leaveStartTime || '',
+      leaveEndTime: data.leaveEndTime || '',
+      leaveDays: data.leaveDays ?? 0,
+      leaveHours: data.leaveHours ?? 0,
+      leaveHandoverUserName: data.leaveHandoverUserName || ''
+    })
+  } catch (err) {
+    // 网络/异常错误提示
+    ElMessage.error(t('messages.networkError'))
+  }
+}
+
+/**
+ * 获取请假类型下拉
+ * 入参：无；出参：转换为{label,value}数组
+ * 错误处理：401/403不提示，其他错误提示加载失败
+ */
+async function getLeaveTypeOptions () {
+  try {
+    const res = await post(GET_LEAVEFORM_DROPDOWN_API, {})
+    if (!res) return
+    if (res.code !== 200) {
+      ElMessage.error(res.message || t('messages.loadError'))
+      return
+    }
+    const list = Array.isArray(res.data) ? res.data : []
+    leaveTypeOptions.value = list.map(item => ({
+      label: item.leaveTypeName,
+      value: String(item.leaveTypeCode)
+    }))
+  } catch (err) {
+    ElMessage.error(t('messages.networkError'))
+  }
+}
+
+/**
+ * 获取重要性下拉
+ * 入参：无；出参：转换为{label,value}数组
+ * 错误处理：401/403不提示，其他错误提示加载失败
+ */
+async function getImportanceOptions () {
+  try {
+    const res = await post(GET_IMPORTANCE_DROPDOWN_API, {})
+    if (!res) return
+    if (res.code !== 200) {
+      ElMessage.error(res.message || t('messages.loadError'))
+      return
+    }
+    const list = Array.isArray(res.data) ? res.data : []
+    importanceOptions.value = list.map(item => ({
+      label: item.importanceName,
+      value: String(item.importanceCode)
+    }))
+  } catch (err) {
+    ElMessage.error(t('messages.networkError'))
+  }
+}
+
+/**
  * 重置表单
- * 说明：清空表单并重置校验状态
+ * 说明：清空用户可编辑字段并重置校验状态
  */
 function onReset () {
-  form.leaveId = ''
-  form.leaveNo = ''
-  form.leaveApplicantId = ''
-  form.leaveTypeId = ''
+  form.description = ''
+  form.importanceCode = ''
+  form.leaveTypeCode = ''
   form.leaveReason = ''
   form.leaveStartTime = ''
   form.leaveEndTime = ''
   form.leaveDays = 0
   form.leaveHours = 0
-  form.leaveHandoverUserId = ''
+  form.leaveHandoverUserName = ''
   formRef.value?.clearValidate()
 }
 
 /**
- * 提交请假单
- * 说明：执行校验，通过后提交（占位实现）
+ * 提交请假单（占位）
+ * 说明：执行校验，通过后仅提示成功（后续可接入保存接口）
  */
 function onSubmit () {
   formRef.value?.validate((valid) => {
     if (!valid) return
-    // 此处可替换为真实提交逻辑
-    // console.log('Submit payload:', { ...form })
-    ElMessage.success(t('formbusiness.messages.saveSuccess'))
+    ElMessage.success(t('messages.saveSuccess'))
   })
 }
+
+/**
+ * 页面挂载
+ * 说明：加载初始化数据与下拉
+ */
+onMounted(async () => {
+  await Promise.all([getLeaveTypeOptions(), getImportanceOptions()])
+  await initLeaveForm()
+})
 </script>
 
 <style scoped>
@@ -245,15 +381,46 @@ function onSubmit () {
   padding: 16px;
 }
 .leave-form-card {
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
 }
+
+.system-title-row {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.system-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  margin: 0;
+}
+
+.form-title-row {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.form-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #606266;
+  margin: 0;
+}
+
 .form-row {
   margin-bottom: 8px;
 }
+
 .form-actions {
   margin-top: 12px;
   display: flex;
   gap: 12px;
+  justify-content: center;
+}
+
+.leave-form {
+  padding: 0 20px;
 }
 </style>

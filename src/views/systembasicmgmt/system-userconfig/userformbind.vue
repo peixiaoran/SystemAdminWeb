@@ -287,40 +287,35 @@ const fetchUserFormBindViewTree = async (userId) => {
     const params = { userId }
     const res = await post(GET_USER_FORM_BIND_VIEW_TREE_API.GET_USER_FORM_BIND_VIEW_TREE, params)
     if (res && res.code === 200) {
-      formTreeData.value = res.data || []
+      // 转换数据结构：将 formTypeChildren 转换为 children
+      const transformTreeData = (nodes) => {
+        return nodes.map(node => ({
+          ...node,
+          children: node.formTypeChildren ? transformTreeData(node.formTypeChildren) : []
+        }))
+      }
+      
+      formTreeData.value = transformTreeData(res.data || [])
 
-      // 提取已选中的节点 - 按照规则：叶子节点isChecked=true加入；父节点只有当所有子节点都勾选且本身isChecked=true才加入
+      // 提取已选中的节点 - 按照规则：叶子节点isChecked=true加入；父节点isChecked=true时加入，不考虑子节点状态
       const extractCheckedKeys = (nodes) => {
         const keys = []
 
-        const dfs = (node) => {
-          const children = node.children || []
-
-          if (children.length === 0) {
-            // 叶子节点：isChecked=true时加入
+        const traverse = (nodeList) => {
+          nodeList.forEach(node => {
+            // 如果节点本身被选中，就加入选中列表
             if (node.isChecked === true) {
               keys.push(node.formGroupTypeId)
             }
-            return !!node.isChecked
-          }
-
-          // 父节点：检查所有子节点是否都勾选
-          let allChildrenChecked = true
-          for (const child of children) {
-            const childAllChecked = dfs(child)
-            allChildrenChecked = allChildrenChecked && childAllChecked
-          }
-
-          // 只有当所有子节点都勾选且本身isChecked=true才加入父节点
-          if (allChildrenChecked && node.isChecked === true) {
-            keys.push(node.formGroupTypeId)
-            return true
-          }
-
-          return false
+            
+            // 递归处理子节点
+            if (node.children && node.children.length > 0) {
+              traverse(node.children)
+            }
+          })
         }
 
-        ; (nodes || []).forEach(dfs)
+        traverse(nodes || [])
         return keys
       }
 

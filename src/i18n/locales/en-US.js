@@ -328,7 +328,12 @@ export default {
       getFailed: 'Failed to get data'
     },
     
+    // Form category page specific
     formtype: {
+        formTypeName: 'Type Name',
+        formName: 'Form Name',
+        apply: 'Apply',
+        formTypeNameCn: 'Chinese Name',
       formTypeName: 'Form Type Name',
       formTypeNameCn: 'Chinese Name',
       formTypeNameEn: 'English Name',
@@ -362,6 +367,17 @@ export default {
     // Leave Form Page Specific
     leaveform: {
       title: 'Leave Application',
+      formNo: 'Form Number',
+      description: 'Description',
+      importanceCode: 'Importance Level',
+      applicantUserNo: 'Applicant Number',
+      applicantUserName: 'Applicant Name',
+      applicantDeptName: 'Applicant Department',
+      applicantPositionNo: 'Applicant Position Number',
+      applicantPositionName: 'Applicant Position Name',
+      applicantPhone: 'Applicant Phone',
+      leaveTypeCode: 'Leave Type',
+      leaveHandoverUserName: 'Handover User Name',
       leaveId: 'Leave ID',
       leaveNo: 'Leave No.',
       leaveApplicantId: 'Applicant',
@@ -377,8 +393,11 @@ export default {
         sick: 'Sick Leave',
         personal: 'Personal Leave'
       },
-      pleaseInputLeaveId: 'Please enter leave ID',
       pleaseInputLeaveNo: 'Please enter leave number',
+      pleaseInputDescription: 'Please enter description',
+      pleaseSelectImportance: 'Please select importance level',
+      pleaseInputHandoverUserName: 'Please enter handover user name',
+      pleaseInputLeaveId: 'Please enter leave ID',
       pleaseSelectLeaveApplicant: 'Please select applicant',
       pleaseSelectLeaveType: 'Please select leave type',
       pleaseInputLeaveReason: 'Please enter leave reason',
@@ -490,9 +509,10 @@ export default {
     passwordRequired: 'Please enter password',
     factoryRequired: 'Please select factory',
     loginFailed: 'Login Failed',
-    loginFailedTip: 'Login request failed, please try again later',
-    passwordExpired: 'Password has expired, redirecting to password change page',
-    accountLocked: 'Account has been locked, redirecting to unlock page',
+      loginFailedTip: 'Login request failed, please try again later',
+      passwordExpired: 'Password has expired, redirecting to password change page',
+      accountLocked: 'Account has been locked, redirecting to unlock page',
+      sessionExpired: 'Session expired, please log in again',
     factories: {
       ESK: 'Kunshan Yisheng',
       ETW: 'Yisheng Taiwan',
@@ -600,6 +620,8 @@ export default {
     formBasicInfo: 'Form Basic Info',
     formGroup: 'Form Group',
     formType: 'Form Type',
+    formoperate: 'Form Operation',
+    applyform: 'Application Form',
     controlInfo: 'Control Info',
     eventInfo: 'Event Info',
     personalInfoTitle: 'Personal Profile',

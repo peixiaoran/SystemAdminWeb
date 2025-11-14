@@ -482,9 +482,23 @@
       fetchSMenuPages()
   }
 
-  // 重置搜索条件（只重置输入字段，保留下拉框值）
-const handleReset = () => {
+  // 重置搜索条件
+const handleReset = async () => {
+  // 重置所有输入字段
   filters.menuName = ''
+  filters.menuCode = ''
+  filters.menuNameEn = ''
+  filters.menuUrl = ''
+  
+  // 重置模块下拉框到第一个未禁用的选项
+  if (moduleDropList.value.length > 0) {
+    const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
+    if (firstEnabledModule) {
+      filters.moduleId = firstEnabledModule.moduleId
+      // 获取对应的父菜单列表
+      await fetchFilterPMenuDrop()
+    }
+  }
   
   // 重置后自动触发查询
   pagination.pageIndex = 1
