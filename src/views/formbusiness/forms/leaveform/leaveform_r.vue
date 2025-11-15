@@ -1,6 +1,69 @@
 <template>
   <div class="leave-form-page">
-    <el-card class="leave-form-card" shadow="never">
+    <!-- 简单Skeleton骨架屏 -->
+    <el-card v-if="loading" class="leave-form-card" shadow="never">
+      <div class="system-title-row">
+        <el-skeleton animated>
+          <template #template>
+            <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+          </template>
+        </el-skeleton>
+      </div>
+      
+      <div class="form-title-row">
+        <el-skeleton animated>
+          <template #template>
+            <el-skeleton-item variant="text" style="width: 150px; height: 28px;" />
+          </template>
+        </el-skeleton>
+      </div>
+      
+      <el-divider style="margin: 22px 0;"></el-divider>
+      
+      <!-- 简化表单内容骨架 -->
+      <div style="padding: 0 16px;">
+        <el-skeleton animated>
+          <template #template>
+            <!-- 基本信息行 -->
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+            </div>
+            
+            <!-- 分割线 -->
+            <el-skeleton-item variant="text" style="width: 100%; height: 1px; margin: 16px 0;" />
+            
+            <!-- 请假信息 -->
+            <el-skeleton-item variant="text" style="width: 200px; height: 32px; margin-bottom: 24px;" />
+            
+            <!-- 时间选择器 -->
+            <el-skeleton-item variant="text" style="width: 400px; height: 32px; margin-bottom: 24px;" />
+            
+            <!-- 时长信息 -->
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+            </div>
+            
+            <!-- 文本区域 -->
+            <el-skeleton-item variant="text" style="width: 100%; height: 80px; margin-bottom: 24px;" />
+            
+            <!-- 另一个文本区域 -->
+            <el-skeleton-item variant="text" style="width: 100%; height: 60px; margin-bottom: 24px;" />
+            
+            <!-- 按钮 -->
+            <div style="display: flex; gap: 16px;">
+              <el-skeleton-item variant="button" style="width: 80px; height: 32px;" />
+              <el-skeleton-item variant="button" style="width: 90px; height: 32px;" />
+            </div>
+          </template>
+        </el-skeleton>
+      </div>
+    </el-card>
+    
+    <!-- 实际表单内容 -->
+    <el-card v-else class="leave-form-card" shadow="never">
       <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
       <div class="system-title-row">
         <h2 class="system-title">{{ t('common.systemTitle') }}</h2>
@@ -145,6 +208,9 @@ const { t } = i18n.global
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
+
+// 加载状态
+const loading = ref(true)
 
 // 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
@@ -506,14 +572,22 @@ function onSubmitForApproval () {
  * 说明：加载初始化数据与下拉
  */
 onMounted(async () => {
-  await Promise.all([getLeaveTypeOptions(), getImportanceOptions()])
-  const initialFormId = String(route.query.formId || route.params?.formId || form.formId || '')
-  currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
-  if (initialFormId) {
-    form.formId = initialFormId
-    await getLeaveFormDetail(initialFormId)
-  } else {
-    await initLeaveForm()
+  try {
+    loading.value = true
+    await Promise.all([getLeaveTypeOptions(), getImportanceOptions()])
+    const initialFormId = String(route.query.formId || route.params?.formId || form.formId || '')
+    currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
+    if (initialFormId) {
+      form.formId = initialFormId
+      await getLeaveFormDetail(initialFormId)
+    } else {
+      await initLeaveForm()
+    }
+  } catch (error) {
+    console.error('加载失败:', error)
+    ElMessage.error(t('messages.loadError'))
+  } finally {
+    loading.value = false
   }
 })
 </script>
@@ -524,6 +598,8 @@ onMounted(async () => {
 .section-row .el-form-item {
   margin-bottom: 0;
 }
+
+
 
 /* 分割线上下间距统一控制 */
 .section-divider {
