@@ -13,7 +13,7 @@
       <el-divider style="margin: 22px 0;"></el-divider>
 
         <!-- 表单主体（表格化排版） -->
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
         <!-- 基本信息 -->
         <el-row :gutter="16" style="justify-content: flex-start;">
@@ -24,7 +24,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.importanceCode')" prop="importanceCode">
-              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" >
+              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" clearable :validate-event="false">
                 <el-option v-for="opt in importanceOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
               </el-select>
             </el-form-item>
@@ -56,7 +56,7 @@
         <el-row :gutter="16" style="justify-content: flex-start;">
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveTypeCode">
-              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" >
+              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable :validate-event="false">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
@@ -120,8 +120,8 @@
          <el-row :gutter="16">
           <el-col :span="24">
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">暂存</el-button>
-              <el-button class="submit-btn" @click="onSubmitForApproval">送审</el-button>
+              <el-button type="primary" style="width:80px;" @click="onSubmit" plain>{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+              <el-button color="#ecc00f" style="width:90px;" @click="onSubmitForApproval">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -135,27 +135,36 @@ import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DROPDOWN_API, GET_IMPORTANCE_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_IMPORTANCE_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { useRoute, useRouter } from 'vue-router'
 
 // 获取翻译函数
 const { t } = i18n.global
 
 // 表单引用
 const formRef = ref(null)
+const route = useRoute()
+const router = useRouter()
 
 // 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
+const currentFormTypeId = ref('')
 
 // 表单模型（与Need.md一致）
+/**
+ * 表单模型
+ */
 const form = reactive({
   formId: '',
   formNo: '',
   description: '',
-  importanceCode: '',
+  importanceCode: null,
   applicantUserNo: '',
   applicantUserName: '',
   applicantDeptName: '',
-  leaveTypeCode: '',
+  applicantDeptId: '',
+  applicantTime: '',
+  leaveTypeCode: null,
   leaveReason: '',
   leaveTimeRange: [],
   leaveDays: 0,
@@ -179,25 +188,19 @@ const rules = {
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' },
     { validator: validateTimeRange, trigger: 'change' }
   ],
-  leaveDays: [
-    { validator: validateDurationPositive, trigger: 'change' }
-  ],
-  leaveHours: [
-    { validator: validateDurationPositive, trigger: 'change' }
-  ],
+
   leaveHandoverUserName: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
     { validator: validateHandoverUserNameRequired, trigger: 'blur' }
   ],
   leaveReason: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
-    { min: 5, message: t('formbusiness.validation.minLength', { min: 5 }), trigger: 'blur' }
+    { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
   ]
 }
 
 /**
- * 计算请假时长（工作时段9:00-17:00，保留两位小数）
- * 输入：开始/结束时间字符串，输出更新表单的 leaveDays/leaveHours
+ * 计算请假时长：将总小时拆分为“天 + 小时”
+ * 规则：24小时=1天；向下取整为“天”，余数为“小时”（保留两位小数）
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
@@ -218,27 +221,11 @@ function calculateDuration () {
     form.leaveHours = parseFloat((0).toFixed(2))
     return
   }
-  const totalWorkingHours = getWorkingHoursBetween(startTime, endTime)
-  const fullDays = Math.floor(totalWorkingHours / 8)
-  const remainHours = totalWorkingHours - fullDays * 8
-  form.leaveDays = parseFloat(fullDays.toFixed(2))
-  form.leaveHours = parseFloat(remainHours.toFixed(2))
-}
-
-/**
- * 判断时间是否在工作时段（09:00-17:00）
- * 入参：日期时间字符串
- */
-function isWithinWorkingHours (dateTimeStr) {
-  if (!dateTimeStr) return false
-  const dt = new Date(dateTimeStr)
-  if (isNaN(dt.getTime())) return false
-  const hours = dt.getHours()
-  const minutes = dt.getMinutes()
-  const totalMin = hours * 60 + minutes
-  const startMin = 9 * 60
-  const endMin = 17 * 60
-  return totalMin >= startMin && totalMin <= endMin
+  const totalHours = getWorkingHoursBetween(startTime, endTime)
+  const wholeDays = Math.floor(totalHours / 24)
+  const hoursRemainder = parseFloat((totalHours - wholeDays * 24).toFixed(2))
+  form.leaveDays = wholeDays
+  form.leaveHours = hoursRemainder
 }
 
 /**
@@ -251,38 +238,6 @@ function getWorkingHoursBetween (startStr, endStr) {
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
   const totalMs = end.getTime() - start.getTime()
   return parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2))
-}
-
-/**
- * 校验开始时间必须选择
- */
-function validateStartTimeWorkingHours (rule, value, callback) {
-  if (!value) {
-    callback(new Error(t('formbusiness.validation.required')))
-    return
-  }
-  callback()
-}
-
-/**
- * 校验结束时间必须晚于开始时间
- */
-function validateEndTimeWorkingHours (rule, value, callback) {
-  if (!value) {
-    callback(new Error(t('formbusiness.validation.required')))
-    return
-  }
-  const start = form.leaveStartTime ? new Date(form.leaveStartTime) : null
-  const end = new Date(value)
-  if (!start || isNaN(start.getTime())) {
-    callback(new Error(t('formbusiness.leaveform.pleaseSelectStartTime')))
-    return
-  }
-  if (end <= start) {
-    callback(new Error(t('formbusiness.leaveform.endAfterStartError')))
-    return
-  }
-  callback()
 }
 
 /**
@@ -315,7 +270,7 @@ function validateTimeRange (rule, value, callback) {
  * 校验请假时长必须大于0（任一字段变更时触发）
  */
 function validateDurationPositive (rule, value, callback) {
-  const total = (Number(form.leaveDays) || 0) * 8 + (Number(form.leaveHours) || 0)
+  const total = (Number(form.leaveDays) || 0) * 24 + (Number(form.leaveHours) || 0)
   if (total <= 0) {
     callback(new Error(t('formbusiness.leaveform.durationRequired')))
     return
@@ -347,11 +302,59 @@ function handleTimeRangeChange () {
  * 入参：固定formtypeId；出参：绑定返回的data到表单
  * 错误处理：401/403不提示，其他错误提示加载失败
  */
+/**
+ * 绑定接口返回数据到表单
+ */
+function bindFormData (data) {
+  Object.assign(form, {
+    formTypeId: data.formTypeId || '',
+    formId: data.formId || '',
+    formNo: data.formNo || '',
+    description: data.description || '',
+    importanceCode: normalizeSelectCode(data.importanceCode),
+    applicantUserNo: data.applicantUserNo || '',
+    applicantUserName: data.applicantUserName || '',
+    applicantDeptName: data.applicantDeptName || '',
+    applicantDeptId: data.applicantDeptId || '',
+    applicantTime: data.applicantTime || '',
+    leaveTypeCode: normalizeSelectCode(data.leaveTypeCode),
+    leaveReason: data.leaveReason || '',
+    leaveTimeRange: data.leaveStartTime && data.leaveEndTime ? [data.leaveStartTime, data.leaveEndTime] : [],
+    leaveDays: data.leaveDays ?? 0,
+    leaveHours: data.leaveHours ?? 0,
+    leaveHandoverUserName: data.leaveHandoverUserName || ''
+  })
+  // 绑定返回的formTypeId作为当前类型（若有）
+  if (data && data.formTypeId) {
+    currentFormTypeId.value = String(data.formTypeId)
+  }
+  // 路由驱动：当存在formId时，将其同步到URL，保证刷新后按详情加载
+  if (form.formId) {
+    const nextQuery = {
+      ...route.query,
+      formId: String(form.formId),
+      formTypeId: String(currentFormTypeId.value || route.query.formTypeId || defaultFormTypeId)
+    }
+    router.replace({ path: route.path, query: nextQuery })
+  }
+}
+
+/**
+ * 规范化下拉选择值：接口返回为-1时视为未选择
+ */
+function normalizeSelectCode (val) {
+  if (val === -1 || String(val) === '-1') return undefined
+  return val === undefined || val === null ? undefined : String(val)
+}
+
+/**
+ * 初始化请假单
+ */
 async function initLeaveForm () {
   try {
     // 创建FormData对象，使用FormFrom格式而不是JSON
     const formData = new window.FormData()
-    formData.append('formTypeId', defaultFormTypeId)
+    formData.append('formTypeId', currentFormTypeId.value || defaultFormTypeId)
     
     const res = await post(INIT_LEAVEFORM_API, formData, {
       headers: {
@@ -364,23 +367,32 @@ async function initLeaveForm () {
       return
     }
     const data = res.data || {}
-    Object.assign(form, {
-      formId: data.formId || '',
-      formNo: data.formNo || '',
-      description: data.description || '',
-      importanceCode: data.importanceCode || '',
-      applicantUserNo: data.applicantUserNo || '',
-      applicantUserName: data.applicantUserName || '',
-      applicantDeptName: data.applicantDeptName || '',
-      leaveTypeCode: data.leaveTypeCode || '',
-      leaveReason: data.leaveReason || '',
-      leaveTimeRange: data.leaveStartTime && data.leaveEndTime ? [data.leaveStartTime, data.leaveEndTime] : [],
-      leaveDays: data.leaveDays ?? 0,
-      leaveHours: data.leaveHours ?? 0,
-      leaveHandoverUserName: data.leaveHandoverUserName || ''
-    })
+    bindFormData(data)
   } catch {
     // 网络/异常错误提示
+    ElMessage.error(t('messages.networkError'))
+  }
+}
+
+/**
+ * 获取请假单详情
+ * 入参：表单ID（字符串），以FormData方式提交
+ */
+async function getLeaveFormDetail (id) {
+  try {
+    const formData = new window.FormData()
+    formData.append('formId', String(id))
+    const res = await post(GET_LEAVEFORM_DETAIL_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    if (!res) return
+    if (res.code !== 200) {
+      ElMessage.error(res.message || t('messages.loadError'))
+      return
+    }
+    const data = res.data || {}
+    bindFormData(data)
+  } catch {
     ElMessage.error(t('messages.networkError'))
   }
 }
@@ -437,10 +449,41 @@ async function getImportanceOptions () {
  * 提交请假单（占位）
  * 说明：执行校验，通过后仅提示成功（后续可接入保存接口）
  */
-function onSubmit () {
-  formRef.value?.validate((valid) => {
+/**
+ * 保存请假单：执行校验，通过后调用保存接口
+ */
+async function onSubmit () {
+  formRef.value?.validate(async (valid) => {
     if (!valid) return
-    plan(t('messages.saveSuccess'))
+    const payload = {
+      formTypeId: String(currentFormTypeId.value || defaultFormTypeId),
+      description: (form.description || '').trim(),
+      importanceCode: form.importanceCode == null || form.importanceCode === '' ? -1 : Number(form.importanceCode),
+      formId: String(form.formId || ''),
+      formNo: form.formNo || '',
+      applicantTime: form.applicantTime || '',
+      applicantUserNo: form.applicantUserNo || '',
+      applicantUserName: form.applicantUserName || '',
+      applicantDeptId: Number(form.applicantDeptId || 0),
+      applicantDeptName: form.applicantDeptName || '',
+      leaveTypeCode: form.leaveTypeCode == null || form.leaveTypeCode === '' ? -1 : Number(form.leaveTypeCode),
+      leaveReason: (form.leaveReason || '').trim(),
+      leaveStartTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[0] ? form.leaveTimeRange[0] : '',
+      leaveEndTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[1] ? form.leaveTimeRange[1] : '',
+      leaveDays: Number(form.leaveDays || 0),
+      leaveHours: Number(form.leaveHours || 0),
+      leaveHandoverUserName: (form.leaveHandoverUserName || '').trim()
+    }
+    try {
+      const res = await post(SAVE_LEAVEFORM_API, payload)
+      if (res && res.code === 200) {
+        ElMessage({ message: res.message || t('messages.saveSuccess'), type: 'success', plain: true, showClose: true })
+      } else {
+        ElMessage({ message: res?.message || t('messages.saveError'), type: 'error', plain: true, showClose: true })
+      }
+    } catch {
+      ElMessage({ message: t('messages.networkError'), type: 'error', plain: true, showClose: true })
+    }
   })
 }
 
@@ -448,10 +491,13 @@ function onSubmit () {
  * 送审请假单
  * 说明：执行校验，通过后提示送审成功
  */
+/**
+ * 送审请假单：执行校验，通过后弹出送审成功提示
+ */
 function onSubmitForApproval () {
   formRef.value?.validate((valid) => {
     if (!valid) return
-    plan('送审成功')
+    ElMessage({ message: t('formbusiness.leaveform.submitSuccess'), type: 'success', plain: true, showClose: true })
   })
 }
 
@@ -461,7 +507,14 @@ function onSubmitForApproval () {
  */
 onMounted(async () => {
   await Promise.all([getLeaveTypeOptions(), getImportanceOptions()])
-  await initLeaveForm()
+  const initialFormId = String(route.query.formId || route.params?.formId || form.formId || '')
+  currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
+  if (initialFormId) {
+    form.formId = initialFormId
+    await getLeaveFormDetail(initialFormId)
+  } else {
+    await initLeaveForm()
+  }
 })
 </script>
 
@@ -511,12 +564,6 @@ onMounted(async () => {
 .submit-btn {
   background-color: #fff3cd;
   border-color: #ffeaa7;
-  color: #856404;
-}
-
-.submit-btn:hover {
-  background-color: #ffeaa7;
-  border-color: #fdcb6e;
   color: #856404;
 }
 

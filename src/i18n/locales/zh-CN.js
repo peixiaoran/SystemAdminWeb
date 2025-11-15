@@ -1,7 +1,7 @@
 export default {
   // 通用
   common: {
-    systemTitle: 'SystemsAdmin管理系统',
+    systemTitle: 'SystemsAdmin 管理系统',
     confirm: '确定',
     cancel: '取消',
     close: '关闭',
@@ -333,7 +333,10 @@ export default {
         pleaseSelectHandoverUser: '请选择交接人',
         formTitle: '员工请假单',
         endAfterStartError: '结束时间必须晚于开始时间',
-        durationRequired: '请假时长不能为空'
+        durationRequired: '请假时长不能为空',
+        saveButton: '暂存',
+        submitButton: '送审'
+        ,submitSuccess: '送审成功'
       },
     
     // 表单验证

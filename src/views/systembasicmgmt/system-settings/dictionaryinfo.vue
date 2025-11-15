@@ -97,7 +97,9 @@
                :append-to-body="true"
                :modal-append-to-body="true"
                :lock-scroll="true"
-               @close="handleDialogClose">
+               destroy-on-close
+               @close="handleDialogClose"
+               @closed="handleDialogClosed">
       <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="字典编辑表单">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.module')" prop="moduleId">
@@ -144,7 +146,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleDialogClose">{{ $t('common.cancel') }}</el-button>
+          <el-button @click="handleCancel">{{ $t('common.cancel') }}</el-button>
           <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
         </span>
       </template>
@@ -344,11 +346,26 @@ const fetchDictionaryPagesImmediate = () => {
 }
 
 // 重置搜索条件
-const handleReset = () => {
-  // 只清空输入框，保留下拉框值
+const handleReset = async () => {
+  // 重置所有过滤条件
   filters.dicName = ''
+  
+  // 重置模块下拉框到第一个选项
+  if (moduleList.value.length > 0) {
+    filters.moduleId = moduleList.value[0].moduleId
+  } else {
+    filters.moduleId = ''
+  }
+  
+  // 重置字典类型下拉框
+  filters.dicType = ''
+  
+  // 重新获取字典类型下拉框数据（触发联动）
+  await fetchDicTypeDropDown()
+  
   // 重置分页并触发查询
   pagination.pageIndex = 1
+  loading.value = true
   debouncedFetchDictionaryPages()
 }
 
@@ -383,85 +400,84 @@ const handleSizeChange = (size) => {
   fetchDictionaryPages()
 }
 
+/**
+ * 重置编辑表单：可选清理校验，然后恢复初始数据
+ */
 const resetForm = (clearValidation = true) => {
-  editForm.dicId = ''
-  editForm.moduleId = ''
-  editForm.dicType = ''
-  editForm.dicCode = ''
-  editForm.dicNameCn = ''
-  editForm.dicNameEn = ''
-  editForm.sortOrder = 0
-  
-  if (clearValidation) {
-    nextTick(() => {
-      if (editFormRef.value) {
-        editFormRef.value.clearValidate()
-      }
-    })
+  // 先清除验证状态（避免重置数据触发 change 校验后仍显示错误）
+  if (clearValidation && editFormRef.value) {
+    try {
+      // 针对下拉框字段单独清除验证
+      editFormRef.value.clearValidate('moduleId')
+      // 然后清除所有字段的验证
+      editFormRef.value.clearValidate()
+    } catch {}
   }
+
+  // 重置表单数据为初始值
+  Object.assign(editForm, {
+    dicId: '',
+    moduleId: '',
+    dicType: '',
+    dicCode: '',
+    dicNameCn: '',
+    dicNameEn: '',
+    sortOrder: 0
+  })
 }
 
-// 新增字典数据
+/**
+ * 新增字典数据：强制类型转换，并在成功后清理校验再关闭
+ */
 const insertDictionary = async () => {
   submitLoading.value = true
   const params = {
-    moduleId: editForm.moduleId, // 使用编辑表单中的模块ID
-    dicType: editForm.dicType,
-    dicCode: editForm.dicCode,
-    dicNameCn: editForm.dicNameCn,
-    dicNameEn: editForm.dicNameEn,
-    sortOrder: editForm.sortOrder
+    moduleId: editForm.moduleId,
+    dicType: (editForm.dicType || '').trim(),
+    dicCode: Number(editForm.dicCode),
+    dicNameCn: (editForm.dicNameCn || '').trim(),
+    dicNameEn: (editForm.dicNameEn || '').trim(),
+    sortOrder: Number(editForm.sortOrder)
   }
-  
   const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
   if (res && res.code === 200) {
-      ElMessage({ 
-        message: res.message, 
-        type: 'success', 
-        plain: true, 
-        showClose: true 
-      })
-      dialogVisible.value = false
-      resetForm()
-      fetchDictionaryPagesImmediate()
-    } else {
-      ElMessage({ 
-        message: res.message, 
-        type: 'error', 
-        plain: true, 
-        showClose: true 
-      })
+    ElMessage({ message: res.message, type: 'success', plain: true, showClose: true })
+    if (editFormRef.value) {
+      editFormRef.value.clearValidate()
     }
+    dialogVisible.value = false
+    fetchDictionaryPagesImmediate()
+  } else {
+    ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
+  }
   submitLoading.value = false
 }
 
-// 更新字典数据
+/**
+ * 更新字典数据：强制类型转换，并在成功后清理校验再关闭
+ */
 const updateDictionary = async () => {
   submitLoading.value = true
   const params = {
     dicId: editForm.dicId,
-    moduleId: editForm.moduleId, // 使用编辑表单中的模块ID
-    dicType: editForm.dicType,
-    dicCode: editForm.dicCode,
-    dicNameCn: editForm.dicNameCn,
-    dicNameEn: editForm.dicNameEn,
-    sortOrder: editForm.sortOrder
+    moduleId: editForm.moduleId,
+    dicType: (editForm.dicType || '').trim(),
+    dicCode: Number(editForm.dicCode),
+    dicNameCn: (editForm.dicNameCn || '').trim(),
+    dicNameEn: (editForm.dicNameEn || '').trim(),
+    sortOrder: Number(editForm.sortOrder)
   }
-  
   const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
   if (res && res.code === 200) {
-     ElMessage({ 
-       message: res.message, 
-       type: 'success', 
-       plain: true, 
-       showClose: true 
-     })
-     dialogVisible.value = false
-     resetForm()
-     fetchDictionaryPagesImmediate()
-   } else {
-     ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
-   }
+    ElMessage({ message: res.message, type: 'success', plain: true, showClose: true })
+    if (editFormRef.value) {
+      editFormRef.value.clearValidate()
+    }
+    dialogVisible.value = false
+    fetchDictionaryPagesImmediate()
+  } else {
+    ElMessage.error(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
+  }
   submitLoading.value = false
 }
 
@@ -470,7 +486,7 @@ const deleteDictionary = async (dicId) => {
   const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, { dicId })
   if (res && res.code === 200) {
     ElMessage({ 
-      message: t('systembasicmgmt.dictionaryInfo.deleteDictionarySuccess'), 
+      message: res.message, 
       type: 'success', 
       plain: true, 
       showClose: true 
@@ -485,28 +501,34 @@ const deleteDictionary = async (dicId) => {
   }
 }
 
-// 处理新增操作
+/**
+ * 处理新增操作：重置表单并清空模块，保留必填校验
+ */
 const handleAdd = () => {
-  resetForm()
+  // 重置并清理校验，模块为空以便保存时触发必填校验
+  resetForm(true)
   dialogTitle.value = t('systembasicmgmt.dictionaryInfo.addDictionary')
   dialogVisible.value = true
-  
-  nextTick(() => {
-    if (editFormRef.value) {
-      editFormRef.value.clearValidate()
-    }
-  })
 }
 
 // 处理编辑操作
+/**
+ * 处理编辑操作：先重置表单，再填充数据，最后清理校验
+ */
 const handleEdit = async (index, row) => {
+  // 先清空表单（不触发验证）
+  resetForm(false)
   const dictionaryData = await fetchDictionaryEntity(row.dicId)
   if (dictionaryData) {
-    Object.assign(editForm, dictionaryData)
+    // 填充数据，确保 moduleId 存在且为字符串，避免校验错误
+    Object.assign(editForm, {
+      ...dictionaryData,
+      moduleId: String(dictionaryData.moduleId || '')
+    })
     dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
     dialogVisible.value = true
-    
-    // 在下一个tick中清除验证，避免编辑时出现必填提示
+
+    // 在下一个 tick 中清除任何残留校验状态
     nextTick(() => {
       if (editFormRef.value) {
         editFormRef.value.clearValidate()
@@ -515,10 +537,20 @@ const handleEdit = async (index, row) => {
   }
 }
 
+/**
+ * 处理取消操作：在按钮点击时清理校验并重置数据，然后关闭弹窗
+ */
+/**
+ * 处理取消操作：仅关闭弹窗，清理由 @closed 统一处理
+ */
+const handleCancel = () => {
+  dialogVisible.value = false
+}
+
 // 处理删除操作
 const handleDelete = (index, row) => {
   ElMessageBox.confirm(
-    t('systembasicmgmt.dictionaryInfo.deleteDictionaryConfirm', { dicCode: row.dicCode }),
+    t('systembasicmgmt.dictionaryInfo.deleteConfirm', { dicCode: row.dicCode }),
     t('common.tip'),
     {
       confirmButtonText: t('common.confirm'),
@@ -545,10 +577,18 @@ const handleSave = () => {
   })
 }
 
-// 处理对话框关闭
+/**
+ * 处理对话框关闭：关闭事件（不做重置，避免关闭动画期间触发校验）
+ */
 const handleDialogClose = () => {
   dialogVisible.value = false
-  resetForm()
+}
+
+/**
+ * 处理对话框完全关闭后：统一清理校验并重置数据
+ */
+const handleDialogClosed = () => {
+  resetForm(true)
 }
 </script>
 

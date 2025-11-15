@@ -48,15 +48,14 @@
           <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
           <el-table-column :label="$t('formbusiness.formtype.apply')" align="center" width="80">
             <template #default="scope">
-              <a 
-                v-if="scope.row.approvalPath" 
-                :href="'#' + scope.row.approvalPath + '?formTypeId=' + scope.row.formTypeId"
-                style="color: #1890ff; text-decoration: none;"
-                target="_blank"
-                @click="handleApprovalPathClick(scope.row)"
+              <el-link
+                v-if="scope.row.approvalPath"
+                type="primary"
+                :underline="false"
+                @click="openApproval(scope.row)"
               >
                 {{ $t('formbusiness.formtype.apply') }}
-              </a>
+              </el-link>
               <span v-else style="color: #999;">-</span>
             </template>
           </el-table-column>
@@ -205,6 +204,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
@@ -229,6 +229,7 @@ const formGroupOptions = ref([])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
+const router = useRouter()
 
 // 搜索表单
 const searchForm = reactive({
@@ -415,6 +416,26 @@ const resetForm = () => {
 }
 
 /**
+ * 规范化路径：去掉开头#并补全/
+ */
+const normalizePath = (p) => {
+  if (!p) return ''
+  let path = String(p).trim().replace(/^#/, '')
+  return path.startsWith('/') ? path : `/${path}`
+}
+
+/**
+ * 路由方式打开审批页面（新标签）
+ */
+const openApproval = (row) => {
+  if (!row || !row.approvalPath) return
+  const path = normalizePath(row.approvalPath)
+  const to = { path, query: { formTypeId: String(row.formTypeId || '') } }
+  const resolved = router.resolve(to)
+  window.open(resolved.href, '_blank')
+}
+
+/**
  * 提交表单
  * 只进行非空验证判断，验证失败时不显示弹出框
  */
@@ -469,15 +490,6 @@ const handleSubmit = async () => {
   } finally {
     submitLoading.value = false
   }
-}
-
-/**
- * 处理审批路径点击事件
- * @param {Object} row - 当前行数据
- */
-const handleApprovalPathClick = (row) => {
-  console.log('跳转到审批页面:', row.approvalPath, 'formTypeId:', row.formTypeId)
-  // 这里可以添加额外的跳转逻辑，比如路由跳转等
 }
 
 /**

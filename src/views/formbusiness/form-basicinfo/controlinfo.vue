@@ -149,6 +149,7 @@ const deletingId = ref(null)
 const controlList = ref([])
 const dialogVisible = ref(false)
 const formRef = ref(null)
+const isEdit = ref(false)
 
 // 搜索表单
 const searchForm = reactive({

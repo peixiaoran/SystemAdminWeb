@@ -367,9 +367,9 @@ export default {
     // Leave Form Page Specific
     leaveform: {
       title: 'Leave Apply',
-      formNo: 'Form Number',
+      formNo: 'Form No',
       description: 'Description',
-      importanceCode: 'Importance Level',
+      importanceCode: 'Importance',
       applicantUserNo: 'User No.',
       applicantUserName: 'User Name',
       applicantDeptName: 'Department',
@@ -382,9 +382,9 @@ export default {
       leaveReason: 'Reason',
       leaveStartTime: 'Start Time',
       leaveEndTime: 'End Time',
-      leaveTimeRange: 'Leave Time Range',
-      leaveDays: 'Total Leave Days',
-      leaveHours: 'Total Leave Hours',
+      leaveTimeRange: 'Leave Time',
+      leaveDays: 'Leave Days',
+      leaveHours: 'Leave Hours',
       leaveHandoverUserId: 'Handover User',
       pleaseInputLeaveNo: 'Please enter leave number',
       pleaseInputDescription: 'Please enter description',
@@ -399,7 +399,10 @@ export default {
       pleaseSelectHandoverUser: 'Please select handover user',
       formTitle: 'Employee Leave Application',
       endAfterStartError: 'End time must be later than start time',
-      durationRequired: 'Leave duration cannot be empty'
+      durationRequired: 'Leave duration cannot be empty',
+      saveButton: 'Save',
+      submitButton: 'Submission',
+      submitSuccess: 'Submitted successfully'
     },
     
     // Form Validation

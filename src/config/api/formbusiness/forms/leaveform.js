@@ -20,6 +20,12 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 // 初始化请假单API
 export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitLeaveForm'
 
+// 保存请假单API
+export const SAVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/SaveLeaveForm'
+
+// 获取请假单详情API
+export const GET_LEAVEFORM_DETAIL_API = 'FormBusiness/Forms/LeaveForm/GetLeaveForm'
+
 // 获取请假类型下拉框API
 export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeaveTypeDropDown'
 
