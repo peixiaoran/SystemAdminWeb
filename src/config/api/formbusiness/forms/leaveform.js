@@ -18,7 +18,7 @@ export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
 // 初始化请假单API
-export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitLeaveFormInfo'
+export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitLeaveForm'
 
 // 获取请假类型下拉框API
 export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeaveTypeDropDown'

@@ -366,33 +366,26 @@ export default {
 
     // Leave Form Page Specific
     leaveform: {
-      title: 'Leave Application',
+      title: 'Leave Apply',
       formNo: 'Form Number',
       description: 'Description',
       importanceCode: 'Importance Level',
-      applicantUserNo: 'Applicant Number',
-      applicantUserName: 'Applicant Name',
-      applicantDeptName: 'Applicant Department',
-      applicantPositionNo: 'Applicant Position Number',
-      applicantPositionName: 'Applicant Position Name',
-      applicantPhone: 'Applicant Phone',
+      applicantUserNo: 'User No.',
+      applicantUserName: 'User Name',
+      applicantDeptName: 'Department',
       leaveTypeCode: 'Leave Type',
-      leaveHandoverUserName: 'Handover User Name',
+      leaveHandoverUserName: 'Handover',
       leaveId: 'Leave ID',
       leaveNo: 'Leave No.',
-      leaveApplicantId: 'Applicant',
+      leaveApplicantId: 'Apply',
       leaveTypeId: 'Leave Type',
       leaveReason: 'Reason',
       leaveStartTime: 'Start Time',
       leaveEndTime: 'End Time',
-      leaveDays: 'Days',
-      leaveHours: 'Hours',
+      leaveTimeRange: 'Leave Time Range',
+      leaveDays: 'Total Leave Days',
+      leaveHours: 'Total Leave Hours',
       leaveHandoverUserId: 'Handover User',
-      types: {
-        annual: 'Annual Leave',
-        sick: 'Sick Leave',
-        personal: 'Personal Leave'
-      },
       pleaseInputLeaveNo: 'Please enter leave number',
       pleaseInputDescription: 'Please enter description',
       pleaseSelectImportance: 'Please select importance level',
@@ -403,7 +396,10 @@ export default {
       pleaseInputLeaveReason: 'Please enter leave reason',
       pleaseSelectStartTime: 'Please select start time',
       pleaseSelectEndTime: 'Please select end time',
-      pleaseSelectHandoverUser: 'Please select handover user'
+      pleaseSelectHandoverUser: 'Please select handover user',
+      formTitle: 'Employee Leave Application',
+      endAfterStartError: 'End time must be later than start time',
+      durationRequired: 'Leave duration cannot be empty'
     },
     
     // Form Validation

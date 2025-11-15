@@ -198,7 +198,7 @@ const createRequest = (method) => async (url, data, options = {}) => {
         return {
           code: 401,
           data: null,
-          message: '认证已过期，请重新登录',
+          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
           success: false
         }
       }
@@ -225,7 +225,7 @@ const createRequest = (method) => async (url, data, options = {}) => {
         return {
           code: 401,
           data: null,
-          message: '认证已过期，请重新登录',
+          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
           success: false
         }
       }

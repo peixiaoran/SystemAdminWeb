@@ -63,13 +63,6 @@
                     </el-table-column>
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="200" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="150" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isPartTime')" align="center" min-width="130">
-                        <template #default="scope">
-                            <el-tag :type="scope.row.isPartTime === '1' ? 'success' : 'info'">
-                                {{ scope.row.isPartTimeName }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
                     <el-table-column prop="partTimeDeptName" :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" align="left" min-width="200" />
                     <el-table-column prop="partTimePositionName" :label="$t('systembasicmgmt.userPartTime.partTimePosition')" align="left" min-width="150" />
                     <el-table-column prop="partTimeLaborName" :label="$t('systembasicmgmt.userPartTime.partTimeLabor')" align="left" min-width="150" />
@@ -77,10 +70,10 @@
                     <el-table-column prop="endTime" :label="$t('systembasicmgmt.userPartTime.endTime')" align="center" min-width="160" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.operation')" min-width="150" fixed="right" align="center">
                         <template #default="scope">
-                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="primary" @click="handleEdit(scope.$index, scope.row)" plain>
+                            <el-button size="small" type="primary" @click="handleEdit(scope.$index, scope.row)" plain>
                                 {{ $t('systembasicmgmt.userPartTime.editPartTime') }}
                             </el-button>
-                            <el-button v-if="scope.row.isPartTime === '1'" size="small" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>
+                            <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>
                                 {{ $t('systembasicmgmt.userPartTime.deletePartTime') }}
                             </el-button>
                         </template>
@@ -189,7 +182,7 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item v-if="!isEditMode">
                         <el-button type="primary" @click="handleDialogUserSearch">{{ $t('common.search') }}</el-button>
                         <el-button @click="handleDialogUserReset">{{ $t('common.reset') }}</el-button>
                     </el-form-item>
@@ -608,14 +601,25 @@
     }
     
     /**
-     * 重置主列表筛选条件，仅清空输入框并重新查询
+     * 重置主列表筛选条件，清空输入框并重置下拉框为第一个选项
      */
     const handleReset = () => {
-        // 重置筛选条件 - 只清空输入框，不清空下拉框
-        Object.assign(filters, {
-            userNo: '',
-            userName: ''
-        })
+        // 清空输入框内容
+        filters.userNo = ''
+        filters.userName = ''
+        
+        // 重置部门下拉框为第一个未禁用的选项
+        if (departmentList.value.length > 0) {
+            const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
+            if (firstEnabledDept) {
+                filters.departmentId = firstEnabledDept
+            } else {
+                filters.departmentId = ''
+            }
+        } else {
+            filters.departmentId = ''
+        }
+        
         // 重置分页到第一页并触发查询
         pagination.pageIndex = 1
         loading.value = true
@@ -1001,19 +1005,11 @@
                 dialogForm.laborName = row.laborName
                 
                 // 初始化编辑对话框的用户搜索条件和分页
+                // 自动填充当前编辑用户的工号、姓名到筛选条件（不需要绑定部门ID到下拉框）
                 Object.assign(dialogUserFilters, {
-                    departmentId: '',
-                    userNo: '',
-                    userName: ''
+                    userNo: row.userNo,
+                    userName: row.userName
                 })
-                
-                // 设置编辑对话框用户搜索的部门默认值
-                if (departmentList.value.length > 0) {
-                    const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
-                    if (firstEnabledDept) {
-                        dialogUserFilters.departmentId = firstEnabledDept
-                    }
-                }
                 Object.assign(dialogUserPagination, {
                     pageIndex: 1,
                     pageSize: 10,

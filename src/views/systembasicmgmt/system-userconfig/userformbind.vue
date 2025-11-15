@@ -361,13 +361,33 @@ const fetchUserPagesImmediate = () => {
 }
 
 /**
- * 处理重置 - 只清空输入框，不清空下拉框，并触发查询
+ * 处理重置 - 清空输入框，重置下拉框为第一个选项，并触发查询
  */
 const handleReset = () => {
-  Object.assign(filters, {
-    userNo: '',
-    userName: ''
-  })
+  // 清空输入框内容
+  filters.userNo = ''
+  filters.userName = ''
+  
+  // 重置部门下拉框为第一个选项
+  if (departmentOptions.value.length > 0) {
+    // 设置第一个部门为默认选择
+    const findFirstDepartment = (departments) => {
+      for (const dept of departments) {
+        return dept.departmentId
+      }
+      return null
+    }
+    
+    const firstDepartmentId = findFirstDepartment(departmentOptions.value)
+    if (firstDepartmentId) {
+      filters.departmentId = firstDepartmentId
+    } else {
+      filters.departmentId = null
+    }
+  } else {
+    filters.departmentId = null
+  }
+  
   // 重置分页到第一页并触发查询
   pagination.pageIndex = 1
   loading.value = true

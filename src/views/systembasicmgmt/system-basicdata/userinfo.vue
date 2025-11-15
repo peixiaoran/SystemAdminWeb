@@ -851,9 +851,21 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
   // 重置筛选条件
   const handleReset = () => {
-      // 只清空输入框内容，保留下拉框内容
+      // 清空输入框内容
       filters.userNo = ''
       filters.userName = ''
+      
+      // 重置部门下拉框为第一个未禁用的选项
+      if (departmentOptions.value.length > 0) {
+        const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
+        if (firstEnabledDept) {
+          filters.departmentId = firstEnabledDept.departmentId
+        } else {
+          filters.departmentId = ''
+        }
+      } else {
+        filters.departmentId = ''
+      }
       
       // 重置后自动触发查询（使用防抖）
       pagination.pageIndex = 1

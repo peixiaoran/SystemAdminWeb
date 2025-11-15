@@ -1,5 +1,3 @@
-import { sortOrders } from "element-plus/es/components/table-v2/src/constants.mjs";
-
 export default {
   // 通用
   common: {
@@ -302,18 +300,15 @@ export default {
 
     // 请假单页面专用
     leaveform: {
-        title: '请假申请',
+        title: '假别',
         formNo: '表单编号',
         description: '描述',
         importanceCode: '重要程度',
-        applicantUserNo: '申请人编号',
-        applicantUserName: '申请人姓名',
-        applicantDeptName: '申请人部门',
-        applicantPositionNo: '申请人职位编号',
-        applicantPositionName: '申请人职位名称',
-        applicantPhone: '申请人电话',
+        applicantUserNo: '员工工号',
+        applicantUserName: '员工姓名',
+        applicantDeptName: '员工部门',
         leaveTypeCode: '请假类型',
-        leaveHandoverUserName: '交接人姓名',
+        leaveHandoverUserName: '交接人',
         leaveId: '请假单ID',
         leaveNo: '请假单号',
         leaveApplicantId: '申请人',
@@ -321,14 +316,10 @@ export default {
         leaveReason: '请假事由',
         leaveStartTime: '开始时间',
         leaveEndTime: '结束时间',
-        leaveDays: '请假天数',
-        leaveHours: '请假小时',
+        leaveTimeRange: '请假时间',
+        leaveDays: '请假总天数',
+        leaveHours: '请假总时数',
         leaveHandoverUserId: '交接人',
-        types: {
-          annual: '年假',
-          sick: '病假',
-          personal: '事假'
-        },
         pleaseInputLeaveNo: '请输入请假单号',
         pleaseInputDescription: '请输入描述',
         pleaseSelectImportance: '请选择重要程度',
@@ -339,7 +330,10 @@ export default {
         pleaseInputLeaveReason: '请输入请假事由',
         pleaseSelectStartTime: '请选择开始时间',
         pleaseSelectEndTime: '请选择结束时间',
-        pleaseSelectHandoverUser: '请选择交接人'
+        pleaseSelectHandoverUser: '请选择交接人',
+        formTitle: '员工请假单',
+        endAfterStartError: '结束时间必须晚于开始时间',
+        durationRequired: '请假时长不能为空'
       },
     
     // 表单验证
@@ -544,7 +538,7 @@ export default {
     formGroup: '表单组别信息',
     formType: '表单类别信息',
     formoperate: '表单操作',
-    applyform: '申请表单',
+    applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     eventInfo: '事件信息维护',
     personalInfoTitle: '个人资料',

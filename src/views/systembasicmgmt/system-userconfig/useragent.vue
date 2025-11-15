@@ -61,11 +61,11 @@
       <div class="table-container">
         <el-table :data="userList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" class="conventional-table">
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" fixed />
-          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="150" />
+          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="left" min-width="120" />
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userName')" align="left" min-width="180" />
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="230" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="120" />
-          <el-table-column prop="laborName" :label="$t('systembasicmgmt.userAgent.laborName')" align="center" min-width="270" />
+          <el-table-column prop="laborName" :label="$t('systembasicmgmt.userAgent.laborName')" align="left" min-width="230" />
           <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="150">
             <template #default="scope">
               <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">{{ scope.row.isApprovalName }}</el-tag>
@@ -586,10 +586,38 @@ const fetchUserPagesImmediate = () => {
 
 // 重置搜索条件
 const handleReset = () => {
-  Object.assign(filters, {
-    userNo: '',
-    userName: ''
-  })
+  // 清空输入框内容
+  filters.userNo = ''
+  filters.userName = ''
+  
+  // 重置部门下拉框为第一个未禁用的选项
+  if (departmentOptions.value.length > 0) {
+    // 查找第一个未禁用的部门
+    const findFirstEnabledDepartment = (departments) => {
+      for (const dept of departments) {
+        if (!dept.disabled) {
+          return dept.departmentId
+        }
+        if (dept.departmentChildList && dept.departmentChildList.length > 0) {
+          const childResult = findFirstEnabledDepartment(dept.departmentChildList)
+          if (childResult) {
+            return childResult
+          }
+        }
+      }
+      return null
+    }
+    
+    const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
+    if (firstDepartmentId) {
+      filters.departmentId = firstDepartmentId
+    } else {
+      filters.departmentId = ''
+    }
+  } else {
+    filters.departmentId = ''
+  }
+  
   // 重置分页到第一页并触发查询
   pagination.pageIndex = 1
   loading.value = true
