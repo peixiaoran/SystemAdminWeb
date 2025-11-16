@@ -63,7 +63,7 @@
     </el-card>
     
     <!-- 实际表单内容 -->
-    <el-card v-else class="leave-form-card" shadow="never">
+    <el-card v-else class="leave-form-card" shadow="never" v-loading="saving || approving">
       <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
       <div class="system-title-row">
         <h2 class="system-title">{{ t('common.systemTitle') }}</h2>
@@ -87,7 +87,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.importanceCode')" prop="importanceCode">
-              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" clearable :validate-event="false">
+              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" clearable @change="onSelectChange('importanceCode')">
                 <el-option v-for="opt in importanceOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
               </el-select>
             </el-form-item>
@@ -119,7 +119,7 @@
         <el-row :gutter="16" style="justify-content: flex-start;">
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveTypeCode">
-              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable :validate-event="false">
+              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable @change="onSelectChange('leaveTypeCode')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
@@ -183,8 +183,8 @@
          <el-row :gutter="16">
           <el-col :span="24">
             <el-form-item>
-              <el-button type="primary" style="width:80px;" @click="onSubmit" plain>{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-              <el-button color="#ecc00f" style="width:90px;" @click="onSubmitForApproval">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+              <el-button type="primary" style="width:80px;" @click="onSubmit" plain :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+              <el-button color="#ecc00f" style="width:90px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -211,6 +211,9 @@ const router = useRouter()
 
 // 加载状态
 const loading = ref(true)
+// 暂存与送审按钮加载状态
+const saving = ref(false)
+const approving = ref(false)
 
 // 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
@@ -280,8 +283,8 @@ function calculateDuration () {
     form.leaveHours = parseFloat((0).toFixed(2))
     return
   }
-  const start = new Date(startTime)
-  const end = new Date(endTime)
+  const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
+  const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
     form.leaveDays = parseFloat((0).toFixed(2))
     form.leaveHours = parseFloat((0).toFixed(2))
@@ -289,9 +292,8 @@ function calculateDuration () {
   }
   const totalHours = getWorkingHoursBetween(startTime, endTime)
   const wholeDays = Math.floor(totalHours / 24)
-  const hoursRemainder = parseFloat((totalHours - wholeDays * 24).toFixed(2))
   form.leaveDays = wholeDays
-  form.leaveHours = hoursRemainder
+  form.leaveHours = parseFloat(totalHours.toFixed(2))
 }
 
 /**
@@ -299,8 +301,8 @@ function calculateDuration () {
  * 入参：开始/结束时间字符串
  */
 function getWorkingHoursBetween (startStr, endStr) {
-  const start = new Date(startStr)
-  const end = new Date(endStr)
+  const start = new Date(typeof startStr === 'string' ? startStr.replace(' ', 'T') : startStr)
+  const end = new Date(typeof endStr === 'string' ? endStr.replace(' ', 'T') : endStr)
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
   const totalMs = end.getTime() - start.getTime()
   return parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2))
@@ -319,8 +321,8 @@ function validateTimeRange (rule, value, callback) {
     callback()
     return
   }
-  const start = new Date(startTime)
-  const end = new Date(endTime)
+  const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
+  const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     callback()
     return
@@ -336,7 +338,7 @@ function validateTimeRange (rule, value, callback) {
  * 校验请假时长必须大于0（任一字段变更时触发）
  */
 function validateDurationPositive (rule, value, callback) {
-  const total = (Number(form.leaveDays) || 0) * 24 + (Number(form.leaveHours) || 0)
+  const total = Number(form.leaveHours) || 0
   if (total <= 0) {
     callback(new Error(t('formbusiness.leaveform.durationRequired')))
     return
@@ -364,6 +366,73 @@ function handleTimeRangeChange () {
 }
 
 /**
+ * 下拉选择变更时触发字段校验
+ * 入参：字段名；出参：无（用于清除红色提示）
+ */
+function onSelectChange (field) {
+  if (!formRef.value) return
+  try {
+    formRef.value.validateField(field)
+  } catch (e) {
+    // ignore
+  }
+}
+
+/**
+ * 规范化日期时间字符串为"YYYY-MM-DD HH:mm:ss"
+ * 入参：字符串/Date/时间戳；出参：符合value-format的字符串，非法返回空字符串
+ */
+function normalizeDateTime (val) {
+  if (!val) return ''
+  let d
+  if (val instanceof Date) {
+    d = val
+  } else if (typeof val === 'number') {
+    d = new Date(val)
+  } else if (typeof val === 'string') {
+    const s = val.trim()
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/)
+    if (m) {
+      return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}:${m[6]}`
+    }
+    const slash = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/)
+    if (slash) {
+      const pad = (n) => String(n).padStart(2, '0')
+      const Y = slash[1]
+      const M = pad(slash[2])
+      const D = pad(slash[3])
+      const H = pad(slash[4])
+      const mi = pad(slash[5])
+      const S = pad(slash[6])
+      return `${Y}-${M}-${D} ${H}:${mi}:${S}`
+    }
+    const msMatch = s.match(/\/Date\((\d+)\)\//)
+    if (msMatch) {
+      d = new Date(Number(msMatch[1]))
+    } else {
+      d = new Date(s.replace('T', ' ').replace(/Z$/, ''))
+    }
+  }
+  if (!d || isNaN(d.getTime())) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  const Y = d.getFullYear()
+  const M = pad(d.getMonth() + 1)
+  const D = pad(d.getDate())
+  const H = pad(d.getHours())
+  const m = pad(d.getMinutes())
+  const S = pad(d.getSeconds())
+  return `${Y}-${M}-${D} ${H}:${m}:${S}`
+}
+
+/**
+ * 将 "YYYY-MM-DD HH:mm:ss" 转为可被 Date 可靠解析的 ISO 字符串
+ * 入参：字符串；出参：替换空格为'T'后的字符串
+ */
+function toISO (str) {
+  return typeof str === 'string' ? str.replace(' ', 'T') : str
+}
+
+/**
  * 初始化请假单
  * 入参：固定formtypeId；出参：绑定返回的data到表单
  * 错误处理：401/403不提示，其他错误提示加载失败
@@ -385,7 +454,11 @@ function bindFormData (data) {
     applicantTime: data.applicantTime || '',
     leaveTypeCode: normalizeSelectCode(data.leaveTypeCode),
     leaveReason: data.leaveReason || '',
-    leaveTimeRange: data.leaveStartTime && data.leaveEndTime ? [data.leaveStartTime, data.leaveEndTime] : [],
+    leaveTimeRange: (() => {
+      const start = normalizeDateTime(data.LeaveStartTime || data.leaveStartTime)
+      const end = normalizeDateTime(data.LeaveEndTime || data.leaveEndTime)
+      return start && end ? [start, end] : []
+    })(),
     leaveDays: data.leaveDays ?? 0,
     leaveHours: data.leaveHours ?? 0,
     leaveHandoverUserName: data.leaveHandoverUserName || ''
@@ -402,6 +475,10 @@ function bindFormData (data) {
       formTypeId: String(currentFormTypeId.value || route.query.formTypeId || defaultFormTypeId)
     }
     router.replace({ path: route.path, query: nextQuery })
+  }
+  // 赋值后清理可能残留的校验错误提示
+  if (formRef.value) {
+    formRef.value.clearValidate(['importanceCode', 'leaveTypeCode'])
   }
 }
 
@@ -519,8 +596,9 @@ async function getImportanceOptions () {
  * 保存请假单：执行校验，通过后调用保存接口
  */
 async function onSubmit () {
+  saving.value = true
   formRef.value?.validate(async (valid) => {
-    if (!valid) return
+    if (!valid) { saving.value = false; return }
     const payload = {
       formTypeId: String(currentFormTypeId.value || defaultFormTypeId),
       description: (form.description || '').trim(),
@@ -549,22 +627,28 @@ async function onSubmit () {
       }
     } catch {
       ElMessage({ message: t('messages.networkError'), type: 'error', plain: true, showClose: true })
+    } finally {
+      saving.value = false
     }
   })
 }
 
 /**
- * 送审请假单
- * 说明：执行校验，通过后提示送审成功
+ * 送审请假单：显示加载中，校验通过后再结束加载
  */
-/**
- * 送审请假单：执行校验，通过后弹出送审成功提示
- */
-function onSubmitForApproval () {
-  formRef.value?.validate((valid) => {
+async function onSubmitForApproval () {
+  approving.value = true
+  try {
+    const valid = await new Promise((resolve) => {
+      formRef.value?.validate((v) => resolve(!!v))
+    })
     if (!valid) return
+    // 占位：如需调用送审接口，请在此添加异步请求
+    await new Promise((r) => setTimeout(r, 600))
     ElMessage({ message: t('formbusiness.leaveform.submitSuccess'), type: 'success', plain: true, showClose: true })
-  })
+  } finally {
+    approving.value = false
+  }
 }
 
 /**
@@ -612,6 +696,10 @@ onMounted(async () => {
 .leave-form-card {
   max-width: 1000px;
   margin: 0 auto;
+  border: 1.5px solid #c0c4cc;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  background: #ffffff;
 }
 
 .system-title-row {
@@ -645,6 +733,19 @@ onMounted(async () => {
 
 .leave-form {
   padding: 0 20px;
+}
+
+.leave-form :deep(.el-input__wrapper),
+.leave-form :deep(.el-select .el-input__wrapper),
+.leave-form :deep(.el-date-editor) {
+  border-color: #c0c4cc;
+}
+
+.leave-form :deep(.el-input__wrapper.is-focus),
+.leave-form :deep(.el-select .el-input__wrapper.is-focus),
+.leave-form :deep(.el-date-editor.is-active) {
+  box-shadow: 0 0 0 2px rgba(192, 196, 204, 0.35) inset;
+  border-color: #a8abb2;
 }
 
 /* 表单项当标签换行时居中对齐，避免两行时样式错乱 */
