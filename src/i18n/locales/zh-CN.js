@@ -1078,7 +1078,7 @@ export default {
       smenuNameEn: '英文名称',
       menuType: '菜单类型',
       module: '所属模块',
-      pmenu: '一级菜单',
+      pmenu: '所属一级菜单',
       smenuIcon: '菜单图标',
       sortOrder: '菜单排序',
       pagePath: '页面Path',

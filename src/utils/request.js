@@ -18,6 +18,9 @@ const pendingRequests = new Map()
 // 防抖延迟时间（毫秒）
 const DEBOUNCE_DELAY = 100
 
+// 全局状态管理 - 跟踪403错误发生
+let has403ErrorOccurred = false
+
 // 生成请求唯一标识
 const generateRequestKey = (config) => {
   const { method, url, params, data } = config
@@ -37,6 +40,14 @@ const handleLogout = () => {
 // 请求拦截器
 service.interceptors.request.use(
   config => {
+    // 如果已经发生过403错误，直接取消后续请求
+    if (has403ErrorOccurred) {
+      const source = axios.CancelToken.source()
+      config.cancelToken = source.token
+      source.cancel('Request cancelled due to previous 403 error')
+      return config
+    }
+    
     // 获取当前请求的URL路径
     const requestPath = config.url
     
@@ -204,17 +215,18 @@ const createRequest = (method) => async (url, data, options = {}) => {
       }
       
       if (status === 403) {
-        // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
-        window.location.href = '/#/403'
-        // 记录错误但不返回提示文案
-        handleNetworkError(error, { showMessage: false })
-        return {
-          code: 403,
-          data: null,
-          message: '权限不足，无法访问该资源',
-          success: false
-        }
+      // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
+      has403ErrorOccurred = true
+      window.location.href = '/#/403'
+      // 记录错误但不返回提示文案
+      handleNetworkError(error, { showMessage: false })
+      return {
+        code: 403,
+        data: null,
+        message: '权限不足，无法访问该资源',
+        success: false
       }
+    }
       
       // 处理业务错误
       // 业务码401：直接登出并跳转登录，不再显示过期提示

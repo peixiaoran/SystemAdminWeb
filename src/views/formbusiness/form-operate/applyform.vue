@@ -51,7 +51,7 @@
               <el-link
                 v-if="scope.row.approvalPath"
                 type="primary"
-                :underline="false"
+                underline="never"
                 @click="openApproval(scope.row)"
               >
                 {{ $t('formbusiness.formtype.apply') }}
@@ -290,7 +290,7 @@ const getFormGroupOptions = async () => {
       formGroupOptions.value = response.data || []
       // 默认选中第一个选项
       if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
-        searchForm.formGroupId = formGroupOptions.value[0].value
+        searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
       ElMessage({
@@ -503,8 +503,8 @@ const handleDialogClose = () => {
 }
 
 // 组件挂载时获取数据
-onMounted(() => {
-  getFormGroupOptions()
+onMounted(async () => {
+  await getFormGroupOptions()
   getFormTypeList()
 })
 </script>

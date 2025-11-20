@@ -113,20 +113,20 @@
                   <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameEn')" prop="menuNameEn">
                       <el-input v-model="editForm.menuNameEn" style="width:100%" />
                   </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
+                 <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
+                      <el-input v-model="editForm.menuIcon" style="width:100%" />
+                  </el-form-item>
+              </div>
+              <div class="form-row">
+                 <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
                       <el-select v-model="editForm.moduleId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
                           <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
                       </el-select>
                   </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="parentMenuId">
+                  <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')" prop="parentMenuId">
                       <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
                           <el-option v-for="item in pmenuDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
                       </el-select>
-                  </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
-                      <el-input v-model="editForm.menuIcon" style="width:100%" />
                   </el-form-item>
               </div>
               <div class="form-row">
