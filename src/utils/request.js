@@ -219,10 +219,8 @@ const createRequest = (method) => async (url, data, options = {}) => {
           plain: true,
           showClose: true
         })
-        // 延迟执行登出，确保提示信息能够显示
-        setTimeout(() => {
-          handleLogout()
-        }, 1500)
+        // 立即执行登出并跳转登录
+        handleLogout()
         // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
         return {
           code: 200,
@@ -259,10 +257,8 @@ const createRequest = (method) => async (url, data, options = {}) => {
           plain: true,
           showClose: true
         })
-        // 延迟执行登出，确保提示信息能够显示
-        setTimeout(() => {
-          handleLogout()
-        }, 1500)
+        // 立即执行登出并跳转登录
+        handleLogout()
         return {
           code: 200,
           data: null,
