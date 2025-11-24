@@ -46,7 +46,7 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
-          <el-table-column :label="$t('formbusiness.formtype.apply')" align="center" width="80">
+          <el-table-column :label="$t('formbusiness.formtype.apply')" align="center" width="130">
             <template #default="scope">
               <el-link
                 v-if="scope.row.approvalPath"
@@ -56,11 +56,23 @@
               >
                 {{ $t('formbusiness.formtype.apply') }}
               </el-link>
-              <span v-else style="color: #999;">-</span>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formtype.formName')" align="center" min-width="80" />
-          <el-table-column prop="description" :label="$t('formbusiness.formtype.description')" align="left" min-width="450" />
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.formtype.formName')" align="center" min-width="200" />
+          <el-table-column prop="description" :label="$t('formbusiness.formtype.description')" align="left" width="900">
+            <template #default="scope">
+              <el-tooltip
+                v-if="scope.row.description"
+                :content="scope.row.description"
+                placement="top"
+                effect="dark"
+                popper-class="fixed-width-tooltip"
+              >
+                <span class="ellipsis-cell">{{ scope.row.description }}</span>
+              </el-tooltip>
+              <span v-else class="ellipsis-cell">-</span>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -76,129 +88,6 @@
         />
       </div>
     </el-card>
-    
-    <el-dialog 
-      v-model="dialogVisible"
-      :title="isEdit ? $t('formbusiness.formtype.editFormType') : $t('formbusiness.formtype.addFormType')"
-      width="55%"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      :modal-append-to-body="true"
-      :lock-scroll="true"
-      @close="handleDialogClose"
-    >
-      <div v-loading="dialogLoading">
-        <el-form 
-          :inline="true"
-          ref="formRef"
-          :model="form" 
-          :rules="rules"
-          label-width="140px" 
-          class="dialog-form"
-          role="form" 
-          aria-label="表单类型编辑"
-        >
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formtype.formGroupName')" prop="formGroupId">
-              <el-select
-                v-model="form.formGroupId"
-                :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
-                style="width:100%"
-              >
-                <el-option
-                  v-for="item in formGroupOptions"
-                  :key="item.formGroupId"
-                  :label="item.formGroupName"
-                  :value="item.formGroupId"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('formbusiness.formtype.prefix')" prop="prefix">
-              <el-input 
-                v-model="form.prefix" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputPrefix')"
-                style="width:100%" 
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formtype.formTypeNameCn')" prop="formTypeNameCn">
-              <el-input 
-                v-model="form.formTypeNameCn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameCn')"
-                style="width:100%" 
-              />
-            </el-form-item>
-            <el-form-item :label="$t('formbusiness.formtype.formTypeNameEn')" prop="formTypeNameEn">
-              <el-input
-                v-model="form.formTypeNameEn"
-                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameEn')"
-                style="width:100%" 
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formtype.reviewPath')" prop="reviewPath">
-              <el-input 
-                v-model="form.reviewPath" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputReviewPath')"
-                style="width:100%" 
-              />
-            </el-form-item>
-            <el-form-item :label="$t('formbusiness.formtype.viewPath')" prop="viewPath">
-              <el-input 
-                v-model="form.viewPath" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputViewPath')"
-                style="width:100%" 
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formtype.sortOrder')" prop="sortOrder">
-              <el-input-number 
-                v-model="form.sortOrder" 
-                :min="0"
-                :max="999"
-                style="width:100%" 
-              />
-            </el-form-item>
-            <el-form-item>
-              
-            </el-form-item>
-          </div>
-          <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.formtype.descriptionCn')" prop="descriptionCn">
-              <el-input 
-                v-model="form.descriptionCn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionCn')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="2" 
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.formtype.descriptionEn')" prop="descriptionEn">
-              <el-input 
-                v-model="form.descriptionEn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionEn')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="2" 
-              />
-            </el-form-item>
-          </div>
-
-        </el-form>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
-      </template>
-    </el-dialog>
-    -->
   </div>
 </template>
 
@@ -511,5 +400,20 @@ onMounted(async () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+:global(.fixed-width-tooltip) {
+  width: 800px;
+  max-width: 800px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.ellipsis-cell {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 </style>
 

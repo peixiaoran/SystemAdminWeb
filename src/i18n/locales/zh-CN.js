@@ -35,7 +35,6 @@ export default {
     closeAllTabs: '关闭所有标签',
     operation: '操作',
     goBack: '返回',
-    tokenExpired: '登录已过期，请重新登录',
     saveSuccess: '保存成功',
     deleteSuccess: '删除成功',
     operationFailed: '操作失败',
@@ -214,6 +213,8 @@ export default {
 
     // 控件信息页面专用
     controlinfo: {
+        ariaFilterLabel: '控件信息筛选',
+        ariaEditLabel: '控件信息编辑',
         controlCode: '控件代码',
         controlName: '控件名称',
         controlNameCn: '中文名称',
@@ -446,7 +447,6 @@ export default {
       loginFailedTip: '登录请求失败，请稍后重试',
       passwordExpired: '密码已过期，即将跳转到密码修改页面',
       accountLocked: '账户已被锁定，即将跳转到解锁页面',
-      sessionExpired: '登录已过期，请重新登录',
       languages: {
         'zh-CN': '中文简体',
         'en-US': 'English'
@@ -1174,7 +1174,6 @@ export default {
       addDictionary: '新增字典',
       editDictionary: '编辑字典信息',
       deleteConfirm: '确定要删除该条记录吗？',
-      pleaseInputDicCode: '请输入字典编码',
       pleaseInputDicNameCn: '请输入中文名称',
       pleaseInputDicNameEn: '请输入英文名称',
       pleaseInputSortOrder: '请输入排序',

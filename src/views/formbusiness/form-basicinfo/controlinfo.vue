@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="控件信息筛选">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.controlinfo.ariaFilterLabel')">
           <el-form-item :label="$t('formbusiness.controlinfo.controlCode')">
             <el-input
               v-model="searchForm.controlCode"
@@ -85,7 +85,7 @@
           label-width="120px" 
           class="dialog-form"
           role="form" 
-          aria-label="控件信息编辑"
+          :aria-label="$t('formbusiness.controlinfo.ariaEditLabel')"
         >
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.controlinfo.controlCode')" prop="controlCode">

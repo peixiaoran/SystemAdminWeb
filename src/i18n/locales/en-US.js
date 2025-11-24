@@ -35,7 +35,6 @@ export default {
     closeAllTabs: 'Close All Tabs',
     operation: 'Operation',
     goBack: 'Go Back',
-    tokenExpired: 'Login expired, please login again',
     saveSuccess: 'Save Successfully',
     deleteSuccess: 'Delete Successfully',
     operationFailed: 'Operation Failed',
@@ -278,6 +277,8 @@ export default {
     
     // Control Information Page Specific
     controlinfo: {
+      ariaFilterLabel: 'Control Info Filter',
+      ariaEditLabel: 'Control Info Edit',
       controlCode: 'Control Code',
       index: 'Index',
       controlName: 'Control Name',
@@ -956,7 +957,6 @@ export default {
       deleteConfirm: 'Are you sure you want to delete this dictionary?',
       pleaseInputDicType: 'Please enter dictionary type',
       pleaseSelectDicType: 'Please select dictionary type',
-      pleaseInputDicCode: 'Please enter dictionary code',
       pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
       pleaseInputSortOrder: 'Please enter sort order',

@@ -116,9 +116,6 @@ const loginForm = reactive({
 
 // 在组件挂载后进行初始化
 onMounted(() => {
-  // 清除登录过期提示标志（不再显示警告提示）
-  localStorage.removeItem('sessionExpired')
-  
   // 重置表单验证状态
   nextTick(() => {
     loginFormRef.value?.resetFields()

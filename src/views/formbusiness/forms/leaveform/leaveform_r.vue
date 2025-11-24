@@ -268,8 +268,9 @@ const rules = {
 }
 
 /**
- * 计算请假时长：将总小时拆分为“天 + 小时”
- * 规则：24小时=1天；向下取整为“天”，余数为“小时”（保留两位小数）
+ * 计算请假时长（按日计数规则）
+ * 规则：天数按跨越的自然日计算（包含起止当日）；小时为实际跨度小时数（保留两位小数）
+ * 示例：2025-11-22 08:00:00 至 2025-11-22 17:00:00 => 天数 1.00，小时 9.00
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
@@ -291,8 +292,8 @@ function calculateDuration () {
     return
   }
   const totalHours = getWorkingHoursBetween(startTime, endTime)
-  const wholeDays = Math.floor(totalHours / 24)
-  form.leaveDays = wholeDays
+  const dayCount = countCalendarDaysInclusive(startTime, endTime)
+  form.leaveDays = parseFloat(dayCount.toFixed(2))
   form.leaveHours = parseFloat(totalHours.toFixed(2))
 }
 
@@ -306,6 +307,22 @@ function getWorkingHoursBetween (startStr, endStr) {
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
   const totalMs = end.getTime() - start.getTime()
   return parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2))
+}
+
+/**
+ * 计算跨越的自然日天数（包含起止当日）
+ * 入参：开始/结束时间字符串或Date
+ * 返回：end > start 时返回至少 1 的天数；否则返回 0
+ */
+function countCalendarDaysInclusive (startStr, endStr) {
+  const start = new Date(typeof startStr === 'string' ? startStr.replace(' ', 'T') : startStr)
+  const end = new Date(typeof endStr === 'string' ? endStr.replace(' ', 'T') : endStr)
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
+  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+  const msPerDay = 24 * 60 * 60 * 1000
+  const diffDays = Math.floor((endDate.getTime() - startDate.getTime()) / msPerDay)
+  return diffDays + 1
 }
 
 /**

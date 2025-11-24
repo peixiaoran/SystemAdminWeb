@@ -90,11 +90,7 @@ import {
   GET_USER_LOGIN_LOG_PAGES_API
 } from '@/config/api/systembasicmgmt/system-settings/userloginlog'
 import { ElMessage } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
-
-// 初始化i18n
-const { t } = useI18n()
 
 // 员工操作日志数据
 const userloginlogList = ref([])
@@ -103,7 +99,7 @@ const loading = ref(false)
 // 分页信息
 const pagination = reactive({
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 50,
   totalCount: 0
 })
 
@@ -159,11 +155,6 @@ const handleSearch = () => {
   pagination.pageIndex = 1
   loading.value = true
   debouncedFetchUserLoginLogPages()
-}
-
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const fetchUserLoginLogPagesImmediate = () => {
-  fetchUserLoginLogPages()
 }
 
 // 重置搜索条件

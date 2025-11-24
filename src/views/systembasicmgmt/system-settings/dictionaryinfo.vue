@@ -122,9 +122,11 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
-            <el-input v-model="editForm.dicCode" 
-                     style="width:100%" 
-                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
+            <el-input-number 
+              v-model="editForm.dicCode"
+              :step="1"
+              style="width:100%"
+            />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
             <el-input v-model="editForm.dicNameCn" style="width:100%" />
@@ -136,10 +138,8 @@
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" prop="sortOrder">
             <el-input-number v-model="editForm.sortOrder" 
-                           :min="0" 
-                           :max="999" 
                            :step="1" 
-                           style="width:50%"
+                           style="width:100%"
                            :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
           </el-form-item>
         </div>
@@ -210,7 +210,7 @@ const editForm = reactive({
   dicId: '',
   moduleId: '',
   dicType: '',
-  dicCode: '',
+  dicCode: null,
   dicNameCn: '',
   dicNameEn: '',
   sortOrder: 0
@@ -229,6 +229,7 @@ const formRules = reactive({
   ],
   dicCode: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
+    ,{ type: 'number', message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'change' }
   ],
   dicNameCn: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
@@ -419,7 +420,7 @@ const resetForm = (clearValidation = true) => {
     dicId: '',
     moduleId: '',
     dicType: '',
-    dicCode: '',
+    dicCode: null,
     dicNameCn: '',
     dicNameEn: '',
     sortOrder: 0
@@ -523,7 +524,8 @@ const handleEdit = async (index, row) => {
     // 填充数据，确保 moduleId 存在且为字符串，避免校验错误
     Object.assign(editForm, {
       ...dictionaryData,
-      moduleId: String(dictionaryData.moduleId || '')
+      moduleId: String(dictionaryData.moduleId || ''),
+      dicCode: Number(dictionaryData.dicCode ?? 0)
     })
     dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
     dialogVisible.value = true

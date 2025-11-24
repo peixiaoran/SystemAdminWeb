@@ -1,7 +1,7 @@
 import axios from 'axios'
 import i18n from '@/i18n'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
-import { handleNetworkError } from '@/utils/errorHandler'
+import { handleNetworkError, ERROR_LEVELS } from '@/utils/errorHandler'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -27,7 +27,11 @@ const generateRequestKey = (config) => {
   return `${method}:${url}:${JSON.stringify(params || {})}:${JSON.stringify(data || {})}`
 }
 
-// 统一处理登出逻辑（不再显示登录过期提示）
+// 统一处理登出逻辑
+/**
+ * 执行统一登出流程
+ * 说明：清理本地状态与请求缓存，并跳转到登录页
+ */
 const handleLogout = () => {
   localStorage.removeItem('token')
   // 清除缓存
@@ -171,6 +175,10 @@ setInterval(cleanExpiredCache, 60000) // 每分钟清理一次
  * @param {string} method - 请求方法：get | post | put | delete
  * @returns {Function} 发起请求的异步函数
  */
+/**
+ * 创建请求方法
+ * 说明：封装HTTP请求的通用处理，包含401/403等状态的统一处理与提示
+ */
 const createRequest = (method) => async (url, data, options = {}) => {
   try {
     const config = {
@@ -202,38 +210,46 @@ const createRequest = (method) => async (url, data, options = {}) => {
     if (error && error.response) {
       const status = error.response.status
       if (status === 401) {
-        // 认证失效（HTTP 401）：直接登出并跳转登录，不再显示过期提示
-        handleLogout()
-        // 不显示额外的错误提示
-        handleNetworkError(error, { showMessage: false })
+        // 认证失效（HTTP 401）：显示登录过期警告提示，然后登出并跳转登录
+        handleNetworkError(error, { showMessage: true, level: ERROR_LEVELS.WARNING })
+        // 延迟执行登出，确保提示信息能够显示
+        setTimeout(() => {
+          handleLogout()
+        }, 1500)
+        // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
         return {
-          code: 401,
+          code: 200,
           data: null,
-          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-          success: false
+          totalCount: 0,
+          message: '',
+          success: true
         }
       }
       
       if (status === 403) {
-      // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
-      has403ErrorOccurred = true
-      window.location.href = '/#/403'
-      // 记录错误但不返回提示文案
-      handleNetworkError(error, { showMessage: false })
-      return {
-        code: 403,
-        data: null,
-        message: '权限不足，无法访问该资源',
-        success: false
-      }
-    }
-      
-      // 处理业务错误
-      // 业务码401：直接登出并跳转登录，不再显示过期提示
-      if (error.response.data?.code === 401) {
-        handleLogout()
-        // 不显示额外的错误提示
+        // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
+        has403ErrorOccurred = true
+        window.location.href = '/#/403'
+        // 记录错误但不返回提示文案
         handleNetworkError(error, { showMessage: false })
+        // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
+        return {
+          code: 200,
+          data: null,
+          totalCount: 0,
+          message: '',
+          success: true
+        }
+      }
+      
+      // 处理业务错误码（仅处理HTTP状态码非401的情况，避免重复提示）
+      // 业务码401：显示登录过期警告提示，然后登出并跳转登录
+      if (error.response.data?.code === 401 && status !== 401) {
+        handleNetworkError(error, { showMessage: true, level: ERROR_LEVELS.WARNING })
+        // 延迟执行登出，确保提示信息能够显示
+        setTimeout(() => {
+          handleLogout()
+        }, 1500)
         return {
           code: 401,
           data: null,
