@@ -19,7 +19,8 @@ const pendingRequests = new Map()
 // 防抖延迟时间（毫秒）
 const DEBOUNCE_DELAY = 100
 
-// 全局状态管理 - 跟踪403错误发生
+// 全局状态管理 - 跟踪401/403错误发生
+let has401ErrorOccurred = false
 let has403ErrorOccurred = false
 
 // 生成请求唯一标识
@@ -38,6 +39,9 @@ const handleLogout = () => {
   // 清除缓存
   requestCache.clear()
   pendingRequests.clear()
+  // 重置错误标志位
+  has401ErrorOccurred = false
+  has403ErrorOccurred = false
   // 使用window.location而不是router
   window.location.href = '/#/login'
 }
@@ -45,11 +49,11 @@ const handleLogout = () => {
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 如果已经发生过403错误，直接取消后续请求
-    if (has403ErrorOccurred) {
+    // 如果已经发生过401或403错误，直接取消后续请求
+    if (has401ErrorOccurred || has403ErrorOccurred) {
       const source = axios.CancelToken.source()
       config.cancelToken = source.token
-      source.cancel('Request cancelled due to previous 403 error')
+      source.cancel('Request cancelled due to previous 401/403 error')
       return config
     }
     
@@ -211,16 +215,19 @@ const createRequest = (method) => async (url, data, options = {}) => {
     if (error && error.response) {
       const status = error.response.status
       if (status === 401) {
-        // 认证失效（HTTP 401）：显示登录过期警告提示，然后登出并跳转登录
-        ElMessage({
-          type: 'warning',
-          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-          duration: 3000,
-          plain: true,
-          showClose: true
-        })
-        // 立即执行登出并跳转登录
-        handleLogout()
+        // 认证失效（HTTP 401）：只在第一次时显示登录过期警告提示
+        if (!has401ErrorOccurred) {
+          has401ErrorOccurred = true
+          ElMessage({
+            type: 'warning',
+            message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+            duration: 3000,
+            plain: true,
+            showClose: true
+          })
+          // 立即执行登出并跳转登录
+          handleLogout()
+        }
         // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
         return {
           code: 200,
@@ -248,17 +255,20 @@ const createRequest = (method) => async (url, data, options = {}) => {
       }
       
       // 处理业务错误码（仅处理HTTP状态码非401的情况，避免重复提示）
-      // 业务码401：显示登录过期警告提示，然后登出并跳转登录
+      // 业务码401：只在第一次时显示登录过期警告提示
       if (error.response.data?.code === 401 && status !== 401) {
-        ElMessage({
-          type: 'warning',
-          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-          duration: 3000,
-          plain: true,
-          showClose: true
-        })
-        // 立即执行登出并跳转登录
-        handleLogout()
+        if (!has401ErrorOccurred) {
+          has401ErrorOccurred = true
+          ElMessage({
+            type: 'warning',
+            message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+            duration: 3000,
+            plain: true,
+            showClose: true
+          })
+          // 立即执行登出并跳转登录
+          handleLogout()
+        }
         return {
           code: 200,
           data: null,
