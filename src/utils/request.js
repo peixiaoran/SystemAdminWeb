@@ -253,7 +253,7 @@ const createRequest = (method) => async (url, data, options = {}) => {
         return {
           code: 401,
           data: null,
-          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+          message: '', // handleNetworkError已经显示了警告消息，这里不需要再设置message
           success: false
         }
       }
