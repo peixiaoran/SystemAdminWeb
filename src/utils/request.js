@@ -1,5 +1,6 @@
 import axios from 'axios'
 import i18n from '@/i18n'
+import { ElMessage } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
 import { handleNetworkError, ERROR_LEVELS } from '@/utils/errorHandler'
 
@@ -211,7 +212,13 @@ const createRequest = (method) => async (url, data, options = {}) => {
       const status = error.response.status
       if (status === 401) {
         // 认证失效（HTTP 401）：显示登录过期警告提示，然后登出并跳转登录
-        handleNetworkError(error, { showMessage: true, level: ERROR_LEVELS.WARNING })
+        ElMessage({
+          type: 'warning',
+          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+          duration: 3000,
+          plain: true,
+          showClose: true
+        })
         // 延迟执行登出，确保提示信息能够显示
         setTimeout(() => {
           handleLogout()
@@ -245,16 +252,23 @@ const createRequest = (method) => async (url, data, options = {}) => {
       // 处理业务错误码（仅处理HTTP状态码非401的情况，避免重复提示）
       // 业务码401：显示登录过期警告提示，然后登出并跳转登录
       if (error.response.data?.code === 401 && status !== 401) {
-        handleNetworkError(error, { showMessage: true, level: ERROR_LEVELS.WARNING })
+        ElMessage({
+          type: 'warning',
+          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+          duration: 3000,
+          plain: true,
+          showClose: true
+        })
         // 延迟执行登出，确保提示信息能够显示
         setTimeout(() => {
           handleLogout()
         }, 1500)
         return {
-          code: 401,
+          code: 200,
           data: null,
-          message: '', // handleNetworkError已经显示了警告消息，这里不需要再设置message
-          success: false
+          totalCount: 0,
+          message: '',
+          success: true
         }
       }
       if (error.response.data?.code && error.response.data.code !== 200) {
