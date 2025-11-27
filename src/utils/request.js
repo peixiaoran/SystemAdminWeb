@@ -29,6 +29,14 @@ const generateRequestKey = (config) => {
   return `${method}:${url}:${JSON.stringify(params || {})}:${JSON.stringify(data || {})}`
 }
 
+// 取消所有pending请求
+export const cancelAllRequests = () => {
+  for (const [key, requestInfo] of pendingRequests.entries()) {
+    requestInfo.source.cancel('Request cancelled by user')
+  }
+  pendingRequests.clear()
+}
+
 // 统一处理登出逻辑
 /**
  * 执行统一登出流程
@@ -38,7 +46,8 @@ const handleLogout = () => {
   localStorage.removeItem('token')
   // 清除缓存
   requestCache.clear()
-  pendingRequests.clear()
+  // 取消并清理所有请求
+  cancelAllRequests()
   // 重置错误标志位
   has401ErrorOccurred = false
   has403ErrorOccurred = false
@@ -218,6 +227,10 @@ const createRequest = (method) => async (url, data, options = {}) => {
         // 认证失效（HTTP 401）：只在第一次时显示登录过期警告提示
         if (!has401ErrorOccurred) {
           has401ErrorOccurred = true
+          
+          // 取消所有正在进行的请求
+          cancelAllRequests()
+          
           ElMessage({
             type: 'warning',
             message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
@@ -259,6 +272,10 @@ const createRequest = (method) => async (url, data, options = {}) => {
       if (error.response.data?.code === 401 && status !== 401) {
         if (!has401ErrorOccurred) {
           has401ErrorOccurred = true
+          
+          // 取消所有正在进行的请求
+          cancelAllRequests()
+          
           ElMessage({
             type: 'warning',
             message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
@@ -316,14 +333,6 @@ export const del = createRequest('delete')
 // 提供清除缓存的方法
 export const clearCache = () => {
   requestCache.clear()
-}
-
-// 取消所有pending请求
-export const cancelAllRequests = () => {
-  for (const [key, requestInfo] of pendingRequests.entries()) {
-    requestInfo.source.cancel('Request cancelled by user')
-  }
-  pendingRequests.clear()
 }
 
 // 已移除sanitizeHtml函数，不再需要
