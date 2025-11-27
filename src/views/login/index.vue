@@ -95,7 +95,7 @@
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, resetAuthErrorState } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
@@ -171,6 +171,7 @@ const handleLogin = () => {
         password: loginForm.password
       }).then(res => {
           if (res.code === 200) {
+            resetAuthErrorState()
             // 设置标题
             document.title = t('common.systemTitle')
             // 获取员工store

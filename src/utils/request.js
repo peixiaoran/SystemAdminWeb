@@ -2,7 +2,7 @@ import axios from 'axios'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
-import { handleNetworkError, ERROR_LEVELS } from '@/utils/errorHandler'
+import { handleNetworkError } from '@/utils/errorHandler'
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -29,14 +29,6 @@ const generateRequestKey = (config) => {
   return `${method}:${url}:${JSON.stringify(params || {})}:${JSON.stringify(data || {})}`
 }
 
-// 取消所有pending请求
-export const cancelAllRequests = () => {
-  for (const [key, requestInfo] of pendingRequests.entries()) {
-    requestInfo.source.cancel('Request cancelled by user')
-  }
-  pendingRequests.clear()
-}
-
 // 统一处理登出逻辑
 /**
  * 执行统一登出流程
@@ -46,11 +38,7 @@ const handleLogout = () => {
   localStorage.removeItem('token')
   // 清除缓存
   requestCache.clear()
-  // 取消并清理所有请求
-  cancelAllRequests()
-  // 重置错误标志位
-  has401ErrorOccurred = false
-  has403ErrorOccurred = false
+  pendingRequests.clear()
   // 使用window.location而不是router
   window.location.href = '/#/login'
 }
@@ -58,16 +46,8 @@ const handleLogout = () => {
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 如果已经发生过401或403错误，直接取消后续请求
-    if (has401ErrorOccurred || has403ErrorOccurred) {
-      const source = axios.CancelToken.source()
-      config.cancelToken = source.token
-      source.cancel('Request cancelled due to previous 401/403 error')
-      return config
-    }
-    
     // 获取当前请求的URL路径
-    const requestPath = config.url
+    const requestPath = config.url || ''
     
     // 检查是否是登录API
     const isLoginRequest = requestPath.includes(LOGIN_API.USER_LOGIN)
@@ -130,6 +110,32 @@ service.interceptors.response.use(
     // 请求完成后从pending中移除
     if (pendingRequests.has(requestKey)) {
       pendingRequests.delete(requestKey)
+    }
+    
+    // 检查业务码 401（HTTP 200 但业务码为 401 的情况）
+    // 例如：{ code: 401, data: false, message: "Unauthorized: Invalid or expired token." }
+    if (response.data && response.data.code === 401) {
+      // 只在第一次时显示登录过期警告提示
+      if (!has401ErrorOccurred) {
+        has401ErrorOccurred = true
+        ElMessage({
+          type: 'warning',
+          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+          duration: 3000,
+          plain: true,
+          showClose: true
+        })
+        // 立即执行登出并跳转登录
+        handleLogout()
+      }
+      // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
+      return {
+        code: 200,
+        data: null,
+        totalCount: 0,
+        message: '',
+        success: true
+      }
     }
     
     // 对GET请求进行缓存（排除登录等敏感请求）
@@ -227,10 +233,6 @@ const createRequest = (method) => async (url, data, options = {}) => {
         // 认证失效（HTTP 401）：只在第一次时显示登录过期警告提示
         if (!has401ErrorOccurred) {
           has401ErrorOccurred = true
-          
-          // 取消所有正在进行的请求
-          cancelAllRequests()
-          
           ElMessage({
             type: 'warning',
             message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
@@ -272,10 +274,6 @@ const createRequest = (method) => async (url, data, options = {}) => {
       if (error.response.data?.code === 401 && status !== 401) {
         if (!has401ErrorOccurred) {
           has401ErrorOccurred = true
-          
-          // 取消所有正在进行的请求
-          cancelAllRequests()
-          
           ElMessage({
             type: 'warning',
             message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
@@ -333,6 +331,20 @@ export const del = createRequest('delete')
 // 提供清除缓存的方法
 export const clearCache = () => {
   requestCache.clear()
+}
+
+// 取消所有pending请求
+export const cancelAllRequests = () => {
+  for (const [key, requestInfo] of pendingRequests.entries()) {
+    requestInfo.source.cancel('Request cancelled by user')
+  }
+  pendingRequests.clear()
+}
+
+// 重置认证错误标志，允许新的请求继续发送
+export const resetAuthErrorState = () => {
+  has401ErrorOccurred = false
+  has403ErrorOccurred = false
 }
 
 // 已移除sanitizeHtml函数，不再需要
