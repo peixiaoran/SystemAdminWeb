@@ -98,15 +98,15 @@
       </el-card>
       
       <el-dialog v-model="dialogVisible"
-                     :title="dialogTitle"
-                     width="75%"
-                     :close-on-click-modal="false"
-                     :append-to-body="true"
-                   :modal-append-to-body="true"
-                   :modal="true"
-                   :lock-scroll="true"
-                   draggable
-                   @close="handleDialogClose">
+                 :title="dialogTitle"
+                 width="75%"
+                 :close-on-click-modal="false"
+                 :append-to-body="true"
+                 :modal-append-to-body="true"
+                 :modal="true"
+                 :lock-scroll="true"
+                 draggable
+                 @close="handleDialogClose">
         <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="用户编辑">
         
         <div class="form-row four-columns">
@@ -783,7 +783,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       }
       const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, params)
 
-      if (res && res.code === 200) {
+      if (res && res.code === 200 && res.data) {
           // 先保存通知状态，以便在 watch 触发前记录原始值
           if (res.data.isRealtimeNotification !== undefined && res.data.isScheduledNotification !== undefined) {
               previousNotificationState.isRealtimeNotification = res.data.isRealtimeNotification

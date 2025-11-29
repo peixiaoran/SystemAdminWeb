@@ -15,13 +15,13 @@
     "@element-plus/icons-vue": "^2.3.2",
     "axios": "^1.13.2",
     "echarts": "^6.0.0",
-    "element-plus": "^2.11.8",
+    "element-plus": "^2.11.9",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.4",
-    "pinia-plugin-persistedstate": "^4.5.0",
-    "vue": "^3.5.24",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "vue": "^3.5.25",
     "vue-demi": "^0.14.10",
-    "vue-i18n": "^11.1.12",
+    "vue-i18n": "^11.2.2",
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
@@ -29,11 +29,11 @@
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "eslint": "^9.39.1",
-    "eslint-plugin-vue": "^10.5.1",
-    "terser": "^5.44.0",
+    "eslint-plugin-vue": "^10.6.2",
+    "terser": "^5.44.1",
     "vite": "^7.2.4",
-    "vite-imagetools": "^9.0.0",
+    "vite-imagetools": "^9.0.2",
     "vite-plugin-compression": "^0.5.1",
-    "vue-tsc": "^3.1.4"
+    "vue-tsc": "^3.1.5"
   }
 }

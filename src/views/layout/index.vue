@@ -307,7 +307,14 @@ const handleLanguageChange = (lang) => {
   window.location.reload()
 }
 
-
+const NOT_FOUND_ROUTE_NAMES = ['NotFound', 'not-found', '404']
+const isNotFoundRoute = (matchedRoute) => {
+  if (!matchedRoute) return false
+  if (matchedRoute.name && NOT_FOUND_ROUTE_NAMES.includes(String(matchedRoute.name))) {
+    return true
+  }
+  return matchedRoute.matched?.some(record => record.path?.includes(':pathMatch')) ?? false
+}
 
 // 格式化路径辅助函数
 const getFormattedPath = (path) => {
@@ -352,6 +359,9 @@ const handleMenuSelect = (index, indexPath) => {
     
     // 检查是否是有效路由且没有noTag标记
     if (matchedRoute && matchedRoute.matched && matchedRoute.matched.length > 0) {
+      if (isNotFoundRoute(matchedRoute)) {
+        return;
+      }
       const hasNoTagMark = matchedRoute.meta && matchedRoute.meta.noTag;
       
       // 如果路由不应该有标签，则不处理
@@ -422,6 +432,13 @@ watch(() => route.path, (newPath, oldPath) => {
     return;
   }
   
+  const matchedRoute = router.resolve(newPath)
+  if (!matchedRoute || isNotFoundRoute(matchedRoute)) {
+    activeTabName.value = ''
+    activeMenu.value = ''
+    return
+  }
+  
   // 使用防抖优化菜单展开操作
   if (menuExpandTimer) clearTimeout(menuExpandTimer)
   menuExpandTimer = setTimeout(() => {
@@ -439,8 +456,6 @@ watch(() => route.path, (newPath, oldPath) => {
   
   // 如果新路径不在标签中，但是不是由刷新引起的路由变化（oldPath存在），尝试添加新标签
   if (oldPath && oldPath !== '/' && oldPath !== '/login') {
-    // 尝试获取路由信息以添加新标签
-    const matchedRoute = router.resolve(newPath)
     if (matchedRoute?.name) {
       // 检查是否有noTag标记
       if (matchedRoute.meta?.noTag) {
@@ -643,7 +658,9 @@ const addTab = (menu) => {
     
     // 如果路由不存在，显示警告并返回
     if (!matchedRoute || !matchedRoute.matched || matchedRoute.matched.length === 0) {
-      ElMessage.warning(`路由 ${formattedPath} 不存在`)
+      return
+    }
+    if (isNotFoundRoute(matchedRoute)) {
       return
     }
     
@@ -951,6 +968,12 @@ onMounted(async () => {
     
     // 获取匹配的路由
     const matchedRoute = router.resolve(currentPath)
+    
+    if (!matchedRoute || isNotFoundRoute(matchedRoute)) {
+      activeTabName.value = ''
+      activeMenu.value = ''
+      return
+    }
     
     // 检查是否有noTag标记
     const hasNoTagMark = matchedRoute && matchedRoute.meta && matchedRoute.meta.noTag
