@@ -957,6 +957,7 @@ export default {
       deleteConfirm: 'Are you sure you want to delete this dictionary?',
       pleaseInputDicType: 'Please enter dictionary type',
       pleaseSelectDicType: 'Please select dictionary type',
+      pleaseInputDicCode: 'Please enter dictionary code',
       pleaseInputDicNameCn: 'Please enter dictionary name (Ch)',
       pleaseInputDicNameEn: 'Please enter dictionary name (En)',
       pleaseInputSortOrder: 'Please enter sort order',

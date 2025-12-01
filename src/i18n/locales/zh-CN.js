@@ -1174,6 +1174,7 @@ export default {
       addDictionary: '新增字典',
       editDictionary: '编辑字典信息',
       deleteConfirm: '确定要删除该条记录吗？',
+      pleaseInputDicCode: '请输入字典编码',
       pleaseInputDicNameCn: '请输入中文名称',
       pleaseInputDicNameEn: '请输入英文名称',
       pleaseInputSortOrder: '请输入排序',
