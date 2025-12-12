@@ -7,7 +7,9 @@ import { handleNetworkError } from '@/utils/errorHandler'
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
   baseURL: BASE_API_URL, // 使用配置文件中的API基础URL
-  timeout: API_TIMEOUT // 使用配置文件中的超时时间
+  timeout: API_TIMEOUT, // 使用配置文件中的超时时间
+  // 使用 HttpOnly Cookie 作为认证方式时，必须携带凭证（跨域也需要）
+  withCredentials: true
 })
 
 // 请求缓存Map - 用于缓存GET请求结果
@@ -35,7 +37,16 @@ const generateRequestKey = (config) => {
  * 说明：清理本地状态与请求缓存，并跳转到登录页
  */
 const handleLogout = () => {
+  // Cookie(HttpOnly) 无法由前端直接删除，这里仅清理前端本地状态
   localStorage.removeItem('token')
+  localStorage.removeItem('user-store')
+  localStorage.removeItem('userNameCn')
+  localStorage.removeItem('userNameEn')
+  localStorage.removeItem('loginNo')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('currentModuleId')
+  localStorage.removeItem('currentModuleName')
+  localStorage.removeItem('currentSystemPath')
   // 清除缓存
   requestCache.clear()
   pendingRequests.clear()
@@ -52,12 +63,9 @@ service.interceptors.request.use(
     // 检查是否是登录API
     const isLoginRequest = requestPath.includes(LOGIN_API.USER_LOGIN)
     
-    // 只有非登录请求才添加token
-    const token = localStorage.getItem('token')
-    if (token && !isLoginRequest) {
-      // 让每个非登录请求携带token
-      config.headers['Authorization'] = `Bearer ${token}`
-    }
+    // Cookie(HttpOnly) 登录：不再从 localStorage 注入 Authorization
+    // 仅保留 isLoginRequest 判断用于未来扩展（例如登录接口特殊处理）
+    void isLoginRequest
 
     // 添加语言参数到请求头
     const language = localStorage.getItem('language') || 'zh-CN'
@@ -112,32 +120,6 @@ service.interceptors.response.use(
       pendingRequests.delete(requestKey)
     }
     
-    // 检查业务码 401（HTTP 200 但业务码为 401 的情况）
-    // 例如：{ code: 401, data: false, message: "Unauthorized: Invalid or expired token." }
-    if (response.data && response.data.code === 401) {
-      // 只在第一次时显示登录过期警告提示
-      if (!has401ErrorOccurred) {
-        has401ErrorOccurred = true
-        ElMessage({
-          type: 'warning',
-          message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-          duration: 3000,
-          plain: true,
-          showClose: true
-        })
-        // 立即执行登出并跳转登录
-        handleLogout()
-      }
-      // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
-      return {
-        code: 200,
-        data: null,
-        totalCount: 0,
-        message: '',
-        success: true
-      }
-    }
-    
     // 对GET请求进行缓存（排除登录等敏感请求）
     if (config.method === 'get' && !config.url.includes('login')) {
       const cacheData = {
@@ -188,7 +170,6 @@ setInterval(cleanExpiredCache, 60000) // 每分钟清理一次
  * 封装HTTP请求方法，添加全局错误处理和缓存
  * 错误处理策略：
  * - HTTP 401：不提示，立即清理登录状态并跳转到登录页
- * - 业务码 401（data.code === 401）：不提示，行为与HTTP 401一致
  * - HTTP 403：不提示，直接跳转到403错误页
  * - 其它HTTP错误：返回标准错误对象，由调用方自行处理提示
  * - 取消与超时：透传错误供调用方自行处理
@@ -229,6 +210,12 @@ const createRequest = (method) => async (url, data, options = {}) => {
     // 处理特定状态码
     if (error && error.response) {
       const status = error.response.status
+
+      // 仅按HTTP状态码判断：若响应状态为200，则视为正常返回（不再判断 data?.code）
+      if (status === 200) {
+        return error.response.data
+      }
+
       if (status === 401) {
         // 认证失效（HTTP 401）：只在第一次时显示登录过期警告提示
         if (!has401ErrorOccurred) {
@@ -266,38 +253,6 @@ const createRequest = (method) => async (url, data, options = {}) => {
           totalCount: 0,
           message: '',
           success: true
-        }
-      }
-      
-      // 处理业务错误码（仅处理HTTP状态码非401的情况，避免重复提示）
-      // 业务码401：只在第一次时显示登录过期警告提示
-      if (error.response.data?.code === 401 && status !== 401) {
-        if (!has401ErrorOccurred) {
-          has401ErrorOccurred = true
-          ElMessage({
-            type: 'warning',
-            message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-            duration: 3000,
-            plain: true,
-            showClose: true
-          })
-          // 立即执行登出并跳转登录
-          handleLogout()
-        }
-        return {
-          code: 200,
-          data: null,
-          totalCount: 0,
-          message: '',
-          success: true
-        }
-      }
-      if (error.response.data?.code && error.response.data.code !== 200) {
-        return {
-          code: error.response.data.code,
-          data: null,
-          message: error.response.data.message,
-          success: false
         }
       }
       

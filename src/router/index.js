@@ -534,9 +534,11 @@ router.beforeEach((to, from, next) => {
   
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('token')
+    // Cookie(HttpOnly) 模式下前端拿不到 token；用本地持久化的用户标识作为“已登录”前端态
+    const loginNo = localStorage.getItem('loginNo')
+    const userId = localStorage.getItem('userId')
     
-    if (!token) {
+    if (!loginNo && !userId) {
       // 清除本地数据
       localStorage.removeItem('username')
       localStorage.removeItem('currentModuleId')

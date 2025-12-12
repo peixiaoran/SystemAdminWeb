@@ -79,5 +79,6 @@ export const EXPORT_USERS_API = {
 
 // 头像上传API
 export const UPLOAD_AVATAR_API = {
-  UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicCoreApi/SysFile/UploadFile'
+  // 对应后端路由：SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar（方法名可为 UploadAvatarAsync）
+  UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar'
 }

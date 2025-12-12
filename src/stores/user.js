@@ -11,14 +11,14 @@ export const useUserStore = defineStore('user', {
     userNameEn: '',
     loginNo: '',
     avatar: '',
-    token: localStorage.getItem('token') || '',
     roles: [],
     permissions: []
   }),
   
   getters: {
     // 是否已登录
-    isLoggedIn: (state) => !!state.token,
+    // Cookie(HttpOnly) 模式下前端无法读取 token；以用户标识是否存在作为“已登录”的前端态
+    isLoggedIn: (state) => !!(state.loginNo || state.userId),
     
     // 根据当前语言获取用户名
     getDisplayName: (state) => {
@@ -46,12 +46,7 @@ export const useUserStore = defineStore('user', {
       localStorage.setItem('userNameCn', userInfo.userNameCn)
       localStorage.setItem('userNameEn', userInfo.userNameEn)
       localStorage.setItem('loginNo', userInfo.loginNo)
-    },
-    
-    // 设置Token
-    setToken(token) {
-      this.token = token
-      localStorage.setItem('token', token)
+      localStorage.setItem('userId', userInfo.userId)
     },
     
     // 设置角色和权限
@@ -69,16 +64,16 @@ export const useUserStore = defineStore('user', {
         // 检查返回结果
         if (response && response.code === 200) {
           // 清除本地存储
-          localStorage.removeItem('token')
           localStorage.removeItem('userNameCn')
           localStorage.removeItem('userNameEn')
           localStorage.removeItem('loginNo')
+          localStorage.removeItem('userId')
           localStorage.removeItem('currentModuleId')
           localStorage.removeItem('currentModuleName')
           localStorage.removeItem('currentSystemPath')
+          localStorage.removeItem('user-store')
           
           // 重置状态
-          this.token = ''
           this.userId = ''
           this.userNameCn = ''
           this.userNameEn = ''
@@ -106,7 +101,6 @@ export const useUserStore = defineStore('user', {
     
     // 重置状态
     resetState() {
-      this.token = ''
       this.userId = ''
       this.userNameCn = ''
       this.userNameEn = ''
@@ -121,6 +115,6 @@ export const useUserStore = defineStore('user', {
   persist: {
     key: 'user-store',
     storage: localStorage,
-    paths: ['token', 'userNameCn', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
+    paths: ['userNameCn', 'userNameEn', 'loginNo', 'userId', 'avatar', 'roles', 'permissions']
   }
 })

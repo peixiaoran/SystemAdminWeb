@@ -320,6 +320,7 @@
                class="avatar-uploader"
                :action="UPLOAD_CONFIG.url"
                :headers="UPLOAD_CONFIG.headers"
+               :with-credentials="true"
                :show-file-list="false"
                :on-success="handleAvatarSuccess"
                :before-upload="beforeAvatarUpload"
@@ -369,22 +370,18 @@ import { useUserStore } from '@/stores/user'
 // 初始化i18n
 const { t } = useI18n()
 
-// 初始化用户存储
+// 初始化用户存储（保留：页面可能仍依赖 store 的其它信息）
 const userStore = useUserStore()
 
-// 统一的文件上传配置
+// 统一的文件上传配置（每个页面从对应 api.js 读取接口地址）
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+const uploadAvatarPath = (UPLOAD_AVATAR_API.UPLOAD_AVATAR || '').replace(/^\/+/, '')
 const UPLOAD_CONFIG = reactive({
-  url: 'https://localhost:7272/api/systembasicmgmt/SystemBasicCoreApi/SysFile/UploadFile',
+  url: `${apiBaseUrl}/${uploadAvatarPath}`,
   headers: {
-    'Accept-Language': '',
-    'Authorization': `Bearer ${userStore.token}`
+    'Accept-Language': ''
   }
 })
-
-// 监听 token 变化，更新上传配置
-watch(() => userStore.token, (newToken) => {
-  UPLOAD_CONFIG.headers.Authorization = `Bearer ${newToken}`
- })
 
  // 员工数据
  const userList = ref([])

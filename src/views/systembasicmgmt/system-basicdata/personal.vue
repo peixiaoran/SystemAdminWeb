@@ -161,6 +161,7 @@
               class="avatar-uploader"
               :action="UPLOAD_CONFIG.url"
               :headers="UPLOAD_CONFIG.headers"
+              :with-credentials="true"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
@@ -230,17 +231,13 @@ export default {
     const saving = ref(false)
 
     // 统一的文件上传配置
+    const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+    const uploadAvatarPath = (UPLOAD_AVATAR_API.UPLOAD_AVATAR || '').replace(/^\/+/, '')
     const UPLOAD_CONFIG = reactive({
-      url: `https://localhost:7272/api/systembasicmgmt/${UPLOAD_AVATAR_API.UPLOAD_AVATAR}`,
+      url: `${apiBaseUrl}/${uploadAvatarPath}`,
       headers: {
-        'Accept-Language': '',
-        'Authorization': `Bearer ${userStore.token}`
+        'Accept-Language': ''
       }
-    })
-    
-    // 监听 token 变化，更新上传配置
-    watch(() => userStore.token, (newToken) => {
-      UPLOAD_CONFIG.headers.Authorization = `Bearer ${newToken}`
     })
 
     // 头像相关

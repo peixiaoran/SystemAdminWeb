@@ -1185,10 +1185,6 @@ export default {
         module: '所属模块',
         dicType: '字典类型',
         dicNameCn: '字典中文名称'
-      },
-      dicTypes: {
-        Bit: '字节类型',
-        Int: '数值类型'
       }
     },
     

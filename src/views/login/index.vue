@@ -176,25 +176,16 @@ const handleLogin = () => {
             document.title = t('common.systemTitle')
             // 获取员工store
             const userStore = useUserStore()
-            // 处理返回的数据
-            if (res.data) {
-              // 设置token
-              if (res.data.token) {
-                userStore.setToken(res.data.token)
-              } else if (res.data) {
-                // 如果直接返回的是token字符串
-                userStore.setToken(res.data)
-              }
-              
-              // 设置用户信息
-              userStore.setUserInfo({
-                userId: res.data.userId || '',
-                userNameCn: res.data.userNameCn || '',
-                userNameEn: res.data.userNameEn || '',
-                loginNo: res.data.loginNo || loginForm.loginNo,
-                avatar: res.data.avatarAddress || ''
-              })
-            }
+
+            // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token
+            // 仍保存必要的用户信息用于前端展示与路由守卫（loginNo/userId）
+            userStore.setUserInfo({
+              userId: res?.data?.userId || '',
+              userNameCn: res?.data?.userNameCn || '',
+              userNameEn: res?.data?.userNameEn || '',
+              loginNo: res?.data?.loginNo || loginForm.loginNo,
+              avatar: res?.data?.avatarAddress || ''
+            })
             
             // 直接跳转到模块选择页
             router.push('/module-select')
