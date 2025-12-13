@@ -124,10 +124,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <!-- 时间区间 -->
-        <el-row :gutter="16">
           <el-col :span="16">
             <el-form-item :label="t('formbusiness.leaveform.leaveTimeRange')" prop="leaveTimeRange">
               <el-date-picker

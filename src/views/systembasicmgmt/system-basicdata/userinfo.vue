@@ -366,6 +366,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 import { useUserStore } from '@/stores/user'
+import { resolveFileUrl } from '@/utils/fileUrl'
 
 // 初始化i18n
 const { t } = useI18n()
@@ -791,11 +792,8 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           
           // 设置头像显示
           if (res.data.avatarAddress) {
-              // 如果头像地址是相对路径，需要拼接完整的URL
-              const baseUrl = import.meta.env.VITE_API_BASE_URL || ''
-              avatarUrl.value = res.data.avatarAddress.startsWith('http') 
-                  ? res.data.avatarAddress 
-                  : `${baseUrl}/${res.data.avatarAddress}`
+              // 使用统一的文件访问域名（区分 dev/test/prod）
+              avatarUrl.value = resolveFileUrl(res.data.avatarAddress)
           }
       }
   }
@@ -1206,7 +1204,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   // 头像上传成功
   const handleAvatarSuccess = (res) => {
       editForm.avatarAddress = res.data
-      avatarUrl.value = res.data
+      avatarUrl.value = resolveFileUrl(res.data)
   
       ElMessage({
           message: t('systembasicmgmt.userInfo.avatarUploadSuccess') || '头像上传成功',

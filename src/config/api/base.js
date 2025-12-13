@@ -15,4 +15,8 @@ export const BASE_API_URL = env.VITE_API_BASE_URL
 export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
 export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 
+// 文件访问域名（用于图片/附件预览等，不等同于 API baseURL）
+export const FILE_BROWSER_BASE_URL =
+  env.VITE_FILE_BROWSER_BASE_URL
+
 

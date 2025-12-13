@@ -5,6 +5,19 @@ import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
 import { clearAuthStorage } from '@/utils/authStorage'
 
 /**
+ * 强制整页跳转到登录页（带 query 强制刷新），用于 401 会话失效场景。
+ * 说明：
+ * - 仅修改 hash 不会刷新页面，Pinia 的内存态/缓存可能仍在，导致登录页守卫又跳回 /module-select
+ * - 通过增加 search 参数触发浏览器 reload，确保前端内存态被清空
+ */
+const hardRedirectToLogin = () => {
+  const origin = window.location.origin
+  const basePath = window.location.pathname || '/'
+  const url = `${origin}${basePath}?_logout=${Date.now()}#/login`
+  window.location.replace(url)
+}
+
+/**
  * ---------------------------
  * 统一错误处理（由 `errorHandler.js` 合并而来）
  * 说明：为了减少重复与跨文件跳转，将错误处理逻辑与请求封装合并维护。
@@ -256,15 +269,30 @@ const generateRequestKey = (config) => {
  */
 const handleLogout = (options = {}) => {
   const { redirect = true } = options
+  
+  // 保存语言设置
+  const currentLanguage = localStorage.getItem('language')
+  
   // Cookie(HttpOnly) 无法由前端直接删除，这里仅清理前端本地状态
   clearAuthStorage()
+  
+  // 清除所有可能影响路由跳转的 localStorage 数据（包括 Pinia 持久化）
+  localStorage.removeItem('tabs-store')
+  localStorage.removeItem('pmenu-store')
+  localStorage.removeItem('user-store')  // 清除 Pinia 用户状态持久化
+  
+  // 恢复语言设置
+  if (currentLanguage) {
+    localStorage.setItem('language', currentLanguage)
+  }
+  
   // 清除请求防抖状态
   pendingRequests.clear()
-  // 使用 window.location 而不是 router（避免循环依赖）
+  
+  // 使用 window.location 强制跳转到登录页（避免循环依赖）
   if (redirect) {
-    if (window.location.hash !== '#/login') {
-      window.location.href = '/#/login'
-    }
+    // 强制整页刷新到登录页，避免 Pinia 内存态导致登录页守卫误跳转
+    hardRedirectToLogin()
   }
 }
 

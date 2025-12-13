@@ -206,6 +206,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { post } from '@/utils/request'
 import { useUserStore } from '@/stores/user'
+import { resolveFileUrl } from '@/utils/fileUrl'
 import {
   GET_PERSONAL_INFO_ENTITY_API,
   UPDATE_PERSONAL_INFO_API,
@@ -385,7 +386,8 @@ export default {
     const handleAvatarSuccess = (res) => {
       if (res && res.code === 200) {
         personalInfoForm.avatarAddress = res.data
-        avatarUrl.value = res.data
+        avatarUrl.value = resolveFileUrl(res.data)
+        console.log(avatarUrl.value)
         ElMessage({
           message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
           type: 'success',
@@ -413,7 +415,7 @@ export default {
         Object.assign(personalInfoForm, response.data)
         personalInfoForm.password = ''
         if (response.data.avatarAddress) {
-          avatarUrl.value = response.data.avatarAddress
+          avatarUrl.value = resolveFileUrl(response.data.avatarAddress)
         }
         Object.assign(originalFormData, response.data)
         originalFormData.password = ''

@@ -202,6 +202,7 @@ import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
+import { resolveFileUrl } from '@/utils/fileUrl'
 
 // 状态
 const router = useRouter()
@@ -212,7 +213,10 @@ const { t, locale } = useI18n()
 const isCollapse = ref(false)
 const menuList = ref([])
 const username = computed(() => userStore.getDisplayName)
-const userAvatar = computed(() => userStore.avatar || '')
+const userAvatar = computed(() => {
+  const avatar = userStore.avatar
+  return avatar ? resolveFileUrl(avatar) : ''
+})
 const currentSystemName = computed(() => {
   // 优先用多语言字段
   if (locale.value === 'en-US') {

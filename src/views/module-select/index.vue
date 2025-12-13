@@ -84,12 +84,16 @@ import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import { resolveFileUrl } from '@/utils/fileUrl'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const username = computed(() => userStore.getDisplayName)
-const userAvatar = computed(() => userStore.avatar || '')
+const userAvatar = computed(() => {
+  const avatar = userStore.avatar
+  return avatar ? resolveFileUrl(avatar) : ''
+})
 const pmenues = ref([])
 const loading = ref(true)
 const pmenuStore = usePMenuStore()
