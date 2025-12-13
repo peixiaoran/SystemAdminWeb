@@ -9,6 +9,7 @@ export default defineConfig(({ command, mode }) => {
   // 根据当前工作目录中的 `mode` 加载 .env 文件
   const env = loadEnv(mode, process.cwd(), '')
   const isProd = mode === 'production'
+  const outDir = env.VITE_BUILD_OUT_DIR || 'dist'
   
   return {
     plugins: [
@@ -62,7 +63,8 @@ export default defineConfig(({ command, mode }) => {
     },
     // 构建选项
     build: {
-      outDir: 'D:\\MyCode\\PlayCode\\SystemsWebDist', // 构建输出到指定目录
+      // 默认输出到相对路径 dist；支持通过 env 覆盖（建议仍使用相对路径，便于 CI/跨平台）
+      outDir,
       emptyOutDir: true,
       assetsDir: 'assets',
       sourcemap: env.DEV === 'true', // 只在开发环境启用

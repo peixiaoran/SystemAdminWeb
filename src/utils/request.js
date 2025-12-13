@@ -1,8 +1,230 @@
 import axios from 'axios'
 import i18n from '@/i18n'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
-import { handleNetworkError } from '@/utils/errorHandler'
+import { clearAuthStorage } from '@/utils/authStorage'
+
+/**
+ * ---------------------------
+ * 统一错误处理（由 `errorHandler.js` 合并而来）
+ * 说明：为了减少重复与跨文件跳转，将错误处理逻辑与请求封装合并维护。
+ * 说明：历史上的 `src/utils/errorHandler.js` 已删除。
+ * ---------------------------
+ */
+
+// 错误类型定义
+export const ERROR_TYPES = {
+  NETWORK: 'network',
+  VALIDATION: 'validation',
+  BUSINESS: 'business',
+  PERMISSION: 'permission',
+  UNKNOWN: 'unknown'
+}
+
+// 错误级别定义
+export const ERROR_LEVELS = {
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error',
+  CRITICAL: 'critical'
+}
+
+/**
+ * 解析错误信息
+ * @param {Error|Object} error - 错误对象
+ * @param {string} context - 错误上下文
+ */
+const parseError = (error, context) => {
+  let message = '未知错误'
+  let code = 'UNKNOWN'
+  let details = null
+
+  if (error?.response) {
+    // HTTP错误
+    const { status, data } = error.response
+    code = `HTTP_${status}`
+    message = data?.message || `HTTP错误 ${status}`
+    details = data
+  } else if (error?.code) {
+    // 业务错误
+    code = error.code
+    message = error.message || '业务处理失败'
+    details = error.data
+  } else if (error?.message) {
+    // 一般错误
+    message = error.message
+    code = 'GENERAL_ERROR'
+  } else if (typeof error === 'string') {
+    // 字符串错误
+    message = error
+    code = 'STRING_ERROR'
+  }
+
+  return {
+    message,
+    code,
+    details,
+    context,
+    timestamp: new Date().toISOString()
+  }
+}
+
+/**
+ * 显示错误消息
+ * @param {Object} errorInfo - 错误信息
+ * @param {string} level - 错误级别
+ */
+const showErrorMessage = (errorInfo, level) => {
+  const messageType = level === ERROR_LEVELS.WARNING ? 'warning' : 'error'
+  ElMessage({
+    type: messageType,
+    message: errorInfo.message,
+    duration: 5000,
+    plain: true,
+    showClose: true
+  })
+}
+
+/**
+ * 显示错误通知
+ * @param {Object} errorInfo - 错误信息
+ * @param {string} level - 错误级别
+ */
+const showErrorNotification = (errorInfo, level) => {
+  const notificationType = level === ERROR_LEVELS.WARNING ? 'warning' : 'error'
+  ElNotification({
+    type: notificationType,
+    title: '系统提示',
+    message: errorInfo.message,
+    duration: 8000,
+    showClose: true
+  })
+}
+
+/**
+ * 记录错误日志
+ * @param {Object} errorInfo - 错误信息
+ * @param {string} context - 错误上下文
+ * @param {string} type - 错误类型
+ */
+const logError = (errorInfo, context, type) => {
+  const logData = {
+    ...errorInfo,
+    type,
+    userAgent: navigator.userAgent,
+    url: window.location.href
+  }
+
+  // 开发环境下在控制台输出详细错误信息
+  if (import.meta.env.DEV) {
+    console.group(`错误日志 - ${context}`)
+    console.error('错误信息:', errorInfo.message)
+    console.error('错误代码:', errorInfo.code)
+    console.error('错误详情:', errorInfo.details)
+    console.error('完整日志:', logData)
+    console.groupEnd()
+  }
+
+  // 生产环境下可以发送到错误监控服务
+  if (import.meta.env.PROD) {
+    // 这里可以集成错误监控服务，如Sentry等
+    // sendToErrorMonitoring(logData)
+  }
+}
+
+/**
+ * 统一错误处理函数
+ * @param {Error|Object} error - 错误对象
+ * @param {string} context - 错误上下文
+ * @param {Object} options - 配置选项
+ */
+export const handleError = (error, context = '', options = {}) => {
+  const {
+    showMessage = true,
+    showNotification = false,
+    level = ERROR_LEVELS.ERROR,
+    type = ERROR_TYPES.UNKNOWN
+  } = options
+
+  // 获取错误信息
+  const errorInfo = parseError(error, context)
+
+  // 显示用户友好的错误提示
+  if (showMessage) {
+    showErrorMessage(errorInfo, level)
+  }
+
+  if (showNotification) {
+    showErrorNotification(errorInfo, level)
+  }
+
+  // 记录错误日志
+  logError(errorInfo, context, type)
+
+  return errorInfo
+}
+
+/**
+ * 创建带有错误处理的异步函数包装器
+ * @param {Function} asyncFn - 异步函数
+ * @param {string} context - 错误上下文
+ * @param {Object} options - 配置选项
+ */
+export const withErrorHandling = (asyncFn, context, options = {}) => {
+  return async (...args) => {
+    try {
+      return await asyncFn(...args)
+    } catch (error) {
+      handleError(error, context, options)
+      throw error // 重新抛出错误以便调用者处理
+    }
+  }
+}
+
+/**
+ * 表单验证错误处理
+ * @param {Object} errors - 验证错误对象
+ * @param {Object} formRef - 表单引用
+ */
+export const handleFormValidationError = (errors, formRef) => {
+  if (formRef && formRef.setFields) {
+    formRef.setFields(errors)
+  }
+
+  const firstError = Object.values(errors)[0]
+  if (firstError) {
+    ElMessage.warning(firstError.message || '表单验证失败')
+  }
+}
+
+/**
+ * 网络错误处理
+ * @param {Error} error - 网络错误
+ */
+export const handleNetworkError = (error, options = {}) => {
+  const { showMessage = false, showNotification = false, level = ERROR_LEVELS.ERROR } = options
+
+  // 规范化错误信息（超时/权限/服务器错误等）
+  let normalized
+  if (error?.code === 'ECONNABORTED' || error?.code === 'TIMEOUT' || (typeof error?.message === 'string' && error.message.toLowerCase().includes('timeout'))) {
+    normalized = { code: 'TIMEOUT', message: i18n.global.t('systembasicmgmt.errorHandler.timeout'), details: error.response?.data }
+  } else if (error?.response?.status === 401) {
+    normalized = { code: 'HTTP_401', message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'), details: error.response?.data }
+  } else if (error?.response?.status === 403) {
+    normalized = { code: 'HTTP_403', message: i18n.global.t('systembasicmgmt.errorHandler.forbidden'), details: error.response?.data }
+  } else if (error?.response?.status >= 500) {
+    normalized = { code: `HTTP_${error.response.status}`, message: i18n.global.t('systembasicmgmt.errorHandler.serverError'), details: error.response?.data }
+  } else {
+    normalized = { code: error?.code || 'NETWORK_ERROR', message: i18n.global.t('systembasicmgmt.errorHandler.networkError'), details: error.response?.data }
+  }
+
+  return handleError(normalized, '网络请求', {
+    showMessage,
+    showNotification,
+    level,
+    type: ERROR_TYPES.NETWORK
+  })
+}
 
 // 创建axios实例 - 使用环境变量中的API基础URL
 const service = axios.create({
@@ -11,10 +233,6 @@ const service = axios.create({
   // 使用 HttpOnly Cookie 作为认证方式时，必须携带凭证（跨域也需要）
   withCredentials: true
 })
-
-// 请求缓存Map - 用于缓存GET请求结果
-const requestCache = new Map()
-const CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存
 
 // 防抖Map - 防止重复请求
 const pendingRequests = new Map()
@@ -36,22 +254,18 @@ const generateRequestKey = (config) => {
  * 执行统一登出流程
  * 说明：清理本地状态与请求缓存，并跳转到登录页
  */
-const handleLogout = () => {
+const handleLogout = (options = {}) => {
+  const { redirect = true } = options
   // Cookie(HttpOnly) 无法由前端直接删除，这里仅清理前端本地状态
-  localStorage.removeItem('token')
-  localStorage.removeItem('user-store')
-  localStorage.removeItem('userNameCn')
-  localStorage.removeItem('userNameEn')
-  localStorage.removeItem('loginNo')
-  localStorage.removeItem('userId')
-  localStorage.removeItem('currentModuleId')
-  localStorage.removeItem('currentModuleName')
-  localStorage.removeItem('currentSystemPath')
-  // 清除缓存
-  requestCache.clear()
+  clearAuthStorage()
+  // 清除请求防抖状态
   pendingRequests.clear()
-  // 使用window.location而不是router
-  window.location.href = '/#/login'
+  // 使用 window.location 而不是 router（避免循环依赖）
+  if (redirect) {
+    if (window.location.hash !== '#/login') {
+      window.location.href = '/#/login'
+    }
+  }
 }
 
 // 请求拦截器
@@ -120,15 +334,6 @@ service.interceptors.response.use(
       pendingRequests.delete(requestKey)
     }
     
-    // 对GET请求进行缓存（排除登录等敏感请求）
-    if (config.method === 'get' && !config.url.includes('login')) {
-      const cacheData = {
-        data: response.data,
-        timestamp: Date.now()
-      }
-      requestCache.set(requestKey, cacheData)
-    }
-    
     // 移除XSS清洗，直接返回数据
     return response.data
   },
@@ -153,19 +358,6 @@ service.interceptors.response.use(
   }
 )
 
-// 清理过期缓存
-const cleanExpiredCache = () => {
-  const now = Date.now()
-  for (const [key, value] of requestCache.entries()) {
-    if (now - value.timestamp > CACHE_DURATION) {
-      requestCache.delete(key)
-    }
-  }
-}
-
-// 定期清理缓存
-setInterval(cleanExpiredCache, 60000) // 每分钟清理一次
-
 /**
  * 封装HTTP请求方法，添加全局错误处理和缓存
  * 错误处理策略：
@@ -173,30 +365,21 @@ setInterval(cleanExpiredCache, 60000) // 每分钟清理一次
  * - HTTP 403：不提示，直接跳转到403错误页
  * - 其它HTTP错误：返回标准错误对象，由调用方自行处理提示
  * - 取消与超时：透传错误供调用方自行处理
- * @param {string} method - 请求方法：get | post | put | delete
  * @returns {Function} 发起请求的异步函数
  */
 /**
  * 创建请求方法
  * 说明：封装HTTP请求的通用处理，包含401/403等状态的统一处理与提示
  */
-const createRequest = (method) => async (url, data, options = {}) => {
+const createPostRequest = () => async (url, data, options = {}) => {
   try {
+    // 允许调用方控制 401/403 的处理策略（用于 /me 探活闭环等场景）
+    const { silentAuthError = true, disableAutoLogout = false, ...axiosOptions } = options
     const config = {
       url,
-      method,
-      [['get', 'delete'].includes(method) ? 'params' : 'data']: data,
-      ...options
-    }
-    
-    // 检查GET请求缓存
-    if (method === 'get' && !options.skipCache) {
-      const requestKey = generateRequestKey(config)
-      const cached = requestCache.get(requestKey)
-      
-      if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-        return cached.data
-      }
+      method: 'post',
+      data,
+      ...axiosOptions
     }
     
     const response = await service(config)
@@ -207,13 +390,16 @@ const createRequest = (method) => async (url, data, options = {}) => {
       return Promise.reject(error)
     }
     
-    // 处理特定状态码
+    // 仅按 HTTP 状态码处理：
+    // - 400/401/403/404：在这里做统一处理（401/403 走全局跳转；400/404 返回标准错误对象）
+    // - 其它状态码：一律“正常返回” response.data，让各页面按业务码/业务逻辑自行处理
     if (error && error.response) {
       const status = error.response.status
+      const responseData = error.response.data
 
-      // 仅按HTTP状态码判断：若响应状态为200，则视为正常返回（不再判断 data?.code）
-      if (status === 200) {
-        return error.response.data
+      // 除 400/401/403/404 之外全部正常返回
+      if (![400, 401, 403, 404].includes(status)) {
+        return responseData
       }
 
       if (status === 401) {
@@ -227,17 +413,14 @@ const createRequest = (method) => async (url, data, options = {}) => {
             plain: true,
             showClose: true
           })
-          // 立即执行登出并跳转登录
-          handleLogout()
+          // 立即执行登出；默认跳转登录（可被 disableAutoLogout 关闭，由上层自行控制跳转）
+          handleLogout({ redirect: !options.disableAutoLogout })
         }
-        // 返回"静默成功"结果，避免各业务页面再次弹出错误提示
-        return {
-          code: 200,
-          data: null,
-          totalCount: 0,
-          message: '',
-          success: true
+        // 默认返回"静默成功"避免各业务页面重复提示；但允许调用方拿到明确 401（用于会话探活闭环）
+        if (options.silentAuthError === false) {
+          return { code: 401, data: null, message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'), success: false }
         }
+        return { code: 200, data: null, totalCount: 0, message: '', success: true }
       }
       
       if (status === 403) {
@@ -256,12 +439,12 @@ const createRequest = (method) => async (url, data, options = {}) => {
         }
       }
       
-      // 其它HTTP错误统一提示
+      // 仅处理 400/404：返回标准错误对象（同时保留后端返回体，供页面自行按需处理）
       const info = handleNetworkError(error, { showMessage: false })
       return {
         code: status,
-        data: null,
-        message: info.message,
+        data: responseData ?? null,
+        message: responseData?.message || info.message,
         success: false
       }
     }
@@ -277,16 +460,8 @@ const createRequest = (method) => async (url, data, options = {}) => {
   }
 }
 
-// 导出各种请求方法
-export const get = createRequest('get')
-export const post = createRequest('post')
-export const put = createRequest('put')
-export const del = createRequest('delete')
-
-// 提供清除缓存的方法
-export const clearCache = () => {
-  requestCache.clear()
-}
+// 仅导出 POST 请求（约定：业务系统所有接口均使用 POST，业务码由页面自行处理）
+export const post = createPostRequest()
 
 // 取消所有pending请求
 export const cancelAllRequests = () => {

@@ -4,18 +4,16 @@
  * 说明：已移除对 `src/config/api/config.js` 的依赖
  */
 
-// 环境变量
+export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 const env = import.meta.env
 
-// 环境标识
-export const ENV_MODE = env.MODE
-export const IS_DEV = env.DEV
-export const IS_PROD = env.PROD
-
-// API基础配置
-export const BASE_API_URL = env.VITE_API_BASE_URL
-export const API_TIMEOUT = parseInt(env.VITE_API_TIMEOUT || '15000')
-export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
+// 会话探活 / 当前用户信息（Cookie 会话闭环）
+// - 由于不同后端实现差异较大，这里默认不启用（避免 /me 404）
+// - 如需启用，请在环境变量中配置：VITE_AUTH_ME_API（需带前导 “/”，例如：/SystemBasicMgmt/SystemAuth/SysUserOperate/GetCurrentUser）
+export const ME_API = {
+  // 约定：若 baseURL 形如 https://host/api（无尾斜杠），这里必须带前导 “/”
+  ME: env.VITE_AUTH_ME_API || ''
+}
 
 // 员工登录
 export const LOGIN_API = {

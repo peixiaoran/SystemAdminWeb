@@ -9,6 +9,7 @@ import './assets/main.css'
 import pinia from './stores'
 import i18n from './i18n'
 import { updateRouteTitle } from './utils/updateRouteTitle'
+import { useUserStore } from './stores/user'
 
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-CN'
@@ -55,7 +56,15 @@ app.config.globalProperties.$ELEMENT = {
 }
 
 // 等待路由就绪后初始化标题
-router.isReady().then(() => {
+router.isReady().then(async () => {
+  // 应用启动探活：同步 Cookie 会话与前端本地态（不在这里强制跳转，交给路由守卫控制）
+  try {
+    const userStore = useUserStore()
+    await userStore.probeSession()
+  } catch (e) {
+    void e
+  }
+
   // 初始化标题
   updateRouteTitle()
   

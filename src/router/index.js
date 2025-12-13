@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../views/layout/index.vue'
 import i18n from '../i18n'
+import { useUserStore } from '@/stores/user'
 
 // 获取翻译函数
 const { t } = i18n.global
@@ -527,25 +528,27 @@ const router = createRouter({
 })
 
 // 设置路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 设置页面标题
   const translatedTitle = to.meta.title ? t(to.meta.title) : '';
   document.title = translatedTitle ? `${translatedTitle} - ${t('common.systemTitle')}` : t('common.systemTitle');
+
+  // 登录页：若 Cookie 会话仍有效，自动跳到首页
+  if (to.path === ROUTE_CONFIG.BASE.LOGIN) {
+    const userStore = useUserStore()
+    const ok = await userStore.probeSession()
+    if (ok) {
+      next({ path: ROUTE_CONFIG.BASE.HOME })
+      return
+    }
+  }
   
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {
-    // Cookie(HttpOnly) 模式下前端拿不到 token；用本地持久化的用户标识作为“已登录”前端态
-    const loginNo = localStorage.getItem('loginNo')
-    const userId = localStorage.getItem('userId')
-    
-    if (!loginNo && !userId) {
-      // 清除本地数据
-      localStorage.removeItem('username')
-      localStorage.removeItem('currentModuleId')
-      localStorage.removeItem('currentModuleName')
-      localStorage.removeItem('currentSystemPath')
-      
-      // 重定向到登录页
+    // Cookie 会话闭环：优先探活 /me，同步并校验会话有效性
+    const userStore = useUserStore()
+    const ok = await userStore.probeSession()
+    if (!ok) {
       next({ path: ROUTE_CONFIG.BASE.LOGIN })
       return
     }
