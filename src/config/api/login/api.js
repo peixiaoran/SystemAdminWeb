@@ -11,7 +11,7 @@ const env = import.meta.env
 // - 由于不同后端实现差异较大，这里默认不启用（避免 /me 404）
 // - 如需启用，请在环境变量中配置：VITE_AUTH_ME_API（需带前导 “/”，例如：/SystemBasicMgmt/SystemAuth/SysUserOperate/GetCurrentUser）
 export const ME_API = {
-  // 约定：若 baseURL 形如 https://host/api（无尾斜杠），这里必须带前导 “/”1
+  // 约定：若 baseURL 形如 https://host/api（无尾斜杠），这里必须带前导 “/”
   ME: env.VITE_AUTH_ME_API || ''
 }
 
