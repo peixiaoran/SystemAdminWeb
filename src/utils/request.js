@@ -256,6 +256,9 @@ const DEBOUNCE_DELAY = 100
 let has401ErrorOccurred = false
 let has403ErrorOccurred = false
 
+// 401 登录过期提示：用于跨整页刷新把提示带到登录页
+const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
+
 // 生成请求唯一标识
 const generateRequestKey = (config) => {
   const { method, url, params, data } = config
@@ -389,7 +392,7 @@ service.interceptors.response.use(
 /**
  * 封装HTTP请求方法，添加全局错误处理和缓存
  * 错误处理策略：
- * - HTTP 401：不提示，立即清理登录状态并跳转到登录页
+ * - HTTP 401：提示“登录已过期”，清理登录状态并跳转到登录页（登录页会补弹一次提示，避免整页刷新导致提示看不到）
  * - HTTP 403：不提示，直接跳转到403错误页
  * - 其它HTTP错误：返回标准错误对象，由调用方自行处理提示
  * - 取消与超时：透传错误供调用方自行处理
@@ -434,6 +437,13 @@ const createPostRequest = () => async (url, data, options = {}) => {
         // 认证失效（HTTP 401）：只在第一次时显示登录过期警告提示
         if (!has401ErrorOccurred) {
           has401ErrorOccurred = true
+          // 由于 401 会触发 hardRedirectToLogin() 整页刷新，这里将提示文案先写入 sessionStorage，
+          // 由登录页在 onMounted 时再弹一次，确保用户能看见“登录已过期”的提示。
+          try {
+            sessionStorage.setItem(AUTH_EXPIRED_MESSAGE_KEY, i18n.global.t('systembasicmgmt.errorHandler.unauthorized'))
+          } catch {
+            // ignore storage errors (private mode / disabled storage)
+          }
           ElMessage({
             type: 'warning',
             message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),

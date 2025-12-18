@@ -106,6 +106,9 @@ const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
 
+// 与 request.js 保持一致：401 整页刷新后在登录页补弹“登录已过期”提示
+const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
+
 // 移除了动态字段名生成逻辑，简化防自动填充机制
 
 const loginForm = reactive({
@@ -116,6 +119,23 @@ const loginForm = reactive({
 
 // 在组件挂载后进行初始化
 onMounted(() => {
+  // 如果是 401 导致的登出跳转，这里补弹一次提示，保证用户看得到
+  try {
+    const msg = sessionStorage.getItem(AUTH_EXPIRED_MESSAGE_KEY)
+    if (msg) {
+      sessionStorage.removeItem(AUTH_EXPIRED_MESSAGE_KEY)
+      ElMessage({
+        type: 'warning',
+        message: msg,
+        duration: 3000,
+        plain: true,
+        showClose: true
+      })
+    }
+  } catch {
+    // ignore
+  }
+
   // 重置表单验证状态
   nextTick(() => {
     loginFormRef.value?.resetFields()

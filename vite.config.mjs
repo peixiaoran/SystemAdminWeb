@@ -3,6 +3,64 @@ import vue from '@vitejs/plugin-vue'
 import { imagetools } from 'vite-imagetools' // 图片优化
 import viteCompression from 'vite-plugin-compression' // 产物压缩 (gzip & brotli)
 import path from 'path'
+import fs from 'node:fs'
+
+function resolveFromRoot(...segments) {
+  return path.resolve(process.cwd(), ...segments)
+}
+
+function getDevHttpsConfig(env = {}) {
+  const envCert = env.VITE_DEV_HTTPS_CERT || env.DEV_HTTPS_CERT
+  const envKey = env.VITE_DEV_HTTPS_KEY || env.DEV_HTTPS_KEY
+  if (envCert && envKey) {
+    const certPath = path.isAbsolute(envCert) ? envCert : resolveFromRoot(envCert)
+    const keyPath = path.isAbsolute(envKey) ? envKey : resolveFromRoot(envKey)
+    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+      return {
+        cert: fs.readFileSync(certPath),
+        key: fs.readFileSync(keyPath),
+      }
+    }
+    console.warn(
+      `[vite] 已配置 HTTPS 证书路径，但文件不存在，已回退到 HTTP。\n` +
+        `- cert: ${certPath}\n` +
+        `- key:  ${keyPath}\n`
+    )
+    return undefined
+  }
+
+  // mkcert 常见输出：
+  // The certificate is at "./localhost+2.pem"
+  // and the key at "./localhost+2-key.pem"
+  const candidates = [
+    // 你当前项目的约定（放在 cert/ 目录）
+    [resolveFromRoot('cert', 'localhost+2.pem'), resolveFromRoot('cert', 'localhost+2-key.pem')],
+    [resolveFromRoot('cert', 'localhost.pem'), resolveFromRoot('cert', 'localhost-key.pem')],
+    // 兼容：证书放在项目根目录
+    [resolveFromRoot('localhost+2.pem'), resolveFromRoot('localhost+2-key.pem')],
+    [resolveFromRoot('localhost.pem'), resolveFromRoot('localhost-key.pem')],
+  ]
+
+  for (const [certPath, keyPath] of candidates) {
+    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+      return {
+        cert: fs.readFileSync(certPath),
+        key: fs.readFileSync(keyPath),
+      }
+    }
+  }
+
+  // 不要因为缺证书导致 dev 启动失败：自动回退到 http，并给出提示
+  console.warn(
+    `[vite] 未找到 HTTPS 证书文件，已回退到 HTTP。\n` +
+      `- 已尝试路径:\n` +
+      candidates.map(([c, k]) => `  - cert: ${c}\n    key:  ${k}`).join('\n') +
+      `\n你可以把证书放到上述任一位置，或在 .env 中配置：\n` +
+      `- VITE_DEV_HTTPS_CERT=cert/xxx.pem\n` +
+      `- VITE_DEV_HTTPS_KEY=cert/xxx-key.pem`
+  )
+  return undefined
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -10,6 +68,8 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isProd = mode === 'production'
   const outDir = env.VITE_BUILD_OUT_DIR || 'dist'
+  const isDev = command === 'serve'
+  const devHttps = isDev ? getDevHttpsConfig(env) : undefined
   
   return {
     plugins: [
@@ -42,8 +102,8 @@ export default defineConfig(({ command, mode }) => {
       open: true,
       // Vite 6 安全配置 - 限制网络访问
       host: 'localhost',
-      // 启用 HTTPS（可选，用于开发环境）
-      // https: true,
+      // 启用 HTTPS（开发环境，使用 mkcert 生成的证书）
+      https: devHttps,
       // 添加安全头
       headers: {
         // 新增HSTS头增强安全
