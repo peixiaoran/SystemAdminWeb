@@ -8,30 +8,30 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 查询汇率分页API
 export const GET_EXCHANGE_RATE_PAGES_API = {
-  GET_EXCHANGE_RATE_PAGES: 'SystemBasicMgmt/SystemSettings/ExchangeRate/GetExchangeRatePage'
+  GET_EXCHANGE_RATE_PAGES: 'SystemBasicMgmt/SystemConfig/ExchangeRate/GetExchangeRatePage'
 }
 
 // 查询汇率详情API
 export const GET_EXCHANGE_RATE_ENTITY_API = {
-  GET_EXCHANGE_RATE_ENTITY: 'SystemBasicMgmt/SystemSettings/ExchangeRate/GetExchangeRateEntity'
+  GET_EXCHANGE_RATE_ENTITY: 'SystemBasicMgmt/SystemConfig/ExchangeRate/GetExchangeRateEntity'
 }
 
 // 查询币别下拉框API
 export const GET_CURRENCY_DROPDOWN_API = {
-  GET_CURRENCY_DROPDOWN: 'SystemBasicMgmt/SystemSettings/ExchangeRate/GetCurrencyInfoDropDown'
+  GET_CURRENCY_DROPDOWN: 'SystemBasicMgmt/SystemConfig/ExchangeRate/GetCurrencyInfoDropDown'
 }
 
 // 新增汇率API
 export const INSERT_EXCHANGE_RATE_API = {
-  INSERT_EXCHANGE_RATE: 'SystemBasicMgmt/SystemSettings/ExchangeRate/InsertExchangeRate'
+  INSERT_EXCHANGE_RATE: 'SystemBasicMgmt/SystemConfig/ExchangeRate/InsertExchangeRate'
 }
 
 // 更新汇率API
 export const UPDATE_EXCHANGE_RATE_API = {
-  UPDATE_EXCHANGE_RATE: 'SystemBasicMgmt/SystemSettings/ExchangeRate/UpdateExchangeRate'
+  UPDATE_EXCHANGE_RATE: 'SystemBasicMgmt/SystemConfig/ExchangeRate/UpdateExchangeRate'
 }
 
 // 删除汇率API
 export const DELETE_EXCHANGE_RATE_API = {
-  DELETE_EXCHANGE_RATE: 'SystemBasicMgmt/SystemSettings/ExchangeRate/DeleteExchangeRate'
+  DELETE_EXCHANGE_RATE: 'SystemBasicMgmt/SystemConfig/ExchangeRate/DeleteExchangeRate'
 }

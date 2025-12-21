@@ -8,25 +8,25 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 货币实体API
 export const GET_CURRENCY_ENTITY_API = {
-    GET_CURRENCY_ENTITY: 'SystemBasicMgmt/SystemSettings/CurrencyInfo/GetCurrencyInfoEntity'
+    GET_CURRENCY_ENTITY: 'SystemBasicMgmt/SystemConfig/CurrencyInfo/GetCurrencyInfoEntity'
 }
 
 // 货币分页API
 export const GET_CURRENCY_PAGES_API = {
-  GET_CURRENCY_PAGES: 'SystemBasicMgmt/SystemSettings/CurrencyInfo/GetCurrencyInfoPage'
+  GET_CURRENCY_PAGES: 'SystemBasicMgmt/SystemConfig/CurrencyInfo/GetCurrencyInfoPage'
 }
 
 // 新增货币API
 export const INSERT_CURRENCY_API = {
-  INSERT_CURRENCY: 'SystemBasicMgmt/SystemSettings/CurrencyInfo/InsertCurrencyInfo'
+  INSERT_CURRENCY: 'SystemBasicMgmt/SystemConfig/CurrencyInfo/InsertCurrencyInfo'
 }
 
 // 更新货币API
 export const UPDATE_CURRENCY_API = {
-  UPDATE_CURRENCY: 'SystemBasicMgmt/SystemSettings/CurrencyInfo/UpdateCurrencyInfo'
+  UPDATE_CURRENCY: 'SystemBasicMgmt/SystemConfig/CurrencyInfo/UpdateCurrencyInfo'
 }
 
 // 删除货币API
 export const DELETE_CURRENCY_API = {
-  DELETE_CURRENCY: 'SystemBasicMgmt/SystemSettings/CurrencyInfo/DeleteCurrencyInfo'
+  DELETE_CURRENCY: 'SystemBasicMgmt/SystemConfig/CurrencyInfo/DeleteCurrencyInfo'
 }

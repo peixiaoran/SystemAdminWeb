@@ -173,10 +173,10 @@ const quickActions = ref([
     color: '#409EFF'
   },
   {
-    key: 'systemSettings',
+    key: 'SystemConfig',
     icon: 'Setting',
-    title: 'dashboard.actions.systemSettings',
-    description: 'dashboard.actions.systemSettingsDesc',
+    title: 'dashboard.actions.SystemConfig',
+    description: 'dashboard.actions.SystemConfigDesc',
     color: '#67C23A'
   },
   {

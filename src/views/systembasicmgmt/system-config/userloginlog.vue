@@ -88,7 +88,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { post } from '@/utils/request'
 import { 
   GET_USER_LOGIN_LOG_PAGES_API
-} from '@/config/api/systembasicmgmt/system-settings/userloginlog'
+} from '@/config/api/systembasicmgmt/system-config/userloginlog'
 import { ElMessage } from 'element-plus'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 

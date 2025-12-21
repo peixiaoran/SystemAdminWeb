@@ -8,5 +8,5 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 查询员工操作日志分页API
 export const GET_USER_LOGIN_LOG_PAGES_API = {
-  GET_USER_LOGIN_LOG_PAGES: 'SystemBasicMgmt/SystemSettings/UserLoginLog/GetUserLoginLogPage'
+  GET_USER_LOGIN_LOG_PAGES: 'SystemBasicMgmt/SystemConfig/UserLoginLog/GetUserLoginLogPage'
 }

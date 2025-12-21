@@ -8,31 +8,31 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 员工分页API
 export const GET_USER_PAGES_API = {
-    GET_USER_PAGES: 'SystemBasicMgmt/SystemUserConfig/UserAgent/GetUserInfoPage'
+    GET_USER_PAGES: 'SystemBasicMgmt/UserSettings/UserAgent/GetUserInfoPage'
 }
 
 // 员工代理人视图API
 export const GET_USER_VIEW_API = {
-    GET_USER_VIEW: 'SystemBasicMgmt/SystemUserConfig/UserAgent/GetUserInfoAgentView'
+    GET_USER_VIEW: 'SystemBasicMgmt/UserSettings/UserAgent/GetUserInfoAgentView'
 }
 
 // 员工代理列表API
 export const GET_USER_AGENT_API = {
-    GET_USER_AGENT: 'SystemBasicMgmt/SystemUserConfig/UserAgent/GetUserAgentList',
-    GET_USER_PRO_AGENT: 'SystemBasicMgmt/SystemUserConfig/UserAgent/GetUserAgentProactiveList'
+    GET_USER_AGENT: 'SystemBasicMgmt/UserSettings/UserAgent/GetUserAgentList',
+    GET_USER_PRO_AGENT: 'SystemBasicMgmt/UserSettings/UserAgent/GetUserAgentProactiveList'
 }
 
 // 员工代理新增API
 export const GET_USER_AGENT_INSERT_API = {
-    GET_USER_AGENT_INSERT: 'SystemBasicMgmt/SystemUserConfig/UserAgent/InsertUserAgent'
+    GET_USER_AGENT_INSERT: 'SystemBasicMgmt/UserSettings/UserAgent/InsertUserAgent'
 }
 
 // 员工代理删除API
 export const GET_USER_AGENT_DELETE_API = {
-    GET_USER_AGENT_DELETE: 'SystemBasicMgmt/SystemUserConfig/UserAgent/DeleteUserAgent'
+    GET_USER_AGENT_DELETE: 'SystemBasicMgmt/UserSettings/UserAgent/DeleteUserAgent'
 }
 
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
-    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemUserConfig/UserAgent/GetDepartmentDropDown'
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserAgent/GetDepartmentDropDown'
 }

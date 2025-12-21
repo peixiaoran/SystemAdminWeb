@@ -158,7 +158,7 @@ import {
   INSERT_EXCHANGE_RATE_API, 
   UPDATE_EXCHANGE_RATE_API,
   DELETE_EXCHANGE_RATE_API
-} from '@/config/api/systembasicmgmt/system-settings/exchangerate'
+} from '@/config/api/systembasicmgmt/system-config/exchangerate'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'

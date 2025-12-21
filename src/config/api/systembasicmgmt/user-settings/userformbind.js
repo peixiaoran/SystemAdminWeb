@@ -8,21 +8,21 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 员工分页API
 export const GET_USER_PAGES_API = {
-    GET_USER_PAGES: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/GetUserInfoPage'
+    GET_USER_PAGES: 'SystemBasicMgmt/UserSettings/UserFormBind/GetUserInfoPage'
 }
 
 // 员工表单绑定视图树API
 export const GET_USER_FORM_BIND_VIEW_TREE_API = {
-    GET_USER_FORM_BIND_VIEW_TREE: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/GetUserFormBindViewTree'
+    GET_USER_FORM_BIND_VIEW_TREE: 'SystemBasicMgmt/UserSettings/UserFormBind/GetUserFormBindViewTree'
 }
 
 // 员工表单绑定更新API
 export const UPDATE_USER_FORM_BIND_API = {
-    UPDATE_USER_FORM_BIND: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/UpdateUserFormBind'
+    UPDATE_USER_FORM_BIND: 'SystemBasicMgmt/UserSettings/UserFormBind/UpdateUserFormBind'
 }
 
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
-    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemUserConfig/UserFormBind/GetDepartmentDropDown'
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserFormBind/GetDepartmentDropDown'
 }
 

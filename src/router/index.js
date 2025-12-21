@@ -247,11 +247,11 @@ const pmenuRoutes = [
       },
       // 用户配置子模块 - 使用嵌套结构
       {
-        path: 'system-userconfig',
-        name: 'System-UserConfig',
-        redirect: '/systembasicmgmt/system-userconfig',
+        path: 'user-settings',
+        name: 'User-Settings',
+        redirect: '/systembasicmgmt/user-settings',
         meta: { 
-          title: 'route.userconfig',
+          title: 'route.userSettings',
           icon: 'SetUp',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -260,7 +260,7 @@ const pmenuRoutes = [
           {
             path: 'useragent',
             name: 'UserAgent',
-            component: () => import('../views/systembasicmgmt/system-userconfig/useragent.vue'),
+            component: () => import('../views/systembasicmgmt/user-settings/useragent.vue'),
             meta: { 
               title: 'route.useragent', 
               icon: 'Handbag',
@@ -271,7 +271,7 @@ const pmenuRoutes = [
           {
             path: 'userparttime',
             name: 'UserPartTime',
-            component: () => import('../views/systembasicmgmt/system-userconfig/userparttime.vue'),
+            component: () => import('../views/systembasicmgmt/user-settings/userparttime.vue'),
             meta: { 
               title: 'route.userparttime', 
               icon: 'ShoppingBag',
@@ -282,7 +282,7 @@ const pmenuRoutes = [
           {
             path: 'userformbind',
             name: 'UserFormBind',
-            component: () => import('../views/systembasicmgmt/system-userconfig/userformbind.vue'),
+            component: () => import('../views/systembasicmgmt/user-settings/userformbind.vue'),
             meta: { 
               title: 'route.userformbind', 
               icon: 'Management',
@@ -294,11 +294,11 @@ const pmenuRoutes = [
       },
       // 基础数据管理子模块 - 使用嵌套结构
       {
-        path: 'system-settings',
-        name: 'System-Settings',
-        redirect: '/systembasicmgmt/system-settings',
+        path: 'system-config',
+        name: 'System-Config',
+        redirect: '/systembasicmgmt/system-config',
         meta: { 
-          title: 'route.settings',
+          title: 'route.systemConfig',
           icon: 'Setting',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
@@ -307,7 +307,7 @@ const pmenuRoutes = [
           {
             path: 'dictionaryinfo',
             name: 'DictionaryInfo',
-            component: () => import('../views/systembasicmgmt/system-settings/dictionaryinfo.vue'),
+            component: () => import('../views/systembasicmgmt/system-config/dictionaryinfo.vue'),
             meta: { 
               title: 'route.dictionaryinfo', 
               icon: 'Reading',
@@ -318,7 +318,7 @@ const pmenuRoutes = [
           {
             path: 'currencyinfo',
             name: 'CurrencyInfo',
-            component: () => import('../views/systembasicmgmt/system-settings/currencyinfo.vue'),
+            component: () => import('../views/systembasicmgmt/system-config/currencyinfo.vue'),
             meta: { 
               title: 'route.currencyinfo', 
               icon: 'Money',
@@ -329,7 +329,7 @@ const pmenuRoutes = [
           {
             path: 'exchangerate',
             name: 'ExchangeRate',
-            component: () => import('../views/systembasicmgmt/system-settings/exchangerate.vue'),
+            component: () => import('../views/systembasicmgmt/system-config/exchangerate.vue'),
             meta: { 
               title: 'route.exchangerate', 
               icon: 'Switch',
@@ -340,7 +340,7 @@ const pmenuRoutes = [
           {
             path: 'userloginlog',
             name: 'UserLoginLog',
-            component: () => import('../views/systembasicmgmt/system-settings/userloginlog.vue'),
+            component: () => import('../views/systembasicmgmt/system-config/userloginlog.vue'),
             meta: { 
               title: 'route.userloginlog', 
               icon: 'Tickets',

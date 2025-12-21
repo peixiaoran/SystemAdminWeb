@@ -155,7 +155,7 @@ import {
   GET_DEPARTMENT_DROPDOWN_API,
   GET_USER_FORM_BIND_VIEW_TREE_API,
   UPDATE_USER_FORM_BIND_API
-} from '@/config/api/systembasicmgmt/system-userconfig/userformbind.js'
+} from '@/config/api/systembasicmgmt/user-settings/userformbind.js'
 
 const { t } = useI18n()
 

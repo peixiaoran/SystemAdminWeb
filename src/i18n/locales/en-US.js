@@ -175,7 +175,7 @@ export default {
     // Quick Actions
     quickActions: {
       title: 'Quick Actions',
-      systemSettings: 'System Settings',
+      SystemConfig: 'System Settings',
       userManagement: 'User Management',
       dataBackup: 'Data Backup',
       systemRestart: 'System Restart',
@@ -607,12 +607,12 @@ export default {
     userlabor: 'User Labor',
     userinfo: 'Employee Info',
     personalinfo: 'Personal Profile',
-    systemSettings: 'System Settings',
+    SystemConfig: 'System Settings',
     dictionaryinfo: 'Dictionary Info',
     currencyinfo: 'Currency Info',
     exchangerate: 'Exchange Rate',
     userloginlog: 'LogOut Info',
-    systemUserConfig: 'System User Configuration',
+    UserSettings: 'System User Configuration',
     useragent: 'User Agent',
     userformbind: 'User Form Bind',
     userparttime: 'User PartTime',

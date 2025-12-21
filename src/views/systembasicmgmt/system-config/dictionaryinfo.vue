@@ -165,7 +165,7 @@ import {
   UPDATE_DICTIONARY_API,
   GET_MODULE_DROP_DOWN_API,
   GET_DIC_TYPE_DROP_DOWN_API
-} from '@/config/api/systembasicmgmt/system-settings/dictionary'
+} from '@/config/api/systembasicmgmt/system-config/dictionary'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'

@@ -246,10 +246,10 @@
         UPDATE_USER_PARTTIME_API,
         GET_POSITION_DROPDOWN_API,
         GET_LABOR_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/system-userconfig/userparttime'
+    } from '@/config/api/systembasicmgmt/user-settings/userparttime'
     import {
         GET_DEPARTMENT_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/system-userconfig/userparttime'
+    } from '@/config/api/systembasicmgmt/user-settings/userparttime'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
     import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'

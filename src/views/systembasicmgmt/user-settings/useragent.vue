@@ -359,7 +359,7 @@ import {
   GET_USER_AGENT_DELETE_API,
   GET_USER_VIEW_API,
   GET_DEPARTMENT_DROPDOWN_API
-} from '@/config/api/systembasicmgmt/system-userconfig/useragent'
+} from '@/config/api/systembasicmgmt/user-settings/useragent'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
