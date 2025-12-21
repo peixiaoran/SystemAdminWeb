@@ -93,7 +93,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, resetAuthErrorState } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
@@ -103,6 +103,7 @@ import { User, Lock } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const loginFormRef = ref(null)
 const loading = ref(false)
 
@@ -207,8 +208,13 @@ const handleLogin = () => {
               avatar: res?.data?.avatarAddress || ''
             })
             
-            // 直接跳转到模块选择页
-            router.push('/module-select')
+            // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页
+            const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+            if (redirect && redirect.startsWith('/')) {
+              router.replace(redirect)
+            } else {
+              router.replace('/module-select')
+            }
             loading.value = false
           } else if (res.code === 210) {
             // 密码过期，显示警告消息后跳转到密码过期修改页面

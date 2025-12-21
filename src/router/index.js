@@ -538,7 +538,13 @@ router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
     const ok = await userStore.probeSession()
     if (ok) {
-      next({ path: ROUTE_CONFIG.BASE.HOME })
+      // 企业标准：支持 login?redirect=xxx，已登录则直接回跳
+      const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
+      if (redirect && redirect.startsWith('/')) {
+        next({ path: redirect })
+      } else {
+        next({ path: ROUTE_CONFIG.BASE.HOME })
+      }
       return
     }
   }
@@ -549,7 +555,8 @@ router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
     const ok = await userStore.probeSession()
     if (!ok) {
-      next({ path: ROUTE_CONFIG.BASE.LOGIN })
+      // 企业标准：未登录访问受保护页 => 跳登录，并携带回跳地址
+      next({ path: ROUTE_CONFIG.BASE.LOGIN, query: { redirect: to.fullPath } })
       return
     }
   }

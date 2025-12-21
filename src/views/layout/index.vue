@@ -200,6 +200,7 @@ import { post } from '@/utils/request'
 import { MENU_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
+import { clearClientSession } from '@/utils/sessionCleanup'
 import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -612,18 +613,9 @@ const logout = async () => {
          showClose: true,
       })
       
-      // 保存语言设置
-      const currentLanguage = localStorage.getItem('language')
-      
-      // 清空所有localStorage
-      localStorage.clear()
-      
-      // 恢复语言设置
-      if (currentLanguage) {
-        localStorage.setItem('language', currentLanguage)
-      }
-      
-      router.push('/login')
+      // 企业标准：清理前端会话本地态（不无脑 localStorage.clear），并 replace 到登录页避免回退
+      clearClientSession({ keepLanguage: true })
+      router.replace('/login')
     } else {
       // 登出失败，错误信息已在 userStore.logout() 中显示
       console.error('Logout failed:', result?.message)

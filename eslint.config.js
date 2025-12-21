@@ -18,6 +18,14 @@ export default [
         setInterval: 'readonly',
         clearInterval: 'readonly',
         fetch: 'readonly',
+        navigator: 'readonly',
+        URL: 'readonly',
+        FormData: 'readonly',
+        MutationObserver: 'readonly',
+        IntersectionObserver: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        performance: 'readonly',
         
         // Node.js globals
         __dirname: 'readonly',

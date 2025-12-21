@@ -85,6 +85,7 @@ import { usePMenuStore } from '@/stores/pmenu'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import { resolveFileUrl } from '@/utils/fileUrl'
+import { clearClientSession } from '@/utils/sessionCleanup'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -217,20 +218,16 @@ const logout = async () => {
     if (result && result.success) {
       // 显示后端返回的退出成功信息，如果没有message则使用默认提示
       const successMessage = result.message || t('common.logoutSuccess')
-      ElMessage.success(successMessage)
+      ElMessage({
+        message: successMessage,
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
       
-      // 保存语言设置
-      const currentLanguage = localStorage.getItem('language')
-      
-      // 清空所有localStorage
-      localStorage.clear()
-      
-      // 恢复语言设置
-      if (currentLanguage) {
-        localStorage.setItem('language', currentLanguage)
-      }
-      
-      router.push('/login')
+      // 企业标准：清理前端会话本地态（不无脑 localStorage.clear），并 replace 到登录页避免回退
+      clearClientSession({ keepLanguage: true })
+      router.replace('/login')
     } else {
       // 登出失败，错误信息已在 userStore.logout() 中显示
       console.error('Logout failed:', result?.message)

@@ -2,19 +2,29 @@ import axios from 'axios'
 import i18n from '@/i18n'
 import { ElMessage, ElNotification } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT, LOGIN_API } from '@/config/api/login/api'
-import { clearAuthStorage } from '@/utils/authStorage'
+import { clearClientSession } from '@/utils/sessionCleanup'
 
 /**
- * 强制整页跳转到登录页（带 query 强制刷新），用于 401 会话失效场景。
+ * 强制整页跳转到登录页（企业标准：URL 稳定，不使用随机 query），用于 401 会话失效场景。
  * 说明：
- * - 仅修改 hash 不会刷新页面，Pinia 的内存态/缓存可能仍在，导致登录页守卫又跳回 /module-select
- * - 通过增加 search 参数触发浏览器 reload，确保前端内存态被清空
+ * - 仅修改 hash 不会刷新页面，Pinia 的内存态可能仍在，导致登录页守卫误跳回
+ * - 这里使用 replace + reload 的组合，确保整页刷新且地址保持规范：/#/login
  */
-const hardRedirectToLogin = () => {
+const hardRedirectToLogin = (redirectPath = '') => {
   const origin = window.location.origin
   const basePath = window.location.pathname || '/'
-  const url = `${origin}${basePath}?_logout=${Date.now()}#/login`
+  const redirectQuery = redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ''
+  const url = `${origin}${basePath}#/login${redirectQuery}`
+
+  // 先 replace 到登录页地址，再异步 reload，确保 hash 变化已生效且地址不带随机 query
   window.location.replace(url)
+  setTimeout(() => {
+    try {
+      window.location.reload()
+    } catch {
+      // ignore
+    }
+  }, 0)
 }
 
 /**
@@ -273,29 +283,28 @@ const generateRequestKey = (config) => {
 const handleLogout = (options = {}) => {
   const { redirect = true } = options
   
-  // 保存语言设置
-  const currentLanguage = localStorage.getItem('language')
-  
   // Cookie(HttpOnly) 无法由前端直接删除，这里仅清理前端本地状态
-  clearAuthStorage()
-  
-  // 清除所有可能影响路由跳转的 localStorage 数据（包括 Pinia 持久化）
-  localStorage.removeItem('tabs-store')
-  localStorage.removeItem('pmenu-store')
-  localStorage.removeItem('user-store')  // 清除 Pinia 用户状态持久化
-  
-  // 恢复语言设置
-  if (currentLanguage) {
-    localStorage.setItem('language', currentLanguage)
-  }
+  clearClientSession({ keepLanguage: true })
   
   // 清除请求防抖状态
   pendingRequests.clear()
   
   // 使用 window.location 强制跳转到登录页（避免循环依赖）
   if (redirect) {
+    // 401/会话失效：携带当前页面作为 redirect（企业常规：登录后回跳）
+    let current = ''
+    try {
+      const hash = window.location.hash || ''
+      // '#/xxx?y=1' => '/xxx?y=1'
+      current = hash.startsWith('#') ? hash.slice(1) : hash
+      if (current.startsWith('/login')) current = ''
+      if (!current.startsWith('/')) current = ''
+    } catch {
+      current = ''
+    }
+
     // 强制整页刷新到登录页，避免 Pinia 内存态导致登录页守卫误跳转
-    hardRedirectToLogin()
+    hardRedirectToLogin(current)
   }
 }
 
@@ -464,7 +473,9 @@ const createPostRequest = () => async (url, data, options = {}) => {
       if (status === 403) {
         // 权限不足（HTTP 403）：直接跳转到403页面；不需要任何提示信息
         has403ErrorOccurred = true
-        window.location.href = '/#/403'
+        const origin = window.location.origin
+        const basePath = window.location.pathname || '/'
+        window.location.replace(`${origin}${basePath}#/403`)
         // 记录错误但不返回提示文案
         handleNetworkError(error, { showMessage: false })
         // 返回"静默成功"结果，避免各业务页面再次弹出错误提示

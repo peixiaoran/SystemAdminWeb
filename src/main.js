@@ -11,6 +11,20 @@ import i18n from './i18n'
 import { updateRouteTitle } from './utils/updateRouteTitle'
 import { useUserStore } from './stores/user'
 
+// 企业标准化：清理历史遗留的 ?_logout=xxx（仅移除该参数，保留 hash 路由）
+try {
+  const url = new URL(window.location.href)
+  if (url.searchParams.has('_logout')) {
+    url.searchParams.delete('_logout')
+    const search = url.searchParams.toString()
+    const normalized = `${url.pathname}${search ? `?${search}` : ''}${url.hash || ''}`
+    window.history.replaceState(null, '', normalized)
+  }
+} catch (e) {
+  // ignore
+  void e
+}
+
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-CN'
 
