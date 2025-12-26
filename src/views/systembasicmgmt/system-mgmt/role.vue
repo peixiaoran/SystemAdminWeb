@@ -40,13 +40,6 @@
           <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
           <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
           <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
-          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" width="100">
-            <template #default="scope">
-              <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-              </el-tag>
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.operation')" min-width="260" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
@@ -111,17 +104,7 @@
                       :rows="3" />
           </el-form-item>
         </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.isEnabled')">
-            <el-switch v-model="editForm.isEnabled"
-                       :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399; width:100%"/>
-            </el-form-item>
-          </div>
+        <!-- 是否启用：按企业标准化需求去掉该字段的前端功能（不展示/不允许编辑） -->
         </el-form>
         <template #footer>
           <span class="dialog-footer">
@@ -273,6 +256,7 @@
       roleNameCn: '',
       roleNameEn: '',
       description: '',
+      // 是否启用：前端不提供编辑能力，仍保留字段用于兼容后端（新增默认启用、编辑沿用原值）
       isEnabled: 1,
       remark: ''
   })
@@ -437,7 +421,8 @@
           roleNameCn: editForm.roleNameCn,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
-          isEnabled: editForm.isEnabled,
+          // 前端不提供“是否启用”开关：新增默认启用
+          isEnabled: 1,
           remark: editForm.remark
       }
       const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
@@ -472,6 +457,7 @@
           roleNameCn: editForm.roleNameCn,
           roleNameEn: editForm.roleNameEn,
           description: editForm.description,
+          // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
           isEnabled: editForm.isEnabled,
           remark: editForm.remark
       }

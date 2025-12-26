@@ -198,6 +198,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { MENU_API } from '@/config/api/modulemenu/menu'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 import { clearClientSession } from '@/utils/sessionCleanup'
@@ -295,6 +296,44 @@ const currentLanguageLabel = computed(() => {
   return languageMap[locale.value] || languageMap[localStorage.getItem('language')] || '中文简体'
 })
 
+// 兼容字段：部分接口使用 moduleNameCh/moduleNameEN 等不同字段名
+const normalizeModuleNames = (m) => {
+  const nameCn = m?.moduleNameCn
+  const nameEn = m?.moduleNameEn
+  return { nameCn, nameEn }
+}
+
+// 确保当前模块的中英文名都有值（用于面包屑模块名随语言切换）
+const ensureCurrentModuleNames = async () => {
+  const moduleId = pmenuStore.currentModuleId
+  if (!moduleId) return
+
+  // 如果已经有中英文名，就不重复请求
+  // 注意：任一缺失都会导致面包屑无法随语言切换，因此只要缺一个就补齐
+  if (pmenuStore.currentModuleNameCn && pmenuStore.currentModuleNameEn) return
+
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    const list = Array.isArray(res?.data) ? res.data : []
+    const matched = list.find((x) => String(x?.moduleId) === String(moduleId))
+    if (!matched) return
+
+    const { nameCn, nameEn } = normalizeModuleNames(matched)
+    const display = locale.value === 'en-US' ? (nameEn || nameCn) : (nameCn || nameEn)
+
+    pmenuStore.setCurrentPMenu(
+      String(moduleId),
+      display,
+      pmenuStore.currentModulePath,
+      nameCn,
+      nameEn
+    )
+  } catch (e) {
+    // ignore
+    void e
+  }
+}
+
 const handleLanguageChange = (lang) => {
   // 如果语言没有变化，不执行切换
   if (locale.value === lang) {
@@ -305,11 +344,11 @@ const handleLanguageChange = (lang) => {
   locale.value = lang
   localStorage.setItem('language', lang)
   
-  // 更新页面标题
-  document.title = t('common.systemTitle')
-  
-  // 直接刷新页面以更新用户名显示
-  window.location.reload()
+  // 企业标准：语言切换后整页刷新，确保所有组件/路由/缓存文本完全按新语言重新渲染
+  // 注意：不再使用 `?_logout=...`，保持 URL 干净；hash 路由会保留当前页面位置
+  setTimeout(() => {
+    window.location.reload()
+  }, 0)
 }
 
 const NOT_FOUND_ROUTE_NAMES = ['NotFound', 'not-found', '404']
@@ -319,6 +358,39 @@ const isNotFoundRoute = (matchedRoute) => {
     return true
   }
   return matchedRoute.matched?.some(record => record.path?.includes(':pathMatch')) ?? false
+}
+
+// 错误页/特殊页：永远不应出现在标签栏中（即使历史 localStorage 里有也要清理）
+const NO_TAG_PATH_SET = new Set(['/403', '/404'])
+const shouldSkipTagForPath = (path) => {
+  if (!path) return true
+  if (NO_TAG_PATH_SET.has(path)) return true
+  try {
+    const resolved = router.resolve(path)
+    if (!resolved) return true
+    if (isNotFoundRoute(resolved)) return true
+    return Boolean(resolved.meta?.noTag)
+  } catch (e) {
+    // resolve 失败时也跳过
+    void e
+    return true
+  }
+}
+
+const purgeTabByPath = (path) => {
+  if (!path) return
+  const beforeLen = visitedTabs.value.length
+  visitedTabs.value = visitedTabs.value.filter(tab => tab.path !== path)
+  if (beforeLen !== visitedTabs.value.length) {
+    const tabName = path.replace(/\//g, '-')
+    cachedTabs.value = cachedTabs.value.filter(n => n !== tabName)
+    if (componentWrapperMap.has(path)) componentWrapperMap.delete(path)
+    // 如果正好清掉的是当前活动标签，避免残留一个无效的 active 值
+    if (activeTabName.value === path) {
+      activeTabName.value = visitedTabs.value[visitedTabs.value.length - 1]?.path || ''
+    }
+    saveTabsToStorage()
+  }
 }
 
 // 格式化路径辅助函数
@@ -443,6 +515,13 @@ watch(() => route.path, (newPath, oldPath) => {
     activeMenu.value = ''
     return
   }
+
+  // 错误页/特殊页：不加入标签，并且如果历史遗留在标签里，需要强制移除
+  if (matchedRoute.meta?.noTag || NO_TAG_PATH_SET.has(newPath)) {
+    purgeTabByPath(newPath)
+    // 不新增标签；activeTabName 保持现状（或由其它逻辑设置），避免出现“幽灵标签”
+    return
+  }
   
   // 使用防抖优化菜单展开操作
   if (menuExpandTimer) clearTimeout(menuExpandTimer)
@@ -462,12 +541,6 @@ watch(() => route.path, (newPath, oldPath) => {
   // 如果新路径不在标签中，但是不是由刷新引起的路由变化（oldPath存在），尝试添加新标签
   if (oldPath && oldPath !== '/' && oldPath !== '/login') {
     if (matchedRoute?.name) {
-      // 检查是否有noTag标记
-      if (matchedRoute.meta?.noTag) {
-        activeTabName.value = newPath
-        return
-      }
-      
       // 尝试从路由元数据中获取标题和图标
       const routeTitleKey = matchedRoute.meta?.title || '未命名页面'
       const routeTitle = routeTitleKey.startsWith('route.') ? t(routeTitleKey) : routeTitleKey
@@ -923,9 +996,24 @@ const restoreTabsFromStorage = () => {
     if (tabsData) {
       const parsedData = JSON.parse(tabsData)
       if (parsedData.visitedTabs && Array.isArray(parsedData.visitedTabs)) {
-        visitedTabs.value = parsedData.visitedTabs
-        cachedTabs.value = parsedData.cachedTabs || []
-        activeTabName.value = parsedData.activeTabName || ''
+        // 过滤掉错误页/不应出现在标签栏的页面（比如 403/404）
+        const rawVisited = parsedData.visitedTabs || []
+        const filteredVisited = rawVisited.filter(tab => {
+          const path = tab?.path
+          return !shouldSkipTagForPath(path)
+        })
+
+        visitedTabs.value = filteredVisited
+
+        // cachedTabs 以 visitedTabs 为准，避免残留无效缓存项
+        const allowedNames = new Set(filteredVisited.map(tab => (tab.path || '').replace(/\//g, '-')))
+        cachedTabs.value = (parsedData.cachedTabs || []).filter(name => allowedNames.has(name))
+
+        // activeTabName 如果指向了被过滤的 tab，则回退到最后一个有效 tab
+        const restoredActive = parsedData.activeTabName || ''
+        activeTabName.value = filteredVisited.some(tab => tab.path === restoredActive)
+          ? restoredActive
+          : (filteredVisited[filteredVisited.length - 1]?.path || '')
         
         // 更新标签标题（考虑语言切换的情况）
         visitedTabs.value.forEach((tab, index) => {
@@ -954,6 +1042,8 @@ onMounted(async () => {
   
   // 获取菜单数据
   await fetchMenuData()
+  // 启动时补齐当前模块中英文名，避免只存了当前语言导致面包屑不随语言切换
+  await ensureCurrentModuleNames()
   
   // 处理初始路由
   if (currentPath === '/' || currentPath === '/module-select' || currentPath === '/login') {

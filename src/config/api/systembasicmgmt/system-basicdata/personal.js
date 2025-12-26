@@ -28,11 +28,6 @@ export const GET_ROLE_DROPDOWN_API = {
     GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetRoleDropDown'
 }
 
-// 性别下拉框API
-export const GET_GENDER_DROPDOWN_API = {
-  GET_GENDER_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetGenderDropDown'
-}
-
 // 国籍下拉框API
 export const GET_NATIONALITY_DROPDOWN_API = {
   GET_NATIONALITY_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetNationalityDropDown'

@@ -143,7 +143,22 @@ onMounted(() => {
 // 多语言字段获取
 function getPMenuName(pmenu) {
   if (!pmenu) return ''
-  return locale.value === 'en-US' ? (pmenu.moduleNameEn || pmenu.moduleNameCn || pmenu.moduleName) : (pmenu.moduleNameCn || pmenu.moduleNameEn || pmenu.moduleName)
+  // 兼容后端字段：部分接口使用 moduleNameCh（中文）而非 moduleNameCn
+  const nameCn =
+    pmenu.moduleNameCn ||
+    pmenu.ModuleNameCn ||
+    pmenu.moduleNameCh ||
+    pmenu.ModuleNameCh ||
+    pmenu.moduleName ||
+    pmenu.ModuleName ||
+    ''
+  const nameEn =
+    pmenu.moduleNameEn ||
+    pmenu.ModuleNameEn ||
+    pmenu.moduleName ||
+    pmenu.ModuleName ||
+    ''
+  return locale.value === 'en-US' ? (nameEn || nameCn) : (nameCn || nameEn)
 }
 function getPMenuRemarks(pmenu) {
   if (!pmenu) return ''
@@ -184,12 +199,27 @@ const enterPMenu = (pmenu) => {
   const pmenuIdentifier = pmenu.path.split('/').filter(Boolean)[0] // 提取一级菜单标识符
   
   // 使用新的模块存储来保存模块信息
+  // 兼容字段：moduleNameCh/ModuleNameCn 作为中文名称兜底
+  const moduleNameCn =
+    pmenu.moduleNameCn ||
+    pmenu.ModuleNameCn ||
+    pmenu.moduleNameCh ||
+    pmenu.ModuleNameCh ||
+    pmenu.moduleName ||
+    pmenu.ModuleName ||
+    ''
+  const moduleNameEn =
+    pmenu.moduleNameEn ||
+    pmenu.ModuleNameEn ||
+    pmenu.moduleName ||
+    pmenu.ModuleName ||
+    ''
   pmenuStore.setCurrentPMenu(
     String(pmenu.moduleId),
     getPMenuName(pmenu),
     pmenuIdentifier,
-    pmenu.moduleNameCn || '',
-    pmenu.moduleNameEn || ''
+    moduleNameCn,
+    moduleNameEn
   )
   
   // 清空之前的标签记录

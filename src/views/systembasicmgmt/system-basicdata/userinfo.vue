@@ -58,23 +58,33 @@
         <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
         <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
         <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="120" />
-        <el-table-column prop="genderName" :label="$t('systembasicmgmt.userInfo.gender')" align="center" min-width="100" />
+        <el-table-column :label="$t('systembasicmgmt.userInfo.gender')" align="center" min-width="100">
+          <template #default="scope">
+            {{
+              String(scope.row.gender) === '1'
+                ? $t('systembasicmgmt.userInfo.genderOptions.male')
+                : String(scope.row.gender) === '2'
+                  ? $t('systembasicmgmt.userInfo.genderOptions.female')
+                  : ''
+            }}
+          </template>
+        </el-table-column>
         <el-table-column prop="email" :label="$t('systembasicmgmt.userInfo.email')" align="left" min-width="200" />
         <el-table-column :label="$t('systembasicmgmt.userInfo.isEmployed')" align="center" min-width="120">
           <template #default="scope">
             <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'danger'">
-              {{ scope.row.isEmployedName }}
+              {{ scope.row.isEmployed === 1 ? $t('systembasicmgmt.userInfo.Employed') : $t('systembasicmgmt.userInfo.Resigned') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('systembasicmgmt.userInfo.isApproval')" align="center" min-width="150">
+        <el-table-column :label="$t('systembasicmgmt.userInfo.isApproval')" align="center" min-width="110">
           <template #default="scope">
             <el-tag :type="scope.row.isApproval === 1 ? 'primary' : 'info'">
-              {{ scope.row.isApprovalName }}
+              {{ scope.row.isApproval === 1 ? $t('common.yes') : $t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="laborName" :label="$t('systembasicmgmt.userInfo.laborName')" align="center" min-width="280" />
+        <el-table-column prop="laborName" :label="$t('systembasicmgmt.userInfo.laborName')" align="left" min-width="280" />
         <el-table-column :label="$t('systembasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
           <template #default="scope">
             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -357,7 +367,6 @@ import {
   GET_DEPARTMENT_DROPDOWN_API,
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
-  GET_GENDER_DROPDOWN_API,
   GET_NATIONALITY_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
   UPLOAD_AVATAR_API
@@ -370,6 +379,38 @@ import { resolveFileUrl } from '@/utils/fileUrl'
 
 // 初始化i18n
 const { t } = useI18n()
+
+// 规范化 0/1 开关字段：后端可能返回字符串 '0'/'1'，el-switch 使用数字 0/1 时会导致显示错误
+const to01 = (val) => {
+  if (val === '' || val === null || val === undefined) return val
+  const n = Number(val)
+  if (Number.isNaN(n)) return val
+  return n
+}
+
+// 针对 el-switch（active/inactive-value=1/0）做兜底：任何非 0/1（尤其是 '0'/'1'/undefined）都可能导致显示异常
+const normalizeSwitchField = (key, defaultValue = 0) => {
+  const current = editForm[key]
+  if (current === '' || current === null || current === undefined) {
+    editForm[key] = defaultValue
+    return
+  }
+  const n = to01(current)
+  // 如果 to01 仍无法转换（例如后端返回非数字字符串），则回退默认值，避免 switch 误判为开启
+  if (n === '' || n === null || n === undefined || Number.isNaN(Number(n))) {
+    editForm[key] = defaultValue
+    return
+  }
+  editForm[key] = n
+}
+
+const normalizeEditFormSwitches = () => {
+  // 注意：isEmployed 默认 1（在职）；其它开关默认 0
+  normalizeSwitchField('isEmployed', 1)
+  normalizeSwitchField('isApproval', 0)
+  normalizeSwitchField('isRealtimeNotification', 0)
+  normalizeSwitchField('isScheduledNotification', 0)
+}
 
 // 初始化用户存储（保留：页面可能仍依赖 store 的其它信息）
 const userStore = useUserStore()
@@ -395,6 +436,7 @@ const UPLOAD_CONFIG = reactive({
  const departmentOptions = ref([])
  const positionOptions = ref([])
  const roleOptions = ref([])
+ // 性别下拉：固定选项，不再调用接口（后端按 HTTP 状态码处理；前端不依赖业务码）
  const genderOptions = ref([])
  const nationalityOptions = ref([])
  const laborTypeOptions = ref([])
@@ -459,6 +501,9 @@ const previousNotificationState = reactive({
   isRealtimeNotification: 0,
   isScheduledNotification: 0
 })
+
+// 加载/回填表单期间的保护标记：避免 watch(isApproval) 在初始化赋值时误把通知强制开启
+const isHydratingEditForm = ref(false)
 
 // 对话框标题
 const dialogTitle = ref(t('systembasicmgmt.userInfo.editUser'))
@@ -574,6 +619,7 @@ const filterNodeMethod = (value, data) => data.departmentName.includes(value)
 
 // 监听isApproval变化
 watch(() => editForm.isApproval, (newValue, oldValue) => {
+  if (isHydratingEditForm.value) return
   // 只有当值真正变化且不是初始化时才执行逻辑
   if (oldValue !== undefined) {
     if (newValue === 0) { // 关闭审批权限
@@ -596,7 +642,7 @@ onMounted(async () => {
   // 获取下拉数据并设置筛选条件默认值
   await fetchDepartmentDropdown(true, false)
   await fetchPositionDropdown(true, false)
-  await fetchGenderDropdown()
+  initGenderOptions()
   await fetchNationalityDropdown()
   await fetchLaborTypeDropdown()
   // 获取用户列表数据
@@ -712,22 +758,16 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   }
 }
 
-  // 获取性别下拉数据
   /**
-   * 获取性别下拉数据（移除 try/catch，按返回码处理）
+   * 性别下拉：固定选项
+   * 说明：不再调用后端 GetGenderDropDown 接口，避免前端依赖业务码/字典接口。
+   * 注意：genderCode 的取值需与后端契约一致（本项目：1=Male, 0=Female）。
    */
-  const fetchGenderDropdown = async () => {
-    const res = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-    if (res && res.code === 200) {
-      genderOptions.value = res.data || []
-      // 验证数据结构并过滤无效数据
-      genderOptions.value = genderOptions.value.filter(item =>
-        item && item.genderCode !== undefined && item.genderCode !== null &&
-        item.genderName !== undefined && item.genderName !== null
-      )
-    } else {
-      genderOptions.value = []
-    }
+  const initGenderOptions = () => {
+    genderOptions.value = [
+      { genderCode: '1', genderName: t('systembasicmgmt.userInfo.genderOptions.male') },
+      { genderCode: '2', genderName: t('systembasicmgmt.userInfo.genderOptions.female') }
+    ]
   }
 
   // 获取国籍下拉数据
@@ -782,6 +822,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, params)
 
       if (res && res.code === 200 && res.data) {
+          isHydratingEditForm.value = true
           // 先保存通知状态，以便在 watch 触发前记录原始值
           if (res.data.isRealtimeNotification !== undefined && res.data.isScheduledNotification !== undefined) {
               previousNotificationState.isRealtimeNotification = res.data.isRealtimeNotification
@@ -789,12 +830,21 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           }
           
           Object.assign(editForm, res.data)
+          // 规范化：el-switch 使用 active/inactive-value=1/0（数字），必须确保 v-model 也是数字 0/1
+          normalizeEditFormSwitches()
+      // 规范化：确保性别值与固定下拉选项 value 类型一致（字符串）
+      if (editForm.gender !== null && editForm.gender !== undefined) {
+        editForm.gender = String(editForm.gender)
+      }
           
           // 设置头像显示
           if (res.data.avatarAddress) {
               // 使用统一的文件访问域名（区分 dev/test/prod）
               avatarUrl.value = resolveFileUrl(res.data.avatarAddress)
           }
+          // 等待本轮响应式更新完成后再解除保护，确保初始化赋值不触发“自动开启通知”
+          await nextTick()
+          isHydratingEditForm.value = false
       }
   }
 
@@ -812,7 +862,14 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
       if (res && res.code === 200) {
 
-          userList.value = res.data || []
+          // 列表字段也做 0/1 规范化，避免表格渲染判断使用 === 1 时不生效
+          userList.value = (res.data || []).map((row) => ({
+            ...row,
+            isEmployed: to01(row?.isEmployed),
+            isApproval: to01(row?.isApproval),
+            isRealtimeNotification: to01(row?.isRealtimeNotification),
+            isScheduledNotification: to01(row?.isScheduledNotification)
+          }))
           pagination.totalCount = res.totalCount || 0
       } else {
           ElMessage({
@@ -912,6 +969,8 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           modifiedDate: '',
           avatarAddress: ''
       })
+      // 兜底：确保开关字段类型一致（避免被其它逻辑写入字符串）
+      normalizeEditFormSwitches()
       
       // 重置下拉框为默认值
       nextTick(() => {
@@ -1087,7 +1146,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       await fetchDepartmentDropdown(false, true)
       await fetchPositionDropdown(false, true)
       await fetchRoleDropdown(false, true)
-      await fetchGenderDropdown()
+      initGenderOptions()
       await fetchLaborTypeDropdown(true)
       // 打开对话框
       dialogTitle.value = t('systembasicmgmt.userInfo.addUser')
@@ -1105,7 +1164,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       await fetchDepartmentDropdown(false, false)
       await fetchPositionDropdown(false, false)
       await fetchRoleDropdown(false, false)
-      await fetchGenderDropdown()
+      initGenderOptions()
       await fetchLaborTypeDropdown(false)
       // 获取员工实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
       await fetchUserEntity(row.userId)

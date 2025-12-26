@@ -61,13 +61,15 @@ const constantRoutes = [
     path: ROUTE_CONFIG.BASE.ERROR_403,
     name: 'Forbidden',
     component: () => import('../views/error/403.vue'),
-    meta: { title: 'route.forbidden' }
+    // 错误页不加入标签（例如请求 403 跳转）
+    meta: { title: 'route.forbidden', noTag: true }
   },
   {
     path: ROUTE_CONFIG.BASE.ERROR_404,
     name: 'NotFound',
     component: () => import('../views/error/404.vue'),
-    meta: { title: 'route.notFound' }
+    // 错误页不加入标签（例如请求 404/路由未命中跳转）
+    meta: { title: 'route.notFound', noTag: true }
   },
   // 通配符路由
   {
@@ -543,7 +545,7 @@ router.beforeEach(async (to, from, next) => {
       if (redirect && redirect.startsWith('/')) {
         next({ path: redirect })
       } else {
-        next({ path: ROUTE_CONFIG.BASE.HOME })
+      next({ path: ROUTE_CONFIG.BASE.HOME })
       }
       return
     }

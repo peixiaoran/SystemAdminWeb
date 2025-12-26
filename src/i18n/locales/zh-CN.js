@@ -722,6 +722,10 @@ export default {
       position: '职级',
       role: '角色',
       gender: '性别',
+      genderOptions: {
+        male: '男',
+        female: '女'
+      },
       hireDate: '入职日期',
       nationality: '国籍',
       email: '邮箱',
@@ -940,6 +944,10 @@ export default {
       phoneNumber: '手机号码',
       password: '密码',
       gender: '性别',
+      genderOptions: {
+        male: '男',
+        female: '女'
+      },
       hireDate: '入职日期',
       department: '部门',
       position: '职级',

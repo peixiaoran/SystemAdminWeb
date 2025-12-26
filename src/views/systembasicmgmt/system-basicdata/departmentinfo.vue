@@ -44,13 +44,6 @@
           <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
           <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
           <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-          <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.departmentInfo.isEnabled')" align="center" min-width="95">
-            <template #default="scope">
-              <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
-                {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.departmentInfo.active') : $t('systembasicmgmt.departmentInfo.inactive') }}
-              </el-tag>
-            </template>
-          </el-table-column>
           <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
           <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="230" />
           <el-table-column prop="description" :label="$t('systembasicmgmt.departmentInfo.description')" align="left" min-width="230" />
@@ -124,16 +117,8 @@
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.isEnabled')" prop="isEnabled">
-            <el-switch
-              v-model="editForm.isEnabled"
-              :active-value="1"
-              :inactive-value="0"
-              :active-text="$t('common.yes')"
-              :inactive-text="$t('common.no')"
-              inline-prompt
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-          </el-form-item>
+          <!-- 是否启用：按企业标准化需求去掉该字段的前端功能（不展示/不允许编辑） -->
+          <el-form-item></el-form-item>
           <el-form-item></el-form-item>
         </div>
         <div class="form-row full-width">
@@ -200,6 +185,7 @@ const editForm = reactive({
   landline: '',
   email: '',
   address: '',
+  // 是否启用：前端不提供编辑能力，仍保留字段用于兼容后端（新增默认启用、编辑沿用原值）
   isEnabled: 1
 })
 
@@ -481,7 +467,8 @@ const addDepartment = async () => {
     landline: editForm.landline,
     email: editForm.email,
     address: editForm.address,
-    isEnabled: editForm.isEnabled
+    // 前端不提供“是否启用”开关：新增默认启用
+    isEnabled: 1
   }
   
   const response = await post(INSERT_DEPARTMENT_API.INSERT_DEPARTMENT, params)
@@ -525,6 +512,7 @@ const updateDepartment = async () => {
     landline: editForm.landline,
     email: editForm.email,
     address: editForm.address,
+    // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
     isEnabled: editForm.isEnabled
   }
   

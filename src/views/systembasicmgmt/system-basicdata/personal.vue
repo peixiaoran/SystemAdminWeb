@@ -46,7 +46,7 @@
             <el-input 
               v-model="personalInfoForm.phoneNumber" 
               :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPhoneNumber')" 
-              :disabled="loading"
+              :disabled="true"
             />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.password')" prop="password">
@@ -213,7 +213,6 @@ import {
   GET_DEPARTMENT_DROPDOWN_API,
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
-  GET_GENDER_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
 } from '@/config/api/systembasicmgmt/system-basicdata/personal'
 import { UPLOAD_AVATAR_API } from '@/config/api/systembasicmgmt/system-basicdata/user'
@@ -280,6 +279,18 @@ export default {
     const roleOptions = ref([])
     const genderOptions = ref([])
     const laborTypeOptions = ref([])
+
+    /**
+     * 性别下拉：固定选项（i18n）
+     * 说明：不再调用后端 GetGenderDropDown 接口，避免前端依赖字典接口/业务码。
+     * 注意：genderCode 的取值需与后端契约一致（本项目：1=Male, 0=Female）。
+     */
+    const initGenderOptions = () => {
+      genderOptions.value = [
+        { genderCode: '1', genderName: t('systembasicmgmt.personalInfo.genderOptions.male') },
+        { genderCode: '0', genderName: t('systembasicmgmt.personalInfo.genderOptions.female') }
+      ]
+    }
     
     // 表单验证规则
     const formRules = reactive({
@@ -413,6 +424,8 @@ export default {
       const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
       if (response.code === 200 && response.data) {
         Object.assign(personalInfoForm, response.data)
+        // 规范化：确保性别值与固定下拉选项 value 类型一致（字符串）
+        personalInfoForm.gender = personalInfoForm.gender !== null && personalInfoForm.gender !== undefined ? String(personalInfoForm.gender) : ''
         personalInfoForm.password = ''
         if (response.data.avatarAddress) {
           avatarUrl.value = resolveFileUrl(response.data.avatarAddress)
@@ -466,18 +479,6 @@ export default {
          roleOptions.value = response.data
        } else {
          roleOptions.value = []
-       }
-     }
-
-     /**
-      * 获取性别下拉（查询）
-      */
-     const getGenderDropdown = async () => {
-       const response = await post(GET_GENDER_DROPDOWN_API.GET_GENDER_DROPDOWN, {})
-       if (response.code === 200 && response.data) {
-         genderOptions.value = response.data
-       } else {
-         genderOptions.value = []
        }
      }
 
@@ -551,22 +552,17 @@ export default {
     const handleReset = () => {
       // 只清除表单验证状态，不重新获取数据
       personalInfoFormRef.value?.clearValidate()
-      ElMessage({
-        message: t('common.resetSuccess'),
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
     }
 
      // 初始化数据
      const initData = async () => {
+       // 固定性别下拉选项（i18n）
+       initGenderOptions()
        await Promise.all([
          getPersonalInfo(),
          getDepartmentDropdown(),
          getPositionDropdown(),
          getRoleDropdown(),
-         getGenderDropdown(),
          getLaborTypeDropdown()
        ])
      }

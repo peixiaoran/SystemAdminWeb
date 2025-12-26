@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { LOGOUT_API, ME_API } from '@/config/api/login/api'
 import { clearAuthStorage } from '@/utils/authStorage'
+import i18n from '@/i18n'
 
 // /me 探活：做简单缓存，避免每次路由跳转都打一次
 let meInFlightPromise = null
@@ -28,8 +29,9 @@ export const useUserStore = defineStore('user', {
     
     // 根据当前语言获取用户名
     getDisplayName: (state) => {
-      const currentLanguage = localStorage.getItem('language') || 'zh-CN'
-    if (currentLanguage === 'zh-CN') {
+      // 使用 i18n 的响应式 locale，避免切换语言必须 reload 才更新显示
+      const currentLanguage = i18n?.global?.locale?.value || localStorage.getItem('language') || 'zh-CN'
+      if (currentLanguage === 'zh-CN') {
         return state.userNameCn || state.loginNo || '管理员'
       } else {
         return state.userNameEn || state.userNameCn || state.loginNo || 'Admin'

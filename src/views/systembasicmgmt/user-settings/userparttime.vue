@@ -54,10 +54,10 @@
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
                     <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="200" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="150">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="110">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                                {{ scope.row.isApprovalName }}
+                                {{ getIsApprovalText(scope.row.isApproval) }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -206,7 +206,7 @@
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
                         <template #default="scope">
                             <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                                {{ scope.row.isApprovalName }}
+                                {{ getIsApprovalText(scope.row.isApproval) }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -256,6 +256,13 @@
   
     // 初始化i18n
     const { t } = useI18n()
+
+    // 是否审批：不使用接口返回的 isApprovalName，统一用 i18n 固定文案
+    const getIsApprovalText = (val) => {
+        if (val === '1' || val === 1) return t('common.yes')
+        if (val === '0' || val === 0) return t('common.no')
+        return ''
+    }
   
     // 员工兼任数据
     const userPartTimeList = ref([])
