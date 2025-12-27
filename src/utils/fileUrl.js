@@ -1,6 +1,7 @@
 import { FILE_BROWSER_BASE_URL } from '@/config/api/base'
 
 const ensureTrailingSlash = (s) => (s.endsWith('/') ? s : `${s}/`)
+const isHttpUrl = (s) => /^https?:\/\//i.test(s)
 
 /**
  * 将后端返回的文件地址/相对路径转换为可访问的 URL
@@ -10,18 +11,16 @@ const ensureTrailingSlash = (s) => (s.endsWith('/') ? s : `${s}/`)
  */
 export const resolveFileUrl = (value) => {
   if (!value || typeof value !== 'string') return ''
-  if (/^https?:\/\//i.test(value)) return value
+  const raw = value.trim()
+  if (!raw) return ''
+  if (isHttpUrl(raw)) return raw
 
   const base = FILE_BROWSER_BASE_URL
-  if (!base) return value
+  if (!base) return raw
 
-  // 去掉多余前缀，统一拼到 {base}/{path}
-  let path = value.trim()
-
-  // 若后端返回的是 /browser/xxx 或 browser/xxx，则去掉 browser 前缀避免重复
-  path = path.replace(/^\/?browser\/+/i, '')
-  // 去掉开头斜杠
-  path = path.replace(/^\/+/, '')
+  const path = raw
+    .replace(/^\/?browser\/+/i, '') // 去重 browser 前缀
+    .replace(/^\/+/, '') // 去掉开头斜杠
 
   return `${ensureTrailingSlash(base)}${path}`
 }

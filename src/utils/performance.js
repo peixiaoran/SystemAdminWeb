@@ -12,58 +12,58 @@ import { nextTick } from 'vue'
  * @returns {Function} 防抖后的函数
  */
 export function debounce(func, wait = 300, immediate = false) {
-  let timeout = null
+  let timer = null
   let lastArgs = null
   let lastThis = null
-  let result
+  let lastResult
 
-  const later = () => {
-    const context = lastThis
+  const clear = () => {
+    if (timer) clearTimeout(timer)
+    timer = null
+  }
+
+  const invokeLater = () => {
+    const ctx = lastThis
     const args = lastArgs
-    timeout = null
     lastArgs = lastThis = null
-    if (!immediate) {
-      result = func.apply(context, args)
-    }
+    timer = null
+    if (!immediate) lastResult = func.apply(ctx, args)
   }
 
   function debounced(...args) {
     lastArgs = args
     lastThis = this
-    const callNow = immediate && !timeout
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(later, wait)
+
+    const callNow = immediate && !timer
+    clear()
+    timer = setTimeout(invokeLater, wait)
+
     if (callNow) {
+      const ctx = lastThis
+      const a = lastArgs
       lastArgs = lastThis = null
-      result = func.apply(this, args)
+      lastResult = func.apply(ctx, a)
     }
-    return result
+
+    return lastResult
   }
 
   debounced.cancel = () => {
-    if (timeout) {
-      clearTimeout(timeout)
-      timeout = null
-    }
+    clear()
     lastArgs = lastThis = null
   }
 
   debounced.flush = () => {
-    if (timeout) {
-      clearTimeout(timeout)
-      const context = lastThis
-      const args = lastArgs
-      timeout = null
-      lastArgs = lastThis = null
-      result = func.apply(context, args)
-      return result
-    }
-    return undefined
+    if (!timer) return undefined
+    clear()
+    const ctx = lastThis
+    const args = lastArgs
+    lastArgs = lastThis = null
+    lastResult = func.apply(ctx, args)
+    return lastResult
   }
 
-  debounced.pending = () => !!timeout
+  debounced.pending = () => !!timer
 
   return debounced
 }
@@ -75,13 +75,12 @@ export function debounce(func, wait = 300, immediate = false) {
  * @returns {Function} 节流后的函数
  */
 export function throttle(func, limit = 300) {
-  let inThrottle
-  return function executedFunction(...args) {
-    if (!inThrottle) {
-      func.apply(this, args)
-      inThrottle = true
-      setTimeout(() => inThrottle = false, limit)
-    }
+  let inThrottle = false
+  return function throttled(...args) {
+    if (inThrottle) return
+    inThrottle = true
+    func.apply(this, args)
+    setTimeout(() => { inThrottle = false }, limit)
   }
 }
 
@@ -122,21 +121,21 @@ export class AsyncQueue {
   }
 
   async process() {
-    if (this.running >= this.concurrency || this.queue.length === 0) {
-      return
-    }
+    while (this.running < this.concurrency && this.queue.length > 0) {
+      this.running++
+      const { asyncFn, resolve, reject } = this.queue.shift()
 
-    this.running++
-    const { asyncFn, resolve, reject } = this.queue.shift()
-
-    try {
-      const result = await asyncFn()
-      resolve(result)
-    } catch (error) {
-      reject(error)
-    } finally {
-      this.running--
-      this.process()
+      ;(async () => {
+        try {
+          const result = await asyncFn()
+          resolve(result)
+        } catch (error) {
+          reject(error)
+        } finally {
+          this.running--
+          this.process()
+        }
+      })()
     }
   }
 }
@@ -157,7 +156,11 @@ export class FunctionCache {
    * @returns {string} 缓存键
    */
   generateKey(args) {
-    return JSON.stringify(args)
+    try {
+      return JSON.stringify(args)
+    } catch {
+      return String(args)
+    }
   }
 
   /**
@@ -239,7 +242,9 @@ export class LazyImageObserver {
       threshold: 0.1,
       ...options
     }
-    this.observer = new IntersectionObserver(this.handleIntersection.bind(this), this.options)
+    this.observer = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(this.handleIntersection.bind(this), this.options)
+      : null
     this.imageMap = new WeakMap()
   }
 
@@ -249,6 +254,10 @@ export class LazyImageObserver {
    * @param {string} src - 图片源地址
    */
   observe(img, src) {
+    if (!this.observer) {
+      if (img && src) img.src = src
+      return
+    }
     this.imageMap.set(img, src)
     this.observer.observe(img)
   }
@@ -258,6 +267,7 @@ export class LazyImageObserver {
    * @param {HTMLElement} img - 图片元素
    */
   unobserve(img) {
+    if (!this.observer) return
     this.imageMap.delete(img)
     this.observer.unobserve(img)
   }
@@ -283,6 +293,7 @@ export class LazyImageObserver {
    * 销毁观察器
    */
   destroy() {
+    if (!this.observer) return
     this.observer.disconnect()
     this.imageMap = new WeakMap()
   }
@@ -297,9 +308,7 @@ export const DOMUtils = {
    * @param {Function} callback - 操作回调
    */
   batchUpdate(callback) {
-    return nextTick(() => {
-      callback()
-    })
+    return nextTick(callback)
   },
 
   /**

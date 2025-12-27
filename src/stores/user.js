@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { LOGOUT_API, ME_API } from '@/config/api/login/api'
-import { clearAuthStorage } from '@/utils/authStorage'
+import { clearAuthStorage } from '@/utils/sessionCleanup'
 import i18n from '@/i18n'
 
 // /me 探活：做简单缓存，避免每次路由跳转都打一次

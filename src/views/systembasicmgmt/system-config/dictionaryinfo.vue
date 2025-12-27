@@ -122,11 +122,7 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
-            <el-input-number 
-              v-model="editForm.dicCode"
-              :step="1"
-              style="width:100%"
-            />
+            <el-input v-model="editForm.dicCode" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
             <el-input v-model="editForm.dicNameCn" style="width:100%" />
@@ -210,7 +206,7 @@ const editForm = reactive({
   dicId: '',
   moduleId: '',
   dicType: '',
-  dicCode: null,
+  dicCode: '',
   dicNameCn: '',
   dicNameEn: '',
   sortOrder: 0
@@ -229,7 +225,6 @@ const formRules = reactive({
   ],
   dicCode: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
-    ,{ type: 'number', message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'change' }
   ],
   dicNameCn: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
@@ -420,7 +415,7 @@ const resetForm = (clearValidation = true) => {
     dicId: '',
     moduleId: '',
     dicType: '',
-    dicCode: null,
+    dicCode: '',
     dicNameCn: '',
     dicNameEn: '',
     sortOrder: 0
@@ -435,7 +430,7 @@ const insertDictionary = async () => {
   const params = {
     moduleId: editForm.moduleId,
     dicType: (editForm.dicType || '').trim(),
-    dicCode: Number(editForm.dicCode),
+    dicCode: String(editForm.dicCode ?? '').trim(),
     dicNameCn: (editForm.dicNameCn || '').trim(),
     dicNameEn: (editForm.dicNameEn || '').trim(),
     sortOrder: Number(editForm.sortOrder)
@@ -463,7 +458,7 @@ const updateDictionary = async () => {
     dicId: editForm.dicId,
     moduleId: editForm.moduleId,
     dicType: (editForm.dicType || '').trim(),
-    dicCode: Number(editForm.dicCode),
+    dicCode: String(editForm.dicCode ?? '').trim(),
     dicNameCn: (editForm.dicNameCn || '').trim(),
     dicNameEn: (editForm.dicNameEn || '').trim(),
     sortOrder: Number(editForm.sortOrder)
@@ -525,7 +520,7 @@ const handleEdit = async (index, row) => {
     Object.assign(editForm, {
       ...dictionaryData,
       moduleId: String(dictionaryData.moduleId || ''),
-      dicCode: Number(dictionaryData.dicCode ?? 0)
+      dicCode: String(dictionaryData.dicCode ?? '')
     })
     dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
     dialogVisible.value = true

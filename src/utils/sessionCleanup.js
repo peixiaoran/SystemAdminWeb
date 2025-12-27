@@ -1,4 +1,46 @@
-import { clearAuthStorage } from '@/utils/authStorage'
+export const AUTH_STORAGE_KEYS = [
+  'token', // 历史遗留（Cookie 模式下不再使用）
+  'user-store',
+  'userNameCn',
+  'userNameEn',
+  'loginNo',
+  'userId',
+  'currentModuleId',
+  'currentModuleName',
+  'currentModulePath',
+  'currentModuleNameCn',
+  'currentModuleNameEn',
+  'currentSystemPath',
+  'username'
+]
+
+const safeStorageGet = (key) => {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+const safeStorageSet = (key, value) => {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // ignore
+  }
+}
+
+const safeStorageRemove = (key) => {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // ignore
+  }
+}
+
+export const clearAuthStorage = () => {
+  AUTH_STORAGE_KEYS.forEach(safeStorageRemove)
+}
 
 /**
  * 企业标准：退出/会话失效时清理“前端本地态”，但不无脑 localStorage.clear()
@@ -9,28 +51,18 @@ export const clearClientSession = (options = {}) => {
   const { keepLanguage = true } = options
 
   // 备份语言
-  const language = keepLanguage ? localStorage.getItem('language') : null
+  const language = keepLanguage ? safeStorageGet('language') : null
 
   // 清理认证与用户态
   clearAuthStorage()
 
   // 清理业务持久化（Pinia persist / tabs）
-  try {
-    localStorage.removeItem('tabs-store')
-    localStorage.removeItem('pmenu-store')
-  } catch (e) {
-    // ignore
-    void e
-  }
+  safeStorageRemove('tabs-store')
+  safeStorageRemove('pmenu-store')
 
   // 恢复语言
   if (keepLanguage && language) {
-    try {
-      localStorage.setItem('language', language)
-    } catch (e) {
-      // ignore
-      void e
-    }
+    safeStorageSet('language', language)
   }
 }
 
