@@ -304,30 +304,6 @@ export default {
       operationFailed: 'Operation Failed',
       getFailed: 'Failed to get data'
     },
-
-    // Event Information Page Specific
-    eventinfo: {
-      eventCode: 'Event Code',
-      eventName: 'Event Name',
-      eventNameCn: 'Chinese Name',
-      eventNameEn: 'English Name',
-      controlCode: 'Control Code',
-      controlName: 'Control Name',
-      description: 'Description',
-      sortOrder: 'Sort Order',
-      isEnabled: 'Is Enabled',
-      index: 'Index',
-      pleaseInputEventCode: 'Please enter event code',
-      pleaseInputEventName: 'Please enter event name',
-      pleaseInputEventNameCn: 'Please enter Chinese name',
-      pleaseInputEventNameEn: 'Please enter English name',
-      pleaseSelectControlCode: 'Please select control code',
-      pleaseInputDescription: 'Please enter description',
-      addEvent: 'Add Event',
-      deleteConfirm: 'Are you sure you want to delete this event?',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data'
-    },
     
     // Form category page specific
     formtype: {
@@ -623,7 +599,6 @@ export default {
     formoperate: 'Form Operation',
     applyform: 'Application Form',
     controlInfo: 'Control Info',
-    eventInfo: 'Event Info',
     personalInfoTitle: 'Personal Profile',
     nationalityInfo: 'Nationality Info',
     custmat: 'Customer Production Plan',

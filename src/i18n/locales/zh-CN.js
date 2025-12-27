@@ -241,30 +241,6 @@ export default {
         getFailed: '获取数据失败'
       },
 
-    // 事件信息页面专用
-    eventinfo: {
-        eventCode: '事件代码',
-        eventName: '事件名称',
-        eventNameCn: '中文名称',
-        eventNameEn: '英文名称',
-        controlCode: '控件代码',
-        controlName: '控件名称',
-        description: '描述',
-        sortOrder: '排序',
-        isEnabled: '是否启用',
-        index: '序号',
-        pleaseInputEventCode: '请输入事件代码',
-        pleaseInputEventName: '请输入事件名称',
-        pleaseInputEventNameCn: '请输入中文名称',
-        pleaseInputEventNameEn: '请输入英文名称',
-        pleaseSelectControlCode: '请选择控件代码',
-        pleaseInputDescription: '请输入描述',
-        addEvent: '新增事件',
-        deleteConfirm: '确定要删除这个事件吗？',
-        operationFailed: '操作失败',
-        getFailed: '获取数据失败'
-      },
-
     // 表单类别页面专用
     formtype: {
         formTypeName: '类型名称',
@@ -543,7 +519,6 @@ export default {
     formoperate: '表单操作',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
-    eventInfo: '事件信息维护',
     personalInfoTitle: '个人资料',
     nationalityInfo: '国籍信息维护',
     custmat: '客户生产计划',

@@ -394,17 +394,6 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'eventInfo',
-              name: 'EventInfo',
-              component: () => import('../views/formbusiness/form-basicinfo/eventinfo.vue'),
-              meta: { 
-                title: 'route.eventInfo', 
-                icon: 'Link',
-                [ROUTE_CONFIG.META.AUTH]: true,
-                noTag: false
-              }
-            },
-            {
               path: 'formgroup',
               name: 'FormGroup',
               component: () => import('../views/formbusiness/form-basicinfo/formgroup.vue'),

@@ -223,13 +223,13 @@ const form = reactive({
   formId: '',
   formNo: '',
   description: '',
-  importanceCode: null,
+  importanceCode: '',
   applicantUserNo: '',
   applicantUserName: '',
   applicantDeptName: '',
   applicantDeptId: '',
   applicantTime: '',
-  leaveTypeCode: null,
+  leaveTypeCode: '',
   leaveReason: '',
   leaveTimeRange: [],
   leaveDays: 0,
@@ -615,7 +615,7 @@ async function onSubmit () {
     const payload = {
       formTypeId: String(currentFormTypeId.value || defaultFormTypeId),
       description: (form.description || '').trim(),
-      importanceCode: form.importanceCode == null || form.importanceCode === '' ? -1 : Number(form.importanceCode),
+      importanceCode: form.importanceCode || '',
       formId: String(form.formId || ''),
       formNo: form.formNo || '',
       applicantTime: form.applicantTime || '',
@@ -623,7 +623,7 @@ async function onSubmit () {
       applicantUserName: form.applicantUserName || '',
       applicantDeptId: Number(form.applicantDeptId || 0),
       applicantDeptName: form.applicantDeptName || '',
-      leaveTypeCode: form.leaveTypeCode == null || form.leaveTypeCode === '' ? -1 : Number(form.leaveTypeCode),
+      leaveTypeCode: form.leaveTypeCode || '',
       leaveReason: (form.leaveReason || '').trim(),
       leaveStartTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[0] ? form.leaveTimeRange[0] : '',
       leaveEndTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[1] ? form.leaveTimeRange[1] : '',
@@ -632,6 +632,7 @@ async function onSubmit () {
       leaveHandoverUserName: (form.leaveHandoverUserName || '').trim()
     }
     try {
+      console.log(payload)
       const res = await post(SAVE_LEAVEFORM_API, payload)
       if (res && res.code === 200) {
         ElMessage({ message: res.message || t('messages.saveSuccess'), type: 'success', plain: true, showClose: true })
