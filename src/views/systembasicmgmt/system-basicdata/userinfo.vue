@@ -69,7 +69,6 @@
             }}
           </template>
         </el-table-column>
-        <el-table-column prop="email" :label="$t('systembasicmgmt.userInfo.email')" align="left" min-width="200" />
         <el-table-column :label="$t('systembasicmgmt.userInfo.isEmployed')" align="center" min-width="120">
           <template #default="scope">
             <el-tag :type="scope.row.isEmployed === 1 ? 'success' : 'danger'">
@@ -84,7 +83,6 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="laborName" :label="$t('systembasicmgmt.userInfo.laborName')" align="left" min-width="280" />
         <el-table-column :label="$t('systembasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
           <template #default="scope">
             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -227,7 +225,7 @@
          </div>
          
          <div class="form-row four-columns">
-           <el-form-item :label="$t('systembasicmgmt.userInfo.email')" prop="email">
+           <el-form-item :label="$t('systembasicmgmt.userInfo.email')">
              <el-input v-model="editForm.email" style="width:100%" />
            </el-form-item>
            <el-form-item :label="$t('systembasicmgmt.userInfo.phoneNumber')">
@@ -542,29 +540,6 @@ const formRules = reactive({
   ],
   loginNo: [
     { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputLoginNo'), trigger: 'blur' }
-  ],
-  email: [
-    { required: true, message: () => t('systembasicmgmt.userInfo.pleaseInputEmail'), trigger: 'blur' },
-    { 
-      validator: (rule, value, callback) => {
-        if (!value) {
-          callback()
-        return
-        }
-        // 邮箱必须是小写字母
-        if (value !== value.toLowerCase()) {
-          callback(new Error(t('systembasicmgmt.userInfo.emailLowercaseError')))
-          return
-        }
-        // 邮箱后缀必须是 @eson.tw 或 @eson.vn
-        if (!value.endsWith('@eson.tw') && !value.endsWith('@eson.vn')) {
-          callback(new Error(t('systembasicmgmt.userInfo.emailModuleError')))
-          return
-        }
-        callback()
-      }, 
-      trigger: 'blur' 
-    }
   ],
   expirationDays: [
     { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }

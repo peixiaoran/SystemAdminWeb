@@ -243,6 +243,10 @@ const handleSearch = () => {
 const handleReset = () => {
   filters.departmentLevelCode = ''
   filters.departmentLevelName = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchDepartmentLevelList()
 }
 
 // 分页大小改变

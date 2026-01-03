@@ -162,6 +162,12 @@ const handleReset = () => {
   // 只清空输入框，不清空下拉框（此页面无下拉框）
   filters.userNo = ''
   filters.ip = ''
+  filters.startTime = ''
+  filters.endTime = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchUserLoginLogPages()
 }
 
 // 处理页码变化

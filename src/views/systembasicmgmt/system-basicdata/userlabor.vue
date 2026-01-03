@@ -218,6 +218,10 @@ const handleSearch = () => {
 // 重置搜索
 const handleReset = () => {
   searchForm.laborName = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedGetLaborList()
 }
 
 // 分页大小改变

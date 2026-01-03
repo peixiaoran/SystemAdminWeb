@@ -265,6 +265,10 @@ const fetchCurrencyPagesImmediate = () => {
 // 重置搜索条件
 const handleReset = () => {
   filters.currencyCode = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchCurrencyPages()
 }
 
 // 处理页码变化

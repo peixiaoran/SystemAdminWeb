@@ -209,6 +209,10 @@ const fetchNationalityListImmediate = () => {
 // 重置
 const handleReset = () => {
   filters.nationalityName = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchNationalityList()
 }
 
 const resetForm = (clearValidation = true) => {

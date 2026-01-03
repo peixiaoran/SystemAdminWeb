@@ -318,6 +318,10 @@ const fetchModulePagesImmediate = () => {
 const handleReset = () => {
   filters.moduleCode = ''
   filters.moduleName = ''
+  // 重置后自动触发查询（使用防抖）
+  pagination.pageIndex = 1
+  loading.value = true
+  debouncedFetchModulePages()
 }
 
 // 分页变化
