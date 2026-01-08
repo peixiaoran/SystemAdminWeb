@@ -8,7 +8,12 @@ export const GET_PERSONAL_INFO_ENTITY_API = {
     GET_PERSONAL_INFO_ENTITY: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetPersonalInfoEntity'
 }
 
-// 个人信息更新API
+// 个人头像上传API
+export const UPLOAD_AVATAR_API = {
+  UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/UploadAvatar'
+}
+
+// 个人信息修改API
 export const UPDATE_PERSONAL_INFO_API = {
   UPDATE_PERSONAL_INFO: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/UpdatePersonalInfo'
 }

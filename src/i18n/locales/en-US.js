@@ -578,7 +578,7 @@ export default {
     systemBasicData: 'SystemBasic Mgmt',
 
     departmentInfo: 'Department Info',
-    departmentLevel: 'Department Level',
+    departmentLevel: 'Dept Level',
     userposition: 'User Positions',
     userlabor: 'User Labor',
     userinfo: 'Employee Info',

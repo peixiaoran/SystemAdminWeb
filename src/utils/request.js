@@ -278,7 +278,15 @@ const handleLogout = (options = {}) => {
     try {
       const hash = window.location.hash || ''
       current = hash.startsWith('#') ? hash.slice(1) : hash
+      // 如果是登录页，不设置 redirect
       if (current.startsWith('/login')) current = ''
+      // 如果是默认首页（module-select），也不设置 redirect，因为登录后会自动跳转到首页
+      if (current === '/module-select' || current === '/') current = ''
+      // 如果是错误页面，不设置 redirect
+      if (current === '/403' || current === '/404') current = ''
+      // 如果是特殊流程页面，不设置 redirect
+      if (current === '/unlock' || current === '/password-expiration') current = ''
+      // 如果路径不以 / 开头，清空
       if (!current.startsWith('/')) current = ''
     } catch {
       current = ''
