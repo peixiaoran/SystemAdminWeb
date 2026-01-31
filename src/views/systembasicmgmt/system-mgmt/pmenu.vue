@@ -49,15 +49,6 @@
           <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.pmenu.menuType')" align="center" min-width="150" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.pmenu.pagePath')" align="left" min-width="280" />
           <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.pmenu.menuIcon')" align="center" min-width="180" />
-          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="120">
-            <template #default="scope">
-              <div class="flex">
-                <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                  {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-                </el-tag>
-              </div>
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
             <template #default="scope">
               <div class="flex">
@@ -140,15 +131,6 @@
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.isEnabled')">
-            <el-switch v-model="editForm.isEnabled"
-                       :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-          </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.isVisible')">
             <el-switch v-model="editForm.isVisible"
                        :active-value="1"
@@ -223,7 +205,6 @@ const editForm = reactive({
   menuIcon: '',
   sortOrder: 1,
 
-  isEnabled: 1,
   isVisible: 1,
   path: '',
   redirect: '',
@@ -353,7 +334,6 @@ const fetchPMenuEntity = async (menuId) => {
       editForm.path = res.data.path
       editForm.redirect = res.data.redirect
       editForm.remark = res.data.remark
-      editForm.isEnabled = res.data.isEnabled
       editForm.isVisible = res.data.isVisible
     }
   } catch (error) {
@@ -478,7 +458,6 @@ const resetForm = (clearValidation = true) => {
     path: '',
     menuIcon: '',
     sortOrder: 1,
-    isEnabled: 1,
     isVisible: 1,
     remark: ''
   })
@@ -629,7 +608,6 @@ const handleAdd = () => {
   editForm.menuId = '0'
   editForm.parentMenuId = '0'
   editForm.sortOrder = 1
-  editForm.isEnabled = 1
   editForm.isVisible = 1
 
   // 设置对话框标题

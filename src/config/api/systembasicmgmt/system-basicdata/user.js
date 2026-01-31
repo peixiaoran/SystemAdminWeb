@@ -61,8 +61,8 @@ export const EXPORT_USERS_API = {
   EXPORT_USERS: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUsersToExcel'
 }
 
-// 头像上传API
+// 头像上传API（后端参数：[FromForm] string userId, IFormFile file；返回 { code, data: string, message }，data 为图片地址）
 export const UPLOAD_AVATAR_API = {
-  // 对应后端路由：SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar（方法名可为 UploadAvatarAsync）
+  // 对应后端路由：SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar
   UPLOAD_AVATAR: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatar'
 }

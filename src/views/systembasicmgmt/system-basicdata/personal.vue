@@ -159,9 +159,7 @@
           <div class="avatar-container">
             <el-upload
               class="avatar-uploader"
-              :action="UPLOAD_CONFIG.url"
-              :headers="UPLOAD_CONFIG.headers"
-              :with-credentials="true"
+              :http-request="customUpload"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
@@ -393,6 +391,28 @@ export default {
       return true
     }
 
+    // 自定义上传（后端参数：[FromForm] string userId, IFormFile file；返回 data 为图片地址字符串）
+    const customUpload = async (options) => {
+      try {
+        const formData = new FormData()
+        formData.append('userId', personalInfoForm.userId || '')
+        formData.append('file', options.file)
+        const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
+          headers: {
+            ...UPLOAD_CONFIG.headers,
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        if (res && res.code === 200) {
+          options.onSuccess(res)
+        } else {
+          options.onError(new Error(res?.message))
+        }
+      } catch (error) {
+        options.onError(error)
+      }
+    }
+
     // 头像上传成功
     const handleAvatarSuccess = (res) => {
       if (res && res.code === 200) {
@@ -587,6 +607,7 @@ export default {
        handleSave,
        handleReset,
        beforeAvatarUpload,
+       customUpload,
        handleAvatarSuccess
      }
    }

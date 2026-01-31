@@ -229,6 +229,9 @@ const formRules = reactive({
   dicNameCn: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
   ],
+  dicNameEn: [
+    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
+  ],  
   sortOrder: [
     { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' },
     { type: 'number', message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' }

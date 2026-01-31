@@ -39,15 +39,6 @@
           <el-table-column prop="moduleNameEn" :label="$t('systembasicmgmt.module.moduleNameEn')" align="left" min-width="280" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.module.pagePath')" align="left" min-width="230" />
           <el-table-column prop="moduleIcon" :label="$t('systembasicmgmt.module.moduleIcon')" align="center" min-width="150" />
-          <el-table-column :label="$t('systembasicmgmt.isEnabled')" align="center" min-width="90">
-            <template #default="scope">
-              <div class="flex">
-                <el-tag :type="scope.row.isEnabled ? 'success' : 'danger'">
-                  {{ scope.row.isEnabled ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-                </el-tag>
-              </div>
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
             <template #default="scope">
               <div class="flex">
@@ -125,15 +116,6 @@
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.isEnabled')">
-            <el-switch v-model="editForm.isEnabled"
-                       :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-          </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.isVisible')">
             <el-switch v-model="editForm.isVisible"
                        :active-value="1"
@@ -200,7 +182,6 @@ const editForm = reactive({
   moduleNameEn: '',
   moduleIcon: '',
   sortOrder: 1,
-  isEnabled: 1,
   isVisible: 1,
   level: 1,
   path: '',
@@ -266,7 +247,6 @@ const fetchModuleEntity = async (moduleId) => {
     editForm.redirect = res.data.redirect
     editForm.remarkCh = res.data.remarkCh ?? res.data.remarksCh ?? ''
     editForm.remarkEn = res.data.remarkEn ?? res.data.remarksEn ?? ''
-    editForm.isEnabled = res.data.isEnabled
     editForm.isVisible = res.data.isVisible
     editForm.level = res.data.level
   }
@@ -345,7 +325,6 @@ const resetForm = (clearValidation = true) => {
   editForm.moduleNameEn = ''
   editForm.moduleIcon = ''
   editForm.sortOrder = 1
-  editForm.isEnabled = 1
   editForm.isVisible = 1
   editForm.path = ''
   editForm.redirect = ''

@@ -53,8 +53,8 @@
         v-loading="loading"
         class="conventional-table">
         <el-table-column type="index" :label="$t('systembasicmgmt.userInfo.index')" width="70" align="center" fixed />
-        <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="center" min-width="150" />
-        <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="180" />
+        <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="center" min-width="130" />
+        <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="150" />
         <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
         <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
         <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="120" />
@@ -326,11 +326,10 @@
            <el-form-item :label="$t('systembasicmgmt.userInfo.avatar')" prop="avatarAddress">
              <el-upload
                class="avatar-uploader"
-               :action="UPLOAD_CONFIG.url"
-               :headers="UPLOAD_CONFIG.headers"
-               :with-credentials="true"
+               :http-request="customUpload"
                :show-file-list="false"
                :on-success="handleAvatarSuccess"
+               :on-error="handleAvatarError"
                :before-upload="beforeAvatarUpload"
                accept=".jpg,.jpeg,.png"
                >
@@ -1212,10 +1211,11 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   }
   
   
-  // 自定义上传
+  // 自定义上传（后端参数：[FromForm] string userId, IFormFile file；返回 data 为图片地址字符串）
   const customUpload = async (options) => {
       try {
           const formData = new FormData()
+          formData.append('userId', editForm.userId || '')
           formData.append('file', options.file)
           
           const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
@@ -1228,7 +1228,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           if (res && res.code === 200) {
               options.onSuccess(res)
           } else {
-              options.onError(new Error(res.message))
+              options.onError(new Error(res?.message))
           }
       } catch (error) {
           options.onError(error)
