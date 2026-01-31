@@ -185,7 +185,6 @@ const editForm = reactive({
   landline: '',
   email: '',
   address: '',
-  // 是否启用：前端不提供编辑能力，仍保留字段用于兼容后端（新增默认启用、编辑沿用原值）
   isEnabled: 1
 })
 
@@ -201,7 +200,6 @@ const formRules = reactive({
     { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
   ],
   departmentLevelId: [
-    // 说明：将触发从 change 改为 blur，避免点击"新增"时初始值变更导致立即校验弹出
     { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'blur' }
   ]
 })
