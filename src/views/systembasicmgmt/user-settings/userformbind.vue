@@ -11,9 +11,10 @@
             check-strictly
             filterable
             :filter-node-method="filterNodeMethod"
-            style="width: 200px;"
-            :placeholder="$t('systembasicmgmt.userformbind.pleaseSelectDepartment')"
-            @change="handleDepartmentChange" />
+            @change="handleDepartmentChange"
+            style="width: 300px;"
+            popper-class="filter-department-tree-select-popper"
+            :placeholder="$t('systembasicmgmt.userformbind.pleaseSelectDepartment')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userformbind.userNo')">
           <el-input v-model="filters.userNo"
@@ -54,10 +55,10 @@
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userformbind.departmentName')" align="left" min-width="270" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userformbind.positionName')" align="left" min-width="150" />
           <el-table-column prop="laborName" :label="$t('systembasicmgmt.userformbind.laborName')" align="left" min-width="270" />
-          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="150">
+          <el-table-column :label="$t('systembasicmgmt.userformbind.isApproval')" align="center" min-width="120">
             <template #default="scope">
               <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                {{ scope.row.isApprovalName }}
+                {{ scope.row.isApproval === '1' ? $t('common.yes') : $t('common.no') }}
               </el-tag>
             </template>
           </el-table-column>
@@ -553,4 +554,16 @@ onMounted(() => {
   margin-top: 10px;
   text-align: left;
 }
+</style>
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .filter-department-tree-select-popper {
+    min-width: 300px;
+  }
+  .filter-department-tree-select-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 12px;
+  }
 </style>

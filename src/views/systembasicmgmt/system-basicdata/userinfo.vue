@@ -12,7 +12,8 @@
           filterable
           :filter-node-method="filterNodeMethod"
           @change="handleDepartmentChange"
-          style="width: 200px;"
+          style="width: 300px;"
+          popper-class="filter-department-tree-select-popper"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
@@ -366,7 +367,8 @@ import {
   GET_ROLE_DROPDOWN_API,
   GET_NATIONALITY_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
-  UPLOAD_AVATAR_API
+  UPLOAD_AVATAR_UPDATE_API,
+  UPLOAD_AVATAR_INSERT_API
 } from '@/config/api/systembasicmgmt/system-basicdata/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
@@ -414,8 +416,8 @@ const userStore = useUserStore()
 
 // 统一的文件上传配置（每个页面从对应 api.js 读取接口地址）
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
-const uploadAvatarPath = (UPLOAD_AVATAR_API.UPLOAD_AVATAR || '').replace(/^\/+/, '')
-const UPLOAD_CONFIG = reactive({
+const uploadAvatarPath = (UPLOAD_AVATAR_UPDATE_API.UPLOAD_AVATAR_UPDATE || '').replace(/^\/+/, '')
+const uploadAvatarUpdateConfig = reactive({
   url: `${apiBaseUrl}/${uploadAvatarPath}`,
   headers: {
     'Accept-Language': ''
@@ -1210,17 +1212,16 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       return true
   }
   
-  
-  // 自定义上传（后端参数：[FromForm] string userId, IFormFile file；返回 data 为图片地址字符串）
+  // 修改用户信息用 UPLOAD_AVATAR_UPDATE_API，新增用户用 UPLOAD_AVATAR_INSERT_API
   const customUpload = async (options) => {
       try {
           const formData = new FormData()
-          formData.append('userId', editForm.userId || '')
+          const isAdd = !editForm.userId
+          if (!isAdd) formData.append('userId', editForm.userId || '')
           formData.append('file', options.file)
-          
-          const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
+          const uploadUrl = isAdd ? UPLOAD_AVATAR_INSERT_API.UPLOAD_AVATAR_INSERT : UPLOAD_AVATAR_UPDATE_API.UPLOAD_AVATAR_UPDATE
+          const res = await post(uploadUrl, formData, {
               headers: {
-                  ...UPLOAD_CONFIG.headers,
                   'Content-Type': 'multipart/form-data'
               }
           })
@@ -1320,6 +1321,18 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
   .dialog-form .form-row.four-columns .el-form-item:last-child {
       margin-right: 0;
+  }
+</style>
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .filter-department-tree-select-popper {
+    min-width: 300px;
+  }
+  .filter-department-tree-select-popper .el-tree-node__content {
+    height: 30px;
+    line-height: 30px;
+    padding-left: 12px;
   }
 </style>
 

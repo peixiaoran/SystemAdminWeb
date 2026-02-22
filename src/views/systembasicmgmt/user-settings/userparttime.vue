@@ -12,8 +12,9 @@
                         check-strictly
                         filterable
                         :filter-node-method="filterNodeMethod"
-                        style="width: 200px;"
                         @change="handleDepartmentChange"
+                        style="width: 300px;"
+                        popper-class="filter-department-tree-select-popper"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
@@ -1162,5 +1163,16 @@
     margin-right: 0;
   }
 </style>
-  
-  
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .filter-department-tree-select-popper {
+    min-width: 320px;
+  }
+  .filter-department-tree-select-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 12px;
+  }
+</style>
+

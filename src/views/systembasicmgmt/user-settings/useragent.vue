@@ -22,9 +22,10 @@
             check-strictly
             filterable
             :filter-node-method="filterNodeMethod"
-            style="width: 200px;"
-            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
             @change="handleDepartmentChange"
+            style="width: 300px;"
+            popper-class="filter-department-tree-select-popper"
+            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
           />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
@@ -226,9 +227,10 @@
               }"
               check-strictly
               filterable
-              @change="handleUserSelectSearch"
               :filter-node-method="filterNodeMethod"
-              style="width: 200px;"
+              @change="handleUserSelectSearch"
+              style="width: 300px;"
+              popper-class="filter-department-tree-select-popper"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
               :clearable="false"
             />
@@ -1040,6 +1042,18 @@ const handleDepartmentChange = () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+</style>
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .filter-department-tree-select-popper {
+    min-width: 300px;
+  }
+  .filter-department-tree-select-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 12px;
+  }
 </style>
 
 
