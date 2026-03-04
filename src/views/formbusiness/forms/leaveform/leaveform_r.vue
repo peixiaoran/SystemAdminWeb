@@ -632,7 +632,6 @@ async function onSubmit () {
       leaveHandoverUserName: (form.leaveHandoverUserName || '').trim()
     }
     try {
-      console.log(payload)
       const res = await post(SAVE_LEAVEFORM_API, payload)
       if (res && res.code === 200) {
         ElMessage({ message: res.message || t('messages.saveSuccess'), type: 'success', plain: true, showClose: true })
@@ -682,7 +681,6 @@ onMounted(async () => {
       await initLeaveForm()
     }
   } catch (error) {
-    console.error('加载失败:', error)
     ElMessage.error(t('messages.loadError'))
   } finally {
     loading.value = false

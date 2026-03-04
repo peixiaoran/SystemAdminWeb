@@ -190,7 +190,6 @@ const getFormGroupOptions = async () => {
       })
     }
   } catch (error) {
-    console.error('获取表单组别下拉选项失败:', error)
     ElMessage({
       message: t('formbusiness.formtype.getFormGroupFailed'),
       type: 'error',
@@ -228,7 +227,6 @@ const getFormTypeList = async () => {
       formTypeList.value = []
     }
   } catch (error) {
-    console.error('获取申请表单列表失败:', error)
     ElMessage({
       message: t('formbusiness.formtype.getFailed'),
       type: 'error',
@@ -373,7 +371,6 @@ const handleSubmit = async () => {
   } catch (error) {
     // 验证失败时只进行非空判断，不显示弹出框错误消息
     if (error !== false) {
-      console.error('表单验证失败:', error)
       // 这里不显示错误消息，只进行非空判断
     }
   } finally {

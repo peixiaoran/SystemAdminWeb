@@ -320,8 +320,7 @@ const handleDelete = async (row) => {
       }
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除职业失败:', error)
+      if (error !== 'cancel') {
       ElMessage({
         message: t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',

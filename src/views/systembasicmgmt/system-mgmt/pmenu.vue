@@ -268,7 +268,6 @@ const initPageData = async () => {
     // 应用默认值进行初始查询
     fetchPMenuPages()
   } catch (error) {
-    console.error('获取模块数据失败:', error)
     ElMessage({
       message: '获取模块数据失败，请刷新页面重试',
       type: 'error',
@@ -337,7 +336,6 @@ const fetchPMenuEntity = async (menuId) => {
       editForm.isVisible = res.data.isVisible
     }
   } catch (error) {
-    console.error('获取模块实体数据失败:', error)
     ElMessage({
       message: '获取模块数据失败，请重试',
       type: 'error',
@@ -361,7 +359,6 @@ const fetchPMenuPages = async () => {
     moduleList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } catch (error) {
-    console.error('获取模块列表失败:', error)
     ElMessage({
       message: '获取数据失败，请重试',
       type: 'error',
@@ -433,15 +430,12 @@ const resetForm = (clearValidation = true) => {
   // 先清除验证状态（在重置数据之前）
   if (clearValidation && editFormRef.value) {
     try {
-      // 针对下拉框字段单独清除验证
       const selectFields = ['moduleId', 'menuType']
       selectFields.forEach(field => {
         editFormRef.value.clearValidate(field)
       })
-      // 然后清除所有验证
       editFormRef.value.clearValidate()
     } catch (error) {
-      console.warn('清除表单验证状态失败:', error)
     }
   }
   

@@ -295,7 +295,6 @@
           // 应用默认值进行初始查询
           fetchSMenuPages()
       } catch (error) {
-          console.error('初始化页面数据失败:', error)
           ElMessage({
               message: '初始化页面数据失败，请刷新页面重试',
               type: 'error',
@@ -322,7 +321,6 @@
               }
           }
       } catch (error) {
-          console.error('获取模块数据失败:', error)
           ElMessage({
               message: '获取模块数据失败，请刷新页面重试',
               type: 'error',
@@ -355,7 +353,6 @@
                 }
           }
       } catch (error) {
-          console.error('获取父菜单数据失败:', error)
           ElMessage({
               message: '获取父菜单数据失败，请刷新页面重试',
               type: 'error',
@@ -403,7 +400,6 @@
               }
           }
       } catch (error) {
-          console.error('获取实体数据失败:', error)
           ElMessage({
               message: '获取实体数据失败，请刷新页面重试',
               type: 'error',
@@ -429,11 +425,9 @@
           smenuList.value = res.data || []
           pagination.totalCount = res.totalCount || 0
       } catch (error) {
-          // 如果是请求被取消的错误，不显示错误信息
           if (axios.isCancel(error)) {
               return
           }
-          console.error('获取列表数据失败:', error)
           ElMessage({
               message: '获取列表数据失败，请刷新页面重试',
               type: 'error',
@@ -503,15 +497,12 @@ const handleReset = async () => {
       // 清除表单验证状态，在重新设置表单值之前
       if (clearValidation && editFormRef.value) {
           try {
-              // 清除表单中选择框的验证
               const selectFields = ['moduleId', 'parentMenuId', 'menuType']
               selectFields.forEach(field => {
                   editFormRef.value.clearValidate(field)
               })
-              // 然后清除所有验证
               editFormRef.value.clearValidate()
           } catch (error) {
-              console.warn('重置表单验证状态失败:', error)
           }
       }
       
@@ -539,7 +530,6 @@ const handleReset = async () => {
                   try {
                       editFormRef.value.clearValidate()
                   } catch (error) {
-                      console.warn('重置表单验证状态失败:', error)
                   }
               }
           })
@@ -672,7 +662,6 @@ const handleReset = async () => {
               })
           }
       } catch (error) {
-          console.error('删除二级菜单失败:', error)
           ElMessage({
               message: '删除二级菜单失败，请重试',
               type: 'error',

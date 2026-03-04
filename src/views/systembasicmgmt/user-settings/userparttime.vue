@@ -163,9 +163,9 @@
                             :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
                             check-strictly
                             filterable
-                            @change="handleDialogUserSearch"
+                            @change="handleDialogDeptFilterChange"
                             :filter-node-method="filterNodeMethod"
-                            style="width: 200px;"
+                            style="width: 240px;"
                             :clearable="false"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                     </el-form-item>
@@ -183,7 +183,7 @@
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>
-                    <el-form-item v-if="!isEditMode">
+                    <el-form-item>
                         <el-button type="primary" @click="handleDialogUserSearch">{{ $t('common.search') }}</el-button>
                         <el-button @click="handleDialogUserReset">{{ $t('common.reset') }}</el-button>
                     </el-form-item>
@@ -197,6 +197,7 @@
                           v-loading="dialogUserLoading || dialogSubmitLoading"
                           class="conventional-table"
                           height="310"
+                          ref="dialogUserTableRef"
                           @selection-change="handleDialogUserSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
@@ -228,7 +229,14 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleDialogSubmit" :loading="dialogSubmitLoading">{{ $t('common.confirm') }}</el-button>
+                    <el-button
+                      type="primary"
+                      @click="handleDialogSubmit"
+                      :loading="dialogSubmitLoading"
+                      :disabled="!dialogForm.userId || dialogSubmitLoading"
+                    >
+                      {{ $t('common.confirm') }}
+                    </el-button>
                 </span>
             </template>
         </el-dialog>
@@ -288,6 +296,7 @@
     const dialogUserList = ref([])
     const dialogUserLoading = ref(false)
     const selectedDialogUsers = ref([])
+    const dialogUserTableRef = ref(null)
   
     // 分页信息
     const pagination = reactive({
@@ -752,6 +761,14 @@
         isEditMode.value = false
         dialogVisible.value = true
         await nextTick()
+        // 打开对话框后清除一次校验状态，避免保留上次必填错误提示
+        if (dialogFormRef.value) {
+            try {
+                dialogFormRef.value.clearValidate()
+            } catch {
+                // ignore
+            }
+        }
         await fetchDialogUserPages()
     }
     
@@ -769,6 +786,16 @@
         dialogUserPagination.pageIndex = 1
         dialogUserLoading.value = true
         debouncedFetchDialogUserPages()
+    }
+
+    /**
+     * 处理对话框部门下拉变化：立即按部门筛选用户列表
+     * 编辑模式下若当前 userId 仍在该部门内，会在列表加载完成后自动勾选回原用户
+     */
+    const handleDialogDeptFilterChange = () => {
+        dialogUserPagination.pageIndex = 1
+        dialogUserLoading.value = true
+        fetchDialogUserPages()
     }
 
     /**
@@ -820,12 +847,20 @@
     }
 
     /**
-     * 处理对话框用户选择变化（单选）
+     * 处理对话框用户选择变化（强制单选）
      * @param {Array} selection 当前选中的用户列表
      */
     const handleDialogUserSelectionChange = (selection) => {
-        selectedDialogUsers.value = selection
-        dialogForm.userId = selection.length > 0 ? selection[0].userId : ''
+        if (selection.length > 1 && dialogUserTableRef.value) {
+            const latest = selection[selection.length - 1]
+            dialogUserTableRef.value.clearSelection()
+            dialogUserTableRef.value.toggleRowSelection(latest, true)
+            selectedDialogUsers.value = [latest]
+            dialogForm.userId = latest.userId ? String(latest.userId) : ''
+        } else {
+            selectedDialogUsers.value = selection
+            dialogForm.userId = selection.length > 0 ? String(selection[0].userId) : ''
+        }
     }
     
     /**
@@ -847,6 +882,19 @@
             if (res && res.code === 200) {
                 dialogUserList.value = res.data || []
                 dialogUserPagination.totalCount = res.totalCount || 0
+
+                // 编辑模式下：自动勾选当前兼任用户所在行（单选）
+                if (isEditMode.value && dialogForm.userId && dialogUserTableRef.value) {
+                    const matched = dialogUserList.value.find(
+                        item => String(item.userId) === String(dialogForm.userId)
+                    )
+                    if (matched) {
+                        await nextTick()
+                        dialogUserTableRef.value.clearSelection()
+                        dialogUserTableRef.value.toggleRowSelection(matched, true)
+                        selectedDialogUsers.value = [matched]
+                    }
+                }
             } else {
                 dialogUserList.value = []
                 ElMessage({
@@ -968,8 +1016,8 @@
             const res = await post(GET_USER_PARTTIMEENTITY_API.GET_USER_PARTTIMEENTITY, params)
             
             if (res && res.code === 200 && res.data) {
-                // 填充通用表单为编辑模式数据
-                dialogForm.userId = ''
+                // 填充通用表单为编辑模式数据（统一为字符串，便于后续对比）
+                dialogForm.userId = res.data.userId ? String(res.data.userId) : ''
                 dialogForm.old_UserId = res.data.userId
                 dialogForm.old_PartTimeDeptId = res.data.partTimeDeptId
                 dialogForm.old_PartTimePositionId = res.data.partTimePositionId
@@ -1030,6 +1078,14 @@
                 
                 // 等待对话框打开后再获取用户列表数据
                 await nextTick()
+                // 编辑模式下同样清理一次校验状态，防止上次的必填/格式错误残留
+                if (dialogFormRef.value) {
+                    try {
+                        dialogFormRef.value.clearValidate()
+                    } catch {
+                        // ignore
+                    }
+                }
                 await fetchDialogUserPages()
             } else {
                 ElMessage({

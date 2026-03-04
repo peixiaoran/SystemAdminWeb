@@ -208,7 +208,6 @@ const getLaborList = async () => {
     laborList.value = []
   }
   } catch (error) {
-    console.error('获取职业列表失败:', error)
     ElMessage({
       message: t('systembasicmgmt.userLabor.getFailed'),
       type: 'error',
@@ -304,7 +303,6 @@ const handleEdit = async (row) => {
       dialogVisible.value = false
     }
   } catch (error) {
-    console.error('获取职业详情失败:', error)
     ElMessage({
       message: t('systembasicmgmt.userLabor.getFailed'),
       type: 'error',
@@ -357,7 +355,6 @@ const handleDelete = async (row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除职业失败:', error)
       ElMessage({
         message: t('systembasicmgmt.userLabor.operationFailed'),
         type: 'error',
@@ -406,9 +403,8 @@ const handleSubmit = async () => {
         showClose: true
       })
     }
-   } catch (error) {
+  } catch (error) {
      if (error !== false) {
-       console.error('提交表单失败:', error)
        ElMessage({
          message: t('systembasicmgmt.userLabor.operationFailed'),
          type: 'error',

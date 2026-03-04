@@ -133,15 +133,6 @@ const logError = (errorInfo, context, type) => {
     url: window.location.href
   }
 
-  if (import.meta.env.DEV) {
-    console.group(`错误日志 - ${context}`)
-    console.error('错误信息:', errorInfo.message)
-    console.error('错误代码:', errorInfo.code)
-    console.error('错误详情:', errorInfo.details)
-    console.error('完整日志:', logData)
-    console.groupEnd()
-  }
-
   if (import.meta.env.PROD) {
     // 这里可以集成错误监控服务，如Sentry等
     // sendToErrorMonitoring(logData)
@@ -250,6 +241,10 @@ const DEBOUNCE_DELAY = 100
 
 let has401ErrorOccurred = false
 let has403ErrorOccurred = false
+
+// 网络错误提示节流：避免多个接口同时失败时重复弹出相同提示
+let lastNetworkErrorTime = 0
+const NETWORK_ERROR_COOLDOWN_MS = 5000
 
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
 
@@ -443,10 +438,25 @@ const createPostRequest = () => async (url, data, options = {}) => {
     }
     
     const info = handleNetworkError(error, { showMessage: false })
+
+    // 只在首次（或冷却期之后）弹出一次网络错误警告
+    const now = Date.now()
+    if (now - lastNetworkErrorTime > NETWORK_ERROR_COOLDOWN_MS) {
+      lastNetworkErrorTime = now
+      ElMessage({
+        type: 'warning',
+        message: info.message,
+        duration: 3000,
+        plain: true,
+        showClose: true
+      })
+    }
+
+    // 对调用方返回一个“已统一处理”的结果，避免各页面再次弹错
     return {
-      code: -1,
+      code: 200,
       data: null,
-      message: info.message,
+      message: '',
       success: false
     }
   }

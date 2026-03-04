@@ -418,7 +418,6 @@ export default {
       if (res && res.code === 200) {
         personalInfoForm.avatarAddress = res.data
         avatarUrl.value = resolveFileUrl(res.data)
-        console.log(avatarUrl.value)
         ElMessage({
           message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
           type: 'success',

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
     <!-- 第一行：四个统计卡片 -->
     <el-row :gutter="20" class="stats-cards">
@@ -630,7 +630,6 @@ const initPieCharts = async () => {
       window.addEventListener('resize', () => chart3.resize())
     }
   } catch (error) {
-    console.error('饼图初始化失败:', error)
   }
 }
 
@@ -676,7 +675,6 @@ onMounted(() => {
       // 初始化饼图
       await initPieCharts()
     } catch (error) {
-      console.error('图表初始化失败:', error)
       // 如果等待超时，尝试最后一次初始化
       setTimeout(async () => {
         try {
@@ -685,7 +683,6 @@ onMounted(() => {
           }
           await initPieCharts()
         } catch (retryError) {
-          console.error('图表重试初始化也失败:', retryError)
         }
       }, 2000)
     }

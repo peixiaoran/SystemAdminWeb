@@ -441,7 +441,6 @@ const handleDelete = async (index, row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除部门失败:', error)
       ElMessage({
         message: t('systembasicmgmt.departmentInfo.operationFailed'),
         type: 'error',

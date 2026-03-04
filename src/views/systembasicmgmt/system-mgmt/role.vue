@@ -40,7 +40,7 @@
           <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
           <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />
           <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
-          <el-table-column :label="$t('systembasicmgmt.operation')" min-width="260" fixed="right" align="center">
+          <el-table-column :label="$t('systembasicmgmt.operation')" min-width="220" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
                 {{ $t('common.edit') }}
@@ -272,8 +272,7 @@
   const currentRoleName = ref('')
   const moduleTreeProps = {
       label: 'moduleName',
-      children: 'children',
-      disabled: (data) => !data.isEnabled
+      children: 'children'
   }
 
   // 配置菜单相关
@@ -285,8 +284,7 @@
   const moduleOptions = ref([])
   const menuTreeProps = {
       label: 'menuName',
-      children: 'menuChildren',
-      disabled: (data) => !data.isEnabled
+      children: 'menuChildren'
   }
 
   // 表单验证规则

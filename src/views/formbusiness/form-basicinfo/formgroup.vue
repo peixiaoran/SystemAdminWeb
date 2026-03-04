@@ -230,7 +230,6 @@ const getFormGroupList = async () => {
       formGroupList.value = []
     }
   } catch (error) {
-    console.error('获取表单组别列表失败:', error)
     ElMessage({
       message: t('formbusiness.formgroup.getFailed'),
       type: 'error',
@@ -330,7 +329,6 @@ const handleEdit = async (row) => {
       dialogVisible.value = false
     }
   } catch (error) {
-    console.error('获取表单组别详情失败:', error)
     ElMessage({
       message: t('formbusiness.formgroup.getFailed'),
       type: 'error',
@@ -387,7 +385,6 @@ const handleDelete = async (row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除表单组别失败:', error)
       ElMessage({
         message: t('formbusiness.formgroup.operationFailed'),
         type: 'error',
@@ -440,7 +437,6 @@ const handleSubmit = async () => {
   } catch (error) {
     // 如果是表单验证失败，不显示错误提示，让Element Plus自己处理
     if (error !== false && typeof error === 'object' && error.message) {
-      console.error('提交表单失败:', error)
       ElMessage({
         message: t('formbusiness.formgroup.operationFailed'),
         type: 'error',

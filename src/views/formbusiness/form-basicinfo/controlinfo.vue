@@ -208,7 +208,6 @@ const getControlList = async () => {
       controlList.value = []
     }
   } catch (error) {
-    console.error('获取控件信息列表失败:', error)
     ElMessage({
       message: t('formbusiness.controlinfo.getFailed'),
       type: 'error',
@@ -334,7 +333,6 @@ const handleDelete = async (row) => {
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除控件信息失败:', error)
       ElMessage({
         message: t('formbusiness.controlinfo.operationFailed'),
         type: 'error',
@@ -387,7 +385,6 @@ const handleSubmit = async () => {
   } catch (error) {
     // 如果是表单验证失败，不显示错误提示，让Element Plus自己处理
     if (error !== false && typeof error === 'object' && error.message) {
-      console.error('提交表单失败:', error)
       ElMessage({
         message: t('formbusiness.controlinfo.operationFailed'),
         type: 'error',

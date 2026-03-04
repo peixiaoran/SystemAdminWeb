@@ -229,7 +229,7 @@
               filterable
               :filter-node-method="filterNodeMethod"
               @change="handleUserSelectSearch"
-              style="width: 300px;"
+              style="width: 270px;"
               popper-class="filter-department-tree-select-popper"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
               :clearable="false"
@@ -702,6 +702,14 @@ const handleAddAgentForUser = async (index, row) => {
 
   // 等待对话框打开后获取用户列表
   await nextTick()
+  // 打开对话框后清除时间校验状态，避免保留上一次的必填错误提示
+  if (agentTimeFormRef.value) {
+    try {
+      agentTimeFormRef.value.clearValidate()
+    } catch {
+      // ignore
+    }
+  }
   await fetchUserSelectList()
 }
 
@@ -728,6 +736,14 @@ const handleUserSelectDialogClosed = () => {
     userNo: '',
     userName: ''
   })
+  // 对话框关闭时也清除一次时间表单的校验状态
+  if (agentTimeFormRef.value) {
+    try {
+      agentTimeFormRef.value.clearValidate()
+    } catch {
+      // ignore
+    }
+  }
   // 清空表格选择
   if (userSelectTableRef.value) {
     userSelectTableRef.value.clearSelection()
@@ -870,9 +886,16 @@ const handleUserSelectSizeChange = (size) => {
   fetchUserSelectList()
 }
 
-// 处理多选变化
+// 处理选择变化：强制单选
 const handleSelectionChange = (selection) => {
-  selectedUsers.value = selection
+  if (selection.length > 1 && userSelectTableRef.value) {
+    const latest = selection[selection.length - 1]
+    userSelectTableRef.value.clearSelection()
+    userSelectTableRef.value.toggleRowSelection(latest, true)
+    selectedUsers.value = [latest]
+  } else {
+    selectedUsers.value = selection
+  }
 }
 
 // 处理开始时间变化

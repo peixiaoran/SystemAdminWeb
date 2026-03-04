@@ -519,7 +519,7 @@ const router = createRouter({
 })
 
 // 设置路由守卫
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   // 设置页面标题
   const translatedTitle = to.meta.title ? t(to.meta.title) : '';
   document.title = translatedTitle ? `${translatedTitle} - ${t('common.systemTitle')}` : t('common.systemTitle');
@@ -529,31 +529,22 @@ router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
     const ok = await userStore.probeSession()
     if (ok) {
-      // 企业标准：支持 login?redirect=xxx，已登录则直接回跳
       const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
       if (redirect && redirect.startsWith('/')) {
-        next({ path: redirect })
-      } else {
-      next({ path: ROUTE_CONFIG.BASE.HOME })
+        return { path: redirect }
       }
-      return
+      return { path: ROUTE_CONFIG.BASE.HOME }
     }
   }
   
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {
-    // Cookie 会话闭环：优先探活 /me，同步并校验会话有效性
     const userStore = useUserStore()
     const ok = await userStore.probeSession()
     if (!ok) {
-      // 企业标准：未登录访问受保护页 => 跳登录，并携带回跳地址
-      next({ path: ROUTE_CONFIG.BASE.LOGIN, query: { redirect: to.fullPath } })
-      return
+      return { path: ROUTE_CONFIG.BASE.LOGIN, query: { redirect: to.fullPath } }
     }
   }
-  
-  // 继续导航
-  next()
 })
 
 // 导出路由配置常量

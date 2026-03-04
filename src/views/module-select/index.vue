@@ -226,7 +226,6 @@ const enterPMenu = (pmenu) => {
   try {
     localStorage.removeItem('tabs-store')
   } catch (error) {
-    console.error('清空标签数据失败:', error)
   }
   
   // 跳转到layout页面，然后由layout处理模块路由
@@ -260,13 +259,9 @@ const logout = async () => {
       router.replace('/login')
     } else {
       // 登出失败，错误信息已在 userStore.logout() 中显示
-      console.error('Logout failed:', result?.message)
     }
   } catch (error) {
-    // 用户取消，不处理
-    if (error !== 'cancel') {
-      console.error('Logout error:', error)
-    }
+    // 用户取消或登出异常不额外打印控制台日志
   }
 }
 </script>

@@ -158,7 +158,6 @@ export const useUserStore = defineStore('user', {
           return { success: false, message: errorMsg }
         }
       } catch (error) {
-        console.error('Logout error:', error)
         ElMessage.error('登出失败，请重试')
         return { success: false, message: '登出失败，请重试' }
       } finally {
