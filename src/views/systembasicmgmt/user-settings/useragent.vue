@@ -23,8 +23,8 @@
             filterable
             :filter-node-method="filterNodeMethod"
             @change="handleDepartmentChange"
-            style="width: 300px;"
-            popper-class="filter-department-tree-select-popper"
+            style="width: 210px;"
+            popper-class="main-dept-filter-popper"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
           />
         </el-form-item>
@@ -66,7 +66,6 @@
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userName')" align="left" min-width="180" />
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="230" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="120" />
-          <el-table-column prop="laborName" :label="$t('systembasicmgmt.userAgent.laborName')" align="left" min-width="230" />
           <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="110">
             <template #default="scope">
               <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
@@ -123,8 +122,8 @@
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
           <el-table-column prop="agentUserNo" :label="$t('systembasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
           <el-table-column prop="agentUserName" :label="$t('systembasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
-          <el-table-column prop="startTime" :label="$t('systembasicmgmt.userAgent.startTime')" align="center" min-width="110" />
-          <el-table-column prop="endTime" :label="$t('systembasicmgmt.userAgent.endTime')" align="center" min-width="110" />
+          <el-table-column prop="startTime" :label="$t('systembasicmgmt.userAgent.startTime')" align="center" min-width="160" :formatter="(row, col, val) => formatDateTime(val)" />
+          <el-table-column prop="endTime" :label="$t('systembasicmgmt.userAgent.endTime')" align="center" min-width="160" :formatter="(row, col, val) => formatDateTime(val)" />
           <el-table-column 
             :label="$t('common.operation')" 
             align="center" 
@@ -229,8 +228,8 @@
               filterable
               :filter-node-method="filterNodeMethod"
               @change="handleUserSelectSearch"
-              style="width: 270px;"
-              popper-class="filter-department-tree-select-popper"
+              style="width: 210px;"
+              popper-class="main-dept-filter-popper"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
               :clearable="false"
             />
@@ -276,7 +275,7 @@
           height="300"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="80" />
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userNameCn')" align="left" min-width="120" />
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="120" />
@@ -340,8 +339,8 @@
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
           <el-table-column prop="substituteUserNo" :label="$t('systembasicmgmt.userAgent.substituteUserNo')" align="left" min-width="110" />
           <el-table-column prop="substituteUserName" :label="$t('systembasicmgmt.userAgent.substituteUserName')" align="left" min-width="200" />
-          <el-table-column prop="startTime" :label="$t('systembasicmgmt.userAgent.startTime')" align="center" min-width="110" />
-          <el-table-column prop="endTime" :label="$t('systembasicmgmt.userAgent.endTime')" align="center" min-width="110" />
+          <el-table-column prop="startTime" :label="$t('systembasicmgmt.userAgent.startTime')" align="center" min-width="160" :formatter="(row, col, val) => formatDateTime(val)" />
+          <el-table-column prop="endTime" :label="$t('systembasicmgmt.userAgent.endTime')" align="center" min-width="160" :formatter="(row, col, val) => formatDateTime(val)" />
         </el-table>
       </div>
       <template #footer>
@@ -372,6 +371,14 @@ import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
 // 初始化i18n
 const { t } = useI18n()
+
+const formatDateTime = (val) => {
+  if (!val) return ''
+  const d = new Date(val)
+  if (isNaN(d.getTime())) return val
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
 
 // 员工数据
 const userList = ref([])
@@ -744,7 +751,7 @@ const handleUserSelectDialogClosed = () => {
       // ignore
     }
   }
-  // 清空表格选择
+  // 清空勾选状态
   if (userSelectTableRef.value) {
     userSelectTableRef.value.clearSelection()
   }
@@ -886,16 +893,9 @@ const handleUserSelectSizeChange = (size) => {
   fetchUserSelectList()
 }
 
-// 处理选择变化：强制单选
+// 处理复选框勾选变化（多选）
 const handleSelectionChange = (selection) => {
-  if (selection.length > 1 && userSelectTableRef.value) {
-    const latest = selection[selection.length - 1]
-    userSelectTableRef.value.clearSelection()
-    userSelectTableRef.value.toggleRowSelection(latest, true)
-    selectedUsers.value = [latest]
-  } else {
-    selectedUsers.value = selection
-  }
+  selectedUsers.value = selection
 }
 
 // 处理开始时间变化
@@ -945,19 +945,35 @@ const handleConfirmUserSelect = async () => {
 
   confirmLoading.value = true
   
-  // 格式化时间
-  const startTime = new Date(agentTimeRange.startTime).toISOString().slice(0, 19).replace('T', ' ')
-  const endTime = new Date(agentTimeRange.endTime).toISOString().slice(0, 19).replace('T', ' ')
+  // 统一提交 DateTime：优先保留本地字符串，仅规范为 ISO 本地时间格式
+  const toDateTimePayload = (val) => {
+    if (!val) return null
+    if (typeof val === 'string') {
+      const normalized = val.trim().replace(' ', 'T')
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)) {
+        return `${normalized}:00`
+      }
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+        return normalized
+      }
+    }
+
+    const d = new Date(val)
+    if (isNaN(d.getTime())) return val
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  }
+  const startTime = toDateTimePayload(agentTimeRange.startTime)
+  const endTime = toDateTimePayload(agentTimeRange.endTime)
 
   // 逐个调用新增接口
   for (const user of selectedUsers.value) {
     const params = {
-      substituteUserId: user.userId,
-      agentUserId: currentUserId.value,
+      agentUserId: user.userId,
+      substituteUserId: currentUserId.value,
       startTime: startTime,
       endTime: endTime
     }
-
     const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, params)
 
     if (res && res.code === 200) {
@@ -989,7 +1005,7 @@ const handleConfirmUserSelect = async () => {
     endTime: ''
   })
 
-  // 清空表格选择
+  // 清空勾选状态
   if (userSelectTableRef.value) {
     userSelectTableRef.value.clearSelection()
   }
@@ -1069,13 +1085,22 @@ const handleDepartmentChange = () => {
 
 <!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
 <style>
-  .filter-department-tree-select-popper {
-    min-width: 300px;
+  .main-dept-filter-popper {
+    width: auto !important;
+    min-width: 280px !important;
   }
-  .filter-department-tree-select-popper .el-tree-node__content {
+  .main-dept-filter-popper .el-select-dropdown__wrap,
+  .main-dept-filter-popper .el-scrollbar__view,
+  .main-dept-filter-popper .el-tree {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .main-dept-filter-popper .el-tree-node__content {
     height: 36px;
     line-height: 36px;
     padding-left: 12px;
+    width: 100% !important;
+    min-width: 100% !important;
   }
 </style>
 

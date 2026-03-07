@@ -12,8 +12,8 @@
           filterable
           :filter-node-method="filterNodeMethod"
           @change="handleDepartmentChange"
-          style="width: 300px;"
-          popper-class="filter-department-tree-select-popper"
+          style="width: 210px;"
+          popper-class="main-dept-filter-popper"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
@@ -43,6 +43,9 @@
         <el-button type="primary" @click="handleAdd">
           {{ $t('systembasicmgmt.userInfo.addUser') }}
         </el-button>
+        <el-button type="success" @click="handleExport" :loading="exportLoading">
+          {{ $t('systembasicmgmt.userInfo.exportUsers') }}
+        </el-button>
       </el-form-item>
     </el-form>
     
@@ -54,7 +57,7 @@
         v-loading="loading"
         class="conventional-table">
         <el-table-column type="index" :label="$t('systembasicmgmt.userInfo.index')" width="70" align="center" fixed />
-        <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="center" min-width="130" />
+        <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="left" min-width="130" />
         <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="150" />
         <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
         <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
@@ -114,8 +117,9 @@
                  :modal-append-to-body="true"
                  :modal="true"
                  :lock-scroll="true"
+                 destroy-on-close
                  draggable
-                 @close="handleDialogClose">
+                 @closed="handleDialogClose">
         <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="用户编辑">
         
         <div class="form-row four-columns">
@@ -144,7 +148,7 @@
             <el-date-picker
               v-model="editForm.hireDate"
               type="date"
-              style="width:100%"
+              style="width: 100%"
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectHireDate')"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD" />
@@ -185,6 +189,7 @@
               clearable
               :filter-node-method="filterNodeMethod"
               style="width:100%"
+              popper-class="main-dept-filter-popper"
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
           </el-form-item>
         </div>
@@ -355,7 +360,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
-import { post } from '@/utils/request'
+import service, { post } from '@/utils/request'
 import { 
   GET_USER_PAGES_API, 
   INSERT_USER_API, 
@@ -367,6 +372,7 @@ import {
   GET_ROLE_DROPDOWN_API,
   GET_NATIONALITY_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
+  EXPORT_USERS_EXCEL_API,
   UPLOAD_AVATAR_UPDATE_API,
   UPLOAD_AVATAR_INSERT_API
 } from '@/config/api/systembasicmgmt/system-basicdata/user'
@@ -459,6 +465,7 @@ const dialogVisible = ref(false)
 
 // 提交加载状态
 const submitLoading = ref(false)
+const exportLoading = ref(false)
 
 // 编辑表单
 const editForm = reactive({
@@ -919,6 +926,65 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       fetchUserPages()
   }
 
+  const handleExport = async () => {
+      exportLoading.value = true
+      try {
+          const params = {
+              departmentId: filters.departmentId,
+              userNo: filters.userNo,
+              userName: filters.userName
+          }
+
+          const blob = await service({
+              url: EXPORT_USERS_EXCEL_API.EXPORT_USERS_EXCEL,
+              method: 'post',
+              data: params,
+              responseType: 'blob'
+          })
+
+          if (!(blob instanceof Blob) || blob.size === 0) {
+              throw new Error(t('systembasicmgmt.userInfo.exportFailed'))
+          }
+
+          if (blob.type && blob.type.includes('application/json')) {
+              const text = await blob.text()
+              let message = t('systembasicmgmt.userInfo.exportFailed')
+              try {
+                  const json = JSON.parse(text)
+                  message = json?.message || message
+              } catch {
+                  // ignore
+              }
+              throw new Error(message)
+          }
+
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `users_${new Date().getTime()}.xlsx`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+
+          ElMessage({
+              message: t('systembasicmgmt.userInfo.exportSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
+      } catch (error) {
+          ElMessage({
+              message: error?.message || t('systembasicmgmt.userInfo.exportFailed'),
+              type: 'error',
+              plain: true,
+              showClose: true
+          })
+      } finally {
+          exportLoading.value = false
+      }
+  }
+
   const resetForm = () => {
       // 重置表单
       Object.assign(editForm, {
@@ -939,8 +1005,6 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           isAgent: 0,
           isEmployed: 1,
           isFreeze: 0,
-          laborId: '',
-          expirationDays: null,
           modifiedBy: '',
           modifiedDate: '',
           avatarAddress: ''
@@ -991,6 +1055,21 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
                   editForm.laborId = firstEnabledLaborType.laborId
               }
           }
+
+          // expirationDays 无固定默认值，重置为 null
+          editForm.expirationDays = null
+
+          // 用嵌套 nextTick 等 Vue 冲刷完所有响应式变更后再清除验证状态
+          // （同步调用 clearValidate 会在 Vue 冲刷前执行，无法拦截 change 触发的校验）
+          nextTick(() => {
+              if (editFormRef.value) {
+                  try {
+                      editFormRef.value.clearValidate()
+                  } catch {
+                      // ignore
+                  }
+              }
+          })
       })
       
       // 重置通知状态记录
@@ -1027,13 +1106,13 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       const res = await post(INSERT_USER_API.INSERT_USER, params)
 
       if (res && res.code === 200) {
-          resetForm()
           ElMessage({
               message: res.message,
               type: 'success',
               plain: true,
               showClose: true
           })
+          resetForm()
           dialogVisible.value = false
           fetchUserPages()
       } else {
@@ -1061,7 +1140,6 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
       
       if (res && res.code === 200) {
-          resetForm()
           ElMessage({
               message: res.message,
               type: 'success',
@@ -1172,17 +1250,18 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   }
 
   // 保存编辑
-  const handleSave = () => {
-      editFormRef.value?.validate((valid) => {
-          if (valid) {
-              // 判断是新增还是编辑
-              if (!editForm.userId) {
-                  insertUser()
-              } else {
-                  updateUser()
-              }
-          }
-      })
+  const handleSave = async () => {
+      try {
+          await editFormRef.value?.validate()
+      } catch {
+          // 校验失败，el-form 已在界面上标红，无需额外处理
+          return
+      }
+      if (!editForm.userId) {
+          insertUser()
+      } else {
+          updateUser()
+      }
   }
 
   // 头像上传前验证
@@ -1214,35 +1293,33 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   
   // 修改用户信息用 UPLOAD_AVATAR_UPDATE_API，新增用户用 UPLOAD_AVATAR_INSERT_API
   const customUpload = async (options) => {
-      try {
-          const formData = new FormData()
-          const isAdd = !editForm.userId
-          if (!isAdd) formData.append('userId', editForm.userId || '')
-          formData.append('file', options.file)
-          const uploadUrl = isAdd ? UPLOAD_AVATAR_INSERT_API.UPLOAD_AVATAR_INSERT : UPLOAD_AVATAR_UPDATE_API.UPLOAD_AVATAR_UPDATE
-          const res = await post(uploadUrl, formData, {
-              headers: {
-                  'Content-Type': 'multipart/form-data'
-              }
-          })
-          
-          if (res && res.code === 200) {
-              options.onSuccess(res)
-          } else {
-              options.onError(new Error(res?.message))
+      const formData = new FormData()
+      const isAdd = !editForm.userId
+      if (!isAdd) formData.append('userId', editForm.userId || '')
+      formData.append('file', options.file)
+      const uploadUrl = isAdd ? UPLOAD_AVATAR_INSERT_API.UPLOAD_AVATAR_INSERT : UPLOAD_AVATAR_UPDATE_API.UPLOAD_AVATAR_UPDATE
+      const res = await post(uploadUrl, formData, {
+          headers: {
+              'Content-Type': 'multipart/form-data'
           }
-      } catch (error) {
-          options.onError(error)
+      })
+      if (res && res.code === 200) {
+          return res
       }
+      throw new Error(res?.message || t('common.operationFailed'))
   }
   
   // 头像上传成功
   const handleAvatarSuccess = (res) => {
-      editForm.avatarAddress = res.data
-      avatarUrl.value = resolveFileUrl(res.data)
-  
+      const avatarAddress = res?.data
+      if (!avatarAddress) {
+          handleAvatarError(new Error(t('systembasicmgmt.userInfo.avatarUploadFailed')))
+          return
+      }
+      editForm.avatarAddress = avatarAddress
+      avatarUrl.value = resolveFileUrl(avatarAddress)
       ElMessage({
-          message: t('systembasicmgmt.userInfo.avatarUploadSuccess') || '头像上传成功',
+          message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
           type: 'success',
           plain: true,
           showClose: true
@@ -1261,7 +1338,6 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   
   // 关闭对话框
   const handleDialogClose = () => {
-      // 重置表单
       resetForm()
   }
 </script>
@@ -1326,13 +1402,22 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
 <!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
 <style>
-  .filter-department-tree-select-popper {
-    min-width: 300px;
+  .main-dept-filter-popper {
+    width: auto !important;
+    min-width: 320px !important;
   }
-  .filter-department-tree-select-popper .el-tree-node__content {
-    height: 30px;
-    line-height: 30px;
+  .main-dept-filter-popper .el-select-dropdown__wrap,
+  .main-dept-filter-popper .el-scrollbar__view,
+  .main-dept-filter-popper .el-tree {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .main-dept-filter-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
     padding-left: 12px;
+    width: 100% !important;
+    min-width: 100% !important;
   }
 </style>
 

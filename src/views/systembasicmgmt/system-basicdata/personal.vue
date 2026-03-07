@@ -77,7 +77,7 @@
               v-model="personalInfoForm.hireDate"
               type="date"
               :disabled="true"
-              style="width: 100%"
+              style="width: 100%;"
               format="YYYY/MM/DD"
               value-format="YYYY-MM-DD"
             />
@@ -86,10 +86,14 @@
             <el-tree-select
               v-model="personalInfoForm.departmentId"
               :data="departmentOptions"
-              :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList' }"
+              :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
               check-strictly
+              filterable
+              :filter-node-method="filterNodeMethod"
               :disabled="true"
               style="width: 100%"
+              popper-class="main-dept-filter-popper"
+              :placeholder="$t('systembasicmgmt.personalInfo.pleaseSelectDepartment')"
             />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.position')" prop="positionId">
@@ -155,13 +159,14 @@
 
       <!-- 第六行：头像上传 -->
       <div class="form-row">
-        <el-form-item :label="$t('systembasicmgmt.userInfo.avatar')" prop="avatarAddress">
+        <el-form-item :label="$t('systembasicmgmt.personalInfo.avatar')" prop="avatarAddress">
           <div class="avatar-container">
             <el-upload
               class="avatar-uploader"
               :http-request="customUpload"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
+              :on-error="handleAvatarError"
               :before-upload="beforeAvatarUpload"
               accept=".jpg,.jpeg,.png"
               :disabled="loading"
@@ -169,7 +174,7 @@
               <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
               <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
             </el-upload>
-            <div class="avatar-tip">{{ $t('systembasicmgmt.userInfo.avatarTip') }}</div>
+            <div class="avatar-tip">{{ $t('systembasicmgmt.personalInfo.avatarTip') }}</div>
           </div>
         </el-form-item>
       </div>
@@ -212,8 +217,8 @@ import {
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
+  UPLOAD_AVATAR_API
 } from '@/config/api/systembasicmgmt/system-basicdata/personal'
-import { UPLOAD_AVATAR_API } from '@/config/api/systembasicmgmt/system-basicdata/user'
 
 export default {
   name: 'PersonalInfo',
@@ -393,45 +398,51 @@ export default {
 
     // 自定义上传（后端参数：[FromForm] string userId, IFormFile file；返回 data 为图片地址字符串）
     const customUpload = async (options) => {
-      try {
-        const formData = new FormData()
-        formData.append('userId', personalInfoForm.userId || '')
-        formData.append('file', options.file)
-        const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
-          headers: {
-            ...UPLOAD_CONFIG.headers,
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        if (res && res.code === 200) {
-          options.onSuccess(res)
-        } else {
-          options.onError(new Error(res?.message))
+      const formData = new FormData()
+      formData.append('userId', personalInfoForm.userId || '')
+      formData.append('file', options.file)
+      const res = await post(UPLOAD_AVATAR_API.UPLOAD_AVATAR, formData, {
+        headers: {
+          ...UPLOAD_CONFIG.headers,
+          'Content-Type': 'multipart/form-data'
         }
-      } catch (error) {
-        options.onError(error)
+      })
+      if (res && res.code === 200) {
+        return res
       }
+      throw new Error(res?.message || t('common.operationFailed'))
+    }
+
+    const filterNodeMethod = (value, data) => {
+      if (!value) return true
+      return data.departmentName.includes(value)
     }
 
     // 头像上传成功
     const handleAvatarSuccess = (res) => {
-      if (res && res.code === 200) {
-        personalInfoForm.avatarAddress = res.data
-        avatarUrl.value = resolveFileUrl(res.data)
-        ElMessage({
-          message: t('systembasicmgmt.userInfo.avatarUploadSuccess'),
-          type: 'success',
-          plain: true,
-          showClose: true
-        })
-      } else {
-        ElMessage({
-          message: res.message,
-          type: 'error',
-          plain: true,
-          showClose: true
-        })
+      const avatarAddress = res?.data
+      if (!avatarAddress) {
+        handleAvatarError(new Error(res?.message || t('systembasicmgmt.personalInfo.avatarUploadFailed')))
+        return
       }
+      personalInfoForm.avatarAddress = avatarAddress
+      avatarUrl.value = resolveFileUrl(avatarAddress)
+      ElMessage({
+        message: t('systembasicmgmt.personalInfo.avatarUploadSuccess'),
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
+    }
+
+    // 头像上传失败
+    const handleAvatarError = (error) => {
+      ElMessage({
+        message: error?.message || t('systembasicmgmt.personalInfo.avatarUploadFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
     }
 
     /**
@@ -607,7 +618,9 @@ export default {
        handleReset,
        beforeAvatarUpload,
        customUpload,
-       handleAvatarSuccess
+       handleAvatarSuccess,
+       handleAvatarError,
+       filterNodeMethod
      }
    }
  }
@@ -750,4 +763,25 @@ export default {
     padding: 15px;
   }
 }
+</style>
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .main-dept-filter-popper {
+    width: auto !important;
+    min-width: 320px !important;
+  }
+  .main-dept-filter-popper .el-select-dropdown__wrap,
+  .main-dept-filter-popper .el-scrollbar__view,
+  .main-dept-filter-popper .el-tree {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .main-dept-filter-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 12px;
+    width: 100% !important;
+    min-width: 100% !important;
+  }
 </style>

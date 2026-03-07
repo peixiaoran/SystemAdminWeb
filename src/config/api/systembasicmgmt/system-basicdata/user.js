@@ -70,3 +70,8 @@ export const UPLOAD_AVATAR_UPDATE_API = {
 export const UPLOAD_AVATAR_INSERT_API = {
   UPLOAD_AVATAR_INSERT: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatarInsert'
 }
+
+// 导出员工ExcelAPI
+export const EXPORT_USERS_EXCEL_API = {
+  EXPORT_USERS_EXCEL: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUserExcel'
+}

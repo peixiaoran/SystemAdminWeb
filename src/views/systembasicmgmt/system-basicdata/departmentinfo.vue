@@ -95,7 +95,7 @@
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentDepartmentId">
+          <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentId">
             <el-tree-select
               v-model="editForm.parentId"
               :data="departmentOptionsWithNone || []"
@@ -103,7 +103,8 @@
               check-strictly
               filterable
               :filter-node-method="filterNodeMethod"
-              style="width: 100%"
+              style="width: 210px;"
+              popper-class="main-dept-filter-popper"
               :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevel')" prop="departmentLevelId">
@@ -115,11 +116,6 @@
                 :value="item.departmentLevelId" />
             </el-select>
           </el-form-item>
-        </div>
-        <div class="form-row">
-          <!-- 是否启用：按企业标准化需求去掉该字段的前端功能（不展示/不允许编辑） -->
-          <el-form-item></el-form-item>
-          <el-form-item></el-form-item>
         </div>
         <div class="form-row full-width">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
@@ -199,8 +195,11 @@ const formRules = reactive({
   departmentNameEn: [
     { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputNameEn'), trigger: 'blur' }
   ],
+  parentId: [
+    { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment'), trigger: 'change' }
+  ],
   departmentLevelId: [
-    { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'change' }
   ]
 })
 
@@ -230,6 +229,11 @@ const departmentOptionsWithNone = computed(() => {
 
 // 部门级别选项
 const departmentLevelOptions = ref([])
+
+const getFirstEnabledDepartmentLevelId = () => {
+  const firstEnabledLevel = departmentLevelOptions.value.find(item => !item.disabled)
+  return firstEnabledLevel ? firstEnabledLevel.departmentLevelId : ''
+}
 
 /**
  * 获取部门树（查询）
@@ -364,6 +368,7 @@ const handleAddChild = (index, row) => {
  * 编辑部门（查询实体并填充表单）
  */
 const handleEdit = async (index, row) => {
+  resetForm()
   const params = { departmentId: row.departmentId }
   const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, params)
   if (response.code === 200) {
@@ -382,6 +387,9 @@ const handleEdit = async (index, row) => {
       address: data.address,
       isEnabled: data.isEnabled
     })
+    if (!editForm.departmentLevelId) {
+      editForm.departmentLevelId = getFirstEnabledDepartmentLevelId()
+    }
     dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
     isEdit.value = true
     dialogVisible.value = true
@@ -559,8 +567,8 @@ const resetForm = () => {
     departmentCode: '',
     departmentNameCn: '',
     departmentNameEn: '',
-    parentId: '',
-    departmentLevelId: '',
+    parentId: '0',
+    departmentLevelId: getFirstEnabledDepartmentLevelId(),
     description: '',
     sortOrder: 1,
     landline: '',
@@ -593,5 +601,26 @@ onMounted(() => {
 
 <style scoped>
   @import '@/assets/styles/conventionalTablePage.css';
+</style>
+
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
+<style>
+  .main-dept-filter-popper {
+    width: auto !important;
+    min-width: 320px !important;
+  }
+  .main-dept-filter-popper .el-select-dropdown__wrap,
+  .main-dept-filter-popper .el-scrollbar__view,
+  .main-dept-filter-popper .el-tree {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .main-dept-filter-popper .el-tree-node__content {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 12px;
+    width: 100% !important;
+    min-width: 100% !important;
+  }
 </style>
 

@@ -525,8 +525,7 @@ async function initLeaveForm () {
     const data = res.data || {}
     bindFormData(data)
   } catch {
-    // 网络/异常错误提示
-    ElMessage.error(t('messages.networkError'))
+
   }
 }
 
@@ -549,7 +548,7 @@ async function getLeaveFormDetail (id) {
     const data = res.data || {}
     bindFormData(data)
   } catch {
-    ElMessage.error(t('messages.networkError'))
+
   }
 }
 
@@ -572,7 +571,7 @@ async function getLeaveTypeOptions () {
       value: String(item.leaveTypeCode)
     }))
   } catch {
-    ElMessage.error(t('messages.networkError'))
+
   }
 }
 
@@ -595,7 +594,7 @@ async function getImportanceOptions () {
       value: String(item.importanceCode)
     }))
   } catch {
-    ElMessage.error(t('messages.networkError'))
+
   }
 }
 
@@ -639,7 +638,7 @@ async function onSubmit () {
         ElMessage({ message: res?.message || t('messages.saveError'), type: 'error', plain: true, showClose: true })
       }
     } catch {
-      ElMessage({ message: t('messages.networkError'), type: 'error', plain: true, showClose: true })
+      
     } finally {
       saving.value = false
     }

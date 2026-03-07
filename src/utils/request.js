@@ -261,6 +261,43 @@ const safeSessionSet = (key, value) => {
   }
 }
 
+const handleUnauthorized = (options = {}) => {
+  const { silentAuthError = true, disableAutoLogout = false } = options
+  if (!has401ErrorOccurred) {
+    has401ErrorOccurred = true
+    safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, i18n.global.t('systembasicmgmt.errorHandler.unauthorized'))
+    ElMessage({
+      type: 'warning',
+      message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
+      duration: 3000,
+      plain: true,
+      showClose: true
+    })
+    handleLogout({ redirect: !disableAutoLogout })
+  }
+  if (silentAuthError === false) {
+    return { code: 401, data: null, message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'), success: false }
+  }
+  return { code: 200, data: null, totalCount: 0, message: '', success: true }
+}
+
+const handleForbidden = (error = null) => {
+  has403ErrorOccurred = true
+  const origin = window.location.origin
+  const basePath = window.location.pathname || '/'
+  window.location.replace(`${origin}${basePath}#/403`)
+  if (error) {
+    handleNetworkError(error, { showMessage: false })
+  }
+  return {
+    code: 200,
+    data: null,
+    totalCount: 0,
+    message: '',
+    success: true
+  }
+}
+
 const handleLogout = (options = {}) => {
   const { redirect = true } = options
   
@@ -379,6 +416,15 @@ const createPostRequest = () => async (url, data, options = {}) => {
       ...axiosOptions
     }
     const response = await service(config)
+
+    // 兼容“HTTP 200 + 业务码 401/403”的场景，统一走全局登录失效/无权限处理
+    if (response?.code === 401) {
+      return handleUnauthorized(options)
+    }
+    if (response?.code === 403) {
+      return handleForbidden()
+    }
+
     return response
   } catch (error) {
     if (axios.isCancel(error)) {
@@ -394,38 +440,11 @@ const createPostRequest = () => async (url, data, options = {}) => {
       }
 
       if (status === 401) {
-        const { silentAuthError = true, disableAutoLogout = false } = options
-        if (!has401ErrorOccurred) {
-          has401ErrorOccurred = true
-          safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, i18n.global.t('systembasicmgmt.errorHandler.unauthorized'))
-          ElMessage({
-            type: 'warning',
-            message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-            duration: 3000,
-            plain: true,
-            showClose: true
-          })
-          handleLogout({ redirect: !disableAutoLogout })
-        }
-        if (silentAuthError === false) {
-          return { code: 401, data: null, message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'), success: false }
-        }
-        return { code: 200, data: null, totalCount: 0, message: '', success: true }
+        return handleUnauthorized(options)
       }
       
       if (status === 403) {
-        has403ErrorOccurred = true
-        const origin = window.location.origin
-        const basePath = window.location.pathname || '/'
-        window.location.replace(`${origin}${basePath}#/403`)
-        handleNetworkError(error, { showMessage: false })
-        return {
-          code: 200,
-          data: null,
-          totalCount: 0,
-          message: '',
-          success: true
-        }
+        return handleForbidden(error)
       }
       
       const info = handleNetworkError(error, { showMessage: false })

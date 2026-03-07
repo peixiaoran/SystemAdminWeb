@@ -54,18 +54,16 @@
                   class="conventional-table">
           <el-table-column type="index" :label="$t('systembasicmgmt.userloginlog.index')" width="70" align="center" fixed />
           <el-table-column prop="userNo" :label="$t('systembasicmgmt.userloginlog.userNo')" align="center" min-width="120" />
-          <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userloginlog.userNameCn')" align="left" min-width="150" />
-          <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userloginlog.userNameEn')" align="left" min-width="150" />
+          <el-table-column prop="userName" :label="$t('systembasicmgmt.userloginlog.userName')" align="left" min-width="150" />
           <el-table-column prop="ip" :label="$t('systembasicmgmt.userloginlog.ip')" align="center" min-width="140" />
-          <el-table-column :label="$t('systembasicmgmt.userloginlog.status')" align="center" min-width="130">
+          <el-table-column :label="$t('systembasicmgmt.userloginlog.loginTypeName')" align="center" min-width="130">
             <template #default="{ row }">
-              <el-tag 
-                :type="getStatusTagType(row.statusId)">
-                {{ row.statusName }}
+              <el-tag :type="getLoginTypeTagType(row.loginType)">
+                {{ getLoginTypeName(row.loginType) }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="loginDate" :label="$t('systembasicmgmt.userloginlog.loginDate')" align="center" min-width="180" />
+          <el-table-column prop="loginDate" :label="$t('systembasicmgmt.userloginlog.loginDate')" align="center" min-width="180" :formatter="(row, col, val) => formatDateTime(val)" />
         </el-table>
       </div>
 
@@ -85,6 +83,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import { 
   GET_USER_LOGIN_LOG_PAGES_API
@@ -92,9 +91,19 @@ import {
 import { ElMessage } from 'element-plus'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
+const { t } = useI18n()
+
 // 员工操作日志数据
 const userloginlogList = ref([])
 const loading = ref(false)
+
+const formatDateTime = (val) => {
+  if (!val) return ''
+  const d = new Date(val)
+  if (isNaN(d.getTime())) return val
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
 
 // 分页信息
 const pagination = reactive({
@@ -185,19 +194,27 @@ const handleSizeChange = (size) => {
   fetchUserLoginLogPages()
 }
 
-// 根据statusId获取标签类型
-const getStatusTagType = (statusId) => {
-  switch (statusId) {
-    case 1:
-      return 'primary' // 蓝色
-    case 2:
-      return 'danger'  // 红色
-    case 3:
-      return 'info' // 橘黄色
-    case 4:
-      return 'primary' // 红色
+// 根据 LoginType 获取显示名称
+const getLoginTypeName = (loginType) => {
+  if (!loginType) return ''
+  const key = `systembasicmgmt.userloginlog.loginType.${loginType}`
+  const text = t(key)
+  return text === key ? loginType : text
+}
+
+// 根据 LoginType 获取标签颜色：LoginSuccessful 成功绿 / IncorrectPassword 危险红 / AccountNotExist 警告橙 / LoggedOut 信息灰
+const getLoginTypeTagType = (loginType) => {
+  switch (loginType) {
+    case 'LoginSuccessful':
+      return 'success'
+    case 'IncorrectPassword':
+      return 'danger'
+    case 'AccountNotExist':
+      return 'warning'
+    case 'LoggedOut':
+      return 'info'
     default:
-      return 'info'    // 默认颜色
+      return 'info'
   }
 }
 </script>

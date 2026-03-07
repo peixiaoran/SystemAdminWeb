@@ -12,8 +12,8 @@
             filterable
             :filter-node-method="filterNodeMethod"
             @change="handleDepartmentChange"
-            style="width: 300px;"
-            popper-class="filter-department-tree-select-popper"
+            style="width: 210px;"
+            popper-class="main-dept-filter-popper"
             :placeholder="$t('systembasicmgmt.userformbind.pleaseSelectDepartment')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userformbind.userNo')">
@@ -558,12 +558,21 @@ onMounted(() => {
 
 <!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
 <style>
-  .filter-department-tree-select-popper {
-    min-width: 300px;
+  .main-dept-filter-popper {
+    width: auto !important;
+    min-width: 280px !important;
   }
-  .filter-department-tree-select-popper .el-tree-node__content {
+  .main-dept-filter-popper .el-select-dropdown__wrap,
+  .main-dept-filter-popper .el-scrollbar__view,
+  .main-dept-filter-popper .el-tree {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .main-dept-filter-popper .el-tree-node__content {
     height: 36px;
     line-height: 36px;
     padding-left: 12px;
+    width: 100% !important;
+    min-width: 100% !important;
   }
 </style>
