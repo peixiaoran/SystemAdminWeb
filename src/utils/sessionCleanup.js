@@ -38,8 +38,12 @@ const safeStorageRemove = (key) => {
   }
 }
 
+const removeStorageKeys = (keys) => {
+  keys.forEach(safeStorageRemove)
+}
+
 export const clearAuthStorage = () => {
-  AUTH_STORAGE_KEYS.forEach(safeStorageRemove)
+  removeStorageKeys(AUTH_STORAGE_KEYS)
 }
 
 /**

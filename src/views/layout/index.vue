@@ -362,6 +362,7 @@ const isNotFoundRoute = (matchedRoute) => {
 
 // 错误页/特殊页：永远不应出现在标签栏中（即使历史 localStorage 里有也要清理）
 const NO_TAG_PATH_SET = new Set(['/403', '/404'])
+const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
 const shouldSkipTagForPath = (path) => {
   if (!path) return true
   if (NO_TAG_PATH_SET.has(path)) return true
@@ -374,6 +375,23 @@ const shouldSkipTagForPath = (path) => {
     // resolve 失败时也跳过
     void e
     return true
+  }
+}
+
+const getForbiddenSourcePath = () => {
+  try {
+    return sessionStorage.getItem(FORBIDDEN_SOURCE_PATH_KEY) || ''
+  } catch (e) {
+    void e
+    return ''
+  }
+}
+
+const clearForbiddenSourcePath = () => {
+  try {
+    sessionStorage.removeItem(FORBIDDEN_SOURCE_PATH_KEY)
+  } catch (e) {
+    void e
   }
 }
 
@@ -518,6 +536,12 @@ watch(() => route.path, (newPath, oldPath) => {
 
   // 错误页/特殊页：不加入标签，并且如果历史遗留在标签里，需要强制移除
   if (matchedRoute.meta?.noTag || NO_TAG_PATH_SET.has(newPath)) {
+    if (newPath === '/403') {
+      const forbiddenSourcePath = getForbiddenSourcePath()
+      if (forbiddenSourcePath && forbiddenSourcePath !== newPath) {
+        purgeTabByPath(forbiddenSourcePath)
+      }
+    }
     purgeTabByPath(newPath)
     // 不新增标签；activeTabName 保持现状（或由其它逻辑设置），避免出现“幽灵标签”
     return
@@ -998,8 +1022,12 @@ const restoreTabsFromStorage = () => {
       if (parsedData.visitedTabs && Array.isArray(parsedData.visitedTabs)) {
         // 过滤掉错误页/不应出现在标签栏的页面（比如 403/404）
         const rawVisited = parsedData.visitedTabs || []
+        const forbiddenSourcePath = getForbiddenSourcePath()
         const filteredVisited = rawVisited.filter(tab => {
           const path = tab?.path
+          if (forbiddenSourcePath && path === forbiddenSourcePath) {
+            return false
+          }
           return !shouldSkipTagForPath(path)
         })
 
@@ -1066,6 +1094,13 @@ onMounted(async () => {
     
     // 如果路由有noTag标记，则不添加标签，只设置活动菜单
     if (hasNoTagMark) {
+      if (currentPath === '/403') {
+        const forbiddenSourcePath = getForbiddenSourcePath()
+        if (forbiddenSourcePath && forbiddenSourcePath !== currentPath) {
+          purgeTabByPath(forbiddenSourcePath)
+        }
+        clearForbiddenSourcePath()
+      }
       activeTabName.value = currentPath
       activeMenu.value = currentPath
       return

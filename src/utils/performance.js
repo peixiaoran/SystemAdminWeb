@@ -4,6 +4,46 @@
  */
 import { nextTick } from 'vue'
 
+const DEFAULT_DEBOUNCE_DELAY = 300
+const DEFAULT_THROTTLE_LIMIT = 300
+const DEFAULT_ASYNC_CONCURRENCY = 3
+const DEFAULT_CACHE_SIZE = 100
+const DEFAULT_VIRTUAL_SCROLL_OVERSCAN = 5
+const DEFAULT_LAZY_IMAGE_OPTIONS = {
+  rootMargin: '50px',
+  threshold: 0.1
+}
+
+const clearTimer = (timer) => {
+  if (timer) clearTimeout(timer)
+}
+
+const getRectSnapshot = (rect) => {
+  return {
+    width: rect.width,
+    height: rect.height,
+    top: rect.top,
+    left: rect.left,
+    right: rect.right,
+    bottom: rect.bottom
+  }
+}
+
+const getViewportBounds = () => {
+  return {
+    height: window.innerHeight || document.documentElement.clientHeight,
+    width: window.innerWidth || document.documentElement.clientWidth
+  }
+}
+
+const isPromiseLike = (value) => {
+  return Boolean(value && typeof value.then === 'function')
+}
+
+const assignImageSource = (img, src) => {
+  if (img && src) img.src = src
+}
+
 /**
  * 防抖函数
  * @param {Function} func - 需要防抖的函数
@@ -11,14 +51,14 @@ import { nextTick } from 'vue'
  * @param {boolean} immediate - 是否立即执行
  * @returns {Function} 防抖后的函数
  */
-export function debounce(func, wait = 300, immediate = false) {
+export function debounce(func, wait = DEFAULT_DEBOUNCE_DELAY, immediate = false) {
   let timer = null
   let lastArgs = null
   let lastThis = null
   let lastResult
 
   const clear = () => {
-    if (timer) clearTimeout(timer)
+    clearTimer(timer)
     timer = null
   }
 
@@ -74,7 +114,7 @@ export function debounce(func, wait = 300, immediate = false) {
  * @param {number} limit - 限制时间（毫秒）
  * @returns {Function} 节流后的函数
  */
-export function throttle(func, limit = 300) {
+export function throttle(func, limit = DEFAULT_THROTTLE_LIMIT) {
   let inThrottle = false
   return function throttled(...args) {
     if (inThrottle) return
@@ -98,7 +138,7 @@ export function delay(ms) {
  * 控制并发数量，避免同时执行过多异步任务
  */
 export class AsyncQueue {
-  constructor(concurrency = 3) {
+  constructor(concurrency = DEFAULT_ASYNC_CONCURRENCY) {
     this.concurrency = concurrency
     this.running = 0
     this.queue = []
@@ -145,7 +185,7 @@ export class AsyncQueue {
  * 为函数添加缓存功能
  */
 export class FunctionCache {
-  constructor(maxSize = 100) {
+  constructor(maxSize = DEFAULT_CACHE_SIZE) {
     this.cache = new Map()
     this.maxSize = maxSize
   }
@@ -179,7 +219,7 @@ export class FunctionCache {
       const result = fn.apply(this, args)
       
       // 如果是Promise，缓存Promise本身
-      if (result && typeof result.then === 'function') {
+      if (isPromiseLike(result)) {
         result.catch(() => {
           // 如果Promise失败，从缓存中移除
           this.cache.delete(key)
@@ -217,7 +257,7 @@ export class FunctionCache {
  * 虚拟滚动辅助函数
  * 计算虚拟滚动的可见范围
  */
-export function calculateVisibleRange(scrollTop, itemHeight, containerHeight, totalItems, overscan = 5) {
+export function calculateVisibleRange(scrollTop, itemHeight, containerHeight, totalItems, overscan = DEFAULT_VIRTUAL_SCROLL_OVERSCAN) {
   const visibleStart = Math.floor(scrollTop / itemHeight)
   const visibleEnd = Math.min(
     visibleStart + Math.ceil(containerHeight / itemHeight),
@@ -237,11 +277,7 @@ export function calculateVisibleRange(scrollTop, itemHeight, containerHeight, to
  */
 export class LazyImageObserver {
   constructor(options = {}) {
-    this.options = {
-      rootMargin: '50px',
-      threshold: 0.1,
-      ...options
-    }
+    this.options = { ...DEFAULT_LAZY_IMAGE_OPTIONS, ...options }
     this.observer = typeof IntersectionObserver !== 'undefined'
       ? new IntersectionObserver(this.handleIntersection.bind(this), this.options)
       : null
@@ -255,7 +291,7 @@ export class LazyImageObserver {
    */
   observe(img, src) {
     if (!this.observer) {
-      if (img && src) img.src = src
+      assignImageSource(img, src)
       return
     }
     this.imageMap.set(img, src)
@@ -282,7 +318,7 @@ export class LazyImageObserver {
         const img = entry.target
         const src = this.imageMap.get(img)
         if (src) {
-          img.src = src
+          assignImageSource(img, src)
           this.unobserve(img)
         }
       }
@@ -318,14 +354,7 @@ export const DOMUtils = {
    */
   measureElement(element) {
     const rect = element.getBoundingClientRect()
-    return {
-      width: rect.width,
-      height: rect.height,
-      top: rect.top,
-      left: rect.left,
-      right: rect.right,
-      bottom: rect.bottom
-    }
+    return getRectSnapshot(rect)
   },
 
   /**
@@ -335,11 +364,12 @@ export const DOMUtils = {
    */
   isInViewport(element) {
     const rect = element.getBoundingClientRect()
+    const viewport = getViewportBounds()
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.bottom <= viewport.height &&
+      rect.right <= viewport.width
     )
   }
 }
@@ -380,15 +410,15 @@ export const MemoryUtils = {
 }
 
 // 创建全局实例
-export const globalAsyncQueue = new AsyncQueue(3)
+export const globalAsyncQueue = new AsyncQueue(DEFAULT_ASYNC_CONCURRENCY)
 export const globalFunctionCache = new FunctionCache(50)
 export const globalLazyImageObserver = new LazyImageObserver()
 
 // 导出常用的优化配置
 export const PERFORMANCE_CONFIG = {
-  DEBOUNCE_DELAY: 300,
-  THROTTLE_LIMIT: 300,
-  CACHE_SIZE: 100,
-  ASYNC_CONCURRENCY: 3,
-  VIRTUAL_SCROLL_OVERSCAN: 5
+  DEBOUNCE_DELAY: DEFAULT_DEBOUNCE_DELAY,
+  THROTTLE_LIMIT: DEFAULT_THROTTLE_LIMIT,
+  CACHE_SIZE: DEFAULT_CACHE_SIZE,
+  ASYNC_CONCURRENCY: DEFAULT_ASYNC_CONCURRENCY,
+  VIRTUAL_SCROLL_OVERSCAN: DEFAULT_VIRTUAL_SCROLL_OVERSCAN
 }

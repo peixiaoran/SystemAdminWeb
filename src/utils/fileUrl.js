@@ -2,6 +2,11 @@ import { FILE_BROWSER_BASE_URL } from '@/config/api/base'
 
 const ensureTrailingSlash = (s) => (s.endsWith('/') ? s : `${s}/`)
 const isHttpUrl = (s) => /^https?:\/\//i.test(s)
+const normalizeBrowserPath = (s) => {
+  return s
+    .replace(/^\/?browser\/+/i, '')
+    .replace(/^\/+/, '')
+}
 
 /**
  * 将后端返回的文件地址/相对路径转换为可访问的 URL
@@ -18,12 +23,7 @@ export const resolveFileUrl = (value) => {
   const base = FILE_BROWSER_BASE_URL
   if (!base) return raw
 
-  const path = raw
-    .replace(/^\/?browser\/+/i, '') // 去重 browser 前缀
-    .replace(/^\/+/, '') // 去掉开头斜杠
+  const path = normalizeBrowserPath(raw)
 
   return `${ensureTrailingSlash(base)}${path}`
 }
-
-
-

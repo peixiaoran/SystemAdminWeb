@@ -1,94 +1,112 @@
 <template>
-  <div class="error-page-container">
-    <div class="error-content-wrapper">
-      <!-- Text Content Section -->
-      <div class="text-section">
-        <div class="error-number">404</div>
-        <h1 class="error-title">{{ $t('route.notFound') }}</h1>
-        <p class="error-description">{{ $t('error.pageNotFound') }}</p>
-        
-        <div class="action-buttons">
-          <el-button 
-            type="primary" 
-            size="large" 
-            @click="goHome"
-            :icon="House"
-            class="home-button">
-            {{ $t('common.backToHome') }}
-          </el-button>
-          <el-button 
-            size="large" 
-            @click="goBack"
-            :icon="ArrowLeft"
-            class="back-button">
-            {{ $t('common.goBack') }}
-          </el-button>
-        </div>
-      </div>
-      
-      <!-- Illustration Section -->
-      <div class="illustration-section">
-        <div class="floating-elements">
-          <!-- Main Illustration -->
-          <div class="main-illustration">
-            <div class="search-character">
-              <div class="character-head">
-                <div class="eyes">
-                  <div class="eye left-eye"></div>
-                  <div class="eye right-eye"></div>
-                </div>
-                <div class="mouth"></div>
-              </div>
-              <div class="character-body"></div>
-              <div class="character-arms">
-                <div class="arm left-arm"></div>
-                <div class="arm right-arm"></div>
-              </div>
-              <div class="character-legs">
-                <div class="leg left-leg"></div>
-                <div class="leg right-leg"></div>
-              </div>
-            </div>
-            
-            <!-- Search Tools -->
-            <div class="magnifier">
-              <div class="magnifier-glass"></div>
-              <div class="magnifier-handle"></div>
-            </div>
-            
-            <!-- Map Paper -->
-            <div class="map-paper">
-              <div class="map-lines">
-                <div class="line" v-for="n in 6" :key="n"></div>
-              </div>
-              <div class="map-dots">
-                <div class="dot" v-for="n in 8" :key="n"></div>
-              </div>
-            </div>
-            
-            <!-- Decoration Elements -->
-            <div class="decoration-elements">
-              <div class="cloud cloud-1"></div>
-              <div class="cloud cloud-2"></div>
-              <div class="star star-1"></div>
-              <div class="star star-2"></div>
-              <div class="star star-3"></div>
-              <div class="question-mark">?</div>
-            </div>
+  <div class="error-shell error-shell--404">
+    <div class="error-card">
+      <header class="brand-header">
+        <div class="brand-block">
+          <img src="/favicon.svg" alt="Logo" class="brand-logo" />
+          <div class="brand-text">
+            <p class="brand-name">{{ t('common.systemTitle') }}</p>
+            <span class="brand-subtitle">{{ content.brandSubtitle }}</span>
           </div>
         </div>
+        <div class="status-chip">{{ content.statusLabel }}</div>
+      </header>
+
+      <div class="content-grid">
+        <section class="main-panel">
+          <div class="code-mark">404</div>
+          <h1 class="headline">{{ content.headline }}</h1>
+          <p class="description">{{ content.description }}</p>
+
+          <div class="action-row">
+            <el-button type="primary" size="large" :icon="House" @click="goHome">
+              {{ t('common.backToHome') }}
+            </el-button>
+            <el-button size="large" :icon="Refresh" @click="reloadPage">
+              {{ content.secondaryAction }}
+            </el-button>
+          </div>
+
+          <button class="text-action" type="button" @click="goBack">
+            <el-icon><ArrowLeft /></el-icon>
+            <span>{{ content.tertiaryAction }}</span>
+          </button>
+
+          <div class="tips-list">
+            <div class="tip-item" v-for="tip in content.tips" :key="tip">
+              <span class="tip-dot"></span>
+              <span>{{ tip }}</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="visual-card">
+            <div class="visual-orb"></div>
+            <div class="visual-icon-wrap">
+              <el-icon class="visual-icon"><Search /></el-icon>
+            </div>
+            <h2 class="visual-title">{{ content.panelTitle }}</h2>
+            <p class="visual-text">{{ content.panelText }}</p>
+          </div>
+
+          <div class="path-card">
+            <span class="path-label">{{ content.pathLabel }}</span>
+            <code class="path-value">{{ route.fullPath || '/404' }}</code>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { House, ArrowLeft } from '@element-plus/icons-vue'
+import { House, ArrowLeft, Refresh, Search } from '@element-plus/icons-vue'
 
 const router = useRouter()
-const { t } = useI18n()
+const route = useRoute()
+const { t, locale } = useI18n()
+
+const content = computed(() => {
+  if (locale.value === 'en-US') {
+    return {
+      brandSubtitle: 'Clear and focused navigation',
+      statusLabel: 'Page Missing',
+      headline: 'This page seems to have wandered off',
+      description: 'The address may be outdated, incomplete, or the page may have been moved. You can recover quickly from the actions below.',
+      secondaryAction: 'Refresh Page',
+      tertiaryAction: 'Go Back',
+      panelTitle: 'A quick way back',
+      panelText: 'Return to the home page to re-enter from the menu, or refresh if you just opened a stale link.',
+      pathLabel: 'Requested address',
+      tips: [
+        'Go back to the previous page and continue browsing from where you came from.',
+        'Return to the home page and reopen the page from the navigation menu.',
+        'Check whether the link or bookmarked address is complete.'
+      ]
+    }
+  }
+
+  return {
+    brandSubtitle: '清晰直接的系统导航体验',
+    statusLabel: '页面走丢了',
+    headline: '你访问的页面似乎走丢了',
+    description: '这个地址可能已经变更、失效，或者链接本身不完整。可以通过下面的操作很快回到正确页面。',
+    secondaryAction: '刷新当前页',
+    tertiaryAction: '返回上一页',
+    panelTitle: '先回到可用入口',
+    panelText: '建议从首页菜单重新进入目标页面。如果你是从旧链接或收藏打开的，也可以先刷新一次确认。',
+    pathLabel: '请求地址',
+    tips: [
+      '先返回上一页，继续从刚才的位置浏览。',
+      '回到首页，再从菜单重新进入目标页面。',
+      '检查地址或收藏链接是否完整、是否已经过期。'
+    ]
+  }
+})
 
 const goHome = () => {
   router.push('/')
@@ -97,499 +115,313 @@ const goHome = () => {
 const goBack = () => {
   router.back()
 }
+
+const reloadPage = () => {
+  window.location.reload()
+}
 </script>
 
 <style scoped>
-.error-page-container {
+.error-shell {
   min-height: 100vh;
-  background: linear-gradient(135deg, 
-    rgba(99, 102, 241, 0.05) 0%, 
-    rgba(219, 234, 254, 0.05) 30%, 
-    rgba(254, 249, 195, 0.05) 60%, 
-    rgba(255, 255, 255, 0.95) 100%);
+  padding: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  font-family: var(--el-font-family);
+  font-family: var(--font-family-primary, var(--el-font-family));
+  background:
+    radial-gradient(circle at top left, rgba(64, 158, 255, 0.16), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(230, 162, 60, 0.14), transparent 28%),
+    linear-gradient(180deg, #f7faff 0%, #eef4ff 100%);
 }
 
-.error-content-wrapper {
-  max-width: 1200px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
+.error-card {
+  width: min(1120px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(64, 158, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.10);
+  backdrop-filter: blur(18px);
+  padding: 28px;
+}
+
+.brand-header {
+  display: flex;
   align-items: center;
-  padding: 60px;
-}
-
-.text-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.error-number {
-  font-size: 160px;
-  font-weight: 800;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 16px;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.error-title {
-  font-size: 48px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  margin: 0 0 16px 0;
-  line-height: 1.2;
-}
-
-.error-description {
-  font-size: 18px;
-  color: var(--el-text-color-regular);
-  line-height: 1.6;
-  margin-bottom: 40px;
-  max-width: 420px;
-}
-
-.action-buttons {
-  display: flex;
+  justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
-.home-button, .back-button {
-  height: 48px;
-  padding: 0 24px;
-  font-size: 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-.home-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.3);
-}
-
-.back-button:hover {
-  transform: translateY(-2px);
-  background-color: var(--el-fill-color-light);
-}
-
-.illustration-section {
-  position: relative;
-  height: 500px;
-  overflow: hidden;
-}
-
-.floating-elements {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.main-illustration {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Search Character */
-.search-character {
-  position: absolute;
-  top: 50%;
-  left: 30%;
-  transform: translate(-50%, -50%);
-  animation: float 4s ease-in-out infinite;
-}
-
-.character-head {
-  width: 80px;
-  height: 80px;
-  background: var(--el-color-primary-light-9);
-  border-radius: 50%;
-  position: relative;
-  margin: 0 auto 8px;
-}
-
-.eyes {
-  position: absolute;
-  top: 28px;
-  width: 100%;
+.brand-block {
   display: flex;
-  justify-content: space-around;
-  padding: 0 20px;
+  align-items: center;
+  gap: 14px;
 }
 
-.eye {
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color-primary, var(--el-text-color-primary));
+}
+
+.brand-subtitle {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-color-secondary, var(--el-text-color-secondary));
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(64, 158, 255, 0.12);
+  color: var(--primary-color, var(--el-color-primary));
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 24px;
+}
+
+.main-panel,
+.side-panel {
+  min-width: 0;
+}
+
+.main-panel {
+  padding: 20px 8px 8px 8px;
+}
+
+.code-mark {
+  font-size: clamp(72px, 12vw, 120px);
+  line-height: 0.92;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 14px;
+  color: var(--primary-color, var(--el-color-primary));
+}
+
+.headline {
+  margin: 0 0 14px;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.18;
+  font-weight: 700;
+  color: var(--text-color-primary, var(--el-text-color-primary));
+  max-width: 680px;
+}
+
+.description {
+  margin: 0 0 28px;
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text-color-regular, var(--el-text-color-regular));
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.action-row :deep(.el-button) {
+  min-width: 156px;
+  height: 46px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.text-action {
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: var(--primary-color, var(--el-color-primary));
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tips-list {
+  margin-top: 28px;
+  display: grid;
+  gap: 12px;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(64, 158, 255, 0.06);
+  color: var(--text-color-regular, var(--el-text-color-regular));
+  line-height: 1.6;
+}
+
+.tip-dot {
   width: 8px;
   height: 8px;
-  background: var(--el-text-color-primary);
+  margin-top: 8px;
   border-radius: 50%;
-  animation: blink 3s infinite;
+  background: var(--warning-color, var(--el-color-warning));
+  flex-shrink: 0;
 }
 
-.mouth {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 5px;
-  background: var(--el-text-color-primary);
-  border-radius: 0 0 20px 20px;
-}
-
-.character-body {
-  width: 60px;
-  height: 100px;
-  background: var(--el-color-primary);
-  border-radius: 30px 30px 20px 20px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.character-arms {
-  position: absolute;
-  top: 20px;
-  width: 100%;
-}
-
-.arm {
-  width: 35px;
-  height: 12px;
-  background: var(--el-color-primary);
-  border-radius: 6px;
-  position: absolute;
-  top: 0;
-}
-
-.left-arm {
-  left: -20px;
-  transform: rotate(-20deg);
-  animation: wave-left 2s ease-in-out infinite;
-}
-
-.right-arm {
-  right: -20px;
-  transform: rotate(20deg);
-}
-
-.character-legs {
-  position: absolute;
-  bottom: -15px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  padding: 0 15px;
-}
-
-.leg {
-  width: 15px;
-  height: 30px;
-  background: var(--el-color-primary);
-  border-radius: 0 0 8px 8px;
-}
-
-/* Magnifier */
-.magnifier {
-  position: absolute;
-  top: 30%;
-  right: 25%;
-  animation: search-move 3s ease-in-out infinite;
-}
-
-.magnifier-glass {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, var(--el-color-warning-light-3), var(--el-color-warning));
-  border-radius: 50%;
-  position: relative;
-  opacity: 0.9;
-}
-
-.magnifier-handle {
-  width: 25px;
-  height: 6px;
-  background: var(--el-color-warning);
-  border-radius: 3px;
-  position: absolute;
-  bottom: -15px;
-  right: -12px;
-  transform: rotate(45deg);
-}
-
-/* Map Paper */
-.map-paper {
-  position: absolute;
-  bottom: 20%;
-  left: 15%;
-  width: 120px;
-  height: 90px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 12px;
-  transform: rotate(-10deg);
-  animation: paper-float 5s ease-in-out infinite;
-}
-
-.map-lines {
+.side-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 18px;
 }
 
-.line {
-  height: 2px;
-  background: var(--el-color-info-light-5);
-  border-radius: 1px;
+.visual-card,
+.path-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(64, 158, 255, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 255, 0.92));
 }
 
-.line:nth-child(1) { width: 80%; }
-.line:nth-child(2) { width: 100%; }
-.line:nth-child(3) { width: 60%; }
-.line:nth-child(4) { width: 90%; }
-.line:nth-child(5) { width: 70%; }
-.line:nth-child(6) { width: 50%; }
-
-.map-dots {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+.visual-card {
+  min-height: 360px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  background: var(--el-color-danger);
+.visual-orb {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  width: 210px;
+  height: 210px;
   border-radius: 50%;
-  animation: dot-pulse 2s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(64, 158, 255, 0.20), rgba(64, 158, 255, 0.03) 70%);
 }
 
-.dot:nth-child(odd) {
-  animation-delay: 0.5s;
-}
-
-/* Decoration Elements */
-.decoration-elements {
+.visual-icon-wrap {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  top: 46px;
+  left: 26px;
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.18), rgba(230, 162, 60, 0.18));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-.cloud {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50px;
-  opacity: 0.6;
+.visual-icon {
+  font-size: 40px;
+  color: var(--primary-color, var(--el-color-primary));
 }
 
-.cloud::before,
-.cloud::after {
-  content: '';
-  position: absolute;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50px;
+.visual-title {
+  position: relative;
+  margin: 0 0 10px;
+  font-size: 24px;
+  line-height: 1.3;
+  color: var(--text-color-primary, var(--el-text-color-primary));
 }
 
-.cloud-1 {
-  width: 60px;
-  height: 30px;
-  top: 15%;
-  right: 10%;
-  animation: cloud-drift 20s linear infinite;
+.visual-text {
+  position: relative;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-color-regular, var(--el-text-color-regular));
 }
 
-.cloud-1::before {
-  width: 30px;
-  height: 30px;
-  top: -15px;
-  left: 10px;
+.path-card {
+  padding: 18px 20px;
 }
 
-.cloud-1::after {
-  width: 40px;
-  height: 40px;
-  top: -20px;
-  right: 10px;
+.path-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--text-color-secondary, var(--el-text-color-secondary));
 }
 
-.cloud-2 {
-  width: 40px;
-  height: 20px;
-  top: 70%;
-  left: 5%;
-  animation: cloud-drift 25s linear infinite reverse;
+.path-value {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-color-primary, var(--el-text-color-primary));
+  background: rgba(17, 24, 39, 0.04);
+  border-radius: 12px;
+  padding: 10px 12px;
 }
 
-.cloud-2::before {
-  width: 20px;
-  height: 20px;
-  top: -10px;
-  left: 5px;
-}
+@media (max-width: 960px) {
+  .error-shell {
+    padding: 20px;
+  }
 
-.cloud-2::after {
-  width: 25px;
-  height: 25px;
-  top: -12px;
-  right: 5px;
-}
-
-.star {
-  position: absolute;
-  color: var(--el-color-warning);
-  font-size: 16px;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star::before {
-  content: '✦';
-}
-
-.star-1 {
-  top: 10%;
-  left: 20%;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: 25%;
-  right: 15%;
-  animation-delay: 0.7s;
-}
-
-.star-3 {
-  bottom: 15%;
-  right: 5%;
-  animation-delay: 1.4s;
-}
-
-.question-mark {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  font-size: 36px;
-  font-weight: bold;
-  color: var(--el-color-primary);
-  animation: bounce-question 3s ease-in-out infinite;
-}
-
-/* Animation Definitions */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-  50% { transform: translate(-50%, -50%) translateY(-10px); }
-}
-
-@keyframes blink {
-  0%, 90%, 100% { opacity: 1; }
-  95% { opacity: 0; }
-}
-
-@keyframes wave-left {
-  0%, 100% { transform: rotate(-20deg); }
-  50% { transform: rotate(-40deg); }
-}
-
-@keyframes search-move {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(5deg); }
-}
-
-@keyframes paper-float {
-  0%, 100% { transform: rotate(-10deg) translateY(0px); }
-  50% { transform: rotate(-12deg) translateY(-5px); }
-}
-
-@keyframes dot-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.5); opacity: 0.7; }
-}
-
-@keyframes cloud-drift {
-  from { transform: translateX(-20px); }
-  to { transform: translateX(20px); }
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-@keyframes bounce-question {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-10px) scale(1.1); }
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-  .error-content-wrapper {
+  .content-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 40px;
-    text-align: center;
   }
-  
-  .illustration-section {
-    height: 350px;
-  }
-  
-  .error-number {
-    font-size: 120px;
-  }
-  
-  .error-title {
-    font-size: 36px;
-  }
-  
-  .text-section {
-    align-items: center;
+
+  .visual-card {
+    min-height: 280px;
   }
 }
 
 @media (max-width: 640px) {
-  .error-content-wrapper {
-    padding: 30px 20px;
+  .error-card {
+    padding: 20px;
+    border-radius: 22px;
   }
-  
-  .error-number {
-    font-size: 96px;
+
+  .brand-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
-  
-  .error-title {
-    font-size: 28px;
-  }
-  
-  .error-description {
+
+  .description {
     font-size: 16px;
   }
-  
-  .action-buttons {
-    flex-direction: column;
+
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .action-row :deep(.el-button) {
     width: 100%;
   }
-  
-  .home-button, .back-button {
-    width: 100%;
+
+  .visual-card {
+    min-height: 240px;
   }
-  
-  .illustration-section {
-    height: 280px;
+
+  .visual-orb {
+    width: 150px;
+    height: 150px;
   }
 }
 </style>

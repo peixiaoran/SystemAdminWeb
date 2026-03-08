@@ -247,6 +247,9 @@ let lastNetworkErrorTime = 0
 const NETWORK_ERROR_COOLDOWN_MS = 5000
 
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
+const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
+const SKIP_TRACK_HASH_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
+const SKIP_REDIRECT_HASH_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration'])
 
 const generateRequestKey = (config) => {
   const { method, url, params, data } = config
@@ -261,34 +264,31 @@ const safeSessionSet = (key, value) => {
   }
 }
 
-const handleUnauthorized = (options = {}) => {
-  const { silentAuthError = true, disableAutoLogout = false } = options
-  if (!has401ErrorOccurred) {
-    has401ErrorOccurred = true
-    safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, i18n.global.t('systembasicmgmt.errorHandler.unauthorized'))
-    ElMessage({
-      type: 'warning',
-      message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'),
-      duration: 3000,
-      plain: true,
-      showClose: true
-    })
-    handleLogout({ redirect: !disableAutoLogout })
+const getRawCurrentHashPath = () => {
+  try {
+    const hash = window.location.hash || ''
+    return hash.startsWith('#') ? hash.slice(1) : hash
+  } catch {
+    return ''
   }
-  if (silentAuthError === false) {
-    return { code: 401, data: null, message: i18n.global.t('systembasicmgmt.errorHandler.unauthorized'), success: false }
-  }
-  return { code: 200, data: null, totalCount: 0, message: '', success: true }
 }
 
-const handleForbidden = (error = null) => {
-  has403ErrorOccurred = true
-  const origin = window.location.origin
-  const basePath = window.location.pathname || '/'
-  window.location.replace(`${origin}${basePath}#/403`)
-  if (error) {
-    handleNetworkError(error, { showMessage: false })
-  }
+const getCurrentHashPath = () => {
+  const current = getRawCurrentHashPath()
+  if (!current.startsWith('/')) return ''
+  if (SKIP_TRACK_HASH_PATHS.has(current)) return ''
+  return current
+}
+
+const getRedirectPathAfterLogout = () => {
+  const current = getRawCurrentHashPath()
+  if (!current.startsWith('/')) return ''
+  if (current.startsWith('/login')) return ''
+  if (SKIP_REDIRECT_HASH_PATHS.has(current)) return ''
+  return current
+}
+
+const createHandledSuccessResponse = () => {
   return {
     code: 200,
     data: null,
@@ -296,6 +296,55 @@ const handleForbidden = (error = null) => {
     message: '',
     success: true
   }
+}
+
+const createAuthFailureResponse = (code, message) => {
+  return {
+    code,
+    data: null,
+    message,
+    success: false
+  }
+}
+
+const showWarningMessage = (message) => {
+  ElMessage({
+    type: 'warning',
+    message,
+    duration: 3000,
+    plain: true,
+    showClose: true
+  })
+}
+
+const handleUnauthorized = (options = {}) => {
+  const { silentAuthError = true, disableAutoLogout = false } = options
+  const unauthorizedMessage = i18n.global.t('systembasicmgmt.errorHandler.unauthorized')
+  if (!has401ErrorOccurred) {
+    has401ErrorOccurred = true
+    safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, unauthorizedMessage)
+    showWarningMessage(unauthorizedMessage)
+    handleLogout({ redirect: !disableAutoLogout })
+  }
+  if (silentAuthError === false) {
+    return createAuthFailureResponse(401, unauthorizedMessage)
+  }
+  return createHandledSuccessResponse()
+}
+
+const handleForbidden = (error = null) => {
+  has403ErrorOccurred = true
+  const currentPath = getCurrentHashPath()
+  if (currentPath) {
+    safeSessionSet(FORBIDDEN_SOURCE_PATH_KEY, currentPath)
+  }
+  const origin = window.location.origin
+  const basePath = window.location.pathname || '/'
+  window.location.replace(`${origin}${basePath}#/403`)
+  if (error) {
+    handleNetworkError(error, { showMessage: false })
+  }
+  return createHandledSuccessResponse()
 }
 
 const handleLogout = (options = {}) => {
@@ -306,24 +355,7 @@ const handleLogout = (options = {}) => {
   pendingRequests.clear()
   
   if (redirect) {
-    let current = ''
-    try {
-      const hash = window.location.hash || ''
-      current = hash.startsWith('#') ? hash.slice(1) : hash
-      // 如果是登录页，不设置 redirect
-      if (current.startsWith('/login')) current = ''
-      // 如果是默认首页（module-select），也不设置 redirect，因为登录后会自动跳转到首页
-      if (current === '/module-select' || current === '/') current = ''
-      // 如果是错误页面，不设置 redirect
-      if (current === '/403' || current === '/404') current = ''
-      // 如果是特殊流程页面，不设置 redirect
-      if (current === '/unlock' || current === '/password-expiration') current = ''
-      // 如果路径不以 / 开头，清空
-      if (!current.startsWith('/')) current = ''
-    } catch {
-      current = ''
-    }
-
+    const current = getRedirectPathAfterLogout()
     hardRedirectToLogin(current)
   }
 }
@@ -462,13 +494,7 @@ const createPostRequest = () => async (url, data, options = {}) => {
     const now = Date.now()
     if (now - lastNetworkErrorTime > NETWORK_ERROR_COOLDOWN_MS) {
       lastNetworkErrorTime = now
-      ElMessage({
-        type: 'warning',
-        message: info.message,
-        duration: 3000,
-        plain: true,
-        showClose: true
-      })
+      showWarningMessage(info.message)
     }
 
     // 对调用方返回一个“已统一处理”的结果，避免各页面再次弹错
