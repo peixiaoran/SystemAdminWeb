@@ -37,7 +37,7 @@
           <el-table-column type="index" :label="$t('systembasicmgmt.userLabor.index')" width="70" align="center" fixed />
           <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="200" />
           <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
-          <el-table-column prop="laborDescription" :label="$t('systembasicmgmt.userLabor.laborDescription')" align="left" min-width="250" />
+          <el-table-column prop="description" :label="$t('systembasicmgmt.userLabor.description')" align="left" min-width="250" />
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
         </el-table>
       </div>
@@ -93,10 +93,10 @@
             </el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('systembasicmgmt.userLabor.laborDescription')" prop="laborDescription">
+            <el-form-item :label="$t('systembasicmgmt.userLabor.description')" prop="description">
               <el-input 
-                v-model="form.laborDescription" 
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborDescription')"
+                v-model="form.description" 
+                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputDescription')"
                 style="width:100%" 
                 type="textarea" 
                 :rows="3" 
@@ -159,7 +159,7 @@ const form = reactive({
   laborId: '',
   laborNameCn: '',
   laborNameEn: '',
-  laborDescription: ''
+  description: ''
 })
 
 // 表单验证规则
@@ -265,7 +265,7 @@ const handleEdit = async (row) => {
     form.laborId = data.laborId
     form.laborNameCn = data.laborNameCn
     form.laborNameEn = data.laborNameEn
-    form.laborDescription = data.laborDescription
+    form.description = data.description
   } else {
     if (response.code !== 401 && response.code !== 403) {
       ElMessage({
@@ -348,7 +348,7 @@ const handleSubmit = async () => {
     laborId: form.laborId,
     laborNameCn: form.laborNameCn,
     laborNameEn: form.laborNameEn,
-    laborDescription: form.laborDescription
+    description: form.description
   }
 
   const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
@@ -380,7 +380,7 @@ const resetForm = () => {
   form.laborId = ''
   form.laborNameCn = ''
   form.laborNameEn = ''
-  form.laborDescription = ''
+  form.description = ''
 }
 
 // 对话框关闭

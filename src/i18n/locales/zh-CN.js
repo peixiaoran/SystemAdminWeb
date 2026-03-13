@@ -511,7 +511,7 @@ export default {
     UserSettings: '系统员工配置',
     useragent: '员工代理维护',
     userparttime: '员工兼任维护',
-    userformbind: '员工表单绑定',
+    userform: '员工表单绑定',
     formbusiness: '表单签核业务',
     formBasicInfo: '表单基础信息',
     formGroup: '表单组别信息',
@@ -859,7 +859,7 @@ export default {
       getFailed: '获取数据失败',
       index: '序号'
     },
-    userformbind: {
+    userform: {
       index: '序号',
       userNo: '员工工号',
       userName: '员工姓名',
@@ -1280,7 +1280,7 @@ export default {
       laborName: '职业名称',
       laborNameCn: '中文名称',
       laborNameEn: '英文名称',
-      laborDescription: '职业描述',
+      description: '职业描述',
       laborTypeCode: '职业编码',
       laborTypeNameCn: '中文名称',
       laborTypeNameEn: '英文名称',
@@ -1294,7 +1294,7 @@ export default {
       pleaseInputLaborName: '请输入职业名称',
       pleaseInputLaborNameCn: '请输入中文名称',
       pleaseInputLaborNameEn: '请输入英文名称',
-      pleaseInputLaborDescription: '请输入职业描述',
+      pleaseInputDescription: '请输入职业描述',
       pleaseInputLaborTypeCode: '请输入职业编码',
       pleaseInputLaborTypeNameCn: '请输入中文名称',
       pleaseInputLaborTypeNameEn: '请输入英文名称',

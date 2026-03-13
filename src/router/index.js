@@ -282,11 +282,11 @@ const pmenuRoutes = [
             },
           },
           {
-            path: 'userformbind',
-            name: 'UserFormBind',
-            component: () => import('../views/systembasicmgmt/user-settings/userformbind.vue'),
+            path: 'userform',
+            name: 'UserForm',
+            component: () => import('../views/systembasicmgmt/user-settings/userform.vue'),
             meta: { 
-              title: 'route.userformbind', 
+              title: 'route.userform', 
               icon: 'Management',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false

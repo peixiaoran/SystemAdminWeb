@@ -133,7 +133,7 @@
             <el-input v-model="editForm.userNameEn" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.gender')" prop="gender">
-            <el-select v-model="editForm.gender" style="width:100%" clearable :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectGender')">
+            <el-select v-model="editForm.gender" style="width:100%" :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectGender')">
               <el-option 
                 v-for="item in genderOptions"
                 :key="`gender-${item.genderCode}`"
@@ -157,7 +157,6 @@
             <el-select 
               v-model="editForm.nationality" 
               style="width:100%"
-              clearable
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNationality')">
               <el-option
                 v-for="item in nationalityOptions"
@@ -170,7 +169,6 @@
             <el-select 
               v-model="editForm.laborId" 
               style="width:100%"
-              clearable
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectLaborType')">
               <el-option
                 v-for="item in laborTypeOptions"
@@ -186,7 +184,6 @@
               :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
               check-strictly
               filterable
-              clearable
               :filter-node-method="filterNodeMethod"
               style="width:100%"
               popper-class="main-dept-filter-popper"
@@ -199,7 +196,6 @@
             <el-select 
               v-model="editForm.positionId" 
               style="width:100%"
-              clearable
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectPosition')">
               <el-option
                 v-for="item in positionOptions"
@@ -213,7 +209,6 @@
             <el-select 
               v-model="editForm.roleId" 
               style="width:100%"
-              clearable
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectRole')">
               <el-option
                 v-for="item in roleOptions"
@@ -238,7 +233,7 @@
              <el-input v-model="editForm.phoneNumber" style="width:100%" />
            </el-form-item>
            <el-form-item :label="$t('systembasicmgmt.userInfo.expirationDays')" prop="expirationDays" required>
-             <el-select v-model="editForm.expirationDays" style="width:100%" clearable :placeholder="$t('systembasicmgmt.userInfo.pleaseInputExpirationDays')">
+             <el-select v-model="editForm.expirationDays" style="width:100%" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputExpirationDays')">
                <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.30')" :value="30" />
                <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.60')" :value="60" />
                <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.90')" :value="90" />

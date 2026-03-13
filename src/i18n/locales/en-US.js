@@ -590,7 +590,7 @@ export default {
     userloginlog: 'LogOut Info',
     UserSettings: 'System User Configuration',
     useragent: 'User Agent',
-    userformbind: 'User Form Bind',
+    userform: 'User Form',
     userparttime: 'User PartTime',
     formbusiness: 'Form Business',
     formBasicInfo: 'Form Basic Info',
@@ -805,7 +805,7 @@ export default {
         getFailed: 'Failed to get data',
         index: 'Index'
     },
-    userformbind: {
+    userform: {
       index: 'Index',
       userNo: 'User No.',
       userName: 'User Name',
@@ -1283,7 +1283,7 @@ export default {
       laborName: 'Career Name',
       laborNameCn: 'Chinese Name',
       laborNameEn: 'English Name',
-      laborDescription: 'Description',
+      description: 'Description',
       laborTypeCode: 'Career Code',
       laborTypeNameCn: 'Chinese Name',
       laborTypeNameEn: 'English Name',
@@ -1297,7 +1297,7 @@ export default {
       pleaseInputLaborName: 'Please enter career name',
       pleaseInputLaborNameCn: 'Please enter Chinese name',
       pleaseInputLaborNameEn: 'Please enter English name',
-      pleaseInputLaborDescription: 'Please enter Description',
+      pleaseInputDescription: 'Please enter Description',
       pleaseInputLaborTypeCode: 'Please enter career code',
       pleaseInputLaborTypeNameCn: 'Please enter Chinese name',
       pleaseInputLaborTypeNameEn: 'Please enter English name',
