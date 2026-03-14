@@ -153,10 +153,10 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.formtype.reviewPath')" prop="reviewPath">
+            <el-form-item :label="$t('formbusiness.formtype.approvalPath')" prop="approvalPath">
               <el-input 
-                v-model="form.reviewPath" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputReviewPath')"
+                v-model="form.approvalPath" 
+                :placeholder="$t('formbusiness.formtype.pleaseInputApprovalPath')"
                 style="width:100%" 
               />
             </el-form-item>
@@ -268,7 +268,7 @@ const form = reactive({
   sortOrder: 0,
   descriptionCn: '',
   descriptionEn: '',
-  reviewPath: '',
+  approvalPath: '',
   viewPath: ''
 })
 
@@ -286,7 +286,7 @@ const rules = {
   prefix: [
     { required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'), trigger: 'blur' }
   ],
-  reviewPath: [
+  approvalPath: [
     { required: false, trigger: 'blur' }
   ],
   viewPath: [
@@ -419,7 +419,7 @@ const resetForm = () => {
   form.sortOrder = 0
   form.descriptionCn = ''
   form.descriptionEn = ''
-  form.reviewPath = ''
+  form.approvalPath = ''
   form.viewPath = ''
 }
 
@@ -463,7 +463,7 @@ const handleEdit = async (row) => {
       form.sortOrder = data.sortOrder
       form.descriptionCn = data.descriptionCn
       form.descriptionEn = data.descriptionEn
-      form.reviewPath = data.reviewPath || ''
+      form.approvalPath = data.approvalPath || ''
       form.viewPath = data.viewPath || ''
       
       // 数据加载完成后清除验证，避免瞬间显示验证错误
@@ -570,7 +570,7 @@ const handleSubmit = async () => {
       sortOrder: form.sortOrder,
       descriptionCn: form.descriptionCn,
       descriptionEn: form.descriptionEn,
-      reviewPath: form.reviewPath,
+      approvalPath: form.approvalPath,
       viewPath: form.viewPath
     }
     

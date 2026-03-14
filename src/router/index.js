@@ -441,6 +441,31 @@ const pmenuRoutes = [
               }
             }
           ]
+        },
+        // 表单流程配置子模块 - 使用嵌套结构
+        {
+          path: 'form-workflow',
+          name: 'FormWorkflow',
+          redirect: '/formbusiness/form-workflow',
+          meta: { 
+            title: 'route.formworkflow',
+            icon: 'ScaleToOriginal',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'workflowstep',
+              name: 'WorkflowStep',
+              component: () => import('../views/formbusiness/form-workflow/workflowstep.vue'),
+              meta: { 
+                title: 'route.workflowstep', 
+                icon: 'SetUp',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
         }
       ]
   },
@@ -451,6 +476,17 @@ const pmenuRoutes = [
     component: () => import('../views/formbusiness/forms/leaveform/leaveform_r.vue'),
     meta: {
       title: 'route.leaveform_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
+  // 独立请假单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/leaveform/leaveform_v',
+    name: 'LeaveFormV',
+    component: () => import('../views/formbusiness/forms/leaveform/leaveform_v.vue'),
+    meta: {
+      title: 'route.leaveform_v',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true
     }
