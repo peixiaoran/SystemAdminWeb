@@ -12,6 +12,6 @@ export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowSte
 // 获取表单类别下拉框API
 export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetFormTypeDropDown'
 
-// 获取流程步骤分页列表API
-export const GET_WORKFLOWSTEP_PAGE_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepPage'
+// 获取流程步骤列表API
+export const GET_WORKFLOWSTEP_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepList'
 

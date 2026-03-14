@@ -2,10 +2,10 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
-      <el-form-item :label="$t('formbusiness.formtype.formGroupName')">
+      <el-form-item :label="$t('formbusiness.applyform.formGroupName')">
         <el-select 
           v-model="searchForm.formGroupId" 
-          :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
+          :placeholder="$t('formbusiness.applyform.pleaseSelectFormGroup')"
           filterable
           style="width: 180px"
         >
@@ -17,10 +17,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item :label="$t('formbusiness.formtype.formTypeName')">
+      <el-form-item :label="$t('formbusiness.applyform.formTypeName')">
         <el-input 
           v-model="searchForm.formTypeName" 
-          :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeName')"
+          :placeholder="$t('formbusiness.applyform.pleaseInputFormTypeName')"
           clearable
           @keyup.enter="handleSearch"
         />
@@ -45,8 +45,8 @@
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
-          <el-table-column :label="$t('formbusiness.formtype.apply')" align="center" width="130">
+          <el-table-column type="index" :label="$t('formbusiness.applyform.index')" width="70" align="center" fixed />
+          <el-table-column :label="$t('formbusiness.applyform.apply')" align="center" width="130">
             <template #default="scope">
               <el-link
                 v-if="scope.row.approvalPath"
@@ -54,12 +54,12 @@
                 underline="never"
                 @click="openApproval(scope.row)"
               >
-                {{ $t('formbusiness.formtype.apply') }}
+                {{ $t('formbusiness.applyform.apply') }}
               </el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formtype.formName')" align="center" min-width="200" />
-          <el-table-column prop="description" :label="$t('formbusiness.formtype.description')" align="left" width="900">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.applyform.formName')" align="center" min-width="200" />
+          <el-table-column prop="description" :label="$t('formbusiness.applyform.description')" align="left" width="900">
             <template #default="scope">
               <el-tooltip
                 v-if="scope.row.description"
@@ -150,16 +150,16 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   formGroupId: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseSelectFormGroup'), trigger: 'change' }
+    { required: true, message: () => t('formbusiness.applyform.pleaseSelectFormGroup'), trigger: 'change' }
   ],
   formTypeNameCn: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameCn'), trigger: 'blur' }
+    { required: true, message: () => t('formbusiness.applyform.pleaseInputFormTypeNameCn'), trigger: 'blur' }
   ],
   formTypeNameEn: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameEn'), trigger: 'blur' }
+    { required: true, message: () => t('formbusiness.applyform.pleaseInputFormTypeNameEn'), trigger: 'blur' }
   ],
   prefix: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'), trigger: 'blur' }
+    { required: true, message: () => t('formbusiness.applyform.pleaseInputPrefix'), trigger: 'blur' }
   ],
   reviewPath: [
     { required: false, trigger: 'blur' }
@@ -191,7 +191,7 @@ const getFormGroupOptions = async () => {
     }
   } catch (error) {
     ElMessage({
-      message: t('formbusiness.formtype.getFormGroupFailed'),
+      message: t('formbusiness.applyform.getFormGroupFailed'),
       type: 'error',
       plain: true,
       showClose: true
@@ -228,7 +228,7 @@ const getFormTypeList = async () => {
     }
   } catch (error) {
     ElMessage({
-      message: t('formbusiness.formtype.getFailed'),
+      message: t('formbusiness.applyform.getFailed'),
       type: 'error',
       plain: true,
       showClose: true

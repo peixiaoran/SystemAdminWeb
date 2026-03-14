@@ -260,7 +260,6 @@ export default {
         pleaseInputFormTypeName: '请输入表单类型名称',
         pleaseInputFormTypeNameCn: '请输入中文名称',
         pleaseInputFormTypeNameEn: '请输入英文名称',
-        pleaseSelectFormGroup: '请选择表单组别',
         pleaseInputPrefix: '请输入前缀',
         pleaseInputDescription: '请输入描述',
         pleaseInputDescriptionCn: '请输入中文描述',
@@ -274,6 +273,42 @@ export default {
         getFormGroupFailed: '获取表单组别失败',
         operationFailed: '操作失败'
       },
+
+    // 流程步骤配置页面专用
+    workflowstep: {
+      formGroupName: '表单分组',
+      formTypeName: '表单类别',
+      index: '序号',
+      stepName: '步骤名称',
+      assignmentName: '指派方式',
+      description: '描述',
+      branchList: '分支列表',
+      conditionName: '条件名称',
+      defaultCondition: '默认',
+      nextStepName: '下一步骤',
+      executeMatched: '执行匹配',
+      endStep: '结束',
+      getFormGroupFailed: '获取表单分组失败',
+      getFormTypeFailed: '获取表单类别失败',
+      getFailed: '获取流程步骤失败'
+    },
+
+    // 申请表单作业页面专用
+    applyform: {
+      formGroupName: '表单组别',
+      formTypeName: '类型名称',
+      pleaseSelectFormGroup: '请选择表单组别',
+      pleaseInputFormTypeName: '请输入表单类型名称',
+      index: '序号',
+      apply: '申请',
+      formName: '表单名称',
+      description: '描述',
+      pleaseInputFormTypeNameCn: '请输入中文名称',
+      pleaseInputFormTypeNameEn: '请输入英文名称',
+      pleaseInputPrefix: '请输入前缀',
+      getFormGroupFailed: '获取表单组别失败',
+      getFailed: '获取数据失败'
+    },
 
     // 请假单页面专用
     leaveform: {

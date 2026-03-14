@@ -307,10 +307,10 @@ export default {
     
     // Form category page specific
     formtype: {
-        formTypeName: 'Type Name',
-        formName: 'Form Name',
-        apply: 'Apply',
-        formTypeNameCn: 'Chinese Name',
+      formTypeName: 'Type Name',
+      formName: 'Form Name',
+      apply: 'Apply',
+      formTypeNameCn: 'Chinese Name',
       formTypeName: 'Form Type Name',
       formTypeNameCn: 'Chinese Name',
       formTypeNameEn: 'English Name',
@@ -326,7 +326,6 @@ export default {
       pleaseInputFormTypeName: 'Please input form type name',
       pleaseInputFormTypeNameCn: 'Please input form type Chinese name',
       pleaseInputFormTypeNameEn: 'Please input form type English name',
-      pleaseSelectFormGroup: 'Please select form group',
       pleaseInputPrefix: 'Please input prefix',
       pleaseInputDescription: 'Please input description',
       pleaseInputDescriptionCn: 'Please input Chinese description',
@@ -339,6 +338,42 @@ export default {
       getFailed: 'Failed to get form type information',
       getFormGroupFailed: 'Failed to get form group information',
       operationFailed: 'Operation failed'
+    },
+
+    // Workflow Step Page Specific
+    workflowstep: {
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      index: 'Index',
+      stepName: 'Step Name',
+      assignmentName: 'Assignment',
+      description: 'Description',
+      branchList: 'Branch List',
+      conditionName: 'Condition',
+      defaultCondition: 'Default',
+      nextStepName: 'Next Step',
+      executeMatched: 'Execute Matched',
+      endStep: 'End',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getFailed: 'Failed to get workflow steps'
+    },
+
+    // Apply Form Page Specific
+    applyform: {
+      formGroupName: 'Form Group',
+      formTypeName: 'Type Name',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseInputFormTypeName: 'Please input form type name',
+      index: 'Index',
+      apply: 'Apply',
+      formName: 'Form Name',
+      description: 'Description',
+      pleaseInputFormTypeNameCn: 'Please input Chinese name',
+      pleaseInputFormTypeNameEn: 'Please input English name',
+      pleaseInputPrefix: 'Please input prefix',
+      getFormGroupFailed: 'Failed to get form group',
+      getFailed: 'Failed to get data'
     },
 
     // Leave Form Page Specific
