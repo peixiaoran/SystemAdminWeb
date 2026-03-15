@@ -15,3 +15,32 @@ export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep
 // 获取流程步骤列表API
 export const GET_WORKFLOWSTEP_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepList'
 
+// 新增流程步骤API
+export const INSERT_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/InsertWorkflowStep'
+
+// 获取指派规则下拉框API
+export const GET_ASSIGNMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetAssignmentDropDown'
+
+// 获取步骤签核级别下拉框API
+export const GET_ARCHI_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetArchiLevelDropDown'
+
+// 获取步骤签核方式下拉框API
+export const GET_APPROVE_MODE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetApproveModeDropDown'
+
+// 获取部门级别下拉框API
+export const GET_DEPARTMENT_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentLevelDropDown'
+
+// 获取员工职级下拉框API
+export const GET_USER_POSITION_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetUserPositionDropDown'
+
+// 获取部门下拉框API
+export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentDropDown'
+
+// 获取用户信息分页API
+export const GET_USER_INFO_PAGE_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetUserInfoPage'
+
+// 删除流程步骤API
+export const DELETE_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/DeleteWorkflowStep'
+
+// 获取流程步骤实体API
+export const GET_WORKFLOWSTEP_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepEntity'
