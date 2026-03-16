@@ -44,3 +44,6 @@ export const DELETE_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/D
 
 // 获取流程步骤实体API
 export const GET_WORKFLOWSTEP_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepEntity'
+
+// 更新流程步骤API
+export const UPDATE_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateWorkflowStep'

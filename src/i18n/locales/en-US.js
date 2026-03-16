@@ -72,6 +72,20 @@ export default {
     deselectAll: 'Deselect All'
   },
 
+  // Global messages (alias for t('messages.xxx'))
+  messages: {
+    saveSuccess: 'Save Successfully',
+    saveError: 'Save Failed',
+    deleteSuccess: 'Delete Successfully',
+    deleteError: 'Delete Failed',
+    updateSuccess: 'Update Successfully',
+    updateError: 'Update Failed',
+    loadError: 'Failed to load data',
+    networkError: 'Network error, please try again later',
+    confirmDelete: 'Are you sure you want to delete? This operation cannot be undone',
+    noDataSelected: 'Please select data to operate'
+  },
+
   // Dashboard
   dashboard: {
     title: 'System Dashboard',
@@ -401,7 +415,9 @@ export default {
       deleteStep: 'Delete Step',
       deleteStepConfirm: 'Are you sure to delete step "{name}"?',
       deleteStepSuccess: 'Step deleted successfully',
-      deleteStepFailed: 'Failed to delete step'
+      deleteStepFailed: 'Failed to delete step',
+      editStep: 'Edit Step',
+      editStepSuccess: 'Step updated successfully'
     },
 
     // Apply Form Page Specific
@@ -443,10 +459,12 @@ export default {
       leaveDays: 'Leave Days',
       leaveHours: 'Leave Hours',
       leaveHandoverUserId: 'Handover User',
+      agentUserNo: 'Agent User No.',
       pleaseInputLeaveNo: 'Please enter leave number',
       pleaseInputDescription: 'Please enter description',
       pleaseSelectImportance: 'Please select importance level',
       pleaseInputHandoverUserName: 'Please enter handover user name',
+      pleaseInputAgentUserNo: 'Please enter agent user no.',
       pleaseInputLeaveId: 'Please enter leave ID',
       pleaseSelectLeaveApplicant: 'Please select applicant',
       pleaseSelectLeaveType: 'Please select leave type',

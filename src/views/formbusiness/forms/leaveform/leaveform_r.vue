@@ -85,13 +85,6 @@
               <el-input v-model="form.formNo" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveNo')" disabled/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.importanceCode')" prop="importanceCode">
-              <el-select v-model="form.importanceCode" :placeholder="t('formbusiness.leaveform.pleaseSelectImportance')" clearable @change="onSelectChange('importanceCode')">
-                <el-option v-for="opt in importanceOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
         </el-row>
 
         <!-- 申请人信息 -->
@@ -139,21 +132,24 @@
           </el-col>
         </el-row>
 
-        <!-- 时长 -->
+        <!-- 时长 / 代理人 -->
         <el-row :gutter="16">
           <el-col :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.leaveDays')" prop="leaveDays">
-              <el-input-number v-model="form.leaveDays" :min="0" :step="0.01" :precision="2" :controls="false" style="width: 200px;" disabled />
+            <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserNo">
+              <el-input v-model="form.agentUserNo" :placeholder="t('formbusiness.leaveform.pleaseInputAgentUserNo')" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="16">
             <el-form-item :label="t('formbusiness.leaveform.leaveHours')" prop="leaveHours">
-              <el-input-number v-model="form.leaveHours" :min="0" :step="0.01" :precision="2" :controls="false" style="width: 200px;" disabled />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.leaveHandoverUserName')" prop="leaveHandoverUserName">
-              <el-input v-model="form.leaveHandoverUserName" :placeholder="t('formbusiness.leaveform.pleaseInputHandoverUserName')"/>
+              <el-input-number
+                v-model="form.leaveHours"
+                :min="0"
+                :step="0.01"
+                :precision="2"
+                :controls="false"
+                style="width: 200px;"
+                disabled
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -163,15 +159,6 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="leaveReason">
               <el-input v-model="form.leaveReason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <!-- 描述 -->
-        <el-row :gutter="16">
-          <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leaveform.description')" prop="description">
-              <el-input v-model="form.description" type="textarea" :rows="2" :placeholder="t('formbusiness.leaveform.pleaseInputDescription')" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -194,7 +181,7 @@ import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_IMPORTANCE_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { useRoute, useRouter } from 'vue-router'
 
 // 获取翻译函数
@@ -222,8 +209,6 @@ const currentFormTypeId = ref('')
 const form = reactive({
   formId: '',
   formNo: '',
-  description: '',
-  importanceCode: '',
   applicantUserNo: '',
   applicantUserName: '',
   applicantDeptName: '',
@@ -232,20 +217,14 @@ const form = reactive({
   leaveTypeCode: '',
   leaveReason: '',
   leaveTimeRange: [],
-  leaveDays: 0,
   leaveHours: 0,
-  leaveHandoverUserName: ''
+  agentUserNo: ''
 })
 
 // 下拉选项（来自接口）
 const leaveTypeOptions = ref([])
-const importanceOptions = ref([])
-
 // 校验规则
 const rules = {
-  importanceCode: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
-  ],
   leaveTypeCode: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
@@ -254,7 +233,7 @@ const rules = {
     { validator: validateTimeRange, trigger: 'change' }
   ],
 
-  leaveHandoverUserName: [
+  agentUserNo: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
     { validator: validateHandoverUserNameRequired, trigger: 'blur' }
   ],
@@ -270,13 +249,11 @@ const rules = {
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
-    form.leaveDays = parseFloat((0).toFixed(2))
     form.leaveHours = parseFloat((0).toFixed(2))
     return
   }
   const [startTime, endTime] = form.leaveTimeRange
   if (!startTime || !endTime) {
-    form.leaveDays = parseFloat((0).toFixed(2))
     form.leaveHours = parseFloat((0).toFixed(2))
     return
   }
@@ -288,8 +265,6 @@ function calculateDuration () {
     return
   }
   const totalHours = getWorkingHoursBetween(startTime, endTime)
-  const dayCount = countCalendarDaysInclusive(startTime, endTime)
-  form.leaveDays = parseFloat(dayCount.toFixed(2))
   form.leaveHours = parseFloat(totalHours.toFixed(2))
 }
 
@@ -458,8 +433,6 @@ function bindFormData (data) {
     formTypeId: data.formTypeId || '',
     formId: data.formId || '',
     formNo: data.formNo || '',
-    description: data.description || '',
-    importanceCode: normalizeSelectCode(data.importanceCode),
     applicantUserNo: data.applicantUserNo || '',
     applicantUserName: data.applicantUserName || '',
     applicantDeptName: data.applicantDeptName || '',
@@ -474,7 +447,7 @@ function bindFormData (data) {
     })(),
     leaveDays: data.leaveDays ?? 0,
     leaveHours: data.leaveHours ?? 0,
-    leaveHandoverUserName: data.leaveHandoverUserName || ''
+    agentUserNo: data.agentUserNo || ''
   })
   // 绑定返回的formTypeId作为当前类型（若有）
   if (data && data.formTypeId) {
@@ -491,7 +464,7 @@ function bindFormData (data) {
   }
   // 赋值后清理可能残留的校验错误提示
   if (formRef.value) {
-    formRef.value.clearValidate(['importanceCode', 'leaveTypeCode'])
+    formRef.value.clearValidate(['leaveTypeCode'])
   }
 }
 
@@ -504,7 +477,7 @@ function normalizeSelectCode (val) {
 }
 
 /**
- * 初始化请假单
+ * 初始化请假单（生成 formId 后立即调用详情接口）
  */
 async function initLeaveForm () {
   try {
@@ -517,13 +490,23 @@ async function initLeaveForm () {
         'Content-Type': 'multipart/form-data'
       }
     })
-    if (!res) return
-    if (res.code !== 200) {
-      ElMessage.error(res.message || t('messages.loadError'))
+    if (!res || res.code !== 200) {
       return
     }
-    const data = res.data || {}
-    bindFormData(data)
+    // 接口返回 Result<int>，data 为新表单ID
+    const newFormId = String(res.data)
+
+    form.formId = newFormId
+    // 默认请假时间：今天 ~ 明天（占位，后续详情会覆盖）
+    const now = new Date()
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0)
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 18, 0, 0)
+    const pad = (n) => (n < 10 ? `0${n}` : `${n}`)
+    const formatDateTime = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
+
+    // 重要：在初始化成功后，立刻调用详情接口，真正加载表单编号和员工信息
+    await getLeaveFormDetail(newFormId)
   } catch {
 
   }
@@ -542,7 +525,7 @@ async function getLeaveFormDetail (id) {
     })
     if (!res) return
     if (res.code !== 200) {
-      ElMessage.error(res.message || t('messages.loadError'))
+      ElMessage.error(res.message)
       return
     }
     const data = res.data || {}
@@ -562,7 +545,7 @@ async function getLeaveTypeOptions () {
     const res = await post(GET_LEAVEFORM_DROPDOWN_API, {})
     if (!res) return
     if (res.code !== 200) {
-      ElMessage.error(res.message || t('messages.loadError'))
+      ElMessage.error(res.message)
       return
     }
     const list = Array.isArray(res.data) ? res.data : []
@@ -576,59 +559,23 @@ async function getLeaveTypeOptions () {
 }
 
 /**
- * 获取重要性下拉
- * 入参：无；出参：转换为{label,value}数组
- * 错误处理：401/403不提示，其他错误提示加载失败
- */
-async function getImportanceOptions () {
-  try {
-    const res = await post(GET_IMPORTANCE_DROPDOWN_API, {})
-    if (!res) return
-    if (res.code !== 200) {
-      ElMessage.error(res.message || t('messages.loadError'))
-      return
-    }
-    const list = Array.isArray(res.data) ? res.data : []
-    importanceOptions.value = list.map(item => ({
-      label: item.importanceName,
-      value: String(item.importanceCode)
-    }))
-  } catch {
-
-  }
-}
-
-
-
-/**
- * 提交请假单（占位）
- * 说明：执行校验，通过后仅提示成功（后续可接入保存接口）
- */
-/**
  * 保存请假单：执行校验，通过后调用保存接口
  */
 async function onSubmit () {
   saving.value = true
   formRef.value?.validate(async (valid) => {
     if (!valid) { saving.value = false; return }
+    const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
     const payload = {
-      formTypeId: String(currentFormTypeId.value || defaultFormTypeId),
-      description: (form.description || '').trim(),
-      importanceCode: form.importanceCode || '',
+      formTypeId: String(currentFormTypeId.value || defaultFormTypeId || ''),
       formId: String(form.formId || ''),
       formNo: form.formNo || '',
-      applicantTime: form.applicantTime || '',
-      applicantUserNo: form.applicantUserNo || '',
-      applicantUserName: form.applicantUserName || '',
-      applicantDeptId: Number(form.applicantDeptId || 0),
-      applicantDeptName: form.applicantDeptName || '',
       leaveTypeCode: form.leaveTypeCode || '',
       leaveReason: (form.leaveReason || '').trim(),
-      leaveStartTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[0] ? form.leaveTimeRange[0] : '',
-      leaveEndTime: Array.isArray(form.leaveTimeRange) && form.leaveTimeRange[1] ? form.leaveTimeRange[1] : '',
-      leaveDays: Number(form.leaveDays || 0),
-      leaveHours: Number(form.leaveHours || 0),
-      leaveHandoverUserName: (form.leaveHandoverUserName || '').trim()
+      leaveStartTime: startTime ? toISO(startTime) : null,
+      leaveEndTime: endTime ? toISO(endTime) : null,
+      leaveHours: form.leaveHours ? Number(form.leaveHours) : 0,
+      agentUserNo: (form.agentUserNo || '').trim()
     }
     try {
       const res = await post(SAVE_LEAVEFORM_API, payload)
@@ -670,17 +617,19 @@ async function onSubmitForApproval () {
 onMounted(async () => {
   try {
     loading.value = true
-    await Promise.all([getLeaveTypeOptions(), getImportanceOptions()])
-    const initialFormId = String(route.query.formId || route.params?.formId || form.formId || '')
+    await Promise.all([getLeaveTypeOptions()])
+    // 优先从路由获取 formId（编辑场景）
+    const routeFormId = route.query.formId || route.params?.formId
     currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
-    if (initialFormId) {
-      form.formId = initialFormId
-      await getLeaveFormDetail(initialFormId)
+    if (routeFormId) {
+      form.formId = String(routeFormId)
+      await getLeaveFormDetail(form.formId)
     } else {
+      // 新建场景：仅调用 initLeaveForm，内部会自动再调一次 GetLeaveForm
       await initLeaveForm()
     }
   } catch (error) {
-    ElMessage.error(t('messages.loadError'))
+    ElMessage.error(t('formbusiness.messages.loadError'))
   } finally {
     loading.value = false
   }

@@ -610,7 +610,11 @@ const fetchMenuData = async () => {
       return
     }
     // 请求菜单数据
-    const res = await post(MENU_API.GET_MENU, { moduleId })
+    const params = new URLSearchParams()
+    params.append('moduleId', moduleId)
+    const res = await post(MENU_API.GET_MENU, params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
     
     if (res && res.code === 200) {
       // 处理菜单数据，将其与路由数据对应起来

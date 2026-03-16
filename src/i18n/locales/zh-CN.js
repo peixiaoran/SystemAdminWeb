@@ -72,6 +72,20 @@ export default {
     deselectAll: '取消全选'
   },
 
+  // 全局消息提示（为 t('messages.xxx') 提供别名）
+  messages: {
+    saveSuccess: '保存成功',
+    saveError: '保存失败',
+    deleteSuccess: '删除成功',
+    deleteError: '删除失败',
+    updateSuccess: '更新成功',
+    updateError: '更新失败',
+    loadError: '加载数据失败',
+    networkError: '网络错误，请稍后重试',
+    confirmDelete: '确定要删除吗？此操作不可恢复',
+    noDataSelected: '请选择要操作的数据'
+  },
+
   // 仪表板
   dashboard: {
     title: '系统仪表板',
@@ -335,7 +349,9 @@ export default {
       deleteStep: '删除步骤',
       deleteStepConfirm: '确定要删除步骤「{name}」吗？',
       deleteStepSuccess: '删除步骤成功',
-      deleteStepFailed: '删除步骤失败'
+      deleteStepFailed: '删除步骤失败',
+      editStep: '编辑步骤',
+      editStepSuccess: '编辑步骤成功'
     },
 
     // 申请表单作业页面专用
@@ -376,18 +392,20 @@ export default {
         leaveTimeRange: '请假时间',
         leaveDays: '请假总天数',
         leaveHours: '请假总时数',
-        leaveHandoverUserId: '交接人',
+    leaveHandoverUserId: '交接人',
+    agentUserNo: '代理人工号',
         pleaseInputLeaveNo: '请输入请假单号',
         pleaseInputDescription: '请输入描述',
         pleaseSelectImportance: '请选择重要程度',
         pleaseInputHandoverUserName: '请输入交接人姓名',
+        pleaseInputAgentUserNo: '请输入代理人工号',
         pleaseInputLeaveId: '请输入请假单ID',
         pleaseSelectLeaveApplicant: '请选择申请人',
         pleaseSelectLeaveType: '请选择请假类型',
         pleaseInputLeaveReason: '请输入请假事由',
         pleaseSelectStartTime: '请选择开始时间',
         pleaseSelectEndTime: '请选择结束时间',
-        pleaseSelectHandoverUser: '请选择交接人',
+    pleaseSelectHandoverUser: '请选择交接人',
         formTitle: '员工请假单',
         endAfterStartError: '结束时间必须晚于开始时间',
         durationRequired: '请假时长不能为空',

@@ -50,9 +50,14 @@
             <div class="step-header">
               <span class="step-name">{{ step.stepName }}</span>
               <el-tag effect="dark" :type="getAssignmentTagType(step.assignment)">{{ step.assignmentName }}</el-tag>
-              <el-button type="danger" link size="small" @click="handleDeleteStep(step)">
-                {{ $t('formbusiness.workflowstep.deleteStep') }}
-              </el-button>
+              <div class="step-actions">
+                <el-button type="primary" link size="small" @click="handleEditStep(step)">
+                  {{ $t('formbusiness.workflowstep.editStep') }}
+                </el-button>
+                <el-button type="danger" link size="small" @click="handleDeleteStep(step)">
+                  {{ $t('formbusiness.workflowstep.deleteStep') }}
+                </el-button>
+              </div>
             </div>
             <el-card class="step-card">
               <div class="card-header" v-if="step.description">
@@ -183,29 +188,6 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.workflowstep.archiveLevel')" prop="archiLevelCode">
-              <el-select
-                v-model="addStepForm.archiLevelCode"
-                :placeholder="$t('formbusiness.workflowstep.pleaseSelectArchiveLevel')"
-                filterable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in archiveLevelOptions"
-                  :key="item.archiLevelCode"
-                  :label="item.archiLevelName"
-                  :value="item.archiLevelCode"
-                />
-              </el-select>
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.workflowstep.isStartStep')" prop="isStartStep">
-              <el-radio-group v-model="addStepForm.isStartStep">
-                <el-radio :value="1">{{ $t('common.yes') }}</el-radio>
-                <el-radio :value="0">{{ $t('common.no') }}</el-radio>
-              </el-radio-group>
-            </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.approveMode')" prop="approveModeCode">
               <el-select
                 v-model="addStepForm.approveModeCode"
@@ -223,18 +205,26 @@
             </el-form-item>
           </div>
           <div class="form-row">
+            <el-form-item :label="$t('formbusiness.workflowstep.isStartStep')" prop="isStartStep">
+              <el-radio-group v-model="addStepForm.isStartStep">
+                <el-radio :value="1">{{ $t('common.yes') }}</el-radio>
+                <el-radio :value="0">{{ $t('common.no') }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.isReminderEnabled')" prop="isReminderEnabled">
               <el-radio-group v-model="addStepForm.isReminderEnabled">
                 <el-radio :value="1">{{ $t('common.yes') }}</el-radio>
                 <el-radio :value="0">{{ $t('common.no') }}</el-radio>
               </el-radio-group>
             </el-form-item>
+          </div>
+          <div class="form-row">
             <el-form-item :label="$t('formbusiness.workflowstep.reminderIntervalMinutes')" prop="reminderIntervalMinutes">
               <el-input-number
                 v-model="addStepForm.reminderIntervalMinutes"
                 :min="0"
                 :max="9999"
-                style="width: 50%"
+                style="width: 200px"
               />
             </el-form-item>
           </div>
@@ -418,13 +408,14 @@ import {
   GET_WORKFLOWSTEP_LIST_API,
   INSERT_WORKFLOWSTEP_API,
   GET_ASSIGNMENT_DROPDOWN_API,
-  GET_ARCHI_LEVEL_DROPDOWN_API,
   GET_APPROVE_MODE_DROPDOWN_API,
   GET_DEPARTMENT_LEVEL_DROPDOWN_API,
   GET_USER_POSITION_DROPDOWN_API,
   GET_DEPARTMENT_DROPDOWN_API,
   GET_USER_INFO_PAGE_API,
-  DELETE_WORKFLOWSTEP_API
+  DELETE_WORKFLOWSTEP_API,
+  GET_WORKFLOWSTEP_ENTITY_API,
+  UPDATE_WORKFLOWSTEP_API
 } from '@/config/api/formbusiness/form-workflow/workflowstep.js'
 import { useI18n } from 'vue-i18n'
 
@@ -442,10 +433,12 @@ const searchForm = reactive({
   formTypeId: ''
 })
 
-// 新增步骤弹窗
+// 新增 / 编辑 步骤弹窗
 const addStepDialogVisible = ref(false)
 const addStepDialogLoading = ref(false)
 const addStepSubmitting = ref(false)
+const isEditMode = ref(false)
+const currentStepId = ref('')
 const addStepFormRef = ref(null)
 const dialogFormTypeOptions = ref([])
 const assignmentOptions = ref([])
@@ -469,7 +462,6 @@ const addStepForm = reactive({
   stepNameCn: '',
   stepNameEn: '',
   assignmentCode: '',
-  archiLevelCode: '',
   approveModeCode: '',
   isReminderEnabled: 0,
   reminderIntervalMinutes: 0,
@@ -486,7 +478,6 @@ const addStepRules = {
   stepNameCn: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseInputStepNameCn'), trigger: 'blur' }],
   stepNameEn: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseInputStepNameEn'), trigger: 'blur' }],
   assignmentCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectAssignment'), trigger: 'change' }],
-  archiLevelCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectArchiveLevel'), trigger: 'change' }],
   approveModeCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectApproveMode'), trigger: 'change' }],
   isStartStep: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectIsStartStep'), trigger: 'change' }],
   isReminderEnabled: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectIsReminderEnabled'), trigger: 'change' }],
@@ -627,6 +618,94 @@ const handleFormTypeChange = async () => {
 }
 
 /**
+ * 编辑步骤：打开弹窗并通过 GetWorkflowStepEntity 拉取实体回填
+ */
+const handleEditStep = async (step) => {
+  isEditMode.value = true
+  currentStepId.value = step.stepId
+  addStepDialogVisible.value = true
+  addStepDialogLoading.value = true
+
+  // 先加载指派规则、签核方式等下拉
+  await Promise.all([
+    loadAssignmentOptions(),
+    loadApproveModeOptions()
+  ])
+
+  try {
+    const params = new URLSearchParams()
+    params.append('stepId', step.stepId)
+    const res = await post(GET_WORKFLOWSTEP_ENTITY_API, params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    if (res && res.code === 200 && res.data) {
+      const data = res.data
+
+      // 顶部基础字段
+      addStepForm.formGroupId = searchForm.formGroupId || ''
+      // 先加载当前分组下的表单类别选项，再绑定 formTypeId，保证下拉中有该值
+      if (addStepForm.formGroupId) {
+        await loadDialogFormTypeOptions(addStepForm.formGroupId)
+      }
+      addStepForm.formTypeId = data.formTypeId || ''
+      addStepForm.stepNameCn = data.stepNameCn || ''
+      addStepForm.stepNameEn = data.stepNameEn || ''
+      addStepForm.isStartStep = data.isStartStep ?? 0
+      addStepForm.assignmentCode = data.assignment || ''
+      addStepForm.approveModeCode = data.approveMode || ''
+      addStepForm.isReminderEnabled = data.isReminderEnabled ?? 0
+      addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
+
+      // 先清空 4 个item
+      addStepForm.stepOrgUpsert = { deptLeaveId: '', positionId: '' }
+      addStepForm.stepDeptUserUpsert = { departmentId: '', positionId: '' }
+      addStepForm.stepUserUpsert = { userId: '', departmentId: '' }
+      addStepForm.stepCustomUpsert = { handlerKey: '', logicalExplanation: '' }
+
+      // 根据 assignment 填充对应 dto
+      if (data.assignment === 'Org' && data.workflowStepOrgDto) {
+        const dto = data.workflowStepOrgDto
+        addStepForm.stepOrgUpsert.deptLeaveId = dto.deptLeaveId || ''
+        addStepForm.stepOrgUpsert.positionId = dto.positionId || ''
+        await loadDepartmentLevelOptions()
+        await loadUserPositionOptions()
+      } else if (data.assignment === 'DeptUser' && data.workflowStepDeptUserDto) {
+        const dto = data.workflowStepDeptUserDto
+        addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
+        addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
+        await loadDepartmentTreeOptions()
+        await loadUserPositionOptions()
+      } else if (data.assignment === 'User' && data.workflowStepUserDto) {
+        const dto = data.workflowStepUserDto
+        addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
+        addStepForm.stepUserUpsert.userId = dto.userId || ''
+        // 部门 watcher 会自动触发一次查询
+      } else if (data.assignment === 'Custom' && data.workflowStepCustomDto) {
+        const dto = data.workflowStepCustomDto
+        addStepForm.stepCustomUpsert.handlerKey = dto.handlerKey || ''
+        addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
+      }
+    } else {
+      ElMessage({
+        message: res?.message || t('formbusiness.workflowstep.getFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
+  } catch {
+    ElMessage({
+      message: t('formbusiness.workflowstep.getFailed'),
+      type: 'error',
+      plain: true,
+      showClose: true
+    })
+  } finally {
+    addStepDialogLoading.value = false
+  }
+}
+
+/**
  * 删除流程步骤（DeleteWorkflowStep，请求参数 FromForm string stepId）
  */
 const deleteStepLoading = ref(false)
@@ -712,7 +791,7 @@ const loadDepartmentLevelOptions = async () => {
     const response = await post(GET_DEPARTMENT_LEVEL_DROPDOWN_API, {})
     if (response.code === 200) {
       departmentLevelOptions.value = response.data || []
-      if (addStepForm.assignmentCode === 'Org' && departmentLevelOptions.value.length > 0) {
+      if (addStepForm.assignmentCode === 'Org' && departmentLevelOptions.value.length > 0 && !addStepForm.stepOrgUpsert.deptLeaveId) {
         addStepForm.stepOrgUpsert.deptLeaveId = departmentLevelOptions.value[0].departmentLevelId
       }
     } else {
@@ -733,9 +812,13 @@ const loadUserPositionOptions = async () => {
       userPositionOptions.value = response.data || []
       if (userPositionOptions.value.length > 0) {
         if (addStepForm.assignmentCode === 'Org') {
-          addStepForm.stepOrgUpsert.positionId = userPositionOptions.value[0].positionId
+          if (!addStepForm.stepOrgUpsert.positionId) {
+            addStepForm.stepOrgUpsert.positionId = userPositionOptions.value[0].positionId
+          }
         } else if (addStepForm.assignmentCode === 'DeptUser') {
-          addStepForm.stepDeptUserUpsert.positionId = userPositionOptions.value[0].positionId
+          if (!addStepForm.stepDeptUserUpsert.positionId) {
+            addStepForm.stepDeptUserUpsert.positionId = userPositionOptions.value[0].positionId
+          }
         }
       }
     } else {
@@ -768,9 +851,9 @@ const loadDepartmentTreeOptions = async () => {
       if (departmentTreeOptions.value.length > 0) {
         const firstEnabled = departmentTreeOptions.value.find(item => !item.disabled)
         if (firstEnabled) {
-          if (addStepForm.assignmentCode === 'DeptUser') {
+          if (addStepForm.assignmentCode === 'DeptUser' && !addStepForm.stepDeptUserUpsert.departmentId) {
             addStepForm.stepDeptUserUpsert.departmentId = firstEnabled.departmentId
-          } else if (addStepForm.assignmentCode === 'User') {
+          } else if (addStepForm.assignmentCode === 'User' && !addStepForm.stepUserUpsert.departmentId) {
             addStepForm.stepUserUpsert.departmentId = firstEnabled.departmentId
           }
         }
@@ -870,13 +953,14 @@ const handleUserSizeChange = (size) => {
  * 打开新增步骤弹窗
  */
 const openAddStepDialog = async () => {
+  isEditMode.value = false
+  currentStepId.value = ''
   addStepDialogVisible.value = true
   addStepForm.formGroupId = ''
   addStepForm.formTypeId = ''
   addStepForm.stepNameCn = ''
   addStepForm.stepNameEn = ''
   addStepForm.assignmentCode = ''
-  addStepForm.archiLevelCode = ''
   addStepForm.approveModeCode = ''
   addStepForm.isStartStep = 0
   addStepForm.isReminderEnabled = 0
@@ -897,13 +981,10 @@ const openAddStepDialog = async () => {
   userPositionOptions.value = []
   departmentTreeOptions.value = []
   addStepFormRef.value?.resetFields()
-  await Promise.all([loadAssignmentOptions(), loadArchiveLevelOptions(), loadApproveModeOptions()])
+  await Promise.all([loadAssignmentOptions(), loadApproveModeOptions()])
   // 下拉框默认选中第一项
   if (assignmentOptions.value.length > 0) {
     addStepForm.assignmentCode = assignmentOptions.value[0].assignmentCode
-  }
-  if (archiveLevelOptions.value.length > 0) {
-    addStepForm.archiLevelCode = archiveLevelOptions.value[0].archiLevelCode
   }
   if (approveModeOptions.value.length > 0) {
     addStepForm.approveModeCode = approveModeOptions.value[0].approveModeCode
@@ -940,22 +1021,6 @@ const loadAssignmentOptions = async () => {
     }
   } catch {
     assignmentOptions.value = []
-  }
-}
-
-/**
- * 加载步骤签核级别下拉
- */
-const loadArchiveLevelOptions = async () => {
-  try {
-    const response = await post(GET_ARCHI_LEVEL_DROPDOWN_API, {})
-    if (response.code === 200) {
-      archiveLevelOptions.value = response.data || []
-    } else {
-      archiveLevelOptions.value = []
-    }
-  } catch {
-    archiveLevelOptions.value = []
   }
 }
 
@@ -1028,25 +1093,32 @@ const submitAddStep = async () => {
     addStepSubmitting.value = true
     try {
       const payload = {
-        stepId: '',
+        stepId: isEditMode.value ? currentStepId.value : '',
+        formGroupId: addStepForm.formGroupId,
         formTypeId: addStepForm.formTypeId,
         stepNameCn: addStepForm.stepNameCn,
         stepNameEn: addStepForm.stepNameEn,
         isStartStep: addStepForm.isStartStep,
-        architectureLevel: addStepForm.archiLevelCode,
         assignment: addStepForm.assignmentCode,
         approveMode: addStepForm.approveModeCode,
         isReminderEnabled: addStepForm.isReminderEnabled,
         reminderIntervalMinutes: addStepForm.reminderIntervalMinutes,
-        description: addStepForm.description,
         stepOrgUpsert: { ...addStepForm.stepOrgUpsert },
         stepDeptUserUpsert: { ...addStepForm.stepDeptUserUpsert },
         stepUserUpsert: { ...addStepForm.stepUserUpsert },
         stepCustomUpsert: { ...addStepForm.stepCustomUpsert }
       }
-      const response = await post(INSERT_WORKFLOWSTEP_API, payload)
+      const response = await post(
+        isEditMode.value ? UPDATE_WORKFLOWSTEP_API : INSERT_WORKFLOWSTEP_API,
+        payload
+      )
       if (response.code === 200) {
-        ElMessage({ message: t('formbusiness.workflowstep.addStepSuccess'), type: 'success', plain: true, showClose: true })
+        ElMessage({ 
+          message: isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess'),
+          type: 'success',
+          plain: true,
+          showClose: true 
+        })
         addStepDialogVisible.value = false
         if (searchForm.formTypeId === addStepForm.formTypeId) {
           await getWorkflowStepList()
@@ -1093,8 +1165,14 @@ onMounted(async () => {
 .step-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 8px;
+}
+
+.step-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .step-name {
