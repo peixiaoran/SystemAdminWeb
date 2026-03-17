@@ -35,9 +35,22 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('systembasicmgmt.userLabor.index')" width="70" align="center" fixed />
-          <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="200" />
+          <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="100" />
           <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
-          <el-table-column prop="description" :label="$t('systembasicmgmt.userLabor.description')" align="left" min-width="250" />
+          <el-table-column prop="description" :label="$t('systembasicmgmt.userLabor.description')" align="left" min-width="300">
+            <template #default="scope">
+              <el-tooltip
+                v-if="scope.row.description"
+                :content="scope.row.description"
+                placement="top"
+                effect="dark"
+                popper-class="fixed-width-tooltip"
+              >
+                <span class="ellipsis-cell">{{ scope.row.description }}</span>
+              </el-tooltip>
+              <span v-else class="ellipsis-cell">-</span>
+            </template>
+          </el-table-column>
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
         </el-table>
       </div>
@@ -258,8 +271,9 @@ const handleEdit = async (row) => {
   dialogVisible.value = true
   isEdit.value = true
 
-  const params = { laborId: row.laborId }
-  const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, params)
+  const formData = new FormData()
+  formData.append('laborId', row.laborId)
+  const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, formData)
   if (response.code === 200) {
     const data = response.data
     form.laborId = data.laborId
@@ -295,11 +309,10 @@ const handleDelete = async (row) => {
     
     deletingId.value = row.laborId
     
-    const params = {
-      laborId: row.laborId
-    }
+    const formData = new FormData()
+    formData.append('laborId', row.laborId)
     
-    const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, params)
+    const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
     
     if (response.code === 200) {
       ElMessage({
@@ -399,5 +412,13 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.ellipsis-cell {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 </style>
 

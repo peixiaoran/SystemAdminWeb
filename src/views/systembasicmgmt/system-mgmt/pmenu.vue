@@ -313,10 +313,9 @@ const fetchMenuTypeOptions = async () => {
 // 获取一级菜单实体数据
 const fetchPMenuEntity = async (menuId) => {
   try {
-    const params = {
-      menuId: menuId
-    }
-    const res = await post(GET_PMENU_ENTITY_API.GET_PMENU_ENTITY, params)
+    const formData = new FormData()
+    formData.append('menuId', menuId)
+    const res = await post(GET_PMENU_ENTITY_API.GET_PMENU_ENTITY, formData)
 
     if (res && res.code === 200) {
       editForm.menuId = res.data.menuId
@@ -559,11 +558,7 @@ const updatePMenu = async () => {
 
 // 删除一级菜单
 const deletePMenu = async (menuId) => {
-  const params = {
-    menuId: menuId
-  }
-
-  if (isNaN(params.menuId)) {
+  if (isNaN(menuId)) {
     ElMessage({
       message: t('systembasicmgmt.invalidId'),
       type: 'error',
@@ -573,7 +568,9 @@ const deletePMenu = async (menuId) => {
     return
   }
 
-  const res = await post(DELETE_PMENU_API.DELETE_PMENU, params)
+  const formData = new FormData()
+  formData.append('menuId', menuId)
+  const res = await post(DELETE_PMENU_API.DELETE_PMENU, formData)
 
   if (res && res.code === 200) {
     ElMessage({

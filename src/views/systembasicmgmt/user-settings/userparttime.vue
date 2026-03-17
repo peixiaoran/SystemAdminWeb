@@ -13,14 +13,14 @@
                         filterable
                         :filter-node-method="filterNodeMethod"
                         @change="handleDepartmentChange"
-                        style="width: 210px;"
+                        style="width: 190px;"
                         popper-class="main-dept-filter-popper"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                     <el-input 
                         v-model="filters.userNo"
-                        style="width: 180px;"
+                        style="width: 150px;"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">

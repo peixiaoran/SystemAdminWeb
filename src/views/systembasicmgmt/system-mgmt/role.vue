@@ -324,10 +324,9 @@
 
   // 获取角色实体数据
   const fetchRoleEntity = async (roleId) => {
-      const params = {
-          roleId: roleId
-      }
-      const res = await post(GET_ROLE_ENTITY_API.GET_ROLE_ENTITY, params)
+      const formData = new FormData()
+      formData.append('roleId', roleId)
+      const res = await post(GET_ROLE_ENTITY_API.GET_ROLE_ENTITY, formData)
 
       if (res && res.code === 200) {
           // 对字符串类型的字段进行防护XSS清洗
@@ -488,11 +487,7 @@
 
   // 删除角色操作
   const deleteRole = async (roleId) => {
-      const params = {
-          roleId: roleId
-      }
-
-      if (isNaN(params.roleId)) {
+      if (isNaN(roleId)) {
           ElMessage({
               message: t('systembasicmgmt.invalidId'),
               type: 'error',
@@ -502,7 +497,9 @@
           return
       }
 
-      const res = await post(DELETE_ROLE_API.DELETE_ROLE, params)
+      const formData = new FormData()
+      formData.append('roleId', roleId)
+      const res = await post(DELETE_ROLE_API.DELETE_ROLE, formData)
 
       if (res && res.code === 200) {
           ElMessage({

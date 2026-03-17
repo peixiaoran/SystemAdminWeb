@@ -81,9 +81,7 @@
                       {{ branch.conditionId === '0' ? $t('formbusiness.workflowstep.defaultCondition') : (branch.conditionName || '-') }}
                     </div>
                     <div class="branch-cell">
-                      <el-tag :type="branch.nextStepId === '-1' ? 'info' : 'success'" effect="dark" size="small">
-                        {{ branch.nextStepName || $t('formbusiness.workflowstep.endStep') }}
-                      </el-tag>
+                      {{ branch.nextStepName || $t('formbusiness.workflowstep.endStep') }}
                     </div>
                     <div class="branch-cell">
                       <el-tag :type="branch.executeMatched === 1 ? 'success' : 'info'" effect="dark" size="small">
@@ -333,23 +331,26 @@
             </div>
           </div>
           <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'User'" class="user-table-wrap">
-            <el-table
-              ref="userTableRef"
-              :data="userTableData"
-              v-loading="userTableLoading"
-              :row-key="(row) => row.userId"
-              @selection-change="handleUserTableSelectionChange"
-              height="180"
-              border
-            >
-                <el-table-column type="selection" width="48" :reserve-selection="false" />
-                <el-table-column prop="userNo" :label="$t('formbusiness.workflowstep.userNo')" min-width="88" />
-                <el-table-column prop="userName" :label="$t('formbusiness.workflowstep.userName')" min-width="82" />
-                <el-table-column prop="departmentName" :label="$t('formbusiness.workflowstep.userTableDepartment')" min-width="90" />
-                <el-table-column prop="positionName" :label="$t('formbusiness.workflowstep.userTablePosition')" min-width="82" />
-                <el-table-column prop="laborName" :label="$t('formbusiness.workflowstep.userTableLabor')" min-width="82" />
-                <el-table-column prop="nationalityName" :label="$t('formbusiness.workflowstep.userTableNationality')" min-width="72" />
-              </el-table>
+            <div class="user-table-scroll">
+              <el-table
+                ref="userTableRef"
+                :data="userTableData"
+                v-loading="userTableLoading"
+                :row-key="(row) => row.userId"
+                @selection-change="handleUserTableSelectionChange"
+                height="150"
+                border
+                class="user-select-table"
+              >
+                  <el-table-column type="selection" width="48" :reserve-selection="false" />
+                  <el-table-column prop="userNo" :label="$t('formbusiness.workflowstep.userNo')" min-width="100" />
+                  <el-table-column prop="userName" :label="$t('formbusiness.workflowstep.userName')" min-width="150" />
+                  <el-table-column prop="departmentName" :label="$t('formbusiness.workflowstep.userTableDepartment')" min-width="130" />
+                  <el-table-column prop="positionName" :label="$t('formbusiness.workflowstep.userTablePosition')" min-width="82" />
+                  <el-table-column prop="laborName" :label="$t('formbusiness.workflowstep.userTableLabor')" min-width="180" />
+                  <el-table-column prop="nationalityName" :label="$t('formbusiness.workflowstep.userTableNationality')" min-width="120" />
+                </el-table>
+            </div>
               <el-pagination
                 v-model:current-page="userPageIndex"
                 v-model:page-size="userPageSize"
@@ -421,6 +422,32 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+const FORM_URLENCODED_CONFIG = {
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+}
+
+const showMessage = (message, type = 'error') => {
+  ElMessage({
+    message,
+    type,
+    plain: true,
+    showClose: true
+  })
+}
+
+const buildFormParams = (params) => {
+  const formParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formParams.append(key, value ?? '')
+  })
+  return formParams
+}
+
+const createEmptyOrgUpsert = () => ({ deptLeaveId: '', positionId: '' })
+const createEmptyDeptUserUpsert = () => ({ departmentId: '', positionId: '' })
+const createEmptyUserUpsert = () => ({ userId: '', departmentId: '' })
+const createEmptyCustomUpsert = () => ({ handlerKey: '', logicalExplanation: '' })
+
 // 响应式数据
 const loading = ref(false)
 const workflowStepList = ref([])
@@ -467,10 +494,10 @@ const addStepForm = reactive({
   reminderIntervalMinutes: 0,
   description: '',
   isStartStep: 0,
-  stepOrgUpsert: { deptLeaveId: '', positionId: '' },
-  stepDeptUserUpsert: { departmentId: '', positionId: '' },
-  stepUserUpsert: { userId: '', departmentId: '' },
-  stepCustomUpsert: { handlerKey: '', logicalExplanation: '' }
+  stepOrgUpsert: createEmptyOrgUpsert(),
+  stepDeptUserUpsert: createEmptyDeptUserUpsert(),
+  stepUserUpsert: createEmptyUserUpsert(),
+  stepCustomUpsert: createEmptyCustomUpsert()
 })
 const addStepRules = {
   formGroupId: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectFormGroup'), trigger: 'change' }],
@@ -486,6 +513,69 @@ const addStepRules = {
     { type: 'number', min: 0, max: 9999, message: () => t('formbusiness.workflowstep.reminderIntervalRange'), trigger: 'blur' }
   ]
 }
+
+const resetStepAssignmentUpserts = () => {
+  addStepForm.stepOrgUpsert = createEmptyOrgUpsert()
+  addStepForm.stepDeptUserUpsert = createEmptyDeptUserUpsert()
+  addStepForm.stepUserUpsert = createEmptyUserUpsert()
+  addStepForm.stepCustomUpsert = createEmptyCustomUpsert()
+}
+
+const resetUserPickerState = () => {
+  userSearchForm.userNo = ''
+  userSearchForm.userName = ''
+  userTableData.value = []
+  userTableTotal.value = 0
+  userPageIndex.value = 1
+  userPageSize.value = 10
+}
+
+const loadAssignmentRelatedOptions = async (assignmentCode) => {
+  if (assignmentCode === 'Org') {
+    await loadDepartmentLevelOptions()
+    await loadUserPositionOptions()
+    return
+  }
+
+  if (assignmentCode === 'DeptUser') {
+    await loadDepartmentTreeOptions()
+    await loadUserPositionOptions()
+    return
+  }
+
+  if (assignmentCode === 'User') {
+    await loadDepartmentTreeOptions()
+  }
+}
+
+const fetchFormTypeDropdown = async (formGroupId) => {
+  const response = await post(
+    GET_FORMTYPE_DROPDOWN_API,
+    buildFormParams({ formGroupId }),
+    FORM_URLENCODED_CONFIG
+  )
+
+  return response.code === 200 ? (response.data || []) : []
+}
+
+const resetAddStepDialogState = () => {
+  addStepForm.formGroupId = ''
+  addStepForm.formTypeId = ''
+  addStepForm.stepNameCn = ''
+  addStepForm.stepNameEn = ''
+  addStepForm.assignmentCode = ''
+  addStepForm.approveModeCode = ''
+  addStepForm.isStartStep = 0
+  addStepForm.isReminderEnabled = 0
+  addStepForm.reminderIntervalMinutes = 0
+  addStepForm.description = ''
+  resetStepAssignmentUpserts()
+  resetUserPickerState()
+  dialogFormTypeOptions.value = []
+  departmentLevelOptions.value = []
+  userPositionOptions.value = []
+  departmentTreeOptions.value = []
+}
   
 /**
  * 获取表单组别下拉选项
@@ -500,20 +590,10 @@ const getFormGroupOptions = async () => {
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(response.message)
     }
   } catch (error) {
-    ElMessage({
-      message: t('formbusiness.workflowstep.getFormGroupFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(t('formbusiness.workflowstep.getFormGroupFailed'))
   }
 }
 
@@ -528,11 +608,11 @@ const getFormTypeOptions = async (formGroupId) => {
     return
   }
   try {
-    const params = new URLSearchParams()
-    params.append('formGroupId', formGroupId)
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
+    const response = await post(
+      GET_FORMTYPE_DROPDOWN_API,
+      buildFormParams({ formGroupId }),
+      FORM_URLENCODED_CONFIG
+    )
     if (response.code === 200) {
       formTypeOptions.value = response.data || []
       if (formTypeOptions.value.length > 0) {
@@ -543,23 +623,13 @@ const getFormTypeOptions = async (formGroupId) => {
         workflowStepList.value = []
       }
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(response.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
       workflowStepList.value = []
     }
   } catch (error) {
-    ElMessage({
-      message: t('formbusiness.workflowstep.getFormTypeFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(t('formbusiness.workflowstep.getFormTypeFailed'))
     formTypeOptions.value = []
     searchForm.formTypeId = ''
     workflowStepList.value = []
@@ -582,21 +652,11 @@ const getWorkflowStepList = async () => {
     if (response.code === 200) {
       workflowStepList.value = response.data || []
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(response.message)
       workflowStepList.value = []
     }
   } catch (error) {
-    ElMessage({
-      message: t('formbusiness.workflowstep.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(t('formbusiness.workflowstep.getFailed'))
     workflowStepList.value = []
   } finally {
     loading.value = false
@@ -633,11 +693,11 @@ const handleEditStep = async (step) => {
   ])
 
   try {
-    const params = new URLSearchParams()
-    params.append('stepId', step.stepId)
-    const res = await post(GET_WORKFLOWSTEP_ENTITY_API, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
+    const res = await post(
+      GET_WORKFLOWSTEP_ENTITY_API,
+      buildFormParams({ stepId: step.stepId }),
+      FORM_URLENCODED_CONFIG
+    )
     if (res && res.code === 200 && res.data) {
       const data = res.data
 
@@ -657,10 +717,7 @@ const handleEditStep = async (step) => {
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
 
       // 先清空 4 个item
-      addStepForm.stepOrgUpsert = { deptLeaveId: '', positionId: '' }
-      addStepForm.stepDeptUserUpsert = { departmentId: '', positionId: '' }
-      addStepForm.stepUserUpsert = { userId: '', departmentId: '' }
-      addStepForm.stepCustomUpsert = { handlerKey: '', logicalExplanation: '' }
+      resetStepAssignmentUpserts()
 
       // 根据 assignment 填充对应 dto
       if (data.assignment === 'Org' && data.workflowStepOrgDto) {
@@ -686,20 +743,10 @@ const handleEditStep = async (step) => {
         addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
       }
     } else {
-      ElMessage({
-        message: res?.message || t('formbusiness.workflowstep.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res?.message || t('formbusiness.workflowstep.getFailed'))
     }
   } catch {
-    ElMessage({
-      message: t('formbusiness.workflowstep.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(t('formbusiness.workflowstep.getFailed'))
   } finally {
     addStepDialogLoading.value = false
   }
@@ -721,19 +768,19 @@ const handleDeleteStep = async (step) => {
   }
   deleteStepLoading.value = true
   try {
-    const params = new URLSearchParams()
-    params.append('stepId', step.stepId)
-    const response = await post(DELETE_WORKFLOWSTEP_API, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
+    const response = await post(
+      DELETE_WORKFLOWSTEP_API,
+      buildFormParams({ stepId: step.stepId }),
+      FORM_URLENCODED_CONFIG
+    )
     if (response.code === 200) {
-      ElMessage({ message: t('formbusiness.workflowstep.deleteStepSuccess'), type: 'success', plain: true, showClose: true })
+      showMessage(t('formbusiness.workflowstep.deleteStepSuccess'), 'success')
       await getWorkflowStepList()
     } else {
-      ElMessage({ message: response.message || t('formbusiness.workflowstep.deleteStepFailed'), type: 'error', plain: true, showClose: true })
+      showMessage(response.message || t('formbusiness.workflowstep.deleteStepFailed'))
     }
   } catch {
-    ElMessage({ message: t('formbusiness.workflowstep.deleteStepFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.workflowstep.deleteStepFailed'))
   } finally {
     deleteStepLoading.value = false
   }
@@ -755,10 +802,7 @@ const getAssignmentTagType = (assignment) => {
  * Assignment 变更时：只显示当前选项对应区块，其余隐藏并清空
  */
 const onAssignmentChange = (assignmentCode) => {
-  addStepForm.stepOrgUpsert = { deptLeaveId: '', positionId: '' }
-  addStepForm.stepDeptUserUpsert = { departmentId: '', positionId: '' }
-  addStepForm.stepUserUpsert = { userId: '', departmentId: '' }
-  addStepForm.stepCustomUpsert = { handlerKey: '', logicalExplanation: '' }
+  resetStepAssignmentUpserts()
   if (assignmentCode === 'Org') {
     loadDepartmentLevelOptions()
     loadUserPositionOptions()
@@ -767,11 +811,7 @@ const onAssignmentChange = (assignmentCode) => {
     loadUserPositionOptions()
   } else if (assignmentCode === 'User') {
     loadDepartmentTreeOptions()
-    userSearchForm.userNo = ''
-    userSearchForm.userName = ''
-    userTableData.value = []
-    userTableTotal.value = 0
-    userPageIndex.value = 1
+    resetUserPickerState()
   }
 }
 
@@ -956,30 +996,7 @@ const openAddStepDialog = async () => {
   isEditMode.value = false
   currentStepId.value = ''
   addStepDialogVisible.value = true
-  addStepForm.formGroupId = ''
-  addStepForm.formTypeId = ''
-  addStepForm.stepNameCn = ''
-  addStepForm.stepNameEn = ''
-  addStepForm.assignmentCode = ''
-  addStepForm.approveModeCode = ''
-  addStepForm.isStartStep = 0
-  addStepForm.isReminderEnabled = 0
-  addStepForm.reminderIntervalMinutes = 0
-  addStepForm.description = ''
-  addStepForm.stepOrgUpsert = { deptLeaveId: '', positionId: '' }
-  addStepForm.stepDeptUserUpsert = { departmentId: '', positionId: '' }
-  addStepForm.stepUserUpsert = { userId: '', departmentId: '' }
-  addStepForm.stepCustomUpsert = { handlerKey: '', logicalExplanation: '' }
-  userSearchForm.userNo = ''
-  userSearchForm.userName = ''
-  userTableData.value = []
-  userTableTotal.value = 0
-  userPageIndex.value = 1
-  userPageSize.value = 10
-  dialogFormTypeOptions.value = []
-  departmentLevelOptions.value = []
-  userPositionOptions.value = []
-  departmentTreeOptions.value = []
+  resetAddStepDialogState()
   addStepFormRef.value?.resetFields()
   await Promise.all([loadAssignmentOptions(), loadApproveModeOptions()])
   // 下拉框默认选中第一项
@@ -996,15 +1013,7 @@ const openAddStepDialog = async () => {
       addStepForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
     }
     // Assignment 为 Org/DeptUser 时加载对应 item 并默认选中第一项（联动）
-    if (addStepForm.assignmentCode === 'Org') {
-      await loadDepartmentLevelOptions()
-      await loadUserPositionOptions()
-    } else if (addStepForm.assignmentCode === 'DeptUser') {
-      await loadDepartmentTreeOptions()
-      await loadUserPositionOptions()
-    } else if (addStepForm.assignmentCode === 'User') {
-      await loadDepartmentTreeOptions()
-    }
+    await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
   }
 }
 
@@ -1058,16 +1067,7 @@ const loadDialogFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) return
   addStepDialogLoading.value = true
   try {
-    const params = new URLSearchParams()
-    params.append('formGroupId', formGroupId)
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
-    if (response.code === 200) {
-      dialogFormTypeOptions.value = response.data || []
-    } else {
-      dialogFormTypeOptions.value = []
-    }
+    dialogFormTypeOptions.value = await fetchFormTypeDropdown(formGroupId)
   } catch {
     dialogFormTypeOptions.value = []
   } finally {
@@ -1113,21 +1113,19 @@ const submitAddStep = async () => {
         payload
       )
       if (response.code === 200) {
-        ElMessage({ 
-          message: isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess'),
-          type: 'success',
-          plain: true,
-          showClose: true 
-        })
+        showMessage(
+          isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess'),
+          'success'
+        )
         addStepDialogVisible.value = false
         if (searchForm.formTypeId === addStepForm.formTypeId) {
           await getWorkflowStepList()
         }
       } else {
-        ElMessage({ message: response.message || t('formbusiness.workflowstep.addStepFailed'), type: 'error', plain: true, showClose: true })
+        showMessage(response.message || t('formbusiness.workflowstep.addStepFailed'))
       }
     } catch {
-      ElMessage({ message: t('formbusiness.workflowstep.addStepFailed'), type: 'error', plain: true, showClose: true })
+      showMessage(t('formbusiness.workflowstep.addStepFailed'))
     } finally {
       addStepSubmitting.value = false
     }
@@ -1154,6 +1152,10 @@ onMounted(async () => {
   padding-left: 20px;
 }
 
+.timeline-wrapper :deep(.el-timeline-item__node--normal) {
+  top: 2px;
+}
+
 .timeline-wrapper :deep(.el-timeline-item) {
   padding-bottom: 12px;
 }
@@ -1166,7 +1168,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 18px;
   margin-bottom: 8px;
+  transform: translateY(-12px);
 }
 
 .step-actions {
@@ -1250,9 +1254,18 @@ onMounted(async () => {
   padding-right: 24px;
   box-sizing: border-box;
 }
-.user-table-wrap :deep(.el-table) {
-  width: 100% !important;
-  max-width: 100%;
+.user-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.user-select-table {
+  min-width: 900px;
+}
+.user-table-scroll :deep(.el-table) {
+  width: max-content !important;
+  min-width: 100%;
+  max-width: none;
   box-sizing: border-box;
 }
 .user-table-wrap :deep(.el-scrollbar__wrap) {

@@ -146,8 +146,9 @@ const handleEdit = async (index, row) => {
   dialogVisible.value = true
   editForm.value = null
 
-  const requestData = { positionId: row.positionId }
-  const response = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, requestData)
+  const formData = new FormData()
+  formData.append('positionId', row.positionId)
+  const response = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, formData)
   if (response.code === 200) {
     editForm.value = { ...response.data }
   } else {

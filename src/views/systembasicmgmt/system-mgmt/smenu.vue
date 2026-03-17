@@ -272,7 +272,6 @@
   // 组件挂载后获取网域数据
   onMounted(() => {
       initPageData() // 初始化页面数据，设置查询条件默认值
-      fetchMenuTypeOptions() // 获取菜单类型选项
   })
 
   // 初始化页面数据（只在页面加载时调用）
@@ -365,10 +364,9 @@
   // 获取实体数据
   const fetchSMenuEntity = async (menuId) => {
       try {
-          const params = {
-              menuId: menuId
-          }
-          const res = await post(GET_SMENU_ENTITY_API.GET_SMENU_ENTITY, params)
+          const formData = new FormData()
+          formData.append('menuId', menuId)
+          const res = await post(GET_SMENU_ENTITY_API.GET_SMENU_ENTITY, formData)
 
           if (res && res.code === 200) {
               // 还原原始的 parentMenuId 值
@@ -628,11 +626,7 @@ const handleReset = async () => {
   // 删除程序
   const deleteSMenu = async (menuId) => {
       try {
-          const params = {
-              menuId: menuId
-          }
-
-          if (isNaN(params.menuId)) {
+          if (isNaN(menuId)) {
               ElMessage({
                   message: t('systembasicmgmt.invalidId'),
                   type: 'error',
@@ -642,7 +636,9 @@ const handleReset = async () => {
               return
           }
 
-          const res = await post(DELETE_SMENU_API.DELETE_SMENU, params)
+          const formData = new FormData()
+          formData.append('menuId', menuId)
+          const res = await post(DELETE_SMENU_API.DELETE_SMENU, formData)
 
           if (res && res.code === 200) {
               ElMessage({
@@ -685,7 +681,6 @@ const handleReset = async () => {
 
       // 获取网域和菜单类型选项
       fetchModuleDrop()
-      fetchMenuTypeOptions()
 
       // 显示对话框
       dialogVisible.value = true
@@ -701,7 +696,6 @@ const handleReset = async () => {
 
       // 先获取网域和菜单类型选项
       await fetchModuleDrop()
-      await fetchMenuTypeOptions()
       
       // 然后获取实体数据，并自动填充对应的模块列表
       await fetchSMenuEntity(row.menuId)
@@ -727,23 +721,22 @@ const handleReset = async () => {
 
   // 删除程序
   const handleDelete = (index, row) => {
-      ElMessageBox.confirm(
-            t('systembasicmgmt.smenu.deleteConfirm'),
-            t('common.tip'),
+      ElMessageBox.confirm(t('systembasicmgmt.smenu.deleteConfirm'), t('common.tip'),
           {
-              confirmButtonText: t('systembasicmgmt.confirm'),
-              cancelButtonText: t('systembasicmgmt.cancel'),
+              confirmButtonText: t('common.confirm'),
+              cancelButtonText: t('common.cancel'),
               type: 'warning',
           }
       )
-          .then(() => {
-              deleteSMenu(row.menuId)
-              // 刷新列表
-              fetchSMenuPages()
-          })
-          .catch(() => {
-              // 取消删除
-          })
+      .then(async () => {
+        await deleteSMenu(row.menuId)
+        // 刷新列表
+        await fetchSMenuPages()
+            dialogVisible.value = false
+      })
+      .catch(() => {
+        dialogVisible.value = false
+      })
   }
 
   // 保存
@@ -821,16 +814,6 @@ const handleFilterParentMenuChange = () => {
               duration: 3000
           })
       }
-  }
-
-  // 获取菜单类型选项
-  const fetchMenuTypeOptions = async () => {
-      // 菜单类型选项暂时使用固定数据
-      menuTypeOptions.value = [
-          { menuTypeCode: '1', menuTypeName: '目录' },
-          { menuTypeCode: '2', menuTypeName: '菜单' },
-          { menuTypeCode: '3', menuTypeName: '按钮' }
-      ]
   }
 </script>
 

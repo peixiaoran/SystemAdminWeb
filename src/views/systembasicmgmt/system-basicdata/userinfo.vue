@@ -12,14 +12,14 @@
           filterable
           :filter-node-method="filterNodeMethod"
           @change="handleDepartmentChange"
-          style="width: 210px;"
+          style="width: 190px;"
           popper-class="main-dept-filter-popper"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
         <el-input 
           v-model="filters.userNo" 
-          style="width: 180px;"
+          style="width: 150px;"
           :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" 
          />
       </el-form-item>
@@ -794,10 +794,9 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
   // 获取员工实体
   const fetchUserEntity = async (userId) => {
-      const params = {
-          userId: userId
-      }
-      const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, params)
+      const formData = new FormData()
+      formData.append('userId', userId)
+      const res = await post(GET_USER_ENTITY_API.GET_USER_ENTITY, formData)
 
       if (res && res.code === 200 && res.data) {
           isHydratingEditForm.value = true
@@ -1161,11 +1160,10 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
    * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
    */
   const deleteUser = async (userId) => {
-      const params = {
-          userId: userId
-      }
+      const formData = new FormData()
+      formData.append('userId', userId)
 
-      const res = await post(DELETE_USER_API.DELETE_USER, params)
+      const res = await post(DELETE_USER_API.DELETE_USER, formData)
 
       if (res && res.code === 200) {
           ElMessage({

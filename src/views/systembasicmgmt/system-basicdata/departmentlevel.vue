@@ -181,10 +181,9 @@ onMounted(() => {
 
 // 获取部门级别实体数据
 const fetchDepartmentLevelEntity = async (departmentLevelId) => {
-  const params = {
-    departmentLevelId: departmentLevelId
-  }
-  const res = await post(GET_DEPARTMENT_LEVEL_ENTITY_API.GET_DEPARTMENT_LEVEL_ENTITY, params)
+  const formData = new FormData()
+  formData.append('deptlevelId', departmentLevelId)
+  const res = await post(GET_DEPARTMENT_LEVEL_ENTITY_API.GET_DEPARTMENT_LEVEL_ENTITY, formData)
 
   if (res && res.code === 200) {
     editForm.departmentLevelId = res.data.departmentLevelId
@@ -306,11 +305,10 @@ const handleDelete = async (index, row) => {
       }
     )
 
-    const params = {
-      departmentLevelId: row.departmentLevelId
-    }
+    const formData = new FormData()
+    formData.append('deptlevelId', row.departmentLevelId)
 
-    const res = await post(DELETE_DEPARTMENT_LEVEL_API.DELETE_DEPARTMENT_LEVEL, params)
+    const res = await post(DELETE_DEPARTMENT_LEVEL_API.DELETE_DEPARTMENT_LEVEL, formData)
 
     if (res && res.code === 200) {
       ElMessage({

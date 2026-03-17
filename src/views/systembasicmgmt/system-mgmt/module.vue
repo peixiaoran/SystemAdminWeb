@@ -231,10 +231,9 @@ onMounted(() => {
 
 // 获取网域实体数据
 const fetchModuleEntity = async (moduleId) => {
-  const params = {
-    moduleId: moduleId
-  }
-  const res = await post(GET_MODULE_ENTITY_API.GET_MODULE_ENTITY, params)
+  const formData = new FormData()
+  formData.append('moduleId', moduleId)
+  const res = await post(GET_MODULE_ENTITY_API.GET_MODULE_ENTITY, formData)
 
   if (res && res.code === 200) {
     editForm.moduleId = res.data.moduleId
@@ -404,11 +403,7 @@ const updateModule = async () => {
 
 // 删除网域
 const deleteModule = async (moduleId) => {
-  const params = {
-    moduleId: moduleId
-  }
-
-  if (isNaN(params.moduleId)) {
+  if (isNaN(moduleId)) {
     ElMessage({
       message: t('systembasicmgmt.invalidId'),
       type: 'error',
@@ -418,7 +413,9 @@ const deleteModule = async (moduleId) => {
     return
   }
 
-  const res = await post(DELETE_MODULE_API.DELETE_MODULE, params)
+  const formData = new FormData()
+  formData.append('moduleId', moduleId)
+  const res = await post(DELETE_MODULE_API.DELETE_MODULE, formData)
 
   if (res && res.code === 200) {
     ElMessage({

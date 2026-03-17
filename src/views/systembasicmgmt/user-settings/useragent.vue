@@ -23,7 +23,7 @@
             filterable
             :filter-node-method="filterNodeMethod"
             @change="handleDepartmentChange"
-            style="width: 210px;"
+            style="width: 190px;"
             popper-class="main-dept-filter-popper"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
           />
@@ -31,7 +31,7 @@
         <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
           <el-input 
             v-model="filters.userNo"
-            style="width: 200px;"
+            style="width: 150px;"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserNo')"
             clearable 
           />
@@ -524,10 +524,9 @@ const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
 const fetchUserAgentList = async (substituteUserId) => {
   agentLoading.value = true
   try {
-    const params = {
-      substituteUserId: substituteUserId
-    }
-    const res = await post(GET_USER_AGENT_API.GET_USER_AGENT, params)
+    const formData = new FormData()
+    formData.append('substituteUserId', substituteUserId)
+    const res = await post(GET_USER_AGENT_API.GET_USER_AGENT, formData)
 
     if (res && res.code === 200) {
       agentList.value = res.data || []
@@ -774,12 +773,10 @@ const handleDeleteAgent = async (index) => {
     )
 
     // 调用删除接口
-    const params = {
-      substituteUserId: currentUserId.value,
-      agentUserId: agent.agentUserId
-    }
+    const formData = new FormData()
+    formData.append('agentUserId', agent.agentUserId)
 
-    const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, params)
+    const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, formData)
 
     if (res && res.code === 200) {
       ElMessage({

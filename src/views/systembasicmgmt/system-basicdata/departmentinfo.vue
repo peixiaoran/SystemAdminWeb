@@ -369,8 +369,9 @@ const handleAddChild = (index, row) => {
  */
 const handleEdit = async (index, row) => {
   resetForm()
-  const params = { departmentId: row.departmentId }
-  const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, params)
+  const formData = new FormData()
+  formData.append('deptId', row.departmentId)
+  const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
   if (response.code === 200) {
     const data = response.data
     Object.assign(editForm, {
@@ -423,11 +424,10 @@ const handleDelete = async (index, row) => {
       }
     )
     
-    const params = {
-      departmentId: row.departmentId
-    }
+    const formData = new FormData()
+    formData.append('deptId', row.departmentId)
     
-    const response = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, params)
+    const response = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
     
     if (response.code === 200) {
       ElMessage({

@@ -157,11 +157,10 @@ onMounted(() => {
 
 // 获取国籍实体数据
 const fetchNationalityEntity = async (nationId) => {
-  const params = {
-    nationId: nationId
-  }
+  const formData = new FormData()
+  formData.append('nationId', nationId)
   
-  const res = await post(GET_NATIONALITY_ENTITY_API.GET_NATIONALITY_ENTITY, params)
+  const res = await post(GET_NATIONALITY_ENTITY_API.GET_NATIONALITY_ENTITY, formData)
 
   if (res && res.code === 200) {
     editForm.nationId = res.data.nationId
@@ -303,11 +302,10 @@ const updateNationality = async () => {
 
 // 删除国籍操作
 const deleteNationality = async (nationId) => {
-  const params = {
-    nationId: nationId
-  }
+  const formData = new FormData()
+  formData.append('nationId', nationId)
 
-  const res = await post(DELETE_NATIONALITY_API.DELETE_NATIONALITY, params)
+  const res = await post(DELETE_NATIONALITY_API.DELETE_NATIONALITY, formData)
 
   if (res && res.code === 200) {
     ElMessage({
