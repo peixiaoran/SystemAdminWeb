@@ -309,11 +309,10 @@ const handleDelete = async (row) => {
     
     deletingId.value = row.controlCode
     
-    const params = {
-      controlCode: row.controlCode
-    }
+    const formData = new FormData()
+    formData.append('controlCode', row.controlCode)
     
-    const response = await post(DELETE_CONTROL_API, params)
+    const response = await post(DELETE_CONTROL_API, formData)
     
     if (response.code === 200) {
       ElMessage({

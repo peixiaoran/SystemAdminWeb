@@ -1176,7 +1176,8 @@ onMounted(async () => {
 .step-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
+  margin-left: 12px;
 }
 
 .step-name {

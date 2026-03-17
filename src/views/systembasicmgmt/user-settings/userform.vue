@@ -285,8 +285,9 @@ const fetchUserPages = async () => {
 const fetchUserFormViewTree = async (userId) => {
   treeLoading.value = true
   try {
-    const params = { userId }
-    const res = await post(GET_USER_FORM_VIEW_TREE_API.GET_USER_FORM_VIEW_TREE, params)
+    const formData = new FormData()
+    formData.append('userId', userId)
+    const res = await post(GET_USER_FORM_VIEW_TREE_API.GET_USER_FORM_VIEW_TREE, formData)
     if (res && res.code === 200) {
       // 转换数据结构：将 formTypeChildren 转换为 children
       const transformTreeData = (nodes) => {

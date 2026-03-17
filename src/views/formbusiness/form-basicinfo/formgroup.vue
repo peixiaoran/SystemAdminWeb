@@ -302,15 +302,10 @@ const handleEdit = async (row) => {
   isEdit.value = true
   
   try {
-    const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: '',
-      formGroupNameEn: '',
-      sortOrder: 1,
-      description: ''
-    }
+    const formData = new FormData()
+    formData.append('formGroupId', row.formGroupId)
     
-    const response = await post(GET_FORMGROUP_ENTITY_API, params)
+    const response = await post(GET_FORMGROUP_ENTITY_API, formData)
     
     if (response.code === 200) {
       const data = response.data
@@ -357,15 +352,10 @@ const handleDelete = async (row) => {
     
     deletingId.value = row.formGroupId
     
-    const params = {
-      formGroupId: row.formGroupId,
-      formGroupNameCn: row.formGroupNameCn,
-      formGroupNameEn: row.formGroupNameEn,
-      sortOrder: row.sortOrder,
-      description: row.description
-    }
-    
-    const response = await post(DELETE_FORMGROUP_ENTITY_API, params)
+    const formData = new FormData()
+    formData.append('formGroupId', row.formGroupId)
+
+    const response = await post(DELETE_FORMGROUP_ENTITY_API, formData)
     
     if (response.code === 200) {
       ElMessage({

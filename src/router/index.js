@@ -449,7 +449,7 @@ const pmenuRoutes = [
           redirect: '/formbusiness/form-workflow',
           meta: { 
             title: 'route.formworkflow',
-            icon: 'ScaleToOriginal',
+            icon: 'Expand',
             [ROUTE_CONFIG.META.AUTH]: true,
             noTag: true
           },
@@ -460,7 +460,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-workflow/workflowstep.vue'),
               meta: { 
                 title: 'route.workflowstep', 
-                icon: 'SetUp',
+                icon: 'Sort',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

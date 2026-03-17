@@ -52,13 +52,13 @@
         >
           <el-table-column type="index" :label="$t('formbusiness.formtype.index')" width="70" align="center" fixed />
           <el-table-column prop="formGroupName" :label="$t('formbusiness.formtype.formGroupName')" align="left" min-width="130" />
-          <el-table-column prop="formTypeNameCn" :label="$t('formbusiness.formtype.formTypeNameCn')" align="left" min-width="170" />
-          <el-table-column prop="formTypeNameEn" :label="$t('formbusiness.formtype.formTypeNameEn')" align="left" min-width="240" />
           <el-table-column prop="prefix" :label="$t('formbusiness.formtype.prefix')" align="center" width="130">
             <template #default="scope">
               <span style="color: #1890ff; font-weight: 500;">{{ scope.row.prefix }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="formTypeNameCn" :label="$t('formbusiness.formtype.formTypeNameCn')" align="left" min-width="170" />
+          <el-table-column prop="formTypeNameEn" :label="$t('formbusiness.formtype.formTypeNameEn')" align="left" min-width="240" />
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button 
@@ -447,11 +447,10 @@ const handleEdit = async (row) => {
   isEdit.value = true
   
   try {
-    const params = {
-      formTypeId: row.formTypeId
-    }
-    
-    const response = await post(GET_FORMTYPE_ENTITY_API, params)
+    const formData = new FormData()
+    formData.append('fromTypeId', row.formTypeId)
+
+    const response = await post(GET_FORMTYPE_ENTITY_API, formData)
     
     if (response.code === 200) {
       const data = response.data
@@ -512,11 +511,10 @@ const handleDelete = async (row) => {
     
     deletingId.value = row.formTypeId
     
-    const params = {
-      formTypeId: row.formTypeId
-    }
-    
-    const response = await post(DELETE_FORMTYPE_ENTITY_API, params)
+    const formData = new FormData()
+    formData.append('fromTypeId', row.formTypeId)
+
+    const response = await post(DELETE_FORMTYPE_ENTITY_API, formData)
     
     if (response.code === 200) {
       ElMessage({
@@ -608,7 +606,6 @@ const handleSubmit = async () => {
  * 对话框关闭
  */
 const handleDialogClose = () => {
-  resetForm()
   if (formRef.value) {
     formRef.value.clearValidate()
   }

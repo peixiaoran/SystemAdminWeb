@@ -271,6 +271,7 @@ export default {
         viewPath: '视图路径',
         sortOrder: '排序',
         index: '序号',
+        pleaseSelectFormGroup: '请选择表单组别',
         pleaseInputFormTypeName: '请输入表单类型名称',
         pleaseInputFormTypeNameCn: '请输入中文名称',
         pleaseInputFormTypeNameEn: '请输入英文名称',
