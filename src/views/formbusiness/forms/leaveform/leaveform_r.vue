@@ -166,8 +166,8 @@
          <el-row :gutter="16">
           <el-col :span="24">
             <el-form-item>
-              <el-button type="primary" style="width:80px;" @click="onSubmit" plain :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-              <el-button color="#ecc00f" style="width:90px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+              <el-button type="primary" style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+              <el-button type="warning" style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">送审</el-button>
             </el-form-item>
           </el-col>
         </el-row>
