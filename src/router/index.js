@@ -435,7 +435,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-operate/applyform.vue'),
               meta: { 
                 title: 'route.applyform', 
-                icon: 'DocumentAdd',
+                icon: 'Document',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

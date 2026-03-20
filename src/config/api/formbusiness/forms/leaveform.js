@@ -20,3 +20,6 @@ export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeave
 
 // 获取重要性下拉框API
 export const GET_IMPORTANCE_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetImportanceDropDown'
+
+// 上传文件API
+export const UPLOAD_FILE_API = 'FormBusiness/Forms/LeaveForm/UploadAFile'

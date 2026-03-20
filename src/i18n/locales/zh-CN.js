@@ -411,8 +411,14 @@ export default {
         endAfterStartError: '结束时间必须晚于开始时间',
         durationRequired: '请假时长不能为空',
         saveButton: '暂存',
-        submitButton: '送审'
-        ,submitSuccess: '送审成功'
+        submitButton: '送审',
+        submitSuccess: '送审成功',
+        attachments: '附件',
+        uploadFile: '上传附件',
+        uploadSuccess: '上传成功',
+        uploadFailed: '上传失败',
+        download: '下载',
+        deleteFile: '删除'
       },
     
     // 表单验证

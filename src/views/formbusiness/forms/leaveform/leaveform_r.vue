@@ -163,7 +163,41 @@
           </el-col>
         </el-row>
 
-         <el-row :gutter="16">
+        <!-- 附件上传 -->
+        <el-row :gutter="16">
+          <el-col :span="24">
+            <el-form-item :label="t('formbusiness.leaveform.attachments')">
+              <div class="upload-section">
+                <el-upload
+                  :show-file-list="false"
+                  :http-request="handleUploadRequest"
+                  multiple
+                  :disabled="uploading"
+                >
+                  <el-button type="primary" plain :loading="uploading" :disabled="uploading">
+                    <el-icon><Upload /></el-icon>
+                    {{ t('formbusiness.leaveform.uploadFile') }}
+                  </el-button>
+                </el-upload>
+                <div v-if="uploadedFiles.length > 0" class="file-list">
+                  <div v-for="(file, idx) in uploadedFiles" :key="idx" class="file-item">
+                    <el-icon class="file-icon"><Document /></el-icon>
+                    <span class="file-name" :title="getFileName(file)">{{ getFileName(file) }}</span>
+                    <el-button type="primary" link size="small" @click="handleDownload(file)">
+                      <el-icon><Download /></el-icon>
+                      {{ t('formbusiness.leaveform.download') }}
+                    </el-button>
+                    <el-button type="danger" link size="small" @click="removeFile(idx)">
+                      <el-icon><Delete /></el-icon>
+                    </el-button>
+                  </div>
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="16">
           <el-col :span="24">
             <el-form-item>
               <el-button type="primary" style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
@@ -180,8 +214,10 @@
 import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
+import { Upload, Document, Download, Delete } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API } from '@/config/api/formbusiness/forms/leaveform'
+import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 
 // 获取翻译函数
@@ -197,6 +233,9 @@ const loading = ref(true)
 // 暂存与送审按钮加载状态
 const saving = ref(false)
 const approving = ref(false)
+// 附件上传状态与列表（相对路径）
+const uploading = ref(false)
+const uploadedFiles = ref([])
 
 // 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
@@ -449,6 +488,10 @@ function bindFormData (data) {
     leaveHours: data.leaveHours ?? 0,
     agentUserNo: data.agentUserNo || ''
   })
+  // 绑定附件列表（接口返回 attachments 为相对路径数组）
+  if (Array.isArray(data.attachments)) {
+    uploadedFiles.value = data.attachments.filter(Boolean)
+  }
   // 绑定返回的formTypeId作为当前类型（若有）
   if (data && data.formTypeId) {
     currentFormTypeId.value = String(data.formTypeId)
@@ -611,6 +654,75 @@ async function onSubmitForApproval () {
 }
 
 /**
+ * el-upload 自定义上传处理
+ * 将文件以 multipart/form-data 发送至 UPLOAD_FILE_API，
+ * 服务端返回 List<string> 相对路径，追加到 uploadedFiles 列表
+ */
+async function handleUploadRequest(options) {
+  uploading.value = true
+  try {
+    const currentFormId = String(form.formId || '')
+    const rawFile = options.file instanceof File ? options.file : options.file?.raw
+
+    if (!currentFormId) {
+      throw new Error('formId不能为空')
+    }
+    if (!rawFile) {
+      throw new Error('文件不能为空')
+    }
+
+    const formData = new window.FormData()
+    formData.append('formId', currentFormId)
+    formData.append('fileList', rawFile, rawFile.name)
+    const res = await post(UPLOAD_FILE_API, formData)
+    if (res && res.code === 200) {
+      const paths = Array.isArray(res.data) ? res.data : []
+      uploadedFiles.value = [...uploadedFiles.value, ...paths]
+      ElMessage({ message: t('formbusiness.leaveform.uploadSuccess'), type: 'success', plain: true, showClose: true })
+      options.onSuccess(res)
+    } else {
+      ElMessage({ message: res?.message || t('formbusiness.leaveform.uploadFailed'), type: 'error', plain: true, showClose: true })
+      options.onError(new Error(res?.message || 'Upload failed'))
+    }
+  } catch (e) {
+    ElMessage({ message: e?.message || t('formbusiness.leaveform.uploadFailed'), type: 'error', plain: true, showClose: true })
+    options.onError(e)
+  } finally {
+    uploading.value = false
+  }
+}
+
+/**
+ * 从相对路径中提取文件名（取最后一段）
+ */
+function getFileName(relativePath) {
+  if (!relativePath) return ''
+  return relativePath.split('/').pop() || relativePath
+}
+
+/**
+ * 下载文件：使用 resolveFileUrl 拼接 VITE_FILE_BROWSER_BASE_URL，触发浏览器下载
+ */
+function handleDownload(relativePath) {
+  const url = resolveFileUrl(relativePath)
+  if (!url) return
+  const a = document.createElement('a')
+  a.href = url
+  a.download = getFileName(relativePath)
+  a.target = '_blank'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
+/**
+ * 从附件列表中移除指定索引的文件
+ */
+function removeFile(idx) {
+  uploadedFiles.value.splice(idx, 1)
+}
+
+/**
  * 页面挂载
  * 说明：加载初始化数据与下拉
  */
@@ -721,5 +833,45 @@ onMounted(async () => {
   align-items: center;
   justify-content: flex-start;
   line-height: 1.2;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #f5f7fa;
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #303133;
+}
+
+.file-icon {
+  color: #409eff;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 </style>
