@@ -439,6 +439,17 @@ const pmenuRoutes = [
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
+            },
+            {
+              path: 'pendingsubapp',
+              name: 'PendingSubApp',
+              component: () => import('../views/formbusiness/form-operate/pendingsubapp.vue'),
+              meta: { 
+                title: 'route.pendingsubapp',
+                icon: 'Check',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
             }
           ]
         },
@@ -476,17 +487,6 @@ const pmenuRoutes = [
     component: () => import('../views/formbusiness/forms/leaveform/leaveform_r.vue'),
     meta: {
       title: 'route.leaveform_r',
-      [ROUTE_CONFIG.META.AUTH]: true,
-      noTag: true
-    }
-  },
-  // 独立请假单查看页面（不使用Layout，无标签）
-  {
-    path: '/formbusiness/forms/leaveform/leaveform_v',
-    name: 'LeaveFormV',
-    component: () => import('../views/formbusiness/forms/leaveform/leaveform_v.vue'),
-    meta: {
-      title: 'route.leaveform_v',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true
     }

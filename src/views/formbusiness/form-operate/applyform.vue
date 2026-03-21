@@ -8,6 +8,8 @@
           :placeholder="$t('formbusiness.applyform.pleaseSelectFormGroup')"
           filterable
           style="width: 180px"
+          @change="handleFormGroupChange"
+          @clear="handleFormGroupClear"
         >
           <el-option
             v-for="item in formGroupOptions"
@@ -22,6 +24,7 @@
           v-model="searchForm.formTypeName" 
           :placeholder="$t('formbusiness.applyform.pleaseInputFormTypeName')"
           clearable
+          @clear="handleSearch"
           @keyup.enter="handleSearch"
         />
       </el-form-item>
@@ -42,7 +45,7 @@
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
+          v-loading="loading || debouncePending"
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.applyform.index')" width="70" align="center" fixed />
@@ -107,17 +110,9 @@ const { t } = useI18n()
 
 // 响应式数据
 const loading = ref(false)
-// 移除对话框相关的响应式变量
-// const dialogLoading = ref(false)
-// const submitLoading = ref(false)
-// const dialogVisible = ref(false)
-// const isEdit = ref(false)
-// const formRef = ref(null)
+const debouncePending = ref(false)
 const formTypeList = ref([])
 const formGroupOptions = ref([])
-const dialogVisible = ref(false)
-const isEdit = ref(false)
-const formRef = ref(null)
 const router = useRouter()
 
 // 搜索表单
@@ -131,20 +126,6 @@ const pagination = reactive({
   pageIndex: 1,
   pageSize: 20,
   totalCount: 0
-})
-
-// 表单数据
-const form = reactive({
-  formTypeId: '',
-  formGroupId: '',
-  formTypeNameCn: '',
-  formTypeNameEn: '',
-  prefix: '',
-  sortOrder: 0,
-  descriptionCn: '',
-  descriptionEn: '',
-  reviewPath: '',
-  viewPath: ''
 })
 
 // 表单验证规则
@@ -241,16 +222,55 @@ const getFormTypeList = async () => {
 
 // 防抖搜索优化
 let searchTimer = null
+let filterTimer = null
+const FILTER_DEBOUNCE_MS = 300
+
+const getDefaultFormGroupId = () => {
+  return formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : ''
+}
+
+const scheduleFilterRequest = async () => {
+  if (filterTimer) clearTimeout(filterTimer)
+  loading.value = true
+  debouncePending.value = true
+  await nextTick()
+  filterTimer = setTimeout(async () => {
+    try {
+      pagination.pageIndex = 1
+      await getFormTypeList()
+    } finally {
+      debouncePending.value = false
+    }
+  }, FILTER_DEBOUNCE_MS)
+}
+
+const handleFormGroupChange = () => {
+  if (!searchForm.formGroupId) {
+    searchForm.formGroupId = getDefaultFormGroupId()
+  }
+  scheduleFilterRequest()
+}
+
+const handleFormGroupClear = () => {
+  searchForm.formGroupId = getDefaultFormGroupId()
+  handleFormGroupChange()
+}
 
 /**
  * 搜索
  */
-const handleSearch = () => {
+const handleSearch = async () => {
   if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true // 立即显示加载状态
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    getFormTypeList()
+  loading.value = true
+  debouncePending.value = true
+  await nextTick()
+  searchTimer = setTimeout(async () => {
+    try {
+      pagination.pageIndex = 1
+      await getFormTypeList()
+    } finally {
+      debouncePending.value = false
+    }
   }, 300) // 300ms防抖
 }
 
@@ -285,107 +305,58 @@ const handleCurrentChange = (val) => {
   pagination.pageIndex = val
   getFormTypeList()
 }
+const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
-/**
- * 重置表单
- */
-const resetForm = () => {
-  form.formTypeId = ''
-  form.formGroupId = ''
-  form.formTypeNameCn = ''
-  form.formTypeNameEn = ''
-  form.prefix = ''
-  form.sortOrder = 0
-  form.descriptionCn = ''
-  form.descriptionEn = ''
-  form.reviewPath = ''
-  form.viewPath = ''
-}
-
-/**
- * 规范化路径：去掉开头#并补全/
- */
 const normalizePath = (p) => {
-  if (!p) return ''
-  let path = String(p).trim().replace(/^#/, '')
+  if (!p || typeof p !== 'string') return ''
+  const path = p.trim().replace(/^#/, '')
   return path.startsWith('/') ? path : `/${path}`
 }
 
-/**
- * 路由方式打开审批页面（新标签）
- */
+const isPathSafe = (path) => {
+  if (!path) return false
+  if (/^[a-zA-Z][a-zA-Z0-9+\-.]*:/.test(path)) return false
+  if (/[<>"'`]/.test(path)) return false
+  return ALLOWED_PATH_PREFIXES.some(prefix => path.startsWith(prefix))
+}
+
+const isRouteValid = (resolved) => {
+  if (!resolved?.matched?.length) return false
+  return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
+}
+
+const FORM_POPUP_WIDTH = 1170
+const FORM_POPUP_HEIGHT = 850
+
+const openPopupWindow = (href, namePrefix = 'form_popup') => {
+  const left = Math.max(Math.floor((window.screen.width - FORM_POPUP_WIDTH) / 2), 0)
+  const top = Math.max(Math.floor((window.screen.height - FORM_POPUP_HEIGHT) / 2), 0)
+  const features = [
+    `width=${FORM_POPUP_WIDTH}`,
+    `height=${FORM_POPUP_HEIGHT}`,
+    `left=${left}`,
+    `top=${top}`,
+    'resizable=yes',
+    'scrollbars=yes'
+  ].join(',')
+  const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
+  popup?.focus()
+}
+
 const openApproval = (row) => {
   if (!row || !row.approvalPath) return
   const path = normalizePath(row.approvalPath)
-  const to = { path, query: { formTypeId: String(row.formTypeId || '') } }
+  if (!isPathSafe(path)) {
+    ElMessage({ message: t('formbusiness.applyform.getFailed'), type: 'error', plain: true, showClose: true })
+    return
+  }
+  const to = { path, query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') } }
   const resolved = router.resolve(to)
-  window.open(resolved.href, '_blank')
-}
-
-/**
- * 提交表单
- * 只进行非空验证判断，验证失败时不显示弹出框
- */
-const handleSubmit = async () => {
-  if (!formRef.value) return
-  
-  try {
-    // 只进行表单验证，不显示错误消息
-    await formRef.value.validate()
-    
-    submitLoading.value = true
-    
-    const params = {
-      formTypeId: form.formTypeId,
-      formGroupId: form.formGroupId,
-      formTypeNameCn: form.formTypeNameCn,
-      formTypeNameEn: form.formTypeNameEn,
-      prefix: form.prefix,
-      sortOrder: form.sortOrder,
-      descriptionCn: form.descriptionCn,
-      descriptionEn: form.descriptionEn,
-      reviewPath: form.reviewPath,
-      viewPath: form.viewPath
-    }
-    
-    const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
-    const response = await post(api, params)
-    
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      dialogVisible.value = false
-      getFormTypeList()
-    } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } catch (error) {
-    // 验证失败时只进行非空判断，不显示弹出框错误消息
-    if (error !== false) {
-      // 这里不显示错误消息，只进行非空判断
-    }
-  } finally {
-    submitLoading.value = false
+  if (!isRouteValid(resolved)) {
+    ElMessage({ message: t('formbusiness.applyform.getFailed'), type: 'error', plain: true, showClose: true })
+    return
   }
-}
-
-/**
- * 对话框关闭
- */
-const handleDialogClose = () => {
-  resetForm()
-  if (formRef.value) {
-    formRef.value.clearValidate()
-  }
+  openPopupWindow(resolved.href, 'apply_form')
 }
 
 // 组件挂载时获取数据
@@ -413,4 +384,3 @@ onMounted(async () => {
   text-overflow: ellipsis;
 }
 </style>
-

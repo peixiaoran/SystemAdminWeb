@@ -332,7 +332,12 @@ const handleUnauthorized = (options = {}) => {
   return createHandledSuccessResponse()
 }
 
-const handleForbidden = (error = null) => {
+const handleForbidden = (error = null, options = {}) => {
+  const { silentForbiddenError = true } = options
+  const forbiddenMessage = error?.response?.data?.message || i18n.global.t('systembasicmgmt.errorHandler.forbidden')
+  if (silentForbiddenError === false) {
+    return createAuthFailureResponse(403, forbiddenMessage)
+  }
   has403ErrorOccurred = true
   const currentPath = getCurrentHashPath()
   if (currentPath) {
@@ -369,7 +374,11 @@ service.interceptors.request.use(
     
     const source = axios.CancelToken.source()
     config.cancelToken = source.token
-    
+
+    if (config.skipDedupe === true) {
+      return config
+    }
+
     const requestKey = generateRequestKey(config)
     config.requestKey = requestKey
     
@@ -440,11 +449,18 @@ service.interceptors.response.use(
  */
 const createPostRequest = () => async (url, data, options = {}) => {
   try {
-    const { silentAuthError: _silentAuthError = true, disableAutoLogout: _disableAutoLogout = false, ...axiosOptions } = options
+    const {
+      silentAuthError: _silentAuthError = true,
+      disableAutoLogout: _disableAutoLogout = false,
+      silentForbiddenError: _silentForbiddenError = true,
+      skipDedupe = false,
+      ...axiosOptions
+    } = options
     const config = {
       url,
       method: 'post',
       data,
+      skipDedupe,
       ...axiosOptions
     }
     const response = await service(config)
@@ -454,7 +470,7 @@ const createPostRequest = () => async (url, data, options = {}) => {
       return handleUnauthorized(options)
     }
     if (response?.code === 403) {
-      return handleForbidden()
+      return handleForbidden(null, options)
     }
 
     return response
@@ -476,7 +492,7 @@ const createPostRequest = () => async (url, data, options = {}) => {
       }
       
       if (status === 403) {
-        return handleForbidden(error)
+        return handleForbidden(error, options)
       }
       
       const info = handleNetworkError(error, { showMessage: false })

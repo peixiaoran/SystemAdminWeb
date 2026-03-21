@@ -1,7 +1,7 @@
 <template>
   <div class="leave-form-page">
     <!-- 简单Skeleton骨架屏 -->
-    <el-card v-if="loading" class="leave-form-card" shadow="never">
+    <el-card v-if="loading && !resultState.visible" class="leave-form-card" shadow="never">
       <div class="system-title-row">
         <el-skeleton animated>
           <template #template>
@@ -63,6 +63,21 @@
     </el-card>
     
     <!-- 实际表单内容 -->
+    <el-card v-else-if="resultState.visible" class="leave-form-card result-card" shadow="never">
+      <el-result
+        class="result-content"
+        :icon="resultState.status"
+        :title="t(resultState.titleKey)"
+        :sub-title="t(resultState.subTitleKey)"
+      >
+        <template #extra>
+          <el-button type="primary" @click="closeCurrentPage">
+            {{ t('formbusiness.leaveform.backToPendingSubApp') }}
+          </el-button>
+        </template>
+      </el-result>
+    </el-card>
+
     <el-card v-else class="leave-form-card" shadow="never" v-loading="saving || approving">
       <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
       <div class="system-title-row">
@@ -168,30 +183,50 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.attachments')">
               <div class="upload-section">
-                <el-upload
-                  :show-file-list="false"
-                  :http-request="handleUploadRequest"
+                <input
+                  ref="fileInputRef"
+                  type="file"
                   multiple
-                  :disabled="uploading"
-                >
-                  <el-button type="primary" plain :loading="uploading" :disabled="uploading">
+                  style="display: none;"
+                  @change="onNativeFileChange"
+                />
+                <div class="upload-actions">
+                  <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading" @click="openFilePicker">
                     <el-icon><Upload /></el-icon>
                     {{ t('formbusiness.leaveform.uploadFile') }}
                   </el-button>
-                </el-upload>
-                <div v-if="uploadedFiles.length > 0" class="file-list">
-                  <div v-for="(file, idx) in uploadedFiles" :key="idx" class="file-item">
-                    <el-icon class="file-icon"><Document /></el-icon>
-                    <span class="file-name" :title="getFileName(file)">{{ getFileName(file) }}</span>
-                    <el-button type="primary" link size="small" @click="handleDownload(file)">
-                      <el-icon><Download /></el-icon>
-                      {{ t('formbusiness.leaveform.download') }}
-                    </el-button>
-                    <el-button type="danger" link size="small" @click="removeFile(idx)">
-                      <el-icon><Delete /></el-icon>
-                    </el-button>
-                  </div>
+                  <span v-if="getAttachmentRequirementTip()" class="attachment-tip">
+                    {{ getAttachmentRequirementTip() }}
+                  </span>
                 </div>
+                <el-table v-if="uploadedFiles.length > 0" :data="uploadedFiles" border size="small" class="file-table">
+                  <el-table-column type="index" width="55" align="center" label="#" />
+                  <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
+                    <template #default="{ row }">
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <el-icon style="color: #409eff; flex-shrink: 0;"><Document /></el-icon>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getFileName(row)">{{ getFileName(row) }}</span>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column :label="t('formbusiness.leaveform.fileSize')" width="100" align="center">
+                    <template #default="{ row }">
+                      {{ formatFileSize(row.fileSize) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column :label="t('common.operation')" width="170" align="center">
+                    <template #default="{ row, $index }">
+                      <el-button type="primary" link size="small" @click="handleDownload(row)">
+                        <el-icon><Download /></el-icon>
+                        {{ t('formbusiness.leaveform.download') }}
+                      </el-button>
+                      <el-button type="danger" link size="small" @click="removeFile(row, $index)">
+                        <el-icon><Delete /></el-icon>
+                        {{ t('formbusiness.leaveform.deleteFile') }}
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </div>
             </el-form-item>
           </el-col>
@@ -200,8 +235,8 @@
         <el-row :gutter="16">
           <el-col :span="24">
             <el-form-item>
-              <el-button type="primary" style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-              <el-button type="warning" style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">送审</el-button>
+              <el-button type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+              <el-button type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -213,10 +248,10 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import { Upload, Document, Download, Delete } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -233,6 +268,12 @@ const loading = ref(true)
 // 暂存与送审按钮加载状态
 const saving = ref(false)
 const approving = ref(false)
+const resultState = reactive({
+  visible: false,
+  status: 'success',
+  titleKey: 'formbusiness.leaveform.approvalResultTitle',
+  subTitleKey: 'formbusiness.leaveform.approvalResultSubTitle'
+})
 // 附件上传状态与列表（相对路径）
 const uploading = ref(false)
 const uploadedFiles = ref([])
@@ -488,9 +529,8 @@ function bindFormData (data) {
     leaveHours: data.leaveHours ?? 0,
     agentUserNo: data.agentUserNo || ''
   })
-  // 绑定附件列表（接口返回 attachments 为相对路径数组）
-  if (Array.isArray(data.attachments)) {
-    uploadedFiles.value = data.attachments.filter(Boolean)
+  if (Array.isArray(data.fileList)) {
+    uploadedFiles.value = data.fileList.filter(Boolean)
   }
   // 绑定返回的formTypeId作为当前类型（若有）
   if (data && data.formTypeId) {
@@ -519,6 +559,21 @@ function normalizeSelectCode (val) {
   return val === undefined || val === null ? undefined : String(val)
 }
 
+function isForbiddenCode(code) {
+  return String(code) === '403'
+}
+
+function showResult(status, titleKey, subTitleKey) {
+  resultState.visible = true
+  resultState.status = status
+  resultState.titleKey = titleKey
+  resultState.subTitleKey = subTitleKey
+}
+
+function closeCurrentPage() {
+  window.close()
+}
+
 /**
  * 初始化请假单（生成 formId 后立即调用详情接口）
  */
@@ -531,8 +586,13 @@ async function initLeaveForm () {
     const res = await post(INIT_LEAVEFORM_API, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      silentForbiddenError: false
     })
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      return
+    }
     if (!res || res.code !== 200) {
       return
     }
@@ -564,9 +624,14 @@ async function getLeaveFormDetail (id) {
     const formData = new window.FormData()
     formData.append('formId', String(id))
     const res = await post(GET_LEAVEFORM_DETAIL_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
     })
     if (!res) return
+    if (isForbiddenCode(res.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      return
+    }
     if (res.code !== 200) {
       ElMessage.error(res.message)
       return
@@ -621,11 +686,23 @@ async function onSubmit () {
       agentUserNo: (form.agentUserNo || '').trim()
     }
     try {
-      const res = await post(SAVE_LEAVEFORM_API, payload)
-      if (res && res.code === 200) {
-        ElMessage({ message: res.message || t('messages.saveSuccess'), type: 'success', plain: true, showClose: true })
+      const res = await post(SAVE_LEAVEFORM_API, payload, {
+        silentForbiddenError: false
+      })
+      if (isForbiddenCode(res?.code)) {
+        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      } else if (res && res.code === 200) {
+        ElNotification({
+          title: '',
+          message: res.message,
+          type: 'success'
+        })
       } else {
-        ElMessage({ message: res?.message || t('messages.saveError'), type: 'error', plain: true, showClose: true })
+        ElNotification({
+          title: '',
+          message: res?.message,
+          type: 'error'
+        })
       }
     } catch {
       
@@ -645,70 +722,133 @@ async function onSubmitForApproval () {
       formRef.value?.validate((v) => resolve(!!v))
     })
     if (!valid) return
-    // 占位：如需调用送审接口，请在此添加异步请求
-    await new Promise((r) => setTimeout(r, 600))
-    ElMessage({ message: t('formbusiness.leaveform.submitSuccess'), type: 'success', plain: true, showClose: true })
+    if (shouldRequireAttachment() && uploadedFiles.value.length === 0) {
+      ElMessage({ message: getAttachmentRequirementTip(), type: 'warning', plain: true, showClose: true })
+      return
+    }
+    showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
   } finally {
     approving.value = false
   }
 }
 
-/**
- * el-upload 自定义上传处理
- * 将文件以 multipart/form-data 发送至 UPLOAD_FILE_API，
- * 服务端返回 List<string> 相对路径，追加到 uploadedFiles 列表
- */
-async function handleUploadRequest(options) {
-  uploading.value = true
-  try {
-    const currentFormId = String(form.formId || '')
-    const rawFile = options.file instanceof File ? options.file : options.file?.raw
+const fileInputRef = ref(null)
 
-    if (!currentFormId) {
-      throw new Error('formId不能为空')
-    }
-    if (!rawFile) {
-      throw new Error('文件不能为空')
-    }
+const leaveTypeAttachmentTipMap = [
+  { keywords: ['sick'], key: 'attachmentTipSick' },
+  { keywords: ['marriage'], key: 'attachmentTipMarriage' },
+  { keywords: ['maternity'], key: 'attachmentTipMaternity' },
+  { keywords: ['paternity'], key: 'attachmentTipPaternity' },
+  { keywords: ['nursing'], key: 'attachmentTipNursing' },
+  { keywords: ['bereavement'], key: 'attachmentTipBereavement' }
+]
 
-    const formData = new window.FormData()
-    formData.append('formId', currentFormId)
-    formData.append('fileList', rawFile, rawFile.name)
-    const res = await post(UPLOAD_FILE_API, formData)
-    if (res && res.code === 200) {
-      const paths = Array.isArray(res.data) ? res.data : []
-      uploadedFiles.value = [...uploadedFiles.value, ...paths]
-      ElMessage({ message: t('formbusiness.leaveform.uploadSuccess'), type: 'success', plain: true, showClose: true })
-      options.onSuccess(res)
-    } else {
-      ElMessage({ message: res?.message || t('formbusiness.leaveform.uploadFailed'), type: 'error', plain: true, showClose: true })
-      options.onError(new Error(res?.message || 'Upload failed'))
-    }
-  } catch (e) {
-    ElMessage({ message: e?.message || t('formbusiness.leaveform.uploadFailed'), type: 'error', plain: true, showClose: true })
-    options.onError(e)
-  } finally {
-    uploading.value = false
+function isSuccessCode(code) {
+  return String(code) === '200'
+}
+
+function getCurrentLeaveTypeOption() {
+  const current = leaveTypeOptions.value.find(item => String(item.value) === String(form.leaveTypeCode || ''))
+  return current || null
+}
+
+function normalizeLeaveTypeText(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '')
+}
+
+function getAttachmentRequirementKey() {
+  const current = getCurrentLeaveTypeOption()
+  const candidates = [
+    normalizeLeaveTypeText(form.leaveTypeCode),
+    normalizeLeaveTypeText(current?.label),
+    normalizeLeaveTypeText(current?.value)
+  ].filter(Boolean)
+
+  const matched = leaveTypeAttachmentTipMap.find(item =>
+    item.keywords.some(keyword => candidates.some(text => text.includes(keyword)))
+  )
+
+  return matched?.key || ''
+}
+
+function getAttachmentRequirementTip() {
+  const key = getAttachmentRequirementKey()
+  return key ? t(`formbusiness.leaveform.${key}`) : ''
+}
+
+function shouldRequireAttachment() {
+  return !!getAttachmentRequirementKey()
+}
+
+function openFilePicker() {
+  if (uploading.value) return
+  fileInputRef.value?.click()
+}
+
+function onNativeFileChange(event) {
+  const files = Array.from(event?.target?.files || [])
+  if (files.length > 0) {
+    batchUpload(files)
   }
 }
 
 /**
- * 从相对路径中提取文件名（取最后一段）
+ * 批量上传：将所有待上传文件合并为一个请求发送
  */
-function getFileName(relativePath) {
-  if (!relativePath) return ''
-  return relativePath.split('/').pop() || relativePath
+async function batchUpload(filesToUpload) {
+  uploading.value = true
+  try {
+    const currentFormId = String(form.formId || '')
+    const formData = new window.FormData()
+    formData.append('formId', currentFormId)
+    for (const item of filesToUpload) {
+      if (item instanceof File) {
+        formData.append('files', item, item.name)
+      }
+    }
+    const res = await post(UPLOAD_FILE_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
+    })
+    if (res && isSuccessCode(res.code)) {
+      const files = Array.isArray(res.data) ? res.data : []
+      uploadedFiles.value = [...uploadedFiles.value, ...files]
+    }
+  } catch (e) {
+  } finally {
+    uploading.value = false
+    if (fileInputRef.value) {
+      fileInputRef.value.value = ''
+    }
+  }
+}
+
+/**
+ * 格式化文件大小（KB）为可读字符串
+ */
+function formatFileSize(sizeKB) {
+  if (!sizeKB && sizeKB !== 0) return '-'
+  const size = Number(sizeKB)
+  if (size < 1024) return `${size} KB`
+  return `${(size / 1024).toFixed(2)} MB`
+}
+
+function getFileName(file) {
+  return file?.fileName || ''
 }
 
 /**
  * 下载文件：使用 resolveFileUrl 拼接 VITE_FILE_BROWSER_BASE_URL，触发浏览器下载
  */
-function handleDownload(relativePath) {
-  const url = resolveFileUrl(relativePath)
+function handleDownload(file) {
+  const url = resolveFileUrl(file?.filePath)
   if (!url) return
   const a = document.createElement('a')
   a.href = url
-  a.download = getFileName(relativePath)
+  a.download = getFileName(file)
   a.target = '_blank'
   document.body.appendChild(a)
   a.click()
@@ -716,10 +856,25 @@ function handleDownload(relativePath) {
 }
 
 /**
- * 从附件列表中移除指定索引的文件
+ * 删除附件：调用 DELETE_FILE_API 后从列表移除
  */
-function removeFile(idx) {
-  uploadedFiles.value.splice(idx, 1)
+async function removeFile(file, idx) {
+  try {
+    const formData = new window.FormData()
+    formData.append('fileId', String(file.fileId || ''))
+    formData.append('filePath', String(file.filePath || ''))
+    const res = await post(DELETE_FILE_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
+    })
+    if (res && isSuccessCode(res.code)) {
+      uploadedFiles.value.splice(idx, 1)
+    } else {
+      ElMessage({ message: res?.message || t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
+    }
+  } catch {
+    ElMessage({ message: t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
+  }
 }
 
 /**
@@ -772,6 +927,19 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   background: #ffffff;
+}
+
+.result-card {
+  border: none;
+  box-shadow: none;
+  min-height: calc(100vh - 32px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-content {
+  width: 100%;
 }
 
 .system-title-row {
@@ -842,36 +1010,28 @@ onMounted(async () => {
   width: 100%;
 }
 
-.file-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.file-item {
+.upload-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: #f5f7fa;
-  border: 1px solid #e4e7ed;
-  border-radius: 6px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.upload-trigger {
+  width: auto;
+  align-self: flex-start;
+}
+
+.attachment-tip {
+  display: inline-flex;
+  align-items: center;
+  color: #e6a23c;
   font-size: 13px;
-  color: #303133;
+  line-height: 1.4;
 }
 
-.file-icon {
-  color: #409eff;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.file-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
+.file-table {
+  width: 100%;
+  margin-top: 4px;
 }
 </style>
