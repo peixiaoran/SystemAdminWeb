@@ -365,14 +365,16 @@ const handleSearch = async () => {
   }, 300)
 }
 
-const handleReset = async () => {
+const handleReset = () => {
   searchForm.formStatus = ''
   searchForm.formNo = ''
   searchForm.formGroupId = ALL_OPTION_VALUE
   searchForm.formTypeId = ALL_OPTION_VALUE
-  pagination.pageIndex = 1
-  await getFormTypeOptions()
-  await getPendingSubAppList()
+  scheduleFilterRequest(async () => {
+    pagination.pageIndex = 1
+    await getFormTypeOptions()
+    await getPendingSubAppList()
+  })
 }
 
 const handleSizeChange = (val) => {

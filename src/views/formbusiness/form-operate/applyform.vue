@@ -278,15 +278,24 @@ const handleSearch = async () => {
  * 重置搜索
  * 清空文本框，下拉框恢复到默认第一个值，并重新获取数据
  */
-const handleReset = () => {
+const handleReset = async () => {
   searchForm.formTypeName = ''
-  // 下拉框恢复到默认第一个值
   if (formGroupOptions.value.length > 0) {
     searchForm.formGroupId = formGroupOptions.value[0].formGroupId
   }
-  pagination.pageIndex = 1
-  loading.value = true // 立即显示加载状态
-  getFormTypeList()
+  if (searchTimer) clearTimeout(searchTimer)
+  if (filterTimer) clearTimeout(filterTimer)
+  loading.value = true
+  debouncePending.value = true
+  await nextTick()
+  searchTimer = setTimeout(async () => {
+    try {
+      pagination.pageIndex = 1
+      await getFormTypeList()
+    } finally {
+      debouncePending.value = false
+    }
+  }, FILTER_DEBOUNCE_MS)
 }
 
 /**

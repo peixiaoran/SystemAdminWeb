@@ -288,58 +288,42 @@ const handleLogin = () => {
 }
 
 .login-box {
-  width: 500px;
+  width: 480px;
   padding: 0;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(50, 50, 93, 0.1), 0 8px 20px rgba(0, 0, 0, 0.07);
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  backdrop-filter: blur(5px);
   z-index: 1;
-  border: 1px solid #ebeef5;
 }
 
 .login-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
-  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
-  color: white;
+  padding: 40px 0 30px;
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
 .logo {
-  width: 70px;
-  height: 70px;
-  margin-bottom: 18px;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+  width: 60px;
+  height: 60px;
+  margin-bottom: 16px;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
-  color: white;
+  font-size: 22px;
+  font-weight: 500;
+  color: #1a1a1a;
   margin: 0;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
 }
 
 .login-form-container {
-  padding: 50px 40px;
-  background-color: #f5f7fa;
+  padding: 16px 40px 40px;
+  background-color: #ffffff;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -349,25 +333,28 @@ const handleLogin = () => {
 .login-form {
   width: 100%;
   max-width: 400px;
-  margin-top: -10px;
+  margin-top: 0;
 }
 
 .login-form :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
+  box-shadow: 0 0 0 1px #e4e7ed inset !important;
+  background-color: #fafafa;
   padding: 0 15px;
-  height: 44px;
-  border-radius: 4px;
-  transition: all 0.3s;
+  height: 48px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
 }
 
 .login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+  box-shadow: 0 0 0 2px #1a1a1a inset !important;
+  background-color: #ffffff;
 }
 
-.login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+.login-form :deep(.el-input__wrapper:hover:not(.is-focus)) {
+  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
+  background-color: #f5f5f5;
 }
 
 .login-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -406,21 +393,24 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-select .el-input__wrapper) {
-  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.8) inset;
+  box-shadow: 0 0 0 1px #e4e7ed inset !important;
+  background-color: #fafafa;
   padding: 0 15px;
-  height: 44px;
-  border-radius: 4px;
-  transition: all 0.3s;
+  height: 48px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
 }
 
-.login-form :deep(.el-select .el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+.login-form :deep(.el-select .el-input__wrapper:hover:not(.is-focus)) {
+  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
+  background-color: #f5f5f5;
 }
 
 .login-form :deep(.el-select .el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.5) inset;
+  box-shadow: 0 0 0 2px #1a1a1a inset !important;
+  background-color: #ffffff;
 }
 
 .login-form :deep(.el-select .el-input__inner) {
@@ -453,20 +443,28 @@ const handleLogin = () => {
 
 .login-button {
   width: 100%;
-  height: 44px;
-  border-radius: 8px;
+  height: 48px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
+  letter-spacing: 1px;
+  background: #1a1a1a;
+  color: #ffffff;
   border: none;
-  margin-left: 0;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1);
+  margin-top: 10px;
+  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-button:hover {
+  background: #303133;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2);
 }
 
 .login-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1);
+  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15);
 }
 
 /* 响应式调整 */

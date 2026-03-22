@@ -546,7 +546,16 @@ export default {
     pageNotFound: '抱歉，您访问的页面不存在或已被移除',
     accessDenied: '抱歉，您没有权限访问此页面',
     access: '访问',
-    denied: '拒绝'
+    denied: '拒绝',
+    title403: '访问受限',
+    desc403Line1: '抱歉，您当前没有权限访问此页面。',
+    desc403Line2: '这可能是因为您的账号角色限制，或页面已被设为私有。',
+    title404: '迷失在数字宇宙',
+    desc404Line1: '抱歉，您要寻找的页面似乎已经不存在或被移动了。',
+    desc404Line2: '就像宇宙中的一颗流星，它已经消失在茫茫星海中。',
+    backToPrev: '返回上一页',
+    backToOrigin: '原路返回',
+    returnToHomeBase: '返回基地'
   },
   
   // 登录页

@@ -258,6 +258,12 @@ const handleSearch = () => {
 // 重置搜索
 const handleReset = () => {
   searchForm.formGroupName = ''
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getFormGroupList()
+  }, 300)
 }
 
 // 分页大小改变

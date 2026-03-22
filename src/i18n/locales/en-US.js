@@ -612,7 +612,16 @@ export default {
     pageNotFound: 'Sorry, the page you visited does not exist or has been removed',
     accessDenied: 'Sorry, you do not have permission to access this page',
     access: 'Access',
-    denied: 'Denied'
+    denied: 'Denied',
+    title403: 'Access Restricted',
+    desc403Line1: 'Sorry, you do not have permission to access this page.',
+    desc403Line2: 'This may be due to your account role restrictions, or the page has been set to private.',
+    title404: 'Lost in the Digital Universe',
+    desc404Line1: 'Sorry, the page you are looking for seems to no longer exist or has been moved.',
+    desc404Line2: 'Like a meteor in the universe, it has disappeared into the vast sea of stars.',
+    backToPrev: 'Go Back',
+    backToOrigin: 'Return Back',
+    returnToHomeBase: 'Return to Base'
   },
   
   // Login Page

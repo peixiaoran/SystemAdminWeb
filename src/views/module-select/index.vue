@@ -394,8 +394,8 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
-  color: #ffffff;
+  background: #f5f7fa;
+  color: #303133;
   position: relative;
 }
 
@@ -406,7 +406,7 @@ const logout = async () => {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: #ebeef5;
 }
 
 .pmenu-info {
@@ -457,11 +457,11 @@ const logout = async () => {
   padding: 12px 28px;
   font-size: 14px;
   font-weight: 500;
-  background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
+  background: #303133;
   color: #fff;
   border: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(221, 160, 221, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   min-width: 120px;
 }
 
@@ -492,7 +492,7 @@ const logout = async () => {
 
 .loading-icon {
   animation: rotate 1s linear infinite;
-  color: #409EFF;
+  color: #606266;
 }
 
 @keyframes rotate {

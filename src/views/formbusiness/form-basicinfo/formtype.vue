@@ -385,9 +385,12 @@ const handleSearch = () => {
  */
 const handleReset = () => {
   searchForm.formTypeName = ''
-  pagination.pageIndex = 1
-  loading.value = true // 立即显示加载状态
-  getFormTypeList()
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getFormTypeList()
+  }, 300)
 }
 
 /**

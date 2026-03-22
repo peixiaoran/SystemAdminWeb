@@ -723,7 +723,7 @@
     }
 
     /**
-     * 处理对话框部门下拉变化：立即按部门筛选用户列表
+     * 处理对话框部门下拉变化：按部门筛选用户列表（使用防抖）
      * 同时清空工号/姓名文字筛选，避免旧的文字条件与新部门组合导致查询无结果。
      */
     const handleDialogDeptFilterChange = () => {
@@ -731,27 +731,19 @@
         dialogUserFilters.userName = ''
         dialogUserPagination.pageIndex = 1
         dialogUserLoading.value = true
-        fetchDialogUserPages()
+        debouncedFetchDialogUserPages()
     }
 
     /**
      * 处理对话框表单中的兼任部门变化
-     * 切换部门后清空并重载兼任岗位，避免沿用旧部门下的岗位值
+     * 部门与职级相互独立，切换部门不影响已选职级
      */
-    const handleDialogDeptChange = async () => {
-        dialogForm.partTimePositionId = ''
-        await fetchPositionList(false)
-        if (positionList.value.length > 0) {
-            const firstEnabledPosition = positionList.value.find(item => !item.disabled)
-            if (firstEnabledPosition) {
-                dialogForm.partTimePositionId = firstEnabledPosition.positionId
-            }
-        }
+    const handleDialogDeptChange = () => {
         if (dialogFormRef.value) {
             try {
-                dialogFormRef.value.clearValidate(['partTimePositionId'])
+                dialogFormRef.value.clearValidate(['partTimeDeptId'])
             } catch {
-                
+                // ignore
             }
         }
     }

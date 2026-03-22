@@ -242,8 +242,12 @@ const handleSearch = () => {
  */
 const handleReset = () => {
   searchForm.controlCode = ''
-  pagination.pageIndex = 1
-  getControlList()
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getControlList()
+  }, 300)
 }
 
 /**

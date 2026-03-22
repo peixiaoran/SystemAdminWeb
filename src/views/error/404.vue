@@ -1,250 +1,314 @@
 <template>
-  <div class="exception-page">
-    <div class="exception-container">
-      <div class="exception-illustration">
-        <div class="code-wrapper">
-          <span class="code-text">404</span>
-          <div class="code-shadow"></div>
-        </div>
-        <el-icon class="status-icon"><Position /></el-icon>
+  <div class="error-page">
+    <div class="bg-dots" />
+    <canvas ref="starsCanvas" class="stars-canvas" />
+    <div class="content-wrapper">
+      <div class="icon-area">
+        <svg class="planet-icon" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="32" fill="url(#planetGrad)" opacity="0.1" />
+          <circle cx="70" cy="70" r="32" stroke="url(#planetStroke)" stroke-width="1.5" opacity="0.35" />
+          <ellipse
+            cx="70" cy="70" rx="52" ry="14"
+            stroke="url(#ringStroke)"
+            stroke-width="1.2"
+            opacity="0.25"
+            transform="rotate(-20 70 70)"
+          />
+          <circle cx="62" cy="62" r="5" fill="#1a1a1a" opacity="0.06" />
+          <circle cx="78" cy="74" r="3.5" fill="#1a1a1a" opacity="0.05" />
+          <circle cx="66" cy="80" r="2.5" fill="#1a1a1a" opacity="0.04" />
+          <circle class="star star-1" cx="20" cy="28" r="1.2" fill="#1a1a1a" opacity="0.2" />
+          <circle class="star star-2" cx="118" cy="38" r="1" fill="#1a1a1a" opacity="0.15" />
+          <circle class="star star-3" cx="30" cy="108" r="0.8" fill="#1a1a1a" opacity="0.18" />
+          <circle class="star star-4" cx="112" cy="100" r="1.1" fill="#1a1a1a" opacity="0.12" />
+          <circle class="star star-5" cx="45" cy="18" r="0.6" fill="#1a1a1a" opacity="0.2" />
+          <defs>
+            <linearGradient id="planetGrad" x1="38" y1="38" x2="102" y2="102">
+              <stop offset="0%" stop-color="#1a1a1a" />
+              <stop offset="100%" stop-color="#606060" />
+            </linearGradient>
+            <linearGradient id="planetStroke" x1="38" y1="38" x2="102" y2="102">
+              <stop offset="0%" stop-color="#1a1a1a" />
+              <stop offset="100%" stop-color="#909090" />
+            </linearGradient>
+            <linearGradient id="ringStroke" x1="18" y1="70" x2="122" y2="70">
+              <stop offset="0%" stop-color="transparent" />
+              <stop offset="30%" stop-color="#1a1a1a" />
+              <stop offset="70%" stop-color="#1a1a1a" />
+              <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
-      
-      <div class="exception-content">
-        <h1 class="title">{{ content.headline }}</h1>
-        <p class="description">{{ content.description }}</p>
-        
-        <div class="suggestion-box">
-          <div class="suggestion-title">
-            <el-icon><Compass /></el-icon>
-            <span>{{ content.panelTitle }}</span>
-          </div>
-          <p class="suggestion-text">{{ content.panelText }}</p>
-        </div>
 
-        <div class="actions">
-          <el-button type="primary" size="large" class="action-btn" :icon="House" @click="goHome">
-            {{ t('common.backToHome') }}
-          </el-button>
-          <el-button size="large" class="action-btn" :icon="Refresh" @click="reloadPage">
-            {{ content.secondaryAction }}
-          </el-button>
-        </div>
+      <div class="text-area">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">{{ $t('error.title404') }}</h2>
+        <p class="error-desc">{{ $t('error.desc404Line1') }}</p>
+        <p class="error-desc secondary">{{ $t('error.desc404Line2') }}</p>
+      </div>
+
+      <div class="action-area">
+        <button class="btn-back" @click="goBack">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ $t('error.backToPrev') }}
+        </button>
+        <button class="btn-home" @click="goHome">
+          {{ $t('error.returnToHomeBase') }}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 13L11 8L6 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { House, Refresh, Position, Compass } from '@element-plus/icons-vue'
 
 const router = useRouter()
-const { t, locale } = useI18n()
+const starsCanvas = ref(null)
+let animationId = null
 
-const content = computed(() => {
-  if (locale.value === 'en-US') {
-    return {
-      headline: 'Page Not Found',
-      description: 'Oops! The page you are looking for seems to have wandered off. It might have been moved, deleted, or never existed.',
-      secondaryAction: 'Refresh Page',
-      panelTitle: 'Lost your way?',
-      panelText: 'Check the URL for any typos, or return to the home page to navigate to your desired destination.',
-    }
+const goBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.replace('/login')
   }
-
-  return {
-    headline: '页面未找到',
-    description: '哎呀！您正在寻找的页面似乎走丢了。它可能已被移动、删除，或者根本不存在。',
-    secondaryAction: '刷新页面',
-    panelTitle: '迷路了吗？',
-    panelText: '请检查您输入的网址是否正确，或者返回首页通过系统菜单重新导航到目标页面。',
-  }
-})
+}
 
 const goHome = () => {
-  router.push('/')
+  router.replace('/module-select')
 }
 
-const reloadPage = () => {
-  window.location.reload()
-}
+onMounted(() => {
+  const canvas = starsCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  let width = canvas.width = window.innerWidth
+  let height = canvas.height = window.innerHeight
+
+  const particles = Array.from({ length: 35 }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    r: Math.random() * 1.2 + 0.3,
+    dx: (Math.random() - 0.5) * 0.15,
+    dy: (Math.random() - 0.5) * 0.15,
+    opacity: Math.random() * 0.15 + 0.05,
+    pulse: Math.random() * Math.PI * 2,
+    pulseSpeed: Math.random() * 0.008 + 0.003
+  }))
+
+  const draw = () => {
+    ctx.clearRect(0, 0, width, height)
+    particles.forEach(p => {
+      p.x += p.dx
+      p.y += p.dy
+      p.pulse += p.pulseSpeed
+      if (p.x < 0) p.x = width
+      if (p.x > width) p.x = 0
+      if (p.y < 0) p.y = height
+      if (p.y > height) p.y = 0
+      const alpha = p.opacity + Math.sin(p.pulse) * 0.04
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(26, 26, 26, ${Math.max(0, alpha)})`
+      ctx.fill()
+    })
+    animationId = requestAnimationFrame(draw)
+  }
+
+  const handleResize = () => {
+    width = canvas.width = window.innerWidth
+    height = canvas.height = window.innerHeight
+  }
+  window.addEventListener('resize', handleResize)
+  draw()
+
+  onBeforeUnmount(() => {
+    if (animationId) cancelAnimationFrame(animationId)
+    window.removeEventListener('resize', handleResize)
+  })
+})
 </script>
 
 <style scoped>
-.exception-page {
+.error-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--el-bg-color-page);
-  padding: 2rem;
-  font-family: var(--el-font-family);
-}
-
-.exception-container {
-  display: flex;
-  align-items: center;
-  gap: 6rem;
-  max-width: 1000px;
-  width: 100%;
-  padding: 4rem;
-  background: var(--el-bg-color);
-  border-radius: var(--el-border-radius-round);
-  box-shadow: var(--el-box-shadow-light);
-  transition: all 0.3s ease;
-}
-
-.exception-container:hover {
-  box-shadow: var(--el-box-shadow);
-}
-
-.exception-illustration {
+  background: #fafafa;
   position: relative;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.code-wrapper {
+.bg-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #d0d0d0 0.8px, transparent 0.8px);
+  background-size: 28px 28px;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
+}
+
+.stars-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.content-wrapper {
   position: relative;
   z-index: 1;
-}
-
-.code-text {
-  font-size: 140px;
-  font-weight: 900;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--el-color-warning) 0%, var(--el-color-warning-light-5) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 10px 30px rgba(var(--el-color-warning-rgb), 0.2);
-  letter-spacing: -4px;
-}
-
-.code-shadow {
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 20px;
-  background: radial-gradient(ellipse at center, rgba(var(--el-color-warning-rgb), 0.15) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: -1;
-}
-
-.status-icon {
-  font-size: 48px;
-  color: var(--el-color-warning);
-  margin-top: -20px;
-  background: var(--el-bg-color);
-  padding: 10px;
-  border-radius: 50%;
-  box-shadow: var(--el-box-shadow-lighter);
-  z-index: 2;
-}
-
-.exception-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.title {
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  margin: 0 0 16px 0;
-  line-height: 1.2;
-}
-
-.description {
-  font-size: 16px;
-  color: var(--el-text-color-regular);
-  margin: 0 0 32px 0;
-  line-height: 1.6;
-}
-
-.suggestion-box {
-  background-color: var(--el-color-warning-light-9);
-  border-left: 4px solid var(--el-color-warning);
-  padding: 16px 20px;
-  border-radius: 0 var(--el-border-radius-base) var(--el-border-radius-base) 0;
-  margin-bottom: 32px;
-}
-
-.suggestion-title {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--el-color-warning);
-  margin-bottom: 8px;
+  text-align: center;
+  padding: 40px;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.suggestion-text {
-  margin: 0;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.actions {
-  display: flex;
-  gap: 16px;
+.icon-area {
+  margin-bottom: 12px;
+  animation: gentleFloat 6s ease-in-out infinite;
 }
 
-.action-btn {
-  padding: 0 28px;
-  border-radius: var(--el-border-radius-round);
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.planet-icon {
+  width: 130px;
+  height: 130px;
+}
+
+.star {
+  animation: twinkle 3s ease-in-out infinite;
+}
+.star-1 { animation-delay: 0s; }
+.star-2 { animation-delay: 0.7s; }
+.star-3 { animation-delay: 1.4s; }
+.star-4 { animation-delay: 2.1s; }
+.star-5 { animation-delay: 0.4s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.05; }
+}
+
+.text-area {
+  margin-bottom: 40px;
+}
+
+.error-code {
+  font-size: 80px;
+  font-weight: 200;
+  letter-spacing: -2px;
+  margin: 0 0 4px;
+  line-height: 1;
+  background: linear-gradient(135deg, #1a1a1a 0%, #999 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.error-title {
+  font-size: 20px;
   font-weight: 500;
-  transition: transform 0.2s ease;
+  color: #1a1a1a;
+  margin: 0 0 20px;
+  letter-spacing: 0.5px;
 }
 
-.action-btn:active {
-  transform: scale(0.96);
+.error-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 6px;
+  line-height: 1.7;
+  max-width: 420px;
 }
 
-@media (max-width: 900px) {
-  .exception-container {
-    flex-direction: column;
-    gap: 3rem;
-    padding: 3rem 2rem;
-    text-align: center;
-  }
+.error-desc.secondary {
+  color: #999;
+  font-size: 13px;
+}
 
-  .suggestion-box {
-    text-align: left;
-  }
+.action-area {
+  display: flex;
+  gap: 14px;
+}
 
-  .actions {
-    justify-content: center;
-  }
+.btn-back,
+.btn-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  .code-text {
-    font-size: 100px;
-  }
+.btn-back {
+  background: #fff;
+  color: #1a1a1a;
+  border: 1px solid #e5e5e5;
+}
+
+.btn-back:hover {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.btn-home {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
+}
+
+.btn-home:hover {
+  background: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(26, 26, 26, 0.2);
+}
+
+.btn-back:active,
+.btn-home:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 480px) {
-  .exception-page {
-    padding: 1rem;
+  .error-code {
+    font-size: 60px;
   }
-  
-  .actions {
+  .action-area {
     flex-direction: column;
-    width: 100%;
   }
-
-  .action-btn {
-    width: 100%;
-    margin-left: 0 !important;
+  .content-wrapper {
+    padding: 24px;
   }
 }
 </style>
