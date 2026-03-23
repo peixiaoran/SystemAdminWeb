@@ -337,11 +337,12 @@
       }
 
       try {
-          const params = {
-              moduleId: editForm.moduleId
-          }
-          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, params)
-          // 对获取的数据进行XSS清洗
+          const formData = new FormData()
+          formData.append('moduleId', String(editForm.moduleId))
+          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              skipDedupe: true
+          })
           pmenuDropList.value = res.data || []
 
           // 只有当需要设置默认值且是新增时才设置默认值
@@ -792,10 +793,12 @@ const handleFilterParentMenuChange = () => {
       }
 
       try {
-          const params = {
-              moduleId: filters.moduleId
-          }
-          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, params)
+          const formData = new FormData()
+          formData.append('moduleId', String(filters.moduleId))
+          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              skipDedupe: true
+          })
           filterPMenuList.value = res.data || []
 
           // 默认选中第一个未禁用的模块

@@ -47,3 +47,21 @@ export const GET_WORKFLOWSTEP_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowSt
 
 // 更新流程步骤API
 export const UPDATE_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateWorkflowStep'
+
+// 获取流程步骤下拉框API
+export const GET_WORKFLOWSTEP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepDropDown'
+
+// 获取条件下拉框API
+export const GET_CONDITION_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetConditionDropDown'
+
+// 新增流程步骤分支API
+export const INSERT_WORKFLOWSTEP_BRANCH_API = 'FormBusiness/FormWorkFlow/WorkflowStep/InsertWorkflowStepBranch'
+
+// 获取流程步骤分支实体API
+export const GET_WORKFLOWSTEP_BRANCH_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepBranchEntity'
+
+// 更新流程步骤分支API
+export const UPDATE_WORKFLOWSTEP_BRANCH_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateWorkflowStepBranch'
+
+// 删除流程步骤分支API
+export const DELETE_WORKFLOWSTEP_BRANCH_API = 'FormBusiness/FormWorkFlow/WorkflowStep/DeleteWorkflowStepBranch'

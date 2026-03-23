@@ -708,8 +708,12 @@
   }
 
   const fetchRoleModuleDropdown = async () => {
-      const params = { roleId: currentRoleId.value }
-      const res = await post(GET_ROLE_MODULE_DROPDOWN_API.GET_ROLE_MODULE_DROPDOWN, params)
+      const formData = new FormData()
+      formData.append('roleId', String(currentRoleId.value))
+      const res = await post(GET_ROLE_MODULE_DROPDOWN_API.GET_ROLE_MODULE_DROPDOWN, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          skipDedupe: true
+      })
       if (res && res.code === 200) {
           moduleOptions.value = res.data || []
           // 默认选中第一个有效值

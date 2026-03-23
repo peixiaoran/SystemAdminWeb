@@ -266,11 +266,13 @@ const fetchModuleDropDown = async () => {
 // 获取字典类型下拉框数据
 const fetchDicTypeDropDown = async () => {
   try {
-    const params = {
-      moduleId: filters.moduleId || ''
-    }
+    const formData = new FormData()
+    formData.append('moduleId', String(filters.moduleId || ''))
     
-    const res = await post(GET_DIC_TYPE_DROP_DOWN_API.GET_DIC_TYPE_DROP_DOWN, params)
+    const res = await post(GET_DIC_TYPE_DROP_DOWN_API.GET_DIC_TYPE_DROP_DOWN, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
+    })
     if (res && res.code === 200) {
       dicTypeList.value = res.data || []
       // 默认选中第一个字典类型

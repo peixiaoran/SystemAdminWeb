@@ -65,20 +65,26 @@
               </div>
               
               <!-- 分支列表 -->
-              <div class="branch-section" v-if="step.stepBranchList && step.stepBranchList.length > 0">
-                <div class="branch-table">
+              <div class="branch-section">
+                <div class="branch-toolbar">
+                  <el-button type="primary" link size="small" @click="handleAddBranch(step)">
+                    {{ $t('formbusiness.workflowstep.addBranch') }}
+                  </el-button>
+                </div>
+                <div class="branch-table" v-if="step.stepBranchList && step.stepBranchList.length > 0">
                   <div class="branch-row branch-row-header">
                     <div class="branch-cell">{{ $t('formbusiness.workflowstep.conditionName') }}</div>
                     <div class="branch-cell">{{ $t('formbusiness.workflowstep.nextStepName') }}</div>
                     <div class="branch-cell">{{ $t('formbusiness.workflowstep.executeMatched') }}</div>
+                    <div class="branch-cell branch-cell-action">{{ $t('formbusiness.workflowstep.operation') }}</div>
                   </div>
                   <div 
                     v-for="(branch, bIndex) in step.stepBranchList" 
-                    :key="bIndex"
+                    :key="resolveBranchRowKey(branch, step.stepId, bIndex)"
                     class="branch-row"
                   >
                     <div class="branch-cell">
-                      {{ branch.conditionId === '0' ? $t('formbusiness.workflowstep.defaultCondition') : (branch.conditionName || '-') }}
+                      {{ branch.conditionId === '0' || branch.conditionId === '-1' || branch.conditionId === -1 ? $t('formbusiness.workflowstep.defaultCondition') : (branch.conditionName || '-') }}
                     </div>
                     <div class="branch-cell">
                       {{ branch.nextStepName || $t('formbusiness.workflowstep.endStep') }}
@@ -87,6 +93,20 @@
                       <el-tag :type="branch.executeMatched === 1 ? 'success' : 'info'" effect="dark" size="small">
                         {{ branch.executeMatched === 1 ? $t('common.yes') : $t('common.no') }}
                       </el-tag>
+                    </div>
+                    <div class="branch-cell branch-cell-action">
+                      <el-button type="primary" link size="small" @click="handleEditBranch(branch)">
+                        {{ $t('formbusiness.workflowstep.editBranch') }}
+                      </el-button>
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        :loading="deletingBranchId === resolveBranchId(branch)"
+                        @click="handleDeleteBranch(branch)"
+                      >
+                        {{ $t('formbusiness.workflowstep.deleteBranch') }}
+                      </el-button>
                     </div>
                   </div>
                 </div>
@@ -394,11 +414,76 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 分支新增 / 编辑弹窗 -->
+    <el-dialog
+      v-model="branchEditDialogVisible"
+      :title="isBranchAddMode ? $t('formbusiness.workflowstep.addBranch') : $t('formbusiness.workflowstep.editBranch')"
+      width="560px"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      @close="handleBranchEditDialogClose"
+      draggable
+    >
+      <div v-loading="branchEditDialogLoading">
+        <el-form
+          ref="branchEditFormRef"
+          :model="branchEditForm"
+          :rules="branchEditRules"
+          label-width="120px"
+        >
+          <el-form-item :label="$t('formbusiness.workflowstep.conditionName')" prop="conditionId">
+            <el-select
+              v-model="branchEditForm.conditionId"
+              :placeholder="$t('formbusiness.workflowstep.pleaseSelectCondition')"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in branchConditionSelectOptions"
+                :key="String(item.conditionId)"
+                :label="item.conditionName"
+                :value="String(item.conditionId)"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('formbusiness.workflowstep.nextStepName')" prop="nextStepId">
+            <el-select
+              v-model="branchEditForm.nextStepId"
+              :placeholder="$t('formbusiness.workflowstep.pleaseSelectNextStep')"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in branchStepSelectOptions"
+                :key="String(item.stepId)"
+                :label="item.stepName"
+                :value="String(item.stepId)"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('formbusiness.workflowstep.executeMatched')">
+            <el-radio-group v-model="branchEditForm.executeMatched">
+              <el-radio :value="1">{{ $t('common.yes') }}</el-radio>
+              <el-radio :value="0">{{ $t('common.no') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="branchEditDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" :loading="branchEditSubmitting" @click="submitBranchEdit">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
   
   <script setup>
-import { ref, reactive, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
@@ -416,7 +501,13 @@ import {
   GET_USER_INFO_PAGE_API,
   DELETE_WORKFLOWSTEP_API,
   GET_WORKFLOWSTEP_ENTITY_API,
-  UPDATE_WORKFLOWSTEP_API
+  UPDATE_WORKFLOWSTEP_API,
+  GET_WORKFLOWSTEP_DROPDOWN_API,
+  GET_CONDITION_DROPDOWN_API,
+  GET_WORKFLOWSTEP_BRANCH_ENTITY_API,
+  UPDATE_WORKFLOWSTEP_BRANCH_API,
+  INSERT_WORKFLOWSTEP_BRANCH_API,
+  DELETE_WORKFLOWSTEP_BRANCH_API
 } from '@/config/api/formbusiness/form-workflow/workflowstep.js'
 import { useI18n } from 'vue-i18n'
 
@@ -532,17 +623,13 @@ const resetUserPickerState = () => {
 
 const loadAssignmentRelatedOptions = async (assignmentCode) => {
   if (assignmentCode === 'Org') {
-    await loadDepartmentLevelOptions()
-    await loadUserPositionOptions()
+    await Promise.all([loadDepartmentLevelOptions(), loadUserPositionOptions()])
     return
   }
-
   if (assignmentCode === 'DeptUser') {
-    await loadDepartmentTreeOptions()
-    await loadUserPositionOptions()
+    await Promise.all([loadDepartmentTreeOptions(), loadUserPositionOptions()])
     return
   }
-
   if (assignmentCode === 'User') {
     await loadDepartmentTreeOptions()
   }
@@ -646,8 +733,11 @@ const getWorkflowStepList = async () => {
   }
   loading.value = true
   try {
-    const response = await post(GET_WORKFLOWSTEP_LIST_API, {
-      formTypeId: searchForm.formTypeId
+    const formData = new FormData()
+    formData.append('formTypeId', String(searchForm.formTypeId))
+    const response = await post(GET_WORKFLOWSTEP_LIST_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
     })
     if (response.code === 200) {
       workflowStepList.value = response.data || []
@@ -686,27 +776,21 @@ const handleEditStep = async (step) => {
   addStepDialogVisible.value = true
   addStepDialogLoading.value = true
 
-  // 先加载指派规则、签核方式等下拉
-  await Promise.all([
-    loadAssignmentOptions(),
-    loadApproveModeOptions()
-  ])
+  const formGroupId = searchForm.formGroupId || ''
 
   try {
-    const res = await post(
-      GET_WORKFLOWSTEP_ENTITY_API,
-      buildFormParams({ stepId: step.stepId }),
-      FORM_URLENCODED_CONFIG
-    )
-    if (res && res.code === 200 && res.data) {
-      const data = res.data
+    const [, , entityRes, formTypes] = await Promise.all([
+      loadAssignmentOptions(),
+      loadApproveModeOptions(),
+      post(GET_WORKFLOWSTEP_ENTITY_API, buildFormParams({ stepId: step.stepId }), FORM_URLENCODED_CONFIG),
+      formGroupId ? fetchFormTypeDropdown(formGroupId) : Promise.resolve([])
+    ])
 
-      // 顶部基础字段
-      addStepForm.formGroupId = searchForm.formGroupId || ''
-      // 先加载当前分组下的表单类别选项，再绑定 formTypeId，保证下拉中有该值
-      if (addStepForm.formGroupId) {
-        await loadDialogFormTypeOptions(addStepForm.formGroupId)
-      }
+    if (entityRes && entityRes.code === 200 && entityRes.data) {
+      const data = entityRes.data
+
+      addStepForm.formGroupId = formGroupId
+      dialogFormTypeOptions.value = formTypes
       addStepForm.formTypeId = data.formTypeId || ''
       addStepForm.stepNameCn = data.stepNameCn || ''
       addStepForm.stepNameEn = data.stepNameEn || ''
@@ -716,34 +800,29 @@ const handleEditStep = async (step) => {
       addStepForm.isReminderEnabled = data.isReminderEnabled ?? 0
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
 
-      // 先清空 4 个item
       resetStepAssignmentUpserts()
 
-      // 根据 assignment 填充对应 dto
       if (data.assignment === 'Org' && data.workflowStepOrgDto) {
         const dto = data.workflowStepOrgDto
         addStepForm.stepOrgUpsert.deptLeaveId = dto.deptLeaveId || ''
         addStepForm.stepOrgUpsert.positionId = dto.positionId || ''
-        await loadDepartmentLevelOptions()
-        await loadUserPositionOptions()
+        await Promise.all([loadDepartmentLevelOptions(), loadUserPositionOptions()])
       } else if (data.assignment === 'DeptUser' && data.workflowStepDeptUserDto) {
         const dto = data.workflowStepDeptUserDto
         addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
         addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
-        await loadDepartmentTreeOptions()
-        await loadUserPositionOptions()
+        await Promise.all([loadDepartmentTreeOptions(), loadUserPositionOptions()])
       } else if (data.assignment === 'User' && data.workflowStepUserDto) {
         const dto = data.workflowStepUserDto
         addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
         addStepForm.stepUserUpsert.userId = dto.userId || ''
-        // 部门 watcher 会自动触发一次查询
       } else if (data.assignment === 'Custom' && data.workflowStepCustomDto) {
         const dto = data.workflowStepCustomDto
         addStepForm.stepCustomUpsert.handlerKey = dto.handlerKey || ''
         addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
       }
     } else {
-      showMessage(res?.message || t('formbusiness.workflowstep.getFailed'))
+      showMessage(entityRes?.message || t('formbusiness.workflowstep.getFailed'))
     }
   } catch {
     showMessage(t('formbusiness.workflowstep.getFailed'))
@@ -996,24 +1075,35 @@ const openAddStepDialog = async () => {
   isEditMode.value = false
   currentStepId.value = ''
   addStepDialogVisible.value = true
+  addStepDialogLoading.value = true
   resetAddStepDialogState()
   addStepFormRef.value?.resetFields()
-  await Promise.all([loadAssignmentOptions(), loadApproveModeOptions()])
-  // 下拉框默认选中第一项
-  if (assignmentOptions.value.length > 0) {
-    addStepForm.assignmentCode = assignmentOptions.value[0].assignmentCode
-  }
-  if (approveModeOptions.value.length > 0) {
-    addStepForm.approveModeCode = approveModeOptions.value[0].approveModeCode
-  }
-  if (formGroupOptions.value.length > 0) {
-    addStepForm.formGroupId = formGroupOptions.value[0].formGroupId
-    await loadDialogFormTypeOptions(addStepForm.formGroupId)
-    if (dialogFormTypeOptions.value.length > 0) {
-      addStepForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
+
+  const formGroupId = formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : ''
+
+  try {
+    const [, , formTypes] = await Promise.all([
+      loadAssignmentOptions(),
+      loadApproveModeOptions(),
+      formGroupId ? fetchFormTypeDropdown(formGroupId) : Promise.resolve([])
+    ])
+
+    if (assignmentOptions.value.length > 0) {
+      addStepForm.assignmentCode = assignmentOptions.value[0].assignmentCode
     }
-    // Assignment 为 Org/DeptUser 时加载对应 item 并默认选中第一项（联动）
-    await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
+    if (approveModeOptions.value.length > 0) {
+      addStepForm.approveModeCode = approveModeOptions.value[0].approveModeCode
+    }
+    if (formGroupId) {
+      addStepForm.formGroupId = formGroupId
+      dialogFormTypeOptions.value = formTypes
+      if (dialogFormTypeOptions.value.length > 0) {
+        addStepForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
+      }
+      await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
+    }
+  } finally {
+    addStepDialogLoading.value = false
   }
 }
 
@@ -1132,6 +1222,246 @@ const submitAddStep = async () => {
   })
 }
 
+// ========== 分支新增 / 编辑弹窗 ==========
+const branchEditDialogVisible = ref(false)
+const branchEditDialogLoading = ref(false)
+const branchEditSubmitting = ref(false)
+const isBranchAddMode = ref(false)
+const branchStepDropdownOptions = ref([])
+const branchConditionDropdownOptions = ref([])
+const branchEditFormRef = ref(null)
+const branchEditForm = reactive({
+  branChId: '',
+  stepId: '',
+  conditionId: '',
+  executeMatched: 0,
+  nextStepId: ''
+})
+
+/** 条件下拉：首项「默认」，避免与接口返回的 -1 重复 */
+const branchConditionSelectOptions = computed(() => {
+  const head = {
+    conditionId: '-1',
+    conditionName: t('formbusiness.workflowstep.conditionOptionDefault')
+  }
+  const list = branchConditionDropdownOptions.value || []
+  const rest = list.filter((x) => String(x?.conditionId) !== '-1')
+  return [head, ...rest]
+})
+
+/** 步骤下拉：首项「结束」，避免与接口返回的 -1 重复 */
+const branchStepSelectOptions = computed(() => {
+  const head = {
+    stepId: '-1',
+    stepName: t('formbusiness.workflowstep.nextStepOptionEnd')
+  }
+  const list = branchStepDropdownOptions.value || []
+  const rest = list.filter((x) => String(x?.stepId) !== '-1')
+  return [head, ...rest]
+})
+
+const branchEditRules = {
+  conditionId: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectCondition'), trigger: 'change' }],
+  nextStepId: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectNextStep'), trigger: 'change' }]
+}
+
+const isBranchApiSuccess = (code) => code === 200 || String(code) === '200'
+
+/** 列表项可能为 branChId（与后端一致）或 branchId */
+const resolveBranchId = (branch) => {
+  if (!branch) return ''
+  const v = branch.branChId ?? branch.branchId
+  return v != null && v !== '' ? String(v) : ''
+}
+
+const resolveBranchRowKey = (branch, stepId, bIndex) => {
+  const id = resolveBranchId(branch)
+  return id || `${stepId}-branch-${bIndex}`
+}
+
+/** 正在删除的分支 branChId，用于行内 loading */
+const deletingBranchId = ref('')
+
+const loadBranchStepDropdown = async (formTypeId) => {
+  try {
+    const res = await post(GET_WORKFLOWSTEP_DROPDOWN_API, buildFormParams({ formTypeId }), FORM_URLENCODED_CONFIG)
+    branchStepDropdownOptions.value = res.code === 200 ? (res.data || []) : []
+  } catch {
+    branchStepDropdownOptions.value = []
+  }
+}
+
+const loadBranchConditionDropdown = async (formTypeId) => {
+  try {
+    const res = await post(GET_CONDITION_DROPDOWN_API, buildFormParams({ formTypeId }), FORM_URLENCODED_CONFIG)
+    branchConditionDropdownOptions.value = res.code === 200 ? (res.data || []) : []
+  } catch {
+    branchConditionDropdownOptions.value = []
+  }
+}
+
+const handleAddBranch = async (step) => {
+  if (!searchForm.formTypeId) {
+    showMessage(t('formbusiness.workflowstep.pleaseSelectFormType'))
+    return
+  }
+  isBranchAddMode.value = true
+  branchEditForm.branChId = ''
+  branchEditForm.stepId = step?.stepId ? String(step.stepId) : ''
+  branchEditForm.conditionId = ''
+  branchEditForm.executeMatched = 0
+  branchEditForm.nextStepId = ''
+  branchEditDialogVisible.value = true
+  branchEditDialogLoading.value = true
+  branchStepDropdownOptions.value = []
+  branchConditionDropdownOptions.value = []
+
+  try {
+    const formTypeId = searchForm.formTypeId
+    await Promise.all([loadBranchStepDropdown(formTypeId), loadBranchConditionDropdown(formTypeId)])
+  } catch {
+    showMessage(t('formbusiness.workflowstep.branchDropdownLoadFailed'))
+  } finally {
+    branchEditDialogLoading.value = false
+    nextTick(() => branchEditFormRef.value?.clearValidate())
+  }
+}
+
+const handleDeleteBranch = async (branch) => {
+  const branChId = resolveBranchId(branch)
+  if (!branChId) {
+    showMessage(t('formbusiness.workflowstep.branchRowIdMissing'))
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.workflowstep.deleteBranchConfirm', {
+        name: branch.conditionName || branch.nextStepName || branChId
+      }),
+      t('common.tip'),
+      { type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  deletingBranchId.value = branChId
+  try {
+    const response = await post(
+      DELETE_WORKFLOWSTEP_BRANCH_API,
+      buildFormParams({ branChId }),
+      FORM_URLENCODED_CONFIG
+    )
+    if (isBranchApiSuccess(response?.code)) {
+      showMessage(t('formbusiness.workflowstep.deleteBranchSuccess'), 'success')
+      await getWorkflowStepList()
+    } else {
+      showMessage(response?.message || t('formbusiness.workflowstep.deleteBranchFailed'))
+    }
+  } catch {
+    showMessage(t('formbusiness.workflowstep.deleteBranchFailed'))
+  } finally {
+    deletingBranchId.value = ''
+  }
+}
+
+const handleEditBranch = async (branch) => {
+  if (!resolveBranchId(branch)) {
+    showMessage(t('formbusiness.workflowstep.branchRowIdMissing'))
+    return
+  }
+  if (!searchForm.formTypeId) {
+    showMessage(t('formbusiness.workflowstep.pleaseSelectFormType'))
+    return
+  }
+  isBranchAddMode.value = false
+  branchEditDialogVisible.value = true
+  branchEditDialogLoading.value = true
+  branchStepDropdownOptions.value = []
+  branchConditionDropdownOptions.value = []
+
+  try {
+    const formTypeId = searchForm.formTypeId
+    const [entityRes] = await Promise.all([
+      post(GET_WORKFLOWSTEP_BRANCH_ENTITY_API, buildFormParams({ branChId: resolveBranchId(branch) }), FORM_URLENCODED_CONFIG),
+      loadBranchStepDropdown(formTypeId),
+      loadBranchConditionDropdown(formTypeId)
+    ])
+
+    if (entityRes && entityRes.code === 200 && entityRes.data) {
+      const data = entityRes.data
+      branchEditForm.branChId = data.branChId != null ? String(data.branChId) : ''
+      branchEditForm.stepId = data.stepId != null ? String(data.stepId) : ''
+      branchEditForm.conditionId = data.conditionId != null ? String(data.conditionId) : ''
+      branchEditForm.executeMatched = data.executeMatched ?? 0
+      branchEditForm.nextStepId = data.nextStepId != null ? String(data.nextStepId) : ''
+    } else {
+      showMessage(entityRes?.message || t('formbusiness.workflowstep.getBranchEntityFailed'))
+    }
+  } catch {
+    showMessage(t('formbusiness.workflowstep.getBranchEntityFailed'))
+  } finally {
+    branchEditDialogLoading.value = false
+    nextTick(() => branchEditFormRef.value?.clearValidate())
+  }
+}
+
+const submitBranchEdit = async () => {
+  if (!branchEditFormRef.value) return
+  await branchEditFormRef.value.validate(async (valid) => {
+    if (!valid) return
+    branchEditSubmitting.value = true
+    try {
+      let response
+      if (isBranchAddMode.value) {
+        const insertPayload = {
+          branChId: '',
+          stepId: String(branchEditForm.stepId),
+          conditionId: String(branchEditForm.conditionId),
+          executeMatched: branchEditForm.executeMatched,
+          nextStepId: String(branchEditForm.nextStepId)
+        }
+        response = await post(INSERT_WORKFLOWSTEP_BRANCH_API, insertPayload)
+        if (isBranchApiSuccess(response?.code)) {
+          showMessage(t('formbusiness.workflowstep.addBranchSuccess'), 'success')
+          branchEditDialogVisible.value = false
+          await getWorkflowStepList()
+        } else {
+          showMessage(response?.message || t('formbusiness.workflowstep.addBranchFailed'))
+        }
+      } else {
+        const updatePayload = {
+          branChId: branchEditForm.branChId,
+          stepId: String(branchEditForm.stepId),
+          conditionId: String(branchEditForm.conditionId),
+          executeMatched: branchEditForm.executeMatched,
+          nextStepId: String(branchEditForm.nextStepId)
+        }
+        response = await post(UPDATE_WORKFLOWSTEP_BRANCH_API, updatePayload)
+        if (isBranchApiSuccess(response?.code)) {
+          showMessage(t('formbusiness.workflowstep.editBranchSuccess'), 'success')
+          branchEditDialogVisible.value = false
+          await getWorkflowStepList()
+        } else {
+          showMessage(response?.message || t('formbusiness.workflowstep.editBranchFailed'))
+        }
+      }
+    } catch {
+      showMessage(
+        isBranchAddMode.value ? t('formbusiness.workflowstep.addBranchFailed') : t('formbusiness.workflowstep.editBranchFailed')
+      )
+    } finally {
+      branchEditSubmitting.value = false
+    }
+  })
+}
+
+const handleBranchEditDialogClose = () => {
+  isBranchAddMode.value = false
+  branchEditFormRef.value?.resetFields()
+  branchStepDropdownOptions.value = []
+  branchConditionDropdownOptions.value = []
+}
+
 // 组件挂载时获取数据
 onMounted(async () => {
   await getFormGroupOptions()
@@ -1208,6 +1538,10 @@ onMounted(async () => {
 
 .branch-section {
   margin-top: 0;
+}
+
+.branch-toolbar {
+  margin-bottom: 8px;
 }
 
 .add-step-form .assignment-divider {
@@ -1303,6 +1637,12 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.branch-cell-action {
+  flex: 0 0 140px;
+  flex-wrap: wrap;
+  gap: 4px 0;
 }
 </style>
 

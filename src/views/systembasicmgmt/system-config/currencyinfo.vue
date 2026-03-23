@@ -36,13 +36,6 @@
           <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120"/>
           <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
           <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-          <el-table-column prop="isEnabled" :label="$t('systembasicmgmt.currencyInfo.isEnabled')" align="center" min-width="70">
-            <template #default="scope">
-              <el-tag :type="scope.row.isEnabled === 1 ? 'success' : 'danger'">
-                {{ scope.row.isEnabled === 1 ? $t('systembasicmgmt.enabled') : $t('systembasicmgmt.disabled') }}
-              </el-tag>
-            </template>
-          </el-table-column>
           <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
           <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
             <template #default="scope">

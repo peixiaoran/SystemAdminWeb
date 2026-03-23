@@ -466,6 +466,17 @@ const pmenuRoutes = [
           },
           children: [
             {
+              path: 'workflowcondition',
+              name: 'WorkflowCondition',
+              component: () => import('../views/formbusiness/form-workflow/workflowcondition.vue'),
+              meta: { 
+                title: 'route.workflowcondition', 
+                icon: 'Switch',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
               path: 'workflowstep',
               name: 'WorkflowStep',
               component: () => import('../views/formbusiness/form-workflow/workflowstep.vue'),
