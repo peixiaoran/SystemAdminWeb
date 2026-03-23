@@ -417,6 +417,7 @@ export default {
       deleteStepConfirm: 'Are you sure to delete step "{name}"?',
       deleteStepSuccess: 'Step deleted successfully',
       deleteStepFailed: 'Failed to delete step',
+      sortOrder: 'Sort Order',
       editStep: 'Edit Step',
       editStepSuccess: 'Step updated successfully',
       operation: 'Operation',

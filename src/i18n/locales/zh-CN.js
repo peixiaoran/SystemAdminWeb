@@ -351,6 +351,7 @@ export default {
       deleteStepConfirm: '确定要删除步骤「{name}」吗？',
       deleteStepSuccess: '删除步骤成功',
       deleteStepFailed: '删除步骤失败',
+      sortOrder: '排序',
       editStep: '编辑步骤',
       editStepSuccess: '编辑步骤成功',
       operation: '操作',

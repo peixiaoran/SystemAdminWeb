@@ -269,12 +269,30 @@ const logout = async () => {
 <style scoped>
 .module-select-container {
   min-height: 100vh;
-  background: #fff;
+  background: linear-gradient(
+    165deg,
+    var(--el-color-primary-light-9) 0%,
+    var(--el-fill-color-blank) 38%,
+    var(--el-bg-color-page) 100%
+  );
   position: relative;
   display: flex;
   flex-direction: column;
   padding: 0 30px 60px;
   overflow: hidden;
+}
+
+.module-select-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 80% at 100% 0%,
+    color-mix(in srgb, var(--el-color-primary) 8%, transparent) 0%,
+    transparent 55%
+  );
+  z-index: 0;
 }
 
 .header-actions {
@@ -316,11 +334,11 @@ const logout = async () => {
 .username {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 .dropdown-icon {
-  color: #909399;
+  color: var(--el-text-color-secondary);
   font-size: 12px;
 }
 
@@ -380,13 +398,24 @@ const logout = async () => {
   height: 320px;
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border-radius: var(--el-border-radius-round);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.28s ease,
+    border-color 0.22s ease;
   cursor: pointer;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  box-shadow: var(--el-box-shadow-light);
+}
+
+.pmenu-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--el-color-primary) 35%, var(--el-border-color-lighter));
+  box-shadow:
+    var(--el-box-shadow),
+    0 0 0 1px color-mix(in srgb, var(--el-color-primary) 12%, transparent);
 }
 
 .pmenu-icon {
@@ -394,8 +423,12 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f7fa;
-  color: #303133;
+  background: linear-gradient(
+    180deg,
+    var(--el-color-primary-light-9) 0%,
+    color-mix(in srgb, var(--el-color-primary-light-9) 45%, var(--el-bg-color)) 100%
+  );
+  color: var(--el-color-primary);
   position: relative;
 }
 
@@ -406,13 +439,18 @@ const logout = async () => {
   left: 0;
   right: 0;
   height: 1px;
-  background: #ebeef5;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--el-border-color-extra-light),
+    transparent
+  );
 }
 
 .pmenu-info {
   flex: 1;
   padding: 24px 20px 16px 20px;
-  background: #ffffff;
+  background: var(--el-bg-color);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -422,7 +460,7 @@ const logout = async () => {
 .pmenu-info h2 {
   font-size: 18px;
   margin: 0 0 12px 0;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-weight: 600;
   letter-spacing: 0.5px;
   overflow: hidden;
@@ -432,7 +470,7 @@ const logout = async () => {
 
 .pmenu-info p {
   font-size: 13px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
   margin: 0;
   line-height: 1.5;
   height: 60px;
@@ -449,7 +487,7 @@ const logout = async () => {
   justify-content: center;
   align-items: center;
   padding: 16px 20px 20px 20px;
-  background: #ffffff;
+  background: var(--el-bg-color);
 }
 
 .pmenu-footer .el-button {
@@ -457,12 +495,12 @@ const logout = async () => {
   padding: 12px 28px;
   font-size: 14px;
   font-weight: 500;
-  background: #303133;
-  color: #fff;
-  border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   min-width: 120px;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.pmenu-card:hover .pmenu-footer .el-button {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--el-color-primary) 35%, transparent);
 }
 
 .loading-container {
@@ -474,7 +512,8 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: color-mix(in srgb, var(--el-bg-color) 88%, transparent);
+  backdrop-filter: blur(6px);
   z-index: 10;
 }
 
@@ -486,13 +525,13 @@ const logout = async () => {
 }
 
 .loading-text {
-  color: #606266;
+  color: var(--el-text-color-regular);
   font-size: 14px;
 }
 
 .loading-icon {
   animation: rotate 1s linear infinite;
-  color: #606266;
+  color: var(--el-color-primary);
 }
 
 @keyframes rotate {
@@ -559,6 +598,7 @@ const logout = async () => {
     padding: 10px 20px;
     font-size: 13px;
     min-width: 100px;
+    border-radius: 22px;
   }
 }
 
@@ -600,33 +640,40 @@ const logout = async () => {
   }
 }
 
-/* 修改Element Plus下拉菜单的样式 */
+/* 与 Element Plus 下拉面板风格对齐 */
 :deep(.el-dropdown-menu) {
   padding: 8px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ebeef5;
+  border-radius: var(--el-border-radius-base);
+  box-shadow: var(--el-box-shadow-light);
+  border: 1px solid var(--el-border-color-lighter);
   min-width: 160px;
+  background-color: var(--el-bg-color-overlay);
 }
 
 :deep(.el-dropdown-menu__item) {
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--el-border-radius-small);
   margin-bottom: 4px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   display: flex;
   align-items: center;
+}
+
+:deep(.el-dropdown-menu__item:not(.is-disabled):focus),
+:deep(.el-dropdown-menu__item:not(.is-disabled):hover) {
+  background-color: var(--el-fill-color-light);
+  color: var(--el-color-primary);
 }
 
 :deep(.el-dropdown-menu__item i) {
   margin-right: 8px;
   font-size: 16px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 :deep(.el-dropdown-menu__item--divided) {
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--el-border-color-lighter);
   margin-top: 8px;
   padding-top: 8px;
 }

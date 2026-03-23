@@ -73,9 +73,9 @@
                 </div>
                 <div class="branch-table" v-if="step.stepBranchList && step.stepBranchList.length > 0">
                   <div class="branch-row branch-row-header">
-                    <div class="branch-cell">{{ $t('formbusiness.workflowstep.conditionName') }}</div>
-                    <div class="branch-cell">{{ $t('formbusiness.workflowstep.nextStepName') }}</div>
-                    <div class="branch-cell">{{ $t('formbusiness.workflowstep.executeMatched') }}</div>
+                    <div class="branch-cell branch-cell-condition">{{ $t('formbusiness.workflowstep.conditionName') }}</div>
+                    <div class="branch-cell branch-cell-next">{{ $t('formbusiness.workflowstep.nextStepName') }}</div>
+                    <div class="branch-cell branch-cell-execute">{{ $t('formbusiness.workflowstep.executeMatched') }}</div>
                     <div class="branch-cell branch-cell-action">{{ $t('formbusiness.workflowstep.operation') }}</div>
                   </div>
                   <div 
@@ -83,13 +83,13 @@
                     :key="resolveBranchRowKey(branch, step.stepId, bIndex)"
                     class="branch-row"
                   >
-                    <div class="branch-cell">
+                    <div class="branch-cell branch-cell-condition">
                       {{ branch.conditionId === '0' || branch.conditionId === '-1' || branch.conditionId === -1 ? $t('formbusiness.workflowstep.defaultCondition') : (branch.conditionName || '-') }}
                     </div>
-                    <div class="branch-cell">
+                    <div class="branch-cell branch-cell-next">
                       {{ branch.nextStepName || $t('formbusiness.workflowstep.endStep') }}
                     </div>
-                    <div class="branch-cell">
+                    <div class="branch-cell branch-cell-execute">
                       <el-tag :type="branch.executeMatched === 1 ? 'success' : 'info'" effect="dark" size="small">
                         {{ branch.executeMatched === 1 ? $t('common.yes') : $t('common.no') }}
                       </el-tag>
@@ -207,19 +207,12 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.approveMode')" prop="approveModeCode">
-              <el-select
+              <el-segmented
                 v-model="addStepForm.approveModeCode"
-                :placeholder="$t('formbusiness.workflowstep.pleaseSelectApproveMode')"
-                filterable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in approveModeOptions"
-                  :key="item.approveModeCode"
-                  :label="item.approveModeName"
-                  :value="item.approveModeCode"
-                />
-              </el-select>
+                class="approve-mode-segmented"
+                block
+                :options="approveModeSegmentedOptions"
+              />
             </el-form-item>
           </div>
           <div class="form-row">
@@ -240,6 +233,14 @@
             <el-form-item :label="$t('formbusiness.workflowstep.reminderIntervalMinutes')" prop="reminderIntervalMinutes">
               <el-input-number
                 v-model="addStepForm.reminderIntervalMinutes"
+                :min="0"
+                :max="9999"
+                style="width: 200px"
+              />
+            </el-form-item>
+            <el-form-item :label="$t('formbusiness.workflowstep.sortOrder')" prop="sortOrder">
+              <el-input-number
+                v-model="addStepForm.sortOrder"
                 :min="0"
                 :max="9999"
                 style="width: 200px"
@@ -560,8 +561,14 @@ const currentStepId = ref('')
 const addStepFormRef = ref(null)
 const dialogFormTypeOptions = ref([])
 const assignmentOptions = ref([])
-const archiveLevelOptions = ref([])
 const approveModeOptions = ref([])
+/** 签核方式（如待签核 / 待送审）→ el-segmented 选项 */
+const approveModeSegmentedOptions = computed(() =>
+  (approveModeOptions.value || []).map((item) => ({
+    label: item.approveModeName,
+    value: item.approveModeCode
+  }))
+)
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
@@ -583,6 +590,7 @@ const addStepForm = reactive({
   approveModeCode: '',
   isReminderEnabled: 0,
   reminderIntervalMinutes: 0,
+  sortOrder: 0,
   description: '',
   isStartStep: 0,
   stepOrgUpsert: createEmptyOrgUpsert(),
@@ -655,6 +663,7 @@ const resetAddStepDialogState = () => {
   addStepForm.isStartStep = 0
   addStepForm.isReminderEnabled = 0
   addStepForm.reminderIntervalMinutes = 0
+  addStepForm.sortOrder = 0
   addStepForm.description = ''
   resetStepAssignmentUpserts()
   resetUserPickerState()
@@ -799,6 +808,7 @@ const handleEditStep = async (step) => {
       addStepForm.approveModeCode = data.approveMode || ''
       addStepForm.isReminderEnabled = data.isReminderEnabled ?? 0
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
+      addStepForm.sortOrder = data.sortOrder ?? 0
 
       resetStepAssignmentUpserts()
 
@@ -1193,6 +1203,7 @@ const submitAddStep = async () => {
         approveMode: addStepForm.approveModeCode,
         isReminderEnabled: addStepForm.isReminderEnabled,
         reminderIntervalMinutes: addStepForm.reminderIntervalMinutes,
+        sortOrder: addStepForm.sortOrder,
         stepOrgUpsert: { ...addStepForm.stepOrgUpsert },
         stepDeptUserUpsert: { ...addStepForm.stepDeptUserUpsert },
         stepUserUpsert: { ...addStepForm.stepUserUpsert },
@@ -1612,11 +1623,25 @@ onMounted(async () => {
 }
 
 .branch-table {
-  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* 分支表各列宽度（在此处改数字即可） */
+  --branch-w-condition: 380px; /* 条件 Condition */
+  --branch-w-next: 320px; /* 下一步 Next Step */
+  --branch-w-execute: 260px; /* 冲突执行 Conflict Execute */
+  --branch-w-action: 200px; /* 操作：至少 240px，其余宽度占满 */
 }
 
 .branch-row {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    var(--branch-w-condition)
+    var(--branch-w-next)
+    var(--branch-w-execute)
+    var(--branch-w-action);
+  align-items: center;
   border-bottom: 1px solid #ebeef5;
 }
 
@@ -1631,18 +1656,26 @@ onMounted(async () => {
 }
 
 .branch-cell {
-  flex: 1;
-  padding: 6px 12px;
+  padding: 6px 10px;
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.branch-cell-condition,
+.branch-cell-next {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .branch-cell-action {
-  flex: 0 0 140px;
   flex-wrap: wrap;
-  gap: 4px 0;
+  gap: 4px 8px;
+  justify-content: center;
 }
 </style>
 
