@@ -489,6 +489,8 @@ export default {
         durationRequired: '请假时长不能为空',
         saveButton: '保存',
         submitButton: '送审',
+        submitConfirmTitle: '确认送审',
+        submitConfirmMessage: '确定要提交送审吗？提交后将进入审批流程。',
         submitSuccess: '送审成功',
         approvalResultTitle: '送审成功',
         approvalResultSubTitle: '已成功送审，请等待后续审批处理。',
@@ -509,7 +511,16 @@ export default {
         attachmentTipMaternity: '产假需上传怀孕或分娩相关证明',
         attachmentTipPaternity: '陪产假需上传配偶分娩相关证明',
         attachmentTipNursing: '护理假需上传被护理人医疗或住院证明',
-        attachmentTipBereavement: '丧假需上传讣告、死亡证明或关系证明'
+        attachmentTipBereavement: '丧假需上传讣告、死亡证明或关系证明',
+        viewFullWorkflow: '查看完整流程',
+        workflowDrawerTitle: '完整签核流程',
+        workflowStatusSigning: '待签核',
+        workflowStatusApproved: '签核完成',
+        workflowStatusNotSigned: '未签核',
+        workflowAgent: '代理人',
+        workflowEmpty: '暂无流程数据',
+        workflowLoadFailed: '加载流程失败',
+        workflowNeedFormId: '请先完成表单初始化后再查看流程'
       },
     
     // 表单验证

@@ -54,7 +54,7 @@
               <p>{{ getPMenuRemarks(pmenu) }}</p>
             </div>
             <div class="pmenu-footer">
-              <el-button type="primary" size="small">
+              <el-button type="primary" size="small" class="module-enter-button">
                 {{ $t('moduleSelect.enterModule') }}
               </el-button>
             </div>
@@ -267,14 +267,10 @@ const logout = async () => {
 </script>
 
 <style scoped>
+/* 与登录页 login-container / login-box 同一套：白底、浅灰层次、#1a1a1a 强调色 */
 .module-select-container {
   min-height: 100vh;
-  background: linear-gradient(
-    165deg,
-    var(--el-color-primary-light-9) 0%,
-    var(--el-fill-color-blank) 38%,
-    var(--el-bg-color-page) 100%
-  );
+  background: #fff;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -288,8 +284,8 @@ const logout = async () => {
   inset: 0;
   pointer-events: none;
   background: radial-gradient(
-    120% 80% at 100% 0%,
-    color-mix(in srgb, var(--el-color-primary) 8%, transparent) 0%,
+    120% 80% at 50% -20%,
+    rgba(26, 26, 26, 0.04) 0%,
     transparent 55%
   );
   z-index: 0;
@@ -334,11 +330,11 @@ const logout = async () => {
 .username {
   font-size: 14px;
   font-weight: 500;
-  color: var(--el-text-color-primary);
+  color: #1a1a1a;
 }
 
 .dropdown-icon {
-  color: var(--el-text-color-secondary);
+  color: #909399;
   font-size: 12px;
 }
 
@@ -398,24 +394,22 @@ const logout = async () => {
   height: 320px;
   display: flex;
   flex-direction: column;
-  border-radius: var(--el-border-radius-round);
+  border-radius: 24px;
   transition:
-    transform 0.22s ease,
-    box-shadow 0.28s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.22s ease;
   cursor: pointer;
   overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  box-shadow: var(--el-box-shadow-light);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .pmenu-card:hover {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--el-color-primary) 35%, var(--el-border-color-lighter));
-  box-shadow:
-    var(--el-box-shadow),
-    0 0 0 1px color-mix(in srgb, var(--el-color-primary) 12%, transparent);
+  border-color: rgba(26, 26, 26, 0.12);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(26, 26, 26, 0.08);
 }
 
 .pmenu-icon {
@@ -423,12 +417,8 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(
-    180deg,
-    var(--el-color-primary-light-9) 0%,
-    color-mix(in srgb, var(--el-color-primary-light-9) 45%, var(--el-bg-color)) 100%
-  );
-  color: var(--el-color-primary);
+  background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+  color: #1a1a1a;
   position: relative;
 }
 
@@ -442,7 +432,7 @@ const logout = async () => {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--el-border-color-extra-light),
+    #e4e7ed,
     transparent
   );
 }
@@ -450,7 +440,7 @@ const logout = async () => {
 .pmenu-info {
   flex: 1;
   padding: 24px 20px 16px 20px;
-  background: var(--el-bg-color);
+  background: #ffffff;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -460,7 +450,7 @@ const logout = async () => {
 .pmenu-info h2 {
   font-size: 18px;
   margin: 0 0 12px 0;
-  color: var(--el-text-color-primary);
+  color: #1a1a1a;
   font-weight: 600;
   letter-spacing: 0.5px;
   overflow: hidden;
@@ -470,7 +460,7 @@ const logout = async () => {
 
 .pmenu-info p {
   font-size: 13px;
-  color: var(--el-text-color-secondary);
+  color: #606266;
   margin: 0;
   line-height: 1.5;
   height: 60px;
@@ -487,20 +477,35 @@ const logout = async () => {
   justify-content: center;
   align-items: center;
   padding: 16px 20px 20px 20px;
-  background: var(--el-bg-color);
+  background: #ffffff;
 }
 
-.pmenu-footer .el-button {
-  border-radius: 25px;
-  padding: 12px 28px;
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 120px;
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
+/* 对齐登录页 .login-button：深灰底、白字、12px 圆角 */
+.module-enter-button {
+  border-radius: 12px !important;
+  padding: 12px 28px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  min-width: 120px !important;
+  letter-spacing: 0.5px;
+  background: #1a1a1a !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.pmenu-card:hover .pmenu-footer .el-button {
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--el-color-primary) 35%, transparent);
+.module-enter-button:hover,
+.module-enter-button:focus {
+  background: #303133 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2) !important;
+}
+
+.module-enter-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15) !important;
 }
 
 .loading-container {
@@ -512,7 +517,7 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: color-mix(in srgb, var(--el-bg-color) 88%, transparent);
+  background-color: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(6px);
   z-index: 10;
 }
@@ -525,13 +530,13 @@ const logout = async () => {
 }
 
 .loading-text {
-  color: var(--el-text-color-regular);
+  color: #606266;
   font-size: 14px;
 }
 
 .loading-icon {
   animation: rotate 1s linear infinite;
-  color: var(--el-color-primary);
+  color: #1a1a1a;
 }
 
 @keyframes rotate {
@@ -594,11 +599,11 @@ const logout = async () => {
     padding: 12px 16px 16px 16px;
   }
   
-  .pmenu-footer .el-button {
-    padding: 10px 20px;
-    font-size: 13px;
-    min-width: 100px;
-    border-radius: 22px;
+  .module-enter-button {
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    min-width: 100px !important;
+    border-radius: 12px !important;
   }
 }
 
@@ -633,47 +638,47 @@ const logout = async () => {
     height: 42px;
   }
   
-  .pmenu-footer .el-button {
-    padding: 8px 16px;
-    font-size: 12px;
-    min-width: 90px;
+  .module-enter-button {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    min-width: 90px !important;
   }
 }
 
-/* 与 Element Plus 下拉面板风格对齐 */
+/* 下拉与登录页中性层次一致 */
 :deep(.el-dropdown-menu) {
   padding: 8px;
-  border-radius: var(--el-border-radius-base);
-  box-shadow: var(--el-box-shadow-light);
-  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   min-width: 160px;
-  background-color: var(--el-bg-color-overlay);
+  background-color: #ffffff;
 }
 
 :deep(.el-dropdown-menu__item) {
   padding: 8px 12px;
-  border-radius: var(--el-border-radius-small);
+  border-radius: 8px;
   margin-bottom: 4px;
   font-size: 14px;
-  color: var(--el-text-color-regular);
+  color: #606266;
   display: flex;
   align-items: center;
 }
 
 :deep(.el-dropdown-menu__item:not(.is-disabled):focus),
 :deep(.el-dropdown-menu__item:not(.is-disabled):hover) {
-  background-color: var(--el-fill-color-light);
-  color: var(--el-color-primary);
+  background-color: #f5f5f5;
+  color: #1a1a1a;
 }
 
 :deep(.el-dropdown-menu__item i) {
   margin-right: 8px;
   font-size: 16px;
-  color: var(--el-text-color-secondary);
+  color: #909399;
 }
 
 :deep(.el-dropdown-menu__item--divided) {
-  border-top: 1px solid var(--el-border-color-lighter);
+  border-top: 1px solid #e4e7ed;
   margin-top: 8px;
   padding-top: 8px;
 }

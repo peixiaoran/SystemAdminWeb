@@ -151,7 +151,7 @@
               style="width: 100%"
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectHireDate')"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD" />
+              value-format="YYYY-MM-DD" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.nationality')" prop="nationality">
             <el-select 
@@ -410,6 +410,47 @@ const normalizeEditFormSwitches = () => {
   normalizeSwitchField('isApproval', 0)
   normalizeSwitchField('isRealtimeNotification', 0)
   normalizeSwitchField('isScheduledNotification', 0)
+}
+
+const pad2 = (n) => String(n).padStart(2, '0')
+
+const formatYmd = (d) => {
+  if (!d || isNaN(d.getTime())) return ''
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+}
+
+/** 后端 HireDate 为 DateTime：ISO、/Date(ms)/、时间戳等 → el-date-picker 的 YYYY-MM-DD */
+const normalizeHireDateFromApi = (val) => {
+  if (val === null || val === undefined || val === '') return ''
+  if (typeof val === 'string') {
+    const msMatch = val.match(/\/Date\((-?\d+)\)\//)
+    if (msMatch) {
+      return formatYmd(new Date(Number(msMatch[1])))
+    }
+    const ymd = val.match(/^(\d{4})-(\d{2})-(\d{2})/)
+    if (ymd) return `${ymd[1]}-${ymd[2]}-${ymd[3]}`
+    const ymdSlash = val.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/)
+    if (ymdSlash) {
+      return `${ymdSlash[1]}-${pad2(ymdSlash[2])}-${pad2(ymdSlash[3])}`
+    }
+    const d = new Date(val.includes('T') ? val : val.replace(' ', 'T'))
+    return formatYmd(d)
+  }
+  if (typeof val === 'number') {
+    return formatYmd(new Date(val))
+  }
+  return ''
+}
+
+/** 提交给后端 DateTime：YYYY-MM-DD（或历史 YYYY/MM/DD）→ 当日 00:00:00 */
+const hireDateToDateTimePayload = (val) => {
+  if (val === null || val === undefined || val === '') return val
+  const s = String(val)
+  const dash = s.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (dash) return `${dash[1]}-${dash[2]}-${dash[3]}T00:00:00`
+  const slash = s.match(/^(\d{4})\/(\d{2})\/(\d{2})/)
+  if (slash) return `${slash[1]}-${slash[2]}-${slash[3]}T00:00:00`
+  return val
 }
 
 // 初始化用户存储（保留：页面可能仍依赖 store 的其它信息）
@@ -813,6 +854,9 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       if (editForm.gender !== null && editForm.gender !== undefined) {
         editForm.gender = String(editForm.gender)
       }
+      editForm.hireDate = normalizeHireDateFromApi(
+        res.data.hireDate ?? res.data.HireDate ?? editForm.hireDate
+      )
           
           // 设置头像显示
           if (res.data.avatarAddress) {
@@ -1094,7 +1138,8 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   const insertUser = async () => {
       submitLoading.value = true
       const params = {
-          ...editForm
+          ...editForm,
+          hireDate: hireDateToDateTimePayload(editForm.hireDate)
       }
       
       const res = await post(INSERT_USER_API.INSERT_USER, params)
@@ -1129,7 +1174,8 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   const updateUser = async () => {
       submitLoading.value = true
       const params = {
-          ...editForm
+          ...editForm,
+          hireDate: hireDateToDateTimePayload(editForm.hireDate)
       }
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
       

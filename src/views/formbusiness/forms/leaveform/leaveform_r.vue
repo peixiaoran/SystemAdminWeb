@@ -234,24 +234,105 @@
 
         <el-row :gutter="16">
           <el-col :span="24">
-            <el-form-item>
-              <el-button type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-              <el-button type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+            <el-form-item class="form-actions-form-item">
+              <div class="form-actions-row">
+                <div class="form-actions-buttons">
+                  <el-button type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+                  <el-button type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+                </div>
+                <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
+                  <el-button
+                    class="workflow-view-btn"
+                    circle
+                    plain
+                    type="primary"
+                    :disabled="!form.formId"
+                    @click="openWorkflowDrawer"
+                  >
+                    <el-icon><Guide /></el-icon>
+                  </el-button>
+                </el-tooltip>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
     </el-card>
+
+    <el-drawer
+      v-model="workflowDrawerVisible"
+      :title="t('formbusiness.leaveform.workflowDrawerTitle')"
+      direction="rtl"
+      size="420px"
+      destroy-on-close
+      class="leaveform-workflow-drawer"
+    >
+      <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
+        <template v-if="!workflowDrawerLoading && workflowOverview.workflowApproveUser?.length">
+          <div
+            v-for="(step, stepIdx) in workflowOverview.workflowApproveUser"
+            :key="step.stepId || stepIdx"
+            class="workflow-step-block"
+          >
+            <div class="workflow-step-head">
+              <span
+                class="workflow-step-icon"
+                :class="{
+                  'is-done-step': workflowStepHeadState(stepIdx) === 'done',
+                  'is-current-step': workflowStepHeadState(stepIdx) === 'current',
+                  'is-pending-step': workflowStepHeadState(stepIdx) === 'pending'
+                }"
+              >
+                <el-icon v-if="workflowStepHeadState(stepIdx) === 'done'"><CircleCheck /></el-icon>
+                <el-icon v-else-if="workflowStepHeadState(stepIdx) === 'current'"><Clock /></el-icon>
+                <el-icon v-else><Minus /></el-icon>
+              </span>
+              <span class="workflow-step-name">{{ step.stepName }}</span>
+            </div>
+            <ul v-if="step.stepApproveUser?.length" class="workflow-user-list">
+              <li
+                v-for="(u, uIdx) in step.stepApproveUser"
+                :key="u.userId + '-' + uIdx"
+                class="workflow-user-row"
+                :class="{ 'workflow-user-row--has-agent': workflowUserHasAgent(u) }"
+              >
+                <span
+                  class="workflow-user-status-icon"
+                  :class="workflowUserStatusClass(stepIdx, u.isPending)"
+                >
+                  <el-icon v-if="workflowUserStatusIcon(stepIdx, u.isPending) === 'done'"><CircleCheck /></el-icon>
+                  <el-icon v-else-if="workflowUserStatusIcon(stepIdx, u.isPending) === 'doing'"><Clock /></el-icon>
+                  <el-icon v-else><Minus /></el-icon>
+                </span>
+                <div class="workflow-user-text">
+                  <div class="workflow-user-name">
+                    {{ u.userName }}<span v-if="u.appointmentTypeName && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                  </div>
+                  <div v-if="workflowUserHasAgent(u) && (u.agentUserName || u.appointmentTypeName)" class="workflow-user-meta">
+                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}<span v-if="u.appointmentTypeName" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                  </div>
+                </div>
+                <span
+                  class="workflow-user-label"
+                  :class="'workflow-user-label--' + workflowUserStatusIcon(stepIdx, u.isPending)"
+                >{{ workflowUserStatusLabel(stepIdx, u.isPending) }}</span>
+              </li>
+            </ul>
+          </div>
+        </template>
+        <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaveform.workflowEmpty')" />
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
-import { ElMessage, ElNotification } from 'element-plus'
-import { Upload, Document, Download, Delete } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import { Upload, Document, Download, Delete, Guide, Clock, CircleCheck, Minus } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_WORKFLOW_ALL_APPROVE_USER_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -268,6 +349,70 @@ const loading = ref(true)
 // 暂存与送审按钮加载状态
 const saving = ref(false)
 const approving = ref(false)
+const workflowDrawerVisible = ref(false)
+const workflowDrawerLoading = ref(false)
+const workflowOverview = reactive({
+  formId: '',
+  nowStepId: '',
+  rejectLogList: [],
+  workflowApproveUser: []
+})
+
+function getWorkflowCurrentStepIndex () {
+  const cur = String(workflowOverview.nowStepId || '')
+  if (!cur) return -1
+  const list = workflowOverview.workflowApproveUser || []
+  return list.findIndex((s) => String(s?.stepId || '') === cur)
+}
+
+function workflowStepPhase (stepIdx) {
+  const curIdx = getWorkflowCurrentStepIndex()
+  if (curIdx < 0) return 'after'
+  if (stepIdx < curIdx) return 'done'
+  if (stepIdx === curIdx) return 'current'
+  return 'after'
+}
+
+function workflowStepHeadState (stepIdx) {
+  const phase = workflowStepPhase(stepIdx)
+  if (phase === 'done') return 'done'
+  if (phase === 'current') return 'current'
+  return 'pending'
+}
+
+function workflowUserStatusIcon (stepIdx, isPending) {
+  const phase = workflowStepPhase(stepIdx)
+  if (phase === 'done') return 'done'
+  if (phase === 'after') return 'none'
+  return Number(isPending) === 1 ? 'done' : 'doing'
+}
+
+function workflowUserStatusClass (stepIdx, isPending) {
+  const key = workflowUserStatusIcon(stepIdx, isPending)
+  if (key === 'done') return 'is-user-done'
+  if (key === 'doing') return 'is-user-doing'
+  return 'is-user-none'
+}
+
+function workflowUserStatusLabel (stepIdx, isPending) {
+  const phase = workflowStepPhase(stepIdx)
+  if (phase === 'done') {
+    return t('formbusiness.leaveform.workflowStatusApproved')
+  }
+  if (phase === 'after') {
+    return t('formbusiness.leaveform.workflowStatusNotSigned')
+  }
+  return Number(isPending) === 1
+    ? t('formbusiness.leaveform.workflowStatusApproved')
+    : t('formbusiness.leaveform.workflowStatusSigning')
+}
+
+function workflowUserHasAgent (u) {
+  const id = u?.agentUserId
+  if (id === undefined || id === null || id === '') return false
+  return String(id) !== '0'
+}
+
 const resultState = reactive({
   visible: false,
   status: 'success',
@@ -712,20 +857,75 @@ async function onSubmit () {
   })
 }
 
-/**
- * 送审请假单：显示加载中，校验通过后再结束加载
- */
-async function onSubmitForApproval () {
-  approving.value = true
+async function fetchWorkflowAllApproveUser () {
+  const fromId = String(form.formId || '')
+  if (!fromId) return
+  workflowDrawerLoading.value = true
   try {
-    const valid = await new Promise((resolve) => {
-      formRef.value?.validate((v) => resolve(!!v))
+    const formData = new window.FormData()
+    formData.append('fromId', fromId)
+    const res = await post(GET_WORKFLOW_ALL_APPROVE_USER_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
     })
-    if (!valid) return
-    if (shouldRequireAttachment() && uploadedFiles.value.length === 0) {
-      ElMessage({ message: getAttachmentRequirementTip(), type: 'warning', plain: true, showClose: true })
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      workflowDrawerVisible.value = false
       return
     }
+    if (!res || res.code !== 200) {
+      ElMessage.error(res?.message || t('formbusiness.leaveform.workflowLoadFailed'))
+      return
+    }
+    const data = res.data || {}
+    workflowOverview.formId = data.formId || ''
+    workflowOverview.nowStepId = data.nowStepId || ''
+    workflowOverview.rejectLogList = Array.isArray(data.rejectLogList) ? data.rejectLogList : []
+    workflowOverview.workflowApproveUser = Array.isArray(data.workflowApproveUser) ? data.workflowApproveUser : []
+  } catch {
+    ElMessage.error(t('formbusiness.leaveform.workflowLoadFailed'))
+  } finally {
+    workflowDrawerLoading.value = false
+  }
+}
+
+function openWorkflowDrawer () {
+  if (!form.formId) {
+    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    return
+  }
+  workflowDrawerVisible.value = true
+  fetchWorkflowAllApproveUser()
+}
+
+/**
+ * 送审请假单：确认弹窗期间不加载；用户点确定后再进入加载并完成送审结果展示
+ */
+async function onSubmitForApproval () {
+  const valid = await new Promise((resolve) => {
+    formRef.value?.validate((v) => resolve(!!v))
+  })
+  if (!valid) return
+  if (shouldRequireAttachment() && uploadedFiles.value.length === 0) {
+    ElMessage({ message: getAttachmentRequirementTip(), type: 'warning', plain: true, showClose: true })
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.leaveform.submitConfirmMessage'),
+      t('formbusiness.leaveform.submitConfirmTitle'),
+      {
+        type: 'warning',
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        closeOnClickModal: false
+      }
+    )
+  } catch {
+    return
+  }
+  approving.value = true
+  try {
     showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
   } finally {
     approving.value = false
@@ -1034,4 +1234,164 @@ onMounted(async () => {
   width: 100%;
   margin-top: 4px;
 }
+
+.form-actions-form-item :deep(.el-form-item__content) {
+  width: 100%;
+}
+
+.form-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.workflow-view-btn {
+  flex-shrink: 0;
+}
+
+.workflow-drawer-body {
+  min-height: 120px;
+}
+
+.workflow-step-block {
+  padding-bottom: 20px;
+  border-left: 2px solid var(--el-border-color-lighter);
+  margin-left: 11px;
+  padding-left: 20px;
+}
+
+.workflow-step-block:last-child {
+  border-left-color: transparent;
+}
+
+.workflow-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  margin-left: -31px;
+}
+
+.workflow-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.workflow-step-icon.is-done-step {
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+}
+
+.workflow-step-icon.is-current-step {
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+}
+
+.workflow-step-icon.is-pending-step {
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color-light);
+}
+
+.workflow-step-name {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.workflow-user-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.workflow-user-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0 8px 4px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.workflow-user-row:last-child {
+  border-bottom: none;
+}
+
+.workflow-user-status-icon {
+  display: inline-flex;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.workflow-user-status-icon.is-user-done {
+  color: var(--el-color-success);
+}
+
+.workflow-user-status-icon.is-user-doing {
+  color: var(--el-color-primary);
+}
+
+.workflow-user-status-icon.is-user-none {
+  color: var(--el-text-color-placeholder);
+}
+
+.workflow-user-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.workflow-user-name {
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+}
+
+.workflow-user-appointment {
+  color: var(--el-text-color-secondary);
+}
+
+.workflow-user-meta {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-top: 2px;
+}
+
+/* 仅「代理人：xxx」一行：略右移，与上行姓名拉开一点纵向间距 */
+.workflow-user-row--has-agent .workflow-user-meta {
+  margin-left: 12px;
+  margin-top: 8px;
+}
+
+.workflow-user-label {
+  flex-shrink: 0;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.workflow-user-label--done {
+  color: var(--el-color-success);
+}
+
+.workflow-user-label--doing {
+  color: var(--el-color-primary);
+}
+
+.workflow-user-label--none {
+  color: var(--el-text-color-placeholder);
+}
+
 </style>

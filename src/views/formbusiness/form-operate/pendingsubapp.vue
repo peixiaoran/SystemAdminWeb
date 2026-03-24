@@ -411,19 +411,46 @@ const isRouteValid = (resolved) => {
 const FORM_POPUP_WIDTH = 1100
 const FORM_POPUP_HEIGHT = 850
 
-const openPopupWindow = (href, namePrefix = 'form_popup') => {
-  const left = Math.max(Math.floor((window.screen.width - FORM_POPUP_WIDTH) / 2), 0)
-  const top = Math.max(Math.floor((window.screen.height - FORM_POPUP_HEIGHT) / 2), 0)
-  const features = [
-    `width=${FORM_POPUP_WIDTH}`,
-    `height=${FORM_POPUP_HEIGHT}`,
-    `left=${left}`,
-    `top=${top}`,
-    'resizable=yes',
-    'scrollbars=yes'
-  ].join(',')
+/**
+ * @param {boolean} [fullscreen] 签核（approvalPath）等新窗口铺满可用屏幕；查看单号等仍用居中弹窗
+ */
+const openPopupWindow = (href, namePrefix = 'form_popup', fullscreen = false) => {
+  let features
+  if (fullscreen) {
+    const aw = window.screen.availWidth
+    const ah = window.screen.availHeight
+    features = [
+      `width=${aw}`,
+      `height=${ah}`,
+      'left=0',
+      'top=0',
+      'resizable=yes',
+      'scrollbars=yes'
+    ].join(',')
+  } else {
+    const left = Math.max(Math.floor((window.screen.width - FORM_POPUP_WIDTH) / 2), 0)
+    const top = Math.max(Math.floor((window.screen.height - FORM_POPUP_HEIGHT) / 2), 0)
+    features = [
+      `width=${FORM_POPUP_WIDTH}`,
+      `height=${FORM_POPUP_HEIGHT}`,
+      `left=${left}`,
+      `top=${top}`,
+      'resizable=yes',
+      'scrollbars=yes'
+    ].join(',')
+  }
   const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
   popup?.focus()
+  if (fullscreen) {
+    try {
+      const aw = window.screen.availWidth
+      const ah = window.screen.availHeight
+      popup?.moveTo(0, 0)
+      popup?.resizeTo(aw, ah)
+    } catch {
+      // ignore
+    }
+  }
 }
 
 const openFormPage = (row, pathKey) => {
@@ -445,7 +472,11 @@ const openFormPage = (row, pathKey) => {
     ElMessage({ message: t('formbusiness.pendingsubapp.getFailed'), type: 'error', plain: true, showClose: true })
     return
   }
-  openPopupWindow(resolved.href, pathKey === 'approvalPath' ? 'pending_approval' : 'form_view')
+  openPopupWindow(
+    resolved.href,
+    pathKey === 'approvalPath' ? 'pending_approval' : 'form_view',
+    pathKey === 'approvalPath'
+  )
 }
 
 const getFormStatusCode = (row) => {

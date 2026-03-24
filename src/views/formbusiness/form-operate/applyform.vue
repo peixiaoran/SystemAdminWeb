@@ -334,22 +334,26 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-const FORM_POPUP_WIDTH = 1170
-const FORM_POPUP_HEIGHT = 850
-
+/** 申请入口：新窗口尽量占满可用屏幕（浏览器弹窗全屏效果） */
 const openPopupWindow = (href, namePrefix = 'form_popup') => {
-  const left = Math.max(Math.floor((window.screen.width - FORM_POPUP_WIDTH) / 2), 0)
-  const top = Math.max(Math.floor((window.screen.height - FORM_POPUP_HEIGHT) / 2), 0)
+  const aw = window.screen.availWidth
+  const ah = window.screen.availHeight
   const features = [
-    `width=${FORM_POPUP_WIDTH}`,
-    `height=${FORM_POPUP_HEIGHT}`,
-    `left=${left}`,
-    `top=${top}`,
+    `width=${aw}`,
+    `height=${ah}`,
+    'left=0',
+    'top=0',
     'resizable=yes',
     'scrollbars=yes'
   ].join(',')
   const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
   popup?.focus()
+  try {
+    popup?.moveTo(0, 0)
+    popup?.resizeTo(aw, ah)
+  } catch {
+    // 部分浏览器策略下 resizeTo 不可用，已用 features 尽量铺满
+  }
 }
 
 const openApproval = (row) => {

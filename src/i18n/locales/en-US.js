@@ -555,6 +555,8 @@ export default {
       durationRequired: 'Leave duration cannot be empty',
       saveButton: 'Save',
       submitButton: 'Approval',
+      submitConfirmTitle: 'Confirm submission',
+      submitConfirmMessage: 'Submit this form for approval? It will enter the approval workflow.',
       submitSuccess: 'Submitted successfully',
       approvalResultTitle: 'Approval Submitted',
       approvalResultSubTitle: 'The form has been approval successfully. Please wait for the approval process.',
@@ -575,7 +577,16 @@ export default {
       attachmentTipMaternity: 'Maternity leave requires pregnancy or delivery proof',
       attachmentTipPaternity: 'Paternity leave requires proof of spouse delivery',
       attachmentTipNursing: 'Nursing leave requires medical or hospitalization proof of the cared person',
-      attachmentTipBereavement: 'Bereavement leave requires an obituary, death certificate, or proof of relationship'
+      attachmentTipBereavement: 'Bereavement leave requires an obituary, death certificate, or proof of relationship',
+      viewFullWorkflow: 'View full workflow',
+      workflowDrawerTitle: 'Approval workflow',
+      workflowStatusSigning: 'Pending',
+      workflowStatusApproved: 'Approved',
+      workflowStatusNotSigned: 'Not Processed',
+      workflowAgent: 'Agent',
+      workflowEmpty: 'No workflow data',
+      workflowLoadFailed: 'Failed to load workflow',
+      workflowNeedFormId: 'Please wait until the form is initialized'
     },
     
     // Form Validation
