@@ -1235,6 +1235,10 @@ onMounted(async () => {
   margin-top: 4px;
 }
 
+.form-actions-form-item {
+  margin-top: 24px;
+}
+
 .form-actions-form-item :deep(.el-form-item__content) {
   width: 100%;
 }

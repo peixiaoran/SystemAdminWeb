@@ -443,7 +443,7 @@ const handleLogin = () => {
 
 .login-button {
   width: 100%;
-  height: 48px;
+  height: 42px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;

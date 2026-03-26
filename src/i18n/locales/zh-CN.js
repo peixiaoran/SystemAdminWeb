@@ -1,7 +1,7 @@
 export default {
   // 通用
   common: {
-    systemTitle: 'SystemsAdmin 管理系统',
+    systemTitle: '工作流管理系统',
     confirm: '确定',
     cancel: '取消',
     close: '关闭',
@@ -89,7 +89,7 @@ export default {
   // 仪表板
   dashboard: {
     title: '系统仪表板',
-    subtitle: '欢迎使用SystemsAdmin管理系统',
+    subtitle: '欢迎使用工作流管理系统',
     stats: {
       totalUsers: '总员工数',
       departments: '部门数量',
@@ -619,7 +619,7 @@ export default {
   
   // 登录页
   login: {
-    title: 'Vue Admin管理系统',
+    title: '工作流管理系统',
     username: '员工名',
     password: '密码',
     factory: '厂区',

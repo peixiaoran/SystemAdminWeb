@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <!-- 侧边菜单 -->
-    <el-aside :width="isCollapse ? '64px' : '220px'" class="aside-container">
+    <el-aside :width="isCollapse ? '64px' : '230px'" class="aside-container">
       <div class="logo-container">
         <div class="logo-content" v-if="!isCollapse">
           <img src="/favicon.svg" alt="Logo" class="logo-icon" />
-          <h1 class="logo-text">Vue Admin</h1>
+          <h1 class="logo-text">{{ $t('common.systemTitle') }}</h1>
         </div>
         <img src="/favicon.svg" alt="Logo" class="logo-mini" v-else />
       </div>

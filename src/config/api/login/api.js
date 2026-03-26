@@ -37,7 +37,7 @@ export const UNLOCK_API = {
 
 // 密码过期更新
 export const PWD_EXPIRATION_UPDATE_API = {
-  PWD_EXPIRATION_UPDATE: 'SystemBasicMgmt/SystemAuth/SysUserOperate/PwdExpirationUpdate'
+  PWD_EXPIRATION_UPDATE: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserPwdExpiration'
 }
 
 // 员工退出

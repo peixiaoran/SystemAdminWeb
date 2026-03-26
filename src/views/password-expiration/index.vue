@@ -310,9 +310,14 @@ const handleSendCode = async () => {
   
   try {
     sendingCode.value = true
-    const res = await post(PWD_EXPIRATION_SEND_API.PWD_EXPIRATION_SEND, null, {
-      params: { userNo: form.userNo }
-    })
+    // 后端：[FromForm] string userNo — 使用 x-www-form-urlencoded 表单正文
+    const res = await post(
+      PWD_EXPIRATION_SEND_API.PWD_EXPIRATION_SEND,
+      new URLSearchParams({ userNo: String(form.userNo ?? '').trim() }),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    )
     
     if (res && res.code === 200) {
       ElMessage({
@@ -359,9 +364,10 @@ const handleSubmit = async () => {
       submitting.value = true
       formDisabled.value = true
       
+      // 后端 UserPwdExpiration：{ userNo, passWord, verificationCode }
       const res = await post(PWD_EXPIRATION_UPDATE_API.PWD_EXPIRATION_UPDATE, {
         userNo: form.userNo,
-        password: form.password,
+        passWord: form.password,
         verificationCode: form.verificationCode
       })
       
@@ -418,7 +424,7 @@ const handleBackToLogin = () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #fff;
+  background: #f2f3f5;
   position: relative;
   overflow: hidden;
   padding: 2px;
@@ -426,13 +432,26 @@ const handleBackToLogin = () => {
   width: 100%;
 }
 
+.password-expiration-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 50% -25%,
+    rgba(255, 255, 255, 0.9) 0%,
+    transparent 58%
+  );
+  z-index: 0;
+}
+
 .password-expiration-box {
   width: 480px;
   padding: 0;
-  background-color: #ffffff;
+  background-color: #fafbfc;
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06), 0 2px 12px rgba(15, 23, 42, 0.04);
+  border: none;
   overflow: hidden;
   z-index: 1;
 }
@@ -442,8 +461,8 @@ const handleBackToLogin = () => {
   flex-direction: column;
   align-items: center;
   padding: 40px 0 30px;
-  background: #ffffff;
-  color: #1a1a1a;
+  background: linear-gradient(180deg, #fcfcfd 0%, #fafbfc 100%);
+  color: #4b5563;
 }
 
 .logo {
@@ -455,14 +474,14 @@ const handleBackToLogin = () => {
 .title {
   font-size: 22px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #525865;
   margin: 0;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .password-expiration-form-container {
   padding: 16px 40px 40px;
-  background-color: #ffffff;
+  background-color: #fafbfc;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -496,23 +515,22 @@ const handleBackToLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
-  border: 1px solid #e4e7ed;
-  color: #1a1a1a;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: none;
 }
 
 .send-code-button:not(:disabled):hover {
-  background-color: #fafafa;
-  color: #1a1a1a;
-  border-color: #dcdfe6;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  background-color: #eceff2;
+  color: #4b5563;
+  border-color: #d1d5db;
 }
 
 .expiration-form :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #e4e7ed inset !important;
-  background-color: #fafafa;
+  box-shadow: 0 0 0 1px #e8eaed inset !important;
+  background-color: #f3f4f6;
   padding: 0 15px;
   height: 48px;
   border-radius: 12px;
@@ -522,13 +540,13 @@ const handleBackToLogin = () => {
 }
 
 .expiration-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #1a1a1a inset !important;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.35) inset !important;
   background-color: #ffffff;
 }
 
 .expiration-form :deep(.el-input__wrapper:hover:not(.is-focus)) {
-  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
-  background-color: #f5f5f5;
+  box-shadow: 0 0 0 1px #dde1e6 inset !important;
+  background-color: #eef0f3;
 }
 
 .expiration-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -554,12 +572,14 @@ const handleBackToLogin = () => {
   display: flex;
   align-items: center;
   margin-right: 8px;
+  color: #9ca3af;
 }
 
 .expiration-form :deep(.el-input__suffix) {
   display: flex;
   align-items: center;
   margin-left: 8px;
+  color: #9ca3af;
 }
 
 .expiration-form :deep(.el-form-item__label) {
@@ -572,7 +592,7 @@ const handleBackToLogin = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
-  color: #606266;
+  color: #7a8494;
 }
 
 .submit-button {
@@ -581,32 +601,32 @@ const handleBackToLogin = () => {
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: 1px;
-  background: #1a1a1a;
+  letter-spacing: 0.5px;
+  background: linear-gradient(180deg, #8b9099 0%, #787f8a 100%);
   color: #ffffff;
   border: none;
   margin-top: 10px;
-  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15);
+  box-shadow: 0 6px 16px rgba(82, 88, 102, 0.18);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .submit-button:not(:disabled):hover {
-  background: #303133;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2);
+  background: linear-gradient(180deg, #7a808a 0%, #6a707a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(82, 88, 102, 0.22);
 }
 
 .submit-button:not(:disabled):active {
   transform: translateY(0);
-  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15);
+  box-shadow: 0 4px 12px rgba(82, 88, 102, 0.15);
 }
 
 .submit-button:disabled {
-  background: #1a1a1a;
-  opacity: 0.6;
+  background: #9ca3af;
+  opacity: 0.75;
   cursor: not-allowed;
   transform: none !important;
-  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(82, 88, 102, 0.1) !important;
 }
 
 .submit-button-item {
@@ -627,16 +647,16 @@ const handleBackToLogin = () => {
 .expiration-form :deep(input:-webkit-autofill:hover),
 .expiration-form :deep(input:-webkit-autofill:focus),
 .expiration-form :deep(input:-webkit-autofill:active) {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: #606266 !important;
+  -webkit-box-shadow: 0 0 0 1000px #f3f4f6 inset !important;
+  -webkit-text-fill-color: #5c6370 !important;
   transition: background-color 5000s ease-in-out 0s !important;
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
 }
 
 /* 进一步防止自动填充的样式 */
 .expiration-form :deep(input[autocomplete="new-password"]) {
-  background: white !important;
-  color: #606266 !important;
+  background: #f3f4f6 !important;
+  color: #5c6370 !important;
 }
 
 .expiration-form :deep(.el-form-item) {
@@ -652,8 +672,8 @@ const handleBackToLogin = () => {
 }
 
 .language-select :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #e4e7ed inset !important;
-  background-color: #fafafa;
+  box-shadow: 0 0 0 1px #e8eaed inset !important;
+  background-color: #f3f4f6;
   padding: 0 15px;
   height: 48px;
   border-radius: 12px;
@@ -663,12 +683,12 @@ const handleBackToLogin = () => {
 }
 
 .language-select :deep(.el-input__wrapper:hover:not(.is-focus)) {
-  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
-  background-color: #f5f5f5;
+  box-shadow: 0 0 0 1px #dde1e6 inset !important;
+  background-color: #eef0f3;
 }
 
 .language-select :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #1a1a1a inset !important;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.35) inset !important;
   background-color: #ffffff;
 }
 

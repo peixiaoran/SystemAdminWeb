@@ -1,7 +1,7 @@
 export default {
   // Common
   common: {
-    systemTitle: 'SystemsAdmin Management System',
+    systemTitle: 'Workflow System',
     confirm: 'Confirm',
     cancel: 'Cancel',
     close: 'Close',
@@ -582,7 +582,7 @@ export default {
       workflowDrawerTitle: 'Approval workflow',
       workflowStatusSigning: 'Pending',
       workflowStatusApproved: 'Approved',
-      workflowStatusNotSigned: 'Not Processed',
+      workflowStatusNotSigned: 'Not',
       workflowAgent: 'Agent',
       workflowEmpty: 'No workflow data',
       workflowLoadFailed: 'Failed to load workflow',
@@ -685,7 +685,7 @@ export default {
   
   // Login Page
   login: {
-    title: 'Vue Admin Management System',
+    title: 'Workflow System',
     username: 'Employee Name',
     password: 'Password',
     factory: 'Factory',
@@ -813,7 +813,7 @@ export default {
     formGroup: 'Form Group',
     formType: 'Form Type',
     formworkflow: 'Form Workflow',
-    workflowcondition: 'Workflow Condition',
+    workflowcondition: 'Workflow Con',
     workflowstep: 'Workflow Step',
     formoperate: 'Form Operation',
     pendingsubapp: 'Pending SubApp',
