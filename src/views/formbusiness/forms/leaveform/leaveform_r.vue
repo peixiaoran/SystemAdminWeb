@@ -273,23 +273,29 @@
             v-for="(step, stepIdx) in workflowOverview.workflowApproveUser"
             :key="step.stepId || stepIdx"
             class="workflow-step-block"
+            :class="{ 'workflow-step-block--hierarchy-skipped': isWorkflowStepHierarchySkipped(step) }"
           >
             <div class="workflow-step-head">
               <span
                 class="workflow-step-icon"
                 :class="{
-                  'is-done-step': workflowStepHeadState(stepIdx) === 'done',
-                  'is-current-step': workflowStepHeadState(stepIdx) === 'current',
-                  'is-pending-step': workflowStepHeadState(stepIdx) === 'pending'
+                  'is-done-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'done',
+                  'is-current-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'current',
+                  'is-pending-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'pending',
+                  'is-skipped-step': isWorkflowStepHierarchySkipped(step)
                 }"
               >
-                <el-icon v-if="workflowStepHeadState(stepIdx) === 'done'"><CircleCheck /></el-icon>
+                <el-icon v-if="isWorkflowStepHierarchySkipped(step)"><Minus /></el-icon>
+                <el-icon v-else-if="workflowStepHeadState(stepIdx) === 'done'"><CircleCheck /></el-icon>
                 <el-icon v-else-if="workflowStepHeadState(stepIdx) === 'current'"><Clock /></el-icon>
                 <el-icon v-else><Minus /></el-icon>
               </span>
               <span class="workflow-step-name">{{ step.stepName }}</span>
             </div>
-            <ul v-if="step.stepApproveUser?.length" class="workflow-user-list">
+            <ul
+              v-if="step.stepApproveUser?.length && !isWorkflowStepHierarchySkipped(step)"
+              class="workflow-user-list"
+            >
               <li
                 v-for="(u, uIdx) in step.stepApproveUser"
                 :key="u.userId + '-' + uIdx"
@@ -363,6 +369,13 @@ function getWorkflowCurrentStepIndex () {
   if (!cur) return -1
   const list = workflowOverview.workflowApproveUser || []
   return list.findIndex((s) => String(s?.stepId || '') === cur)
+}
+
+/** 职级覆盖跳过：整步灰色展示，不展示 stepApproveUser 明细 */
+function isWorkflowStepHierarchySkipped (step) {
+  const users = step?.stepApproveUser
+  if (!Array.isArray(users) || users.length === 0) return false
+  return users.some((u) => u?.appointmentType === 'HierarchySkipped')
 }
 
 function workflowStepPhase (stepIdx) {
@@ -1310,6 +1323,20 @@ onMounted(async () => {
 .workflow-step-icon.is-pending-step {
   color: var(--el-text-color-placeholder);
   background: var(--el-fill-color-light);
+}
+
+.workflow-step-icon.is-skipped-step {
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color);
+}
+
+.workflow-step-block--hierarchy-skipped {
+  border-left-color: var(--el-border-color-lighter);
+}
+
+.workflow-step-block--hierarchy-skipped .workflow-step-name {
+  color: var(--el-text-color-placeholder);
+  font-weight: 500;
 }
 
 .workflow-step-name {
