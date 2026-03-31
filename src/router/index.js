@@ -466,11 +466,11 @@ const pmenuRoutes = [
           },
           children: [
             {
-              path: 'workflowcondition',
-              name: 'WorkflowCondition',
-              component: () => import('../views/formbusiness/form-workflow/workflowcondition.vue'),
+              path: 'workflowbranch',
+              name: 'WorkflowBranch',
+              component: () => import('../views/formbusiness/form-workflow/workflowbranch.vue'),
               meta: { 
-                title: 'route.workflowcondition', 
+                title: 'route.workflowbranch', 
                 icon: 'Switch',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false

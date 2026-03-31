@@ -1,8 +1,8 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程条件筛选">
-        <el-form-item :label="$t('formbusiness.workflowcondition.formGroupName')">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程分支筛选">
+        <el-form-item :label="$t('formbusiness.workflowbranch.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"
             filterable
@@ -17,7 +17,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('formbusiness.workflowcondition.formTypeName')">
+        <el-form-item :label="$t('formbusiness.workflowbranch.formTypeName')">
           <el-select
             v-model="searchForm.formTypeId"
             filterable
@@ -34,36 +34,36 @@
         </el-form-item>
         <el-form-item class="form-right-button">
           <el-button type="primary" @click="handleAdd" :disabled="!searchForm.formTypeId">
-            {{ $t('formbusiness.workflowcondition.addCondition') }}
+            {{ $t('formbusiness.workflowbranch.addBranch') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <div class="table-container">
         <el-table
-          :data="conditionList"
+          :data="branchList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('formbusiness.workflowcondition.index')" width="70" align="center" fixed />
-          <el-table-column prop="conditionNameCn" :label="$t('formbusiness.workflowcondition.conditionNameCn')" align="left" min-width="200" />
-          <el-table-column prop="conditionNameEn" :label="$t('formbusiness.workflowcondition.conditionNameEn')" align="left" min-width="240" />
-          <el-table-column prop="handlerKey" :label="$t('formbusiness.workflowcondition.handlerKey')" align="left" min-width="200" />
-          <el-table-column prop="description" :label="$t('formbusiness.workflowcondition.description')" align="left" min-width="260">
+          <el-table-column type="index" :label="$t('formbusiness.workflowbranch.index')" width="70" align="center" fixed />
+          <el-table-column prop="branchNameCn" :label="$t('formbusiness.workflowbranch.branchNameCn')" align="left" min-width="200" />
+          <el-table-column prop="branchNameEn" :label="$t('formbusiness.workflowbranch.branchNameEn')" align="left" min-width="240" />
+          <el-table-column prop="handlerKey" :label="$t('formbusiness.workflowbranch.handlerKey')" align="left" min-width="200" />
+          <el-table-column prop="description" :label="$t('formbusiness.workflowbranch.description')" align="left" min-width="260">
             <template #default="{ row }">
               <span>{{ row.description || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowcondition.operation')" width="200" align="center" fixed="right">
+          <el-table-column :label="$t('formbusiness.workflowbranch.operation')" width="200" align="center" fixed="right">
             <template #default="{ row }">
               <el-button size="small" type="primary" @click="handleEdit(row)" plain>
-                {{ $t('formbusiness.workflowcondition.editCondition') }}
+                {{ $t('formbusiness.workflowbranch.editBranch') }}
               </el-button>
               <el-button size="small" type="danger" @click="handleDelete(row)" plain>
-                {{ $t('formbusiness.workflowcondition.deleteCondition') }}
+                {{ $t('formbusiness.workflowbranch.deleteBranch') }}
               </el-button>
             </template>
           </el-table-column>
@@ -85,7 +85,7 @@
 
     <el-dialog
       v-model="dialogVisible"
-      :title="isEditMode ? $t('formbusiness.workflowcondition.editCondition') : $t('formbusiness.workflowcondition.addCondition')"
+      :title="isEditMode ? $t('formbusiness.workflowbranch.editBranch') : $t('formbusiness.workflowbranch.addBranch')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -94,20 +94,20 @@
     >
       <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogFormRules" label-width="auto" class="dialog-form">
         <div class="form-row">
-          <el-form-item :label="$t('formbusiness.workflowcondition.conditionNameCn')" prop="conditionNameCn">
-            <el-input v-model="dialogForm.conditionNameCn" :placeholder="$t('formbusiness.workflowcondition.pleaseInputConditionNameCn')" style="width:100%" />
+          <el-form-item :label="$t('formbusiness.workflowbranch.branchNameCn')" prop="branchNameCn">
+            <el-input v-model="dialogForm.branchNameCn" :placeholder="$t('formbusiness.workflowbranch.pleaseInputBranchNameCn')" style="width:100%" />
           </el-form-item>
-          <el-form-item :label="$t('formbusiness.workflowcondition.conditionNameEn')" prop="conditionNameEn">
-            <el-input v-model="dialogForm.conditionNameEn" :placeholder="$t('formbusiness.workflowcondition.pleaseInputConditionNameEn')" style="width:100%" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('formbusiness.workflowcondition.handlerKey')" prop="handlerKey">
-            <el-input v-model="dialogForm.handlerKey" :placeholder="$t('formbusiness.workflowcondition.pleaseInputHandlerKey')" style="width:100%" />
+          <el-form-item :label="$t('formbusiness.workflowbranch.branchNameEn')" prop="branchNameEn">
+            <el-input v-model="dialogForm.branchNameEn" :placeholder="$t('formbusiness.workflowbranch.pleaseInputBranchNameEn')" style="width:100%" />
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item :label="$t('formbusiness.workflowcondition.description')" class="full-width-item">
+          <el-form-item :label="$t('formbusiness.workflowbranch.handlerKey')" prop="handlerKey">
+            <el-input v-model="dialogForm.handlerKey" :placeholder="$t('formbusiness.workflowbranch.pleaseInputHandlerKey')" style="width:100%" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('formbusiness.workflowbranch.description')" class="full-width-item">
             <el-input v-model="dialogForm.description" style="width:100%" />
           </el-form-item>
         </div>
@@ -127,18 +127,18 @@ import { post } from '@/utils/request'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
-  GET_WORKFLOWCONDITION_LIST_API,
-  INSERT_WORKFLOWCONDITION_API,
-  DELETE_WORKFLOWCONDITION_API,
-  GET_WORKFLOWCONDITION_ENTITY_API,
-  UPDATE_WORKFLOWCONDITION_API
-} from '@/config/api/formbusiness/form-workflow/workflowcondition.js'
+  GET_WORKFLOWBRANCH_LIST_API,
+  INSERT_WORKFLOWBRANCH_API,
+  DELETE_WORKFLOWBRANCH_API,
+  GET_WORKFLOWBRANCH_ENTITY_API,
+  UPDATE_WORKFLOWBRANCH_API
+} from '@/config/api/formbusiness/form-workflow/workflowbranch.js'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const loading = ref(false)
-const conditionList = ref([])
+const branchList = ref([])
 const formGroupOptions = ref([])
 const formTypeOptions = ref([])
 
@@ -170,7 +170,7 @@ const getFormGroupOptions = async () => {
       showMessage(response.message)
     }
   } catch {
-    showMessage(t('formbusiness.workflowcondition.getFormGroupFailed'))
+    showMessage(t('formbusiness.workflowbranch.getFormGroupFailed'))
   }
 }
 
@@ -178,7 +178,7 @@ const getFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) {
     formTypeOptions.value = []
     searchForm.formTypeId = ''
-    conditionList.value = []
+    branchList.value = []
     return
   }
   try {
@@ -192,28 +192,28 @@ const getFormTypeOptions = async (formGroupId) => {
       formTypeOptions.value = response.data || []
       if (formTypeOptions.value.length > 0) {
         searchForm.formTypeId = formTypeOptions.value[0].formTypeId
-        await getConditionList()
+        await getBranchList()
       } else {
         searchForm.formTypeId = ''
-        conditionList.value = []
+        branchList.value = []
       }
     } else {
       showMessage(response.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
-      conditionList.value = []
+      branchList.value = []
     }
   } catch {
-    showMessage(t('formbusiness.workflowcondition.getFormTypeFailed'))
+    showMessage(t('formbusiness.workflowbranch.getFormTypeFailed'))
     formTypeOptions.value = []
     searchForm.formTypeId = ''
-    conditionList.value = []
+    branchList.value = []
   }
 }
 
-const getConditionList = async () => {
+const getBranchList = async () => {
   if (!searchForm.formTypeId) {
-    conditionList.value = []
+    branchList.value = []
     return
   }
   loading.value = true
@@ -224,17 +224,17 @@ const getConditionList = async () => {
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
     }
-    const response = await post(GET_WORKFLOWCONDITION_LIST_API, params)
+    const response = await post(GET_WORKFLOWBRANCH_LIST_API, params)
     if (response.code === 200) {
-      conditionList.value = response.data || []
+      branchList.value = response.data || []
       pagination.totalCount = response.totalCount || 0
     } else {
       showMessage(response.message)
-      conditionList.value = []
+      branchList.value = []
     }
   } catch {
-    showMessage(t('formbusiness.workflowcondition.getFailed'))
-    conditionList.value = []
+    showMessage(t('formbusiness.workflowbranch.getFailed'))
+    branchList.value = []
   } finally {
     loading.value = false
   }
@@ -246,18 +246,18 @@ const handleFormGroupChange = async (val) => {
 
 const handleFormTypeChange = async () => {
   pagination.pageIndex = 1
-  await getConditionList()
+  await getBranchList()
 }
 
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  getConditionList()
+  getBranchList()
 }
 
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
-  getConditionList()
+  getBranchList()
 }
 
 const dialogVisible = ref(false)
@@ -266,29 +266,29 @@ const dialogFormRef = ref(null)
 const isEditMode = ref(false)
 
 const dialogForm = reactive({
-  conditionId: '',
-  conditionNameCn: '',
-  conditionNameEn: '',
+  branchId: '',
+  branchNameCn: '',
+  branchNameEn: '',
   handlerKey: '',
   description: ''
 })
 
 const dialogFormRules = reactive({
-  conditionNameCn: [
-    { required: true, message: () => t('formbusiness.workflowcondition.pleaseInputConditionNameCn'), trigger: 'blur' }
+  branchNameCn: [
+    { required: true, message: () => t('formbusiness.workflowbranch.pleaseInputBranchNameCn'), trigger: 'blur' }
   ],
-  conditionNameEn: [
-    { required: true, message: () => t('formbusiness.workflowcondition.pleaseInputConditionNameEn'), trigger: 'blur' }
+  branchNameEn: [
+    { required: true, message: () => t('formbusiness.workflowbranch.pleaseInputBranchNameEn'), trigger: 'blur' }
   ],
   handlerKey: [
-    { required: true, message: () => t('formbusiness.workflowcondition.pleaseInputHandlerKey'), trigger: 'blur' }
+    { required: true, message: () => t('formbusiness.workflowbranch.pleaseInputHandlerKey'), trigger: 'blur' }
   ]
 })
 
 const resetDialogForm = () => {
-  dialogForm.conditionId = ''
-  dialogForm.conditionNameCn = ''
-  dialogForm.conditionNameEn = ''
+  dialogForm.branchId = ''
+  dialogForm.branchNameCn = ''
+  dialogForm.branchNameEn = ''
   dialogForm.handlerKey = ''
   dialogForm.description = ''
 }
@@ -305,16 +305,16 @@ const handleAdd = () => {
 const handleEdit = async (row) => {
   try {
     const formData = new FormData()
-    formData.append('conditionId', String(row.conditionId))
-    const response = await post(GET_WORKFLOWCONDITION_ENTITY_API, formData, {
+    formData.append('branchId', String(row.branchId))
+    const response = await post(GET_WORKFLOWBRANCH_ENTITY_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       skipDedupe: true
     })
     if (response.code === 200 && response.data) {
       isEditMode.value = true
-      dialogForm.conditionId = response.data.conditionId || ''
-      dialogForm.conditionNameCn = response.data.conditionNameCn || ''
-      dialogForm.conditionNameEn = response.data.conditionNameEn || ''
+      dialogForm.branchId = response.data.branchId || ''
+      dialogForm.branchNameCn = response.data.branchNameCn || ''
+      dialogForm.branchNameEn = response.data.branchNameEn || ''
       dialogForm.handlerKey = response.data.handlerKey || ''
       dialogForm.description = response.data.description || ''
       dialogVisible.value = true
@@ -322,10 +322,10 @@ const handleEdit = async (row) => {
         dialogFormRef.value?.clearValidate()
       })
     } else {
-      showMessage(response.message || t('formbusiness.workflowcondition.getEntityFailed'))
+      showMessage(response.message || t('formbusiness.workflowbranch.getEntityFailed'))
     }
   } catch {
-    showMessage(t('formbusiness.workflowcondition.getEntityFailed'))
+    showMessage(t('formbusiness.workflowbranch.getEntityFailed'))
   }
 }
 
@@ -347,27 +347,27 @@ const handleSubmit = async () => {
   const isEdit = isEditMode.value
   try {
     const params = {
-      conditionId: dialogForm.conditionId || '',
+      branchId: dialogForm.branchId || '',
       formTypeId: searchForm.formTypeId,
-      conditionNameCn: dialogForm.conditionNameCn,
-      conditionNameEn: dialogForm.conditionNameEn,
+      branchNameCn: dialogForm.branchNameCn,
+      branchNameEn: dialogForm.branchNameEn,
       handlerKey: dialogForm.handlerKey,
       description: dialogForm.description || ''
     }
-    const api = isEdit ? UPDATE_WORKFLOWCONDITION_API : INSERT_WORKFLOWCONDITION_API
+    const api = isEdit ? UPDATE_WORKFLOWBRANCH_API : INSERT_WORKFLOWBRANCH_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
     const failKey = isEdit ? 'editFailed' : 'addFailed'
 
     const response = await post(api, params)
     if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t(`formbusiness.workflowcondition.${successKey}`), 'success')
+      showMessage(response.message || t(`formbusiness.workflowbranch.${successKey}`), 'success')
       dialogVisible.value = false
-      await getConditionList()
+      await getBranchList()
     } else {
-      showMessage(response.message || t(`formbusiness.workflowcondition.${failKey}`))
+      showMessage(response.message || t(`formbusiness.workflowbranch.${failKey}`))
     }
   } catch {
-    showMessage(t(`formbusiness.workflowcondition.${isEdit ? 'editFailed' : 'addFailed'}`))
+    showMessage(t(`formbusiness.workflowbranch.${isEdit ? 'editFailed' : 'addFailed'}`))
   } finally {
     submitLoading.value = false
   }
@@ -376,7 +376,7 @@ const handleSubmit = async () => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.workflowcondition.deleteConfirm'),
+      t('formbusiness.workflowbranch.deleteConfirm'),
       t('common.tip'),
       {
         confirmButtonText: t('common.confirm'),
@@ -391,22 +391,22 @@ const handleDelete = async (row) => {
   loading.value = true
   try {
     const formData = new FormData()
-    formData.append('condititonId', String(row.conditionId))
-    const response = await post(DELETE_WORKFLOWCONDITION_API, formData, {
+    formData.append('branchId', String(row.branchId))
+    const response = await post(DELETE_WORKFLOWBRANCH_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       skipDedupe: true
     })
     if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t('formbusiness.workflowcondition.deleteSuccess'), 'success')
-      if (conditionList.value.length === 1 && pagination.pageIndex > 1) {
+      showMessage(response.message || t('formbusiness.workflowbranch.deleteSuccess'), 'success')
+      if (branchList.value.length === 1 && pagination.pageIndex > 1) {
         pagination.pageIndex--
       }
-      await getConditionList()
+      await getBranchList()
     } else {
-      showMessage(response.message || t('formbusiness.workflowcondition.deleteFailed'))
+      showMessage(response.message || t('formbusiness.workflowbranch.deleteFailed'))
     }
   } catch {
-    showMessage(t('formbusiness.workflowcondition.deleteFailed'))
+    showMessage(t('formbusiness.workflowbranch.deleteFailed'))
   } finally {
     loading.value = false
   }

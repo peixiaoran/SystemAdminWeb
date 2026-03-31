@@ -338,7 +338,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { Upload, Document, Download, Delete, Guide, Clock, CircleCheck, Minus } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_WORKFLOW_ALL_APPROVE_USER_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_WORKFLOW_ALL_APPROVE_USER_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -937,9 +937,34 @@ async function onSubmitForApproval () {
   } catch {
     return
   }
+  const fromId = String(form.formId || '')
+  if (!fromId) {
+    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    return
+  }
   approving.value = true
   try {
-    showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
+    const formData = new window.FormData()
+    formData.append('fromId', fromId)
+    const res = await post(APPROVE_LEAVEFORM_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
+    })
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      return
+    }
+    if (res && isSuccessCode(res.code)) {
+      showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
+      return
+    }
+    ElNotification({
+      title: '',
+      message: res?.message || t('formbusiness.leaveform.submitFailed'),
+      type: 'error'
+    })
+  } catch {
+
   } finally {
     approving.value = false
   }
@@ -1320,22 +1345,24 @@ onMounted(async () => {
   background: var(--el-color-primary-light-9);
 }
 
+/* 未到步骤 / 后续流程：中性灰，与「未签核」同一视觉体系 */
 .workflow-step-icon.is-pending-step {
-  color: var(--el-text-color-placeholder);
+  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
 }
 
+/* 职级覆盖跳过：更淡的灰，与「未到/未签核」区分 */
 .workflow-step-icon.is-skipped-step {
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
+  color: var(--el-text-color-disabled);
+  background: var(--el-fill-color-darker);
 }
 
 .workflow-step-block--hierarchy-skipped {
-  border-left-color: var(--el-border-color-lighter);
+  border-left-color: var(--el-border-color-extra-light, var(--el-border-color-lighter));
 }
 
 .workflow-step-block--hierarchy-skipped .workflow-step-name {
-  color: var(--el-text-color-placeholder);
+  color: var(--el-text-color-disabled);
   font-weight: 500;
 }
 
@@ -1377,7 +1404,7 @@ onMounted(async () => {
 }
 
 .workflow-user-status-icon.is-user-none {
-  color: var(--el-text-color-placeholder);
+  color: var(--el-text-color-secondary);
 }
 
 .workflow-user-text {
@@ -1422,7 +1449,7 @@ onMounted(async () => {
 }
 
 .workflow-user-label--none {
-  color: var(--el-text-color-placeholder);
+  color: var(--el-text-color-secondary);
 }
 
 </style>

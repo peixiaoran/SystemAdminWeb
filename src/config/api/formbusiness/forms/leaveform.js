@@ -29,3 +29,6 @@ export const DELETE_FILE_API = 'FormBusiness/Forms/LeaveForm/DeleteFile'
 
 // 获取所有签核人API
 export const GET_WORKFLOW_ALL_APPROVE_USER_API = 'FormBusiness/Forms/LeaveForm/GetWorkflowAllApproveUser'
+
+// 送审请假单API
+export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/ApproveLeaveForm'
