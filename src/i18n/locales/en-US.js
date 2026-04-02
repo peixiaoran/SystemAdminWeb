@@ -414,6 +414,7 @@ export default {
       sortOrder: 'Sort Order',
       editStep: 'Edit Step',
       editStepSuccess: 'Step updated successfully',
+      operation: 'Operation',
     },
 
     // Workflow Branch Page Specific

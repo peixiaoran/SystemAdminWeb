@@ -348,6 +348,7 @@ export default {
       sortOrder: '排序',
       editStep: '编辑步骤',
       editStepSuccess: '编辑步骤成功',
+      operation: '操作',
     },
 
     // 流程分支配置页面专用

@@ -62,7 +62,7 @@
               <el-button size="small" type="primary" @click="handleEdit(row)" plain>
                 {{ $t('formbusiness.workflowbranch.editBranch') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(row)" plain>
+              <el-button size="small" type="danger" @click="handleDelete(row)">
                 {{ $t('formbusiness.workflowbranch.deleteBranch') }}
               </el-button>
             </template>

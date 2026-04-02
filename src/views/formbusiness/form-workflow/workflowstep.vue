@@ -39,34 +39,47 @@
         </el-form-item>
       </el-form>
 
-      <!-- 时间线区域 -->
-      <div class="timeline-wrapper" v-loading="loading">
-        <el-timeline v-if="workflowStepList.length > 0">
-          <el-timeline-item
-            v-for="step in workflowStepList"
-            :key="step.stepId"
-            placement="top"
-          >
-            <div class="step-header">
-              <span class="step-name">{{ step.stepName }}</span>
-              <el-tag effect="dark" :type="getAssignmentTagType(step.assignment)">{{ step.assignmentName }}</el-tag>
-              <div class="step-actions">
-                <el-button type="primary" link size="small" @click="handleEditStep(step)">
-                  {{ $t('formbusiness.workflowstep.editStep') }}
-                </el-button>
-                <el-button type="danger" link size="small" @click="handleDeleteStep(step)">
-                  {{ $t('formbusiness.workflowstep.deleteStep') }}
-                </el-button>
-              </div>
-            </div>
-            <el-card v-if="step.description" class="step-card">
-              <div class="card-header">
-                <span class="step-desc">{{ step.description }}</span>
-              </div>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
-        
+      <div class="table-container" v-loading="loading">
+        <el-table
+          v-if="workflowStepList.length > 0"
+          :data="workflowStepList"
+          border
+          stripe
+          class="conventional-table"
+          :header-cell-style="{ background: '#f5f7fa' }"
+          row-key="stepId"
+        >
+          <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
+          <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="120" show-overflow-tooltip />
+          <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="120" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="120" align="center">
+            <template #default="{ row }">
+              <el-tag effect="dark" :type="getAssignmentTagType(row.assignment)">
+                {{ row.assignmentName}}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('formbusiness.workflowstep.isStartStep')" width="120" align="center">
+            <template #default="{ row }">
+              {{ Number(row.isStartStep) === 1 ? $t('common.yes') : $t('common.no') }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" :label="$t('formbusiness.workflowstep.description')" min-width="160" show-overflow-tooltip>
+            <template #default="{ row }">
+              <span>{{ row.description}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('formbusiness.workflowstep.operation')" width="250" align="center" fixed="right">
+            <template #default="{ row }">
+              <el-button type="primary" size="small" plain @click="handleEditStep(row)">
+                {{ $t('formbusiness.workflowstep.editStep') }}
+              </el-button>
+              <el-button type="danger" size="small" @click="handleDeleteStep(row)">
+                {{ $t('formbusiness.workflowstep.deleteStep') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
         <el-empty v-else-if="!loading" />
       </div>
     </el-card>
@@ -159,12 +172,19 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.approveMode')" prop="approveModeCode">
-              <el-segmented
+              <el-select
                 v-model="addStepForm.approveModeCode"
-                class="approve-mode-segmented"
-                block
-                :options="approveModeSegmentedOptions"
-              />
+                :placeholder="$t('formbusiness.workflowstep.pleaseSelectApproveMode')"
+                filterable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in approveModeOptions"
+                  :key="item.approveModeCode"
+                  :label="item.approveModeName"
+                  :value="item.approveModeCode"
+                />
+              </el-select>
             </el-form-item>
           </div>
           <div class="form-row">
@@ -371,7 +391,7 @@
 </template>
   
   <script setup>
-import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
@@ -443,13 +463,6 @@ const addStepFormRef = ref(null)
 const dialogFormTypeOptions = ref([])
 const assignmentOptions = ref([])
 const approveModeOptions = ref([])
-/** 签核方式（如待签核 / 待送审）→ el-segmented 选项 */
-const approveModeSegmentedOptions = computed(() =>
-  (approveModeOptions.value || []).map((item) => ({
-    label: item.approveModeName,
-    value: item.approveModeCode
-  }))
-)
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
@@ -729,7 +742,9 @@ const deleteStepLoading = ref(false)
 const handleDeleteStep = async (step) => {
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.workflowstep.deleteStepConfirm', { name: step.stepName || step.stepId }),
+      t('formbusiness.workflowstep.deleteStepConfirm', {
+        name: step.stepName || step.stepNameCn || step.stepId
+      }),
       t('common.tip'),
       { type: 'warning' }
     )
@@ -1122,71 +1137,6 @@ onMounted(async () => {
   
   <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
-
-.timeline-wrapper {
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
-  padding: 20px 0;
-}
-
-/* 缩小时间线步骤之间的间距 */
-.timeline-wrapper :deep(.el-timeline-item__wrapper) {
-  padding-left: 20px;
-}
-
-.timeline-wrapper :deep(.el-timeline-item__node--normal) {
-  top: 2px;
-}
-
-.timeline-wrapper :deep(.el-timeline-item) {
-  padding-bottom: 12px;
-}
-
-.timeline-wrapper :deep(.el-timeline-item:last-child) {
-  padding-bottom: 0;
-}
-
-.step-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 18px;
-  margin-bottom: 8px;
-  transform: translateY(-12px);
-}
-
-.step-actions {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-left: 12px;
-}
-
-.step-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.step-card {
-  margin-right: 20px;
-}
-
-.step-card :deep(.el-card__body) {
-  padding: 12px 16px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.step-desc {
-  font-size: 13px;
-  color: #909399;
-}
 
 .add-step-form .assignment-divider {
   margin: 16px 0;
