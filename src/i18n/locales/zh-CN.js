@@ -445,7 +445,7 @@ export default {
         leaveStartTime: '开始时间',
         leaveEndTime: '结束时间',
         leaveTimeRange: '请假时间',
-        leaveDays: '请假总天数',
+        days: '请假总天数',
         leaveHours: '请假总时数',
     leaveHandoverUserId: '交接人',
     agentUserNo: '代理人工号',

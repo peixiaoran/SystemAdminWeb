@@ -511,7 +511,7 @@ export default {
       leaveStartTime: 'Start Time',
       leaveEndTime: 'End Time',
       leaveTimeRange: 'Leave Time',
-      leaveDays: 'Leave Days',
+      days: 'Leave Days',
       leaveHours: 'Leave Hours',
       leaveHandoverUserId: 'Handover User',
       agentUserNo: 'Agent User',

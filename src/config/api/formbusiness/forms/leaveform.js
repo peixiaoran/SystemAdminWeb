@@ -6,8 +6,8 @@
 
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
-// 初始化请假单API
-export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitLeaveForm'
+// 初始化请假单 API
+export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitializeLevel'
 
 // 保存请假单API
 export const SAVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/SaveLeaveForm'
@@ -22,10 +22,10 @@ export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeave
 export const GET_IMPORTANCE_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetImportanceDropDown'
 
 // 上传附件API
-export const UPLOAD_FILE_API = 'FormBusiness/Forms/LeaveForm/UploadFile'
+export const UPLOAD_FILE_API = 'FormBusiness/Forms/LeaveForm/UploadAttachment'
 
 // 删除附件API
-export const DELETE_FILE_API = 'FormBusiness/Forms/LeaveForm/DeleteFile'
+export const DELETE_FILE_API = 'FormBusiness/Forms/LeaveForm/DeleteAttachment'
 
 // 获取所有签核人API
 export const GET_WORKFLOW_ALL_APPROVE_USER_API = 'FormBusiness/Forms/LeaveForm/GetWorkflowAllApproveUser'

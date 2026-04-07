@@ -126,8 +126,8 @@
         <!-- 请假信息 -->
         <el-row :gutter="16" style="justify-content: flex-start;">
           <el-col :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveTypeCode">
-              <el-select v-model="form.leaveTypeCode" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable @change="onSelectChange('leaveTypeCode')">
+            <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveType">
+              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable @change="onSelectChange('leaveType')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
@@ -155,9 +155,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <el-form-item :label="t('formbusiness.leaveform.leaveHours')" prop="leaveHours">
+            <el-form-item :label="t('formbusiness.leaveform.days')" prop="days">
               <el-input-number
-                v-model="form.leaveHours"
+                v-model="form.days"
                 :min="0"
                 :step="0.01"
                 :precision="2"
@@ -172,8 +172,8 @@
         <!-- 事由 -->
         <el-row :gutter="16">
           <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="leaveReason">
-              <el-input v-model="form.leaveReason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" />
+            <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="reason">
+              <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,19 +199,19 @@
                     {{ getAttachmentRequirementTip() }}
                   </span>
                 </div>
-                <el-table v-if="uploadedFiles.length > 0" :data="uploadedFiles" border size="small" class="file-table">
+                <el-table v-if="uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
                   <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
                     <template #default="{ row }">
                       <div style="display: flex; align-items: center; gap: 6px;">
                         <el-icon style="color: #409eff; flex-shrink: 0;"><Document /></el-icon>
-                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getFileName(row)">{{ getFileName(row) }}</span>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
                       </div>
                     </template>
                   </el-table-column>
                   <el-table-column :label="t('formbusiness.leaveform.fileSize')" width="100" align="center">
                     <template #default="{ row }">
-                      {{ formatFileSize(row.fileSize) }}
+                      {{ formatFileSize(getAttachmentSizeKb(row)) }}
                     </template>
                   </el-table-column>
                   <el-table-column :label="t('common.operation')" width="170" align="center">
@@ -220,7 +220,7 @@
                         <el-icon><Download /></el-icon>
                         {{ t('formbusiness.leaveform.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" @click="removeFile(row, $index)">
+                      <el-button type="danger" link size="small" @click="removeAttachment(row, $index)">
                         <el-icon><Delete /></el-icon>
                         {{ t('formbusiness.leaveform.deleteFile') }}
                       </el-button>
@@ -434,7 +434,7 @@ const resultState = reactive({
 })
 // 附件上传状态与列表（相对路径）
 const uploading = ref(false)
-const uploadedFiles = ref([])
+const uploadedAttachments = ref([])
 
 // 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
@@ -452,10 +452,10 @@ const form = reactive({
   applicantDeptName: '',
   applicantDeptId: '',
   applicantTime: '',
-  leaveTypeCode: '',
-  leaveReason: '',
+  leaveType: '',
+  reason: '',
   leaveTimeRange: [],
-  leaveHours: 0,
+  days: 0,
   agentUserNo: ''
 })
 
@@ -463,7 +463,7 @@ const form = reactive({
 const leaveTypeOptions = ref([])
 // 校验规则
 const rules = {
-  leaveTypeCode: [
+  leaveType: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
   leaveTimeRange: [
@@ -475,47 +475,41 @@ const rules = {
     { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
     { validator: validateHandoverUserNameRequired, trigger: 'blur' }
   ],
-  leaveReason: [
+  reason: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
   ]
 }
 
+/** 将接口或输入值规范为天数（非有限数或负值按 0，保留两位小数） */
+function coerceDays (v) {
+  if (v === undefined || v === null || v === '') return 0
+  const n = Number(v)
+  if (!Number.isFinite(n)) return 0
+  return parseFloat(Math.max(0, n).toFixed(2))
+}
+
 /**
- * 计算请假时长（按日计数规则）
- * 规则：天数按跨越的自然日计算（包含起止当日）；小时为实际跨度小时数（保留两位小数）
- * 示例：2025-11-22 08:00:00 至 2025-11-22 17:00:00 => 天数 1.00，小时 9.00
+ * 计算请假天数（按自然日，含起止当日）
+ * 示例：2025-11-22 08:00:00 至 2025-11-22 17:00:00 => 1.00 天
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
-    form.leaveHours = parseFloat((0).toFixed(2))
+    form.days = coerceDays(0)
     return
   }
   const [startTime, endTime] = form.leaveTimeRange
   if (!startTime || !endTime) {
-    form.leaveHours = parseFloat((0).toFixed(2))
+    form.days = coerceDays(0)
     return
   }
   const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
   const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
-    form.leaveDays = parseFloat((0).toFixed(2))
-    form.leaveHours = parseFloat((0).toFixed(2))
+    form.days = coerceDays(0)
     return
   }
-  const totalHours = getWorkingHoursBetween(startTime, endTime)
-  form.leaveHours = parseFloat(totalHours.toFixed(2))
-}
-
-/**
- * 计算两个时间点之间的总小时数（正常计算所有时间）
- * 入参：开始/结束时间字符串
- */
-function getWorkingHoursBetween (startStr, endStr) {
-  const start = new Date(typeof startStr === 'string' ? startStr.replace(' ', 'T') : startStr)
-  const end = new Date(typeof endStr === 'string' ? endStr.replace(' ', 'T') : endStr)
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
-  const totalMs = end.getTime() - start.getTime()
-  return parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2))
+  const calendarDays = countCalendarDaysInclusive(startTime, endTime)
+  form.days = coerceDays(calendarDays)
 }
 
 /**
@@ -564,7 +558,7 @@ function validateTimeRange (rule, value, callback) {
  * 校验请假时长必须大于0（任一字段变更时触发）
  */
 function validateDurationPositive (rule, value, callback) {
-  const total = Number(form.leaveHours) || 0
+  const total = coerceDays(form.days)
   if (total <= 0) {
     callback(new Error(t('formbusiness.leaveform.durationRequired')))
     return
@@ -676,19 +670,27 @@ function bindFormData (data) {
     applicantDeptName: data.applicantDeptName || '',
     applicantDeptId: data.applicantDeptId || '',
     applicantTime: data.applicantTime || '',
-    leaveTypeCode: normalizeSelectCode(data.leaveTypeCode),
-    leaveReason: data.leaveReason || '',
+    leaveType: normalizeSelectCode(data.leaveType),
+    reason: data.Reason ?? data.reason ?? data.leaveReason ?? '',
     leaveTimeRange: (() => {
-      const start = normalizeDateTime(data.LeaveStartTime || data.leaveStartTime)
-      const end = normalizeDateTime(data.LeaveEndTime || data.leaveEndTime)
+      const start = normalizeDateTime(
+        data.StartTime ?? data.startTime ?? data.LeaveStartTime ?? data.leaveStartTime
+      )
+      const end = normalizeDateTime(
+        data.EndTime ?? data.endTime ?? data.LeaveEndTime ?? data.leaveEndTime
+      )
       return start && end ? [start, end] : []
     })(),
-    leaveDays: data.leaveDays ?? 0,
-    leaveHours: data.leaveHours ?? 0,
+    days: coerceDays(data.days ?? data.Days ?? data.leaveDays ?? data.leaveHours),
     agentUserNo: data.agentUserNo || ''
   })
-  if (Array.isArray(data.fileList)) {
-    uploadedFiles.value = data.fileList.filter(Boolean)
+  const [rangeStart, rangeEnd] = form.leaveTimeRange || []
+  if (rangeStart && rangeEnd) {
+    calculateDuration()
+  }
+  const attachmentList = data.attachmentList
+  if (Array.isArray(attachmentList)) {
+    uploadedAttachments.value = attachmentList.filter(Boolean)
   }
   // 绑定返回的formTypeId作为当前类型（若有）
   if (data && data.formTypeId) {
@@ -705,7 +707,7 @@ function bindFormData (data) {
   }
   // 赋值后清理可能残留的校验错误提示
   if (formRef.value) {
-    formRef.value.clearValidate(['leaveTypeCode'])
+    formRef.value.clearValidate(['leaveType'])
   }
 }
 
@@ -713,8 +715,9 @@ function bindFormData (data) {
  * 规范化下拉选择值：接口返回为-1时视为未选择
  */
 function normalizeSelectCode (val) {
+  if (val === undefined || val === null || val === '') return undefined
   if (val === -1 || String(val) === '-1') return undefined
-  return val === undefined || val === null ? undefined : String(val)
+  return String(val)
 }
 
 function isForbiddenCode(code) {
@@ -733,14 +736,15 @@ function closeCurrentPage() {
 }
 
 /**
- * 初始化请假单（生成 formId 后立即调用详情接口）
+ * 初始化请假单（InitializeLevel）
+ * 正常情况 data 为完整实体，直接 bindFormData，不再请求 GetLeaveForm。
+ * 兼容旧版：若 data 仅为表单 ID（数字或字符串），则占位时间并拉取详情。
  */
 async function initLeaveForm () {
   try {
-    // 创建FormData对象，使用FormFrom格式而不是JSON
     const formData = new window.FormData()
     formData.append('formTypeId', currentFormTypeId.value || defaultFormTypeId)
-    
+
     const res = await post(INIT_LEAVEFORM_API, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -754,19 +758,24 @@ async function initLeaveForm () {
     if (!res || res.code !== 200) {
       return
     }
-    // 接口返回 Result<int>，data 为新表单ID
-    const newFormId = String(res.data)
+    const raw = res.data
+    if (raw == null) {
+      return
+    }
+    // InitializeLevel：data 为完整实体对象；旧版仅返回表单 ID（number / 数字字符串）
+    if (typeof raw === 'object' && !Array.isArray(raw)) {
+      bindFormData(raw)
+      return
+    }
 
+    const newFormId = String(raw)
     form.formId = newFormId
-    // 默认请假时间：今天 ~ 明天（占位，后续详情会覆盖）
     const now = new Date()
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0)
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 18, 0, 0)
     const pad = (n) => (n < 10 ? `0${n}` : `${n}`)
     const formatDateTime = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
     form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
-
-    // 重要：在初始化成功后，立刻调用详情接口，真正加载表单编号和员工信息
     await getLeaveFormDetail(newFormId)
   } catch {
 
@@ -836,11 +845,11 @@ async function onSubmit () {
       formTypeId: String(currentFormTypeId.value || defaultFormTypeId || ''),
       formId: String(form.formId || ''),
       formNo: form.formNo || '',
-      leaveTypeCode: form.leaveTypeCode || '',
-      leaveReason: (form.leaveReason || '').trim(),
-      leaveStartTime: startTime ? toISO(startTime) : null,
-      leaveEndTime: endTime ? toISO(endTime) : null,
-      leaveHours: form.leaveHours ? Number(form.leaveHours) : 0,
+      leaveType: form.leaveType || '',
+      Reason: (form.reason || '').trim(),
+      StartTime: startTime ? toISO(startTime) : null,
+      EndTime: endTime ? toISO(endTime) : null,
+      days: coerceDays(form.days),
       agentUserNo: (form.agentUserNo || '').trim()
     }
     try {
@@ -919,7 +928,7 @@ async function onSubmitForApproval () {
     formRef.value?.validate((v) => resolve(!!v))
   })
   if (!valid) return
-  if (shouldRequireAttachment() && uploadedFiles.value.length === 0) {
+  if (shouldRequireAttachment() && uploadedAttachments.value.length === 0) {
     ElMessage({ message: getAttachmentRequirementTip(), type: 'warning', plain: true, showClose: true })
     return
   }
@@ -986,7 +995,7 @@ function isSuccessCode(code) {
 }
 
 function getCurrentLeaveTypeOption() {
-  const current = leaveTypeOptions.value.find(item => String(item.value) === String(form.leaveTypeCode || ''))
+  const current = leaveTypeOptions.value.find(item => String(item.value) === String(form.leaveType || ''))
   return current || null
 }
 
@@ -1000,7 +1009,7 @@ function normalizeLeaveTypeText(value) {
 function getAttachmentRequirementKey() {
   const current = getCurrentLeaveTypeOption()
   const candidates = [
-    normalizeLeaveTypeText(form.leaveTypeCode),
+    normalizeLeaveTypeText(form.leaveType),
     normalizeLeaveTypeText(current?.label),
     normalizeLeaveTypeText(current?.value)
   ].filter(Boolean)
@@ -1053,7 +1062,7 @@ async function batchUpload(filesToUpload) {
     })
     if (res && isSuccessCode(res.code)) {
       const files = Array.isArray(res.data) ? res.data : []
-      uploadedFiles.value = [...uploadedFiles.value, ...files]
+      uploadedAttachments.value = [...uploadedAttachments.value, ...files]
     }
   } catch (e) {
   } finally {
@@ -1074,19 +1083,34 @@ function formatFileSize(sizeKB) {
   return `${(size / 1024).toFixed(2)} MB`
 }
 
-function getFileName(file) {
-  return file?.fileName || ''
+/** FormAttachment 字段优先，兼容旧 FormFile */
+function getAttachmentName (row) {
+  return row?.attachmentName ?? row?.fileName ?? ''
+}
+
+function getAttachmentPath (row) {
+  return row?.attachmentPath ?? row?.filePath ?? ''
+}
+
+function getAttachmentId (row) {
+  return row?.attachmentId ?? row?.fileId ?? ''
+}
+
+/** 附件大小（KB），新字段 attachmentSize，旧 fileSize */
+function getAttachmentSizeKb (row) {
+  const v = row?.attachmentSize ?? row?.fileSize
+  return v
 }
 
 /**
  * 下载文件：使用 resolveFileUrl 拼接 VITE_FILE_BROWSER_BASE_URL，触发浏览器下载
  */
 function handleDownload(file) {
-  const url = resolveFileUrl(file?.filePath)
+  const url = resolveFileUrl(getAttachmentPath(file))
   if (!url) return
   const a = document.createElement('a')
   a.href = url
-  a.download = getFileName(file)
+  a.download = getAttachmentName(file)
   a.target = '_blank'
   document.body.appendChild(a)
   a.click()
@@ -1094,19 +1118,19 @@ function handleDownload(file) {
 }
 
 /**
- * 删除附件：调用 DELETE_FILE_API 后从列表移除
+ * 删除附件：调用 DELETE_FILE_API（后端 FormAttachment：attachmentId / attachmentPath）
  */
-async function removeFile(file, idx) {
+async function removeAttachment (file, idx) {
   try {
     const formData = new window.FormData()
-    formData.append('fileId', String(file.fileId || ''))
-    formData.append('filePath', String(file.filePath || ''))
+    formData.append('attachmentId', String(getAttachmentId(file)))
+    formData.append('attachmentPath', String(getAttachmentPath(file)))
     const res = await post(DELETE_FILE_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       skipDedupe: true
     })
     if (res && isSuccessCode(res.code)) {
-      uploadedFiles.value.splice(idx, 1)
+      uploadedAttachments.value.splice(idx, 1)
     } else {
       ElMessage({ message: res?.message || t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
     }
@@ -1130,7 +1154,7 @@ onMounted(async () => {
       form.formId = String(routeFormId)
       await getLeaveFormDetail(form.formId)
     } else {
-      // 新建场景：仅调用 initLeaveForm，内部会自动再调一次 GetLeaveForm
+      // 新建场景：InitializeLevel 返回完整实体则只调 init；旧接口仅返回 ID 时内部会再调 GetLeaveForm
       await initLeaveForm()
     }
   } catch (error) {
@@ -1268,7 +1292,7 @@ onMounted(async () => {
   line-height: 1.4;
 }
 
-.file-table {
+.attachment-table {
   width: 100%;
   margin-top: 4px;
 }

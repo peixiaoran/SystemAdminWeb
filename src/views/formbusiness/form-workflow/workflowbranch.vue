@@ -54,7 +54,7 @@
           <el-table-column prop="handlerKey" :label="$t('formbusiness.workflowbranch.handlerKey')" align="left" min-width="200" />
           <el-table-column prop="description" :label="$t('formbusiness.workflowbranch.description')" align="left" min-width="260">
             <template #default="{ row }">
-              <span>{{ row.description || '-' }}</span>
+              <span>{{ row.description}}</span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.workflowbranch.operation')" width="200" align="center" fixed="right">
