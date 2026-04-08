@@ -31,7 +31,7 @@
     "eslint": "^10.1.0",
     "eslint-plugin-vue": "^10.8.0",
     "terser": "^5.46.1",
-    "vite": "^8.0.5",
+    "vite": "^8.0.7",
     "vite-imagetools": "^10.0.0",
     "vite-plugin-compression": "^0.5.1",
     "vue-tsc": "^3.2.6"
