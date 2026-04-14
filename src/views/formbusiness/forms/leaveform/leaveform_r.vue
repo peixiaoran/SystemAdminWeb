@@ -126,7 +126,7 @@
         <!-- 请假信息 -->
         <el-row :gutter="16" style="justify-content: flex-start;">
           <el-col :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.leaveTypeCode')" prop="leaveType">
+            <el-form-item :label="t('formbusiness.leaveform.leaveType')" prop="leaveType">
               <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable @change="onSelectChange('leaveType')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
@@ -670,18 +670,30 @@ function bindFormData (data) {
     applicantDeptName: data.applicantDeptName || '',
     applicantDeptId: data.applicantDeptId || '',
     applicantTime: data.applicantTime || '',
-    leaveType: normalizeSelectCode(data.leaveType),
-    reason: data.Reason ?? data.reason ?? data.leaveReason ?? '',
+    leaveType: normalizeSelectCode(
+      data.leaveTypeCode ?? data.LeaveTypeCode ?? data.leaveType ?? data.LeaveType
+    ),
+    reason:
+      data.leaveReason ??
+      data.LeaveReason ??
+      data.Reason ??
+      data.reason ??
+      '',
     leaveTimeRange: (() => {
       const start = normalizeDateTime(
-        data.StartTime ?? data.startTime ?? data.LeaveStartTime ?? data.leaveStartTime
+        data.leaveStartTime ??
+          data.LeaveStartTime ??
+          data.startTime ??
+          data.starttime
       )
       const end = normalizeDateTime(
-        data.EndTime ?? data.endTime ?? data.LeaveEndTime ?? data.leaveEndTime
+        data.leaveEndTime ?? data.LeaveEndTime ?? data.endTime ?? data.endtime
       )
       return start && end ? [start, end] : []
     })(),
-    days: coerceDays(data.days ?? data.Days ?? data.leaveDays ?? data.leaveHours),
+    days: coerceDays(
+      data.leaveHours ?? data.LeaveHours ?? data.days ?? data.Days
+    ),
     agentUserNo: data.agentUserNo || ''
   })
   const [rangeStart, rangeEnd] = form.leaveTimeRange || []
@@ -826,7 +838,7 @@ async function getLeaveTypeOptions () {
     const list = Array.isArray(res.data) ? res.data : []
     leaveTypeOptions.value = list.map(item => ({
       label: item.leaveTypeName,
-      value: String(item.leaveTypeCode)
+      value: String(item.leaveTypeCode ?? item.leaveType ?? '')
     }))
   } catch {
 
@@ -845,11 +857,11 @@ async function onSubmit () {
       formTypeId: String(currentFormTypeId.value || defaultFormTypeId || ''),
       formId: String(form.formId || ''),
       formNo: form.formNo || '',
-      leaveType: form.leaveType || '',
-      Reason: (form.reason || '').trim(),
-      StartTime: startTime ? toISO(startTime) : null,
-      EndTime: endTime ? toISO(endTime) : null,
-      days: coerceDays(form.days),
+      LeaveTypeCode: form.leaveType || '',
+      LeaveReason: (form.reason || '').trim(),
+      LeaveStartTime: startTime ? toISO(startTime) : null,
+      LeaveEndTime: endTime ? toISO(endTime) : null,
+      LeaveHours: coerceDays(form.days),
       agentUserNo: (form.agentUserNo || '').trim()
     }
     try {

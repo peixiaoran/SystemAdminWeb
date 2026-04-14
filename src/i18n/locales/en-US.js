@@ -501,7 +501,7 @@ export default {
       applicantUserNo: 'User No.',
       applicantUserName: 'User Name',
       applicantDeptName: 'Department',
-      leaveTypeCode: 'Leave Type',
+      leaveType: 'Leave Type',
       leaveHandoverUserName: 'Handover',
       leaveId: 'Leave ID',
       leaveNo: 'Leave No.',

@@ -435,7 +435,7 @@ export default {
         applicantUserNo: '员工工号',
         applicantUserName: '员工姓名',
         applicantDeptName: '员工部门',
-        leaveTypeCode: '请假类型',
+        leaveType: '请假类型',
         leaveHandoverUserName: '交接人',
         leaveId: '请假单ID',
         leaveNo: '请假单号',
