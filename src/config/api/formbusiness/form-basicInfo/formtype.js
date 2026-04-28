@@ -22,4 +22,4 @@ export const UPDATE_FORMTYPE_API = 'FormBusiness/FormBasicInfo/FormType/UpdateFo
 export const DELETE_FORMTYPE_ENTITY_API = 'FormBusiness/FormBasicInfo/FormType/DeleteFormTypeInfo'
 
 // 获取表单组别下拉列表API
-export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormBasicInfo/FormType/GetFormGroupDropDown'
+export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormBasicInfo/FormType/GetFormGroupDrop'

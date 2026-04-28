@@ -7,13 +7,13 @@
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 // 获取表单组别下拉框API
-export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormGroupDropDown'
+export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormGroupDrop'
 
 // 获取表单类型下拉框API
-export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormTypeDropDown'
+export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormTypeDrop'
 
 // 获取表单状态下拉框API
-export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormStatusDropDown'
+export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/PendingSubApp/GetFormStatusDrop'
 
 // 获取待送审列表API
 export const GET_PENDING_SUBMISSION_LIST_API = 'FormBusiness/FormOperate/PendingSubApp/GetPendingSubmissionPage'

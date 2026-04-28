@@ -33,27 +33,27 @@ export const GET_USER_ENTITY_API = {
 
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
-    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetDepartmentDropDown'
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetDepartmentDrop'
 }
 
 // 职业下拉框API
 export const GET_USER_POSITION_DROPDOWN_API = {
-    GET_USER_POSITION_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetUserPositionDropDown'
+    GET_USER_POSITION_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetPositionDrop'
 }
 
 // 角色下拉框API
 export const GET_ROLE_DROPDOWN_API = {
-    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetRoleDropDown'
+    GET_ROLE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetRoleDrop'
 }
 
 // 国籍下拉框API
 export const GET_NATIONALITY_DROPDOWN_API = {
-  GET_NATIONALITY_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetNationalityDropDown'
+  GET_NATIONALITY_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetNationalityDrop'
 }
 
 // 员工职业下拉框API
 export const GET_LABOR_TYPE_DROPDOWN_API = {
-  GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetLaborDropDown'
+  GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/UserInfo/GetLaborDrop'
 }
 
 // 导出员工API

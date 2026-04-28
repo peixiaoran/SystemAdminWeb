@@ -28,12 +28,12 @@ export const DELETE_SMENU_API = {
 
 // 网域下拉框
 export const GET_MODULE_DROP_API = {
-  GET_MODULE_DROP: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/GetModuleDropDown'
+  GET_MODULE_DROP: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/GetModuleDrop'
 }
 
 // 父菜单下拉框
 export const GET_PMENU_DROP_API = {
-  GET_PMENU_TYPE: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/GetPMenuDropDown'
+  GET_PMENU_TYPE: 'SystemBasicMgmt/SystemMgmt/SMenuInfo/GetPMenuDrop'
 }
 
 // 程序更新API

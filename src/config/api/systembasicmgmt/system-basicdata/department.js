@@ -33,10 +33,10 @@ export const UPDATE_DEPARTMENT_API = {
 
 // 上级部门下拉框API
 export const GET_DEPARTMENT_TREE_DROPDOWN_API = {
-  GET_DEPARTMENT_TREE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentDropDown'
+  GET_DEPARTMENT_TREE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentDrop'
 }
 
 // 部门级别下拉框API
 export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
-  GET_DEPARTMENTLEVEL_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentLevelDropdown'
+  GET_DEPARTMENTLEVEL_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentLevelDrop'
 }

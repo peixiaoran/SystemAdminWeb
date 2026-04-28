@@ -103,7 +103,6 @@
               check-strictly
               filterable
               :filter-node-method="filterNodeMethod"
-              style="width: 210px;"
               popper-class="main-dept-filter-popper"
               :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
           </el-form-item>

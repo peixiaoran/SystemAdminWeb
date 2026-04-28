@@ -35,15 +35,15 @@ export const UPDATE_USER_PARTTIME_API = {
 
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
-    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetDepartmentDropDown'
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetDepartmentDrop'
 }
 
 // 职级下拉框API
 export const GET_POSITION_DROPDOWN_API = {
-    GET_POSITION_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetUserPositionDropDown'
+    GET_POSITION_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetUserPositionDrop'
 }
 
 // 职业下拉框API
 export const GET_LABOR_DROPDOWN_API = {
-    GET_LABOR_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetLaborDropDown'
+    GET_LABOR_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserPartTime/GetLaborDrop'
 }

@@ -33,7 +33,7 @@ export const UPDATE_ROLE_API = {
 
 // 角色模块下拉框API
 export const GET_ROLE_MODULE_DROPDOWN_API = {
-  GET_ROLE_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetRoleModuleDropDown'
+  GET_ROLE_MODULE_DROPDOWN: 'SystemBasicMgmt/SystemMgmt/RoleInfo/GetRoleModuleDrop'
 }
 
 // 角色模块列表API

@@ -7,10 +7,10 @@
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 // 获取表单组别下拉框API
-export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowBranch/GetFormGroupDropDown'
+export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowBranch/GetFormGroupDrop'
 
 // 获取表单类别下拉框API
-export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowBranch/GetFormTypeDropDown'
+export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowBranch/GetFormTypeDrop'
 
 // 获取流程分支分页列表API
 export const GET_WORKFLOWBRANCH_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowBranch/GetWorkflowBranchPage'

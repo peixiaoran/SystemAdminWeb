@@ -289,7 +289,7 @@ export default {
         operationFailed: '操作失败'
       },
 
-    // 流程步骤配置页面专用
+    // 流程步骤配置
     workflowstep: {
       formGroupName: '表单组别',
       formTypeName: '表单类别',
@@ -380,6 +380,40 @@ export default {
       getFormTypeFailed: '获取表单类别失败'
     },
 
+    // 流程规则配置页面专用
+    workflowrule: {
+      formGroupName: '表单组别',
+      formTypeName: '表单类别',
+      positionName: '职级',
+      index: '序号',
+      ruleNameCn: '规则名称(中)',
+      ruleNameEn: '规则名称(英)',
+      guidance: '条件键值',
+      sortOrder: '排序',
+      addRule: '新增规则',
+      editRule: '编辑规则',
+      deleteRule: '删除',
+      deleteConfirm: '确定要删除该规则吗？',
+      deleteSuccess: '删除成功',
+      deleteFailed: '删除失败',
+      addSuccess: '新增成功',
+      addFailed: '新增失败',
+      editSuccess: '编辑成功',
+      editFailed: '编辑失败',
+      getEntityFailed: '获取规则详情失败',
+      getFailed: '获取流程规则列表失败',
+      getFormGroupFailed: '获取表单组别失败',
+      getFormTypeFailed: '获取表单类别失败',
+      getPositionFailed: '获取职级列表失败',
+      pleaseSelectFormGroup: '请选择表单组别',
+      pleaseSelectFormType: '请选择表单类别',
+      pleaseSelectPosition: '请选择职级',
+      pleaseInputRuleNameCn: '请输入规则中文名称',
+      pleaseInputRuleNameEn: '请输入规则英文名称',
+      pleaseInputGuidance: '请输入条件键值',
+      operation: '操作'
+    },
+
     // 申请表单作业页面专用
     applyform: {
       formGroupName: '表单组别',
@@ -447,8 +481,8 @@ export default {
         leaveTimeRange: '请假时间',
         days: '请假总天数',
         leaveHours: '请假总时数',
-    leaveHandoverUserId: '交接人',
-    agentUserNo: '代理人工号',
+        leaveHandoverUserId: '交接人',
+        agentUserNo: '代理人',
         pleaseInputLeaveNo: '请输入请假单号',
         pleaseInputDescription: '请输入描述',
         pleaseSelectImportance: '请选择重要程度',
@@ -711,8 +745,8 @@ export default {
     formGroup: '表单组别信息',
     formType: '表单类别信息',
     formworkflow: '表单流程配置',
-    workflowbranch: '流程分支配置',
-    workflowstep: '流程步骤配置',
+    workflowstep: '流程步骤维护',
+    workflowrule: '流程规则维护',
     formoperate: '表单操作',
     pendingsubapp: '待审表单列表',
     applyform: '申请表单作业',

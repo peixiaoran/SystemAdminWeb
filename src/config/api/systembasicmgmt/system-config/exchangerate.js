@@ -18,7 +18,7 @@ export const GET_EXCHANGE_RATE_ENTITY_API = {
 
 // 查询币别下拉框API
 export const GET_CURRENCY_DROPDOWN_API = {
-  GET_CURRENCY_DROPDOWN: 'SystemBasicMgmt/SystemConfig/ExchangeRate/GetCurrencyInfoDropDown'
+  GET_CURRENCY_DROPDOWN: 'SystemBasicMgmt/SystemConfig/ExchangeRate/GetCurrencyInfoDrop'
 }
 
 // 新增汇率API

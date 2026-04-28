@@ -179,6 +179,7 @@ const getFormTypeOptions = async (formGroupId) => {
     formTypeOptions.value = []
     searchForm.formTypeId = ''
     branchList.value = []
+    loading.value = false
     return
   }
   try {
@@ -192,24 +193,31 @@ const getFormTypeOptions = async (formGroupId) => {
       formTypeOptions.value = response.data || []
       if (formTypeOptions.value.length > 0) {
         searchForm.formTypeId = formTypeOptions.value[0].formTypeId
+        pagination.pageIndex = 1
         await getBranchList()
       } else {
         searchForm.formTypeId = ''
         branchList.value = []
+        loading.value = false
       }
     } else {
       showMessage(response.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
       branchList.value = []
+      loading.value = false
     }
   } catch {
     showMessage(t('formbusiness.workflowbranch.getFormTypeFailed'))
     formTypeOptions.value = []
     searchForm.formTypeId = ''
     branchList.value = []
+    loading.value = false
   }
 }
+
+// 最小 loading 显示时间，避免接口太快导致动画一闪而过
+const MIN_LOADING_DURATION = 300
 
 const getBranchList = async () => {
   if (!searchForm.formTypeId) {
@@ -217,6 +225,7 @@ const getBranchList = async () => {
     return
   }
   loading.value = true
+  const loadingStart = Date.now()
   try {
     const params = {
       formTypeId: searchForm.formTypeId,
@@ -236,17 +245,27 @@ const getBranchList = async () => {
     showMessage(t('formbusiness.workflowbranch.getFailed'))
     branchList.value = []
   } finally {
+    const elapsed = Date.now() - loadingStart
+    if (elapsed < MIN_LOADING_DURATION) {
+      await new Promise(resolve => setTimeout(resolve, MIN_LOADING_DURATION - elapsed))
+    }
     loading.value = false
   }
 }
 
-const handleFormGroupChange = async (val) => {
-  await getFormTypeOptions(val)
+/**
+ * 组别变更：立即联动 formType 下拉，由 getBranchList 内部触发表格加载动画
+ */
+const handleFormGroupChange = (val) => {
+  getFormTypeOptions(val)
 }
 
-const handleFormTypeChange = async () => {
+/**
+ * 类别变更：直接刷新表格
+ */
+const handleFormTypeChange = () => {
   pagination.pageIndex = 1
-  await getBranchList()
+  getBranchList()
 }
 
 const handleSizeChange = (val) => {
@@ -279,9 +298,6 @@ const dialogFormRules = reactive({
   ],
   branchNameEn: [
     { required: true, message: () => t('formbusiness.workflowbranch.pleaseInputBranchNameEn'), trigger: 'blur' }
-  ],
-  handlerKey: [
-    { required: true, message: () => t('formbusiness.workflowbranch.pleaseInputHandlerKey'), trigger: 'blur' }
   ]
 })
 

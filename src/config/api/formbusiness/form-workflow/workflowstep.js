@@ -7,10 +7,10 @@
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 // 获取表单组别下拉框API
-export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetFormGroupDropDown'
+export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetFormGroupDrop'
 
 // 获取表单类别下拉框API
-export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetFormTypeDropDown'
+export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetFormTypeDrop'
 
 // 获取流程步骤列表API
 export const GET_WORKFLOWSTEP_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetWorkflowStepList'
@@ -19,22 +19,22 @@ export const GET_WORKFLOWSTEP_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowStep
 export const INSERT_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/InsertWorkflowStep'
 
 // 获取指派规则下拉框API
-export const GET_ASSIGNMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetAssignmentDropDown'
+export const GET_ASSIGNMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetAssignmentDrop'
 
 // 获取步骤签核级别下拉框API
-export const GET_ARCHI_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetArchiLevelDropDown'
+export const GET_ARCHI_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetArchiLevelDrop'
 
 // 获取步骤签核方式下拉框API
-export const GET_APPROVE_MODE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetApproveModeDropDown'
+export const GET_APPROVE_MODE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetApproveModeDrop'
 
 // 获取部门级别下拉框API
-export const GET_DEPARTMENT_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentLevelDropDown'
+export const GET_DEPARTMENT_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentLevelDrop'
 
 // 获取员工职级下拉框API
-export const GET_USER_POSITION_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetUserPositionDropDown'
+export const GET_USER_POSITION_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetPositionDrop'
 
 // 获取部门下拉框API
-export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentDropDown'
+export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentDrop'
 
 // 获取用户信息分页API
 export const GET_USER_INFO_PAGE_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetUserInfoPage'

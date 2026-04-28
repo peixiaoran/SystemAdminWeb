@@ -23,6 +23,6 @@ export const UPDATE_USER_FORM_API = {
 
 // 部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = {
-    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserForm/GetDepartmentDropDown'
+    GET_DEPARTMENT_DROPDOWN: 'SystemBasicMgmt/UserSettings/UserForm/GetDepartmentDrop'
 }
 

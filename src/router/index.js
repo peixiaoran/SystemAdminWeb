@@ -482,7 +482,18 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-workflow/workflowstep.vue'),
               meta: { 
                 title: 'route.workflowstep', 
-                icon: 'Sort',
+                icon: 'Notification',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'workflowrule',
+              name: 'WorkflowRule',
+              component: () => import('../views/formbusiness/form-workflow/workflowrule.vue'),
+              meta: { 
+                title: 'route.workflowrule', 
+                icon: 'HelpFilled',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

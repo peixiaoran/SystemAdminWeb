@@ -10,4 +10,4 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 export const GET_APPLYFORM_API = 'FormBusiness/FormOperate/ApplyForm/GetApplyFormPage'
 
 // 获取表单组别下拉框API
-export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/ApplyForm/GetFormGroupDropDown'
+export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/ApplyForm/GetFormGroupDrop'

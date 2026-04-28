@@ -28,7 +28,7 @@ export const DELETE_PMENU_API = {
 
 // 模块下拉框
 export const GET_MODULE_DROP_API = {
-  GET_MODULE_DROP: 'SystemBasicMgmt/SystemMgmt/PMenuInfo/GetModuleDropDown'
+  GET_MODULE_DROP: 'SystemBasicMgmt/SystemMgmt/PMenuInfo/GetModuleDrop'
 }
 
 // 一级菜单更新API

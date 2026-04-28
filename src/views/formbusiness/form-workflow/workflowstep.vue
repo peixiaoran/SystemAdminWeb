@@ -39,14 +39,14 @@
         </el-form-item>
       </el-form>
 
-      <div class="table-container" v-loading="loading">
+      <div class="table-container">
         <el-table
-          v-if="workflowStepList.length > 0"
           :data="workflowStepList"
           border
           stripe
           class="conventional-table"
           :header-cell-style="{ background: '#f5f7fa' }"
+          v-loading="loading"
           row-key="stepId"
         >
           <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
@@ -80,7 +80,6 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-empty v-else-if="!loading" />
       </div>
     </el-card>
 
@@ -588,13 +587,13 @@ const getFormGroupOptions = async () => {
 }
 
 /**
- * 获取表单类别下拉选项
+ * 获取表单类别下拉选项；不论是否有数据，最终都会调用 getWorkflowStepList 走一遍 loading 流程
  */
 const getFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) {
     formTypeOptions.value = []
     searchForm.formTypeId = ''
-    workflowStepList.value = []
+    await getWorkflowStepList()
     return
   }
   try {
@@ -605,37 +604,36 @@ const getFormTypeOptions = async (formGroupId) => {
     )
     if (response.code === 200) {
       formTypeOptions.value = response.data || []
-      if (formTypeOptions.value.length > 0) {
-        searchForm.formTypeId = formTypeOptions.value[0].formTypeId
-        await getWorkflowStepList()
-      } else {
-        searchForm.formTypeId = ''
-        workflowStepList.value = []
-      }
+      searchForm.formTypeId = formTypeOptions.value.length > 0
+        ? formTypeOptions.value[0].formTypeId
+        : ''
     } else {
       showMessage(response.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
-      workflowStepList.value = []
     }
   } catch (error) {
     showMessage(t('formbusiness.workflowstep.getFormTypeFailed'))
     formTypeOptions.value = []
     searchForm.formTypeId = ''
-    workflowStepList.value = []
   }
+  await getWorkflowStepList()
 }
 
+// 最小 loading 显示时间，避免接口太快导致动画一闪而过
+const MIN_LOADING_DURATION = 300
+
 /**
- * 获取流程步骤列表
+ * 获取流程步骤列表；formTypeId 为空时也走一遍 loading 流程并清空表格
  */
 const getWorkflowStepList = async () => {
-  if (!searchForm.formTypeId) {
-    workflowStepList.value = []
-    return
-  }
   loading.value = true
+  const loadingStart = Date.now()
   try {
+    if (!searchForm.formTypeId) {
+      workflowStepList.value = []
+      return
+    }
     const formData = new FormData()
     formData.append('formTypeId', String(searchForm.formTypeId))
     const response = await post(GET_WORKFLOWSTEP_LIST_API, formData, {
@@ -652,22 +650,26 @@ const getWorkflowStepList = async () => {
     showMessage(t('formbusiness.workflowstep.getFailed'))
     workflowStepList.value = []
   } finally {
+    const elapsed = Date.now() - loadingStart
+    if (elapsed < MIN_LOADING_DURATION) {
+      await new Promise(resolve => setTimeout(resolve, MIN_LOADING_DURATION - elapsed))
+    }
     loading.value = false
   }
 }
 
 /**
- * 表单分组改变事件
+ * 表单分组改变：立即联动表单类别下拉，由 getWorkflowStepList 内部触发表格加载动画
  */
-const handleFormGroupChange = async (val) => {
-  await getFormTypeOptions(val)
+const handleFormGroupChange = (val) => {
+  getFormTypeOptions(val)
 }
 
 /**
- * 表单类别改变事件
+ * 表单类别改变：直接刷新表格
  */
-const handleFormTypeChange = async () => {
-  await getWorkflowStepList()
+const handleFormTypeChange = () => {
+  getWorkflowStepList()
 }
 
 /**
@@ -1080,7 +1082,7 @@ const handleAddStepDialogClose = () => {
 }
 
 /**
- * 提交新增步骤（按新接口请求体结构）
+ * 提交新增步骤
  */
 const submitAddStep = async () => {
   if (!addStepFormRef.value) return
@@ -1111,7 +1113,7 @@ const submitAddStep = async () => {
       )
       if (response.code === 200) {
         showMessage(
-          isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess'),
+          response.message || (isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess')),
           'success'
         )
         addStepDialogVisible.value = false
@@ -1119,10 +1121,10 @@ const submitAddStep = async () => {
           await getWorkflowStepList()
         }
       } else {
-        showMessage(response.message || t('formbusiness.workflowstep.addStepFailed'))
+        showMessage(response.message)
       }
     } catch {
-      showMessage(t('formbusiness.workflowstep.addStepFailed'))
+      showMessage(response.message)
     } finally {
       addStepSubmitting.value = false
     }

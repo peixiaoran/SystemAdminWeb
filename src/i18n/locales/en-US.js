@@ -446,6 +446,40 @@ export default {
       getFormTypeFailed: 'Failed to get form type'
     },
 
+    // Workflow Rule Page Specific
+    workflowrule: {
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      positionName: 'Position',
+      index: 'Index',
+      ruleNameCn: 'Rule (CN)',
+      ruleNameEn: 'Rule (EN)',
+      guidance: 'Condition Key',
+      sortOrder: 'Sort',
+      addRule: 'Add Rule',
+      editRule: 'Edit Rule',
+      deleteRule: 'Delete',
+      deleteConfirm: 'Are you sure you want to delete this rule?',
+      deleteSuccess: 'Deleted successfully',
+      deleteFailed: 'Failed to delete',
+      addSuccess: 'Added successfully',
+      addFailed: 'Failed to add',
+      editSuccess: 'Updated successfully',
+      editFailed: 'Failed to update',
+      getEntityFailed: 'Failed to get rule details',
+      getFailed: 'Failed to get workflow rule list',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getPositionFailed: 'Failed to get position list',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseSelectFormType: 'Please select form type',
+      pleaseSelectPosition: 'Please select position',
+      pleaseInputRuleNameCn: 'Please input rule name (CN)',
+      pleaseInputRuleNameEn: 'Please input rule name (EN)',
+      pleaseInputGuidance: 'Please input condition key',
+      operation: 'Operation'
+    },
+
     // Apply Form Page Specific
     applyform: {
       formGroupName: 'Form Group',
@@ -791,8 +825,8 @@ export default {
     formGroup: 'Form Group',
     formType: 'Form Type',
     formworkflow: 'Form Workflow',
-    workflowbranch: 'Workflow Branch',
     workflowstep: 'Workflow Step',
+    workflowrule: 'Workflow Rule',
     formoperate: 'Form Operation',
     pendingsubapp: 'Pending SubApp',
     applyform: 'Application Form',
@@ -872,7 +906,7 @@ export default {
       nationality: 'Nationality',
       email: 'Email',
       phoneNumber: 'Phone Number',
-      expirationDays: 'Password Expiration',
+      expirationDays: 'Pwd Expiration',
        pleaseInputExpirationDays: 'Please input expiration',
        pleaseSelectExpirationDays: 'Please select password expiration',
        expirationDaysOptions: {

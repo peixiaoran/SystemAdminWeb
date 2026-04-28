@@ -134,8 +134,7 @@
               show-checkbox
               node-key="moduleId"
               :props="moduleTreeProps"
-              :default-checked-keys="defaultCheckedModules"
-              @check-change="handleModuleCheckChange">
+              :default-checked-keys="defaultCheckedModules">
           </el-tree>
         </div>
         <template #footer>
@@ -187,8 +186,7 @@
                 :props="menuTreeProps"
                 :default-checked-keys="defaultCheckedMenus"
                 :check-strictly="false"
-                check-on-click-node
-                @check-change="handleMenuCheckChange">
+                check-on-click-node>
             </el-tree>
           </div>
         </div>
@@ -689,9 +687,15 @@
       const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
       if (res && res.code === 200) {
           moduleDialogVisible.value = false
+          ElMessage({
+              message: res?.message || t('systembasicmgmt.role.moduleConfigSuccess'),
+              type: 'success',
+              plain: true,
+              showClose: true
+          })
       } else {
           ElMessage({
-              message: res?.message,
+              message: res?.message || t('systembasicmgmt.role.moduleConfigFailed'),
               type: 'error',
               plain: true,
               showClose: true
@@ -794,10 +798,6 @@
       return checkedIds
   }
 
-  const handleMenuCheckChange = () => {
-      // 处理菜单选择变化
-  }
-
   /**
    * 保存菜单配置
    * 函数说明：直接保存当前勾选的菜单配置并关闭对话框，不弹出确认或成功提示。
@@ -816,14 +816,14 @@
       if (res && res.code === 200) {
           menuDialogVisible.value = false
           ElMessage({
-              message: res?.message,
+              message: res?.message || t('systembasicmgmt.role.menuConfigSuccess'),
               type: 'success',
               plain: true,
               showClose: true
           })
       } else {
           ElMessage({
-              message: res?.message || t('systembasicmgmt.role.saveMenuFail'),
+              message: res?.message || t('systembasicmgmt.role.menuConfigFailed'),
               type: 'error',
               plain: true,
               showClose: true

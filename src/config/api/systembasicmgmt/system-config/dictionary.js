@@ -33,10 +33,10 @@ export const DELETE_DICTIONARY_API = {
 
 // 获取模块下拉列表API
 export const GET_MODULE_DROP_DOWN_API = {
-  GET_MODULE_DROP_DOWN: 'SystemBasicMgmt/SystemConfig/DictionaryInfo/GetModuleDropDown'
+  GET_MODULE_DROP_DOWN: 'SystemBasicMgmt/SystemConfig/DictionaryInfo/GetModuleDrop'
 }
 
 // 获取字典类型下拉列表API
 export const GET_DIC_TYPE_DROP_DOWN_API = {
-  GET_DIC_TYPE_DROP_DOWN: 'SystemBasicMgmt/SystemConfig/DictionaryInfo/GetDicTypeDropDown'
+  GET_DIC_TYPE_DROP_DOWN: 'SystemBasicMgmt/SystemConfig/DictionaryInfo/GetDicTypeDrop'
 }
