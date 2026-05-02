@@ -5,18 +5,18 @@
         <el-form-item>
           <el-radio-group v-model="listMode" @change="handleListModeChange">
             <el-radio-button value="pendingSubmission">
-              {{ $t('formbusiness.pendingsubapp.pendingSubmission') }}
+              {{ $t('formbusiness.pendingsubreview.pendingSubmission') }}
             </el-radio-button>
-            <el-radio-button value="pendingsubapp">
-              {{ $t('formbusiness.pendingsubapp.pendingsubapp') }}
+            <el-radio-button value="pendingsubreview">
+              {{ $t('formbusiness.pendingsubreview.pendingsubreview') }}
             </el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.pendingsubapp.formGroupName')">
+        <el-form-item :label="$t('formbusiness.pendingsubreview.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"
-            :placeholder="$t('formbusiness.pendingsubapp.pleaseSelectFormGroup')"
+            :placeholder="$t('formbusiness.pendingsubreview.pleaseSelectFormGroup')"
             filterable
             clearable
             style="width: 170px"
@@ -31,10 +31,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.pendingsubapp.formTypeName')">
+        <el-form-item :label="$t('formbusiness.pendingsubreview.formTypeName')">
           <el-select
             v-model="searchForm.formTypeId"
-            :placeholder="$t('formbusiness.pendingsubapp.pleaseSelectFormType')"
+            :placeholder="$t('formbusiness.pendingsubreview.pleaseSelectFormType')"
             filterable
             clearable
             style="width: 170px"
@@ -49,10 +49,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="listMode === 'pendingsubapp'" :label="$t('formbusiness.pendingsubapp.formStatus')">
+        <el-form-item v-if="listMode === 'pendingsubreview'" :label="$t('formbusiness.pendingsubreview.formStatus')">
           <el-select
             v-model="searchForm.formStatus"
-            :placeholder="$t('formbusiness.pendingsubapp.pleaseSelectFormStatus')"
+            :placeholder="$t('formbusiness.pendingsubreview.pleaseSelectFormStatus')"
             clearable
             style="width: 170px"
             @change="handleFormStatusChange"
@@ -78,15 +78,15 @@
 
       <div class="table-container">
         <el-table
-          :data="pendingsubappList"
+          :data="pendingsubreviewList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading || filterPending"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('formbusiness.pendingsubapp.index')" width="70" align="center" fixed />
-          <el-table-column :label="$t('formbusiness.pendingsubapp.formNo')" align="center" min-width="140">
+          <el-table-column type="index" :label="$t('formbusiness.pendingsubreview.index')" width="70" align="center" fixed />
+          <el-table-column :label="$t('formbusiness.pendingsubreview.formNo')" align="center" min-width="140">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -99,16 +99,16 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.pendingsubapp.formTypeName')" align="center" min-width="140" />
-          <el-table-column :label="$t('formbusiness.pendingsubapp.formStatus')" align="center" width="170">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.pendingsubreview.formTypeName')" align="center" min-width="140" />
+          <el-table-column :label="$t('formbusiness.pendingsubreview.formStatus')" align="center" width="170">
             <template #default="{ row }">
               <el-tag :type="getFormStatusTagType(row)" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="applyUserName" :label="$t('formbusiness.pendingsubapp.applyUserName')" align="center" min-width="80" />
-          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.pendingsubapp.applyUserDeptName')" align="center" min-width="170" />
+          <el-table-column prop="applyUserName" :label="$t('formbusiness.pendingsubreview.applyUserName')" align="center" min-width="80" />
+          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.pendingsubreview.applyUserDeptName')" align="center" min-width="170" />
           <el-table-column :label="$t('common.operation')" align="center" width="160">
             <template #default="{ row }">
               <el-link
@@ -126,7 +126,7 @@
                 style="margin-left: 12px;"
                 @click="handleVoidForm(row)"
               >
-                {{ $t('formbusiness.pendingsubapp.invalidate') }}
+                {{ $t('formbusiness.pendingsubreview.invalidate') }}
               </el-link>
             </template>
           </el-table-column>
@@ -158,9 +158,9 @@ import {
   GET_FORMTYPE_DROPDOWN_API,
   GET_FORMSTATUS_DROPDOWN_API,
   GET_PENDING_SUBMISSION_LIST_API,
-  GET_PENDING_APPROVAL_LIST_API,
+  GET_PENDING_REVIEW_LIST_API,
   VOIDED_FORM_API
-} from '@/config/api/formbusiness/form-operate/pendingsubapp.js'
+} from '@/config/api/formbusiness/form-operate/pendingsubreview.js'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -168,11 +168,11 @@ const router = useRouter()
 
 const loading = ref(false)
 const filterPending = ref(false)
-const pendingsubappList = ref([])
+const pendingsubreviewList = ref([])
 const formGroupOptions = ref([])
 const formTypeOptions = ref([])
 const formStatusOptions = ref([])
-const listMode = ref('pendingsubapp')
+const listMode = ref('pendingsubreview')
 const ALL_OPTION_VALUE = '-1'
 
 const searchForm = reactive({
@@ -193,7 +193,7 @@ const getFormGroupOptions = async () => {
     const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (response?.code === 200) {
       formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.pendingsubapp.all') },
+        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.pendingsubreview.all') },
         ...(response.data || [])
       ]
       if (!searchForm.formGroupId) {
@@ -201,9 +201,9 @@ const getFormGroupOptions = async () => {
       }
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubapp.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubapp.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
   }
 }
 
@@ -221,14 +221,14 @@ const getFormTypeOptions = async () => {
     })
     if (response?.code === 200) {
       formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.pendingsubapp.all') },
+        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.pendingsubreview.all') },
         ...(response.data || [])
       ]
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubapp.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubapp.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
   }
 }
 
@@ -239,13 +239,13 @@ const getFormStatusOptions = async () => {
       formStatusOptions.value = response.data || []
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubapp.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubapp.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
   }
 }
 
-const getPendingSubAppList = async () => {
+const getPendingSubReviewList = async () => {
   loading.value = true
   try {
     const params = {
@@ -259,14 +259,14 @@ const getPendingSubAppList = async () => {
     }
     const response = await post(getCurrentListApi(), params)
     if (response?.code === 200) {
-      pendingsubappList.value = response.data || []
+      pendingsubreviewList.value = response.data || []
       pagination.totalCount = Number(response.totalCount || 0)
       return
     }
-    pendingsubappList.value = []
+    pendingsubreviewList.value = []
     ElMessage({ message: response?.message || t(getCurrentListErrorKey()), type: 'error', plain: true, showClose: true })
   } catch {
-    pendingsubappList.value = []
+    pendingsubreviewList.value = []
     ElMessage({ message: t(getCurrentListErrorKey()), type: 'error', plain: true, showClose: true })
   } finally {
     loading.value = false
@@ -284,19 +284,19 @@ const normalizeFilterValue = (value) => {
 const getCurrentListApi = () => {
   return listMode.value === 'pendingSubmission'
     ? GET_PENDING_SUBMISSION_LIST_API
-    : GET_PENDING_APPROVAL_LIST_API
+    : GET_PENDING_REVIEW_LIST_API
 }
 
 const getCurrentListErrorKey = () => {
   return listMode.value === 'pendingSubmission'
-    ? 'formbusiness.pendingsubapp.getPendingSubmissionFailed'
-    : 'formbusiness.pendingsubapp.getPendingSubAppFailed'
+    ? 'formbusiness.pendingsubreview.getPendingSubmissionFailed'
+    : 'formbusiness.pendingsubreview.getPendingSubReviewFailed'
 }
 
 const getActionText = () => {
   return listMode.value === 'pendingSubmission'
-    ? t('formbusiness.pendingsubapp.submission')
-    : t('formbusiness.pendingsubapp.approval')
+    ? t('formbusiness.pendingsubreview.submission')
+    : t('formbusiness.pendingsubreview.approval')
 }
 
 const scheduleFilterRequest = async (callback) => {
@@ -317,7 +317,7 @@ const handleListModeChange = () => {
   searchForm.formStatus = ''
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
-    await getPendingSubAppList()
+    await getPendingSubReviewList()
   })
 }
 
@@ -328,14 +328,14 @@ const handleFormGroupChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getPendingSubAppList()
+    await getPendingSubReviewList()
   })
 }
 
 const handleFilterChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
-    await getPendingSubAppList()
+    await getPendingSubReviewList()
   })
 }
 
@@ -358,7 +358,7 @@ const handleSearch = async () => {
   searchTimer = setTimeout(async () => {
     try {
       pagination.pageIndex = 1
-      await getPendingSubAppList()
+      await getPendingSubReviewList()
     } finally {
       filterPending.value = false
     }
@@ -373,19 +373,19 @@ const handleReset = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getPendingSubAppList()
+    await getPendingSubReviewList()
   })
 }
 
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  getPendingSubAppList()
+  getPendingSubReviewList()
 }
 
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
-  getPendingSubAppList()
+  getPendingSubReviewList()
 }
 
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
@@ -408,48 +408,27 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-const FORM_POPUP_WIDTH = 1100
-const FORM_POPUP_HEIGHT = 850
-
 /**
- * @param {boolean} [fullscreen] 签核（approvalPath）等新窗口铺满可用屏幕；查看单号等仍用居中弹窗
+ * 新窗口铺满可用屏幕（表单编号链接与修改链接相同宽高）
  */
-const openPopupWindow = (href, namePrefix = 'form_popup', fullscreen = false) => {
-  let features
-  if (fullscreen) {
-    const aw = window.screen.availWidth
-    const ah = window.screen.availHeight
-    features = [
-      `width=${aw}`,
-      `height=${ah}`,
-      'left=0',
-      'top=0',
-      'resizable=yes',
-      'scrollbars=yes'
-    ].join(',')
-  } else {
-    const left = Math.max(Math.floor((window.screen.width - FORM_POPUP_WIDTH) / 2), 0)
-    const top = Math.max(Math.floor((window.screen.height - FORM_POPUP_HEIGHT) / 2), 0)
-    features = [
-      `width=${FORM_POPUP_WIDTH}`,
-      `height=${FORM_POPUP_HEIGHT}`,
-      `left=${left}`,
-      `top=${top}`,
-      'resizable=yes',
-      'scrollbars=yes'
-    ].join(',')
-  }
+const openPopupWindow = (href, namePrefix = 'form_popup') => {
+  const aw = window.screen.availWidth
+  const ah = window.screen.availHeight
+  const features = [
+    `width=${aw}`,
+    `height=${ah}`,
+    'left=0',
+    'top=0',
+    'resizable=yes',
+    'scrollbars=yes'
+  ].join(',')
   const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
   popup?.focus()
-  if (fullscreen) {
-    try {
-      const aw = window.screen.availWidth
-      const ah = window.screen.availHeight
-      popup?.moveTo(0, 0)
-      popup?.resizeTo(aw, ah)
-    } catch {
-      // ignore
-    }
+  try {
+    popup?.moveTo(0, 0)
+    popup?.resizeTo(aw, ah)
+  } catch {
+    // ignore
   }
 }
 
@@ -457,7 +436,7 @@ const openFormPage = (row, pathKey) => {
   if (!row || !row[pathKey]) return
   const path = normalizePath(row[pathKey])
   if (!isPathSafe(path)) {
-    ElMessage({ message: t('formbusiness.pendingsubapp.getFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.getFailed'), type: 'error', plain: true, showClose: true })
     return
   }
   const to = {
@@ -469,14 +448,10 @@ const openFormPage = (row, pathKey) => {
   }
   const resolved = router.resolve(to)
   if (!isRouteValid(resolved)) {
-    ElMessage({ message: t('formbusiness.pendingsubapp.getFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.getFailed'), type: 'error', plain: true, showClose: true })
     return
   }
-  openPopupWindow(
-    resolved.href,
-    pathKey === 'approvalPath' ? 'pending_approval' : 'form_view',
-    pathKey === 'approvalPath'
-  )
+  openPopupWindow(resolved.href, pathKey === 'approvalPath' ? 'pending_approval' : 'form_view')
 }
 
 const getFormStatusCode = (row) => {
@@ -499,7 +474,7 @@ const handleVoidForm = async (row) => {
   if (!row?.formId) return
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.pendingsubapp.voidConfirm'),
+      t('formbusiness.pendingsubreview.voidConfirm'),
       t('common.tip'),
       { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
@@ -515,13 +490,13 @@ const handleVoidForm = async (row) => {
       skipDedupe: true
     })
     if (res?.code === 200) {
-      ElMessage({ message: res.message || t('formbusiness.pendingsubapp.voidSuccess'), type: 'success', plain: true, showClose: true })
-      await getPendingSubAppList()
+      ElMessage({ message: res.message || t('formbusiness.pendingsubreview.voidSuccess'), type: 'success', plain: true, showClose: true })
+      await getPendingSubReviewList()
     } else {
-      ElMessage({ message: res?.message || t('formbusiness.pendingsubapp.voidFailed'), type: 'error', plain: true, showClose: true })
+      ElMessage({ message: res?.message || t('formbusiness.pendingsubreview.voidFailed'), type: 'error', plain: true, showClose: true })
     }
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubapp.voidFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.pendingsubreview.voidFailed'), type: 'error', plain: true, showClose: true })
   } finally {
     loading.value = false
   }
@@ -538,7 +513,7 @@ const canShowInvalidate = (row) => {
 onMounted(async () => {
   await Promise.all([getFormGroupOptions(), getFormStatusOptions()])
   await getFormTypeOptions()
-  await getPendingSubAppList()
+  await getPendingSubReviewList()
 })
 </script>
 

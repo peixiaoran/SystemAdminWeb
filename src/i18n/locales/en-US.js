@@ -375,8 +375,8 @@ export default {
       pleaseInputStepNameEn: 'Please input step name (EN)',
       pleaseSelectAssignment: 'Please select assignment rule',
       pleaseSelectArchiveLevel: 'Please select archive level',
-      approveMode: 'App Mode',
-      pleaseSelectApproveMode: 'Please select approve mode',
+      reviewMode: 'Review Mode',
+      pleaseSelectReviewMode: 'Please select review mode',
       isReminderEnabled: 'Is Reminder',
       reminderIntervalMinutes: 'Interval',
       pleaseInputReminderInterval: 'Please input reminder interval',
@@ -480,6 +480,41 @@ export default {
       operation: 'Operation'
     },
 
+    // Workflow Rule Step Page Specific
+    workflowrulestep: {
+      title: 'Workflow Rule Step',
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      rule: 'Workflow Rule',
+      currentStepName: 'Current Step',
+      nextStepName: 'Next Step',
+      sortOrder: 'Sort',
+      index: 'Index',
+      operation: 'Operation',
+      addRuleStep: 'Add Rule Step',
+      editRuleStep: 'Edit Rule Step',
+      deleteRuleStep: 'Delete',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseSelectFormType: 'Please select form type',
+      pleaseSelectRule: 'Please select workflow rule',
+      pleaseSelectCurrentStep: 'Please select current step',
+      pleaseSelectNextStep: 'Please select next step',
+      nextStepEnd: 'End of workflow',
+      stepDuplicated: 'Current step and next step cannot be the same',
+      deleteConfirm: 'Are you sure you want to delete this rule step?',
+      deleteSuccess: 'Deleted successfully',
+      deleteFailed: 'Failed to delete',
+      addSuccess: 'Added successfully',
+      addFailed: 'Failed to add',
+      editSuccess: 'Updated successfully',
+      editFailed: 'Failed to update',
+      getEntityFailed: 'Failed to get rule step details',
+      getFailed: 'Failed to get workflow rule step list',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getRuleFailed: 'Failed to get workflow rule'
+    },
+
     // Apply Form Page Specific
     applyform: {
       formGroupName: 'Form Group',
@@ -497,10 +532,10 @@ export default {
       getFailed: 'Failed to get data'
     },
 
-    pendingsubapp: {
+    pendingsubreview: {
       all: 'All',
       pendingSubmission: 'Submission',
-      pendingsubapp: 'Approval',
+      pendingsubreview: 'Approval',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
       formStatus: 'Form Status',
@@ -522,8 +557,8 @@ export default {
       getFormTypeFailed: 'Failed to get form type',
       getFormStatusFailed: 'Failed to get form status',
       getPendingSubmissionFailed: 'Failed to get pending submission list',
-      getPendingSubAppFailed: 'Failed to get pending sub app list',
-      getFailed: 'Failed to get pending sub app list'
+      getPendingSubReviewFailed: 'Failed to get pending review list',
+      getFailed: 'Failed to get pending review list'
     },
 
     // Leave Form Page Specific
@@ -549,7 +584,6 @@ export default {
       leaveHours: 'Leave Hours',
       leaveHandoverUserId: 'Handover User',
       agentUserNo: 'Agent User',
-      pleaseInputLeaveNo: 'Please enter leave number',
       pleaseInputDescription: 'Please enter description',
       pleaseSelectImportance: 'Please select importance level',
       pleaseInputHandoverUserName: 'Please enter handover user name',
@@ -574,7 +608,7 @@ export default {
       approvalResultSubTitle: 'The form has been approval successfully. Please wait for the approval process.',
       forbiddenResultTitle: 'Unable to Continue',
       forbiddenResultSubTitle: 'This action is restricted. Please ensure it complies with the workflow rules.',
-      backToPendingSubApp: 'Back to Pending Sub App List',
+      backToPendingSubReview: 'Back to Pending Review List',
       attachments: 'Attachments',
       uploadFile: 'Upload',
       uploadSuccess: 'Upload successfully',
@@ -595,6 +629,11 @@ export default {
       workflowStatusSigning: 'Pending',
       workflowStatusApproved: 'Approved',
       workflowStatusNotSigned: 'Not',
+      workflowStatusUnsigned: 'Unsigned',
+      workflowStatusUnderReview: 'Reviewing',
+      workflowStatusApprove: 'Approved',
+      workflowStatusSkipped: 'Skipped',
+      workflowRejectCount: 'Rejected {count} time(s)',
       workflowAgent: 'Agent',
       workflowEmpty: 'No workflow data',
       workflowLoadFailed: 'Failed to load workflow',
@@ -827,8 +866,9 @@ export default {
     formworkflow: 'Form Workflow',
     workflowstep: 'Workflow Step',
     workflowrule: 'Workflow Rule',
+    workflowrulestep: 'Workflow Rule Step',
     formoperate: 'Form Operation',
-    pendingsubapp: 'Pending SubApp',
+    pendingsubreview: 'Pending Review',
     applyform: 'Application Form',
     controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',

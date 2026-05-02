@@ -23,7 +23,8 @@
                          style="width: 180px;"
                          :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
                          format="YYYY-MM"
-                         value-format="YYYY-MM" />
+                         value-format="YYYY-MM"
+                         :clearable="false" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>

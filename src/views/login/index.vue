@@ -187,10 +187,15 @@ const handleLogin = () => {
       localStorage.setItem('language', loginForm.language)
 
       // 使用封装的post方法，它会使用环境变量中的API基础URL
-      post(LOGIN_API.USER_LOGIN, {
-        loginNo: loginForm.loginNo,
-        password: loginForm.password
-      }).then(res => {
+      post(
+        LOGIN_API.USER_LOGIN,
+        {
+          loginNo: loginForm.loginNo,
+          password: loginForm.password
+        },
+        { allowLoginBusinessCodes: true }
+      ).then(res => {
+          const businessMsg = res?.message ?? ''
           if (res.code === 200) {
             resetAuthErrorState()
             // 设置标题
@@ -216,24 +221,19 @@ const handleLogin = () => {
               router.replace('/module-select')
             }
             loading.value = false
-          } else if (res.code === 210) {
-            // 密码过期，显示警告消息后跳转到密码过期修改页面
-            // 保持loading状态为true，禁用登录按钮
+          } else if (res.code === 400) {
+            // 账号不存在
             ElMessage({
-              message: res.message,
-              type: 'warning',
+              message: businessMsg,
+              type: 'error',
               plain: true,
-              showClose: true,
-              duration: 3000
+              showClose: true
             })
-            setTimeout(() => {
-              router.push('/password-expiration')
-            }, 1500)
-          } else if (res.code === 220) {
-            // 账户被锁定，显示警告消息后跳转到解锁页面
-            // 保持loading状态为true，禁用登录按钮
+            loading.value = false
+          } else if (res.code === 401 || res.code === 402) {
+            // 冻结：跳转解锁页（保持 loading 至跳转，避免重复提交）
             ElMessage({
-              message: res.message,
+              message: businessMsg,
               type: 'warning',
               plain: true,
               showClose: true,
@@ -242,12 +242,33 @@ const handleLogin = () => {
             setTimeout(() => {
               router.push('/unlock')
             }, 1500)
-          } else {
+          } else if (res.code === 403) {
+            // 密码错误
             ElMessage({
-              message: res.message,
+              message: businessMsg,
               type: 'error',
               plain: true,
+              showClose: true
+            })
+            loading.value = false
+          } else if (res.code === 405) {
+            // 密码过期：跳转密码过期页
+            ElMessage({
+              message: businessMsg,
+              type: 'warning',
+              plain: true,
               showClose: true,
+              duration: 3000
+            })
+            setTimeout(() => {
+              router.push('/password-expiration')
+            }, 1500)
+          } else {
+            ElMessage({
+              message: businessMsg,
+              type: 'error',
+              plain: true,
+              showClose: true
             })
             loading.value = false
           }
@@ -265,8 +286,7 @@ const handleLogin = () => {
           loading.value = false
         })
         .finally(() => {
-          // 只有在非密码过期和非账户锁定的情况下才重置loading状态
-          // 密码过期(210)和账户锁定(220)需要保持按钮禁用状态
+          // 冻结(401/402)与密码过期(405)在跳转前保持 loading，避免重复点击
         })
     }
   })

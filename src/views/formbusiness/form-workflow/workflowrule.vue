@@ -419,14 +419,10 @@ const dialogFormRules = reactive({
 })
 
 const resetDialogForm = () => {
+  // ruleId 不在 el-form-item prop 里，resetFields 不会重置，需手动清
   dialogForm.ruleId = ''
-  dialogForm.formGroupId = ''
-  dialogForm.formTypeId = ''
-  dialogForm.ruleNameCn = ''
-  dialogForm.ruleNameEn = ''
+  // positionId 默认选第一项（resetFields 只能还原到挂载时的空值）
   dialogForm.positionId = positionOptions.value.length > 0 ? positionOptions.value[0].positionId : ''
-  dialogForm.guidance = ''
-  dialogForm.sortOrder = 0
 }
 
 /**
@@ -470,7 +466,6 @@ const handleDialogFormGroupChange = async (val) => {
 
 const handleAdd = async () => {
   isEditMode.value = false
-  resetDialogForm()
   dialogVisible.value = true
   dialogLoading.value = true
   try {
@@ -485,6 +480,10 @@ const handleAdd = async () => {
       } else if (dialogFormTypeOptions.value.length > 0) {
         dialogForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
       }
+    }
+    // positionId 默认选第一项
+    if (!dialogForm.positionId && positionOptions.value.length > 0) {
+      dialogForm.positionId = positionOptions.value[0].positionId
     }
   } finally {
     dialogLoading.value = false
@@ -506,14 +505,15 @@ const handleEdit = async (row) => {
     })
     if (response.code === 200 && response.data) {
       isEditMode.value = true
-      dialogForm.ruleId = response.data.ruleId || ''
-      dialogForm.formGroupId = response.data.formGroupId || searchForm.formGroupId || ''
-      dialogForm.formTypeId = response.data.formTypeId || searchForm.formTypeId || ''
-      dialogForm.ruleNameCn = response.data.ruleNameCn || ''
-      dialogForm.ruleNameEn = response.data.ruleNameEn || ''
-      dialogForm.positionId = response.data.positionId || ''
-      dialogForm.guidance = response.data.guidance || ''
-      dialogForm.sortOrder = response.data.sortOrder ?? 0
+      const d = response.data
+      dialogForm.ruleId = d.ruleId || ''
+      dialogForm.formGroupId = d.formGroupId || searchForm.formGroupId || ''
+      dialogForm.formTypeId = d.formTypeId || searchForm.formTypeId || ''
+      dialogForm.ruleNameCn = d.ruleNameCn || ''
+      dialogForm.ruleNameEn = d.ruleNameEn || ''
+      dialogForm.positionId = d.positionId || ''
+      dialogForm.guidance = d.guidance || ''
+      dialogForm.sortOrder = d.sortOrder ?? 0
       if (dialogForm.formGroupId) {
         await loadDialogFormTypeOptions(dialogForm.formGroupId)
       }
@@ -533,10 +533,10 @@ const handleEdit = async (row) => {
 }
 
 const handleDialogClose = () => {
+  dialogFormRef.value?.resetFields()
   resetDialogForm()
   dialogFormTypeOptions.value = []
   isEditMode.value = false
-  dialogVisible.value = false
 }
 
 const handleSubmit = async () => {

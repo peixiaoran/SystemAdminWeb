@@ -267,10 +267,10 @@ const logout = async () => {
 </script>
 
 <style scoped>
-/* 与登录页 login-container / login-box 同一套：白底、浅灰层次、#1a1a1a 强调色 */
+/* 与 Element Plus 主题变量对齐，便于随主色 / 暗色链动 */
 .module-select-container {
   min-height: 100vh;
-  background: #fff;
+  background: var(--el-bg-color-page);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -284,9 +284,9 @@ const logout = async () => {
   inset: 0;
   pointer-events: none;
   background: radial-gradient(
-    120% 80% at 50% -20%,
-    rgba(26, 26, 26, 0.04) 0%,
-    transparent 55%
+    115% 75% at 50% -18%,
+    var(--el-color-primary-light-9) 0%,
+    transparent 52%
   );
   z-index: 0;
 }
@@ -318,9 +318,14 @@ const logout = async () => {
 .user-avatar {
   display: flex;
   align-items: center;
-  padding: 0 8px;
+  padding: 6px 10px;
+  border-radius: var(--el-border-radius-round);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color var(--el-transition-duration, 0.3s);
+}
+
+.user-avatar:hover {
+  background-color: var(--el-fill-color-light);
 }
 
 .user-details {
@@ -330,11 +335,11 @@ const logout = async () => {
 .username {
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--el-text-color-primary);
 }
 
 .dropdown-icon {
-  color: #909399;
+  color: var(--el-text-color-secondary);
   font-size: 12px;
 }
 
@@ -394,22 +399,24 @@ const logout = async () => {
   height: 320px;
   display: flex;
   flex-direction: column;
-  border-radius: 24px;
+  border-radius: calc(var(--el-border-radius-base) + 10px);
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.22s ease;
   cursor: pointer;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-lighter);
+  box-shadow: var(--el-box-shadow-light);
 }
 
 .pmenu-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(26, 26, 26, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(26, 26, 26, 0.08);
+  border-color: var(--el-color-primary-light-7);
+  box-shadow:
+    var(--el-box-shadow),
+    0 12px 40px color-mix(in srgb, var(--el-color-primary) 10%, transparent);
 }
 
 .pmenu-icon {
@@ -417,8 +424,12 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
-  color: #1a1a1a;
+  background: linear-gradient(
+    180deg,
+    var(--el-fill-color-extra-light, var(--el-fill-color-lighter)) 0%,
+    var(--el-fill-color-light) 100%
+  );
+  color: var(--el-color-primary);
   position: relative;
 }
 
@@ -432,7 +443,7 @@ const logout = async () => {
   background: linear-gradient(
     90deg,
     transparent,
-    #e4e7ed,
+    var(--el-border-color-light),
     transparent
   );
 }
@@ -440,7 +451,7 @@ const logout = async () => {
 .pmenu-info {
   flex: 1;
   padding: 24px 20px 16px 20px;
-  background: #ffffff;
+  background: var(--el-fill-color-blank);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -450,9 +461,9 @@ const logout = async () => {
 .pmenu-info h2 {
   font-size: 18px;
   margin: 0 0 12px 0;
-  color: #1a1a1a;
+  color: var(--el-text-color-primary);
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -460,9 +471,9 @@ const logout = async () => {
 
 .pmenu-info p {
   font-size: 13px;
-  color: #606266;
+  color: var(--el-text-color-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.55;
   height: 60px;
   overflow: hidden;
   display: -webkit-box;
@@ -477,35 +488,29 @@ const logout = async () => {
   justify-content: center;
   align-items: center;
   padding: 16px 20px 20px 20px;
-  background: #ffffff;
+  background: var(--el-fill-color-blank);
 }
 
-/* 对齐登录页 .login-button：深灰底、白字、12px 圆角 */
+/* 沿用主题主色，仅微调尺寸与圆角 */
 .module-enter-button {
-  border-radius: 12px !important;
-  padding: 12px 28px !important;
+  border-radius: calc(var(--el-border-radius-base) + 8px) !important;
+  padding: 11px 26px !important;
   font-size: 14px !important;
   font-weight: 500 !important;
-  min-width: 120px !important;
-  letter-spacing: 0.5px;
-  background: #1a1a1a !important;
-  border: none !important;
-  color: #ffffff !important;
-  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-width: 118px !important;
+  letter-spacing: 0.02em;
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s ease !important;
 }
 
 .module-enter-button:hover,
 .module-enter-button:focus {
-  background: #303133 !important;
-  color: #ffffff !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2) !important;
+  transform: translateY(-1px);
 }
 
 .module-enter-button:active {
   transform: translateY(0);
-  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15) !important;
 }
 
 .loading-container {
@@ -517,8 +522,8 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
+  background-color: color-mix(in srgb, var(--el-bg-color-page) 90%, transparent);
+  backdrop-filter: blur(8px);
   z-index: 10;
 }
 
@@ -530,13 +535,13 @@ const logout = async () => {
 }
 
 .loading-text {
-  color: #606266;
+  color: var(--el-text-color-regular);
   font-size: 14px;
 }
 
 .loading-icon {
   animation: rotate 1s linear infinite;
-  color: #1a1a1a;
+  color: var(--el-color-primary);
 }
 
 @keyframes rotate {
@@ -603,7 +608,7 @@ const logout = async () => {
     padding: 10px 20px !important;
     font-size: 13px !important;
     min-width: 100px !important;
-    border-radius: 12px !important;
+    border-radius: calc(var(--el-border-radius-base) + 8px) !important;
   }
 }
 
@@ -645,40 +650,44 @@ const logout = async () => {
   }
 }
 
-/* 下拉与登录页中性层次一致 */
+/* 下拉：主色 hover 与 LanguageSwitcher / 布局侧栏一致 */
 :deep(.el-dropdown-menu) {
   padding: 8px;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  min-width: 160px;
-  background-color: #ffffff;
+  border-radius: calc(var(--el-border-radius-base) + 8px);
+  box-shadow: var(--el-box-shadow-light);
+  border: 1px solid var(--el-border-color-lighter);
+  min-width: 168px;
+  background-color: var(--el-bg-color-overlay, var(--el-fill-color-blank));
 }
 
 :deep(.el-dropdown-menu__item) {
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--el-border-radius-base);
   margin-bottom: 4px;
   font-size: 14px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   display: flex;
   align-items: center;
 }
 
 :deep(.el-dropdown-menu__item:not(.is-disabled):focus),
 :deep(.el-dropdown-menu__item:not(.is-disabled):hover) {
-  background-color: #f5f5f5;
-  color: #1a1a1a;
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 
 :deep(.el-dropdown-menu__item i) {
   margin-right: 8px;
   font-size: 16px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
+}
+
+:deep(.el-dropdown-menu__item:not(.is-disabled):hover i) {
+  color: var(--el-color-primary);
 }
 
 :deep(.el-dropdown-menu__item--divided) {
-  border-top: 1px solid #e4e7ed;
+  border-top: 1px solid var(--el-border-color-lighter);
   margin-top: 8px;
   padding-top: 8px;
 }

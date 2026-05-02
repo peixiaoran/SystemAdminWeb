@@ -27,6 +27,5 @@ export const UPDATE_WORKFLOWRULE_API = 'FormBusiness/FormWorkFlow/WorkflowRule/U
 // 获取流程规则实体API
 export const GET_WORKFLOWRULE_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowRule/GetWorkflowRuleEntity'
 
-
 // 获取流程规则分页API
 export const GET_WORKFLOWRULE_PAGE_API = 'FormBusiness/FormWorkFlow/WorkflowRule/GetWorkflowRulePage'

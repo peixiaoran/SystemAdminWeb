@@ -246,6 +246,18 @@ let has403ErrorOccurred = false
 let lastNetworkErrorTime = 0
 const NETWORK_ERROR_COOLDOWN_MS = 5000
 
+// 超时提示节流：与“网络错误”分开计时，确保超时始终能展示，但同窗口内只弹一次
+let lastTimeoutShownTime = 0
+const TIMEOUT_COOLDOWN_MS = 5000
+
+/** 判断是否为请求超时（axios 超时表现为 ECONNABORTED 且 message 含 timeout） */
+const isTimeoutError = (error) => {
+  if (!error) return false
+  if (error.code === 'ECONNABORTED' || error.code === 'TIMEOUT') return true
+  const msg = typeof error.message === 'string' ? error.message.toLowerCase() : ''
+  return msg.includes('timeout')
+}
+
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
 const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
 const SKIP_TRACK_HASH_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
@@ -297,6 +309,26 @@ const createHandledSuccessResponse = () => {
     success: true
   }
 }
+
+/**
+ * 全局已处理（已弹过统一提示）的失败响应：
+ * - 超时、网络错误等场景下统一弹出提示后返回，避免业务页再叠加提示
+ * - 标记 __handled = true 供调用方在“需要分支为成功”的场景里及时跳出
+ * - data 为 null，message 为空；只读类页面会按空数据正常渲染
+ */
+const createHandledFailureResponse = () => {
+  return {
+    code: 200,
+    data: null,
+    totalCount: 0,
+    message: '',
+    success: false,
+    __handled: true
+  }
+}
+
+/** 调用方判断响应是否“已被全局统一处理”（如超时/网络错误已弹过提示），可据此直接跳出，不再弹业务级提示 */
+export const isHandled = (res) => res != null && res.__handled === true
 
 const createAuthFailureResponse = (code, message) => {
   return {
@@ -420,16 +452,12 @@ service.interceptors.response.use(
     if (axios.isCancel(error)) {
       return Promise.reject(error)
     }
-    
+
     const { config } = error
     if (config && config.requestKey) {
       pendingRequests.delete(config.requestKey)
     }
-    
-    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
-      return Promise.reject(error)
-    }
-    
+
     return Promise.reject(error)
   }
 )
@@ -454,6 +482,8 @@ const createPostRequest = () => async (url, data, options = {}) => {
       disableAutoLogout: _disableAutoLogout = false,
       silentForbiddenError: _silentForbiddenError = true,
       skipDedupe = false,
+      /** 登录等接口：HTTP 200 下业务码 401/403 表示冻结/密码错误，不得走全局登出或 403 页 */
+      allowLoginBusinessCodes = false,
       ...axiosOptions
     } = options
     const config = {
@@ -465,12 +495,14 @@ const createPostRequest = () => async (url, data, options = {}) => {
     }
     const response = await service(config)
 
-    // 兼容“HTTP 200 + 业务码 401/403”的场景，统一走全局登录失效/无权限处理
-    if (response?.code === 401) {
-      return handleUnauthorized(options)
-    }
-    if (response?.code === 403) {
-      return handleForbidden(null, options)
+    // 兼容“HTTP 200 + 业务码 401/403”的场景，统一走全局登录失效/无权限处理（登录接口除外）
+    if (!allowLoginBusinessCodes) {
+      if (response?.code === 401) {
+        return handleUnauthorized(options)
+      }
+      if (response?.code === 403) {
+        return handleForbidden(null, options)
+      }
     }
 
     return response
@@ -478,7 +510,20 @@ const createPostRequest = () => async (url, data, options = {}) => {
     if (axios.isCancel(error)) {
       return Promise.reject(error)
     }
-    
+
+    // 超时优先处理：仅弹「请求超时」一条提示，并在窗口内压制其它网络错误提示
+    if (isTimeoutError(error)) {
+      const now = Date.now()
+      if (now - lastTimeoutShownTime > TIMEOUT_COOLDOWN_MS) {
+        lastTimeoutShownTime = now
+        // 同步压制后续网络错误提示，避免「请求超时」之外再弹其它通用错误
+        lastNetworkErrorTime = now
+        showWarningMessage(i18n.global.t('systembasicmgmt.errorHandler.timeout'))
+      }
+      // 返回「已统一处理」失败结果：业务页可通过 isHandled(res) 跳出，避免误弹成功
+      return createHandledFailureResponse()
+    }
+
     if (error && error.response) {
       const status = error.response.status
       const responseData = error.response.data
@@ -503,23 +548,18 @@ const createPostRequest = () => async (url, data, options = {}) => {
         success: false
       }
     }
-    
+
     const info = handleNetworkError(error, { showMessage: false })
 
-    // 只在首次（或冷却期之后）弹出一次网络错误警告
+    // 只在首次（或冷却期之后）弹出一次网络错误警告；若刚刚已弹过「请求超时」则跳过
     const now = Date.now()
     if (now - lastNetworkErrorTime > NETWORK_ERROR_COOLDOWN_MS) {
       lastNetworkErrorTime = now
       showWarningMessage(info.message)
     }
 
-    // 对调用方返回一个“已统一处理”的结果，避免各页面再次弹错
-    return {
-      code: 200,
-      data: null,
-      message: '',
-      success: false
-    }
+    // 对调用方返回「已统一处理」失败结果，避免各页面再次弹错
+    return createHandledFailureResponse()
   }
 }
 
@@ -535,6 +575,8 @@ export const cancelAllRequests = () => {
 export const resetAuthErrorState = () => {
   has401ErrorOccurred = false
   has403ErrorOccurred = false
+  lastTimeoutShownTime = 0
+  lastNetworkErrorTime = 0
 }
 
 export default service

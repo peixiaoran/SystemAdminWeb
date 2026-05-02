@@ -86,7 +86,7 @@
     <!-- 新增步骤弹窗 -->
     <el-dialog
       v-model="addStepDialogVisible"
-      :title="$t('formbusiness.workflowstep.addStep')"
+      :title="isEditMode ? $t('common.edit') : $t('formbusiness.workflowstep.addStep')"
       width="970px"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -170,18 +170,18 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.workflowstep.approveMode')" prop="approveModeCode">
+            <el-form-item :label="$t('formbusiness.workflowstep.reviewMode')" prop="reviewModeCode">
               <el-select
-                v-model="addStepForm.approveModeCode"
-                :placeholder="$t('formbusiness.workflowstep.pleaseSelectApproveMode')"
+                v-model="addStepForm.reviewModeCode"
+                :placeholder="$t('formbusiness.workflowstep.pleaseSelectReviewMode')"
                 filterable
                 style="width: 100%"
               >
                 <el-option
-                  v-for="item in approveModeOptions"
-                  :key="item.approveModeCode"
-                  :label="item.approveModeName"
-                  :value="item.approveModeCode"
+                  v-for="item in reviewModeOptions"
+                  :key="item.reviewModeCode"
+                  :label="item.reviewModeName"
+                  :value="item.reviewModeCode"
                 />
               </el-select>
             </el-form-item>
@@ -401,7 +401,7 @@ import {
   GET_WORKFLOWSTEP_LIST_API,
   INSERT_WORKFLOWSTEP_API,
   GET_ASSIGNMENT_DROPDOWN_API,
-  GET_APPROVE_MODE_DROPDOWN_API,
+  GET_REVIEW_MODE_DROPDOWN_API,
   GET_DEPARTMENT_LEVEL_DROPDOWN_API,
   GET_USER_POSITION_DROPDOWN_API,
   GET_DEPARTMENT_DROPDOWN_API,
@@ -461,7 +461,7 @@ const currentStepId = ref('')
 const addStepFormRef = ref(null)
 const dialogFormTypeOptions = ref([])
 const assignmentOptions = ref([])
-const approveModeOptions = ref([])
+const reviewModeOptions = ref([])
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
@@ -480,7 +480,7 @@ const addStepForm = reactive({
   stepNameCn: '',
   stepNameEn: '',
   assignmentCode: '',
-  approveModeCode: '',
+  reviewModeCode: '',
   isReminderEnabled: 0,
   reminderIntervalMinutes: 0,
   sortOrder: 0,
@@ -497,7 +497,7 @@ const addStepRules = {
   stepNameCn: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseInputStepNameCn'), trigger: 'blur' }],
   stepNameEn: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseInputStepNameEn'), trigger: 'blur' }],
   assignmentCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectAssignment'), trigger: 'change' }],
-  approveModeCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectApproveMode'), trigger: 'change' }],
+  reviewModeCode: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectReviewMode'), trigger: 'change' }],
   isStartStep: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectIsStartStep'), trigger: 'change' }],
   isReminderEnabled: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectIsReminderEnabled'), trigger: 'change' }],
   reminderIntervalMinutes: [
@@ -552,7 +552,7 @@ const resetAddStepDialogState = () => {
   addStepForm.stepNameCn = ''
   addStepForm.stepNameEn = ''
   addStepForm.assignmentCode = ''
-  addStepForm.approveModeCode = ''
+  addStepForm.reviewModeCode = ''
   addStepForm.isStartStep = 0
   addStepForm.isReminderEnabled = 0
   addStepForm.reminderIntervalMinutes = 0
@@ -686,7 +686,7 @@ const handleEditStep = async (step) => {
   try {
     const [, , entityRes, formTypes] = await Promise.all([
       loadAssignmentOptions(),
-      loadApproveModeOptions(),
+      loadReviewModeOptions(),
       post(GET_WORKFLOWSTEP_ENTITY_API, buildFormParams({ stepId: step.stepId }), FORM_URLENCODED_CONFIG),
       formGroupId ? fetchFormTypeDropdown(formGroupId) : Promise.resolve([])
     ])
@@ -701,7 +701,7 @@ const handleEditStep = async (step) => {
       addStepForm.stepNameEn = data.stepNameEn || ''
       addStepForm.isStartStep = data.isStartStep ?? 0
       addStepForm.assignmentCode = data.assignment || ''
-      addStepForm.approveModeCode = data.approveMode || ''
+      addStepForm.reviewModeCode = data.reviewMode ?? data.approveMode ?? ''
       addStepForm.isReminderEnabled = data.isReminderEnabled ?? 0
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
       addStepForm.sortOrder = data.sortOrder ?? 0
@@ -992,15 +992,15 @@ const openAddStepDialog = async () => {
   try {
     const [, , formTypes] = await Promise.all([
       loadAssignmentOptions(),
-      loadApproveModeOptions(),
+      loadReviewModeOptions(),
       formGroupId ? fetchFormTypeDropdown(formGroupId) : Promise.resolve([])
     ])
 
     if (assignmentOptions.value.length > 0) {
       addStepForm.assignmentCode = assignmentOptions.value[0].assignmentCode
     }
-    if (approveModeOptions.value.length > 0) {
-      addStepForm.approveModeCode = approveModeOptions.value[0].approveModeCode
+    if (reviewModeOptions.value.length > 0) {
+      addStepForm.reviewModeCode = reviewModeOptions.value[0].reviewModeCode
     }
     if (formGroupId) {
       addStepForm.formGroupId = formGroupId
@@ -1032,18 +1032,22 @@ const loadAssignmentOptions = async () => {
 }
 
 /**
- * 加载签核方式下拉
+ * 加载审核方式下拉
  */
-const loadApproveModeOptions = async () => {
+const loadReviewModeOptions = async () => {
   try {
-    const response = await post(GET_APPROVE_MODE_DROPDOWN_API, {})
+    const response = await post(GET_REVIEW_MODE_DROPDOWN_API, {})
     if (response.code === 200) {
-      approveModeOptions.value = response.data || []
+      const raw = response.data || []
+      reviewModeOptions.value = raw.map((item) => ({
+        reviewModeCode: item.reviewModeCode ?? item.approveModeCode,
+        reviewModeName: item.reviewModeName ?? item.approveModeName
+      }))
     } else {
-      approveModeOptions.value = []
+      reviewModeOptions.value = []
     }
   } catch {
-    approveModeOptions.value = []
+    reviewModeOptions.value = []
   }
 }
 
@@ -1098,7 +1102,7 @@ const submitAddStep = async () => {
         stepNameEn: addStepForm.stepNameEn,
         isStartStep: addStepForm.isStartStep,
         assignment: addStepForm.assignmentCode,
-        approveMode: addStepForm.approveModeCode,
+        reviewMode: addStepForm.reviewModeCode,
         isReminderEnabled: addStepForm.isReminderEnabled,
         reminderIntervalMinutes: addStepForm.reminderIntervalMinutes,
         sortOrder: addStepForm.sortOrder,

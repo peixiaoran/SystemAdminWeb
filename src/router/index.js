@@ -441,11 +441,11 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'pendingsubapp',
-              name: 'PendingSubApp',
-              component: () => import('../views/formbusiness/form-operate/pendingsubapp.vue'),
+              path: 'pendingsubreview',
+              name: 'PendingSubReview',
+              component: () => import('../views/formbusiness/form-operate/pendingsubreview.vue'),
               meta: { 
-                title: 'route.pendingsubapp',
+                title: 'route.pendingsubreview',
                 icon: 'Check',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
@@ -466,23 +466,12 @@ const pmenuRoutes = [
           },
           children: [
             {
-              path: 'workflowbranch',
-              name: 'WorkflowBranch',
-              component: () => import('../views/formbusiness/form-workflow/workflowbranch.vue'),
-              meta: { 
-                title: 'route.workflowbranch', 
-                icon: 'Switch',
-                [ROUTE_CONFIG.META.AUTH]: true,
-                noTag: false
-              }
-            },
-            {
               path: 'workflowstep',
               name: 'WorkflowStep',
               component: () => import('../views/formbusiness/form-workflow/workflowstep.vue'),
               meta: { 
                 title: 'route.workflowstep', 
-                icon: 'Notification',
+                icon: 'HelpFilled',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
@@ -493,7 +482,18 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-workflow/workflowrule.vue'),
               meta: { 
                 title: 'route.workflowrule', 
-                icon: 'HelpFilled',
+                icon: 'Notification',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'workflowrulestep',
+              name: 'WorkflowRuleStep',
+              component: () => import('../views/formbusiness/form-workflow/workflowrulestep.vue'),
+              meta: { 
+                title: 'route.workflowrulestep', 
+                icon: 'Promotion',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

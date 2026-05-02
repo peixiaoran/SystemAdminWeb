@@ -147,7 +147,7 @@
  * 功能：管理用户与表单的绑定关系
  */
 import { ref, reactive, onMounted, nextTick } from 'vue'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
@@ -452,25 +452,31 @@ const handleSaveFormConfig = async () => {
     formGroupTypeId: selectedFormIds
   }
 
-  const res = await post(UPDATE_USER_FORM_API.UPDATE_USER_FORM, params)
-  if (res && res.code === 200) {
-    ElMessage({
-      message: t('systembasicmgmt.userform.saveConfigSuccess'),
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
-    configDialogVisible.value = false
-  } else {
-    ElMessage({
-      message: res?.message || t('systembasicmgmt.userform.saveConfigFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  try {
+    const res = await post(UPDATE_USER_FORM_API.UPDATE_USER_FORM, params)
+    // 全局已处理（如请求超时/网络异常）：已弹出统一提示，业务侧不再弹成功或失败
+    if (isHandled(res)) {
+      return
+    }
+    if (res && res.code === 200) {
+      ElMessage({
+        message: t('systembasicmgmt.userform.saveConfigSuccess'),
+        type: 'success',
+        plain: true,
+        showClose: true
+      })
+      configDialogVisible.value = false
+    } else {
+      ElMessage({
+        message: res?.message || t('systembasicmgmt.userform.saveConfigFailed'),
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+    }
+  } finally {
+    saveLoading.value = false
   }
-  
-  saveLoading.value = false
 }
 
 /**

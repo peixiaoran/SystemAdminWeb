@@ -72,7 +72,7 @@
       >
         <template #extra>
           <el-button type="primary" @click="closeCurrentPage">
-            {{ t('formbusiness.leaveform.backToPendingSubApp') }}
+            {{ t('formbusiness.leaveform.backToPendingSubReview') }}
           </el-button>
         </template>
       </el-result>
@@ -97,7 +97,7 @@
         <el-row :gutter="16" style="justify-content: flex-start;">
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
-              <el-input v-model="form.formNo" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveNo')" disabled/>
+              <el-input v-model="form.formNo" disabled />
             </el-form-item>
           </el-col>
         </el-row>
@@ -268,47 +268,53 @@
       class="leaveform-workflow-drawer"
     >
       <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
-        <template v-if="!workflowDrawerLoading && workflowOverview.workflowApproveUser?.length">
+        <div v-if="!workflowDrawerLoading && workflowOverview.rejectCount > 0" class="workflow-reject-banner">
+          {{ t('formbusiness.leaveform.workflowRejectCount', { count: workflowOverview.rejectCount }) }}
+        </div>
+        <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewFlowList?.length">
           <div
-            v-for="(step, stepIdx) in workflowOverview.workflowApproveUser"
+            v-for="(step, stepIdx) in workflowOverview.stepReviewFlowList"
             :key="step.stepId || stepIdx"
             class="workflow-step-block"
-            :class="{ 'workflow-step-block--hierarchy-skipped': isWorkflowStepHierarchySkipped(step) }"
+            :class="{ 'workflow-step-block--skipped': isWorkflowStepSkipped(step) }"
           >
             <div class="workflow-step-head">
               <span
                 class="workflow-step-icon"
                 :class="{
-                  'is-done-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'done',
-                  'is-current-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'current',
-                  'is-pending-step': !isWorkflowStepHierarchySkipped(step) && workflowStepHeadState(stepIdx) === 'pending',
-                  'is-skipped-step': isWorkflowStepHierarchySkipped(step)
+                  'is-done-step': workflowStepHeadState(step) === 'done',
+                  'is-current-step': workflowStepHeadState(step) === 'current',
+                  'is-pending-step': workflowStepHeadState(step) === 'pending',
+                  'is-skipped-step': workflowStepHeadState(step) === 'skipped'
                 }"
               >
-                <el-icon v-if="isWorkflowStepHierarchySkipped(step)"><Minus /></el-icon>
-                <el-icon v-else-if="workflowStepHeadState(stepIdx) === 'done'"><CircleCheck /></el-icon>
-                <el-icon v-else-if="workflowStepHeadState(stepIdx) === 'current'"><Clock /></el-icon>
-                <el-icon v-else><Minus /></el-icon>
+                <el-icon v-if="workflowStepHeadState(step) === 'skipped'"><RemoveFilled /></el-icon>
+                <el-icon v-else-if="workflowStepHeadState(step) === 'done'"><CircleCheck /></el-icon>
+                <el-icon v-else-if="workflowStepHeadState(step) === 'current'"><Loading /></el-icon>
+                <el-icon v-else><Clock /></el-icon>
               </span>
               <span class="workflow-step-name">{{ step.stepName }}</span>
+              <span v-if="isWorkflowStepSkipped(step)" class="workflow-step-tag workflow-step-tag--skipped">
+                {{ t('formbusiness.leaveform.workflowStatusSkipped') }}
+              </span>
             </div>
             <ul
-              v-if="step.stepApproveUser?.length && !isWorkflowStepHierarchySkipped(step)"
+              v-if="step.stepReviewUser?.length && !isWorkflowStepSkipped(step)"
               class="workflow-user-list"
             >
               <li
-                v-for="(u, uIdx) in step.stepApproveUser"
-                :key="u.userId + '-' + uIdx"
+                v-for="(u, uIdx) in step.stepReviewUser"
+                :key="(u.userId || 'u') + '-' + uIdx"
                 class="workflow-user-row"
                 :class="{ 'workflow-user-row--has-agent': workflowUserHasAgent(u) }"
               >
                 <span
                   class="workflow-user-status-icon"
-                  :class="workflowUserStatusClass(stepIdx, u.isPending)"
+                  :class="workflowUserStatusClass(u)"
                 >
-                  <el-icon v-if="workflowUserStatusIcon(stepIdx, u.isPending) === 'done'"><CircleCheck /></el-icon>
-                  <el-icon v-else-if="workflowUserStatusIcon(stepIdx, u.isPending) === 'doing'"><Clock /></el-icon>
-                  <el-icon v-else><Minus /></el-icon>
+                  <el-icon v-if="workflowUserStatusIcon(u) === 'approve'"><CircleCheck /></el-icon>
+                  <el-icon v-else-if="workflowUserStatusIcon(u) === 'underReview'"><Loading /></el-icon>
+                  <el-icon v-else><Clock /></el-icon>
                 </span>
                 <div class="workflow-user-text">
                   <div class="workflow-user-name">
@@ -320,8 +326,8 @@
                 </div>
                 <span
                   class="workflow-user-label"
-                  :class="'workflow-user-label--' + workflowUserStatusIcon(stepIdx, u.isPending)"
-                >{{ workflowUserStatusLabel(stepIdx, u.isPending) }}</span>
+                  :class="'workflow-user-label--' + workflowUserStatusIcon(u)"
+                >{{ workflowUserStatusLabel(u) }}</span>
               </li>
             </ul>
           </div>
@@ -336,9 +342,9 @@
 import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
-import { Upload, Document, Download, Delete, Guide, Clock, CircleCheck, Minus } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Guide, Clock, CircleCheck, Minus, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_WORKFLOW_ALL_APPROVE_USER_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -359,65 +365,56 @@ const workflowDrawerVisible = ref(false)
 const workflowDrawerLoading = ref(false)
 const workflowOverview = reactive({
   formId: '',
-  nowStepId: '',
-  rejectLogList: [],
-  workflowApproveUser: []
+  rejectCount: 0,
+  stepReviewFlowList: []
 })
 
-function getWorkflowCurrentStepIndex () {
-  const cur = String(workflowOverview.nowStepId || '')
-  if (!cur) return -1
-  const list = workflowOverview.workflowApproveUser || []
-  return list.findIndex((s) => String(s?.stepId || '') === cur)
+/** 步骤是否被跳过：skip = 1 整步置灰且不展示用户明细 */
+function isWorkflowStepSkipped (step) {
+  return Number(step?.skip) === 1
 }
 
-/** 职级覆盖跳过：整步灰色展示，不展示 stepApproveUser 明细 */
-function isWorkflowStepHierarchySkipped (step) {
-  const users = step?.stepApproveUser
-  if (!Array.isArray(users) || users.length === 0) return false
-  return users.some((u) => u?.appointmentType === 'HierarchySkipped')
+/** 用户签核状态：归一化到 approve / underReview / unsigned 三态 */
+function normalizeReviewResult (result) {
+  const v = String(result ?? '').trim().toLowerCase()
+  if (v === 'approve' || v === 'approved') return 'approve'
+  if (v === 'underreview' || v === 'under_review' || v === 'reviewing') return 'underReview'
+  return 'unsigned'
 }
 
-function workflowStepPhase (stepIdx) {
-  const curIdx = getWorkflowCurrentStepIndex()
-  if (curIdx < 0) return 'after'
-  if (stepIdx < curIdx) return 'done'
-  if (stepIdx === curIdx) return 'current'
-  return 'after'
-}
-
-function workflowStepHeadState (stepIdx) {
-  const phase = workflowStepPhase(stepIdx)
-  if (phase === 'done') return 'done'
-  if (phase === 'current') return 'current'
+/**
+ * 步骤头部状态（聚合自 stepReviewUser.result）：
+ * - skip=1：skipped
+ * - 全部 approve：done
+ * - 任一 underReview：current
+ * - 否则：pending
+ */
+function workflowStepHeadState (step) {
+  if (isWorkflowStepSkipped(step)) return 'skipped'
+  const users = Array.isArray(step?.stepReviewUser) ? step.stepReviewUser : []
+  if (users.length === 0) return 'pending'
+  const states = users.map((u) => normalizeReviewResult(u?.result))
+  if (states.every((s) => s === 'approve')) return 'done'
+  if (states.some((s) => s === 'underReview')) return 'current'
   return 'pending'
 }
 
-function workflowUserStatusIcon (stepIdx, isPending) {
-  const phase = workflowStepPhase(stepIdx)
-  if (phase === 'done') return 'done'
-  if (phase === 'after') return 'none'
-  return Number(isPending) === 1 ? 'done' : 'doing'
+function workflowUserStatusIcon (user) {
+  return normalizeReviewResult(user?.result)
 }
 
-function workflowUserStatusClass (stepIdx, isPending) {
-  const key = workflowUserStatusIcon(stepIdx, isPending)
-  if (key === 'done') return 'is-user-done'
-  if (key === 'doing') return 'is-user-doing'
+function workflowUserStatusClass (user) {
+  const key = workflowUserStatusIcon(user)
+  if (key === 'approve') return 'is-user-done'
+  if (key === 'underReview') return 'is-user-doing'
   return 'is-user-none'
 }
 
-function workflowUserStatusLabel (stepIdx, isPending) {
-  const phase = workflowStepPhase(stepIdx)
-  if (phase === 'done') {
-    return t('formbusiness.leaveform.workflowStatusApproved')
-  }
-  if (phase === 'after') {
-    return t('formbusiness.leaveform.workflowStatusNotSigned')
-  }
-  return Number(isPending) === 1
-    ? t('formbusiness.leaveform.workflowStatusApproved')
-    : t('formbusiness.leaveform.workflowStatusSigning')
+function workflowUserStatusLabel (user) {
+  const key = workflowUserStatusIcon(user)
+  if (key === 'approve') return t('formbusiness.leaveform.workflowStatusApprove')
+  if (key === 'underReview') return t('formbusiness.leaveform.workflowStatusUnderReview')
+  return t('formbusiness.leaveform.workflowStatusUnsigned')
 }
 
 function workflowUserHasAgent (u) {
@@ -891,14 +888,18 @@ async function onSubmit () {
   })
 }
 
-async function fetchWorkflowAllApproveUser () {
-  const fromId = String(form.formId || '')
-  if (!fromId) return
+/**
+ * 拉取完整签核流程：调用 GetFullReviewFlow，参数 formId（multipart）
+ * 数据结构：{ formId, rejectCount, stepReviewFlowList: [{ stepId, stepName, skip, stepReviewUser: [{ result, ... }] }] }
+ */
+async function fetchFullReviewFlow () {
+  const formId = String(form.formId || '')
+  if (!formId) return
   workflowDrawerLoading.value = true
   try {
     const formData = new window.FormData()
-    formData.append('fromId', fromId)
-    const res = await post(GET_WORKFLOW_ALL_APPROVE_USER_API, formData, {
+    formData.append('formId', formId)
+    const res = await post(GET_FULL_REVIEW_FLOW_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       silentForbiddenError: false
     })
@@ -913,9 +914,8 @@ async function fetchWorkflowAllApproveUser () {
     }
     const data = res.data || {}
     workflowOverview.formId = data.formId || ''
-    workflowOverview.nowStepId = data.nowStepId || ''
-    workflowOverview.rejectLogList = Array.isArray(data.rejectLogList) ? data.rejectLogList : []
-    workflowOverview.workflowApproveUser = Array.isArray(data.workflowApproveUser) ? data.workflowApproveUser : []
+    workflowOverview.rejectCount = Number(data.rejectCount) || 0
+    workflowOverview.stepReviewFlowList = Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : []
   } catch {
     ElMessage.error(t('formbusiness.leaveform.workflowLoadFailed'))
   } finally {
@@ -929,7 +929,7 @@ function openWorkflowDrawer () {
     return
   }
   workflowDrawerVisible.value = true
-  fetchWorkflowAllApproveUser()
+  fetchFullReviewFlow()
 }
 
 /**
@@ -1381,23 +1381,28 @@ onMounted(async () => {
   background: var(--el-color-primary-light-9);
 }
 
-/* 未到步骤 / 后续流程：中性灰，与「未签核」同一视觉体系 */
-.workflow-step-icon.is-pending-step {
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
+.workflow-step-icon.is-current-step .el-icon {
+  animation: workflow-step-rotate 1.4s linear infinite;
 }
 
-/* 职级覆盖跳过：更淡的灰，与「未到/未签核」区分 */
+/* 未到步骤 / 后续流程：中性灰，与「未签核」同一视觉体系 */
+.workflow-step-icon.is-pending-step {
+  color: var(--el-color-info);
+  background: var(--el-color-info-light-9, var(--el-fill-color-light));
+}
+
+/* skip=1：更淡的灰，与「未到/未签核」区分 */
 .workflow-step-icon.is-skipped-step {
   color: var(--el-text-color-disabled);
   background: var(--el-fill-color-darker);
 }
 
-.workflow-step-block--hierarchy-skipped {
+.workflow-step-block--skipped {
   border-left-color: var(--el-border-color-extra-light, var(--el-border-color-lighter));
+  opacity: 0.65;
 }
 
-.workflow-step-block--hierarchy-skipped .workflow-step-name {
+.workflow-step-block--skipped .workflow-step-name {
   color: var(--el-text-color-disabled);
   font-weight: 500;
 }
@@ -1405,6 +1410,29 @@ onMounted(async () => {
 .workflow-step-name {
   font-weight: 600;
   color: var(--el-text-color-primary);
+}
+
+.workflow-step-tag {
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 4px;
+}
+
+.workflow-step-tag--skipped {
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-darker);
+}
+
+.workflow-reject-banner {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+  border: 1px solid var(--el-color-danger-light-7);
+  border-radius: 6px;
 }
 
 .workflow-user-list {
@@ -1439,8 +1467,17 @@ onMounted(async () => {
   color: var(--el-color-primary);
 }
 
+.workflow-user-status-icon.is-user-doing .el-icon {
+  animation: workflow-step-rotate 1.4s linear infinite;
+}
+
 .workflow-user-status-icon.is-user-none {
-  color: var(--el-text-color-secondary);
+  color: var(--el-color-info);
+}
+
+@keyframes workflow-step-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .workflow-user-text {
@@ -1476,16 +1513,16 @@ onMounted(async () => {
   margin-top: 2px;
 }
 
-.workflow-user-label--done {
+.workflow-user-label--approve {
   color: var(--el-color-success);
 }
 
-.workflow-user-label--doing {
+.workflow-user-label--underReview {
   color: var(--el-color-primary);
 }
 
-.workflow-user-label--none {
-  color: var(--el-text-color-secondary);
+.workflow-user-label--unsigned {
+  color: var(--el-color-info);
 }
 
 </style>
