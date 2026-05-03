@@ -68,8 +68,14 @@
         class="result-content"
         :icon="resultState.status"
         :title="t(resultState.titleKey)"
-        :sub-title="t(resultState.subTitleKey)"
       >
+        <template #sub-title>
+          <div v-if="resultState.variant === 'badRequest'" class="leaveform-bad-request-sub">
+            <p class="leaveform-bad-request-msg">{{ resultState.detailMessage }}</p>
+            <p class="leaveform-bad-request-hint">{{ t('formbusiness.leaveform.badRequestHint') }}</p>
+          </div>
+          <span v-else>{{ t(resultState.subTitleKey) }}</span>
+        </template>
         <template #extra>
           <el-button type="primary" @click="closeCurrentPage">
             {{ t('formbusiness.leaveform.backToPendingSubReview') }}
@@ -425,6 +431,8 @@ function workflowUserHasAgent (u) {
 
 const resultState = reactive({
   visible: false,
+  variant: 'standard',
+  detailMessage: '',
   status: 'success',
   titleKey: 'formbusiness.leaveform.approvalResultTitle',
   subTitleKey: 'formbusiness.leaveform.approvalResultSubTitle'
@@ -689,7 +697,12 @@ function bindFormData (data) {
       return start && end ? [start, end] : []
     })(),
     days: coerceDays(
-      data.leaveHours ?? data.LeaveHours ?? data.days ?? data.Days
+      data.leaveDays ??
+        data.LeaveDays ??
+        data.leaveHours ??
+        data.LeaveHours ??
+        data.days ??
+        data.Days
     ),
     agentUserNo: data.agentUserNo || ''
   })
@@ -733,11 +746,28 @@ function isForbiddenCode(code) {
   return String(code) === '403'
 }
 
+/** HTTP 400：request 封装将 status 写入 code，message 来自后端 */
+function isBadRequestResponse (res) {
+  return Number(res?.code) === 400 || String(res?.code) === '400'
+}
+
 function showResult(status, titleKey, subTitleKey) {
+  resultState.variant = 'standard'
+  resultState.detailMessage = ''
   resultState.visible = true
   resultState.status = status
   resultState.titleKey = titleKey
   resultState.subTitleKey = subTitleKey
+}
+
+function showBadRequestResult (message) {
+  const msg = typeof message === 'string' ? message.trim() : ''
+  resultState.variant = 'badRequest'
+  resultState.detailMessage = msg || t('formbusiness.leaveform.badRequestFallbackMessage')
+  resultState.visible = true
+  resultState.status = 'warning'
+  resultState.titleKey = 'formbusiness.leaveform.badRequestTitle'
+  resultState.subTitleKey = ''
 }
 
 function closeCurrentPage() {
@@ -765,6 +795,9 @@ async function initLeaveForm () {
       return
     }
     if (!res || res.code !== 200) {
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      }
       return
     }
     const raw = res.data
@@ -809,7 +842,11 @@ async function getLeaveFormDetail (id) {
       return
     }
     if (res.code !== 200) {
-      ElMessage.error(res.message)
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res.message)
+      }
       return
     }
     const data = res.data || {}
@@ -858,6 +895,7 @@ async function onSubmit () {
       LeaveReason: (form.reason || '').trim(),
       LeaveStartTime: startTime ? toISO(startTime) : null,
       LeaveEndTime: endTime ? toISO(endTime) : null,
+      LeaveDays: coerceDays(form.days),
       LeaveHours: coerceDays(form.days),
       agentUserNo: (form.agentUserNo || '').trim()
     }
@@ -1214,6 +1252,27 @@ onMounted(async () => {
 
 .result-content {
   width: 100%;
+}
+
+.leaveform-bad-request-sub {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.leaveform-bad-request-msg {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #303133;
+  word-break: break-word;
+}
+
+.leaveform-bad-request-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #909399;
 }
 
 .system-title-row {

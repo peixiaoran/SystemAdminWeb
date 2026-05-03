@@ -219,8 +219,8 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-/** 下一步骤 ID 为 0 表示流程结束（与后端约定一致） */
-const NEXT_STEP_END_ID = 0
+/** 下一步骤 ID 为 "0" 表示流程结束（后端 NextStepId 为 string） */
+const NEXT_STEP_END_ID = '0'
 
 const isNextStepEnd = (id) => id === 0 || id === '0' || Number(id) === 0
 
@@ -690,7 +690,7 @@ const handleSubmit = async () => {
     const params = {
       ruleId: dialogForm.ruleId,
       currentStepId: dialogForm.currentStepId,
-      nextStepId: isNextStepEnd(dialogForm.nextStepId) ? 0 : dialogForm.nextStepId,
+      nextStepId: isNextStepEnd(dialogForm.nextStepId) ? '0' : String(dialogForm.nextStepId),
       sortOrder: dialogForm.sortOrder
     }
     const api = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API
