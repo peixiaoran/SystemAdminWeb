@@ -240,6 +240,19 @@
 
         <el-row :gutter="16">
           <el-col :span="24">
+            <el-form-item :label="t('formbusiness.leaveform.approvalComment')">
+              <el-input
+                v-model="approvalComment"
+                type="textarea"
+                :rows="3"
+                :placeholder="t('formbusiness.leaveform.approvalCommentPlaceholder')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="16">
+          <el-col :span="24">
             <el-form-item class="form-actions-form-item">
               <div class="form-actions-row">
                 <div class="form-actions-buttons">
@@ -437,6 +450,9 @@ const resultState = reactive({
   titleKey: 'formbusiness.leaveform.approvalResultTitle',
   subTitleKey: 'formbusiness.leaveform.approvalResultSubTitle'
 })
+// 送审意见
+const approvalComment = ref('')
+
 // 附件上传状态与列表（相对路径）
 const uploading = ref(false)
 const uploadedAttachments = ref([])
@@ -996,19 +1012,18 @@ async function onSubmitForApproval () {
   } catch {
     return
   }
-  const fromId = String(form.formId || '')
-  if (!fromId) {
+  const formId = String(form.formId || '')
+  if (!formId) {
     ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
     return
   }
   approving.value = true
   try {
-    const formData = new window.FormData()
-    formData.append('fromId', fromId)
-    const res = await post(APPROVE_LEAVEFORM_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      silentForbiddenError: false
-    })
+    const res = await post(APPROVE_LEAVEFORM_API, {
+      formId,
+      rejectStepId: '0',
+      comment: approvalComment.value || ''
+    }, { silentForbiddenError: false })
     if (isForbiddenCode(res?.code)) {
       showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
       return

@@ -146,6 +146,7 @@
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.workflowrule.positionName')" prop="positionId">
               <el-select v-model="dialogForm.positionId" filterable style="width:100%">
+                <el-option :label="$t('formbusiness.workflowrule.other')" value="0" />
                 <el-option
                   v-for="item in positionOptions"
                   :key="item.positionId"
@@ -334,7 +335,7 @@ const dialogForm = reactive({
   formTypeId: '',
   ruleNameCn: '',
   ruleNameEn: '',
-  positionId: '',
+  positionId: '0',
   guidance: '',
   sortOrder: 0
 })
@@ -345,13 +346,13 @@ const dialogFormRules = {
   ruleNameCn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameCn'), trigger: 'blur'   }],
   ruleNameEn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur'   }],
   positionId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'),  trigger: 'change' }],
-  guidance:    [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputGuidance'),   trigger: 'blur'   }]
+  guidance:    []
 }
 
 const resetDialogForm = () => {
   // ruleId 不在 el-form-item prop 里，resetFields 不会重置，需手动清
   dialogForm.ruleId = ''
-  dialogForm.positionId = positionOptions.value[0]?.positionId ?? ''
+  dialogForm.positionId = '0'
 }
 
 const loadDialogFormTypeOptions = async (formGroupId) => {
@@ -394,8 +395,8 @@ const handleAdd = async () => {
         dialogForm.formTypeId = dialogFormTypeOptions.value[0]?.formTypeId ?? ''
       }
     }
-    if (!dialogForm.positionId && positionOptions.value.length > 0) {
-      dialogForm.positionId = positionOptions.value[0].positionId
+    if (!dialogForm.positionId) {
+      dialogForm.positionId = '0'
     }
   } finally {
     dialogLoading.value = false

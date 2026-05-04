@@ -31,4 +31,4 @@ export const DELETE_FILE_API = 'FormBusiness/Forms/LeaveForm/DeleteAttachment'
 export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/LeaveForm/GetFullReviewFlow'
 
 // 送审请假单API
-export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/ApproveLeaveForm'
+export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/LeaveFromApprove'

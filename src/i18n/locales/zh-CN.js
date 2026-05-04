@@ -409,6 +409,7 @@ export default {
       pleaseInputRuleNameCn: '请输入规则中文名称',
       pleaseInputRuleNameEn: '请输入规则英文名称',
       pleaseInputGuidance: '请输入条件键值',
+      other: '其他',
       operation: '操作'
     },
 
@@ -572,7 +573,9 @@ export default {
         workflowAgent: '代理人',
         workflowEmpty: '暂无流程数据',
         workflowLoadFailed: '加载流程失败',
-        workflowNeedFormId: '请先完成表单初始化后再查看流程'
+        workflowNeedFormId: '请先完成表单初始化后再查看流程',
+        approvalComment: '送审意见',
+        approvalCommentPlaceholder: '请输入送审意见（选填）'
       },
     
     // 表单验证

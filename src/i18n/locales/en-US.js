@@ -475,6 +475,7 @@ export default {
       pleaseInputRuleNameCn: 'Please input rule name (CN)',
       pleaseInputRuleNameEn: 'Please input rule name (EN)',
       pleaseInputGuidance: 'Please input condition key',
+      other: 'Other',
       operation: 'Operation'
     },
 
@@ -638,7 +639,9 @@ export default {
       workflowAgent: 'Agent',
       workflowEmpty: 'No workflow data',
       workflowLoadFailed: 'Failed to load workflow',
-      workflowNeedFormId: 'Please wait until the form is initialized'
+      workflowNeedFormId: 'Please wait until the form is initialized',
+        approvalComment: 'Approval Comment',
+        approvalCommentPlaceholder: 'Enter approval comment (optional)'
     },
     
     // Form Validation
