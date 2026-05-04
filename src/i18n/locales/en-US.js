@@ -122,23 +122,20 @@ export default {
          lastMonth: 'Last Month',
          complexBarChart: 'Complex Bar Chart',
          simpleBarChart: 'Simple Bar Chart',
-         kLineChart: 'K-Line Chart',
-          kLine: 'K-Line',
-          highest: 'Highest',
-          lowest: 'Lowest',
-          open: 'Open',
-          close: 'Close',
-          high: 'High',
-          low: 'Low',
+         areaChart: 'Trend Analysis',
+         userActivity: 'User Logins',
+         apiRequests: 'API Calls',
+         formSubmissions: 'Form Submissions',
+         systemEvents: 'System Events',
          departmentDistribution: 'Department Distribution',
          projectStatus: 'Project Status',
          resourceUsage: 'Resource Usage'
        },
     
     period: {
-      day: 'Day',
-      week: 'Week',
-      year: 'Year'
+      day: 'Last 30 Days',
+      week: 'Last 12 Weeks',
+      year: 'Last 12 Months'
     },
     
     // Departments

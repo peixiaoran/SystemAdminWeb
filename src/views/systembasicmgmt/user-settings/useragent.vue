@@ -112,7 +112,6 @@
       height="500px"
       :close-on-click-modal="false"
       :append-to-body="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @closed="handleAgentDialogClosed"
       class="agent-dialog"
@@ -142,11 +141,9 @@
         </el-table>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="agentDialogVisible = false">
-            {{ $t('common.close') }}
-          </el-button>
-        </span>
+        <el-button @click="agentDialogVisible = false">
+          {{ $t('common.close') }}
+        </el-button>
       </template>
     </el-dialog>
 
@@ -157,7 +154,6 @@
       width="70%"
       :close-on-click-modal="false"
       :append-to-body="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @closed="handleUserSelectDialogClosed"
     >
@@ -297,19 +293,17 @@
       </div>
 
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="userSelectDialogVisible = false">
-            {{ $t('common.cancel') }}
-          </el-button>
-          <el-button 
-            type="primary" 
-            @click="handleConfirmUserSelect" 
-            :disabled="selectedUsers.length === 0"
-            :loading="confirmLoading"
-          >
-            {{ $t('common.confirm') }}
-          </el-button>
-        </span>
+        <el-button @click="userSelectDialogVisible = false">
+          {{ $t('common.cancel') }}
+        </el-button>
+        <el-button 
+          type="primary" 
+          @click="handleConfirmUserSelect" 
+          :disabled="selectedUsers.length === 0"
+          :loading="confirmLoading"
+        >
+          {{ $t('common.confirm') }}
+        </el-button>
       </template>
     </el-dialog>
 
@@ -321,7 +315,6 @@
       height="500px"
       :close-on-click-modal="false"
       :append-to-body="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @closed="handleProactiveAgentDialogClosed"
       class="proactive-agent-dialog"
@@ -344,11 +337,9 @@
         </el-table>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="proactiveAgentDialogVisible = false">
-            {{ $t('common.close') }}
-          </el-button>
-        </span>
+        <el-button @click="proactiveAgentDialogVisible = false">
+          {{ $t('common.close') }}
+        </el-button>
       </template>
     </el-dialog>
   </div>
@@ -367,10 +358,12 @@ import {
 } from '@/config/api/systembasicmgmt/user-settings/useragent'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
-// 初始化i18n
 const { t } = useI18n()
+
+const DEBOUNCE_MS = 300
+let searchTimer = null
+let userSelectSearchTimer = null
 
 const formatDateTime = (val) => {
   if (!val) return ''
@@ -380,28 +373,23 @@ const formatDateTime = (val) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-// 员工数据
 const userList = ref([])
 const loading = ref(false)
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 10,
   totalCount: 0
 })
 
-// 过滤条件
 const filters = reactive({
   departmentId: '',
   userNo: '',
   userName: '',
 })
 
-// 部门选项数据
 const departmentOptions = ref([])
 
-// 代理人相关数据
 const agentDialogVisible = ref(false)
 const agentDialogTitle = ref('')
 const agentList = ref([])
@@ -409,67 +397,87 @@ const agentLoading = ref(false)
 const currentUserId = ref('')
 const currentUserInfo = ref({})
 
-// 员工选择对话框相关数据
 const userSelectDialogVisible = ref(false)
 const userSelectLoading = ref(false)
 const userSelectList = ref([])
 const selectedUsers = ref([])
 const userSelectTableRef = ref(null)
 const agentTimeFormRef = ref(null)
-const confirmLoading = ref(false) // 确认按钮加载状态
+const confirmLoading = ref(false)
 
-// 代理时间表单验证规则
-const agentTimeFormRules = reactive({
+const agentTimeFormRules = {
   startTime: [
     { required: true, message: t('systembasicmgmt.userAgent.pleaseSelectStartTime'), trigger: 'change' }
   ],
   endTime: [
     { required: true, message: t('systembasicmgmt.userAgent.pleaseSelectEndTime'), trigger: 'change' }
   ]
-})
+}
 
-// 代理时间范围
 const agentTimeRange = reactive({
   startTime: '',
   endTime: ''
 })
 
-// 员工选择筛选条件
 const userSelectFilters = reactive({
   departmentId: '',
   userNo: '',
   userName: ''
 })
 
-// 员工选择分页信息
 const userSelectPagination = reactive({
   pageIndex: 1,
   pageSize: 10,
   totalCount: 0
 })
 
-// 查看员工代理了哪些人对话框相关数据
 const proactiveAgentDialogVisible = ref(false)
 const proactiveAgentDialogTitle = ref('')
 const proactiveAgentList = ref([])
 const proactiveAgentLoading = ref(false)
 const currentProactiveUserId = ref('')
 
-// 在组件挂载后获取数据
 onMounted(async () => {
-  // 获取部门下拉数据
   await fetchDepartmentDropdown(true)
-  // 获取员工列表数据
   await fetchUserPages()
 })
 
-// 部门树过滤方法
 const filterNodeMethod = (value, data) => {
   if (!value) return true
   return data.departmentName.includes(value)
 }
 
-// 获取部门下拉数据
+const findFirstEnabledDepartment = (departments) => {
+  for (const dept of departments) {
+    if (!dept.disabled) {
+      return dept.departmentId
+    }
+    if (dept.departmentChildList && dept.departmentChildList.length > 0) {
+      const childResult = findFirstEnabledDepartment(dept.departmentChildList)
+      if (childResult) {
+        return childResult
+      }
+    }
+  }
+  return null
+}
+
+const scheduleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchUserPages()
+  }, DEBOUNCE_MS)
+}
+
+const scheduleUserSelectSearch = () => {
+  clearTimeout(userSelectSearchTimer)
+  userSelectSearchTimer = setTimeout(() => {
+    userSelectPagination.pageIndex = 1
+    fetchUserSelectList()
+  }, DEBOUNCE_MS)
+}
+
 const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
   try {
     const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
@@ -477,24 +485,7 @@ const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
     if (res && res.code === 200) {
       departmentOptions.value = res.data || []
 
-      // 设置默认筛选条件
       if (setDefaultFilter && departmentOptions.value.length > 0) {
-        // 查找第一个未禁用的部门
-        const findFirstEnabledDepartment = (departments) => {
-          for (const dept of departments) {
-            if (!dept.disabled) {
-              return dept.departmentId
-            }
-            if (dept.departmentChildList && dept.departmentChildList.length > 0) {
-              const childResult = findFirstEnabledDepartment(dept.departmentChildList)
-              if (childResult) {
-                return childResult
-              }
-            }
-          }
-          return null
-        }
-
         const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
         if (firstDepartmentId) {
           filters.departmentId = firstDepartmentId
@@ -520,7 +511,6 @@ const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
   }
 }
 
-// 获取代理人列表数据
 const fetchUserAgentList = async (substituteUserId) => {
   agentLoading.value = true
   try {
@@ -552,7 +542,6 @@ const fetchUserAgentList = async (substituteUserId) => {
   }
 }
 
-// 获取员工列表数据
 const fetchUserPages = async () => {
   loading.value = true
   const params = {
@@ -579,100 +568,49 @@ const fetchUserPages = async () => {
   loading.value = false
 }
 
-// 使用通用防抖工具（主列表）
-const debouncedFetchUserPages = debounce(() => {
-  fetchUserPages()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchUserPages()
+  scheduleSearch()
 }
 
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const fetchUserPagesImmediate = () => {
-  fetchUserPages()
-}
-
-// 重置搜索条件
 const handleReset = () => {
-  // 清空输入框内容
   filters.userNo = ''
   filters.userName = ''
-  
-  // 重置部门下拉框为第一个未禁用的选项
+
   if (departmentOptions.value.length > 0) {
-    // 查找第一个未禁用的部门
-    const findFirstEnabledDepartment = (departments) => {
-      for (const dept of departments) {
-        if (!dept.disabled) {
-          return dept.departmentId
-        }
-        if (dept.departmentChildList && dept.departmentChildList.length > 0) {
-          const childResult = findFirstEnabledDepartment(dept.departmentChildList)
-          if (childResult) {
-            return childResult
-          }
-        }
-      }
-      return null
-    }
-    
     const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
-    if (firstDepartmentId) {
-      filters.departmentId = firstDepartmentId
-    } else {
-      filters.departmentId = ''
-    }
+    filters.departmentId = firstDepartmentId ?? ''
   } else {
     filters.departmentId = ''
   }
-  
-  // 重置分页到第一页并触发查询
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchUserPages()
+
+  scheduleSearch()
 }
 
-// 处理页码变化
-const handlePageChange = (page) => {
-  loading.value = true // 显示加载状态
-  pagination.pageIndex = page
+const handlePageChange = () => {
   fetchUserPages()
 }
 
-// 处理每页记录数变化
-const handleSizeChange = (size) => {
-  loading.value = true // 显示加载状态
-  pagination.pageSize = size
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   fetchUserPages()
 }
 
-// 处理配置代理人操作
 const handleConfigureAgent = async (index, row) => {
   currentUserId.value = row.userId
   agentDialogTitle.value = `${t('systembasicmgmt.userAgent.agentDetails')} - ${row.userName || ''}`
   agentDialogVisible.value = true
-  // 获取代理人列表
   await fetchUserAgentList(row.userId)
 }
 
-// 处理主页面新增代理人操作
 const handleAddAgentForUser = async (index, row) => {
   currentUserId.value = row.userId
   currentUserInfo.value = row
-  // 重置时间选择
   Object.assign(agentTimeRange, {
     startTime: '',
     endTime: ''
   })
-  // 重置用户选择
   selectedUsers.value = []
 
-  // 重置搜索条件
   Object.assign(userSelectFilters, {
     departmentId: '',
     userNo: '',
@@ -680,24 +618,7 @@ const handleAddAgentForUser = async (index, row) => {
   })
   userSelectPagination.pageIndex = 1
 
-  // 设置默认部门筛选条件
   if (departmentOptions.value.length > 0) {
-    // 查找第一个未禁用的部门
-    const findFirstEnabledDepartment = (departments) => {
-      for (const dept of departments) {
-        if (!dept.disabled) {
-          return dept.departmentId
-        }
-        if (dept.departmentChildList && dept.departmentChildList.length > 0) {
-          const childResult = findFirstEnabledDepartment(dept.departmentChildList)
-          if (childResult) {
-            return childResult
-          }
-        }
-      }
-      return null
-    }
-
     const firstDepartmentId = findFirstEnabledDepartment(departmentOptions.value)
     if (firstDepartmentId) {
       userSelectFilters.departmentId = firstDepartmentId
@@ -706,7 +627,6 @@ const handleAddAgentForUser = async (index, row) => {
 
   userSelectDialogVisible.value = true
 
-  // 等待对话框打开后获取用户列表
   await nextTick()
   // 打开对话框后清除时间校验状态，避免保留上一次的必填错误提示
   if (agentTimeFormRef.value) {
@@ -719,16 +639,12 @@ const handleAddAgentForUser = async (index, row) => {
   await fetchUserSelectList()
 }
 
-// 处理代理人对话框完全关闭后的清理
 const handleAgentDialogClosed = async () => {
   agentList.value = []
   currentUserId.value = ''
   agentDialogTitle.value = ''
-  // 只有在代理人列表有变化时才刷新主页面数据
-  // await fetchUserPages() // 移除自动刷新，避免不必要的表格重载
 }
 
-// 处理员工选择对话框关闭后的清理
 const handleUserSelectDialogClosed = () => {
   currentUserInfo.value = {}
   currentUserId.value = ''
@@ -742,7 +658,6 @@ const handleUserSelectDialogClosed = () => {
     userNo: '',
     userName: ''
   })
-  // 对话框关闭时也清除一次时间表单的校验状态
   if (agentTimeFormRef.value) {
     try {
       agentTimeFormRef.value.clearValidate()
@@ -750,18 +665,15 @@ const handleUserSelectDialogClosed = () => {
       // ignore
     }
   }
-  // 清空勾选状态
   if (userSelectTableRef.value) {
     userSelectTableRef.value.clearSelection()
   }
 }
 
-// 处理删除代理人
 const handleDeleteAgent = async (index) => {
   try {
     const agent = agentList.value[index]
 
-    // 确认删除
     await ElMessageBox.confirm(
       t('systembasicmgmt.userAgent.confirmDeleteAgent', { name: agent.agentUserName }),
       t('common.tip'),
@@ -772,7 +684,6 @@ const handleDeleteAgent = async (index) => {
       }
     )
 
-    // 调用删除接口
     const formData = new FormData()
     formData.append('agentUserId', agent.agentUserId)
 
@@ -785,9 +696,7 @@ const handleDeleteAgent = async (index) => {
         plain: true,
         showClose: true
       })
-      // 重新获取代理人列表
       await fetchUserAgentList(currentUserId.value)
-      // 关闭弹出框并刷新主页面
       agentDialogVisible.value = false
       await fetchUserPages()
     } else {
@@ -798,21 +707,11 @@ const handleDeleteAgent = async (index) => {
         showClose: true
       })
     }
-  } catch (error) {
-    if (error === 'cancel') {
-      // 用户取消删除
-      return
-    }
-    ElMessage({
-      message: t('common.operationFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    return
   }
 }
 
-// 获取用户选择列表
 const fetchUserSelectList = async () => {
   userSelectLoading.value = true
   try {
@@ -823,7 +722,7 @@ const fetchUserSelectList = async () => {
       pageIndex: userSelectPagination.pageIndex,
       pageSize: userSelectPagination.pageSize,
       totalCount: userSelectPagination.totalCount,
-      SubstituteUserId: currentUserId.value // 排除自己不能代理自己
+      SubstituteUserId: currentUserId.value
     }
     const res = await post(GET_USER_VIEW_API.GET_USER_VIEW, params)
 
@@ -854,48 +753,31 @@ const fetchUserSelectList = async () => {
   }
 }
 
-// 使用通用防抖工具（用户选择列表）
-const debouncedFetchUserSelectList = debounce(() => {
-  fetchUserSelectList()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理用户选择搜索（带防抖）
 const handleUserSelectSearch = () => {
-  userSelectPagination.pageIndex = 1
-  userSelectLoading.value = true // 立即显示加载状态
-  debouncedFetchUserSelectList()
+  scheduleUserSelectSearch()
 }
 
-// 重置用户选择搜索 - 只清空输入框，不清空下拉框，触发查询
 const handleUserSelectReset = () => {
   Object.assign(userSelectFilters, {
     userNo: '',
     userName: ''
   })
-  userSelectPagination.pageIndex = 1
-  userSelectLoading.value = true // 显示加载状态
-  debouncedFetchUserSelectList()
+  scheduleUserSelectSearch()
 }
 
-// 处理用户选择分页
-const handleUserSelectPageChange = (page) => {
-  userSelectPagination.pageIndex = page
+const handleUserSelectPageChange = () => {
   fetchUserSelectList()
 }
 
-// 处理用户选择每页大小变化
-const handleUserSelectSizeChange = (size) => {
-  userSelectPagination.pageSize = size
+const handleUserSelectSizeChange = () => {
   userSelectPagination.pageIndex = 1
   fetchUserSelectList()
 }
 
-// 处理复选框勾选变化（多选）
 const handleSelectionChange = (selection) => {
   selectedUsers.value = selection
 }
 
-// 处理开始时间变化
 const handleStartTimeChange = (value) => {
   if (value && agentTimeRange.endTime && new Date(value) > new Date(agentTimeRange.endTime)) {
     ElMessage({
@@ -908,7 +790,6 @@ const handleStartTimeChange = (value) => {
   }
 }
 
-// 处理结束时间变化
 const handleEndTimeChange = (value) => {
   if (value && agentTimeRange.startTime && new Date(value) < new Date(agentTimeRange.startTime)) {
     ElMessage({
@@ -921,7 +802,6 @@ const handleEndTimeChange = (value) => {
   }
 }
 
-// 确认用户选择
 const handleConfirmUserSelect = async () => {
   if (selectedUsers.value.length === 0) {
     ElMessage({
@@ -933,7 +813,6 @@ const handleConfirmUserSelect = async () => {
     return
   }
 
-  // 验证表单
   try {
     await agentTimeFormRef.value.validate()
   } catch (error) {
@@ -941,7 +820,7 @@ const handleConfirmUserSelect = async () => {
   }
 
   confirmLoading.value = true
-  
+
   // 统一提交 DateTime：优先保留本地字符串，仅规范为 ISO 本地时间格式
   const toDateTimePayload = (val) => {
     if (!val) return null
@@ -963,7 +842,6 @@ const handleConfirmUserSelect = async () => {
   const startTime = toDateTimePayload(agentTimeRange.startTime)
   const endTime = toDateTimePayload(agentTimeRange.endTime)
 
-  // 逐个调用新增接口
   for (const user of selectedUsers.value) {
     const params = {
       agentUserId: user.userId,
@@ -995,31 +873,25 @@ const handleConfirmUserSelect = async () => {
   })
   userSelectDialogVisible.value = false
 
-  // 重置数据
   selectedUsers.value = []
   Object.assign(agentTimeRange, {
     startTime: '',
     endTime: ''
   })
 
-  // 清空勾选状态
   if (userSelectTableRef.value) {
     userSelectTableRef.value.clearSelection()
   }
 
-  // 重新获取代理人列表
   await fetchUserAgentList(currentUserId.value)
 
-  // 清理当前用户信息
   currentUserInfo.value = {}
 
-  // 刷新主页面数据
   await fetchUserPages()
-  
+
   confirmLoading.value = false
 }
 
-// 获取员工代理了哪些人的列表数据
 const fetchProactiveAgentList = async (userId) => {
   proactiveAgentLoading.value = true
   try {
@@ -1052,25 +924,19 @@ const fetchProactiveAgentList = async (userId) => {
   }
 }
 
-// 处理查看员工代理了哪些人操作
 const handleViewProactiveAgent = async (index, row) => {
   currentProactiveUserId.value = row.userId
   proactiveAgentDialogTitle.value = `${t('systembasicmgmt.userAgent.proactiveAgentDetails')} - ${row.userName || ''}`
   proactiveAgentDialogVisible.value = true
-  // 获取员工代理了哪些人的列表
   await fetchProactiveAgentList(row.userId)
 }
 
-// 处理查看员工代理了哪些人对话框完全关闭后的清理
 const handleProactiveAgentDialogClosed = async () => {
   proactiveAgentList.value = []
   currentProactiveUserId.value = ''
   proactiveAgentDialogTitle.value = ''
-  // 只有在主动代理人列表有变化时才刷新主页面数据
-  // await fetchUserPages() // 移除自动刷新，避免不必要的表格重载
 }
 
-// 处理部门下拉框变化事件（带防抖）
 const handleDepartmentChange = () => {
   handleSearch()
 }
@@ -1100,5 +966,3 @@ const handleDepartmentChange = () => {
     min-width: 100% !important;
   }
 </style>
-
-

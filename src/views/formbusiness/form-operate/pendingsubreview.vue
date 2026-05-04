@@ -55,7 +55,7 @@
             :placeholder="$t('formbusiness.pendingsubreview.pleaseSelectFormStatus')"
             clearable
             style="width: 170px"
-            @change="handleFormStatusChange"
+            @change="handleFilterChange"
           >
             <el-option
               v-for="item in formStatusOptions"
@@ -117,7 +117,7 @@
                 underline="never"
                 @click="openFormPage(row, 'approvalPath')"
               >
-                {{ getActionText() }}
+                {{ actionText }}
               </el-link>
               <el-link
                 v-if="canShowInvalidate(row)"
@@ -141,7 +141,7 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="getPendingSubReviewList"
         />
       </div>
     </el-card>
@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
@@ -166,6 +166,20 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const router = useRouter()
 
+const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
+const FILTER_DEBOUNCE_MS = 300
+const ALL_OPTION_VALUE = '-1'
+
+const buildFormData = (params) => {
+  const fd = new FormData()
+  Object.entries(params).forEach(([k, v]) => fd.append(k, v ?? ''))
+  return fd
+}
+
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
 const loading = ref(false)
 const filterPending = ref(false)
 const pendingsubreviewList = ref([])
@@ -173,37 +187,51 @@ const formGroupOptions = ref([])
 const formTypeOptions = ref([])
 const formStatusOptions = ref([])
 const listMode = ref('pendingsubreview')
-const ALL_OPTION_VALUE = '-1'
 
 const searchForm = reactive({
   formGroupId: ALL_OPTION_VALUE,
-  formTypeId: ALL_OPTION_VALUE,
-  formStatus: '',
-  formNo: ''
+  formTypeId:  ALL_OPTION_VALUE,
+  formStatus:  '',
+  formNo:      ''
 })
 
 const pagination = reactive({
   pageIndex: 1,
-  pageSize: 10,
+  pageSize:  10,
   totalCount: 0
 })
 
+const actionText = computed(() =>
+  listMode.value === 'pendingSubmission'
+    ? t('formbusiness.pendingsubreview.submission')
+    : t('formbusiness.pendingsubreview.approval')
+)
+
+const getCurrentListApi = () =>
+  listMode.value === 'pendingSubmission' ? GET_PENDING_SUBMISSION_LIST_API : GET_PENDING_REVIEW_LIST_API
+
+const getCurrentListErrorKey = () =>
+  listMode.value === 'pendingSubmission'
+    ? 'formbusiness.pendingsubreview.getPendingSubmissionFailed'
+    : 'formbusiness.pendingsubreview.getPendingSubReviewFailed'
+
+const normalizeFilterValue = (value) =>
+  value === undefined || value === null || value === '' ? ALL_OPTION_VALUE : String(value)
+
 const getFormGroupOptions = async () => {
   try {
-    const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
-    if (response?.code === 200) {
+    const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
+    if (res?.code === 200) {
       formGroupOptions.value = [
         { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.pendingsubreview.all') },
-        ...(response.data || [])
+        ...(res.data || [])
       ]
-      if (!searchForm.formGroupId) {
-        searchForm.formGroupId = ALL_OPTION_VALUE
-      }
+      if (!searchForm.formGroupId) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(res?.message || t('formbusiness.pendingsubreview.getFormGroupFailed'))
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubreview.getFormGroupFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.getFormGroupFailed'))
   }
 }
 
@@ -211,37 +239,31 @@ const getFormTypeOptions = async () => {
   formTypeOptions.value = []
   searchForm.formTypeId = ALL_OPTION_VALUE
   if (!searchForm.formGroupId) return
-
   try {
-    const formData = new window.FormData()
-    formData.append('formGroupId', String(searchForm.formGroupId))
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
-    if (response?.code === 200) {
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
+    if (res?.code === 200) {
       formTypeOptions.value = [
         { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.pendingsubreview.all') },
-        ...(response.data || [])
+        ...(res.data || [])
       ]
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(res?.message || t('formbusiness.pendingsubreview.getFormTypeFailed'))
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubreview.getFormTypeFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.getFormTypeFailed'))
   }
 }
 
 const getFormStatusOptions = async () => {
   try {
-    const response = await post(GET_FORMSTATUS_DROPDOWN_API, {})
-    if (response?.code === 200) {
-      formStatusOptions.value = response.data || []
+    const res = await post(GET_FORMSTATUS_DROPDOWN_API, {})
+    if (res?.code === 200) {
+      formStatusOptions.value = res.data || []
       return
     }
-    ElMessage({ message: response?.message || t('formbusiness.pendingsubreview.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(res?.message || t('formbusiness.pendingsubreview.getFormStatusFailed'))
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubreview.getFormStatusFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.getFormStatusFailed'))
   }
 }
 
@@ -250,61 +272,36 @@ const getPendingSubReviewList = async () => {
   try {
     const params = {
       formGroupId: normalizeFilterValue(searchForm.formGroupId),
-      formTypeId: normalizeFilterValue(searchForm.formTypeId),
-      formStatus: String(searchForm.formStatus || ''),
-      formNo: String(searchForm.formNo || ''),
-      pageIndex: String(pagination.pageIndex),
-      pageSize: String(pagination.pageSize),
-      totalCount: String(pagination.totalCount || 0)
+      formTypeId:  normalizeFilterValue(searchForm.formTypeId),
+      formStatus:  String(searchForm.formStatus || ''),
+      formNo:      String(searchForm.formNo     || ''),
+      pageIndex:   String(pagination.pageIndex),
+      pageSize:    String(pagination.pageSize),
+      totalCount:  String(pagination.totalCount || 0)
     }
-    const response = await post(getCurrentListApi(), params)
-    if (response?.code === 200) {
-      pendingsubreviewList.value = response.data || []
-      pagination.totalCount = Number(response.totalCount || 0)
+    const res = await post(getCurrentListApi(), params)
+    if (res?.code === 200) {
+      pendingsubreviewList.value = res.data || []
+      pagination.totalCount = Number(res.totalCount || 0)
       return
     }
     pendingsubreviewList.value = []
-    ElMessage({ message: response?.message || t(getCurrentListErrorKey()), type: 'error', plain: true, showClose: true })
+    showMessage(res?.message || t(getCurrentListErrorKey()))
   } catch {
     pendingsubreviewList.value = []
-    ElMessage({ message: t(getCurrentListErrorKey()), type: 'error', plain: true, showClose: true })
+    showMessage(t(getCurrentListErrorKey()))
   } finally {
     loading.value = false
   }
 }
 
-let searchTimer = null
-let filterTimer = null
-const FILTER_DEBOUNCE_MS = 300
-
-const normalizeFilterValue = (value) => {
-  return value === undefined || value === null || value === '' ? ALL_OPTION_VALUE : String(value)
-}
-
-const getCurrentListApi = () => {
-  return listMode.value === 'pendingSubmission'
-    ? GET_PENDING_SUBMISSION_LIST_API
-    : GET_PENDING_REVIEW_LIST_API
-}
-
-const getCurrentListErrorKey = () => {
-  return listMode.value === 'pendingSubmission'
-    ? 'formbusiness.pendingsubreview.getPendingSubmissionFailed'
-    : 'formbusiness.pendingsubreview.getPendingSubReviewFailed'
-}
-
-const getActionText = () => {
-  return listMode.value === 'pendingSubmission'
-    ? t('formbusiness.pendingsubreview.submission')
-    : t('formbusiness.pendingsubreview.approval')
-}
-
+let debounceTimer = null
 const scheduleFilterRequest = async (callback) => {
-  if (filterTimer) clearTimeout(filterTimer)
+  if (debounceTimer) clearTimeout(debounceTimer)
   loading.value = true
   filterPending.value = true
   await nextTick()
-  filterTimer = setTimeout(async () => {
+  debounceTimer = setTimeout(async () => {
     try {
       await callback()
     } finally {
@@ -322,9 +319,7 @@ const handleListModeChange = () => {
 }
 
 const handleFormGroupChange = () => {
-  if (!searchForm.formGroupId) {
-    searchForm.formGroupId = ALL_OPTION_VALUE
-  }
+  if (!searchForm.formGroupId) searchForm.formGroupId = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -340,36 +335,22 @@ const handleFilterChange = () => {
 }
 
 const handleFormTypeChange = () => {
-  if (!searchForm.formTypeId) {
-    searchForm.formTypeId = ALL_OPTION_VALUE
-  }
+  if (!searchForm.formTypeId) searchForm.formTypeId = ALL_OPTION_VALUE
   handleFilterChange()
 }
 
-const handleFormStatusChange = () => {
-  handleFilterChange()
-}
-
-const handleSearch = async () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  filterPending.value = true
-  await nextTick()
-  searchTimer = setTimeout(async () => {
-    try {
-      pagination.pageIndex = 1
-      await getPendingSubReviewList()
-    } finally {
-      filterPending.value = false
-    }
-  }, 300)
+const handleSearch = () => {
+  scheduleFilterRequest(async () => {
+    pagination.pageIndex = 1
+    await getPendingSubReviewList()
+  })
 }
 
 const handleReset = () => {
-  searchForm.formStatus = ''
-  searchForm.formNo = ''
+  searchForm.formStatus  = ''
+  searchForm.formNo      = ''
   searchForm.formGroupId = ALL_OPTION_VALUE
-  searchForm.formTypeId = ALL_OPTION_VALUE
+  searchForm.formTypeId  = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -377,14 +358,8 @@ const handleReset = () => {
   })
 }
 
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
+const handleSizeChange = () => {
   pagination.pageIndex = 1
-  getPendingSubReviewList()
-}
-
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
   getPendingSubReviewList()
 }
 
@@ -408,47 +383,34 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-/**
- * 新窗口铺满可用屏幕（表单编号链接与修改链接相同宽高）
- */
+// 新窗口铺满可用屏幕；部分浏览器策略下 resizeTo/moveTo 不可用，已用 features 尽量铺满
 const openPopupWindow = (href, namePrefix = 'form_popup') => {
   const aw = window.screen.availWidth
   const ah = window.screen.availHeight
   const features = [
-    `width=${aw}`,
-    `height=${ah}`,
-    'left=0',
-    'top=0',
-    'resizable=yes',
-    'scrollbars=yes'
+    `width=${aw}`, `height=${ah}`, 'left=0', 'top=0', 'resizable=yes', 'scrollbars=yes'
   ].join(',')
   const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
   popup?.focus()
   try {
     popup?.moveTo(0, 0)
     popup?.resizeTo(aw, ah)
-  } catch {
-    // ignore
-  }
+  } catch { /* resizeTo not available in all browsers */ }
 }
 
 const openFormPage = (row, pathKey) => {
-  if (!row || !row[pathKey]) return
+  if (!row?.[pathKey]) return
   const path = normalizePath(row[pathKey])
   if (!isPathSafe(path)) {
-    ElMessage({ message: t('formbusiness.pendingsubreview.getFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.getFailed'))
     return
   }
-  const to = {
+  const resolved = router.resolve({
     path,
-    query: {
-      formTypeId: String(row.formTypeId || ''),
-      formId: String(row.formId || '')
-    }
-  }
-  const resolved = router.resolve(to)
+    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') }
+  })
   if (!isRouteValid(resolved)) {
-    ElMessage({ message: t('formbusiness.pendingsubreview.getFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.getFailed'))
     return
   }
   openPopupWindow(resolved.href, pathKey === 'approvalPath' ? 'pending_approval' : 'form_view')
@@ -456,17 +418,16 @@ const openFormPage = (row, pathKey) => {
 
 const getFormStatusCode = (row) => {
   if (row?.formStatus) return String(row.formStatus)
-  const matched = formStatusOptions.value.find(item => item.formStatusName === row?.formStatusName)
-  return matched?.formStatusCode || ''
+  return formStatusOptions.value.find(i => i.formStatusName === row?.formStatusName)?.formStatusCode || ''
 }
 
 const getFormStatusTagType = (row) => {
   const code = getFormStatusCode(row)
   if (code === 'PendingSubmission') return 'warning'
-  if (code === 'UnderReview') return 'primary'
-  if (code === 'Rejected') return 'danger'
-  if (code === 'Approved') return 'success'
-  if (code === 'Voided') return 'info'
+  if (code === 'UnderReview')       return 'primary'
+  if (code === 'Rejected')          return 'danger'
+  if (code === 'Approved')          return 'success'
+  if (code === 'Voided')            return 'info'
   return ''
 }
 
@@ -483,20 +444,15 @@ const handleVoidForm = async (row) => {
   }
   loading.value = true
   try {
-    const formData = new window.FormData()
-    formData.append('formId', String(row.formId))
-    const res = await post(VOIDED_FORM_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
+    const res = await post(VOIDED_FORM_API, buildFormData({ formId: String(row.formId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
-      ElMessage({ message: res.message || t('formbusiness.pendingsubreview.voidSuccess'), type: 'success', plain: true, showClose: true })
+      showMessage(res.message || t('formbusiness.pendingsubreview.voidSuccess'), 'success')
       await getPendingSubReviewList()
     } else {
-      ElMessage({ message: res?.message || t('formbusiness.pendingsubreview.voidFailed'), type: 'error', plain: true, showClose: true })
+      showMessage(res?.message || t('formbusiness.pendingsubreview.voidFailed'))
     }
   } catch {
-    ElMessage({ message: t('formbusiness.pendingsubreview.voidFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.pendingsubreview.voidFailed'))
   } finally {
     loading.value = false
   }
@@ -505,8 +461,8 @@ const handleVoidForm = async (row) => {
 const canShowInvalidate = (row) => {
   const value = row?.isDelete
   if (typeof value === 'boolean') return value
-  if (typeof value === 'number') return value === 1
-  if (typeof value === 'string') return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
+  if (typeof value === 'number')  return value === 1
+  if (typeof value === 'string')  return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
   return false
 }
 

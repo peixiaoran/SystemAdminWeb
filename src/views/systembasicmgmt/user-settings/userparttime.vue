@@ -99,10 +99,9 @@
                    width="70%"
                    :close-on-click-modal="false"
                    :append-to-body="true"
-                   :modal-append-to-body="true"
                    :lock-scroll="true"
-                   append-to-body
-                   class="parttime-dialog">
+                   class="parttime-dialog"
+                   @close="handleDialogClose">
             <div style="height: 560px;">
                 <!-- 兼任信息区域 -->
                 <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogFormRules" label-width="auto" style="padding: 12px 16px 0;">
@@ -227,17 +226,15 @@
             </div>
 
             <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                    <el-button
-                      type="primary"
-                      @click="handleDialogSubmit"
-                      :loading="dialogSubmitLoading"
-                      :disabled="!dialogForm.userId || dialogSubmitLoading"
-                    >
-                      {{ $t('common.confirm') }}
-                    </el-button>
-                </span>
+                <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+                <el-button
+                  type="primary"
+                  @click="handleDialogSubmit"
+                  :loading="dialogSubmitLoading"
+                  :disabled="!dialogForm.userId || dialogSubmitLoading"
+                >
+                  {{ $t('common.confirm') }}
+                </el-button>
             </template>
         </el-dialog>
     </div>
@@ -253,17 +250,17 @@
         INSERT_USER_PARTTIME_API,
         GET_USER_PARTTIMEENTITY_API,
         UPDATE_USER_PARTTIME_API,
-        GET_POSITION_DROPDOWN_API
-    } from '@/config/api/systembasicmgmt/user-settings/userparttime'
-    import {
+        GET_POSITION_DROPDOWN_API,
         GET_DEPARTMENT_DROPDOWN_API
     } from '@/config/api/systembasicmgmt/user-settings/userparttime'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
-    import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
-  
-    // 初始化i18n
+
     const { t } = useI18n()
+
+    const DEBOUNCE_MS = 300
+    let searchTimer = null
+    let dialogSearchTimer = null
 
     const formatDateTime = (val) => {
         if (!val) return ''
@@ -279,43 +276,35 @@
         return ''
     }
   
-    // 员工兼任数据
     const userPartTimeList = ref([])
     const loading = ref(false)
     
-    // 部门下拉列表
     const departmentList = ref([])
     
-    // 合并后的通用对话框状态
     const dialogVisible = ref(false)
     const isEditMode = ref(false)
     const dialogSubmitLoading = ref(false)
     const dialogFormRef = ref(null)
     
-    // 职级下拉列表
     const positionList = ref([])
     
-    // 通用对话框内的用户信息列表与加载状态
     const dialogUserList = ref([])
     const dialogUserLoading = ref(false)
     const selectedDialogUsers = ref([])
     const dialogUserTableRef = ref(null)
   
-    // 分页信息
     const pagination = reactive({
         pageIndex: 1,
         pageSize: 10,
         totalCount: 0
     })
   
-    // 过滤条件
     const filters = reactive({
         departmentId: '',
         userNo: '',
         userName: ''
     })
     
-    // 合并后的通用表单数据（包含新增与编辑所需字段）
     const dialogForm = reactive({
         userId: '',
         old_UserId: '',
@@ -332,7 +321,6 @@
         laborName: ''
     })
     
-    // 合并后的对话框内用户搜索条件与分页
     const dialogUserFilters = reactive({
         departmentId: '',
         userNo: '',
@@ -344,8 +332,7 @@
         totalCount: 0
     })
     
-    // 通用表单验证规则（新增/编辑一致）
-    const dialogFormRules = reactive({
+    const dialogFormRules = {
         partTimeDeptId: [
             { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
         ],
@@ -358,32 +345,18 @@
         endTime: [
             { required: true, message: t('systembasicmgmt.userPartTime.endTimeRequired'), trigger: 'change' }
         ]
-    })
+    }
   
-    // 在组件挂载后获取数据
     onMounted(async () => {
-        // 获取部门下拉列表，并默认选中第一个部门
         await fetchDepartmentList(true)
-        
-        // 等待默认值设置完成后再获取数据
-        setTimeout(async () => {
-            // 获取员工兼任列表数据
-            await fetchUserPartTimePages()
-        }, 200) // 稍微延长等待时间，确保默认值设置完成
+        await fetchUserPartTimePages()
     })
     
-    /**
-     * 递归查找第一个未禁用的部门ID
-     * @param {Array} departments 部门树形列表
-     * @returns {string|null} 返回第一个未禁用的部门ID，若不存在返回 null
-     */
     const findFirstEnabledDepartment = (departments) => {
         for (const dept of departments) {
-            // 检查当前部门是否未禁用
             if (!dept.disabled) {
                 return dept.departmentId
             }
-            // 如果当前部门禁用，检查子部门
             if (dept.departmentChildList && Array.isArray(dept.departmentChildList) && dept.departmentChildList.length > 0) {
                 const childResult = findFirstEnabledDepartment(dept.departmentChildList)
                 if (childResult) {
@@ -393,13 +366,23 @@
         }
         return null
     }
+
+    const scheduleSearch = () => {
+        clearTimeout(searchTimer)
+        searchTimer = setTimeout(() => {
+            pagination.pageIndex = 1
+            fetchUserPartTimePages()
+        }, DEBOUNCE_MS)
+    }
+
+    const scheduleDialogSearch = () => {
+        clearTimeout(dialogSearchTimer)
+        dialogSearchTimer = setTimeout(() => {
+            dialogUserPagination.pageIndex = 1
+            fetchDialogUserPages()
+        }, DEBOUNCE_MS)
+    }
     
-    /**
-     * 获取部门下拉列表
-     * @param {boolean} [setDefaultFilter=false] 是否为主列表筛选设置默认值
-     * @param {boolean} [setDefaultForm=false] 是否为对话框表单设置默认值
-     * @returns {Promise<void>}
-     */
     const fetchDepartmentList = async (setDefaultFilter = false, setDefaultForm = false) => {
         try {
             const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
@@ -420,7 +403,6 @@
                 }
                 departmentList.value = departmentList.value.filter(validateDepartment)
                 
-                // 设置筛选条件默认值 - 选择第一个未禁用的选项
                 if (setDefaultFilter && departmentList.value.length > 0 && !filters.departmentId) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
@@ -428,7 +410,6 @@
                     }
                 }
                 
-                // 设置表单默认值 - 选择第一个未禁用的选项
                 if (setDefaultForm && departmentList.value.length > 0 && !dialogForm.partTimeDeptId) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
@@ -455,11 +436,6 @@
         }
     }
     
-    /**
-     * 获取职级下拉列表
-     * @param {boolean} [setDefaultForm=false] 是否为对话框表单设置默认值
-     * @returns {Promise<void>}
-     */
     const fetchPositionList = async (setDefaultForm = false) => {
         try {
             const res = await post(GET_POSITION_DROPDOWN_API.GET_POSITION_DROPDOWN, {})
@@ -467,13 +443,11 @@
             if (res && res.code === 200) {
                 positionList.value = Array.isArray(res.data) ? res.data : []
                 
-                // 验证数据结构并过滤无效数据
                 positionList.value = positionList.value.filter(item => 
                     item && item.positionId !== undefined && item.positionId !== null && 
                     item.positionName !== undefined && item.positionName !== null
                 )
                 
-                // 设置表单默认值 - 选择第一个未禁用的选项
                 if (setDefaultForm && positionList.value.length > 0 && !dialogForm.partTimePositionId) {
                     const firstEnabledPosition = positionList.value.find(item => !item.disabled)
                     if (firstEnabledPosition) {
@@ -500,10 +474,6 @@
         }
     }
     
-    /**
-     * 获取员工兼任主列表数据
-     * @returns {Promise<void>}
-     */
     const fetchUserPartTimePages = async () => {
         loading.value = true
         try {
@@ -541,96 +511,44 @@
             loading.value = false
         }
     }
-  
-    /**
-     * 主列表查询的防抖函数
-     * 通过防抖避免频繁请求接口
-     */
-    const debouncedFetchUserPartTimePages = debounce(() => {
-        fetchUserPartTimePages()
-    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
-    /**
-     * 处理主列表搜索（使用防抖）
-     * 重置到第一页并触发查询
-     */
     const handleSearch = () => {
-        pagination.pageIndex = 1
-        loading.value = true // 立即显示加载状态
-        debouncedFetchUserPartTimePages()
+        scheduleSearch()
     }
     
-    /**
-     * 重置主列表筛选条件，清空输入框并重置下拉框为第一个选项
-     */
     const handleReset = () => {
-        // 清空输入框内容
         filters.userNo = ''
         filters.userName = ''
         
-        // 重置部门下拉框为第一个未禁用的选项
         if (departmentList.value.length > 0) {
             const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
-            if (firstEnabledDept) {
-                filters.departmentId = firstEnabledDept
-            } else {
-                filters.departmentId = ''
-            }
+            filters.departmentId = firstEnabledDept ?? ''
         } else {
             filters.departmentId = ''
         }
         
-        // 重置分页到第一页并触发查询
-        pagination.pageIndex = 1
-        loading.value = true
-        debouncedFetchUserPartTimePages()
+        scheduleSearch()
     }
 
-    /**
-     * 处理主列表部门下拉框变化，重新触发查询
-     */
     const handleDepartmentChange = () => {
         handleSearch()
     }
 
-    /**
-     * 处理主列表页码变化
-     * @param {number} page 新页码
-     */
-    const handlePageChange = (page) => {
-        loading.value = true // 显示加载状态
-        pagination.pageIndex = page
+    const handlePageChange = () => {
         fetchUserPartTimePages()
     }
   
-    /**
-     * 处理主列表每页记录数变化
-     * @param {number} size 新的每页条数
-     */
-    const handleSizeChange = (size) => {
-        loading.value = true // 显示加载状态
-        pagination.pageSize = size
+    const handleSizeChange = () => {
         pagination.pageIndex = 1
         fetchUserPartTimePages()
     }
     
-    /**
-     * 部门树选择器过滤方法
-     * @param {string} value 输入值
-     * @param {object} data 节点数据
-     * @returns {boolean} 是否匹配
-     */
     const filterNodeMethod = (value, data) => {
         if (!value) return true
         return data.departmentName && data.departmentName.toLowerCase().includes(value.toLowerCase())
     }
     
-    /**
-     * 打开新增模式：初始化对话框表单、搜索与分页，并加载数据
-     * @returns {Promise<void>}
-     */
     const handleAdd = async () => {
-        // 重置通用表单
         Object.assign(dialogForm, {
             userId: '',
             old_UserId: '',
@@ -647,14 +565,12 @@
             laborName: ''
         })
 
-        // 重置搜索条件
         Object.assign(dialogUserFilters, {
             departmentId: '',
             userNo: '',
             userName: ''
         })
 
-        // 设置用户搜索部门默认值
         if (departmentList.value.length > 0) {
             const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
             if (firstEnabledDept) {
@@ -662,22 +578,18 @@
             }
         }
 
-        // 重置分页
         Object.assign(dialogUserPagination, {
             pageIndex: 1,
             pageSize: 10,
             totalCount: 0
         })
 
-        // 清空列表与选择
         dialogUserList.value = []
         selectedDialogUsers.value = []
 
-        // 加载下拉数据
         await fetchDepartmentList(false, false)
         await fetchPositionList(false)
 
-        // 设置默认值
         if (departmentList.value.length > 0) {
             const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
             if (firstEnabledDept) {
@@ -691,7 +603,6 @@
             }
         }
 
-        // 打开对话框并加载列表
         isEditMode.value = false
         dialogVisible.value = true
         await nextTick()
@@ -705,39 +616,17 @@
         }
         await fetchDialogUserPages()
     }
-    
-    /**
-     * 对话框用户列表查询的防抖函数
-     */
-    const debouncedFetchDialogUserPages = debounce(() => {
-        fetchDialogUserPages()
-    }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
-    /**
-     * 处理对话框用户搜索（使用防抖）
-     */
     const handleDialogUserSearch = () => {
-        dialogUserPagination.pageIndex = 1
-        dialogUserLoading.value = true
-        debouncedFetchDialogUserPages()
+        scheduleDialogSearch()
     }
 
-    /**
-     * 处理对话框部门下拉变化：按部门筛选用户列表（使用防抖）
-     * 同时清空工号/姓名文字筛选，避免旧的文字条件与新部门组合导致查询无结果。
-     */
     const handleDialogDeptFilterChange = () => {
         dialogUserFilters.userNo = ''
         dialogUserFilters.userName = ''
-        dialogUserPagination.pageIndex = 1
-        dialogUserLoading.value = true
-        debouncedFetchDialogUserPages()
+        scheduleDialogSearch()
     }
 
-    /**
-     * 处理对话框表单中的兼任部门变化
-     * 部门与职级相互独立，切换部门不影响已选职级
-     */
     const handleDialogDeptChange = () => {
         if (dialogFormRef.value) {
             try {
@@ -748,42 +637,23 @@
         }
     }
     
-    /**
-     * 重置对话框用户搜索条件，并重新查询
-     */
     const handleDialogUserReset = () => {
         Object.assign(dialogUserFilters, {
             userNo: '',
             userName: ''
         })
-        dialogUserPagination.pageIndex = 1
-        dialogUserLoading.value = true
-        debouncedFetchDialogUserPages()
+        scheduleDialogSearch()
     }
     
-    /**
-     * 处理对话框用户分页页码变化
-     * @param {number} page 新页码
-     */
-    const handleDialogUserPageChange = (page) => {
-        dialogUserPagination.pageIndex = page
+    const handleDialogUserPageChange = () => {
         fetchDialogUserPages()
     }
 
-    /**
-     * 处理对话框用户每页大小变化
-     * @param {number} size 新的每页条数
-     */
-    const handleDialogUserSizeChange = (size) => {
-        dialogUserPagination.pageSize = size
+    const handleDialogUserSizeChange = () => {
         dialogUserPagination.pageIndex = 1
         fetchDialogUserPages()
     }
 
-    /**
-     * 处理对话框用户选择变化（强制单选）
-     * @param {Array} selection 当前选中的用户列表
-     */
     const handleDialogUserSelectionChange = (selection) => {
         if (selection.length > 1 && dialogUserTableRef.value) {
             const latest = selection[selection.length - 1]
@@ -797,10 +667,6 @@
         }
     }
     
-    /**
-     * 获取对话框用户列表数据
-     * @returns {Promise<void>}
-     */
     const fetchDialogUserPages = async () => {
         dialogUserLoading.value = true
         try {
@@ -816,7 +682,6 @@
             if (res && res.code === 200) {
                 dialogUserList.value = res.data || []
                 dialogUserPagination.totalCount = res.totalCount || 0
-
             } else {
                 dialogUserList.value = []
                 ElMessage({
@@ -839,14 +704,7 @@
         }
     }
     
-    // 以下编辑对话框专用方法已合并至通用方法（handleDialogUserSearch/Reset/PageChange/SizeChange/SelectionChange）
-    
-    /**
-     * 提交对话框（支持新增与编辑模式）
-     * @returns {Promise<void>}
-     */
     const handleDialogSubmit = async () => {
-        // 检查用户选择
         if (!dialogForm.userId) {
             ElMessage({
                 message: t('systembasicmgmt.userPartTime.pleaseSelectUser'),
@@ -857,7 +715,6 @@
             return
         }
 
-        // 验证表单
         if (!dialogFormRef.value) return
         try {
             await dialogFormRef.value.validate()
@@ -930,19 +787,11 @@
         dialogSubmitLoading.value = false
     }
     
-    /**
-     * 打开编辑模式并加载当前记录详情
-     * @param {number} index 表格行索引
-     * @param {object} row 当前行数据
-     * @returns {Promise<void>}
-     */
     const handleEdit = async (index, row) => {
         try {
-            // 先获取下拉列表数据
             await fetchDepartmentList(false, false)
             await fetchPositionList(false)
             
-            // 调用获取兼任实体接口
             const params = {
                 userId: row.userId,
                 old_PartTimeDeptId: row.partTimeDeptId,
@@ -952,7 +801,6 @@
             const res = await post(GET_USER_PARTTIMEENTITY_API.GET_USER_PARTTIMEENTITY, params)
             
             if (res && res.code === 200 && res.data) {
-                // 填充通用表单为编辑模式数据（统一为字符串，便于后续对比）
                 dialogForm.userId = res.data.userId ? String(res.data.userId) : ''
                 dialogForm.old_UserId = res.data.userId
                 dialogForm.old_PartTimeDeptId = res.data.partTimeDeptId
@@ -963,7 +811,6 @@
                 dialogForm.startTime = res.data.startTime ? new Date(res.data.startTime).toISOString().slice(0, 19).replace('T', ' ') : ''
                 dialogForm.endTime = res.data.endTime ? new Date(res.data.endTime).toISOString().slice(0, 19).replace('T', ' ') : ''
                 
-                // 检查并设置部门默认值
                 if (!dialogForm.partTimeDeptId && departmentList.value.length > 0) {
                     const firstEnabledDept = findFirstEnabledDepartment(departmentList.value)
                     if (firstEnabledDept) {
@@ -971,7 +818,6 @@
                     }
                 }
                 
-                // 检查并设置职位默认值
                 if (!dialogForm.partTimePositionId && positionList.value.length > 0) {
                     const firstEnabledPosition = positionList.value.find(item => !item.disabled)
                     if (firstEnabledPosition) {
@@ -979,15 +825,13 @@
                     }
                 }
                 
-                // 填充用户信息
                 dialogForm.userNo = row.userNo
                 dialogForm.userName = row.userName
                 dialogForm.departmentName = row.departmentName
                 dialogForm.positionName = row.positionName
                 dialogForm.laborName = row.laborName
                 
-                // 初始化编辑对话框的用户搜索条件和分页
-                // 自动填充当前编辑用户的工号、姓名到筛选条件（不需要绑定部门ID到下拉框）
+                // 自动填充当前编辑用户的工号、姓名到筛选条件
                 Object.assign(dialogUserFilters, {
                     userNo: row.userNo,
                     userName: row.userName
@@ -998,11 +842,9 @@
                     totalCount: 0
                 })
                 
-                // 打开通用对话框（编辑模式）
                 isEditMode.value = true
                 dialogVisible.value = true
                 
-                // 等待对话框打开后再获取用户列表数据
                 await nextTick()
                 // 编辑模式下同样清理一次校验状态，防止上次的必填/格式错误残留
                 if (dialogFormRef.value) {
@@ -1022,7 +864,6 @@
                 })
             }
         } catch (error) {
-            console.error('获取兼任实体失败:', error)
             ElMessage({
                 message: t('systembasicmgmt.userPartTime.getPartTimeDetailFailed'),
                 type: 'error',
@@ -1032,14 +873,15 @@
         }
     }
     
-    // 编辑提交逻辑已合并至 handleDialogSubmit
+    const handleDialogClose = () => {
+        Object.assign(dialogForm, {
+            userId: '', old_UserId: '', old_PartTimeDeptId: '', old_PartTimePositionId: '',
+            partTimeDeptId: '', partTimePositionId: '', startTime: '', endTime: '',
+            userNo: '', userName: '', departmentName: '', positionName: '', laborName: ''
+        })
+        dialogFormRef.value?.clearValidate()
+    }
     
-    /**
-     * 删除员工兼任记录
-     * @param {number} index 表格行索引
-     * @param {object} row 当前行数据
-     * @returns {Promise<void>}
-     */
     const handleDelete = async (index, row) => {
         try {
             await ElMessageBox.confirm(
@@ -1052,7 +894,6 @@
                 }
             )
             
-            // 根据需求文档构建删除参数
             const deleteParams = {
                 Old_UserId: row.userId,
                 old_PartTimeDeptId: row.partTimeDeptId,
@@ -1068,7 +909,6 @@
                     plain: true,
                     showClose: true
                 })
-                // 删除成功后刷新列表
                 await fetchUserPartTimePages()
             } else {
                 ElMessage({
@@ -1165,4 +1005,3 @@
     min-width: 100% !important;
   }
 </style>
-

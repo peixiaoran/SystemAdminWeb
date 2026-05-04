@@ -2,47 +2,46 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
-          <el-form-item :label="$t('formbusiness.formtype.formGroupName')">
-            <el-select
-              v-model="searchForm.formGroupId"
-              :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
-              style="width: 200px"
-              @change="handleSearch"
-            >
-              <el-option
-                v-for="item in formGroupOptions"
-                :key="item.formGroupId"
-                :label="item.formGroupName"
-                :value="item.formGroupId"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('formbusiness.formtype.formTypeName')">
-            <el-input
-              v-model="searchForm.formTypeName"
-              :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeName')"
-              clearable
-              style="width: 200px"
+        <el-form-item :label="$t('formbusiness.formtype.formGroupName')">
+          <el-select
+            v-model="searchForm.formGroupId"
+            :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
+            style="width: 200px"
+            @change="scheduleSearch"
+          >
+            <el-option
+              v-for="item in formGroupOptions"
+              :key="item.formGroupId"
+              :label="item.formGroupName"
+              :value="item.formGroupId"
             />
-          </el-form-item>
-          <el-form-item class="form-button-group">
-            <el-button type="primary" @click="handleSearch" plain>
-              {{ $t('common.search') }}
-            </el-button>
-            <el-button @click="handleReset">
-              {{ $t('common.reset') }}
-            </el-button>
-          </el-form-item>
-          <el-form-item class="form-right-button">
-            <el-button type="primary" @click="handleAdd">
-              {{ $t('formbusiness.formtype.addFormType') }}
-            </el-button>
-          </el-form-item>
-        </el-form>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('formbusiness.formtype.formTypeName')">
+          <el-input
+            v-model="searchForm.formTypeName"
+            :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeName')"
+            clearable
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="scheduleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('formbusiness.formtype.addFormType') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
+        <el-table
           :data="formTypeList"
           border
           stripe
@@ -61,17 +60,10 @@
           <el-table-column prop="formTypeNameEn" :label="$t('formbusiness.formtype.formTypeNameEn')" align="left" min-width="240" />
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
-              <el-button 
-                size="small" 
-                @click="handleEdit(scope.row)"
-              >
+              <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button 
-                size="small" 
-                type="danger"
-                @click="handleDelete(scope.row)"
-              >
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -87,39 +79,34 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="getFormTypeList"
         />
       </div>
     </el-card>
-    
-    <el-dialog 
+
+    <el-dialog
       v-model="dialogVisible"
       :title="isEdit ? $t('formbusiness.formtype.editFormType') : $t('formbusiness.formtype.addFormType')"
       width="55%"
       :close-on-click-modal="false"
       :append-to-body="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
-        <el-form 
+        <el-form
           :inline="true"
           ref="formRef"
-          :model="form" 
+          :model="form"
           :rules="rules"
-          label-width="140px" 
+          label-width="140px"
           class="dialog-form"
-          role="form" 
+          role="form"
           aria-label="表单类型编辑"
         >
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.formGroupName')" prop="formGroupId">
-              <el-select
-                v-model="form.formGroupId"
-                :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')"
-                style="width:100%"
-              >
+              <el-select v-model="form.formGroupId" :placeholder="$t('formbusiness.formtype.pleaseSelectFormGroup')" style="width:100%">
                 <el-option
                   v-for="item in formGroupOptions"
                   :key="item.formGroupId"
@@ -129,88 +116,46 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.formtype.prefix')" prop="prefix">
-              <el-input 
-                v-model="form.prefix" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputPrefix')"
-                style="width:100%" 
-              />
+              <el-input v-model="form.prefix" :placeholder="$t('formbusiness.formtype.pleaseInputPrefix')" style="width:100%" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.formTypeNameCn')" prop="formTypeNameCn">
-              <el-input 
-                v-model="form.formTypeNameCn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameCn')"
-                style="width:100%" 
-              />
+              <el-input v-model="form.formTypeNameCn" :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameCn')" style="width:100%" />
             </el-form-item>
             <el-form-item :label="$t('formbusiness.formtype.formTypeNameEn')" prop="formTypeNameEn">
-              <el-input
-                v-model="form.formTypeNameEn"
-                :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameEn')"
-                style="width:100%" 
-              />
+              <el-input v-model="form.formTypeNameEn" :placeholder="$t('formbusiness.formtype.pleaseInputFormTypeNameEn')" style="width:100%" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.approvalPath')" prop="approvalPath">
-              <el-input 
-                v-model="form.approvalPath" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputApprovalPath')"
-                style="width:100%" 
-              />
+              <el-input v-model="form.approvalPath" :placeholder="$t('formbusiness.formtype.pleaseInputApprovalPath')" style="width:100%" />
             </el-form-item>
             <el-form-item :label="$t('formbusiness.formtype.viewPath')" prop="viewPath">
-              <el-input 
-                v-model="form.viewPath" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputViewPath')"
-                style="width:100%" 
-              />
+              <el-input v-model="form.viewPath" :placeholder="$t('formbusiness.formtype.pleaseInputViewPath')" style="width:100%" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.sortOrder')" prop="sortOrder">
-              <el-input-number 
-                v-model="form.sortOrder" 
-                :min="0"
-                :max="999"
-                style="width:100%" 
-              />
+              <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width:100%" />
             </el-form-item>
-            <el-form-item>
-              
-            </el-form-item>
+            <el-form-item />
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('formbusiness.formtype.descriptionCn')" prop="descriptionCn">
-              <el-input 
-                v-model="form.descriptionCn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionCn')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="2" 
-              />
+              <el-input v-model="form.descriptionCn" :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionCn')" style="width:100%" type="textarea" :rows="2" />
             </el-form-item>
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('formbusiness.formtype.descriptionEn')" prop="descriptionEn">
-              <el-input 
-                v-model="form.descriptionEn" 
-                :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionEn')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="2" 
-              />
+              <el-input v-model="form.descriptionEn" :placeholder="$t('formbusiness.formtype.pleaseInputDescriptionEn')" style="width:100%" type="textarea" :rows="2" />
             </el-form-item>
           </div>
-
         </el-form>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -220,7 +165,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
-import { 
+import {
   GET_FORMTYPE_PAGE_API,
   GET_FORMTYPE_ENTITY_API,
   INSERT_FORMTYPE_ENTITY_API,
@@ -230,391 +175,229 @@ import {
 } from '@/config/api/formbusiness/form-basicInfo/formtype.js'
 import { useI18n } from 'vue-i18n'
 
-// 使用i18n
 const { t } = useI18n()
 
-// 响应式数据
+const DEBOUNCE_MS = 300
+
+const buildFormData = (params) => {
+  const fd = new FormData()
+  Object.entries(params).forEach(([k, v]) => fd.append(k, v ?? ''))
+  return fd
+}
+
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
-const deletingId = ref(null)
 const formTypeList = ref([])
 const formGroupOptions = ref([])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
 
-// 搜索表单
-const searchForm = reactive({
-  formGroupId: '',
-  formTypeName: ''
-})
+const searchForm = reactive({ formGroupId: '', formTypeName: '' })
 
-// 分页信息
-const pagination = reactive({
-  pageIndex: 1,
-  pageSize: 20,
-  totalCount: 0
-})
+const pagination = reactive({ pageIndex: 1, pageSize: 20, totalCount: 0 })
 
-// 表单数据
 const form = reactive({
-  formTypeId: '',
-  formGroupId: '',
+  formTypeId:     '',
+  formGroupId:    '',
   formTypeNameCn: '',
   formTypeNameEn: '',
-  prefix: '',
-  sortOrder: 0,
-  descriptionCn: '',
-  descriptionEn: '',
-  approvalPath: '',
-  viewPath: ''
+  prefix:         '',
+  sortOrder:      0,
+  descriptionCn:  '',
+  descriptionEn:  '',
+  approvalPath:   '',
+  viewPath:       ''
 })
 
-// 表单验证规则
 const rules = {
-  formGroupId: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseSelectFormGroup'), trigger: 'change' }
-  ],
-  formTypeNameCn: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameCn'), trigger: 'blur' }
-  ],
-  formTypeNameEn: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameEn'), trigger: 'blur' }
-  ],
-  prefix: [
-    { required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'), trigger: 'blur' }
-  ],
-  approvalPath: [
-    { required: false, trigger: 'blur' }
-  ],
-  viewPath: [
-    { required: false, trigger: 'blur' }
-  ]
+  formGroupId:    [{ required: true, message: () => t('formbusiness.formtype.pleaseSelectFormGroup'),    trigger: 'change' }],
+  formTypeNameCn: [{ required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameCn'), trigger: 'blur'   }],
+  formTypeNameEn: [{ required: true, message: () => t('formbusiness.formtype.pleaseInputFormTypeNameEn'), trigger: 'blur'   }],
+  prefix:         [{ required: true, message: () => t('formbusiness.formtype.pleaseInputPrefix'),         trigger: 'blur'   }]
 }
 
-/**
- * 获取表单组别下拉选项
- */
 const getFormGroupOptions = async () => {
   try {
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, {})
-    if (response.code === 200) {
-      formGroupOptions.value = response.data || []
-      // 默认选中第一个选项
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, {})
+    if (res.code === 200) {
+      formGroupOptions.value = res.data || []
       if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
     }
-  } catch (error) {
-    ElMessage({
-      message: t('formbusiness.formtype.getFormGroupFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('formbusiness.formtype.getFormGroupFailed'))
   }
 }
 
-/**
- * 获取表单类型列表
- */
 const getFormTypeList = async () => {
   loading.value = true
   try {
-    const params = {
-      formGroupId: searchForm.formGroupId,
+    const res = await post(GET_FORMTYPE_PAGE_API, {
+      formGroupId:  searchForm.formGroupId,
       formTypeName: searchForm.formTypeName,
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize,
-      totalCount: pagination.totalCount
-    }
-    
-    const response = await post(GET_FORMTYPE_PAGE_API, params)
-    if (response.code === 200) {
-      formTypeList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
+      pageIndex:    pagination.pageIndex,
+      pageSize:     pagination.pageSize,
+      totalCount:   pagination.totalCount
+    })
+    if (res.code === 200) {
+      formTypeList.value = res.data || []
+      pagination.totalCount = res.totalCount || 0
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
       formTypeList.value = []
     }
-  } catch (error) {
-    ElMessage({
-      message: t('formbusiness.formtype.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('formbusiness.formtype.getFailed'))
     formTypeList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 防抖搜索优化
 let searchTimer = null
-
-/**
- * 搜索
- */
-const handleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true // 立即显示加载状态
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    getFormTypeList()
-  }, 300) // 300ms防抖
-}
-
-/**
- * 重置搜索
- * 不清空下拉框值，只清空文本框并重新获取数据
- */
-const handleReset = () => {
-  searchForm.formTypeName = ''
+const scheduleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
   searchTimer = setTimeout(() => {
     pagination.pageIndex = 1
     getFormTypeList()
-  }, 300)
+  }, DEBOUNCE_MS)
 }
 
-/**
- * 分页大小改变
- */
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
+const handleReset = () => {
+  searchForm.formTypeName = ''
+  scheduleSearch()
+}
+
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   getFormTypeList()
 }
 
-/**
- * 当前页改变
- */
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
-  getFormTypeList()
-}
-
-/**
- * 重置表单
- */
 const resetForm = () => {
-  form.formTypeId = ''
-  form.formGroupId = ''
+  form.formTypeId     = ''
+  form.formGroupId    = ''
   form.formTypeNameCn = ''
   form.formTypeNameEn = ''
-  form.prefix = ''
-  form.sortOrder = 0
-  form.descriptionCn = ''
-  form.descriptionEn = ''
-  form.approvalPath = ''
-  form.viewPath = ''
+  form.prefix         = ''
+  form.sortOrder      = 0
+  form.descriptionCn  = ''
+  form.descriptionEn  = ''
+  form.approvalPath   = ''
+  form.viewPath       = ''
 }
 
-/**
- * 新增
- */
 const handleAdd = () => {
   resetForm()
   isEdit.value = false
   dialogVisible.value = true
-  nextTick(() => {
-    if (formRef.value) {
-      formRef.value.clearValidate()
-    }
-  })
+  nextTick(() => formRef.value?.clearValidate())
 }
 
-/**
- * 编辑
- */
 const handleEdit = async (row) => {
-  editingId.value = row.formTypeId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
-  
   try {
-    const formData = new FormData()
-    formData.append('fromTypeId', row.formTypeId)
-
-    const response = await post(GET_FORMTYPE_ENTITY_API, formData)
-    
-    if (response.code === 200) {
-      const data = response.data
-      form.formTypeId = data.formTypeId
-      form.formGroupId = data.formGroupId
-      form.formTypeNameCn = data.formTypeNameCn
-      form.formTypeNameEn = data.formTypeNameEn
-      form.prefix = data.prefix
-      form.sortOrder = data.sortOrder
-      form.descriptionCn = data.descriptionCn
-      form.descriptionEn = data.descriptionEn
-      form.approvalPath = data.approvalPath || ''
-      form.viewPath = data.viewPath || ''
-      
-      // 数据加载完成后清除验证，避免瞬间显示验证错误
-      nextTick(() => {
-        if (formRef.value) {
-          formRef.value.clearValidate()
-        }
-      })
+    const res = await post(GET_FORMTYPE_ENTITY_API, buildFormData({ fromTypeId: row.formTypeId }))
+    if (res.code === 200) {
+      const d = res.data
+      form.formTypeId     = d.formTypeId
+      form.formGroupId    = d.formGroupId
+      form.formTypeNameCn = d.formTypeNameCn
+      form.formTypeNameEn = d.formTypeNameEn
+      form.prefix         = d.prefix
+      form.sortOrder      = d.sortOrder
+      form.descriptionCn  = d.descriptionCn
+      form.descriptionEn  = d.descriptionEn
+      form.approvalPath   = d.approvalPath || ''
+      form.viewPath       = d.viewPath     || ''
+      // 数据回填后清除验证，避免瞬间显示校验红框
+      nextTick(() => formRef.value?.clearValidate())
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
       dialogVisible.value = false
     }
-  } catch (error) {
-    ElMessage({
-      message: t('formbusiness.formtype.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('formbusiness.formtype.getFailed'))
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
   }
 }
 
-/**
- * 删除
- */
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('formbusiness.formtype.deleteConfirm'),
       t('common.warning'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
-    
-    deletingId.value = row.formTypeId
-    
-    const formData = new FormData()
-    formData.append('fromTypeId', row.formTypeId)
-
-    const response = await post(DELETE_FORMTYPE_ENTITY_API, formData)
-    
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
+  } catch {
+    return
+  }
+  try {
+    const res = await post(DELETE_FORMTYPE_ENTITY_API, buildFormData({ fromTypeId: row.formTypeId }))
+    if (res.code === 200) {
+      showMessage(res.message, 'success')
       getFormTypeList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
     }
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage({
-        message: t('formbusiness.formtype.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } finally {
-    deletingId.value = null
+  } catch {
+    showMessage(t('formbusiness.formtype.operationFailed'))
   }
 }
 
-/**
- * 提交表单
- * 只进行非空验证判断，验证失败时不显示弹出框
- */
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
   try {
-    // 只进行表单验证，不显示错误消息
     await formRef.value.validate()
-    
-    submitLoading.value = true
-    
-    const params = {
-      formTypeId: form.formTypeId,
-      formGroupId: form.formGroupId,
+  } catch {
+    return
+  }
+  submitLoading.value = true
+  try {
+    const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
+    const res = await post(api, {
+      formTypeId:     form.formTypeId,
+      formGroupId:    form.formGroupId,
       formTypeNameCn: form.formTypeNameCn,
       formTypeNameEn: form.formTypeNameEn,
-      prefix: form.prefix,
-      sortOrder: form.sortOrder,
-      descriptionCn: form.descriptionCn,
-      descriptionEn: form.descriptionEn,
-      approvalPath: form.approvalPath,
-      viewPath: form.viewPath
-    }
-    
-    const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
-    const response = await post(api, params)
-    
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
+      prefix:         form.prefix,
+      sortOrder:      form.sortOrder,
+      descriptionCn:  form.descriptionCn,
+      descriptionEn:  form.descriptionEn,
+      approvalPath:   form.approvalPath,
+      viewPath:       form.viewPath
+    })
+    if (res.code === 200) {
+      showMessage(res.message, 'success')
       dialogVisible.value = false
       getFormTypeList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
     }
-  } catch (error) {
-    // 验证失败时只进行非空判断，不显示弹出框错误消息
-    if (error !== false) {
-      // 这里不显示错误消息，只进行非空判断
-    }
+  } catch {
+    showMessage(t('formbusiness.formtype.operationFailed'))
   } finally {
     submitLoading.value = false
   }
 }
 
-/**
- * 对话框关闭
- */
 const handleDialogClose = () => {
-  if (formRef.value) {
-    formRef.value.clearValidate()
-  }
+  formRef.value?.clearValidate()
 }
 
-// 组件挂载时获取数据
 onMounted(() => {
   getFormGroupOptions()
   getFormTypeList()
@@ -624,4 +407,3 @@ onMounted(() => {
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 </style>
-

@@ -1,826 +1,560 @@
 <template>
   <div class="conventional-table-container">
-      <el-card class="conventional-card">
+    <el-card class="conventional-card">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
+        <el-form-item :label="$t('systembasicmgmt.smenu.module')">
+          <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange">
+            <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
+          <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFilterParentMenuChange">
+            <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('systembasicmgmt.smenu.smenuName')">
+          <el-input style="width: 180px"
+                    v-model="filters.menuName"
+                    :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.smenu.smenuName')" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+        <div class="form-right-button">
+          <el-button type="primary" @click="handleAdd">
+            {{ $t('systembasicmgmt.smenu.addSMenu') }}
+          </el-button>
+        </div>
+      </el-form>
 
-          <!-- 搜索表单 -->
-          <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
-              <el-form-item :label="$t('systembasicmgmt.smenu.module')">
-                      <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange">
-                      <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
-                  </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-                      <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFilterParentMenuChange">
-                      <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
-                  </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('systembasicmgmt.smenu.smenuName')">
-                  <el-input style="width: 180px" 
-                            v-model="filters.menuName" 
-                            :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.smenu.smenuName')" 
-                            />
-              </el-form-item>
-              <el-form-item>
-                  <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
-                      {{ $t('common.search') }}
-                  </el-button>
-                  <el-button @click="handleReset">
-                      {{ $t('common.reset') }}
-                  </el-button>
-              </el-form-item>
-              <div class="form-right-button">
-                  <el-button type="primary" @click="handleAdd">
-                    {{ $t('systembasicmgmt.smenu.addSMenu') }}
-                  </el-button>
+      <div class="table-container">
+        <el-table :data="smenuList"
+                  style="width: 100%"
+                  border
+                  stripe
+                  max-height="calc(100vh - 240px)"
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table">
+          <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
+          <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="180" />
+          <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="230" />
+          <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="200" />
+          <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.smenu.menuType')" align="center" min-width="150" />
+          <el-table-column prop="path" :label="$t('systembasicmgmt.smenu.pagePath')" align="left" min-width="420" />
+          <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.smenu.smenuIcon')" align="center" min-width="180" />
+          <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
+            <template #default="scope">
+              <div class="flex">
+                <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
+                  {{ scope.row.isVisible ? $t('systembasicmgmt.visible') : $t('systembasicmgmt.hidden') }}
+                </el-tag>
               </div>
-          </el-form>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
+            <template #default="scope">
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
-          <!-- 表格 -->
-          <div class="table-container">
-              <el-table :data="smenuList"
-                        style="width: 100%"
-                        border
-                        stripe
-                        max-height="calc(100vh - 240px)"
-                        :header-cell-style="{ background: '#f5f7fa' }"
-                        v-loading="loading"
-                        class="conventional-table">
-                  <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
-                  <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="180" />
-                  <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="230" />
-                  <el-table-column prop="menuNameEn" :label="$t('systembasicmgmt.smenu.smenuNameEn')" align="left" min-width="200" />
-                  <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.smenu.menuType')" align="center" min-width="150" />
-                  <el-table-column prop="path" :label="$t('systembasicmgmt.smenu.pagePath')" align="left" min-width="420" />
-                  <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.smenu.smenuIcon')" align="center" min-width="180" />
-                  <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
-                      <template #default="scope">
-                          <div class="flex">
-                              <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                                  {{ scope.row.isVisible ? $t('systembasicmgmt.visible') : $t('systembasicmgmt.hidden') }}
-                              </el-tag>
-                          </div>
-                      </template>
-                  </el-table-column>
-                <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
-                      <template #default="scope">
-                          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-                          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
-                      </template>
-                  </el-table-column>
-              </el-table>
-          </div>
+      <div class="pagination-wrapper">
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
+      </div>
+    </el-card>
 
-          <!-- 分页 -->
-          <div class="pagination-wrapper">
-              <el-pagination v-model:current-page="pagination.pageIndex"
-                             v-model:page-size="pagination.pageSize"
-                             :page-sizes="[10, 20, 50, 100]"
-                             layout="total, sizes, prev, pager, next, jumper"
-                             :total="pagination.totalCount"
-                             @size-change="handleSizeChange"
-                             @current-change="handlePageChange" />
-          </div>
-      </el-card>
-
-      <!-- 编辑弹窗 -->
-      <el-dialog v-model="dialogVisible"
-                 :title="dialogTitle"
-                 width="50%"
-                 :close-on-click-modal="false"
-                 :append-to-body="true"
-                 :modal-append-to-body="true"
-                 :lock-scroll="true"
-                 @close="handleDialogClose">
-          <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="编辑表单">
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.smenu.smenuCode')" prop="menuCode">
-                      <el-input v-model="editForm.menuCode" style="width:100%" />
-                  </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameCn')" prop="menuNameCn">
-                      <el-input v-model="editForm.menuNameCn" style="width:100%" />
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameEn')" prop="menuNameEn">
-                      <el-input v-model="editForm.menuNameEn" style="width:100%" />
-                  </el-form-item>
-                 <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
-                      <el-input v-model="editForm.menuIcon" style="width:100%" />
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                 <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
-                      <el-select v-model="editForm.moduleId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
-                          <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
-                      </el-select>
-                  </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')" prop="parentMenuId">
-                      <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
-                          <el-option v-for="item in pmenuDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
-                      </el-select>
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.smenu.sortOrder')" prop="sortOrder">
-                      <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
-                  </el-form-item>
-                  <el-form-item :label="$t('systembasicmgmt.smenu.pagePath')" prop="path">
-                      <el-input v-model="editForm.path" style="width:100%" />
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.smenu.apiRoute')" prop="routePath">
-                      <el-input v-model="editForm.routePath" style="width:100%" />
-                  </el-form-item>
-              </div>
-              <div class="form-row full-width">
-                                     <el-form-item :label="$t('systembasicmgmt.remark')">
-                      <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
-                  </el-form-item>
-              </div>
-              <div class="form-row">
-                  <el-form-item :label="$t('systembasicmgmt.isVisible')">
-                      <el-switch v-model="editForm.isVisible"
-                                 :active-value="1"
-                                 :inactive-value="0"
-                                 :active-text="$t('common.yes')"
-                                 :inactive-text="$t('common.no')"
-                                 inline-prompt
-                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-                  </el-form-item>
-              </div>
-          </el-form>
-          <template #footer>
-              <span class="dialog-footer">
-                  <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-                  <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-              </span>
-          </template>
-      </el-dialog>
+    <el-dialog v-model="dialogVisible"
+               :title="dialogTitle"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
+      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="编辑表单">
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.smenu.smenuCode')" prop="menuCode">
+            <el-input v-model="editForm.menuCode" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputSmenuCode')" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameCn')" prop="menuNameCn">
+            <el-input v-model="editForm.menuNameCn" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputSmenuNameCn')" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameEn')" prop="menuNameEn">
+            <el-input v-model="editForm.menuNameEn" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputSmenuNameEn')" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
+            <el-input v-model="editForm.menuIcon" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputSmenuIcon')" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
+            <el-select v-model="editForm.moduleId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectmodule')" @change="handlemoduleChange">
+              <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')" prop="parentMenuId">
+            <el-select v-model="editForm.parentMenuId" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')">
+              <el-option v-for="item in pmenuDropList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
+            </el-select>
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.smenu.sortOrder')" prop="sortOrder">
+            <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.smenu.pagePath')" prop="path">
+            <el-input v-model="editForm.path" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputPagePath')" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.smenu.apiRoute')" prop="routePath">
+            <el-input v-model="editForm.routePath" style="width:100%" :placeholder="$t('systembasicmgmt.smenu.pleaseInputApiRoute')" />
+          </el-form-item>
+        </div>
+        <div class="form-row full-width">
+          <el-form-item :label="$t('systembasicmgmt.remark')">
+            <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
+          </el-form-item>
+        </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.isVisible')">
+            <el-switch v-model="editForm.isVisible"
+                       :active-value="1"
+                       :inactive-value="0"
+                       :active-text="$t('common.yes')"
+                       :inactive-text="$t('common.no')"
+                       inline-prompt
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+          </el-form-item>
+        </div>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted, nextTick } from 'vue'
-  import { post } from '@/utils/request'
-  import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
-  import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API } from '@/config/api/systembasicmgmt/system-mgmt/smenu'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
-  import axios from 'axios'
+import { ref, reactive, onMounted, nextTick } from 'vue'
+import { post } from '@/utils/request'
+import { GET_SMENU_PAGES_API, GET_SMENU_ENTITY_API, INSERT_SMENU_API, DELETE_SMENU_API, GET_MODULE_DROP_API, GET_PMENU_DROP_API, UPDATE_SMENU_API } from '@/config/api/systembasicmgmt/system-mgmt/smenu'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
-  // 使用i18n
-  const { t } = useI18n()
+const { t } = useI18n()
 
-  // 二级菜单数据
-  const smenuList = ref([])
-  const loading = ref(false)
-  // 提交加载状态
-  const submitLoading = ref(false)
-  
-  const moduleDropList = ref([])
-  const pmenuDropList = ref([])
-  const menuTypeOptions = ref([])
+const DEBOUNCE_MS = 300
+let searchTimer = null
 
-  // 表单引用
-  const editFormRef = ref(null)
+const smenuList = ref([])
+const loading = ref(false)
+const submitLoading = ref(false)
 
-  // 分页信息
-  const pagination = reactive({
-      pageIndex: 1,
-      pageSize: 10,
-      totalCount: 0
-  })
+const moduleDropList = ref([])
+const pmenuDropList = ref([])
+const menuTypeOptions = ref([])
 
-  // 过滤条件
-  const filters = reactive({
-      menuCode: '',
-      menuName: '',
-      menuNameEn: '',
-      menuUrl: '',
-      moduleId: '',
-      parentMenuId: ''
-  })
+const editFormRef = ref(null)
 
-  // 过滤模块列表
-  const filterPMenuList = ref([])
+const pagination = reactive({
+  pageIndex: 1,
+  pageSize: 10,
+  totalCount: 0
+})
 
-  // 对话框显示状态
-  const dialogVisible = ref(false)
+const filters = reactive({
+  menuCode: '',
+  menuName: '',
+  menuNameEn: '',
+  menuUrl: '',
+  moduleId: '',
+  parentMenuId: ''
+})
 
-  // 编辑表单
-  const editForm = reactive({
-      menuId: '',
-      parentMenuId: '',
-      moduleId: '',
-      menuCode: '',
-      menuNameCn: '',
-      menuNameEn: '',
-      menuType: '',
-      menuUrl: '',
-      menuIcon: '',
-      sortOrder: 1,
+const filterPMenuList = ref([])
 
-      isVisible: 1,
-      level: 1,
-      routePath: '',
-      path: '',
-      redirect: '',
-      remark: ''
-  })
-  // 对话框标题
-  const dialogTitle = ref('')
+const dialogVisible = ref(false)
 
-  // 表单验证规则
-  const formRules = reactive({
-      menuCode: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuCode'), trigger: 'blur' }
-      ],
-      menuNameCn: [
-{ required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuNameCn'), trigger: 'blur' }
-      ],
-      menuNameEn: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuNameEn'), trigger: 'blur' }
-      ],
-      moduleId: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectModule'), trigger: 'change' }
-      ],
-      parentMenuId: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectModule'), trigger: 'change' }
-      ],
-      menuIcon: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuIcon'), trigger: 'blur' }
-      ],
-      sortOrder: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSortOrder'), trigger: 'blur' }
-      ],
-      path: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputPagePath'), trigger: 'blur' }
-      ],
-      menuType: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectSmenuType'), trigger: 'change' }
-      ],
-      
-      routePath: [
-          { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputApiRoute'), trigger: 'blur' }
-      ],
-      redirect: [
-          // redirect 可为空，移除必填验证
-      ]
-  })
+const editForm = reactive({
+  menuId: '',
+  parentMenuId: '',
+  moduleId: '',
+  menuCode: '',
+  menuNameCn: '',
+  menuNameEn: '',
+  menuType: '',
+  menuUrl: '',
+  menuIcon: '',
+  sortOrder: 1,
+  isVisible: 1,
+  level: 1,
+  routePath: '',
+  path: '',
+  redirect: '',
+  remark: ''
+})
 
-  // 组件挂载后获取网域数据
-  onMounted(() => {
-      initPageData() // 初始化页面数据，设置查询条件默认值
-  })
+const dialogTitle = ref('')
 
-  // 初始化页面数据（只在页面加载时调用）
-  const initPageData = async () => {
-      try {
-          const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
-          // 对获取的数据进行XSS清洗
-          moduleDropList.value = res.data || []
+const formRules = {
+  menuCode: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuCode'), trigger: 'blur' }
+  ],
+  menuNameCn: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuNameCn'), trigger: 'blur' }
+  ],
+  menuNameEn: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuNameEn'), trigger: 'blur' }
+  ],
+  moduleId: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectModule'), trigger: 'change' }
+  ],
+  parentMenuId: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectModule'), trigger: 'change' }
+  ],
+  menuIcon: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSmenuIcon'), trigger: 'blur' }
+  ],
+  sortOrder: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputSortOrder'), trigger: 'blur' }
+  ],
+  path: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputPagePath'), trigger: 'blur' }
+  ],
+  menuType: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseSelectSmenuType'), trigger: 'change' }
+  ],
+  routePath: [
+    { required: true, message: () => t('systembasicmgmt.smenu.pleaseInputApiRoute'), trigger: 'blur' }
+  ]
+}
 
-          // 默认选中第一个未禁用的网域（用于查询条件）
-          if (moduleDropList.value.length > 0) {
-              const firstEnabledmodule = moduleDropList.value.find(item => !item.disabled)
-              if (firstEnabledmodule) {
-                  filters.moduleId = firstEnabledmodule.moduleId
-                  // 获取对应的模块列表
-                  await fetchFilterPMenuDrop()
-              }
-          }
+const showMessage = (message, type = 'error') => ElMessage({ message, type, plain: true, showClose: true })
 
-          // 应用默认值进行初始查询
-          fetchSMenuPages()
-      } catch (error) {
-          ElMessage({
-              message: '初始化页面数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
+onMounted(() => {
+  initPageData()
+})
+
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchSMenuPages()
+  }, DEBOUNCE_MS)
+}
+
+const initPageData = async () => {
+  try {
+    const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
+    moduleDropList.value = res.data || []
+    if (moduleDropList.value.length > 0) {
+      const firstEnabledmodule = moduleDropList.value.find(item => !item.disabled)
+      if (firstEnabledmodule) {
+        filters.moduleId = firstEnabledmodule.moduleId
+        await fetchFilterPMenuDrop()
       }
+    }
+    fetchSMenuPages()
+  } catch (error) {
+    showMessage('初始化页面数据失败，请刷新页面重试')
   }
+}
 
-  // 获取模块数据（用于新增时设置默认值）
-  const fetchModuleDrop = async () => {
-      try {
-          const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
-          // 对获取的数据进行XSS清洗
-          moduleDropList.value = res.data || []
-
-          // 新增时默认选中第一个未禁用的模块
-          if (dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && moduleDropList.value.length > 0) {
-              const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
-              if (firstEnabledModule) {
-                  editForm.moduleId = firstEnabledModule.moduleId
-                  // 根据选中的模块获取父菜单列表
-                  fetchPMenuDrop(true)
-              }
-          }
-      } catch (error) {
-          ElMessage({
-              message: '获取模块数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
+const fetchModuleDrop = async () => {
+  try {
+    const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
+    moduleDropList.value = res.data || []
+    if (dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && moduleDropList.value.length > 0) {
+      const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
+      if (firstEnabledModule) {
+        editForm.moduleId = firstEnabledModule.moduleId
+        fetchPMenuDrop(true)
       }
+    }
+  } catch (error) {
+    showMessage('获取模块数据失败，请刷新页面重试')
   }
+}
 
-  // 获取模块数据
-  const fetchPMenuDrop = async (setDefaultValue = false) => {
-      if (!editForm.moduleId) {
-          pmenuDropList.value = []
-          return
+const fetchPMenuDrop = async (setDefaultValue = false) => {
+  if (!editForm.moduleId) {
+    pmenuDropList.value = []
+    return
+  }
+  try {
+    const formData = new FormData()
+    formData.append('moduleId', String(editForm.moduleId))
+    const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
+    })
+    pmenuDropList.value = res.data || []
+    if (setDefaultValue && dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && pmenuDropList.value.length > 0) {
+      const firstEnabledPMenu = pmenuDropList.value.find(item => !item.disabled)
+      if (firstEnabledPMenu) {
+        editForm.parentMenuId = firstEnabledPMenu.menuId
       }
+    }
+  } catch (error) {
+    showMessage('获取父菜单数据失败，请刷新页面重试')
+  }
+}
 
-      try {
-          const formData = new FormData()
-          formData.append('moduleId', String(editForm.moduleId))
-          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-              skipDedupe: true
-          })
-          pmenuDropList.value = res.data || []
-
-          // 只有当需要设置默认值且是新增时才设置默认值
-          if (setDefaultValue && dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && pmenuDropList.value.length > 0) {
-                const firstEnabledPMenu = pmenuDropList.value.find(item => !item.disabled)
-                if (firstEnabledPMenu) {
-                    editForm.parentMenuId = firstEnabledPMenu.menuId
-                }
-          }
-      } catch (error) {
-          ElMessage({
-              message: '获取父菜单数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
+const fetchSMenuEntity = async (menuId) => {
+  try {
+    const formData = new FormData()
+    formData.append('menuId', menuId)
+    const res = await post(GET_SMENU_ENTITY_API.GET_SMENU_ENTITY, formData)
+    if (res && res.code === 200) {
+      const originalParentMenuId = res.data.parentMenuId
+      editForm.menuId = res.data.menuId
+      editForm.menuCode = res.data.menuCode || ''
+      editForm.menuNameCn = res.data.menuNameCn || ''
+      editForm.menuNameEn = res.data.menuNameEn || ''
+      editForm.moduleId = res.data.moduleId
+      editForm.menuType = String(res.data.menuType || '')
+      editForm.menuUrl = res.data.menuUrl || ''
+      editForm.menuIcon = res.data.menuIcon || ''
+      editForm.sortOrder = res.data.sortOrder
+      editForm.path = res.data.path || ''
+      editForm.redirect = res.data.redirect || ''
+      editForm.remark = res.data.remark || ''
+      editForm.isVisible = res.data.isVisible
+      editForm.level = res.data.level
+      editForm.routePath = res.data.routePath || ''
+      if (editForm.moduleId) {
+        await fetchPMenuDrop(false)
+        editForm.parentMenuId = originalParentMenuId
       }
+    }
+  } catch (error) {
+    showMessage('获取实体数据失败，请刷新页面重试')
   }
+}
 
-  // 获取实体数据
-  const fetchSMenuEntity = async (menuId) => {
-      try {
-          const formData = new FormData()
-          formData.append('menuId', menuId)
-          const res = await post(GET_SMENU_ENTITY_API.GET_SMENU_ENTITY, formData)
-
-          if (res && res.code === 200) {
-              // 还原原始的 parentMenuId 值
-              const originalParentMenuId = res.data.parentMenuId
-              
-              // 填充表单数据
-              editForm.menuId = res.data.menuId
-              editForm.menuCode = res.data.menuCode || ''
-              editForm.menuNameCn = res.data.menuNameCn || ''
-              editForm.menuNameEn = res.data.menuNameEn || ''
-              editForm.moduleId = res.data.moduleId
-              editForm.menuType = String(res.data.menuType || '')
-              editForm.menuUrl = res.data.menuUrl || ''
-              editForm.menuIcon = res.data.menuIcon || ''
-              editForm.sortOrder = res.data.sortOrder
-
-              editForm.path = res.data.path || ''
-              editForm.redirect = res.data.redirect || ''
-              editForm.remark = res.data.remark || ''
-              editForm.isVisible = res.data.isVisible
-              editForm.level = res.data.level
-              editForm.routePath = res.data.routePath || ''
-
-              // 当编辑时，需要重新获取模块列表，并还原 parentMenuId
-              if (editForm.moduleId) {
-                  await fetchPMenuDrop(false)
-                  // 模块列表加载完成后，还原 parentMenuId
-                  editForm.parentMenuId = originalParentMenuId
-              }
-          }
-      } catch (error) {
-          ElMessage({
-              message: '获取实体数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
-      }
+const fetchSMenuPages = async () => {
+  loading.value = true
+  try {
+    const params = {
+      ...filters,
+      pageIndex: pagination.pageIndex,
+      pageSize: pagination.pageSize
+    }
+    const res = await post(GET_SMENU_PAGES_API.GET_SMENU_PAGES, params)
+    smenuList.value = res.data || []
+    pagination.totalCount = res.totalCount || 0
+  } catch (error) {
+    showMessage('获取列表数据失败，请刷新页面重试')
+  } finally {
+    loading.value = false
   }
+}
 
-  // 获取列表数据
-  const fetchSMenuPages = async () => {
-      loading.value = true
-      try {
-          const params = {
-              ...filters,
-              pageIndex: pagination.pageIndex,
-              pageSize: pagination.pageSize
-          }
+const handleSearch = () => {
+  scheduleSearch()
+}
 
-          const res = await post(GET_SMENU_PAGES_API.GET_SMENU_PAGES, params)
-
-          // 确保使用sanitizeHtml清洗数据
-          smenuList.value = res.data || []
-          pagination.totalCount = res.totalCount || 0
-      } catch (error) {
-          if (axios.isCancel(error)) {
-              return
-          }
-          ElMessage({
-              message: '获取列表数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
-      } finally {
-          loading.value = false
-      }
-  }
-
-  // 使用通用防抖工具
-  const debouncedFetchSMenuPages = debounce(() => {
-      fetchSMenuPages()
-  }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-  // 处理搜索操作（带防抖）
-  const handleSearch = () => {
-      pagination.pageIndex = 1
-      loading.value = true
-      debouncedFetchSMenuPages()
-  }
-
-  // 立即查询数据（不使用防抖，用于保存后刷新）
-  const fetchSMenuPagesImmediate = () => {
-      fetchSMenuPages()
-  }
-
-  // 重置搜索条件
 const handleReset = async () => {
-  // 重置所有输入字段
   filters.menuName = ''
   filters.menuCode = ''
   filters.menuNameEn = ''
   filters.menuUrl = ''
-  
-  // 重置模块下拉框到第一个未禁用的选项
   if (moduleDropList.value.length > 0) {
     const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
     if (firstEnabledModule) {
       filters.moduleId = firstEnabledModule.moduleId
-      // 获取对应的父菜单列表
       await fetchFilterPMenuDrop()
     }
   }
-  
-  // 重置后自动触发查询
-  pagination.pageIndex = 1
-  loading.value = true
-  handleSearch()
+  scheduleSearch()
 }
 
-  // 分页变化
-  const handlePageChange = (page) => {
-      pagination.pageIndex = page
-      fetchSMenuPages()
-  }
+const handlePageChange = () => {
+  fetchSMenuPages()
+}
 
-  // 每页条数变化
-  const handleSizeChange = (size) => {
-      pagination.pageSize = size
-      pagination.pageIndex = 1
-      fetchSMenuPages()
-  }
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchSMenuPages()
+}
 
-  const resetForm = (clearValidation = true) => {
-      // 清除表单验证状态，在重新设置表单值之前
-      if (clearValidation && editFormRef.value) {
-          try {
-              const selectFields = ['moduleId', 'parentMenuId', 'menuType']
-              selectFields.forEach(field => {
-                  editFormRef.value.clearValidate(field)
-              })
-              editFormRef.value.clearValidate()
-          } catch (error) {
-          }
-      }
-      
-      // 重置表单值
-      Object.assign(editForm, {
-          menuId: '',
-          menuCode: '',
-          menuNameCn: '',
-          menuNameEn: '',
-          menuType: '',
-          menuUrl: '',
-          redirect: '',
-          path: '',
-          menuIcon: '',
-          sortOrder: 1,
-          isVisible: 1,
-          routePath: '',
-          remark: ''
-      })
-      
-      // 重新设置表单验证状态
-      if (clearValidation) {
-          nextTick(() => {
-              if (editFormRef.value) {
-                  try {
-                      editFormRef.value.clearValidate()
-                  } catch (error) {
-                  }
-              }
-          })
-      }
-  }
+const resetForm = () => {
+  Object.assign(editForm, {
+    menuId: '',
+    menuCode: '',
+    menuNameCn: '',
+    menuNameEn: '',
+    menuType: '',
+    menuUrl: '',
+    redirect: '',
+    path: '',
+    menuIcon: '',
+    sortOrder: 1,
+    isVisible: 1,
+    routePath: '',
+    remark: ''
+  })
+}
 
-  // 新增程序
-  const insertSMenu = async () => {
-    submitLoading.value = true
-    
-    // 验证必填项
-    if (!editForm.moduleId) {
-      ElMessage({
-        message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
+const insertSMenu = async () => {
+  submitLoading.value = true
+  const res = await post(INSERT_SMENU_API.INSERT_SMENU, { ...editForm })
+  if (res && res.code === 200) {
+    showMessage(res.message, 'success')
+    resetForm()
+    dialogVisible.value = false
+    fetchSMenuPages()
+  } else {
+    showMessage(res.message)
+  }
+  submitLoading.value = false
+}
+
+const updateSMenu = async () => {
+  submitLoading.value = true
+  const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, { ...editForm })
+  if (res && res.code === 200) {
+    showMessage(res.message, 'success')
+    resetForm()
+    dialogVisible.value = false
+    fetchSMenuPages()
+  } else {
+    showMessage(res.message)
+  }
+  submitLoading.value = false
+}
+
+const deleteSMenu = async (menuId) => {
+  if (isNaN(menuId)) {
+    showMessage(t('systembasicmgmt.invalidId'))
+    return
+  }
+  const formData = new FormData()
+  formData.append('menuId', menuId)
+  const res = await post(DELETE_SMENU_API.DELETE_SMENU, formData)
+  if (res && res.code === 200) {
+    showMessage(res.message, 'success')
+    fetchSMenuPages()
+  } else {
+    showMessage(res.message)
+  }
+}
+
+const handleAdd = () => {
+  resetForm()
+  editForm.menuId = '0'
+  editForm.sortOrder = 1
+  editForm.isVisible = 1
+  dialogTitle.value = t('systembasicmgmt.smenu.addSMenu')
+  fetchModuleDrop()
+  dialogVisible.value = true
+}
+
+const handleEdit = async (index, row) => {
+  resetForm()
+  dialogTitle.value = t('systembasicmgmt.smenu.editSMenu')
+  await fetchModuleDrop()
+  await fetchSMenuEntity(row.menuId)
+  dialogVisible.value = true
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+  })
+}
+
+const handleDialogClose = () => {
+  resetForm()
+  editFormRef.value?.clearValidate()
+}
+
+const handleDelete = async (index, row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('systembasicmgmt.smenu.deleteConfirm'),
+      t('common.tip'),
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning',
-        plain: true,
-        showClose: true
-      })
-      submitLoading.value = false
-      return
-    }
-  
-    // 设置必填项
-    const params = {
-      ...editForm,
-      redirect: editForm.redirect
-    }
-    const res = await post(INSERT_SMENU_API.INSERT_SMENU, params)
-  
-    if (res && res.code === 200) {
-      resetForm()
-      ElMessage({
-        message: res.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      fetchSMenuPages()
-      dialogVisible.value = false
-    } else {
-      ElMessage({
-        message: res.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-    submitLoading.value = false
-  }
-  
-  // 更新程序
-  const updateSMenu = async () => {
-    submitLoading.value = true
-    
-    // 验证必填项
-    if (!editForm.moduleId) {
-      ElMessage({
-        message: t('systembasicmgmt.smenu.pleaseSelectmodule'),
-        type: 'warning',
-        plain: true,
-        showClose: true
-      })
-      submitLoading.value = false
-      return
-    }
-  
-    // 设置必填项
-    const params = {
-      ...editForm,
-      redirect: editForm.redirect
-    }
-  
-    const res = await post(UPDATE_SMENU_API.UPDATE_SMENU, params)
-  
-    if (res && res.code === 200) {
-      resetForm()
-      ElMessage({
-        message: res.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      dialogVisible.value = false
-      fetchSMenuPages()
-    } else {
-      ElMessage({
-        message: res.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-    submitLoading.value = false
-  }
-
-  // 删除程序
-  const deleteSMenu = async (menuId) => {
-      try {
-          if (isNaN(menuId)) {
-              ElMessage({
-                  message: t('systembasicmgmt.invalidId'),
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-              return
-          }
-
-          const formData = new FormData()
-          formData.append('menuId', menuId)
-          const res = await post(DELETE_SMENU_API.DELETE_SMENU, formData)
-
-          if (res && res.code === 200) {
-              ElMessage({
-                  message: res.message,
-                  type: 'success',
-                  plain: true,
-                  showClose: true
-              })
-              dialogVisible.value = false
-              fetchSMenuPages()
-          } else {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
-          }
-      } catch (error) {
-          ElMessage({
-              message: '删除二级菜单失败，请重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
       }
+    )
+  } catch {
+    return
   }
+  await deleteSMenu(row.menuId)
+}
 
-  // 新增程序
-  const handleAdd = () => {
-      // 重置表单
-      resetForm()
-      // 设置默认值
-      editForm.menuId = '0'
-      editForm.sortOrder = 1
-      editForm.isVisible = 1
-
-      // 设置对话框标题
-      dialogTitle.value = t('systembasicmgmt.smenu.addSMenu')
-
-      // 获取网域和菜单类型选项
-      fetchModuleDrop()
-
-      // 显示对话框
-      dialogVisible.value = true
+const handleSave = async () => {
+  try {
+    await editFormRef.value.validate()
+  } catch {
+    return
   }
-
-  // 编辑程序
-  const handleEdit = async (index, row) => {
-      // 重置表单
-      resetForm()
-
-      // 设置对话框标题
-      dialogTitle.value = t('systembasicmgmt.smenu.editSMenu')
-
-      // 先获取网域和菜单类型选项
-      await fetchModuleDrop()
-      
-      // 然后获取实体数据，并自动填充对应的模块列表
-      await fetchSMenuEntity(row.menuId)
-
-      // 显示对话框
-      dialogVisible.value = true
-      
-      // 延迟清除表单验证状态
-      setTimeout(() => {
-          if (editFormRef.value) {
-              editFormRef.value.clearValidate()
-          }
-      }, 100)
+  const isNew = !editForm.menuId || editForm.menuId === '' || editForm.menuId === '0'
+  if (isNew) {
+    await insertSMenu()
+  } else {
+    await updateSMenu()
   }
+}
 
-  // 关闭对话框
-  const handleDialogClose = () => {
-      // 使用nextTick确保DOM渲染完成后再清除验证
-      nextTick(() => {
-          resetForm(true)
-      })
-  }
+const handlemoduleChange = () => {
+  editForm.parentMenuId = ''
+  fetchPMenuDrop(true)
+}
 
-  // 删除程序
-  const handleDelete = (index, row) => {
-      ElMessageBox.confirm(t('systembasicmgmt.smenu.deleteConfirm'), t('common.tip'),
-          {
-              confirmButtonText: t('common.confirm'),
-              cancelButtonText: t('common.cancel'),
-              type: 'warning',
-          }
-      )
-      .then(async () => {
-        await deleteSMenu(row.menuId)
-        // 刷新列表
-        await fetchSMenuPages()
-            dialogVisible.value = false
-      })
-      .catch(() => {
-        dialogVisible.value = false
-      })
-  }
-
-  // 保存
-  const handleSave = () => {
-      editFormRef.value?.validate((valid) => {
-          if (valid) {
-              // 判断是新增还是编辑
-              const isNewModule = !editForm.menuId || editForm.menuId === '' || editForm.menuId === '0'
-
-              if (isNewModule) {
-                  insertSMenu()
-              } else {
-                  updateSMenu()
-              }
-              dialogVisible.value = false
-
-              // 刷新列表
-              fetchSMenuPages()
-          }
-      })
-  }
-
-  // 模块变化
-  const handlemoduleChange = () => {
-      // 清除模块选择
-      editForm.parentMenuId = ''
-      // 当模块选择变化时，设置默认值
-      fetchPMenuDrop(true)
-  }
-
-  // 过滤模块变化
 const handleFiltermoduleChange = () => {
-  // 清除模块选择
   filters.parentMenuId = ''
-  // 立即获取新的模块列表
   fetchFilterPMenuDrop()
-  // 模块变化时重置页码并自动查询数据
-  pagination.pageIndex = 1
-  handleSearch()
+  scheduleSearch()
 }
 
-  // 过滤父菜单变化
 const handleFilterParentMenuChange = () => {
-  // 父菜单变化时重置页码并自动查询数据
-  pagination.pageIndex = 1
-  handleSearch()
+  scheduleSearch()
 }
-  // 获取过滤条件下的模块数据
-  const fetchFilterPMenuDrop = async () => {
-      if (!filters.moduleId) {
-          filterPMenuList.value = []
-          return
-      }
 
-      try {
-          const formData = new FormData()
-          formData.append('moduleId', String(filters.moduleId))
-          const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-              skipDedupe: true
-          })
-          filterPMenuList.value = res.data || []
-
-          // 默认选中第一个未禁用的模块
-            if (filterPMenuList.value.length > 0) {
-                const firstEnabledPMenu = filterPMenuList.value.find(item => !item.disabled)
-                if (firstEnabledPMenu) {
-                    filters.parentMenuId = firstEnabledPMenu.menuId
-                }
-          }
-      } catch (error) {
-          console.error('获取过滤条件下的模块数据失败:', error)
-          ElMessage({
-              message: '获取过滤条件下的模块数据失败，请刷新页面重试',
-              type: 'error',
-              plain: true,
-              duration: 3000
-          })
-      }
+const fetchFilterPMenuDrop = async () => {
+  if (!filters.moduleId) {
+    filterPMenuList.value = []
+    return
   }
+  try {
+    const formData = new FormData()
+    formData.append('moduleId', String(filters.moduleId))
+    const res = await post(GET_PMENU_DROP_API.GET_PMENU_TYPE, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true
+    })
+    filterPMenuList.value = res.data || []
+    if (filterPMenuList.value.length > 0) {
+      const firstEnabledPMenu = filterPMenuList.value.find(item => !item.disabled)
+      if (firstEnabledPMenu) {
+        filters.parentMenuId = firstEnabledPMenu.menuId
+      }
+    }
+  } catch (error) {
+    showMessage('获取过滤条件下的模块数据失败，请刷新页面重试')
+  }
+}
 </script>
 
 <style scoped>
-  @import '@/assets/styles/conventionalTablePage.css';
+@import '@/assets/styles/conventionalTablePage.css';
 </style>
-

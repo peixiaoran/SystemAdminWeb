@@ -79,7 +79,7 @@
                        v-model:page-size="pagination.pageSize"
                        :page-sizes="[10, 20, 50, 100]"
                        layout="total, sizes, prev, pager, next, jumper"
-                       :total="pagination.total"
+                       :total="pagination.totalCount"
                        @size-change="handleSizeChange"
                        @current-change="handlePageChange" />
       </div>
@@ -142,15 +142,10 @@
 </template>
 
 <script setup>
-/**
- * 用户表单绑定管理页面
- * 功能：管理用户与表单的绑定关系
- */
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { post, isHandled } from '@/utils/request'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 import {
   GET_USER_PAGES_API,
   GET_DEPARTMENT_DROPDOWN_API,
@@ -160,12 +155,13 @@ import {
 
 const { t } = useI18n()
 
-// 响应式数据
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
 const loading = ref(false)
 const userList = ref([])
 const departmentOptions = ref([])
 
-// 配置表单相关数据
 const configDialogVisible = ref(false)
 const treeLoading = ref(false)
 const saveLoading = ref(false)
@@ -174,62 +170,55 @@ const currentUser = ref(null)
 const checkedKeys = ref([])
 const formTreeRef = ref(null)
 
-// 搜索过滤条件
 const filters = reactive({
   userNo: '',
   userName: '',
   departmentId: null
 })
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 20,
-  total: 0,
   totalCount: 0
 })
 
-// 树组件属性配置
 const treeProps = {
   children: 'children',
   label: 'formGroupTypeName'
 }
 
-// 部门树过滤方法
 const filterNodeMethod = (value, data) => {
   if (!value) return true
   return data.departmentName && data.departmentName.includes(value)
 }
 
-/**
- * 初始化页面数据
- */
+const findFirstDepartment = (departments) => {
+  for (const dept of departments) {
+    return dept.departmentId
+  }
+  return null
+}
+
+const scheduleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchUserPages()
+  }, DEBOUNCE_MS)
+}
+
 const initPageData = async () => {
-  // 先获取部门树并设置默认筛选条件
   await fetchDepartmentTree(true)
-  // 然后获取用户数据
   await fetchUserPages()
 }
 
-/**
- * 获取部门树数据
- */
 const fetchDepartmentTree = async (setDefaultFilter = false) => {
   try {
     const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
     if (res && res.code === 200) {
       departmentOptions.value = res.data || []
 
-      // 设置默认筛选条件
       if (setDefaultFilter && departmentOptions.value.length > 0) {
-        // 设置第一个部门为默认选择
-        const findFirstDepartment = (departments) => {
-          for (const dept of departments) {
-            return dept.departmentId
-          }
-          return null
-        }
-
         const firstDepartmentId = findFirstDepartment(departmentOptions.value)
         if (firstDepartmentId) {
           filters.departmentId = firstDepartmentId
@@ -241,9 +230,6 @@ const fetchDepartmentTree = async (setDefaultFilter = false) => {
   }
 }
 
-/**
- * 获取用户分页数据
- */
 const fetchUserPages = async () => {
   loading.value = true
   try {
@@ -279,9 +265,6 @@ const fetchUserPages = async () => {
   }
 }
 
-/**
- * 获取用户表单绑定视图树数据
- */
 const fetchUserFormViewTree = async (userId) => {
   treeLoading.value = true
   try {
@@ -296,27 +279,22 @@ const fetchUserFormViewTree = async (userId) => {
           children: node.formTypeChildren ? transformTreeData(node.formTypeChildren) : []
         }))
       }
-      
+
       formTreeData.value = transformTreeData(res.data || [])
 
-      // 提取已选中的节点 - 按照规则：叶子节点isChecked=true加入；父节点isChecked=true时加入，不考虑子节点状态
+      // 提取已选中的节点 - 叶子节点 isChecked=true 加入；父节点 isChecked=true 时加入，不考虑子节点状态
       const extractCheckedKeys = (nodes) => {
         const keys = []
-
         const traverse = (nodeList) => {
           nodeList.forEach(node => {
-            // 如果节点本身被选中，就加入选中列表
             if (node.isChecked === true) {
               keys.push(node.formGroupTypeId)
             }
-            
-            // 递归处理子节点
             if (node.children && node.children.length > 0) {
               traverse(node.children)
             }
           })
         }
-
         traverse(nodes || [])
         return keys
       }
@@ -342,108 +320,50 @@ const fetchUserFormViewTree = async (userId) => {
   }
 }
 
-// 使用通用防抖工具
-const debouncedFetchUserPages = debounce(() => {
-  fetchUserPages()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-/**
- * 处理搜索（带防抖）
- */
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchUserPages()
+  scheduleSearch()
 }
 
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const fetchUserPagesImmediate = () => {
-  loading.value = true
-  fetchUserPages()
-}
-
-/**
- * 处理重置 - 清空输入框，重置下拉框为第一个选项，并触发查询
- */
 const handleReset = () => {
-  // 清空输入框内容
   filters.userNo = ''
   filters.userName = ''
-  
-  // 重置部门下拉框为第一个选项
+
   if (departmentOptions.value.length > 0) {
-    // 设置第一个部门为默认选择
-    const findFirstDepartment = (departments) => {
-      for (const dept of departments) {
-        return dept.departmentId
-      }
-      return null
-    }
-    
     const firstDepartmentId = findFirstDepartment(departmentOptions.value)
-    if (firstDepartmentId) {
-      filters.departmentId = firstDepartmentId
-    } else {
-      filters.departmentId = null
-    }
+    filters.departmentId = firstDepartmentId ?? null
   } else {
     filters.departmentId = null
   }
-  
-  // 重置分页到第一页并触发查询
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchUserPages()
+
+  scheduleSearch()
 }
 
-/**
- * 处理部门下拉框变化
- */
 const handleDepartmentChange = () => {
   handleSearch()
 }
 
-/**
- * 处理页码变化
- */
-const handlePageChange = (page) => {
-  pagination.pageIndex = page
+const handlePageChange = () => {
   fetchUserPages()
 }
 
-/**
- * 处理页大小变化
- */
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   fetchUserPages()
 }
 
-/**
- * 处理配置表单
- */
 const handleConfigForm = async (row) => {
   currentUser.value = row
   configDialogVisible.value = true
-
-  // 获取用户表单绑定视图树数据
   await fetchUserFormViewTree(row.userId)
 }
 
-/**
- * 处理保存表单配置
- */
 const handleSaveFormConfig = async () => {
   if (!currentUser.value || !formTreeRef.value) return
 
   saveLoading.value = true
-  
-  // 获取选中的节点
+
   const checkedNodes = formTreeRef.value.getCheckedNodes()
   const halfCheckedNodes = formTreeRef.value.getHalfCheckedNodes()
-
-  // 合并全选和半选节点
   const allSelectedNodes = [...checkedNodes, ...halfCheckedNodes]
   const selectedFormIds = allSelectedNodes.map(node => node.formGroupTypeId)
 
@@ -479,13 +399,9 @@ const handleSaveFormConfig = async () => {
   }
 }
 
-/**
- * 处理全选
- */
 const handleSelectAll = () => {
   if (!formTreeRef.value || !formTreeData.value) return
 
-  // 获取所有节点ID
   const getAllNodeIds = (nodes) => {
     const ids = []
     const traverse = (nodeList) => {
@@ -504,25 +420,17 @@ const handleSelectAll = () => {
   formTreeRef.value.setCheckedKeys(allIds)
 }
 
-/**
- * 处理取消全选
- */
 const handleDeselectAll = () => {
   if (!formTreeRef.value) return
   formTreeRef.value.setCheckedKeys([])
 }
 
-/**
- * 处理弹框关闭
- */
 const handleDialogClose = () => {
-  // 重置树组件状态，确保下次打开时显示实时数据
   formTreeData.value = []
   checkedKeys.value = []
   currentUser.value = null
 }
 
-// 页面挂载时初始化数据
 onMounted(() => {
   initPageData()
 })

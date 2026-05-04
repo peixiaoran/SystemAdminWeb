@@ -1,8 +1,6 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-
-      <!-- 搜索 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleCode')">
           <el-input v-model="filters.moduleCode" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleCode')" style="width:170px" />
@@ -25,7 +23,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格 -->
       <div class="table-container">
         <el-table :data="moduleList"
                   border
@@ -59,7 +56,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -71,30 +67,28 @@
       </div>
     </el-card>
 
-    <!-- 编辑状态弹窗 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"
                :close-on-click-modal="false"
                :append-to-body="true"
-               :modal-append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
       <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="编辑表单">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
-            <el-input v-model="editForm.moduleCode" style="width:100%" />
+            <el-input v-model="editForm.moduleCode" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleCode')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.moduleNameCn')" prop="moduleNameCn">
-            <el-input v-model="editForm.moduleNameCn" style="width:100%" />
+            <el-input v-model="editForm.moduleNameCn" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameCn')" />
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.module.moduleNameEn')" prop="moduleNameEn">
-            <el-input v-model="editForm.moduleNameEn" style="width:100%" />
+            <el-input v-model="editForm.moduleNameEn" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameEn')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.moduleIcon')" prop="moduleIcon">
-            <el-input v-model="editForm.moduleIcon" style="width:100%" />
+            <el-input v-model="editForm.moduleIcon" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleIcon')" />
           </el-form-item>
         </div>
         <div class="form-row">
@@ -102,7 +96,7 @@
             <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.pagePath')" prop="path">
-            <el-input v-model="editForm.path" style="width:100%" />
+            <el-input v-model="editForm.path" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputPagePath')" />
           </el-form-item>
         </div>
         <div class="form-row full-width">
@@ -128,10 +122,8 @@
         </div>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -140,41 +132,34 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { post } from '@/utils/request'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 import { GET_MODULE_PAGES_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_MODULE_ENTITY_API, UPDATE_MODULE_API } from '@/config/api/systembasicmgmt/system-mgmt/module'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 
-// 使用i18n
 const { t } = useI18n()
 
-// 网域数据
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
 const moduleList = ref([])
 const loading = ref(false)
 
-// 表单引用
 const editFormRef = ref(null)
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 10,
   totalCount: 0
 })
 
-// 过滤条件
 const filters = reactive({
   moduleCode: '',
   moduleName: ''
 })
 
-// 对话框显示状态
 const dialogVisible = ref(false)
-
-// 提交加载状态
 const submitLoading = ref(false)
 
-// 编辑表单
 const editForm = reactive({
   moduleId: '0',
   moduleCode: '',
@@ -190,11 +175,9 @@ const editForm = reactive({
   remarkEn: ''
 })
 
-// 对话框标题
 const dialogTitle = ref(t('systembasicmgmt.module.editModule'))
 
-// 表单验证规则
-const formRules = reactive({
+const formRules = {
   moduleCode: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputModuleCode'), trigger: 'blur' }
   ],
@@ -204,12 +187,6 @@ const formRules = reactive({
   moduleNameEn: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputModuleNameEn'), trigger: 'blur' }
   ],
-  remarkCh: [
-    { required: false, message: () => t('systembasicmgmt.module.pleaseInputRemarksCh'), trigger: 'blur' }
-  ],
-  remarkEn: [
-    { required: false, message: () => t('systembasicmgmt.module.pleaseInputRemarksEn'), trigger: 'blur' }
-  ],
   moduleIcon: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputModuleIcon'), trigger: 'blur' }
   ],
@@ -218,23 +195,28 @@ const formRules = reactive({
   ],
   path: [
     { required: true, message: () => t('systembasicmgmt.module.pleaseInputPagePath'), trigger: 'blur' }
-  ],
-  redirect: [
-    { required: false, message: () => t('systembasicmgmt.module.pleaseInputRedirect'), trigger: 'blur' }
   ]
-})
+}
 
-// 组件挂载后获取网域数据
+const showMessage = (message, type = 'error') => ElMessage({ message, type, plain: true, showClose: true })
+
 onMounted(() => {
   fetchModulePages()
 })
 
-// 获取网域实体数据
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchModulePages()
+  }, DEBOUNCE_MS)
+}
+
 const fetchModuleEntity = async (moduleId) => {
   const formData = new FormData()
   formData.append('moduleId', moduleId)
   const res = await post(GET_MODULE_ENTITY_API.GET_MODULE_ENTITY, formData)
-
   if (res && res.code === 200) {
     editForm.moduleId = res.data.moduleId
     editForm.moduleCode = res.data.moduleCode
@@ -251,7 +233,6 @@ const fetchModuleEntity = async (moduleId) => {
   }
 }
 
-// 获取网域列表
 const fetchModulePages = async () => {
   loading.value = true
   const params = {
@@ -259,65 +240,36 @@ const fetchModulePages = async () => {
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize
   }
-
   const res = await post(GET_MODULE_PAGES_API.GET_MODULE_PAGES, params)
-
   if (res && res.code === 200) {
     moduleList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else {
-    ElMessage({
-      message: res.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(res.message)
   }
   loading.value = false
 }
 
-// 使用通用防抖工具
-const debouncedFetchModulePages = debounce(() => {
-  fetchModulePages()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchModulePages()
+  scheduleSearch()
 }
 
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const fetchModulePagesImmediate = () => {
-  fetchModulePages()
-}
-
-// 重置
 const handleReset = () => {
   filters.moduleCode = ''
   filters.moduleName = ''
-  // 重置后自动触发查询（使用防抖）
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchModulePages()
+  scheduleSearch()
 }
 
-// 分页变化
-const handlePageChange = (page) => {
-  pagination.pageIndex = page
+const handlePageChange = () => {
   fetchModulePages()
 }
 
-// 每页条数变化
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   fetchModulePages()
 }
 
-const resetForm = (clearValidation = true) => {
-  // 重置表单数据
+const resetForm = () => {
   editForm.moduleId = '0'
   editForm.moduleCode = ''
   editForm.moduleNameCn = ''
@@ -329,136 +281,63 @@ const resetForm = (clearValidation = true) => {
   editForm.redirect = ''
   editForm.remarkCh = ''
   editForm.remarkEn = ''
-  
-  // 清除表单验证状态
-  if (clearValidation && editFormRef.value) {
-    nextTick(() => {
-      try {
-        editFormRef.value.clearValidate()
-      } catch (error) {
-      }
-    })
-  }
 }
 
-// 插入网域
 const insertModule = async () => {
   submitLoading.value = true
-  const params = {
-    ...editForm,
-    redirect: editForm.redirect
-  }
-  
-  const res = await post(INSERT_MODULE_API.INSERT_MODULE, params)
+  const res = await post(INSERT_MODULE_API.INSERT_MODULE, { ...editForm })
   if (res && res.code === 200) {
+    showMessage(res.message, 'success')
     resetForm()
-    ElMessage({
-      message: res.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    ElMessage({
-      message: res.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(res.message)
   }
   submitLoading.value = false
 }
 
-// 更新网域
 const updateModule = async () => {
   submitLoading.value = true
-  const params = {
-    ...editForm,
-    redirect: editForm.redirect
-  }
-  
-  const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, params)
+  const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, { ...editForm })
   if (res && res.code === 200) {
+    showMessage(res.message, 'success')
     resetForm()
-    ElMessage({
-      message: res.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    ElMessage({
-      message: res.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(res.message)
   }
   submitLoading.value = false
 }
 
-// 删除网域
 const deleteModule = async (moduleId) => {
   if (isNaN(moduleId)) {
-    ElMessage({
-      message: t('systembasicmgmt.invalidId'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(t('systembasicmgmt.invalidId'))
     return
   }
-
   const formData = new FormData()
   formData.append('moduleId', moduleId)
   const res = await post(DELETE_MODULE_API.DELETE_MODULE, formData)
-
   if (res && res.code === 200) {
-    ElMessage({
-      message: res.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
-    dialogVisible.value = false
+    showMessage(res.message, 'success')
     fetchModulePages()
   } else {
-    ElMessage({
-      message: res.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(res.message)
   }
 }
 
-// 添加网域
 const handleAdd = () => {
-  // 重置表单
   resetForm()
-  // 设置对话框标题
   dialogTitle.value = t('systembasicmgmt.module.addModule')
-  // 显示对话框
   dialogVisible.value = true
 }
 
-// 编辑网域
 const handleEdit = async (index, row) => {
-  // 重置表单
   resetForm()
-  // 获取网域实体数据
   await fetchModuleEntity(row.moduleId)
-
-  // 设置对话框标题
   dialogTitle.value = t('systembasicmgmt.module.editModule')
-
   dialogVisible.value = true
-  
-  // 数据加载完成后清除表单验证状态
   nextTick(() => {
     if (editFormRef.value) {
       editFormRef.value.clearValidate()
@@ -466,57 +345,42 @@ const handleEdit = async (index, row) => {
   })
 }
 
-// 关闭对话框
 const handleDialogClose = () => {
-  // 使用 nextTick 确保 DOM 渲染完成后再清除验证
-  nextTick(() => {
-    resetForm(true)
-  })
+  resetForm()
+  editFormRef.value?.clearValidate()
 }
 
-// 删除网域
-const handleDelete = (index, row) => {
-  ElMessageBox.confirm(
-    t('systembasicmgmt.module.deleteConfirm'),
-    t('common.tip'),
-    {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      deleteModule(row.moduleId)
-      // 刷新列表
-      fetchModulePages()
-    })
-    .catch(() => {
-      // 取消删除
-    })
-}
-
-// 保存编辑
-const handleSave = () => {
-  editFormRef.value?.validate((valid) => {
-    if (valid) {
-      // 判断是新增还是编辑
-      const actionType = editForm.moduleId === '0' ? '新增' : '编辑'
-
-      if (actionType === '新增') {
-        insertModule()
-      } else {
-        updateModule()
+const handleDelete = async (index, row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('systembasicmgmt.module.deleteConfirm'),
+      t('common.tip'),
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning',
       }
-      dialogVisible.value = false
+    )
+  } catch {
+    return
+  }
+  await deleteModule(row.moduleId)
+}
 
-      // 刷新列表
-      fetchModulePages()
-    }
-  })
+const handleSave = async () => {
+  try {
+    await editFormRef.value.validate()
+  } catch {
+    return
+  }
+  if (editForm.moduleId === '0') {
+    await insertModule()
+  } else {
+    await updateModule()
+  }
 }
 </script>
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 </style>
-

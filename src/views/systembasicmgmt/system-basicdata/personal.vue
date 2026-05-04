@@ -233,7 +233,6 @@ export default {
     const loading = ref(false)
     const saving = ref(false)
 
-    // 统一的文件上传配置
     const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
     const uploadAvatarPath = (UPLOAD_AVATAR_API.UPLOAD_AVATAR || '').replace(/^\/+/, '')
     const UPLOAD_CONFIG = reactive({
@@ -243,10 +242,8 @@ export default {
       }
     })
 
-    // 头像相关
     const avatarUrl = ref('')
 
-    // 表单数据
     const personalInfoForm = reactive({
       userId: '',
       departmentId: '',
@@ -273,21 +270,13 @@ export default {
       isScheduledNotification: 0
     })
 
-    // 原始数据备份（用于重置）
     const originalFormData = reactive({})
-    
-    // 下拉框选项
     const departmentOptions = ref([])
     const positionOptions = ref([])
     const roleOptions = ref([])
     const genderOptions = ref([])
     const laborTypeOptions = ref([])
 
-    /**
-     * 性别下拉：固定选项（i18n）
-     * 说明：不再调用后端 GetGenderDropDown 接口，避免前端依赖字典接口/业务码。
-     * 注意：genderCode 的取值需与后端契约一致（本项目：1=Male, 0=Female）。
-     */
     const initGenderOptions = () => {
       genderOptions.value = [
         { genderCode: '1', genderName: t('systembasicmgmt.personalInfo.genderOptions.male') },
@@ -295,8 +284,7 @@ export default {
       ]
     }
     
-    // 表单验证规则
-    const formRules = reactive({
+    const formRules = {
       userNameCn: [
         { required: true, message: t('systembasicmgmt.personalInfo.userNameCnRequired'), trigger: 'blur' }
       ],
@@ -311,65 +299,31 @@ export default {
         { pattern: /^[0-9-+\s()]+$/, message: t('systembasicmgmt.personalInfo.phoneNumberFormatError'), trigger: 'blur' }
       ],
       password: [
-        { 
+        {
           validator: (rule, value, callback) => {
-            if (!value) {
-              callback()
-              return
-            }
-            // 密码必须为8-16个字符
+            if (!value) { callback(); return }
             if (value.length < 8 || value.length > 16) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordLengthError')))
-              return
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordLengthError'))); return
             }
-            // 必须包含小写字母
             if (!/[a-z]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordLowercaseError')))
-              return
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordLowercaseError'))); return
             }
-            // 必须包含大写字母
             if (!/[A-Z]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordUppercaseError')))
-              return
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordUppercaseError'))); return
             }
-            // 必须包含数字
             if (!/[0-9]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordNumberError')))
-              return
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordNumberError'))); return
             }
-            // 密码必须为8-16个字符
-            if (value.length < 8 || value.length > 16) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordLengthError')))
-              return
-            }
-            // 必须包含小写字母
-            if (!/[a-z]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordLowercaseError')))
-              return
-            }
-            // 必须包含大写字母
-            if (!/[A-Z]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordUppercaseError')))
-              return
-            }
-            // 必须包含数字
-            if (!/[0-9]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordNumberError')))
-              return
-            }
-            // 必须包含特殊字符
             if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
-              callback(new Error(t('systembasicmgmt.personalInfo.passwordSpecialCharError')))
-              return
+              callback(new Error(t('systembasicmgmt.personalInfo.passwordSpecialCharError'))); return
             }
             callback()
-          }, 
-          trigger: 'blur' 
+          },
+          trigger: 'blur'
         }
-      ]
-    })
+        ]
+    }
 
-    // 头像上传前验证
     const beforeAvatarUpload = (file) => {
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -396,7 +350,6 @@ export default {
       return true
     }
 
-    // 自定义上传（后端参数：[FromForm] string userId, IFormFile file；返回 data 为图片地址字符串）
     const customUpload = async (options) => {
       const formData = new FormData()
       formData.append('userId', personalInfoForm.userId || '')
@@ -418,7 +371,6 @@ export default {
       return data.departmentName.includes(value)
     }
 
-    // 头像上传成功
     const handleAvatarSuccess = (res) => {
       const avatarAddress = res?.data
       if (!avatarAddress) {
@@ -435,7 +387,6 @@ export default {
       })
     }
 
-    // 头像上传失败
     const handleAvatarError = (error) => {
       ElMessage({
         message: error?.message || t('systembasicmgmt.personalInfo.avatarUploadFailed'),
@@ -445,17 +396,12 @@ export default {
       })
     }
 
-    /**
-     * 获取个人信息（查询）
-     * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
-     */
     const getPersonalInfo = async () => {
       loading.value = true
       const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
       if (response.code === 200 && response.data) {
         Object.assign(personalInfoForm, response.data)
-        // 规范化：确保性别值与固定下拉选项 value 类型一致（字符串）
-        personalInfoForm.gender = personalInfoForm.gender !== null && personalInfoForm.gender !== undefined ? String(personalInfoForm.gender) : ''
+          personalInfoForm.gender = personalInfoForm.gender != null ? String(personalInfoForm.gender) : ''
         personalInfoForm.password = ''
         if (response.data.avatarAddress) {
           avatarUrl.value = resolveFileUrl(response.data.avatarAddress)
@@ -475,10 +421,6 @@ export default {
       loading.value = false
     }
 
-     /**
-      * 获取部门下拉（查询）
-      * 无 try/catch；异常由请求封装返回标准对象
-      */
      const getDepartmentDropdown = async () => {
        const response = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
        if (response.code === 200 && response.data) {
@@ -488,9 +430,6 @@ export default {
        }
      }
 
-     /**
-      * 获取职位下拉（查询）
-      */
      const getPositionDropdown = async () => {
        const response = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
        if (response.code === 200 && response.data) {
@@ -500,9 +439,6 @@ export default {
        }
      }
 
-     /**
-      * 获取角色下拉（查询）
-      */
      const getRoleDropdown = async () => {
        const response = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
        if (response.code === 200 && response.data) {
@@ -512,9 +448,6 @@ export default {
        }
      }
 
-     /**
-      * 获取用工类型下拉（查询）
-      */
      const getLaborTypeDropdown = async () => {
        const response = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
        if (response.code === 200 && response.data) {
@@ -527,10 +460,6 @@ export default {
        }
      }
 
-     /**
-      * 保存个人信息（编辑）
-      * 移除 try/catch；错误处理遵循全局策略：code 401/403 不提示
-      */
      const handleSave = async () => {
        const valid = await personalInfoFormRef.value.validate().catch(() => false)
        if (!valid) return
@@ -578,15 +507,11 @@ export default {
        saving.value = false
      }
 
-     // 重置表单
-    const handleReset = () => {
-      // 只清除表单验证状态，不重新获取数据
+     const handleReset = () => {
       personalInfoFormRef.value?.clearValidate()
     }
 
-     // 初始化数据
      const initData = async () => {
-       // 固定性别下拉选项（i18n）
        initGenderOptions()
        await Promise.all([
          getPersonalInfo(),

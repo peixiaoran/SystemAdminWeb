@@ -85,7 +85,6 @@
                width="50%"
                :close-on-click-modal="false"
                :append-to-body="true"
-               :modal-append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
       <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="汇率编辑表单">
@@ -115,9 +114,9 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" prop="exchangeRate">
-            <el-input v-model.number="editForm.exchangeRate" 
-                     type="number" 
-                     style="width:100%" 
+            <el-input v-model.number="editForm.exchangeRate"
+                     type="number"
+                     style="width:100%"
                      :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.yearMonth')" prop="yearMonth">
@@ -131,63 +130,54 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.remark')" prop="remark">
-            <el-input v-model="editForm.remark" 
-                     type="textarea" 
+            <el-input v-model="editForm.remark"
+                     type="textarea"
                      :rows="3"
-                     style="width:100%" 
+                     style="width:100%"
                      :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputRemark')" />
           </el-form-item>
         </div>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { post } from '@/utils/request'
-import { 
-  GET_EXCHANGE_RATE_PAGES_API, 
+import {
+  GET_EXCHANGE_RATE_PAGES_API,
   GET_CURRENCY_DROPDOWN_API,
   GET_EXCHANGE_RATE_ENTITY_API,
-  INSERT_EXCHANGE_RATE_API, 
+  INSERT_EXCHANGE_RATE_API,
   UPDATE_EXCHANGE_RATE_API,
   DELETE_EXCHANGE_RATE_API
 } from '@/config/api/systembasicmgmt/system-config/exchangerate'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
-// 初始化i18n
 const { t } = useI18n()
 
-// 汇率数据
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
 const exchangeRateList = ref([])
 const loading = ref(false)
-
-// 提交加载状态
 const submitLoading = ref(false)
-
-// 币别下拉选项
 const currencyOptions = ref([])
-
-// 表单引用
 const editFormRef = ref(null)
+const isEdit = ref(false)
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 10,
   totalCount: 0
 })
 
-// 获取当前年月（格式：YYYY-MM）
 const getCurrentYearMonth = () => {
   const now = new Date()
   const year = now.getFullYear()
@@ -195,16 +185,14 @@ const getCurrentYearMonth = () => {
   return `${year}-${month}`
 }
 
-// 过滤条件
 const filters = reactive({
   currencyCode: '',
   yearMonth: getCurrentYearMonth()
 })
 
-// 对话框显示状态
 const dialogVisible = ref(false)
+const dialogTitle = ref(t('systembasicmgmt.exchangeRate.editExchangeRate'))
 
-// 编辑表单
 const editForm = reactive({
   exchangeRateId: '',
   currencyCode: '',
@@ -214,11 +202,7 @@ const editForm = reactive({
   remark: ''
 })
 
-// 对话框标题
-const dialogTitle = ref(t('systembasicmgmt.exchangeRate.editExchangeRate'))
-
-// 表单验证规则
-const formRules = reactive({
+const formRules = {
   currencyCode: [
     { required: true, message: t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode'), trigger: 'change' }
   ],
@@ -232,20 +216,27 @@ const formRules = reactive({
   yearMonth: [
     { required: true, message: t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth'), trigger: 'change' }
   ]
-})
+}
 
-// 在组件挂载后获取数据
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
+const scheduleSearch = () => {
+  pagination.pageIndex = 1
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => fetchExchangeRatePages(), DEBOUNCE_MS)
+}
+
 onMounted(async () => {
   await fetchCurrencyDropDown()
   fetchExchangeRatePages()
 })
 
-// 获取货币下拉框数据
 const fetchCurrencyDropDown = async () => {
   const res = await post(GET_CURRENCY_DROPDOWN_API.GET_CURRENCY_DROPDOWN)
   if (res && res.code === 200) {
     currencyOptions.value = res.data || []
-    // 设置默认选中第一个有效值
     if (currencyOptions.value.length > 0) {
       const firstValidOption = currencyOptions.value.find(option => !option.disabled)
       if (firstValidOption) {
@@ -253,16 +244,10 @@ const fetchCurrencyDropDown = async () => {
       }
     }
   } else {
-    ElMessage({ 
-      message: res.message, 
-      type: 'error', 
-      plain: true, 
-      showClose: true 
-    })
+    showMessage(res?.message)
   }
 }
 
-// 获取汇率列表数据
 const fetchExchangeRatePages = async () => {
   try {
     loading.value = true
@@ -272,87 +257,48 @@ const fetchExchangeRatePages = async () => {
       currencyCode: filters.currencyCode || '',
       yearMonth: filters.yearMonth || ''
     }
-    
     const res = await post(GET_EXCHANGE_RATE_PAGES_API.GET_EXCHANGE_RATE_PAGES, params)
     if (res && res.code === 200) {
       exchangeRateList.value = res.data || []
       pagination.totalCount = res.data?.totalCount || 0
     } else {
-    ElMessage({ 
-      message: res.message, 
-      type: 'error', 
-      plain: true, 
-      showClose: true 
-    })
-  }
-} catch (error) {
-  ElMessage({ 
-    message: t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'), 
-    type: 'error', 
-    plain: true, 
-    showClose: true 
-  })
-} finally {
+      showMessage(res?.message || t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'))
+    }
+  } catch {
+    showMessage(t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'))
+  } finally {
     loading.value = false
   }
 }
 
-// 使用通用防抖工具
-const debouncedFetchExchangeRatePages = debounce(() => {
-  fetchExchangeRatePages()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
 const handleSearch = () => {
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedFetchExchangeRatePages()
+  scheduleSearch()
 }
 
-// 立即查询数据（不使用防抖，用于保存后刷新）
-const fetchExchangeRatePagesImmediate = () => {
+const handlePageChange = () => {
   fetchExchangeRatePages()
 }
 
-// 处理页码变化
-const handlePageChange = (page) => {
-  pagination.pageIndex = page
-  fetchExchangeRatePages()
-}
-
-// 处理每页记录数变化
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   fetchExchangeRatePages()
 }
 
-
-
-const resetForm = (clearValidation = true) => {
+const resetForm = () => {
   editForm.exchangeRateId = ''
   editForm.currencyCode = ''
   editForm.exchangeCurrencyCode = ''
   editForm.exchangeRate = ''
   editForm.yearMonth = ''
   editForm.remark = ''
-  
-  // 设置默认选中第一个有效值
   if (currencyOptions.value.length > 0) {
     const firstValidOption = currencyOptions.value.find(option => !option.disabled)
     if (firstValidOption) {
       editForm.currencyCode = firstValidOption.currencyCode
     }
   }
-  
-  if (clearValidation && editFormRef.value) {
-    nextTick(() => {
-      editFormRef.value.clearValidate()
-    })
-  }
 }
 
-// 新增汇率数据
 const insertExchangeRate = async () => {
   submitLoading.value = true
   const params = {
@@ -362,29 +308,17 @@ const insertExchangeRate = async () => {
     yearMonth: editForm.yearMonth,
     remark: editForm.remark || ''
   }
-  
   const res = await post(INSERT_EXCHANGE_RATE_API.INSERT_EXCHANGE_RATE, params)
   if (res && res.code === 200) {
-      ElMessage({ 
-        message: res.message, 
-        type: 'success', 
-        plain: true, 
-        showClose: true 
-      })
-      dialogVisible.value = false
-      fetchExchangeRatePagesImmediate()
-    } else {
-      ElMessage({ 
-        message: res.message, 
-        type: 'error', 
-        plain: true, 
-        showClose: true 
-      })
-    }
+    showMessage(res.message, 'success')
+    dialogVisible.value = false
+    fetchExchangeRatePages()
+  } else {
+    showMessage(res?.message)
+  }
   submitLoading.value = false
 }
 
-// 更新汇率数据
 const updateExchangeRate = async () => {
   submitLoading.value = true
   const params = {
@@ -394,118 +328,86 @@ const updateExchangeRate = async () => {
     yearMonth: editForm.yearMonth,
     remark: editForm.remark || ''
   }
-  
   const res = await post(UPDATE_EXCHANGE_RATE_API.UPDATE_EXCHANGE_RATE, params)
   if (res && res.code === 200) {
-     ElMessage({ 
-       message: res.message, 
-       type: 'success', 
-       plain: true, 
-       showClose: true 
-     })
-     dialogVisible.value = false
-     fetchExchangeRatePagesImmediate()
-   } else {
-     ElMessage({ 
-       message: res.message, 
-       type: 'error', 
-       plain: true, 
-       showClose: true 
-     })
-   }
+    showMessage(res.message, 'success')
+    dialogVisible.value = false
+    fetchExchangeRatePages()
+  } else {
+    showMessage(res?.message)
+  }
   submitLoading.value = false
 }
 
-// 删除汇率数据
 const deleteExchangeRate = async (exchangeRateId) => {
   const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, { exchangeRateId })
   if (res && res.code === 200) {
-    ElMessage({ 
-      message: res.message, 
-      type: 'success', 
-      plain: true, 
-      showClose: true 
-    })
-    // 如果当前页没有数据了，回到上一页
+    showMessage(res.message, 'success')
     if (exchangeRateList.value.length === 1 && pagination.pageIndex > 1) {
       pagination.pageIndex--
     }
-    fetchExchangeRatePagesImmediate()
+    fetchExchangeRatePages()
   } else {
-    ElMessage({ 
-      message: res.message, 
-      type: 'error', 
-      plain: true, 
-      showClose: true 
-    })
+    showMessage(res?.message)
   }
 }
 
-// 处理新增操作
 const handleAdd = () => {
+  isEdit.value = false
   resetForm()
   dialogTitle.value = t('systembasicmgmt.exchangeRate.addExchangeRate')
   dialogVisible.value = true
 }
 
-// 处理编辑操作
 const handleEdit = async (index, row) => {
-  // 直接使用行数据填充表单，删除exchangeRateId相关逻辑
+  isEdit.value = true
+  resetForm()
   editForm.currencyCode = row.currencyCode
   editForm.exchangeCurrencyCode = row.exchangeCurrencyCode
   editForm.exchangeRate = row.exchangeRate
   editForm.yearMonth = row.yearMonth
   editForm.remark = row.remark || ''
-  
   dialogTitle.value = t('systembasicmgmt.exchangeRate.editExchangeRate')
   dialogVisible.value = true
 }
 
-// 处理删除操作
-const handleDelete = (index, row) => {
-  ElMessageBox.confirm(
-    t('systembasicmgmt.exchangeRate.confirmDeleteExchangeRate'),
-    t('common.warning'),
-    {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning'
-    }
-  ).then(() => {
-    deleteExchangeRate(row.exchangeRateId)
-  }).catch(() => {
-    // 用户取消删除
-  })
-}
-
-// 保存编辑结果
-const handleSave = () => {
-  editFormRef.value.validate((valid) => {
-    if (valid) {
-      // 判断是否为编辑模式：如果currencyCode、exchangeCurrencyCode、yearMonth都有值，则为编辑
-      const isEditMode = editForm.currencyCode && editForm.exchangeCurrencyCode && editForm.yearMonth
-      
-      if (isEditMode) {
-        updateExchangeRate()
-      } else {
-        insertExchangeRate()
+const handleDelete = async (index, row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('systembasicmgmt.exchangeRate.confirmDeleteExchangeRate'),
+      t('common.warning'),
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning'
       }
-    }
-  })
+    )
+  } catch {
+    return
+  }
+  deleteExchangeRate(row.exchangeRateId)
 }
 
-// 处理对话框关闭
+const handleSave = async () => {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  if (!valid) return
+  if (isEdit.value) {
+    updateExchangeRate()
+  } else {
+    insertExchangeRate()
+  }
+}
+
 const handleDialogClose = () => {
   resetForm()
+  editFormRef.value?.clearValidate()
 }
 
-// 处理币别下拉框变化事件（带防抖）
 const handleCurrencyChange = () => {
-  handleSearch()
+  scheduleSearch()
 }
 </script>
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 </style>
-  

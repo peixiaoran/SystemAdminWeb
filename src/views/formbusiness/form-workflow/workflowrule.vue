@@ -3,12 +3,7 @@
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程规则筛选">
         <el-form-item :label="$t('formbusiness.workflowrule.formGroupName')">
-          <el-select
-            v-model="searchForm.formGroupId"
-            filterable
-            style="width: 180px"
-            @change="handleFormGroupChange"
-          >
+          <el-select v-model="searchForm.formGroupId" filterable style="width: 180px" @change="getFormTypeOptions">
             <el-option
               v-for="item in formGroupOptions"
               :key="item.formGroupId"
@@ -18,12 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrule.formTypeName')">
-          <el-select
-            v-model="searchForm.formTypeId"
-            filterable
-            style="width: 180px"
-            @change="handleFormTypeChange"
-          >
+          <el-select v-model="searchForm.formTypeId" filterable style="width: 180px" @change="handleFilterChange">
             <el-option
               v-for="item in formTypeOptions"
               :key="item.formTypeId"
@@ -33,12 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrule.positionName')">
-          <el-select
-            v-model="searchForm.positionId"
-            filterable
-            style="width: 160px"
-            @change="handlePositionChange"
-          >
+          <el-select v-model="searchForm.positionId" filterable style="width: 160px" @change="handleFilterChange">
             <el-option :label="$t('formbusiness.workflowrule.pleaseSelect')" value="0" />
             <el-option
               v-for="item in positionOptions"
@@ -91,7 +76,7 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="getRuleList"
         />
       </div>
     </el-card>
@@ -210,6 +195,18 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
+// 最小 loading 显示时间，避免接口太快导致动画一闪而过
+const MIN_LOADING_DURATION = 300
+
+const buildFormData = (params) => {
+  const fd = new FormData()
+  Object.entries(params).forEach(([k, v]) => fd.append(k, v ?? ''))
+  return fd
+}
+
+const isSuccess = (code) => code === 200 || code === '200'
+
 const loading = ref(false)
 const ruleList = ref([])
 const formGroupOptions = ref([])
@@ -217,17 +214,8 @@ const formTypeOptions = ref([])
 const dialogFormTypeOptions = ref([])
 const positionOptions = ref([])
 
-const searchForm = reactive({
-  formGroupId: '',
-  formTypeId: '',
-  positionId: '0'
-})
-
-const pagination = reactive({
-  pageIndex: 1,
-  pageSize: 20,
-  totalCount: 0
-})
+const searchForm = reactive({ formGroupId: '', formTypeId: '', positionId: '0' })
+const pagination = reactive({ pageIndex: 1, pageSize: 20, totalCount: 0 })
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
@@ -235,10 +223,8 @@ const showMessage = (message, type = 'error') => {
 
 const getPositionOptions = async () => {
   try {
-    const response = await post(GET_POSITION_LIST_API, {})
-    if (response.code === 200) {
-      positionOptions.value = response.data || []
-    }
+    const res = await post(GET_POSITION_LIST_API, {})
+    if (res.code === 200) positionOptions.value = res.data || []
   } catch {
     showMessage(t('formbusiness.workflowrule.getPositionFailed'))
   }
@@ -246,24 +232,21 @@ const getPositionOptions = async () => {
 
 const getFormGroupOptions = async () => {
   try {
-    const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
-    if (response.code === 200) {
-      formGroupOptions.value = response.data || []
+    const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
+    if (res.code === 200) {
+      formGroupOptions.value = res.data || []
       if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
     }
   } catch {
     showMessage(t('formbusiness.workflowrule.getFormGroupFailed'))
   }
 }
 
-/**
- * 获取表单类别下拉选项；不论是否有数据，最终都会调用 getRuleList 走一遍 loading 流程
- */
 const getFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) {
     formTypeOptions.value = []
@@ -272,19 +255,12 @@ const getFormTypeOptions = async (formGroupId) => {
     return
   }
   try {
-    const formData = new FormData()
-    formData.append('formGroupId', String(formGroupId))
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
-    if (response.code === 200) {
-      formTypeOptions.value = response.data || []
-      searchForm.formTypeId = formTypeOptions.value.length > 0
-        ? formTypeOptions.value[0].formTypeId
-        : ''
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId }), FORM_DATA_OPTIONS)
+    if (res.code === 200) {
+      formTypeOptions.value = res.data || []
+      searchForm.formTypeId = formTypeOptions.value[0]?.formTypeId ?? ''
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
@@ -296,37 +272,30 @@ const getFormTypeOptions = async (formGroupId) => {
   await getRuleList()
 }
 
-// 最小 loading 显示时间，避免接口太快导致动画一闪而过
-const MIN_LOADING_DURATION = 300
-
 let ruleListSeq = 0
-/**
- * 获取流程规则列表；formTypeId 为空时也走一遍 loading 流程并清空表格
- */
 const getRuleList = async () => {
   const seq = ++ruleListSeq
   loading.value = true
-  const loadingStart = Date.now()
+  const start = Date.now()
   try {
     if (!searchForm.formTypeId) {
       ruleList.value = []
       pagination.totalCount = 0
       return
     }
-    const params = {
+    const res = await post(GET_WORKFLOWRULE_PAGE_API, {
       formTypeId: searchForm.formTypeId,
       positionId: searchForm.positionId ?? '',
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
-    }
-    const response = await post(GET_WORKFLOWRULE_PAGE_API, params)
+    })
     if (seq !== ruleListSeq) return
-    if (response.code === 200) {
-      ruleList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
+    if (res.code === 200) {
+      ruleList.value = res.data || []
+      pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
       ruleList.value = []
     }
   } catch {
@@ -334,50 +303,25 @@ const getRuleList = async () => {
     ruleList.value = []
   } finally {
     if (seq === ruleListSeq) {
-      const elapsed = Date.now() - loadingStart
+      const elapsed = Date.now() - start
       if (elapsed < MIN_LOADING_DURATION) {
-        await new Promise(resolve => setTimeout(resolve, MIN_LOADING_DURATION - elapsed))
+        await new Promise(r => setTimeout(r, MIN_LOADING_DURATION - elapsed))
       }
       if (seq === ruleListSeq) loading.value = false
     }
   }
 }
 
-/**
- * 表单分组改变：立即联动表单类别下拉，由 getRuleList 内部触发表格加载动画
- */
-const handleFormGroupChange = (val) => {
-  getFormTypeOptions(val)
-}
-
-/**
- * 表单类别改变：直接刷新表格
- */
-const handleFormTypeChange = () => {
+const handleFilterChange = () => {
   pagination.pageIndex = 1
   getRuleList()
 }
 
-/**
- * 职级改变：直接刷新表格
- */
-const handlePositionChange = () => {
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   getRuleList()
 }
 
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
-  pagination.pageIndex = 1
-  getRuleList()
-}
-
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
-  getRuleList()
-}
-
-// 对话框
 const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
@@ -395,58 +339,31 @@ const dialogForm = reactive({
   sortOrder: 0
 })
 
-const dialogFormRules = reactive({
-  formGroupId: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseSelectFormGroup'), trigger: 'change' }
-  ],
-  formTypeId: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseSelectFormType'), trigger: 'change' }
-  ],
-  ruleNameCn: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameCn'), trigger: 'blur' }
-  ],
-  ruleNameEn: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur' }
-  ],
-  positionId: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'), trigger: 'change' }
-  ],
-  guidance: [
-    { required: true, message: () => t('formbusiness.workflowrule.pleaseInputGuidance'), trigger: 'blur' }
-  ]
-})
+const dialogFormRules = {
+  formGroupId: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectFormGroup'), trigger: 'change' }],
+  formTypeId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectFormType'),  trigger: 'change' }],
+  ruleNameCn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameCn'), trigger: 'blur'   }],
+  ruleNameEn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur'   }],
+  positionId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'),  trigger: 'change' }],
+  guidance:    [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputGuidance'),   trigger: 'blur'   }]
+}
 
 const resetDialogForm = () => {
   // ruleId 不在 el-form-item prop 里，resetFields 不会重置，需手动清
   dialogForm.ruleId = ''
-  // positionId 默认选第一项（resetFields 只能还原到挂载时的空值）
-  dialogForm.positionId = positionOptions.value.length > 0 ? positionOptions.value[0].positionId : ''
+  dialogForm.positionId = positionOptions.value[0]?.positionId ?? ''
 }
 
-/**
- * 仅为弹窗加载表单类别下拉，不影响搜索区
- */
 const loadDialogFormTypeOptions = async (formGroupId) => {
-  if (!formGroupId) {
-    dialogFormTypeOptions.value = []
-    return
-  }
+  if (!formGroupId) { dialogFormTypeOptions.value = []; return }
   try {
-    const formData = new FormData()
-    formData.append('formGroupId', String(formGroupId))
-    const response = await post(GET_FORMTYPE_DROPDOWN_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
-    dialogFormTypeOptions.value = response.code === 200 ? (response.data || []) : []
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId }), FORM_DATA_OPTIONS)
+    dialogFormTypeOptions.value = res.code === 200 ? (res.data || []) : []
   } catch {
     dialogFormTypeOptions.value = []
   }
 }
 
-/**
- * 弹窗内表单组别变更时仅刷新弹窗内的表单类别下拉
- */
 const handleDialogFormGroupChange = async (val) => {
   dialogForm.formTypeId = ''
   dialogFormTypeOptions.value = []
@@ -467,27 +384,22 @@ const handleAdd = async () => {
   dialogVisible.value = true
   dialogLoading.value = true
   try {
-    const formGroupId = searchForm.formGroupId
-      || (formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : '')
+    const formGroupId = searchForm.formGroupId || formGroupOptions.value[0]?.formGroupId || ''
     if (formGroupId) {
       dialogForm.formGroupId = formGroupId
       await loadDialogFormTypeOptions(formGroupId)
-      if (searchForm.formTypeId
-        && dialogFormTypeOptions.value.some(item => item.formTypeId === searchForm.formTypeId)) {
+      if (searchForm.formTypeId && dialogFormTypeOptions.value.some(i => i.formTypeId === searchForm.formTypeId)) {
         dialogForm.formTypeId = searchForm.formTypeId
-      } else if (dialogFormTypeOptions.value.length > 0) {
-        dialogForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
+      } else {
+        dialogForm.formTypeId = dialogFormTypeOptions.value[0]?.formTypeId ?? ''
       }
     }
-    // positionId 默认选第一项
     if (!dialogForm.positionId && positionOptions.value.length > 0) {
       dialogForm.positionId = positionOptions.value[0].positionId
     }
   } finally {
     dialogLoading.value = false
-    nextTick(() => {
-      dialogFormRef.value?.clearValidate()
-    })
+    nextTick(() => dialogFormRef.value?.clearValidate())
   }
 }
 
@@ -495,32 +407,23 @@ const handleEdit = async (row) => {
   dialogVisible.value = true
   dialogLoading.value = true
   try {
-    const formData = new FormData()
-    formData.append('ruleId', String(row.ruleId))
-    const response = await post(GET_WORKFLOWRULE_ENTITY_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
-    if (response.code === 200 && response.data) {
+    const res = await post(GET_WORKFLOWRULE_ENTITY_API, buildFormData({ ruleId: row.ruleId }), FORM_DATA_OPTIONS)
+    if (res.code === 200 && res.data) {
       isEditMode.value = true
-      const d = response.data
-      dialogForm.ruleId = d.ruleId || ''
+      const d = res.data
+      dialogForm.ruleId      = d.ruleId      || ''
       dialogForm.formGroupId = d.formGroupId || searchForm.formGroupId || ''
-      dialogForm.formTypeId = d.formTypeId || searchForm.formTypeId || ''
-      dialogForm.ruleNameCn = d.ruleNameCn || ''
-      dialogForm.ruleNameEn = d.ruleNameEn || ''
-      dialogForm.positionId = d.positionId || ''
-      dialogForm.guidance = d.guidance || ''
-      dialogForm.sortOrder = d.sortOrder ?? 0
-      if (dialogForm.formGroupId) {
-        await loadDialogFormTypeOptions(dialogForm.formGroupId)
-      }
-      nextTick(() => {
-        dialogFormRef.value?.clearValidate()
-      })
+      dialogForm.formTypeId  = d.formTypeId  || searchForm.formTypeId  || ''
+      dialogForm.ruleNameCn  = d.ruleNameCn  || ''
+      dialogForm.ruleNameEn  = d.ruleNameEn  || ''
+      dialogForm.positionId  = d.positionId  || ''
+      dialogForm.guidance    = d.guidance    || ''
+      dialogForm.sortOrder   = d.sortOrder   ?? 0
+      if (dialogForm.formGroupId) await loadDialogFormTypeOptions(dialogForm.formGroupId)
+      nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false
-      showMessage(response.message || t('formbusiness.workflowrule.getEntityFailed'))
+      showMessage(res.message || t('formbusiness.workflowrule.getEntityFailed'))
     }
   } catch {
     dialogVisible.value = false
@@ -548,26 +451,24 @@ const handleSubmit = async () => {
   const isEdit = isEditMode.value
   try {
     const params = {
-      ruleId: dialogForm.ruleId || '',
-      formTypeId: dialogForm.formTypeId,
-      ruleNameCn: dialogForm.ruleNameCn,
-      ruleNameEn: dialogForm.ruleNameEn,
-      positionId: dialogForm.positionId,
-      guidance: dialogForm.guidance,
-      sortOrder: dialogForm.sortOrder
+      ruleId:      dialogForm.ruleId || '',
+      formTypeId:  dialogForm.formTypeId,
+      ruleNameCn:  dialogForm.ruleNameCn,
+      ruleNameEn:  dialogForm.ruleNameEn,
+      positionId:  dialogForm.positionId,
+      guidance:    dialogForm.guidance,
+      sortOrder:   dialogForm.sortOrder
     }
-    const api = isEdit ? UPDATE_WORKFLOWRULE_API : INSERT_WORKFLOWRULE_API
+    const api        = isEdit ? UPDATE_WORKFLOWRULE_API : INSERT_WORKFLOWRULE_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
-    const failKey = isEdit ? 'editFailed' : 'addFailed'
-    const response = await post(api, params)
-    if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t(`formbusiness.workflowrule.${successKey}`), 'success')
+    const failKey    = isEdit ? 'editFailed'  : 'addFailed'
+    const res = await post(api, params)
+    if (isSuccess(res.code)) {
+      showMessage(res.message || t(`formbusiness.workflowrule.${successKey}`), 'success')
       dialogVisible.value = false
-      if (dialogForm.formTypeId === searchForm.formTypeId) {
-        await getRuleList()
-      }
+      if (dialogForm.formTypeId === searchForm.formTypeId) await getRuleList()
     } else {
-      showMessage(response.message || t(`formbusiness.workflowrule.${failKey}`))
+      showMessage(res.message || t(`formbusiness.workflowrule.${failKey}`))
     }
   } catch {
     showMessage(t(`formbusiness.workflowrule.${isEdit ? 'editFailed' : 'addFailed'}`))
@@ -581,31 +482,20 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm(
       t('formbusiness.workflowrule.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
   }
   loading.value = true
   try {
-    const formData = new FormData()
-    formData.append('ruleId', String(row.ruleId))
-    const response = await post(DELETE_WORKFLOWRULE_API, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      skipDedupe: true
-    })
-    if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t('formbusiness.workflowrule.deleteSuccess'), 'success')
-      if (ruleList.value.length === 1 && pagination.pageIndex > 1) {
-        pagination.pageIndex--
-      }
+    const res = await post(DELETE_WORKFLOWRULE_API, buildFormData({ ruleId: row.ruleId }), FORM_DATA_OPTIONS)
+    if (isSuccess(res.code)) {
+      showMessage(res.message || t('formbusiness.workflowrule.deleteSuccess'), 'success')
+      if (ruleList.value.length === 1 && pagination.pageIndex > 1) pagination.pageIndex--
       await getRuleList()
     } else {
-      showMessage(response.message || t('formbusiness.workflowrule.deleteFailed'))
+      showMessage(res.message || t('formbusiness.workflowrule.deleteFailed'))
     }
   } catch {
     showMessage(t('formbusiness.workflowrule.deleteFailed'))
@@ -615,10 +505,7 @@ const handleDelete = async (row) => {
 }
 
 onMounted(async () => {
-  await Promise.all([
-    getFormGroupOptions(),
-    getPositionOptions()
-  ])
+  await Promise.all([getFormGroupOptions(), getPositionOptions()])
 })
 </script>
 

@@ -2,45 +2,43 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
-      <el-form-item :label="$t('formbusiness.applyform.formGroupName')">
-        <el-select 
-          v-model="searchForm.formGroupId" 
-          :placeholder="$t('formbusiness.applyform.pleaseSelectFormGroup')"
-          filterable
-          style="width: 180px"
-          @change="handleFormGroupChange"
-          @clear="handleFormGroupClear"
-        >
-          <el-option
-            v-for="item in formGroupOptions"
-            :key="item.formGroupId"
-            :label="item.formGroupName"
-            :value="item.formGroupId"
+        <el-form-item :label="$t('formbusiness.applyform.formGroupName')">
+          <el-select
+            v-model="searchForm.formGroupId"
+            :placeholder="$t('formbusiness.applyform.pleaseSelectFormGroup')"
+            filterable
+            style="width: 180px"
+            @change="handleFormGroupChange"
+          >
+            <el-option
+              v-for="item in formGroupOptions"
+              :key="item.formGroupId"
+              :label="item.formGroupName"
+              :value="item.formGroupId"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('formbusiness.applyform.formTypeName')">
+          <el-input
+            v-model="searchForm.formTypeName"
+            :placeholder="$t('formbusiness.applyform.pleaseInputFormTypeName')"
+            clearable
+            @clear="scheduleSearch"
+            @keyup.enter="scheduleSearch"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item :label="$t('formbusiness.applyform.formTypeName')">
-        <el-input 
-          v-model="searchForm.formTypeName" 
-          :placeholder="$t('formbusiness.applyform.pleaseInputFormTypeName')"
-          clearable
-          @clear="handleSearch"
-          @keyup.enter="handleSearch"
-        />
-      </el-form-item>
-      <el-form-item class="form-button-group">
-        <el-button type="primary" @click="handleSearch" plain>
-          {{ $t('common.search') }}
-        </el-button>
-        <el-button @click="handleReset">
-          {{ $t('common.reset') }}
-        </el-button>
-      </el-form-item>
-    </el-form>
+        </el-form-item>
+        <el-form-item class="form-button-group">
+          <el-button type="primary" @click="scheduleSearch" plain>
+            {{ $t('common.search') }}
+          </el-button>
+          <el-button @click="handleReset">
+            {{ $t('common.reset') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
+        <el-table
           :data="formTypeList"
           border
           stripe
@@ -87,7 +85,7 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="getFormTypeList"
         />
       </div>
     </el-card>
@@ -97,144 +95,87 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
-import { 
+import {
   GET_APPLYFORM_API,
   GET_FORMGROUP_DROPDOWN_API
 } from '@/config/api/formbusiness/form-operate/applyform.js'
 import { useI18n } from 'vue-i18n'
 
-// 使用i18n
 const { t } = useI18n()
+const router = useRouter()
 
-// 响应式数据
+const FILTER_DEBOUNCE_MS = 300
+
 const loading = ref(false)
 const debouncePending = ref(false)
 const formTypeList = ref([])
 const formGroupOptions = ref([])
-const router = useRouter()
 
-// 搜索表单
 const searchForm = reactive({
   formGroupId: '',
   formTypeName: ''
 })
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 20,
   totalCount: 0
 })
 
-// 表单验证规则
-const rules = {
-  formGroupId: [
-    { required: true, message: () => t('formbusiness.applyform.pleaseSelectFormGroup'), trigger: 'change' }
-  ],
-  formTypeNameCn: [
-    { required: true, message: () => t('formbusiness.applyform.pleaseInputFormTypeNameCn'), trigger: 'blur' }
-  ],
-  formTypeNameEn: [
-    { required: true, message: () => t('formbusiness.applyform.pleaseInputFormTypeNameEn'), trigger: 'blur' }
-  ],
-  prefix: [
-    { required: true, message: () => t('formbusiness.applyform.pleaseInputPrefix'), trigger: 'blur' }
-  ],
-  reviewPath: [
-    { required: false, trigger: 'blur' }
-  ],
-  viewPath: [
-    { required: false, trigger: 'blur' }
-  ]
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
 }
 
-/**
- * 获取表单组别下拉选项
- */
 const getFormGroupOptions = async () => {
   try {
-    const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
-    if (response.code === 200) {
-      formGroupOptions.value = response.data || []
-      // 默认选中第一个选项
+    const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
+    if (res.code === 200) {
+      formGroupOptions.value = res.data || []
       if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
     }
-  } catch (error) {
-    ElMessage({
-      message: t('formbusiness.applyform.getFormGroupFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('formbusiness.applyform.getFormGroupFailed'))
   }
 }
 
-/**
- * 获取申请表单列表
- */
 const getFormTypeList = async () => {
   loading.value = true
   try {
-    const params = {
-      formGroupId: searchForm.formGroupId,
+    const res = await post(GET_APPLYFORM_API, {
+      formGroupId:  searchForm.formGroupId,
       formTypeName: searchForm.formTypeName,
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize,
-      totalCount: pagination.totalCount
-    }
-    
-    const response = await post(GET_APPLYFORM_API, params)
-    if (response.code === 200) {
-      formTypeList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
+      pageIndex:    pagination.pageIndex,
+      pageSize:     pagination.pageSize,
+      totalCount:   pagination.totalCount
+    })
+    if (res.code === 200) {
+      formTypeList.value = res.data || []
+      pagination.totalCount = res.totalCount || 0
     } else {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+      showMessage(res.message)
       formTypeList.value = []
     }
-  } catch (error) {
-    ElMessage({
-      message: t('formbusiness.applyform.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('formbusiness.applyform.getFailed'))
     formTypeList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 防抖搜索优化
-let searchTimer = null
-let filterTimer = null
-const FILTER_DEBOUNCE_MS = 300
-
-const getDefaultFormGroupId = () => {
-  return formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : ''
-}
-
-const scheduleFilterRequest = async () => {
-  if (filterTimer) clearTimeout(filterTimer)
+let debounceTimer = null
+const scheduleSearch = async () => {
+  if (debounceTimer) clearTimeout(debounceTimer)
   loading.value = true
   debouncePending.value = true
   await nextTick()
-  filterTimer = setTimeout(async () => {
+  debounceTimer = setTimeout(async () => {
     try {
       pagination.pageIndex = 1
       await getFormTypeList()
@@ -246,74 +187,22 @@ const scheduleFilterRequest = async () => {
 
 const handleFormGroupChange = () => {
   if (!searchForm.formGroupId) {
-    searchForm.formGroupId = getDefaultFormGroupId()
+    searchForm.formGroupId = formGroupOptions.value[0]?.formGroupId ?? ''
   }
-  scheduleFilterRequest()
+  scheduleSearch()
 }
 
-const handleFormGroupClear = () => {
-  searchForm.formGroupId = getDefaultFormGroupId()
-  handleFormGroupChange()
-}
-
-/**
- * 搜索
- */
-const handleSearch = async () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  debouncePending.value = true
-  await nextTick()
-  searchTimer = setTimeout(async () => {
-    try {
-      pagination.pageIndex = 1
-      await getFormTypeList()
-    } finally {
-      debouncePending.value = false
-    }
-  }, 300) // 300ms防抖
-}
-
-/**
- * 重置搜索
- * 清空文本框，下拉框恢复到默认第一个值，并重新获取数据
- */
-const handleReset = async () => {
+const handleReset = () => {
   searchForm.formTypeName = ''
-  if (formGroupOptions.value.length > 0) {
-    searchForm.formGroupId = formGroupOptions.value[0].formGroupId
-  }
-  if (searchTimer) clearTimeout(searchTimer)
-  if (filterTimer) clearTimeout(filterTimer)
-  loading.value = true
-  debouncePending.value = true
-  await nextTick()
-  searchTimer = setTimeout(async () => {
-    try {
-      pagination.pageIndex = 1
-      await getFormTypeList()
-    } finally {
-      debouncePending.value = false
-    }
-  }, FILTER_DEBOUNCE_MS)
+  searchForm.formGroupId = formGroupOptions.value[0]?.formGroupId ?? ''
+  scheduleSearch()
 }
 
-/**
- * 分页大小改变
- */
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   getFormTypeList()
 }
 
-/**
- * 当前页改变
- */
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
-  getFormTypeList()
-}
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const normalizePath = (p) => {
@@ -334,45 +223,37 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-/** 申请入口：新窗口尽量占满可用屏幕（浏览器弹窗全屏效果） */
+// 新窗口尽量占满可用屏幕；部分浏览器策略下 resizeTo 不可用，已用 features 尽量铺满
 const openPopupWindow = (href, namePrefix = 'form_popup') => {
   const aw = window.screen.availWidth
   const ah = window.screen.availHeight
   const features = [
-    `width=${aw}`,
-    `height=${ah}`,
-    'left=0',
-    'top=0',
-    'resizable=yes',
-    'scrollbars=yes'
+    `width=${aw}`, `height=${ah}`, 'left=0', 'top=0', 'resizable=yes', 'scrollbars=yes'
   ].join(',')
   const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
   popup?.focus()
   try {
     popup?.moveTo(0, 0)
     popup?.resizeTo(aw, ah)
-  } catch {
-    // 部分浏览器策略下 resizeTo 不可用，已用 features 尽量铺满
-  }
+  } catch { /* resizeTo not available in all browsers */ }
 }
 
 const openApproval = (row) => {
-  if (!row || !row.approvalPath) return
+  if (!row?.approvalPath) return
   const path = normalizePath(row.approvalPath)
   if (!isPathSafe(path)) {
-    ElMessage({ message: t('formbusiness.applyform.getFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.applyform.getFailed'))
     return
   }
   const to = { path, query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') } }
   const resolved = router.resolve(to)
   if (!isRouteValid(resolved)) {
-    ElMessage({ message: t('formbusiness.applyform.getFailed'), type: 'error', plain: true, showClose: true })
+    showMessage(t('formbusiness.applyform.getFailed'))
     return
   }
   openPopupWindow(resolved.href, 'apply_form')
 }
 
-// 组件挂载时获取数据
 onMounted(async () => {
   await getFormGroupOptions()
   getFormTypeList()

@@ -114,14 +114,11 @@ export default {
         percentage: '百分比',
         complexBarChart: '复杂柱状图',
         simpleBarChart: '简单柱状图',
-        kLineChart: 'K线图',
-         kLine: 'K线',
-         highest: '最高值',
-         lowest: '最低值',
-         open: '开盘',
-         close: '收盘',
-         high: '最高',
-         low: '最低',
+        areaChart: '趋势分析',
+        userActivity: '用户登录',
+        apiRequests: 'API调用',
+        formSubmissions: '表单提交',
+        systemEvents: '系统事件',
         departmentDistribution: '部门分布',
         projectStatus: '项目状态',
         resourceUsage: '资源使用'
@@ -145,9 +142,9 @@ export default {
         networkTraffic: '网络流量'
     },
     period: {
-      day: '日',
-      week: '周',
-      year: '年'
+      day: '近30天',
+      week: '近12周',
+      year: '近12月'
     },
     recentActivities: '最近活动',
     quickActions: '快捷操作',

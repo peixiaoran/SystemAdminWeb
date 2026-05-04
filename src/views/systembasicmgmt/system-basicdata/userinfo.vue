@@ -114,8 +114,7 @@
                  width="75%"
                  :close-on-click-modal="false"
                  :append-to-body="true"
-                 :modal-append-to-body="true"
-                 :modal="true"
+               :modal="true"
                  :lock-scroll="true"
                  destroy-on-close
                  draggable
@@ -124,13 +123,13 @@
         
         <div class="form-row four-columns">
           <el-form-item :label="$t('systembasicmgmt.userInfo.userNo')" prop="userNo">
-            <el-input v-model="editForm.userNo" style="width:100%" />
+            <el-input v-model="editForm.userNo" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputUserNo')" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.userNameCn')" prop="userNameCn">
-            <el-input v-model="editForm.userNameCn" style="width:100%" />
+            <el-input v-model="editForm.userNameCn" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputUserNameCn')" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.userNameEn')" prop="userNameEn">
-            <el-input v-model="editForm.userNameEn" style="width:100%" />
+            <el-input v-model="editForm.userNameEn" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputUserNameEn')" style="width:100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.gender')" prop="gender">
             <el-select v-model="editForm.gender" style="width:100%" :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectGender')">
@@ -218,10 +217,10 @@
              </el-select>
            </el-form-item>
            <el-form-item :label="$t('systembasicmgmt.userInfo.loginNo')" prop="loginNo">
-             <el-input v-model="editForm.loginNo" style="width:100%" />
+             <el-input v-model="editForm.loginNo" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputLoginNo')" style="width:100%" />
            </el-form-item>
            <el-form-item :label="$t('systembasicmgmt.userInfo.password')" prop="passWord">
-             <el-input v-model="editForm.passWord" type="password" style="width:100%" show-password />
+             <el-input v-model="editForm.passWord" type="password" :placeholder="$t('systembasicmgmt.userInfo.pleaseInputPassword')" style="width:100%" show-password />
            </el-form-item>
          </div>
          
@@ -343,10 +342,8 @@
 
        </el-form>
        <template #footer>
-         <span class="dialog-footer">
-           <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-           <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-         </span>
+         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -946,20 +943,11 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       debouncedFetchUserPages()
   }
 
-  // 立即查询数据（不使用防抖，用于保存后刷新）
-  const fetchUserPagesImmediate = () => {
+  const handlePageChange = () => {
       fetchUserPages()
   }
 
-  // 分页变化
-  const handlePageChange = (page) => {
-      pagination.pageIndex = page
-      fetchUserPages()
-  }
-
-  // 每页条数变化
-  const handleSizeChange = (size) => {
-      pagination.pageSize = size
+  const handleSizeChange = () => {
       pagination.pageIndex = 1
       fetchUserPages()
   }
@@ -1152,25 +1140,16 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
               showClose: true
           })
           resetForm()
-          dialogVisible.value = false
-          fetchUserPages()
+      dialogVisible.value = false
+            fetchUserPages()
       } else {
           if (res.code !== 401 && res.code !== 403) {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
+              ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
           }
       }
       submitLoading.value = false
   }
-  
-  /**
-   * 更新员工（编辑）
-   * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
-   */
+
   const updateUser = async () => {
       submitLoading.value = true
       const params = {
@@ -1178,24 +1157,13 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           hireDate: hireDateToDateTimePayload(editForm.hireDate)
       }
       const res = await post(UPDATE_USER_API.UPDATE_USER, params)
-      
       if (res && res.code === 200) {
-          ElMessage({
-              message: res.message,
-              type: 'success',
-              plain: true,
-              showClose: true
-          })
+          ElMessage({ message: res.message, type: 'success', plain: true, showClose: true })
           dialogVisible.value = false
           fetchUserPages()
       } else {
           if (res.code !== 401 && res.code !== 403) {
-              ElMessage({
-                  message: res.message,
-                  type: 'error',
-                  plain: true,
-                  showClose: true
-              })
+              ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
           }
       }
       submitLoading.value = false
@@ -1269,23 +1237,17 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       clearFormValidation()
   }
 
-  // 删除用户
-  const handleDelete = (index, row) => {
-      ElMessageBox.confirm(
-          t('systembasicmgmt.userInfo.deleteConfirm'),
-          t('common.tip'),
-          {
-              confirmButtonText: t('common.confirm'),
-              cancelButtonText: t('common.cancel'),
-              type: 'warning',
-          }
-      )
-          .then(() => {
-              deleteUser(row.userId)
-          })
-          .catch(() => {
-              // 取消删除
-          })
+  const handleDelete = async (index, row) => {
+      try {
+          await ElMessageBox.confirm(
+              t('systembasicmgmt.userInfo.deleteConfirm'),
+              t('common.tip'),
+              { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+          )
+      } catch {
+          return
+      }
+      deleteUser(row.userId)
   }
 
   // 保存编辑
@@ -1378,6 +1340,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   // 关闭对话框
   const handleDialogClose = () => {
       resetForm()
+      editFormRef.value?.clearValidate()
   }
 </script>
 

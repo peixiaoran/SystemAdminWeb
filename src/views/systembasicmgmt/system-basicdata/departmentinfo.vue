@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- 搜索表单 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
         <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentCode')">
           <el-input style="width: 180px"
@@ -28,7 +27,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格 -->
       <div class="table-container">
         <el-table :data="departmentList"
                   border
@@ -51,28 +49,24 @@
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
               <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systembasicmgmt.departmentInfo.addChild') }}</el-button>
-              <el-button size="small"
-                        type="danger"
-                        @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
 
-    <!-- 编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="55%"
                :close-on-click-modal="false"
                :append-to-body="true"
-               :modal-append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
       <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="部门编辑表单">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
-            <el-input v-model="editForm.departmentCode" style="width: 100%" />
+            <el-input v-model="editForm.departmentCode" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" style="width: 100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
             <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 60%" />
@@ -80,10 +74,10 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
-            <el-input v-model="editForm.departmentNameCn" style="width: 100%" />
+            <el-input v-model="editForm.departmentNameCn" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameCn')" style="width: 100%" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
-            <el-input v-model="editForm.departmentNameEn" style="width: 100%" />
+            <el-input v-model="editForm.departmentNameEn" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameEn')" style="width: 100%" />
           </el-form-item>
         </div>
         <div class="form-row">
@@ -123,10 +117,8 @@
         </div>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -135,39 +127,35 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick, computed } from 'vue'
 import { post } from '@/utils/request'
-import { 
-  GET_DEPARTMENT_TREE_API, 
-  GET_DEPARTMENT_ENTITY_API, 
-  INSERT_DEPARTMENT_API, 
-  DELETE_DEPARTMENT_API, 
+import {
+  GET_DEPARTMENT_TREE_API,
+  GET_DEPARTMENT_ENTITY_API,
+  INSERT_DEPARTMENT_API,
+  DELETE_DEPARTMENT_API,
   UPDATE_DEPARTMENT_API,
   GET_DEPARTMENTLEVEL_DROPDOWN_API,
-  GET_DEPARTMENT_TREE_DROPDOWN_API 
+  GET_DEPARTMENT_TREE_DROPDOWN_API
 } from '@/config/api/systembasicmgmt/system-basicdata/department'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
-// 初始化i18n
+const DEBOUNCE_MS = 300
+
 const { t } = useI18n()
 
-// 部门数据
 const departmentList = ref([])
 const loading = ref(false)
+const submitLoading = ref(false)
+const editFormRef = ref(null)
+const dialogVisible = ref(false)
+const dialogTitle = ref('')
+const isEdit = ref(false)
 
-// 过滤条件
 const filters = reactive({
   departmentCode: '',
   departmentName: ''
 })
 
-// 对话框显示状态
-const dialogVisible = ref(false)
-
-// 表单引用
-const editFormRef = ref(null)
-
-// 编辑表单
 const editForm = reactive({
   departmentId: '',
   departmentCode: '',
@@ -183,8 +171,7 @@ const editForm = reactive({
   isEnabled: 1
 })
 
-// 表单验证规则
-const formRules = reactive({
+const formRules = {
   departmentCode: [
     { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseInputCode'), trigger: 'blur' }
   ],
@@ -200,366 +187,82 @@ const formRules = reactive({
   departmentLevelId: [
     { required: true, message: () => t('systembasicmgmt.departmentInfo.pleaseSelectLevel'), trigger: 'change' }
   ]
-})
-
-// 对话框标题
-const dialogTitle = ref('')
-
-// 是否为编辑模式
-const isEdit = ref(false)
-
-// 提交加载状态
-const submitLoading = ref(false)
-
-// 部门选项（用于父部门选择）
-const departmentOptions = ref([])
-
-// 包含"顶级部门"选项的部门数据
-const departmentOptionsWithNone = computed(() => {
-  const options = [...departmentOptions.value]
-  // 添加"顶级部门"选项，departmentId为0
-  options.unshift({
-    departmentId: '0',
-    departmentName: t('systembasicmgmt.departmentInfo.topLevel'),
-    departmentChildList: []
-  })
-  return options
-})
-
-// 部门级别选项
-const departmentLevelOptions = ref([])
-
-const getFirstEnabledDepartmentLevelId = () => {
-  const firstEnabledLevel = departmentLevelOptions.value.find(item => !item.disabled)
-  return firstEnabledLevel ? firstEnabledLevel.departmentLevelId : ''
 }
 
-/**
- * 获取部门树（查询）
- * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
- */
+const departmentOptions = ref([])
+const departmentOptionsWithNone = computed(() => {
+  return [
+    { departmentId: '0', departmentName: t('systembasicmgmt.departmentInfo.topLevel'), departmentChildList: [] },
+    ...departmentOptions.value
+  ]
+})
+
+const departmentLevelOptions = ref([])
+
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
+const getFirstEnabledDepartmentLevelId = () => {
+  return departmentLevelOptions.value.find(item => !item.disabled)?.departmentLevelId ?? ''
+}
+
 const getDepartmentTree = async () => {
   loading.value = true
-  const params = {
+  const response = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, {
     departmentCode: filters.departmentCode,
     departmentName: filters.departmentName
-  }
-  const response = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, params)
-  if (response.code === 200) {
+  })
+  if (response?.code === 200) {
     departmentList.value = response.data || []
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.departmentInfo.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
     }
     departmentList.value = []
   }
   loading.value = false
 }
 
-// 防抖获取部门数据
-const debouncedGetDepartmentTree = debounce(getDepartmentTree, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 立即获取部门数据（不使用防抖，用于保存后刷新）
-const getDepartmentTreeImmediate = () => {
-  getDepartmentTree()
-}
-
-/**
- * 获取部门级别下拉（查询）
- * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
- */
 const getDepartmentLevelDropdown = async () => {
   const response = await post(GET_DEPARTMENTLEVEL_DROPDOWN_API.GET_DEPARTMENTLEVEL_DROPDOWN, {})
-  if (response.code === 200) {
+  if (response?.code === 200) {
     departmentLevelOptions.value = response.data || []
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.departmentInfo.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
     }
     departmentLevelOptions.value = []
   }
 }
 
-/**
- * 获取部门下拉（查询，用于父部门选择）
- * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
- */
 const getDepartmentDropdown = async () => {
   const response = await post(GET_DEPARTMENT_TREE_DROPDOWN_API.GET_DEPARTMENT_TREE_DROPDOWN, {})
-  if (response.code === 200) {
+  if (response?.code === 200) {
     departmentOptions.value = response.data || []
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.departmentInfo.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
     }
     departmentOptions.value = []
   }
 }
 
-// 处理搜索操作（带防抖）
-const handleSearch = () => {
+let searchTimer = null
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
-  debouncedGetDepartmentTree()
+  searchTimer = setTimeout(() => getDepartmentTree(), DEBOUNCE_MS)
 }
 
-// 重置
+const handleSearch = () => scheduleSearch()
+
 const handleReset = () => {
   filters.departmentCode = ''
   filters.departmentName = ''
-  // 重置后自动触发查询（使用防抖）
-  loading.value = true
-  debouncedGetDepartmentTree()
+  scheduleSearch()
 }
 
-/**
- * 添加部门
- * 打开对话框前重置表单，打开后清除校验，避免初始值变更触发"change"校验
- */
-const handleAdd = () => {
-  resetForm()
-  dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
-  isEdit.value = false
-  dialogVisible.value = true
-  nextTick(() => {
-    if (editFormRef.value) {
-      try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
-    }
-  })
-}
-
-/**
- * 添加子部门
- * 预填父部门并打开对话框，打开后清除校验，避免变更触发"change"校验
- */
-const handleAddChild = (index, row) => {
-  resetForm()
-  editForm.parentId = row.departmentId
-  dialogTitle.value = t('systembasicmgmt.departmentInfo.addChild')
-  isEdit.value = false
-  dialogVisible.value = true
-  nextTick(() => {
-    if (editFormRef.value) {
-      try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
-    }
-  })
-}
-
-/**
- * 编辑部门
- * 拉取部门详情并填充表单，打开后清除校验，避免变更触发"change"校验
- */
-/**
- * 编辑部门（查询实体并填充表单）
- */
-const handleEdit = async (index, row) => {
-  resetForm()
-  const formData = new FormData()
-  formData.append('deptId', row.departmentId)
-  const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
-  if (response.code === 200) {
-    const data = response.data
-    Object.assign(editForm, {
-      departmentId: data.departmentId,
-      departmentCode: data.departmentCode,
-      departmentNameCn: data.departmentNameCn,
-      departmentNameEn: data.departmentNameEn,
-      parentId: data.parentId,
-      departmentLevelId: data.departmentLevelId,
-      description: data.description,
-      sortOrder: data.sortOrder,
-      landline: data.landline,
-      email: data.email,
-      address: data.address,
-      isEnabled: data.isEnabled
-    })
-    if (!editForm.departmentLevelId) {
-      editForm.departmentLevelId = getFirstEnabledDepartmentLevelId()
-    }
-    dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
-    isEdit.value = true
-    dialogVisible.value = true
-    nextTick(() => {
-      if (editFormRef.value) {
-        try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
-      }
-    })
-  } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.departmentInfo.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  }
-}
-
-// 删除部门
-const handleDelete = async (index, row) => {
-  try {
-    await ElMessageBox.confirm(
-      t('systembasicmgmt.departmentInfo.deleteConfirm'),
-      t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
-    )
-    
-    const formData = new FormData()
-    formData.append('deptId', row.departmentId)
-    
-    const response = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
-    
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      getDepartmentTreeImmediate()
-    } else {
-      if (response.code !== 401 && response.code !== 403) {
-        ElMessage({
-          message: response.message,
-          type: 'error',
-          plain: true,
-          showClose: true
-        })
-      }
-    }
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage({
-        message: t('systembasicmgmt.departmentInfo.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  }
-}
-
-/**
- * 新增部门（新增）
- */
-const addDepartment = async () => {
-  submitLoading.value = true
-  const params = {
-    departmentCode: editForm.departmentCode,
-    departmentNameCn: editForm.departmentNameCn,
-    departmentNameEn: editForm.departmentNameEn,
-    parentId: editForm.parentId,
-    departmentLevelId: editForm.departmentLevelId,
-    description: editForm.description,
-    sortOrder: editForm.sortOrder,
-    landline: editForm.landline,
-    email: editForm.email,
-    address: editForm.address,
-    // 前端不提供“是否启用”开关：新增默认启用
-    isEnabled: 1
-  }
-  
-  const response = await post(INSERT_DEPARTMENT_API.INSERT_DEPARTMENT, params)
-  
-  if (response.code === 200) {
-    ElMessage({
-      message: response.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
-    dialogVisible.value = false
-    getDepartmentTreeImmediate()
-  } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  }
-  submitLoading.value = false
-}
-
-/**
- * 更新部门（修改）
- */
-const updateDepartment = async () => {
-  submitLoading.value = true
-  const params = {
-    departmentId: editForm.departmentId,
-    departmentCode: editForm.departmentCode,
-    departmentNameCn: editForm.departmentNameCn,
-    departmentNameEn: editForm.departmentNameEn,
-    parentId: editForm.parentId,
-    departmentLevelId: editForm.departmentLevelId,
-    description: editForm.description,
-    sortOrder: editForm.sortOrder,
-    landline: editForm.landline,
-    email: editForm.email,
-    address: editForm.address,
-    // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
-    isEnabled: editForm.isEnabled
-  }
-  
-  const response = await post(UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT, params)
-  
-  if (response.code === 200) {
-    ElMessage({
-      message: response.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
-    dialogVisible.value = false
-    getDepartmentTreeImmediate()
-  } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message,
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  }
-  submitLoading.value = false
-}
-
-// 提交表单
-const handleSubmit = async () => {
-  const isValid = await editFormRef.value.validate().catch(() => false)
-  if (!isValid) return
-  
-  if (isEdit.value) {
-    await updateDepartment()
-  } else {
-    await addDepartment()
-  }
-}
-
-// 重置表单
 const resetForm = () => {
   Object.assign(editForm, {
     departmentId: '',
@@ -577,20 +280,126 @@ const resetForm = () => {
   })
 }
 
-// 对话框关闭
-const handleDialogClose = () => {
-  if (editFormRef.value) {
-    try { editFormRef.value.clearValidate() } catch (error) { /* no-op */ }
+const handleAdd = () => {
+  resetForm()
+  dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
+  isEdit.value = false
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
+const handleAddChild = (index, row) => {
+  resetForm()
+  editForm.parentId = row.departmentId
+  dialogTitle.value = t('systembasicmgmt.departmentInfo.addChild')
+  isEdit.value = false
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
+const handleEdit = async (index, row) => {
+  resetForm()
+  const formData = new FormData()
+  formData.append('deptId', row.departmentId)
+  const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
+  if (response?.code === 200) {
+    const data = response.data
+    Object.assign(editForm, {
+      departmentId: data.departmentId,
+      departmentCode: data.departmentCode,
+      departmentNameCn: data.departmentNameCn,
+      departmentNameEn: data.departmentNameEn,
+      parentId: data.parentId,
+      departmentLevelId: data.departmentLevelId || getFirstEnabledDepartmentLevelId(),
+      description: data.description,
+      sortOrder: data.sortOrder,
+      landline: data.landline,
+      email: data.email,
+      address: data.address,
+      isEnabled: data.isEnabled
+    })
+    dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
+    isEdit.value = true
+    dialogVisible.value = true
+    nextTick(() => editFormRef.value?.clearValidate())
+  } else {
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+    }
   }
 }
 
-// 树形选择器过滤方法
+const handleDelete = async (index, row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('systembasicmgmt.departmentInfo.deleteConfirm'),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  const formData = new FormData()
+  formData.append('deptId', row.departmentId)
+  const response = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
+  if (response?.code === 200) {
+    showMessage(response.message, 'success')
+    getDepartmentTree()
+  } else {
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message)
+    }
+  }
+}
+
+const handleSubmit = async () => {
+  const isValid = await editFormRef.value?.validate().catch(() => false)
+  if (!isValid) return
+
+  submitLoading.value = true
+  const params = {
+    departmentCode: editForm.departmentCode,
+    departmentNameCn: editForm.departmentNameCn,
+    departmentNameEn: editForm.departmentNameEn,
+    parentId: editForm.parentId,
+    departmentLevelId: editForm.departmentLevelId,
+    description: editForm.description,
+    sortOrder: editForm.sortOrder,
+    landline: editForm.landline,
+    email: editForm.email,
+    address: editForm.address
+  }
+  if (isEdit.value) {
+    params.departmentId = editForm.departmentId
+    params.isEnabled = editForm.isEnabled
+  } else {
+    params.isEnabled = 1
+  }
+
+  const api = isEdit.value ? UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT : INSERT_DEPARTMENT_API.INSERT_DEPARTMENT
+  const response = await post(api, params)
+  if (response?.code === 200) {
+    showMessage(response.message, 'success')
+    dialogVisible.value = false
+    getDepartmentTree()
+  } else {
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message)
+    }
+  }
+  submitLoading.value = false
+}
+
+const handleDialogClose = () => {
+  resetForm()
+  editFormRef.value?.clearValidate()
+}
+
 const filterNodeMethod = (value, data) => {
   if (!value) return true
   return data.departmentName.includes(value)
 }
 
-// 组件挂载
 onMounted(() => {
   getDepartmentTree()
   getDepartmentLevelDropdown()
@@ -602,7 +411,6 @@ onMounted(() => {
   @import '@/assets/styles/conventionalTablePage.css';
 </style>
 
-<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
 <style>
   .main-dept-filter-popper {
     width: auto !important;
@@ -622,4 +430,3 @@ onMounted(() => {
     min-width: 100% !important;
   }
 </style>
-

@@ -3,12 +3,7 @@
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.workflowrulestep.title')">
         <el-form-item :label="$t('formbusiness.workflowrulestep.formGroupName')">
-          <el-select
-            v-model="searchForm.formGroupId"
-            filterable
-            style="width: 180px"
-            @change="handleFormGroupChange"
-          >
+          <el-select v-model="searchForm.formGroupId" filterable style="width: 180px" @change="getFormTypeOptions">
             <el-option
               v-for="item in formGroupOptions"
               :key="item.formGroupId"
@@ -18,12 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrulestep.formTypeName')">
-          <el-select
-            v-model="searchForm.formTypeId"
-            filterable
-            style="width: 180px"
-            @change="handleFormTypeChange"
-          >
+          <el-select v-model="searchForm.formTypeId" filterable style="width: 180px" @change="getRuleOptions">
             <el-option
               v-for="item in formTypeOptions"
               :key="item.formTypeId"
@@ -33,12 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrulestep.rule')">
-          <el-select
-            v-model="searchForm.ruleId"
-            filterable
-            style="width: 220px"
-            @change="handleRuleChange"
-          >
+          <el-select v-model="searchForm.ruleId" filterable style="width: 220px" @change="getRuleStepList">
             <el-option
               v-for="item in ruleOptions"
               :key="item.ruleId"
@@ -219,24 +204,26 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-/** 下一步骤 ID 为 "0" 表示流程结束（后端 NextStepId 为 string） */
+// nextStepId 为 "0" 表示流程结束（后端 NextStepId 为 string 类型）
 const NEXT_STEP_END_ID = '0'
+const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
+// 最小 loading 显示时间，避免接口太快导致动画一闪而过
+const MIN_LOADING_DURATION = 300
 
 const isNextStepEnd = (id) => id === 0 || id === '0' || Number(id) === 0
 
 const normalizeNextStepIdForForm = (val) => {
   if (val === null || val === undefined) return ''
-  if (isNextStepEnd(val)) return NEXT_STEP_END_ID
-  return val
+  return isNextStepEnd(val) ? NEXT_STEP_END_ID : val
 }
 
-const FORM_DATA_OPTIONS = {
-  headers: { 'Content-Type': 'multipart/form-data' },
-  skipDedupe: true
-}
+const isSuccess = (code) => code === 200 || code === '200'
 
-// 最小 loading 显示时间，避免接口太快导致动画一闪而过
-const MIN_LOADING_DURATION = 300
+const buildFormData = (params) => {
+  const fd = new FormData()
+  Object.entries(params).forEach(([k, v]) => fd.append(k, v ?? ''))
+  return fd
+}
 
 const loading = ref(false)
 const ruleStepList = ref([])
@@ -247,47 +234,28 @@ const dialogFormTypeOptions = ref([])
 const dialogRuleOptions = ref([])
 const dialogStepOptions = ref([])
 
-const searchForm = reactive({
-  formGroupId: '',
-  formTypeId: '',
-  ruleId: ''
-})
+const searchForm = reactive({ formGroupId: '', formTypeId: '', ruleId: '' })
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const buildFormData = (params) => {
-  const formData = new FormData()
-  Object.entries(params).forEach(([key, value]) => {
-    formData.append(key, value ?? '')
-  })
-  return formData
-}
-
 let listSeq = 0
-/**
- * 获取流程规则步骤列表；ruleId 为空时也走一遍 loading 流程并清空表格
- */
 const getRuleStepList = async () => {
   const seq = ++listSeq
   loading.value = true
-  const loadingStart = Date.now()
+  const start = Date.now()
   try {
     if (!searchForm.ruleId) {
       ruleStepList.value = []
       return
     }
-    const response = await post(
-      GET_WORKFLOWRULESTEP_LIST_API,
-      buildFormData({ ruleId: searchForm.ruleId }),
-      FORM_DATA_OPTIONS
-    )
+    const res = await post(GET_WORKFLOWRULESTEP_LIST_API, buildFormData({ ruleId: searchForm.ruleId }), FORM_DATA_OPTIONS)
     if (seq !== listSeq) return
-    if (response.code === 200) {
-      ruleStepList.value = response.data || []
+    if (res.code === 200) {
+      ruleStepList.value = res.data || []
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
       ruleStepList.value = []
     }
   } catch {
@@ -295,19 +263,16 @@ const getRuleStepList = async () => {
     ruleStepList.value = []
   } finally {
     if (seq === listSeq) {
-      const elapsed = Date.now() - loadingStart
+      const elapsed = Date.now() - start
       if (elapsed < MIN_LOADING_DURATION) {
-        await new Promise(resolve => setTimeout(resolve, MIN_LOADING_DURATION - elapsed))
+        await new Promise(r => setTimeout(r, MIN_LOADING_DURATION - elapsed))
       }
       if (seq === listSeq) loading.value = false
     }
   }
 }
 
-/**
- * 获取流程规则下拉，并默认选中第一项；接着触发列表加载动画
- * 防抖：通过 ruleSeq 丢弃过期响应，避免快速切换时回填错乱
- */
+// 通过 seq 丢弃过期响应，避免快速切换时回填错乱
 let ruleSeq = 0
 const getRuleOptions = async (formTypeId) => {
   const seq = ++ruleSeq
@@ -318,17 +283,13 @@ const getRuleOptions = async (formTypeId) => {
     return
   }
   try {
-    const response = await post(
-      GET_WORKFLOWRULE_DROPDOWN_API,
-      buildFormData({ formTypeId }),
-      FORM_DATA_OPTIONS
-    )
+    const res = await post(GET_WORKFLOWRULE_DROPDOWN_API, buildFormData({ formTypeId }), FORM_DATA_OPTIONS)
     if (seq !== ruleSeq) return
-    if (response.code === 200) {
-      ruleOptions.value = response.data || []
-      searchForm.ruleId = ruleOptions.value.length > 0 ? ruleOptions.value[0].ruleId : ''
+    if (res.code === 200) {
+      ruleOptions.value = res.data || []
+      searchForm.ruleId = ruleOptions.value[0]?.ruleId ?? ''
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
       ruleOptions.value = []
       searchForm.ruleId = ''
     }
@@ -340,10 +301,6 @@ const getRuleOptions = async (formTypeId) => {
   if (seq === ruleSeq) await getRuleStepList()
 }
 
-/**
- * 获取表单类别下拉，并默认选中第一项；接着触发规则下拉加载
- * 防抖：通过 formTypeSeq 丢弃过期响应
- */
 let formTypeSeq = 0
 const getFormTypeOptions = async (formGroupId) => {
   const seq = ++formTypeSeq
@@ -354,17 +311,13 @@ const getFormTypeOptions = async (formGroupId) => {
     return
   }
   try {
-    const response = await post(
-      GET_FORMTYPE_DROPDOWN_API,
-      buildFormData({ formGroupId }),
-      FORM_DATA_OPTIONS
-    )
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId }), FORM_DATA_OPTIONS)
     if (seq !== formTypeSeq) return
-    if (response.code === 200) {
-      formTypeOptions.value = response.data || []
-      searchForm.formTypeId = formTypeOptions.value.length > 0 ? formTypeOptions.value[0].formTypeId : ''
+    if (res.code === 200) {
+      formTypeOptions.value = res.data || []
+      searchForm.formTypeId = formTypeOptions.value[0]?.formTypeId ?? ''
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
@@ -378,40 +331,19 @@ const getFormTypeOptions = async (formGroupId) => {
 
 const getFormGroupOptions = async () => {
   try {
-    const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
-    if (response.code === 200) {
-      formGroupOptions.value = response.data || []
+    const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
+    if (res.code === 200) {
+      formGroupOptions.value = res.data || []
       if (formGroupOptions.value.length > 0 && !searchForm.formGroupId) {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      showMessage(response.message)
+      showMessage(res.message)
     }
   } catch {
     showMessage(t('formbusiness.workflowrulestep.getFormGroupFailed'))
   }
-}
-
-/**
- * 表单组别改变：先刷新表单类别下拉 → 再刷新规则下拉 → 再触发列表查询
- */
-const handleFormGroupChange = (val) => {
-  getFormTypeOptions(val)
-}
-
-/**
- * 表单类别改变：先刷新规则下拉 → 再触发列表查询
- */
-const handleFormTypeChange = (val) => {
-  getRuleOptions(val)
-}
-
-/**
- * 流程规则改变：直接触发列表查询
- */
-const handleRuleChange = () => {
-  getRuleStepList()
 }
 
 const dialogVisible = ref(false)
@@ -429,153 +361,98 @@ const dialogForm = reactive({
   sortOrder: 0
 })
 
-const dialogFormRules = reactive({
-  formGroupId: [
-    { required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectFormGroup'), trigger: 'change' }
-  ],
-  formTypeId: [
-    { required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectFormType'), trigger: 'change' }
-  ],
-  ruleId: [
-    { required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectRule'), trigger: 'change' }
-  ],
-  currentStepId: [
-    { required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectCurrentStep'), trigger: 'change' }
-  ],
-  nextStepId: [
-    {
-      required: true,
-      validator: (_rule, value, callback) => {
-        if (value === '' || value === null || value === undefined) {
-          callback(new Error(t('formbusiness.workflowrulestep.pleaseSelectNextStep')))
-          return
-        }
-        callback()
-      },
-      trigger: 'change'
-    }
-  ]
-})
+const dialogFormRules = {
+  formGroupId:   [{ required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectFormGroup'),    trigger: 'change' }],
+  formTypeId:    [{ required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectFormType'),     trigger: 'change' }],
+  ruleId:        [{ required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectRule'),         trigger: 'change' }],
+  currentStepId: [{ required: true, message: () => t('formbusiness.workflowrulestep.pleaseSelectCurrentStep'), trigger: 'change' }],
+  nextStepId: [{
+    required: true,
+    validator: (_rule, value, callback) => {
+      if (value === '' || value === null || value === undefined) {
+        callback(new Error(t('formbusiness.workflowrulestep.pleaseSelectNextStep')))
+        return
+      }
+      callback()
+    },
+    trigger: 'change'
+  }]
+}
 
 const resetDialogForm = () => {
   dialogForm.formGroupId = ''
-  dialogForm.formTypeId = ''
-  dialogForm.ruleId = ''
+  dialogForm.formTypeId  = ''
+  dialogForm.ruleId      = ''
   dialogForm.currentStepId = ''
-  dialogForm.nextStepId = ''
-  dialogForm.sortOrder = 0
+  dialogForm.nextStepId  = ''
+  dialogForm.sortOrder   = 0
 }
 
-/**
- * 仅为弹窗加载表单类别下拉
- */
 const loadDialogFormTypeOptions = async (formGroupId) => {
-  if (!formGroupId) {
-    dialogFormTypeOptions.value = []
-    return
-  }
+  if (!formGroupId) { dialogFormTypeOptions.value = []; return }
   try {
-    const response = await post(
-      GET_FORMTYPE_DROPDOWN_API,
-      buildFormData({ formGroupId }),
-      FORM_DATA_OPTIONS
-    )
-    dialogFormTypeOptions.value = response.code === 200 ? (response.data || []) : []
+    const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId }), FORM_DATA_OPTIONS)
+    dialogFormTypeOptions.value = res.code === 200 ? (res.data || []) : []
   } catch {
     dialogFormTypeOptions.value = []
   }
 }
 
-/**
- * 仅为弹窗加载规则下拉
- */
 const loadDialogRuleOptions = async (formTypeId) => {
-  if (!formTypeId) {
-    dialogRuleOptions.value = []
-    return
-  }
+  if (!formTypeId) { dialogRuleOptions.value = []; return }
   try {
-    const response = await post(
-      GET_WORKFLOWRULE_DROPDOWN_API,
-      buildFormData({ formTypeId }),
-      FORM_DATA_OPTIONS
-    )
-    dialogRuleOptions.value = response.code === 200 ? (response.data || []) : []
+    const res = await post(GET_WORKFLOWRULE_DROPDOWN_API, buildFormData({ formTypeId }), FORM_DATA_OPTIONS)
+    dialogRuleOptions.value = res.code === 200 ? (res.data || []) : []
   } catch {
     dialogRuleOptions.value = []
   }
 }
 
-/**
- * 仅为弹窗加载步骤下拉（传参 formTypeId 取弹窗内表单类别下拉 dialogForm.formTypeId）
- */
+// formTypeId 取弹窗内 dialogForm.formTypeId，确保步骤选项与所选表单类别一致
 const loadDialogStepOptions = async () => {
   const formTypeId = dialogForm.formTypeId
-  if (!formTypeId) {
-    dialogStepOptions.value = []
-    return
-  }
+  if (!formTypeId) { dialogStepOptions.value = []; return }
   try {
-    const response = await post(
-      GET_WORKFLOWSTEP_DROPDOWN_API,
-      buildFormData({ formTypeId: String(formTypeId) }),
-      FORM_DATA_OPTIONS
-    )
-    dialogStepOptions.value = response.code === 200 ? (response.data || []) : []
+    const res = await post(GET_WORKFLOWSTEP_DROPDOWN_API, buildFormData({ formTypeId: String(formTypeId) }), FORM_DATA_OPTIONS)
+    dialogStepOptions.value = res.code === 200 ? (res.data || []) : []
   } catch {
     dialogStepOptions.value = []
   }
 }
 
-/**
- * 弹窗内表单组别变更：刷新表单类别 → 联动刷新规则、步骤
- */
 const handleDialogFormGroupChange = async (val) => {
-  dialogForm.formTypeId = ''
-  dialogForm.ruleId = ''
+  dialogForm.formTypeId    = ''
+  dialogForm.ruleId        = ''
   dialogForm.currentStepId = ''
-  dialogForm.nextStepId = ''
+  dialogForm.nextStepId    = ''
   dialogFormTypeOptions.value = []
-  dialogRuleOptions.value = []
-  dialogStepOptions.value = []
+  dialogRuleOptions.value     = []
+  dialogStepOptions.value     = []
   if (!val) return
   dialogLoading.value = true
   try {
     await loadDialogFormTypeOptions(val)
     if (dialogFormTypeOptions.value.length > 0) {
       dialogForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
-      await Promise.all([
-        loadDialogRuleOptions(dialogForm.formTypeId),
-        loadDialogStepOptions()
-      ])
-      if (dialogRuleOptions.value.length > 0) {
-        dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
-      }
+      await Promise.all([loadDialogRuleOptions(dialogForm.formTypeId), loadDialogStepOptions()])
+      if (dialogRuleOptions.value.length > 0) dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
     }
   } finally {
     dialogLoading.value = false
   }
 }
 
-/**
- * 弹窗内表单类别变更：联动刷新规则、步骤
- */
 const handleDialogFormTypeChange = async (val) => {
-  dialogForm.ruleId = ''
+  dialogForm.ruleId        = ''
   dialogForm.currentStepId = ''
-  dialogForm.nextStepId = ''
-  dialogRuleOptions.value = []
-  dialogStepOptions.value = []
+  dialogForm.nextStepId    = ''
+  dialogRuleOptions.value  = []
+  dialogStepOptions.value  = []
   if (!val) return
   dialogLoading.value = true
   try {
-    await Promise.all([
-      loadDialogRuleOptions(val),
-      loadDialogStepOptions()
-    ])
-    if (dialogRuleOptions.value.length > 0) {
-      dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
-    }
+    await Promise.all([loadDialogRuleOptions(val), loadDialogStepOptions()])
+    if (dialogRuleOptions.value.length > 0) dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
   } finally {
     dialogLoading.value = false
   }
@@ -586,36 +463,27 @@ const handleAdd = async () => {
   dialogVisible.value = true
   dialogLoading.value = true
   try {
-    const formGroupId = searchForm.formGroupId
-      || (formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : '')
+    const formGroupId = searchForm.formGroupId || formGroupOptions.value[0]?.formGroupId || ''
     if (formGroupId) {
       dialogForm.formGroupId = formGroupId
       await loadDialogFormTypeOptions(formGroupId)
-      const formTypeId = searchForm.formTypeId
-        && dialogFormTypeOptions.value.some(item => item.formTypeId === searchForm.formTypeId)
+      const formTypeId = searchForm.formTypeId && dialogFormTypeOptions.value.some(i => i.formTypeId === searchForm.formTypeId)
         ? searchForm.formTypeId
         : (dialogFormTypeOptions.value[0]?.formTypeId || '')
       if (formTypeId) {
         dialogForm.formTypeId = formTypeId
-        await Promise.all([
-          loadDialogRuleOptions(formTypeId),
-          loadDialogStepOptions()
-        ])
-        const ruleId = searchForm.ruleId
-          && dialogRuleOptions.value.some(item => item.ruleId === searchForm.ruleId)
+        await Promise.all([loadDialogRuleOptions(formTypeId), loadDialogStepOptions()])
+        dialogForm.ruleId = searchForm.ruleId && dialogRuleOptions.value.some(i => i.ruleId === searchForm.ruleId)
           ? searchForm.ruleId
           : (dialogRuleOptions.value[0]?.ruleId || '')
-        dialogForm.ruleId = ruleId
       }
     }
     dialogForm.currentStepId = ''
-    dialogForm.nextStepId = ''
-    dialogForm.sortOrder = 0
+    dialogForm.nextStepId    = ''
+    dialogForm.sortOrder     = 0
   } finally {
     dialogLoading.value = false
-    nextTick(() => {
-      dialogFormRef.value?.clearValidate()
-    })
+    nextTick(() => dialogFormRef.value?.clearValidate())
   }
 }
 
@@ -623,20 +491,20 @@ const handleEdit = async (row) => {
   dialogVisible.value = true
   dialogLoading.value = true
   try {
-    const response = await post(
+    const res = await post(
       GET_WORKFLOWRULESTEP_ENTITY_API,
       buildFormData({ ruleId: row.ruleId, currentStepId: row.currentStepId }),
       FORM_DATA_OPTIONS
     )
-    if (response.code === 200 && response.data) {
+    if (res.code === 200 && res.data) {
       isEditMode.value = true
-      const d = response.data
-      dialogForm.formGroupId = d.formGroupId ?? searchForm.formGroupId ?? ''
-      dialogForm.formTypeId = d.formTypeId ?? searchForm.formTypeId ?? ''
-      dialogForm.ruleId = d.ruleId || row.ruleId || ''
+      const d = res.data
+      dialogForm.formGroupId   = d.formGroupId   ?? searchForm.formGroupId ?? ''
+      dialogForm.formTypeId    = d.formTypeId    ?? searchForm.formTypeId  ?? ''
+      dialogForm.ruleId        = d.ruleId        || row.ruleId        || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
-      dialogForm.nextStepId = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
-      dialogForm.sortOrder = d.sortOrder ?? row.sortOrder ?? 0
+      dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
+      dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 0
 
       const tasks = []
       if (dialogForm.formGroupId) tasks.push(loadDialogFormTypeOptions(dialogForm.formGroupId))
@@ -645,13 +513,10 @@ const handleEdit = async (row) => {
         tasks.push(loadDialogStepOptions())
       }
       if (tasks.length) await Promise.all(tasks)
-
-      nextTick(() => {
-        dialogFormRef.value?.clearValidate()
-      })
+      nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false
-      showMessage(response.message || t('formbusiness.workflowrulestep.getEntityFailed'))
+      showMessage(res.message || t('formbusiness.workflowrulestep.getEntityFailed'))
     }
   } catch {
     dialogVisible.value = false
@@ -665,8 +530,8 @@ const handleDialogClose = () => {
   dialogFormRef.value?.resetFields()
   resetDialogForm()
   dialogFormTypeOptions.value = []
-  dialogRuleOptions.value = []
-  dialogStepOptions.value = []
+  dialogRuleOptions.value     = []
+  dialogStepOptions.value     = []
   isEditMode.value = false
 }
 
@@ -689,23 +554,21 @@ const handleSubmit = async () => {
   const isEdit = isEditMode.value
   try {
     const params = {
-      ruleId: dialogForm.ruleId,
+      ruleId:        dialogForm.ruleId,
       currentStepId: dialogForm.currentStepId,
-      nextStepId: isNextStepEnd(dialogForm.nextStepId) ? '0' : String(dialogForm.nextStepId),
-      sortOrder: dialogForm.sortOrder
+      nextStepId:    isNextStepEnd(dialogForm.nextStepId) ? '0' : String(dialogForm.nextStepId),
+      sortOrder:     dialogForm.sortOrder
     }
-    const api = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API
+    const api        = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
-    const failKey = isEdit ? 'editFailed' : 'addFailed'
-    const response = await post(api, params)
-    if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t(`formbusiness.workflowrulestep.${successKey}`), 'success')
+    const failKey    = isEdit ? 'editFailed'  : 'addFailed'
+    const res = await post(api, params)
+    if (isSuccess(res.code)) {
+      showMessage(res.message || t(`formbusiness.workflowrulestep.${successKey}`), 'success')
       dialogVisible.value = false
-      if (dialogForm.ruleId === searchForm.ruleId) {
-        await getRuleStepList()
-      }
+      if (dialogForm.ruleId === searchForm.ruleId) await getRuleStepList()
     } else {
-      showMessage(response.message || t(`formbusiness.workflowrulestep.${failKey}`))
+      showMessage(res.message || t(`formbusiness.workflowrulestep.${failKey}`))
     }
   } catch {
     showMessage(t(`formbusiness.workflowrulestep.${isEdit ? 'editFailed' : 'addFailed'}`))
@@ -719,27 +582,23 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm(
       t('formbusiness.workflowrulestep.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
   }
   loading.value = true
   try {
-    const response = await post(
+    const res = await post(
       DELETE_WORKFLOWRULESTEP_API,
       buildFormData({ ruleId: row.ruleId, currentStepId: row.currentStepId }),
       FORM_DATA_OPTIONS
     )
-    if (response.code === 200 || response.code === '200') {
-      showMessage(response.message || t('formbusiness.workflowrulestep.deleteSuccess'), 'success')
+    if (isSuccess(res.code)) {
+      showMessage(res.message || t('formbusiness.workflowrulestep.deleteSuccess'), 'success')
       await getRuleStepList()
     } else {
-      showMessage(response.message || t('formbusiness.workflowrulestep.deleteFailed'))
+      showMessage(res.message || t('formbusiness.workflowrulestep.deleteFailed'))
     }
   } catch {
     showMessage(t('formbusiness.workflowrulestep.deleteFailed'))

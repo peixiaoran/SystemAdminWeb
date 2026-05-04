@@ -25,7 +25,7 @@ export const GET_DEPARTMENT_DROPDOWN_API = {
 
 // 职业下拉框API
 export const GET_USER_POSITION_DROPDOWN_API = {
-    GET_USER_POSITION_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetUserPositionDrop'
+    GET_USER_POSITION_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetPositionDrop'
 }
 
 // 角色下拉框API

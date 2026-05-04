@@ -24,9 +24,8 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
+        <el-table
           :data="laborList"
           border
           stripe
@@ -51,7 +50,12 @@
               <span v-else class="ellipsis-cell">-</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center"><template #default="scope"><el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button><el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">{{ $t('common.delete') }}</el-button></template></el-table-column>
+          <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
+            <template #default="scope">
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -67,62 +71,59 @@
         />
       </div>
     </el-card>
-    
-    <el-dialog 
+
+    <el-dialog
       v-model="dialogVisible"
       :title="isEdit ? $t('systembasicmgmt.userLabor.editLabor') : $t('systembasicmgmt.userLabor.addLabor')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
-        <el-form 
+        <el-form
           :inline="true"
           ref="formRef"
-          :model="form" 
+          :model="form"
           :rules="rules"
-          label-width="100px" 
+          label-width="100px"
           class="dialog-form"
-          role="form" 
+          role="form"
           aria-label="员工职业编辑"
         >
           <div class="form-row">
             <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameCn')" prop="laborNameCn">
-              <el-input 
-                v-model="form.laborNameCn" 
+              <el-input
+                v-model="form.laborNameCn"
                 :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameCn')"
-                style="width:100%" 
+                style="width:100%"
               />
             </el-form-item>
             <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameEn')" prop="laborNameEn">
               <el-input
                 v-model="form.laborNameEn"
                 :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameEn')"
-                style="width:100%" 
+                style="width:100%"
               />
             </el-form-item>
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('systembasicmgmt.userLabor.description')" prop="description">
-              <el-input 
-                v-model="form.description" 
+              <el-input
+                v-model="form.description"
                 :placeholder="$t('systembasicmgmt.userLabor.pleaseInputDescription')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="3" 
+                style="width:100%"
+                type="textarea"
+                :rows="3"
               />
             </el-form-item>
           </div>
         </el-form>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -132,7 +133,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
-import { 
+import {
   GET_USERLABOR_LIST_API,
   GET_USER_LABOR_ENTITY_API,
   INSERT_USER_LABOR_API,
@@ -140,34 +141,29 @@ import {
   DELETE_USER_LABOR_API
 } from '@/config/api/systembasicmgmt/system-basicdata/userlabor.js'
 import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
-// 使用i18n
+const DEBOUNCE_MS = 300
+
 const { t } = useI18n()
 
-// 响应式数据
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const deletingId = ref(null)
 const laborList = ref([])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
 
-// 搜索表单
 const searchForm = reactive({
   laborName: ''
 })
 
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 20,
   totalCount: 0
 })
 
-// 表单数据
 const form = reactive({
   laborId: '',
   laborNameCn: '',
@@ -175,7 +171,6 @@ const form = reactive({
   description: ''
 })
 
-// 表单验证规则
 const rules = {
   laborNameCn: [
     { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
@@ -185,226 +180,132 @@ const rules = {
   ]
 }
 
-/**
- * 获取职业列表（查询）
- * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
- */
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
 const getLaborList = async () => {
   loading.value = true
-  const params = {
+  const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, {
     laborName: searchForm.laborName,
     pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    totalCount: pagination.total
-  }
-
-  const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
-  if (response.code === 200) {
+    pageSize: pagination.pageSize
+  })
+  if (response?.code === 200) {
     laborList.value = response.data || []
     pagination.totalCount = response.totalCount || 0
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'))
     }
     laborList.value = []
   }
   loading.value = false
 }
 
-// 使用通用防抖工具
-const debouncedGetLaborList = debounce(() => {
-  getLaborList()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
-const handleSearch = () => {
-  pagination.pageIndex = 1
+let searchTimer = null
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
-  debouncedGetLaborList()
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    getLaborList()
+  }, DEBOUNCE_MS)
 }
 
-// 重置搜索
+const handleSearch = () => scheduleSearch()
+
 const handleReset = () => {
   searchForm.laborName = ''
-  // 重置后自动触发查询（使用防抖）
-  pagination.pageIndex = 1
-  loading.value = true
-  debouncedGetLaborList()
+  scheduleSearch()
 }
 
-// 分页大小改变
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
+const handleSizeChange = () => {
   pagination.pageIndex = 1
   getLaborList()
 }
 
-// 当前页改变
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
+const handleCurrentChange = () => {
   getLaborList()
 }
 
-// 新增
+const resetForm = () => {
+  Object.assign(form, { laborId: '', laborNameCn: '', laborNameEn: '', description: '' })
+}
+
 const handleAdd = () => {
   resetForm()
   isEdit.value = false
   dialogVisible.value = true
-  nextTick(() => {
-    if (formRef.value) {
-      formRef.value.clearValidate()
-    }
-  })
+  nextTick(() => formRef.value?.clearValidate())
 }
 
-/**
- * 编辑职业（查询实体）
- * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
- */
 const handleEdit = async (row) => {
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
-
   const formData = new FormData()
   formData.append('laborId', row.laborId)
   const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, formData)
-  if (response.code === 200) {
-    const data = response.data
-    form.laborId = data.laborId
-    form.laborNameCn = data.laborNameCn
-    form.laborNameEn = data.laborNameEn
-    form.description = data.description
+  if (response?.code === 200) {
+    Object.assign(form, response.data)
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.getFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'))
     }
     dialogVisible.value = false
   }
   dialogLoading.value = false
 }
 
-// 删除
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.userLabor.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
-    
-    deletingId.value = row.laborId
-    
-    const formData = new FormData()
-    formData.append('laborId', row.laborId)
-    
-    const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
-    
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      getLaborList()
-    } else {
-      if (response.code !== 401 && response.code !== 403) {
-        ElMessage({
-          message: response.message,
-          type: 'error',
-          plain: true,
-          showClose: true
-        })
-      }
+  } catch {
+    return
+  }
+  const formData = new FormData()
+  formData.append('laborId', row.laborId)
+  const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
+  if (response?.code === 200) {
+    showMessage(response.message, 'success')
+    getLaborList()
+  } else {
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message)
     }
-  } catch (error) {
-      if (error !== 'cancel') {
-      ElMessage({
-        message: t('systembasicmgmt.userLabor.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
-  } finally {
-    deletingId.value = null
   }
 }
 
-/**
- * 提交表单（新增/编辑）
- * 表单验证使用 Promise 捕获；错误处理遵循全局策略：code 401/403 不提示
- */
 const handleSubmit = async () => {
   if (!formRef.value) return
-
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
 
   submitLoading.value = true
-  const params = {
-    laborId: form.laborId,
-    laborNameCn: form.laborNameCn,
-    laborNameEn: form.laborNameEn,
-    description: form.description
-  }
-
   const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
-  const response = await post(api, params)
-  if (response.code === 200) {
-    ElMessage({
-      message: response.message,
-      type: 'success',
-      plain: true,
-      showClose: true
-    })
+  const response = await post(api, { ...form })
+  if (response?.code === 200) {
+    showMessage(response.message, 'success')
     dialogVisible.value = false
     getLaborList()
   } else {
-    if (response.code !== 401 && response.code !== 403) {
-      ElMessage({
-        message: response.message || t('systembasicmgmt.userLabor.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.userLabor.operationFailed'))
     }
   }
   submitLoading.value = false
 }
 
-// 重置表单
-const resetForm = () => {
-  form.laborId = ''
-  form.laborNameCn = ''
-  form.laborNameEn = ''
-  form.description = ''
-}
-
-// 对话框关闭
 const handleDialogClose = () => {
   resetForm()
-  if (formRef.value) {
-    formRef.value.clearValidate()
-  }
+  formRef.value?.clearValidate()
 }
 
-// 组件挂载时获取数据
 onMounted(() => {
   getLaborList()
 })
@@ -421,4 +322,3 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 </style>
-
