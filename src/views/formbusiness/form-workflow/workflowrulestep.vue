@@ -507,9 +507,10 @@ const loadDialogRuleOptions = async (formTypeId) => {
 }
 
 /**
- * 仅为弹窗加载步骤下拉
+ * 仅为弹窗加载步骤下拉（传参 formTypeId 取弹窗内表单类别下拉 dialogForm.formTypeId）
  */
-const loadDialogStepOptions = async (formTypeId) => {
+const loadDialogStepOptions = async () => {
+  const formTypeId = dialogForm.formTypeId
   if (!formTypeId) {
     dialogStepOptions.value = []
     return
@@ -517,7 +518,7 @@ const loadDialogStepOptions = async (formTypeId) => {
   try {
     const response = await post(
       GET_WORKFLOWSTEP_DROPDOWN_API,
-      buildFormData({ formTypeId }),
+      buildFormData({ formTypeId: String(formTypeId) }),
       FORM_DATA_OPTIONS
     )
     dialogStepOptions.value = response.code === 200 ? (response.data || []) : []
@@ -545,7 +546,7 @@ const handleDialogFormGroupChange = async (val) => {
       dialogForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
       await Promise.all([
         loadDialogRuleOptions(dialogForm.formTypeId),
-        loadDialogStepOptions(dialogForm.formTypeId)
+        loadDialogStepOptions()
       ])
       if (dialogRuleOptions.value.length > 0) {
         dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
@@ -570,7 +571,7 @@ const handleDialogFormTypeChange = async (val) => {
   try {
     await Promise.all([
       loadDialogRuleOptions(val),
-      loadDialogStepOptions(val)
+      loadDialogStepOptions()
     ])
     if (dialogRuleOptions.value.length > 0) {
       dialogForm.ruleId = dialogRuleOptions.value[0].ruleId
@@ -598,7 +599,7 @@ const handleAdd = async () => {
         dialogForm.formTypeId = formTypeId
         await Promise.all([
           loadDialogRuleOptions(formTypeId),
-          loadDialogStepOptions(formTypeId)
+          loadDialogStepOptions()
         ])
         const ruleId = searchForm.ruleId
           && dialogRuleOptions.value.some(item => item.ruleId === searchForm.ruleId)
@@ -630,8 +631,8 @@ const handleEdit = async (row) => {
     if (response.code === 200 && response.data) {
       isEditMode.value = true
       const d = response.data
-      dialogForm.formGroupId = searchForm.formGroupId || ''
-      dialogForm.formTypeId = searchForm.formTypeId || ''
+      dialogForm.formGroupId = d.formGroupId ?? searchForm.formGroupId ?? ''
+      dialogForm.formTypeId = d.formTypeId ?? searchForm.formTypeId ?? ''
       dialogForm.ruleId = d.ruleId || row.ruleId || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
@@ -641,7 +642,7 @@ const handleEdit = async (row) => {
       if (dialogForm.formGroupId) tasks.push(loadDialogFormTypeOptions(dialogForm.formGroupId))
       if (dialogForm.formTypeId) {
         tasks.push(loadDialogRuleOptions(dialogForm.formTypeId))
-        tasks.push(loadDialogStepOptions(dialogForm.formTypeId))
+        tasks.push(loadDialogStepOptions())
       }
       if (tasks.length) await Promise.all(tasks)
 

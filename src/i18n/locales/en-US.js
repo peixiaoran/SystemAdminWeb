@@ -471,6 +471,7 @@ export default {
       getFormGroupFailed: 'Failed to get form group',
       getFormTypeFailed: 'Failed to get form type',
       getPositionFailed: 'Failed to get position list',
+      pleaseSelect: 'Please select',
       pleaseSelectFormGroup: 'Please select form group',
       pleaseSelectFormType: 'Please select form type',
       pleaseSelectPosition: 'Please select position',

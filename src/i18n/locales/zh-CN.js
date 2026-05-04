@@ -405,6 +405,7 @@ export default {
       getFormGroupFailed: '获取表单组别失败',
       getFormTypeFailed: '获取表单类别失败',
       getPositionFailed: '获取职级列表失败',
+      pleaseSelect: '请选择',
       pleaseSelectFormGroup: '请选择表单组别',
       pleaseSelectFormType: '请选择表单类别',
       pleaseSelectPosition: '请选择职级',

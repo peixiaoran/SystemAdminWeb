@@ -39,6 +39,7 @@
             style="width: 160px"
             @change="handlePositionChange"
           >
+            <el-option :label="$t('formbusiness.workflowrule.pleaseSelect')" value="0" />
             <el-option
               v-for="item in positionOptions"
               :key="item.positionId"
@@ -219,7 +220,7 @@ const positionOptions = ref([])
 const searchForm = reactive({
   formGroupId: '',
   formTypeId: '',
-  positionId: ''
+  positionId: '0'
 })
 
 const pagination = reactive({
@@ -237,9 +238,6 @@ const getPositionOptions = async () => {
     const response = await post(GET_POSITION_LIST_API, {})
     if (response.code === 200) {
       positionOptions.value = response.data || []
-      if (positionOptions.value.length > 0 && !searchForm.positionId) {
-        searchForm.positionId = positionOptions.value[0].positionId
-      }
     }
   } catch {
     showMessage(t('formbusiness.workflowrule.getPositionFailed'))
@@ -317,7 +315,7 @@ const getRuleList = async () => {
     }
     const params = {
       formTypeId: searchForm.formTypeId,
-      positionId: searchForm.positionId || '',
+      positionId: searchForm.positionId ?? '',
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
