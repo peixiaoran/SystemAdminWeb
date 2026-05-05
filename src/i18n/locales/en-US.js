@@ -532,6 +532,7 @@ export default {
     },
 
     pendingsubreview: {
+      pleaseSelect: 'Please select',
       all: 'All',
       pendingSubmission: 'Submission',
       pendingsubreview: 'Approval',

@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
@@ -168,7 +168,11 @@ const router = useRouter()
 
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
 const FILTER_DEBOUNCE_MS = 300
-const ALL_OPTION_VALUE = '-1'
+const ALL_OPTION_VALUE = 0
+/** 与请假单等弹窗页约定：关闭前 postMessage 触发本页刷新 */
+const PENDING_SUB_REVIEW_REFRESH_MSG = 'PENDING_SUB_REVIEW_REFRESH'
+
+const isUnsetFilter = (v) => v === '' || v === undefined || v === null
 
 const buildFormData = (params) => {
   const fd = new FormData()
@@ -216,17 +220,17 @@ const getCurrentListErrorKey = () =>
     : 'formbusiness.pendingsubreview.getPendingSubReviewFailed'
 
 const normalizeFilterValue = (value) =>
-  value === undefined || value === null || value === '' ? ALL_OPTION_VALUE : String(value)
+  isUnsetFilter(value) ? String(ALL_OPTION_VALUE) : String(value)
 
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (res?.code === 200) {
       formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.pendingsubreview.all') },
+        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.pendingsubreview.pleaseSelect') },
         ...(res.data || [])
       ]
-      if (!searchForm.formGroupId) searchForm.formGroupId = ALL_OPTION_VALUE
+      if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
     showMessage(res?.message || t('formbusiness.pendingsubreview.getFormGroupFailed'))
@@ -238,12 +242,12 @@ const getFormGroupOptions = async () => {
 const getFormTypeOptions = async () => {
   formTypeOptions.value = []
   searchForm.formTypeId = ALL_OPTION_VALUE
-  if (!searchForm.formGroupId) return
+  if (isUnsetFilter(searchForm.formGroupId)) return
   try {
     const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
       formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.pendingsubreview.all') },
+        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.pendingsubreview.pleaseSelect') },
         ...(res.data || [])
       ]
       return
@@ -274,7 +278,7 @@ const getPendingSubReviewList = async () => {
       formGroupId: normalizeFilterValue(searchForm.formGroupId),
       formTypeId:  normalizeFilterValue(searchForm.formTypeId),
       formStatus:  String(searchForm.formStatus || ''),
-      formNo:      String(searchForm.formNo     || ''),
+      formNo:      String(searchForm.formNo || ''),
       pageIndex:   String(pagination.pageIndex),
       pageSize:    String(pagination.pageSize),
       totalCount:  String(pagination.totalCount || 0)
@@ -319,7 +323,7 @@ const handleListModeChange = () => {
 }
 
 const handleFormGroupChange = () => {
-  if (!searchForm.formGroupId) searchForm.formGroupId = ALL_OPTION_VALUE
+  if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -335,7 +339,7 @@ const handleFilterChange = () => {
 }
 
 const handleFormTypeChange = () => {
-  if (!searchForm.formTypeId) searchForm.formTypeId = ALL_OPTION_VALUE
+  if (isUnsetFilter(searchForm.formTypeId)) searchForm.formTypeId = ALL_OPTION_VALUE
   handleFilterChange()
 }
 
@@ -466,10 +470,21 @@ const canShowInvalidate = (row) => {
   return false
 }
 
+const onPendingSubReviewRefreshMessage = (event) => {
+  if (event.origin !== window.location.origin) return
+  if (event.data?.type !== PENDING_SUB_REVIEW_REFRESH_MSG) return
+  getPendingSubReviewList()
+}
+
 onMounted(async () => {
+  window.addEventListener('message', onPendingSubReviewRefreshMessage)
   await Promise.all([getFormGroupOptions(), getFormStatusOptions()])
   await getFormTypeOptions()
   await getPendingSubReviewList()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('message', onPendingSubReviewRefreshMessage)
 })
 </script>
 

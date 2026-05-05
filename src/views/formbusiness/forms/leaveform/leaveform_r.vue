@@ -786,7 +786,20 @@ function showBadRequestResult (message) {
   resultState.subTitleKey = ''
 }
 
-function closeCurrentPage() {
+/** 与待审批列表页约定：弹窗关闭前通知 opener 刷新列表 */
+const PENDING_SUB_REVIEW_REFRESH_MSG = 'PENDING_SUB_REVIEW_REFRESH'
+
+function notifyOpenerRefreshPendingSubReview () {
+  try {
+    if (!window.opener || window.opener.closed) return
+    window.opener.postMessage({ type: PENDING_SUB_REVIEW_REFRESH_MSG }, window.location.origin)
+  } catch {
+    /* opener 跨域或不可用时忽略 */
+  }
+}
+
+function closeCurrentPage () {
+  notifyOpenerRefreshPendingSubReview()
   window.close()
 }
 
@@ -925,7 +938,8 @@ async function onSubmit () {
         ElNotification({
           title: '',
           message: res.message,
-          type: 'success'
+          type: 'success',
+          position: 'top-left'
         })
       } else {
         ElNotification({

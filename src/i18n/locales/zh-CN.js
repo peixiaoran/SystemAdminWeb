@@ -466,6 +466,7 @@ export default {
     },
 
     pendingsubreview: {
+      pleaseSelect: '请选择',
       all: '全部',
       pendingSubmission: '待送审',
       pendingsubreview: '待签核',
