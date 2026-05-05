@@ -78,7 +78,7 @@
         </template>
         <template #extra>
           <el-button type="primary" @click="closeCurrentPage">
-            {{ t('formbusiness.leaveform.backToPendingSubReview') }}
+            {{ t('formbusiness.leaveform.backToPendingReview') }}
           </el-button>
         </template>
       </el-result>
@@ -268,7 +268,15 @@
                     :disabled="!form.formId"
                     @click="openWorkflowDrawer"
                   >
-                    <el-icon><Guide /></el-icon>
+                    <el-icon class="workflow-view-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="4.5" r="2.15" />
+                        <line x1="12" y1="6.65" x2="12" y2="9.85" />
+                        <circle cx="12" cy="12" r="2.15" />
+                        <line x1="12" y1="14.15" x2="12" y2="17.35" />
+                        <circle cx="12" cy="19.5" r="2.15" />
+                      </svg>
+                    </el-icon>
                   </el-button>
                 </el-tooltip>
               </div>
@@ -361,7 +369,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
-import { Upload, Document, Download, Delete, Guide, Clock, CircleCheck, Minus, RemoveFilled, Loading } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -787,19 +795,19 @@ function showBadRequestResult (message) {
 }
 
 /** 与待审批列表页约定：弹窗关闭前通知 opener 刷新列表 */
-const PENDING_SUB_REVIEW_REFRESH_MSG = 'PENDING_SUB_REVIEW_REFRESH'
+const PENDING_REVIEW_REFRESH_MSG = 'PENDING_REVIEW_REFRESH'
 
-function notifyOpenerRefreshPendingSubReview () {
+function notifyOpenerRefreshPendingReview () {
   try {
     if (!window.opener || window.opener.closed) return
-    window.opener.postMessage({ type: PENDING_SUB_REVIEW_REFRESH_MSG }, window.location.origin)
+    window.opener.postMessage({ type: PENDING_REVIEW_REFRESH_MSG }, window.location.origin)
   } catch {
     /* opener 跨域或不可用时忽略 */
   }
 }
 
 function closeCurrentPage () {
-  notifyOpenerRefreshPendingSubReview()
+  notifyOpenerRefreshPendingReview()
   window.close()
 }
 
@@ -1423,6 +1431,16 @@ onMounted(async () => {
 
 .workflow-view-btn {
   flex-shrink: 0;
+}
+
+.workflow-view-icon {
+  font-size: 18px;
+}
+
+.workflow-view-icon svg {
+  width: 1em;
+  height: 1em;
+  display: block;
 }
 
 .workflow-drawer-body {

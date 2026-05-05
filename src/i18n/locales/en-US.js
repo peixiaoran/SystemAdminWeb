@@ -531,11 +531,11 @@ export default {
       getFailed: 'Failed to get data'
     },
 
-    pendingsubreview: {
+    pendingreview: {
       pleaseSelect: 'Please select',
       all: 'All',
       pendingSubmission: 'Submission',
-      pendingsubreview: 'Approval',
+      pendingreview: 'Review',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
       formStatus: 'Form Status',
@@ -557,7 +557,7 @@ export default {
       getFormTypeFailed: 'Failed to get form type',
       getFormStatusFailed: 'Failed to get form status',
       getPendingSubmissionFailed: 'Failed to get pending submission list',
-      getPendingSubReviewFailed: 'Failed to get pending review list',
+      getPendingReviewFailed: 'Failed to get pending review list',
       getFailed: 'Failed to get pending review list'
     },
 
@@ -611,7 +611,7 @@ export default {
       badRequestTitle: 'Request Cannot Be Completed',
       badRequestFallbackMessage: 'No detailed message was returned by the server.',
       badRequestHint: 'This often means invalid parameters, the current state does not allow opening this page, or access is denied. Check the URL and form type; if it persists, contact your system administrator.',
-      backToPendingSubReview: 'Back to Pending Review List',
+      backToPendingReview: 'Back to Pending Review List',
       attachments: 'Attachments',
       uploadFile: 'Upload',
       uploadSuccess: 'Upload successfully',
@@ -642,7 +642,7 @@ export default {
       workflowLoadFailed: 'Failed to load workflow',
       workflowNeedFormId: 'Please wait until the form is initialized',
         approvalComment: 'Approval Comment',
-        approvalCommentPlaceholder: 'Enter approval comment (optional)'
+        approvalCommentPlaceholder: 'Say something...'
     },
     
     // Form Validation
@@ -873,7 +873,7 @@ export default {
     workflowrule: 'Workflow Rule',
     workflowrulestep: 'Workflow Rule Step',
     formoperate: 'Form Operation',
-    pendingsubreview: 'Pending Review',
+    pendingreview: 'Pending Review',
     applyform: 'Application Form',
     controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',

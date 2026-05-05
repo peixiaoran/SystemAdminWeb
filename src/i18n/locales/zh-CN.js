@@ -465,11 +465,11 @@ export default {
       getFailed: '获取数据失败'
     },
 
-    pendingsubreview: {
+    pendingreview: {
       pleaseSelect: '请选择',
       all: '全部',
       pendingSubmission: '待送审',
-      pendingsubreview: '待签核',
+      pendingreview: '待签核',
       formGroupName: '表单组别',
       formTypeName: '表单类型',
       formStatus: '表单状态',
@@ -491,7 +491,7 @@ export default {
       getFormTypeFailed: '获取表单类型失败',
       getFormStatusFailed: '获取表单状态失败',
       getPendingSubmissionFailed: '获取待送审列表失败',
-      getPendingSubReviewFailed: '获取待签核列表失败',
+      getPendingReviewFailed: '获取待签核列表失败',
       getFailed: '获取待审批列表失败'
     },
 
@@ -545,7 +545,7 @@ export default {
         badRequestTitle: '请求无法完成',
         badRequestFallbackMessage: '服务器未返回详细说明。',
         badRequestHint: '这通常表示请求参数无效、当前状态不允许打开本页，或无访问权限。请核对访问链接与表单类型是否正确；若问题持续，请联系系统管理员。',
-        backToPendingSubReview: '返回待签核列表',
+        backToPendingReview: '返回待签核列表',
         attachments: '附件',
         uploadFile: '上传附件',
         uploadSuccess: '上传成功',
@@ -576,7 +576,7 @@ export default {
         workflowLoadFailed: '加载流程失败',
         workflowNeedFormId: '请先完成表单初始化后再查看流程',
         approvalComment: '送审意见',
-        approvalCommentPlaceholder: '请输入送审意见（选填）'
+        approvalCommentPlaceholder: '说点什么...'
       },
     
     // 表单验证
@@ -793,7 +793,7 @@ export default {
     workflowrule: '流程规则维护',
     workflowrulestep: '流程规则步骤',
     formoperate: '表单操作',
-    pendingsubreview: '待审表单列表',
+    pendingreview: '待审表单列表',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',

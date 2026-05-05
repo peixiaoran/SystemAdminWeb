@@ -441,11 +441,11 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'pendingsubreview',
-              name: 'PendingSubReview',
-              component: () => import('../views/formbusiness/form-operate/pendingsubreview.vue'),
+              path: 'pendingreview',
+              name: 'PendingReview',
+              component: () => import('../views/formbusiness/form-operate/pendingreview.vue'),
               meta: { 
-                title: 'route.pendingsubreview',
+                title: 'route.pendingreview',
                 icon: 'Check',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
