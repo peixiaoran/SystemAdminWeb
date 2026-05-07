@@ -187,8 +187,17 @@ const showMessage = (message, type = 'error') => {
 const loading = ref(false)
 const filterPending = ref(false)
 const pendingReviewList = ref([])
-const formGroupOptions = ref([])
-const formTypeOptions = ref([])
+/** 与 v-model 默认 0 同步，避免选项未加载时 el-select 短暂显示数字 0 */
+const formGroupPlaceholder = () => ({
+  formGroupId: ALL_OPTION_VALUE,
+  formGroupName: t('formbusiness.pendingreview.pleaseSelect')
+})
+const formTypePlaceholder = () => ({
+  formTypeId: ALL_OPTION_VALUE,
+  formTypeName: t('formbusiness.pendingreview.pleaseSelect')
+})
+const formGroupOptions = ref([formGroupPlaceholder()])
+const formTypeOptions = ref([formTypePlaceholder()])
 const formStatusOptions = ref([])
 const listMode = ref('pendingreview')
 
@@ -240,7 +249,7 @@ const getFormGroupOptions = async () => {
 }
 
 const getFormTypeOptions = async () => {
-  formTypeOptions.value = []
+  formTypeOptions.value = [formTypePlaceholder()]
   searchForm.formTypeId = ALL_OPTION_VALUE
   if (isUnsetFilter(searchForm.formGroupId)) return
   try {

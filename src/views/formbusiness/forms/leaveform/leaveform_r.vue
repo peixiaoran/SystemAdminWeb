@@ -66,14 +66,14 @@
     <el-card v-else-if="resultState.visible" class="leave-form-card result-card" shadow="never">
       <el-result
         class="result-content"
+        :class="{ 'result-content--bad-request': resultState.variant === 'badRequest' }"
         :icon="resultState.status"
-        :title="t(resultState.titleKey)"
+        :title="resultState.variant === 'badRequest' ? resultState.detailMessage : t(resultState.titleKey)"
       >
         <template #sub-title>
-          <div v-if="resultState.variant === 'badRequest'" class="leaveform-bad-request-sub">
-            <p class="leaveform-bad-request-msg">{{ resultState.detailMessage }}</p>
-            <p class="leaveform-bad-request-hint">{{ t('formbusiness.leaveform.badRequestHint') }}</p>
-          </div>
+          <p v-if="resultState.variant === 'badRequest'" class="leaveform-bad-request-desc">
+            {{ t('formbusiness.leaveform.badRequestHint') }}
+          </p>
           <span v-else>{{ t(resultState.subTitleKey) }}</span>
         </template>
         <template #extra>
@@ -790,7 +790,7 @@ function showBadRequestResult (message) {
   resultState.detailMessage = msg || t('formbusiness.leaveform.badRequestFallbackMessage')
   resultState.visible = true
   resultState.status = 'warning'
-  resultState.titleKey = 'formbusiness.leaveform.badRequestTitle'
+  resultState.titleKey = ''
   resultState.subTitleKey = ''
 }
 
@@ -903,7 +903,11 @@ async function getLeaveTypeOptions () {
     const res = await post(GET_LEAVEFORM_DROPDOWN_API, {})
     if (!res) return
     if (res.code !== 200) {
-      ElMessage.error(res.message)
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res.message)
+      }
       return
     }
     const list = Array.isArray(res.data) ? res.data : []
@@ -949,6 +953,8 @@ async function onSubmit () {
           type: 'success',
           position: 'top-left'
         })
+      } else if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
       } else {
         ElNotification({
           title: '',
@@ -985,7 +991,12 @@ async function fetchFullReviewFlow () {
       return
     }
     if (!res || res.code !== 200) {
-      ElMessage.error(res?.message || t('formbusiness.leaveform.workflowLoadFailed'))
+      workflowDrawerVisible.value = false
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.leaveform.workflowLoadFailed'))
+      }
       return
     }
     const data = res.data || {}
@@ -1052,6 +1063,10 @@ async function onSubmitForApproval () {
     }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
+      return
+    }
+    if (isBadRequestResponse(res)) {
+      showBadRequestResult(res?.message)
       return
     }
     ElNotification({
@@ -1150,6 +1165,8 @@ async function batchUpload(filesToUpload) {
     if (res && isSuccessCode(res.code)) {
       const files = Array.isArray(res.data) ? res.data : []
       uploadedAttachments.value = [...uploadedAttachments.value, ...files]
+    } else if (res && isBadRequestResponse(res)) {
+      showBadRequestResult(res?.message)
     }
   } catch (e) {
   } finally {
@@ -1218,6 +1235,8 @@ async function removeAttachment (file, idx) {
     })
     if (res && isSuccessCode(res.code)) {
       uploadedAttachments.value.splice(idx, 1)
+    } else if (isBadRequestResponse(res)) {
+      showBadRequestResult(res?.message)
     } else {
       ElMessage({ message: res?.message || t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
     }
@@ -1291,24 +1310,30 @@ onMounted(async () => {
   width: 100%;
 }
 
-.leaveform-bad-request-sub {
-  max-width: 520px;
-  margin: 0 auto;
-  text-align: left;
-}
-
-.leaveform-bad-request-msg {
-  margin: 0 0 12px;
-  font-size: 15px;
-  line-height: 1.55;
+/* 400：主文案为 title，居中；下方为说明段落 */
+.result-content--bad-request :deep(.el-result__title) {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.6;
   color: #303133;
   word-break: break-word;
+  white-space: pre-wrap;
 }
 
-.leaveform-bad-request-hint {
-  margin: 0;
+.result-content--bad-request :deep(.el-result__subtitle) {
+  margin-top: 14px;
+}
+
+.leaveform-bad-request-desc {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: #909399;
 }
 
