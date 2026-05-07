@@ -18,8 +18,8 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.pendingreview.pleaseSelectFormGroup')"
             filterable
-            clearable
-            style="width: 170px"
+            clearables
+            class="pending-filter-select"
             @change="handleFormGroupChange"
           >
             <el-option
@@ -37,7 +37,7 @@
             :placeholder="$t('formbusiness.pendingreview.pleaseSelectFormType')"
             filterable
             clearable
-            style="width: 170px"
+            class="pending-filter-select"
             @change="handleFormTypeChange"
           >
             <el-option
@@ -45,23 +45,6 @@
               :key="item.formTypeId"
               :label="item.formTypeName"
               :value="item.formTypeId"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-if="listMode === 'pendingreview'" :label="$t('formbusiness.pendingreview.formStatus')">
-          <el-select
-            v-model="searchForm.formStatus"
-            :placeholder="$t('formbusiness.pendingreview.pleaseSelectFormStatus')"
-            clearable
-            style="width: 170px"
-            @change="handleFilterChange"
-          >
-            <el-option
-              v-for="item in formStatusOptions"
-              :key="item.formStatusCode"
-              :label="item.formStatusName"
-              :value="item.formStatusCode"
             />
           </el-select>
         </el-form-item>
@@ -86,7 +69,7 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.pendingreview.index')" width="70" align="center" fixed />
-          <el-table-column :label="$t('formbusiness.pendingreview.formNo')" align="center" min-width="140">
+          <el-table-column :label="$t('formbusiness.pendingreview.formNo')" align="center" min-width="160">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -99,17 +82,40 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.pendingreview.formTypeName')" align="center" min-width="140" />
-          <el-table-column :label="$t('formbusiness.pendingreview.formStatus')" align="center" width="170">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.pendingreview.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.pendingreview.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
-              <el-tag :type="getFormStatusTagType(row)" effect="dark" round>
+              <el-tag type="primary" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="applyUserName" :label="$t('formbusiness.pendingreview.applyUserName')" align="center" min-width="80" />
-          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.pendingreview.applyUserDeptName')" align="center" min-width="170" />
-          <el-table-column :label="$t('common.operation')" align="center" width="160">
+          <el-table-column
+            :label="$t('formbusiness.pendingreview.viewPendingReviewers')"
+            align="center"
+            min-width="200"
+          >
+            <template #default="{ row }">
+              <el-link
+                v-if="row.formId"
+                type="primary"
+                underline="never"
+                class="pending-reviewers-link"
+                @click="openPendingReviewers(row)"
+              >
+                {{ $t('formbusiness.pendingreview.viewPendingReviewers') }}
+              </el-link>
+              <span v-else>—</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="applyUserName" :label="$t('formbusiness.pendingreview.applyUserName')" align="center" min-width="140" show-overflow-tooltip />
+          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.pendingreview.applyUserDeptName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column
+            :label="$t('common.operation')"
+            align="center"
+            min-width="180"
+            fixed="right"
+          >
             <template #default="{ row }">
               <el-link
                 v-if="row.approvalPath"
@@ -145,6 +151,57 @@
         />
       </div>
     </el-card>
+
+    <el-dialog
+      v-model="pendingReviewersDialogVisible"
+      :title="$t('formbusiness.pendingreview.pendingReviewersTitle')"
+      width="920px"
+      destroy-on-close
+      append-to-body
+      class="pending-reviewers-dialog"
+      @closed="onPendingReviewersDialogClosed"
+    >
+      <el-table
+        :data="pendingReviewersList"
+        border
+        stripe
+        max-height="420"
+        v-loading="pendingReviewersLoading"
+        :empty-text="$t('formbusiness.pendingreview.noPendingReviewers')"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa' }"
+        :cell-style="{ textAlign: 'center' }"
+      >
+        <el-table-column type="index" :label="$t('formbusiness.pendingreview.index')" width="75" align="center" header-align="center" />
+        <el-table-column
+          prop="stepName"
+          :label="$t('formbusiness.pendingreview.stepName')"
+          min-width="130"
+          align="center"
+          header-align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="reviewUserNo"
+          :label="$t('formbusiness.pendingreview.reviewerUserNo')"
+          min-width="100"
+          align="center"
+          header-align="center"
+        />
+        <el-table-column
+          prop="reviewUserName"
+          :label="$t('formbusiness.pendingreview.reviewerUserName')"
+          min-width="120"
+          align="center"
+          header-align="center"
+        />
+        <el-table-column :label="$t('formbusiness.pendingreview.agentUserNo')" min-width="100" align="center" header-align="center">
+          <template #default="{ row: r }">{{ r.agentUserNo || '-' }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('formbusiness.pendingreview.agentUserName')" min-width="120" align="center" header-align="center">
+          <template #default="{ row: r }">{{ r.agentUserName || '-' }}</template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -156,9 +213,9 @@ import { post } from '@/utils/request'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
-  GET_FORMSTATUS_DROPDOWN_API,
   GET_PENDING_SUBMISSION_LIST_API,
   GET_PENDING_REVIEW_LIST_API,
+  GET_FORM_PENDING_REVIEW_LIST_API,
   VOIDED_FORM_API
 } from '@/config/api/formbusiness/form-operate/pendingreview.js'
 import { useI18n } from 'vue-i18n'
@@ -187,6 +244,9 @@ const showMessage = (message, type = 'error') => {
 const loading = ref(false)
 const filterPending = ref(false)
 const pendingReviewList = ref([])
+const pendingReviewersDialogVisible = ref(false)
+const pendingReviewersLoading = ref(false)
+const pendingReviewersList = ref([])
 /** 与 v-model 默认 0 同步，避免选项未加载时 el-select 短暂显示数字 0 */
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,
@@ -198,13 +258,11 @@ const formTypePlaceholder = () => ({
 })
 const formGroupOptions = ref([formGroupPlaceholder()])
 const formTypeOptions = ref([formTypePlaceholder()])
-const formStatusOptions = ref([])
 const listMode = ref('pendingreview')
 
 const searchForm = reactive({
   formGroupId: ALL_OPTION_VALUE,
   formTypeId:  ALL_OPTION_VALUE,
-  formStatus:  '',
   formNo:      ''
 })
 
@@ -267,26 +325,12 @@ const getFormTypeOptions = async () => {
   }
 }
 
-const getFormStatusOptions = async () => {
-  try {
-    const res = await post(GET_FORMSTATUS_DROPDOWN_API, {})
-    if (res?.code === 200) {
-      formStatusOptions.value = res.data || []
-      return
-    }
-    showMessage(res?.message || t('formbusiness.pendingreview.getFormStatusFailed'))
-  } catch {
-    showMessage(t('formbusiness.pendingreview.getFormStatusFailed'))
-  }
-}
-
 const getPendingReviewList = async () => {
   loading.value = true
   try {
     const params = {
       formGroupId: normalizeFilterValue(searchForm.formGroupId),
       formTypeId:  normalizeFilterValue(searchForm.formTypeId),
-      formStatus:  String(searchForm.formStatus || ''),
       formNo:      String(searchForm.formNo || ''),
       pageIndex:   String(pagination.pageIndex),
       pageSize:    String(pagination.pageSize),
@@ -324,7 +368,6 @@ const scheduleFilterRequest = async (callback) => {
 }
 
 const handleListModeChange = () => {
-  searchForm.formStatus = ''
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getPendingReviewList()
@@ -360,7 +403,6 @@ const handleSearch = () => {
 }
 
 const handleReset = () => {
-  searchForm.formStatus  = ''
   searchForm.formNo      = ''
   searchForm.formGroupId = ALL_OPTION_VALUE
   searchForm.formTypeId  = ALL_OPTION_VALUE
@@ -411,6 +453,35 @@ const openPopupWindow = (href, namePrefix = 'form_popup') => {
   } catch { /* resizeTo not available in all browsers */ }
 }
 
+const onPendingReviewersDialogClosed = () => {
+  pendingReviewersList.value = []
+}
+
+const openPendingReviewers = async (row) => {
+  if (!row?.formId) return
+  pendingReviewersDialogVisible.value = true
+  pendingReviewersLoading.value = true
+  pendingReviewersList.value = []
+  try {
+    const res = await post(
+      GET_FORM_PENDING_REVIEW_LIST_API,
+      buildFormData({ formId: String(row.formId) }),
+      FORM_DATA_OPTIONS
+    )
+    if (res?.code === 200) {
+      pendingReviewersList.value = Array.isArray(res.data) ? res.data : []
+      return
+    }
+    pendingReviewersDialogVisible.value = false
+    showMessage(res?.message || t('formbusiness.pendingreview.getPendingReviewersFailed'))
+  } catch {
+    pendingReviewersDialogVisible.value = false
+    showMessage(t('formbusiness.pendingreview.getPendingReviewersFailed'))
+  } finally {
+    pendingReviewersLoading.value = false
+  }
+}
+
 const openFormPage = (row, pathKey) => {
   if (!row?.[pathKey]) return
   const path = normalizePath(row[pathKey])
@@ -427,21 +498,6 @@ const openFormPage = (row, pathKey) => {
     return
   }
   openPopupWindow(resolved.href, pathKey === 'approvalPath' ? 'pending_approval' : 'form_view')
-}
-
-const getFormStatusCode = (row) => {
-  if (row?.formStatus) return String(row.formStatus)
-  return formStatusOptions.value.find(i => i.formStatusName === row?.formStatusName)?.formStatusCode || ''
-}
-
-const getFormStatusTagType = (row) => {
-  const code = getFormStatusCode(row)
-  if (code === 'PendingSubmission') return 'warning'
-  if (code === 'UnderReview')       return 'primary'
-  if (code === 'Rejected')          return 'danger'
-  if (code === 'Approved')          return 'success'
-  if (code === 'Voided')            return 'info'
-  return ''
 }
 
 const handleVoidForm = async (row) => {
@@ -487,7 +543,7 @@ const onPendingReviewRefreshMessage = (event) => {
 
 onMounted(async () => {
   window.addEventListener('message', onPendingReviewRefreshMessage)
-  await Promise.all([getFormGroupOptions(), getFormStatusOptions()])
+  await getFormGroupOptions()
   await getFormTypeOptions()
   await getPendingReviewList()
 })
@@ -501,10 +557,21 @@ onUnmounted(() => {
 @import '@/assets/styles/conventionalTablePage.css';
 
 .table-container {
-  overflow-x: auto;
+  /* flex 子项允许收缩，否则宽表无法在卡片内正确出现内部横向滚动条 */
+  min-width: 0;
 }
 
-.conventional-table {
-  min-width: 960px;
+.conventional-table :deep(.el-table) {
+  min-width: 1280px;
+}
+
+.pending-filter-select {
+  width: 220px;
+  min-width: 200px;
+}
+
+.pending-reviewers-link {
+  font-size: 12px;
+  line-height: 1.2;
 }
 </style>

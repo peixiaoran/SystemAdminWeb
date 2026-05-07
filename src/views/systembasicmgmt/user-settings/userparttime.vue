@@ -55,10 +55,10 @@
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
                     <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="200" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="110">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="110">
                         <template #default="scope">
-                            <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                                {{ getIsApprovalText(scope.row.isApproval) }}
+                            <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
+                                {{ getIsReviewText(scope.row.isReview) }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -204,10 +204,10 @@
                     <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
                     <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
-                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isApproval')" align="center" min-width="100">
+                    <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="100">
                         <template #default="scope">
-                            <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                                {{ getIsApprovalText(scope.row.isApproval) }}
+                            <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
+                                {{ getIsReviewText(scope.row.isReview) }}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -270,7 +270,7 @@
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
     }
 
-    const getIsApprovalText = (val) => {
+    const getIsReviewText = (val) => {
         if (val === '1' || val === 1) return t('common.yes')
         if (val === '0' || val === 0) return t('common.no')
         return ''
@@ -488,7 +488,14 @@
             const res = await post(GET_USER_PARTTIME_PAGES_API.GET_USER_PARTTIME_PAGES, params)
 
             if (res && res.code === 200) {
-                userPartTimeList.value = res.data || []
+                const mapRow = (row) => ({
+                    ...row,
+                    isReview: (() => {
+                        const v = row.isReview ?? row.isApproval ?? row.IsApproval
+                        return v === '1' || v === 1 ? '1' : '0'
+                    })()
+                })
+                userPartTimeList.value = (res.data || []).map(mapRow)
                 pagination.totalCount = res.totalCount || 0
             } else {
                 userPartTimeList.value = []
@@ -680,7 +687,14 @@
             }
             const res = await post(GET_USER_PARTTIMEVIEW_API.GET_USER_PARTTIMEVIEW, params)
             if (res && res.code === 200) {
-                dialogUserList.value = res.data || []
+                const mapRow = (row) => ({
+                    ...row,
+                    isReview: (() => {
+                        const v = row.isReview ?? row.isApproval ?? row.IsApproval
+                        return v === '1' || v === 1 ? '1' : '0'
+                    })()
+                })
+                dialogUserList.value = (res.data || []).map(mapRow)
                 dialogUserPagination.totalCount = res.totalCount || 0
             } else {
                 dialogUserList.value = []

@@ -66,10 +66,10 @@
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userName')" align="left" min-width="180" />
           <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="230" />
           <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="120" />
-          <el-table-column :label="$t('systembasicmgmt.userAgent.isApproval')" align="center" min-width="110">
+          <el-table-column :label="$t('systembasicmgmt.userAgent.isReview')" align="center" min-width="110">
             <template #default="scope">
-              <el-tag :type="scope.row.isApproval === '1' ? 'primary' : 'info'">
-                {{ scope.row.isApproval === '1' ? $t('common.yes') : $t('common.no') }}
+              <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
+                {{ scope.row.isReview === '1' ? $t('common.yes') : $t('common.no') }}
               </el-tag>
             </template>
           </el-table-column>
@@ -555,7 +555,13 @@ const fetchUserPages = async () => {
   const res = await post(GET_USER_PAGES_API.GET_USER_PAGES, params)
 
   if (res && res.code === 200) {
-    userList.value = res.data || []
+    userList.value = (res.data || []).map((row) => ({
+      ...row,
+      isReview: (() => {
+        const v = row.isReview ?? row.isApproval ?? row.IsApproval
+        return v === '1' || v === 1 ? '1' : '0'
+      })()
+    }))
     pagination.totalCount = res.totalCount || 0
   } else {
     ElMessage({

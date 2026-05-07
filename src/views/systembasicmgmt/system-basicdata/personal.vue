@@ -146,8 +146,8 @@
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isPartTime')" prop="isPartTime">
           <el-switch v-model="personalInfoForm.isPartTime" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.personalInfo.isApproval')" prop="isApproval">
-          <el-switch v-model="personalInfoForm.isApproval" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
+        <el-form-item :label="$t('systembasicmgmt.personalInfo.isReview')" prop="isReview">
+          <el-switch v-model="personalInfoForm.isReview" :disabled="true" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
           <el-switch v-model="personalInfoForm.isRealtimeNotification" :disabled="loading" :active-value="1" :inactive-value="0" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" :active-text="$t('common.yes')" :inactive-text="$t('common.no')" inline-prompt />
@@ -260,7 +260,7 @@ export default {
       loginNo: '',
       isEmployed: 1,
       isAgent: 0,
-      IsApproval: 0,
+      isReview: 0,
       isPartTime: 0,
       isFreeze: 0,
       employmentType: '',
@@ -401,7 +401,14 @@ export default {
       const response = await post(GET_PERSONAL_INFO_ENTITY_API.GET_PERSONAL_INFO_ENTITY, {})
       if (response.code === 200 && response.data) {
         Object.assign(personalInfoForm, response.data)
-          personalInfoForm.gender = personalInfoForm.gender != null ? String(personalInfoForm.gender) : ''
+        const rv = response.data.isReview ?? response.data.isApproval ?? response.data.IsApproval
+        if (rv !== undefined && rv !== null && rv !== '') {
+          const n = Number(rv)
+          personalInfoForm.isReview = Number.isNaN(n) ? 0 : n
+        }
+        delete personalInfoForm.isApproval
+        delete personalInfoForm.IsApproval
+        personalInfoForm.gender = personalInfoForm.gender != null ? String(personalInfoForm.gender) : ''
         personalInfoForm.password = ''
         if (response.data.avatarAddress) {
           avatarUrl.value = resolveFileUrl(response.data.avatarAddress)

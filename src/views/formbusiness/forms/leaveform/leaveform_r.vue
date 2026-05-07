@@ -331,7 +331,7 @@
             >
               <li
                 v-for="(u, uIdx) in step.stepReviewUser"
-                :key="(u.userId || 'u') + '-' + uIdx"
+                :key="String(u.reviewUserId ?? u.ReviewUserId ?? u.userId ?? u.UserId ?? 'u') + '-' + uIdx"
                 class="workflow-user-row"
                 :class="{ 'workflow-user-row--has-agent': workflowUserHasAgent(u) }"
               >
@@ -345,10 +345,10 @@
                 </span>
                 <div class="workflow-user-text">
                   <div class="workflow-user-name">
-                    {{ u.userName }}<span v-if="u.appointmentTypeName && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                    {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
                   </div>
-                  <div v-if="workflowUserHasAgent(u) && (u.agentUserName || u.appointmentTypeName)" class="workflow-user-meta">
-                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}<span v-if="u.appointmentTypeName" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                  <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
+                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}<span v-if="workflowUserShowAppointmentTypeName(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
                   </div>
                 </div>
                 <span
@@ -374,6 +374,7 @@ import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 // 获取翻译函数
 const { t } = i18n.global
@@ -382,6 +383,7 @@ const { t } = i18n.global
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 
 // 加载状态
 const loading = ref(true)
@@ -444,10 +446,25 @@ function workflowUserStatusLabel (user) {
   return t('formbusiness.leaveform.workflowStatusUnsigned')
 }
 
+/** 签核人显示姓名：优先 reviewUserName / ReviewUserName，兼容 userName / UserName */
+function workflowReviewUserName (u) {
+  const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
+  if (name == null || name === '') return ''
+  return String(name)
+}
+
 function workflowUserHasAgent (u) {
   const id = u?.agentUserId
   if (id === undefined || id === null || id === '') return false
   return String(id) !== '0'
+}
+
+/** appointmentTypeCode 为 Actual 时不展示 appointmentTypeName */
+function workflowUserShowAppointmentTypeName (u) {
+  if (!u?.appointmentTypeName) return false
+  const code = String(u?.appointmentTypeCode ?? u?.AppointmentTypeCode ?? '').trim()
+  if (code.toLowerCase() === 'actual') return false
+  return true
 }
 
 const resultState = reactive({
@@ -971,8 +988,8 @@ async function onSubmit () {
 }
 
 /**
- * 拉取完整签核流程：调用 GetFullReviewFlow，参数 formId（multipart）
- * 数据结构：{ formId, rejectCount, stepReviewFlowList: [{ stepId, stepName, skip, stepReviewUser: [{ result, ... }] }] }
+ * 拉取完整签核流程：调用 GetFullReviewFlow，参数 formId（multipart）；签核人标识参数名为 ReviewUserId（原 UserId）
+ * 数据结构：{ formId, rejectCount, stepReviewFlowList: [{ stepId, stepName, skip, stepReviewUser: [{ reviewUserId, reviewUserName, result, ... }] }] }（兼容旧 userId、userName）
  */
 async function fetchFullReviewFlow () {
   const formId = String(form.formId || '')
@@ -981,6 +998,7 @@ async function fetchFullReviewFlow () {
   try {
     const formData = new window.FormData()
     formData.append('formId', formId)
+    formData.append('ReviewUserId', String(userStore.userId || ''))
     const res = await post(GET_FULL_REVIEW_FLOW_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       silentForbiddenError: false

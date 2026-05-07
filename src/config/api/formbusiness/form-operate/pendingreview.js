@@ -21,5 +21,8 @@ export const GET_PENDING_SUBMISSION_LIST_API = 'FormBusiness/FormOperate/Pending
 // 获取待签核列表API
 export const GET_PENDING_REVIEW_LIST_API = 'FormBusiness/FormOperate/PendingReview/GetPendingReviewPage'
 
+// 获取表单当前待审批人列表
+export const GET_FORM_PENDING_REVIEW_LIST_API = 'FormBusiness/FormOperate/PendingReview/GetFormPendingReview'
+
 // 作废表单API
 export const VOIDED_FORM_API = 'FormBusiness/FormOperate/PendingReview/VoidedForm'

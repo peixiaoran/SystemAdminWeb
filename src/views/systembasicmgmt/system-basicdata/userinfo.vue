@@ -80,10 +80,10 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('systembasicmgmt.userInfo.isApproval')" align="center" min-width="110">
+        <el-table-column :label="$t('systembasicmgmt.userInfo.isReview')" align="center" min-width="110">
           <template #default="scope">
-            <el-tag :type="scope.row.isApproval === 1 ? 'primary' : 'info'">
-              {{ scope.row.isApproval === 1 ? $t('common.yes') : $t('common.no') }}
+            <el-tag :type="scope.row.isReview === 1 ? 'primary' : 'info'">
+              {{ scope.row.isReview === 1 ? $t('common.yes') : $t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
@@ -252,9 +252,9 @@
                inline-prompt
                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
            </el-form-item>
-           <el-form-item :label="$t('systembasicmgmt.userInfo.isApproval')">
+           <el-form-item :label="$t('systembasicmgmt.userInfo.isReview')">
              <el-switch
-               v-model="editForm.isApproval"
+               v-model="editForm.isReview"
                :active-value="1"
                :inactive-value="0"
                :active-text="$t('common.yes')"
@@ -267,7 +267,7 @@
                v-model="editForm.isRealtimeNotification"
                :active-value="1"
                :inactive-value="0"
-               :disabled="editForm.isApproval === 0"
+               :disabled="editForm.isReview === 0"
                :active-text="$t('common.yes')"
                :inactive-text="$t('common.no')"
                inline-prompt
@@ -278,7 +278,7 @@
                v-model="editForm.isScheduledNotification"
                :active-value="1"
                :inactive-value="0"
-               :disabled="editForm.isApproval === 0"
+               :disabled="editForm.isReview === 0"
                :active-text="$t('common.yes')"
                :inactive-text="$t('common.no')"
                inline-prompt
@@ -404,7 +404,7 @@ const normalizeSwitchField = (key, defaultValue = 0) => {
 const normalizeEditFormSwitches = () => {
   // 注意：isEmployed 默认 1（在职）；其它开关默认 0
   normalizeSwitchField('isEmployed', 1)
-  normalizeSwitchField('isApproval', 0)
+  normalizeSwitchField('isReview', 0)
   normalizeSwitchField('isRealtimeNotification', 0)
   normalizeSwitchField('isScheduledNotification', 0)
 }
@@ -517,7 +517,7 @@ const editForm = reactive({
   loginNo: '',
   passWord: '',
   pwdSalt: '',
-  isApproval: 0,
+  isReview: 0,
   isPartTime: 0,
   isRealtimeNotification: 0,
   isScheduledNotification: 0,
@@ -535,13 +535,13 @@ const editForm = reactive({
 const avatarUrl = ref('')
 const avatarFile = ref(null)
 
-// 存储isApproval关闭前的通知状态
+// 存储 isReview 关闭前的通知状态
 const previousNotificationState = reactive({
   isRealtimeNotification: 0,
   isScheduledNotification: 0
 })
 
-// 加载/回填表单期间的保护标记：避免 watch(isApproval) 在初始化赋值时误把通知强制开启
+// 加载/回填表单期间的保护标记：避免 watch(isReview) 在初始化赋值时误把通知强制开启
 const isHydratingEditForm = ref(false)
 
 // 对话框标题
@@ -633,12 +633,12 @@ const formRules = reactive({
 // 树形选择器过滤方法
 const filterNodeMethod = (value, data) => data.departmentName.includes(value)
 
-// 监听isApproval变化
-watch(() => editForm.isApproval, (newValue, oldValue) => {
+// 监听 isReview 变化
+watch(() => editForm.isReview, (newValue, oldValue) => {
   if (isHydratingEditForm.value) return
   // 只有当值真正变化且不是初始化时才执行逻辑
   if (oldValue !== undefined) {
-    if (newValue === 0) { // 关闭审批权限
+    if (newValue === 0) { // 关闭签核权限
       // 保存当前通知状态
       previousNotificationState.isRealtimeNotification = editForm.isRealtimeNotification
       previousNotificationState.isScheduledNotification = editForm.isScheduledNotification
@@ -845,6 +845,12 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           }
           
           Object.assign(editForm, res.data)
+          const reviewRaw = res.data.isReview ?? res.data.isApproval ?? res.data.IsApproval
+          if (reviewRaw !== undefined && reviewRaw !== null && reviewRaw !== '') {
+            editForm.isReview = to01(reviewRaw)
+          }
+          delete editForm.isApproval
+          delete editForm.IsApproval
           // 规范化：el-switch 使用 active/inactive-value=1/0（数字），必须确保 v-model 也是数字 0/1
           normalizeEditFormSwitches()
       // 规范化：确保性别值与固定下拉选项 value 类型一致（字符串）
@@ -884,7 +890,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           userList.value = (res.data || []).map((row) => ({
             ...row,
             isEmployed: to01(row?.isEmployed),
-            isApproval: to01(row?.isApproval),
+            isReview: to01(row?.isReview ?? row?.isApproval ?? row?.IsApproval),
             isRealtimeNotification: to01(row?.isRealtimeNotification),
             isScheduledNotification: to01(row?.isScheduledNotification)
           }))
@@ -1024,7 +1030,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           loginNo: '',
           passWord: '',
           pwdSalt: '',
-          isApproval: 0,
+          isReview: 0,
           isPartTime: 0,
           isRealtimeNotification: 0,
           isScheduledNotification: 0,
