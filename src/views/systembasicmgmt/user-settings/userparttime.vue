@@ -1,4 +1,5 @@
 <template>
+    <div>
     <el-config-provider :locale="elementPlusLocale">
     <div class="conventional-table-container">
         <el-card class="conventional-card">
@@ -240,6 +241,7 @@
         </el-dialog>
     </div>
     </el-config-provider>
+    </div>
 </template>
   
 <script setup>
