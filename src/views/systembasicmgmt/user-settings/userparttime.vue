@@ -56,7 +56,7 @@
                           class="conventional-table">
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
-                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="200" />
+                    <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="170" />
                     <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="110">
                         <template #default="scope">
                             <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
@@ -64,7 +64,7 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="200" />
+                    <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="270" />
                     <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="150" />
                     <el-table-column prop="partTimeDeptName" :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" align="left" min-width="270" />
                     <el-table-column prop="partTimePositionName" :label="$t('systembasicmgmt.userPartTime.partTimePosition')" align="left" min-width="150" />
@@ -132,6 +132,7 @@
                             <el-date-picker
                                 v-model="dialogForm.startTime"
                                 type="datetime"
+                                :clearable="false"
                                 :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectStartTime')"
                                 :disabled-date="(date) => dialogForm.endTime && date > new Date(dialogForm.endTime)"
                                 format="YYYY-MM-DD HH:mm:ss"
@@ -142,6 +143,7 @@
                             <el-date-picker
                                 v-model="dialogForm.endTime"
                                 type="datetime"
+                                :clearable="false"
                                 :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectEndTime')"
                                 :disabled-date="(date) => dialogForm.startTime && date < new Date(dialogForm.startTime)"
                                 format="YYYY-MM-DD HH:mm:ss"

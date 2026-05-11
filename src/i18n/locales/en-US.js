@@ -1626,7 +1626,7 @@ export default {
       name: 'Name',
       index: 'Index',
       position: 'Level',
-      partTimeDepartment: 'Part-time Department',
+      partTimeDepartment: 'Part Dept',
       partTimePosition: 'Level',
       partTimeLabor: 'Career',
       labor: 'Career',
