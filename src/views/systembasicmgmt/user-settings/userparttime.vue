@@ -1,4 +1,5 @@
 <template>
+    <el-config-provider :locale="elementPlusLocale">
     <div class="conventional-table-container">
         <el-card class="conventional-card">
   
@@ -238,11 +239,14 @@
             </template>
         </el-dialog>
     </div>
+    </el-config-provider>
 </template>
   
 <script setup>
-    import { ref, reactive, onMounted, nextTick } from 'vue'
+    import { ref, reactive, computed, onMounted, nextTick } from 'vue'
     import { post } from '@/utils/request'
+    import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+    import en from 'element-plus/dist/locale/en.mjs'
     import { 
         GET_USER_PARTTIME_PAGES_API,
         DELETE_USER_PARTTIME_API,
@@ -256,7 +260,10 @@
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { useI18n } from 'vue-i18n'
 
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
+
+    /** 与 vue-i18n 一致，保证分页、日期时间面板等 Element Plus 内置文案随语言切换 */
+    const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 
     const DEBOUNCE_MS = 300
     let searchTimer = null
@@ -332,7 +339,7 @@
         totalCount: 0
     })
     
-    const dialogFormRules = {
+    const dialogFormRules = computed(() => ({
         partTimeDeptId: [
             { required: true, message: t('systembasicmgmt.userPartTime.partTimeDepartmentRequired'), trigger: 'change' }
         ],
@@ -345,7 +352,7 @@
         endTime: [
             { required: true, message: t('systembasicmgmt.userPartTime.endTimeRequired'), trigger: 'change' }
         ]
-    }
+    }))
   
     onMounted(async () => {
         await fetchDepartmentList(true)

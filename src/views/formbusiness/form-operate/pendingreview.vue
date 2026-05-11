@@ -181,22 +181,23 @@
           show-overflow-tooltip
         />
         <el-table-column
-          prop="reviewUserNo"
-          :label="$t('formbusiness.pendingreview.reviewerUserNo')"
-          min-width="100"
+          prop="appointmentType"
+          :label="$t('formbusiness.pendingreview.appointmentType')"
+          min-width="120"
           align="center"
           header-align="center"
-        />
+          show-overflow-tooltip
+        >
+          <template #default="{ row: r }">{{ r.appointmentType || '-' }}</template>
+        </el-table-column>
         <el-table-column
           prop="reviewUserName"
           :label="$t('formbusiness.pendingreview.reviewerUserName')"
           min-width="120"
           align="center"
           header-align="center"
+          show-overflow-tooltip
         />
-        <el-table-column :label="$t('formbusiness.pendingreview.agentUserNo')" min-width="100" align="center" header-align="center">
-          <template #default="{ row: r }">{{ r.agentUserNo || '-' }}</template>
-        </el-table-column>
         <el-table-column :label="$t('formbusiness.pendingreview.agentUserName')" min-width="120" align="center" header-align="center">
           <template #default="{ row: r }">{{ r.agentUserName || '-' }}</template>
         </el-table-column>

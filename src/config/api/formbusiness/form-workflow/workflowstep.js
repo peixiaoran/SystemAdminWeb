@@ -24,7 +24,7 @@ export const GET_ASSIGNMENT_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowSt
 // 获取步骤签核级别下拉框API
 export const GET_ARCHI_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetArchiLevelDrop'
 
-// 获取步骤签核方式下拉框API
+// 获取步骤审批方式下拉框API
 export const GET_REVIEW_MODE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetReviewModeDrop'
 
 // 获取部门级别下拉框API
