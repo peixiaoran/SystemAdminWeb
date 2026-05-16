@@ -118,10 +118,10 @@
           >
             <template #default="{ row }">
               <el-link
-                v-if="row.approvalPath"
+                v-if="row.reviewPath"
                 type="primary"
                 underline="never"
-                @click="openFormPage(row, 'approvalPath')"
+                @click="openFormPage(row, 'reviewPath')"
               >
                 {{ actionText }}
               </el-link>
@@ -498,7 +498,7 @@ const openFormPage = (row, pathKey) => {
     showMessage(t('formbusiness.pendingreview.getFailed'))
     return
   }
-  openPopupWindow(resolved.href, pathKey === 'approvalPath' ? 'pending_approval' : 'form_view')
+  openPopupWindow(resolved.href, pathKey === 'reviewPath' ? 'pending_approval' : 'form_view')
 }
 
 const handleVoidForm = async (row) => {

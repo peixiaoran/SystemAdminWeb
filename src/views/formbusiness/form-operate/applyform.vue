@@ -50,7 +50,7 @@
           <el-table-column :label="$t('formbusiness.applyform.apply')" align="center" width="130">
             <template #default="scope">
               <el-link
-                v-if="scope.row.approvalPath"
+                v-if="scope.row.reviewPath"
                 type="primary"
                 underline="never"
                 @click="openApproval(scope.row)"
@@ -239,8 +239,8 @@ const openPopupWindow = (href, namePrefix = 'form_popup') => {
 }
 
 const openApproval = (row) => {
-  if (!row?.approvalPath) return
-  const path = normalizePath(row.approvalPath)
+  if (!row?.reviewPath) return
+  const path = normalizePath(row.reviewPath)
   if (!isPathSafe(path)) {
     showMessage(t('formbusiness.applyform.getFailed'))
     return
