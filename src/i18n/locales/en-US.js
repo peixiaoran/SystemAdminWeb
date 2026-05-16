@@ -668,7 +668,10 @@ export default {
         rejectReasonLabel: 'Reject Reason',
         rejectReasonPlaceholder: 'Please enter the rejection reason',
         rejectReasonRequired: 'Rejection reason is required',
-        rejectStepRequired: 'Please select the step to reject to'
+        rejectStepRequired: 'Please select the step to reject to',
+        rejectResultTitle: 'Rejected Successfully',
+        rejectResultSubTitle: 'The form has been rejected.',
+        rejectFailed: 'Rejection failed'
     },
     
     // Form Validation

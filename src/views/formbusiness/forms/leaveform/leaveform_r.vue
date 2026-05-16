@@ -1,66 +1,92 @@
 <template>
   <div class="leave-form-page">
-    <!-- 简单Skeleton骨架屏 -->
-    <el-card v-if="loading && !resultState.visible" class="leave-form-card" shadow="never">
-      <div class="system-title-row">
+    <!-- Skeleton 骨架屏 -->
+    <template v-if="loading && !resultState.visible">
+      <!-- 表单卡片骨架 -->
+      <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
-          </template>
-        </el-skeleton>
-      </div>
-      
-      <div class="form-title-row">
-        <el-skeleton animated>
-          <template #template>
-            <el-skeleton-item variant="text" style="width: 150px; height: 28px;" />
-          </template>
-        </el-skeleton>
-      </div>
-      
-      <el-divider style="margin: 22px 0;"></el-divider>
-      
-      <!-- 简化表单内容骨架 -->
-      <div style="padding: 0 16px;">
-        <el-skeleton animated>
-          <template #template>
-            <!-- 基本信息行 -->
-            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
-              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+            <!-- 系统标题 -->
+            <div style="display:flex; justify-content:center; margin-bottom:16px;">
+              <el-skeleton-item variant="text" style="width:200px; height:28px;" />
             </div>
-            
+            <!-- 表单标题 -->
+            <div style="display:flex; justify-content:center; margin-bottom:24px;">
+              <el-skeleton-item variant="text" style="width:130px; height:22px;" />
+            </div>
             <!-- 分割线 -->
-            <el-skeleton-item variant="text" style="width: 100%; height: 1px; margin: 16px 0;" />
-            
-            <!-- 请假信息 -->
-            <el-skeleton-item variant="text" style="width: 200px; height: 32px; margin-bottom: 24px;" />
-            
-            <!-- 时间选择器 -->
-            <el-skeleton-item variant="text" style="width: 400px; height: 32px; margin-bottom: 24px;" />
-            
-            <!-- 时长信息 -->
-            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
-              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
-              <el-skeleton-item variant="text" style="width: 200px; height: 32px;" />
+            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:24px;" />
+
+            <!-- 表单号（1/3 宽） -->
+            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="width:33%; height:32px;" />
             </div>
-            
-            <!-- 文本区域 -->
-            <el-skeleton-item variant="text" style="width: 100%; height: 80px; margin-bottom: 24px;" />
-            
-            <!-- 另一个文本区域 -->
-            <el-skeleton-item variant="text" style="width: 100%; height: 60px; margin-bottom: 24px;" />
-            
-            <!-- 按钮 -->
-            <div style="display: flex; gap: 16px;">
-              <el-skeleton-item variant="button" style="width: 80px; height: 32px;" />
-              <el-skeleton-item variant="button" style="width: 90px; height: 32px;" />
+
+            <!-- 员工信息（3 列） -->
+            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
+              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
+              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
+            </div>
+            <!-- 分割线 -->
+            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:22px;" />
+
+            <!-- 请假类型 + 时间范围 -->
+            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="width:33%; height:32px;" />
+              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
+            </div>
+
+            <!-- 代理人 + 请假天数 -->
+            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="width:33%; height:32px;" />
+              <el-skeleton-item variant="text" style="width:200px; height:32px;" />
+            </div>
+
+            <!-- 请假事由 -->
+            <div style="margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="width:100%; height:76px;" />
+            </div>
+
+            <!-- 附件区域 -->
+            <div style="margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="button" style="width:100px; height:32px;" />
+            </div>
+
+            <!-- 审批意见 -->
+            <div style="margin-bottom:22px; padding:0 20px;">
+              <el-skeleton-item variant="text" style="width:100%; height:60px;" />
+            </div>
+
+            <!-- 操作按钮行 -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 20px;">
+              <div style="display:flex; gap:12px;">
+                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
+                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
+                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
+              </div>
+              <el-skeleton-item variant="circle" style="width:32px; height:32px;" />
             </div>
           </template>
         </el-skeleton>
-      </div>
-    </el-card>
+      </el-card>
+
+      <!-- 审批记录卡片骨架 -->
+      <el-card class="leave-form-card review-log-card" shadow="never">
+        <el-skeleton animated>
+          <template #template>
+            <!-- 标题 -->
+            <el-skeleton-item variant="text" style="width:80px; height:20px; margin-bottom:16px;" />
+            <!-- 表格头 -->
+            <el-skeleton-item variant="text" style="width:100%; height:36px; margin-bottom:2px;" />
+            <!-- 表格行 × 3 -->
+            <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
+            <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
+            <el-skeleton-item variant="text" style="width:100%; height:44px;" />
+          </template>
+        </el-skeleton>
+      </el-card>
+    </template>
     
     <!-- 实际表单内容 -->
     <el-card v-else-if="resultState.visible" class="leave-form-card result-card" shadow="never">
@@ -300,11 +326,12 @@
           size="small"
           class="review-log-table"
         >
+          <el-table-column type="index" label="#" width="46" align="center" />
           <el-table-column
             prop="stepName"
             :label="t('formbusiness.leaveform.reviewLogStep')"
             width="130"
-            align="center"
+            align="left"
           >
             <template #default="{ row }">
               <span class="review-log-step-cell">{{ row.stepName }}</span>
@@ -418,9 +445,6 @@
       class="leaveform-workflow-drawer"
     >
       <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
-        <div v-if="!workflowDrawerLoading && workflowOverview.rejectCount > 0" class="workflow-reject-banner">
-          {{ t('formbusiness.leaveform.workflowRejectCount', { count: workflowOverview.rejectCount }) }}
-        </div>
         <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewFlowList?.length">
           <div
             v-for="(step, stepIdx) in workflowOverview.stepReviewFlowList"
@@ -494,7 +518,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -609,15 +633,24 @@ const rejectStepDropOptions = ref([])
 /**
  * 按 stepId（无则降级为 stepName）对签核记录分组，保持原始顺序
  */
+/**
+ * 按 stepId（无则降级 stepName）对排序后的记录分组：
+ * 只合并【相邻】的相同步骤，非相邻的同步骤单独成组，
+ * 避免 ReviewDateTime 排序后跨位置误合并。
+ */
 const groupedReviewRecords = computed(() => {
   const groups = []
-  const keyToIdx = new Map()
   for (const record of reviewRecordList.value) {
-    const key = record.stepId != null && String(record.stepId) !== '' ? String(record.stepId) : (record.stepName || '')
-    if (keyToIdx.has(key)) {
-      groups[keyToIdx.get(key)].records.push(record)
+    const key = record.stepId != null && String(record.stepId) !== ''
+      ? String(record.stepId)
+      : (record.stepName || '')
+    const last = groups[groups.length - 1]
+    const lastKey = last
+      ? (last.stepId || last.stepName)
+      : null
+    if (last && lastKey === key) {
+      last.records.push(record)
     } else {
-      keyToIdx.set(key, groups.length)
       groups.push({ stepId: record.stepId || '', stepName: record.stepName || '', records: [record] })
     }
   }
@@ -968,7 +1001,11 @@ function bindFormData (data) {
     formRef.value.clearValidate(['leaveType'])
   }
   if (Array.isArray(data.reviewRecordList)) {
-    reviewRecordList.value = data.reviewRecordList
+    reviewRecordList.value = [...data.reviewRecordList].sort((a, b) => {
+      const ta = a.reviewDateTime ? new Date(a.reviewDateTime).getTime() : 0
+      const tb = b.reviewDateTime ? new Date(b.reviewDateTime).getTime() : 0
+      return ta - tb
+    })
   }
   if (Array.isArray(data.rejectStepDrop)) {
     rejectStepDropOptions.value = data.rejectStepDrop
@@ -1256,7 +1293,42 @@ async function confirmReject () {
     rejectFormRef.value?.validate((v) => resolve(!!v))
   })
   if (!valid) return
-  // TODO: 调用驳回接口
+
+  const formId = String(form.formId || '')
+  if (!formId) {
+    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    return
+  }
+
+  rejecting.value = true
+  try {
+    const res = await post(REJECT_LEAVEFORM_API, {
+      formId,
+      rejectStepId: rejectForm.rejectStepId,
+      comment: rejectForm.rejectReason
+    }, { silentForbiddenError: false })
+
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      rejectDialogVisible.value = false
+      return
+    }
+    if (res && isSuccessCode(res.code)) {
+      rejectDialogVisible.value = false
+      showResult('success', 'formbusiness.leaveform.rejectResultTitle', 'formbusiness.leaveform.rejectResultSubTitle')
+      return
+    }
+    if (isBadRequestResponse(res)) {
+      showBadRequestResult(res?.message)
+      rejectDialogVisible.value = false
+      return
+    }
+    ElNotification({ title: '', message: res?.message || t('formbusiness.leaveform.rejectFailed'), type: 'error' })
+  } catch {
+    ElNotification({ title: '', message: t('formbusiness.leaveform.rejectFailed'), type: 'error' })
+  } finally {
+    rejecting.value = false
+  }
 }
 
 /**
@@ -1514,13 +1586,88 @@ async function removeAttachment (file, idx) {
  * 页面挂载
  * 说明：加载初始化数据与下拉
  */
+/**
+ * 通过 token 换取表单信息
+ * 入参：tokenValue（URL query 参数 token）
+ * 出参：成功返回 formId 字符串，失败返回 null
+ */
+/**
+ * 通过 token 换取表单信息并同步用户身份到 userStore
+ * 后端同时写入 Cookie JWT + 返回用户信息；前端需将用户信息同步到 Pinia，
+ * 否则 userStore.isLoggedIn = false，后续路由守卫仍会跳转登录页。
+ * 出参：成功返回 formId 字符串，失败返回 null
+ */
+async function resolveTokenFormId (tokenValue) {
+  try {
+    const formData = new window.FormData()
+    formData.append('tokenValue', String(tokenValue))
+    const res = await post(GET_FORM_NOTIFICATION_TOKEN_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      // token 本身尚未换取会话，禁止 401/403 触发全局硬跳转登录页
+      disableAutoLogout: true,
+      silentAuthError: false,
+      silentForbiddenError: false
+    })
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      return null
+    }
+    if (!res || res.code !== 200) {
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+      }
+      return null
+    }
+    const data = res.data || {}
+    const formId = data.formId ? String(data.formId) : null
+    if (!formId) return null
+
+    // 将后端返回的用户信息写入 userStore，令 isLoggedIn = true，
+    // 否则路由守卫 probeSession() 检测不到登录态，跳转其他页面仍会被打回登录页。
+    // 注意：仅设 loginNo（工号），不设 userId（内部数字 ID）——
+    //   userId 将在后续 probeSession() 调用 /me 时由服务端返回的真实值覆盖；
+    //   若此处误将 userNo 赋给 userId，fetchFullReviewFlow 等接口会携带错误的 ID 参数。
+    userStore.setUserInfo({
+      userId: '',
+      loginNo: data.userNo || '',
+      userNameCn: data.userNameCn || '',
+      userNameEn: data.userNameEn || '',
+      avatar: data.avatarAddress || ''
+    })
+
+    return formId
+  } catch {
+    ElMessage.error(t('formbusiness.messages.loadError'))
+    return null
+  }
+}
+
 onMounted(async () => {
   try {
     loading.value = true
-    await Promise.all([getLeaveTypeOptions()])
-    // 优先从路由获取 formId（编辑场景）
-    const routeFormId = route.query.formId || route.params?.formId
+
     currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
+
+    // token 场景：必须先换取身份（后端写入 Cookie JWT），再发其他任何需要鉴权的请求
+    // 若先调 getLeaveTypeOptions() 等接口，此时没有 Cookie 会收到 401，
+    // request.js 拦截器会直接 hardRedirectToLogin()，完全绕过 Vue Router。
+    const routeToken = route.query.token || route.query.Token
+    if (routeToken) {
+      const tokenFormId = await resolveTokenFormId(String(routeToken))
+      if (tokenFormId) {
+        // Cookie 已由后端写入，后续请求均可正常鉴权
+        await Promise.all([getLeaveTypeOptions()])
+        form.formId = tokenFormId
+        await getLeaveFormDetail(tokenFormId)
+      }
+      return
+    }
+
+    // 普通场景：已有 session，直接并行加载
+    await Promise.all([getLeaveTypeOptions()])
+    const routeFormId = route.query.formId || route.params?.formId
     if (routeFormId) {
       form.formId = String(routeFormId)
       await getLeaveFormDetail(form.formId)
@@ -1736,6 +1883,23 @@ onMounted(async () => {
   display: block;
 }
 
+.leaveform-workflow-drawer :deep(.el-drawer__header) {
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.leaveform-workflow-drawer :deep(.el-drawer__title) {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.leaveform-workflow-drawer :deep(.el-drawer__body) {
+  padding: 10px 20px 20px !important;
+}
+
 .workflow-drawer-body {
   min-height: 120px;
 }
@@ -1824,15 +1988,6 @@ onMounted(async () => {
   background: var(--el-fill-color-darker);
 }
 
-.workflow-reject-banner {
-  margin: 0 0 12px;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: var(--el-color-danger);
-  background: var(--el-color-danger-light-9);
-  border: 1px solid var(--el-color-danger-light-7);
-  border-radius: 6px;
-}
 
 .workflow-user-list {
   list-style: none;

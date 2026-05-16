@@ -31,4 +31,10 @@ export const DELETE_FILE_API = 'FormBusiness/Forms/PublicForm/DeleteAttachment'
 export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/PublicForm/GetFullReviewFlow'
 
 // 送审请假单API
-export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/PublicForm/LeaveFromApprove'
+export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/PublicForm/FromApprove'
+
+// 驳回请假单API
+export const REJECT_LEAVEFORM_API = 'FormBusiness/Forms/PublicForm/FromReject'
+
+// 获取表单通知令牌API
+export const GET_FORM_NOTIFICATION_TOKEN_API = 'FormBusiness/Forms/PublicForm/GetFormNotificationToken'

@@ -503,6 +503,7 @@ const pmenuRoutes = [
       ]
   },
   // 独立请假单申请页面（不使用Layout，无标签）
+  // tokenBypass: true 表示携带 token 参数时跳过 session 检查，由页面自行用 token 换取身份
   {
     path: '/formbusiness/forms/leaveform/leaveform_r',
     name: 'LeaveFormR',
@@ -510,7 +511,8 @@ const pmenuRoutes = [
     meta: {
       title: 'route.leaveform_r',
       [ROUTE_CONFIG.META.AUTH]: true,
-      noTag: true
+      noTag: true,
+      tokenBypass: true
     }
   },
   {
@@ -597,6 +599,10 @@ router.beforeEach(async (to) => {
   
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {
+    // tokenBypass：路由声明支持 token 免登录访问，由页面自行处理 token 换取身份
+    if (to.meta.tokenBypass && (to.query.token || to.query.Token)) {
+      return
+    }
     const userStore = useUserStore()
     const ok = await userStore.probeSession()
     if (!ok) {

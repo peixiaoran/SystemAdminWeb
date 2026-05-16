@@ -570,7 +570,7 @@ export default {
         attachmentTipNursing: '护理假需上传被护理人医疗或住院证明',
         attachmentTipBereavement: '丧假需上传讣告、死亡证明或关系证明',
         viewFullWorkflow: '查看完整流程',
-        workflowDrawerTitle: '完整签核流程',
+        workflowDrawerTitle: '完整审批流程',
         workflowStatusSigning: '待审批',
         workflowStatusApproved: '签核完成',
         workflowStatusNotSigned: '未签核',
@@ -586,14 +586,14 @@ export default {
         approvalComment: '送审意见',
         approvalCommentPlaceholder: '说点什么...',
         reviewLog: '审批记录',
-        reviewLogStep: '签核步骤',
-        reviewLogResult: '签核结果',
+        reviewLogStep: '审批步骤',
+        reviewLogResult: '审批结果',
         reviewLogComment: '意见',
         reviewLogReviewType: '签核方式',
         reviewLogAppointmentType: '签核身份',
         reviewLogOriginalUser: '原始签核人',
         reviewLogOperationUser: '实际操作人',
-        reviewLogDateTime: '签核时间',
+        reviewLogDateTime: '审批时间',
         reviewLogEmpty: '暂无签核记录',
         rejectButton: '驳回',
         rejectDialogTitle: '驳回确认',
@@ -602,7 +602,10 @@ export default {
         rejectReasonLabel: '驳回原因',
         rejectReasonPlaceholder: '请输入驳回原因',
         rejectReasonRequired: '驳回原因为必填项',
-        rejectStepRequired: '请选择驳回至的步骤'
+        rejectStepRequired: '请选择驳回至的步骤',
+        rejectResultTitle: '驳回成功',
+        rejectResultSubTitle: '表单已成功驳回。',
+        rejectFailed: '驳回失败'
       },
     
     // 表单验证
