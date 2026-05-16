@@ -22,13 +22,13 @@ export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeave
 export const GET_IMPORTANCE_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetImportanceDrop'
 
 // 上传附件API
-export const UPLOAD_FILE_API = 'FormBusiness/Forms/LeaveForm/UploadAttachment'
+export const UPLOAD_FILE_API = 'FormBusiness/Forms/PublicForm/UploadAttachment'
 
 // 删除附件API
-export const DELETE_FILE_API = 'FormBusiness/Forms/LeaveForm/DeleteAttachment'
+export const DELETE_FILE_API = 'FormBusiness/Forms/PublicForm/DeleteAttachment'
 
 // 获取完整签核流程API
-export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/LeaveForm/GetFullReviewFlow'
+export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/PublicForm/GetFullReviewFlow'
 
 // 送审请假单API
-export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/LeaveFromApprove'
+export const APPROVE_LEAVEFORM_API = 'FormBusiness/Forms/PublicForm/LeaveFromApprove'

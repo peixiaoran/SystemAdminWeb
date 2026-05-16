@@ -84,7 +84,8 @@
       </el-result>
     </el-card>
 
-    <el-card v-else class="leave-form-card" shadow="never" v-loading="saving || approving">
+    <template v-else>
+    <el-card class="leave-form-card" shadow="never" v-loading="saving || approving">
       <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
       <div class="system-title-row">
         <h2 class="system-title">{{ t('common.systemTitle') }}</h2>
@@ -258,6 +259,7 @@
                 <div class="form-actions-buttons">
                   <el-button type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
                   <el-button type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+                  <el-button type="danger" round style="width:80px;" @click="onReject" :disabled="saving || approving">{{ t('formbusiness.leaveform.rejectButton') }}</el-button>
                 </div>
                 <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
                   <el-button
@@ -285,6 +287,127 @@
         </el-row>
       </el-form>
     </el-card>
+
+    <!-- 审批记录独立卡片 -->
+    <el-card class="leave-form-card review-log-card" shadow="never">
+      <div class="review-log-section">
+        <div class="review-log-title">{{ t('formbusiness.leaveform.reviewLog') }}</div>
+        <el-table
+          v-if="reviewLogTableRows.length"
+          :data="reviewLogTableRows"
+          :span-method="reviewLogSpanMethod"
+          :max-height="280"
+          size="small"
+          class="review-log-table"
+        >
+          <el-table-column
+            prop="stepName"
+            :label="t('formbusiness.leaveform.reviewLogStep')"
+            width="130"
+            align="center"
+          >
+            <template #default="{ row }">
+              <span class="review-log-step-cell">{{ row.stepName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="t('formbusiness.leaveform.reviewLogOperationUser')"
+            width="220"
+            align="left"
+          >
+            <template #default="{ row }">
+              <div class="review-log-user-wrap">
+                <!-- 自动标记：右上角小字 -->
+                <span
+                  v-if="row.reviewType && row.reviewType.toLowerCase() === 'automatic'"
+                  class="review-log-auto-badge"
+                >{{ row.reviewTypeName }}</span>
+                <!-- 第一行：实际操作人 -->
+                <span class="review-log-user-cell">{{ row.operationUserName }}</span>
+                <!-- 第二行：代理人 + 签核身份（有内容才显示） -->
+                <div
+                  v-if="(row.originalUserName && row.originalUserName !== row.operationUserName) || (row.appointmentType && row.appointmentType.toLowerCase() !== 'actual')"
+                  class="review-log-sub-row"
+                >
+                  <span v-if="row.originalUserName && row.originalUserName !== row.operationUserName" class="review-log-original-cell">{{ row.originalUserName }}</span>
+                  <span v-if="row.appointmentType && row.appointmentType.toLowerCase() !== 'actual'" class="review-log-appointment-cell">{{ row.appointmentTypeName }}</span>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="t('formbusiness.leaveform.reviewLogResult')"
+            width="100"
+            align="center"
+          >
+            <template #default="{ row }">
+              <el-tag :type="getReviewResultTagType(row)" size="small">
+                {{ row.reviewResultName }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="comment"
+            :label="t('formbusiness.leaveform.reviewLogComment')"
+            min-width="180"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            :label="t('formbusiness.leaveform.reviewLogDateTime')"
+            width="155"
+            align="center"
+          >
+            <template #default="{ row }">{{ formatReviewDateTime(row.reviewDateTime) }}</template>
+          </el-table-column>
+        </el-table>
+        <el-empty
+          v-else
+          :description="t('formbusiness.leaveform.reviewLogEmpty')"
+          style="padding: 20px 0;"
+        />
+      </div>
+    </el-card>
+    </template>
+
+    <!-- 驳回弹窗 -->
+    <el-dialog
+      v-model="rejectDialogVisible"
+      :title="t('formbusiness.leaveform.rejectDialogTitle')"
+      width="480px"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      class="modal-penetrable"
+      @close="onRejectDialogClose"
+    >
+      <el-form ref="rejectFormRef" :model="rejectForm" :rules="rejectRules" label-width="100px">
+        <el-form-item :label="t('formbusiness.leaveform.rejectStepLabel')" prop="rejectStepId">
+          <el-select
+            v-model="rejectForm.rejectStepId"
+            :placeholder="t('formbusiness.leaveform.rejectStepPlaceholder')"
+            style="width: 100%;"
+          >
+            <el-option
+              v-for="step in rejectStepDropOptions"
+              :key="step.stepId"
+              :label="step.stepName"
+              :value="step.stepId"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.leaveform.rejectReasonLabel')" prop="rejectReason">
+          <el-input
+            v-model="rejectForm.rejectReason"
+            type="textarea"
+            :rows="3"
+            :placeholder="t('formbusiness.leaveform.rejectReasonPlaceholder')"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="rejectDialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="danger" @click="confirmReject" :loading="rejecting">{{ t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
 
     <el-drawer
       v-model="workflowDrawerVisible"
@@ -366,7 +489,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
@@ -477,6 +600,78 @@ const resultState = reactive({
 })
 // 送审意见
 const approvalComment = ref('')
+
+// 签核日志列表
+const reviewRecordList = ref([])
+// 驳回步骤下拉选项
+const rejectStepDropOptions = ref([])
+
+/**
+ * 按 stepId（无则降级为 stepName）对签核记录分组，保持原始顺序
+ */
+const groupedReviewRecords = computed(() => {
+  const groups = []
+  const keyToIdx = new Map()
+  for (const record of reviewRecordList.value) {
+    const key = record.stepId != null && String(record.stepId) !== '' ? String(record.stepId) : (record.stepName || '')
+    if (keyToIdx.has(key)) {
+      groups[keyToIdx.get(key)].records.push(record)
+    } else {
+      keyToIdx.set(key, groups.length)
+      groups.push({ stepId: record.stepId || '', stepName: record.stepName || '', records: [record] })
+    }
+  }
+  return groups
+})
+
+/**
+ * 将分组数据展平为表格行，附带步骤列合并所需的 _rowSpan
+ */
+const reviewLogTableRows = computed(() => {
+  const rows = []
+  for (const group of groupedReviewRecords.value) {
+    group.records.forEach((record, rIdx) => {
+      rows.push({
+        ...record,
+        stepName: group.stepName,
+        stepId: group.stepId,
+        _rowSpan: rIdx === 0 ? group.records.length : 0
+      })
+    })
+  }
+  return rows
+})
+
+/**
+ * 步骤列（第 0 列）按分组合并单元格
+ */
+function reviewLogSpanMethod ({ columnIndex, rowIndex }) {
+  if (columnIndex === 0) {
+    const row = reviewLogTableRows.value[rowIndex]
+    if (!row) return { rowspan: 1, colspan: 1 }
+    return row._rowSpan > 0
+      ? { rowspan: row._rowSpan, colspan: 1 }
+      : { rowspan: 0, colspan: 0 }
+  }
+}
+
+// 驳回弹窗状态
+const rejectDialogVisible = ref(false)
+const rejectFormRef = ref(null)
+const rejecting = ref(false)
+const rejectForm = reactive({
+  rejectStepId: '',
+  rejectReason: ''
+})
+
+const rejectRules = {
+  rejectStepId: [
+    { required: true, message: t('formbusiness.leaveform.rejectStepRequired'), trigger: 'change' }
+  ],
+  rejectReason: [
+    { required: true, message: t('formbusiness.leaveform.rejectReasonRequired'), trigger: 'blur' }
+  ]
+}
 
 // 附件上传状态与列表（相对路径）
 const uploading = ref(false)
@@ -772,6 +967,12 @@ function bindFormData (data) {
   if (formRef.value) {
     formRef.value.clearValidate(['leaveType'])
   }
+  if (Array.isArray(data.reviewRecordList)) {
+    reviewRecordList.value = data.reviewRecordList
+  }
+  if (Array.isArray(data.rejectStepDrop)) {
+    rejectStepDropOptions.value = data.rejectStepDrop
+  }
 }
 
 /**
@@ -1035,6 +1236,52 @@ function openWorkflowDrawer () {
   }
   workflowDrawerVisible.value = true
   fetchFullReviewFlow()
+}
+
+/**
+ * 打开驳回弹窗
+ */
+function onReject () {
+  rejectForm.rejectStepId = ''
+  rejectForm.rejectReason = ''
+  rejectDialogVisible.value = true
+}
+
+function onRejectDialogClose () {
+  rejectFormRef.value?.clearValidate()
+}
+
+async function confirmReject () {
+  const valid = await new Promise((resolve) => {
+    rejectFormRef.value?.validate((v) => resolve(!!v))
+  })
+  if (!valid) return
+  // TODO: 调用驳回接口
+}
+
+/**
+ * 格式化签核时间显示
+ */
+function formatReviewDateTime (dt) {
+  if (!dt) return ''
+  return normalizeDateTime(dt)
+}
+
+/**
+ * 根据 reviewResult 枚举值（优先）或 reviewResultName 文字返回 el-tag type
+ * Approve → success, Reject/Rejected → danger, Return → warning, 其余 → info
+ */
+function getReviewResultTagType (row) {
+  const code = String(row?.reviewResult ?? '').trim().toLowerCase()
+  if (code === 'approve' || code === 'approved') return 'success'
+  if (code === 'reject' || code === 'rejected') return 'danger'
+  if (code === 'return') return 'warning'
+  if (code) return 'info'
+  // fallback：按中文名称匹配
+  const name = String(row?.reviewResultName ?? '').toLowerCase()
+  if (name.includes('核准') || name.includes('通过') || name.includes('同意')) return 'success'
+  if (name.includes('驳回') || name.includes('拒绝')) return 'danger'
+  return 'info'
 }
 
 /**
@@ -1305,6 +1552,9 @@ onMounted(async () => {
 
 .leave-form-page {
   padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .leave-form-card {
   max-width: 1000px;
@@ -1672,6 +1922,80 @@ onMounted(async () => {
 
 .workflow-user-label--unsigned {
   color: var(--el-color-info);
+}
+
+/* 审批记录独立卡片 */
+.review-log-card {
+  margin-top: 10px;
+}
+
+/* ===== 审批记录区域 ===== */
+.review-log-section {
+  padding: 0 20px 20px;
+}
+
+.review-log-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-bottom: 12px;
+}
+
+.review-log-table {
+  width: 100%;
+}
+
+.review-log-step-cell {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+}
+
+.review-log-user-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 24px;
+}
+
+.review-log-auto-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--el-color-info);
+  background: var(--el-color-info-light-9);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.review-log-user-cell {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+}
+
+.review-log-sub-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.review-log-original-cell {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.review-log-appointment-cell {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+/* ===== 驳回弹窗（modal-penetrable：半透明遮罩） ===== */
+.modal-penetrable :deep(.el-overlay) {
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 </style>

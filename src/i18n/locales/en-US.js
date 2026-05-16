@@ -650,7 +650,25 @@ export default {
       workflowLoadFailed: 'Failed to load workflow',
       workflowNeedFormId: 'Please wait until the form is initialized',
         approvalComment: 'Approval Comment',
-        approvalCommentPlaceholder: 'Say something...'
+        approvalCommentPlaceholder: 'Say something...',
+        reviewLog: 'Approval Records',
+        reviewLogStep: 'Step',
+        reviewLogResult: 'Result',
+        reviewLogComment: 'Comment',
+        reviewLogReviewType: 'Review Type',
+        reviewLogAppointmentType: 'Appointment Type',
+        reviewLogOriginalUser: 'Original Reviewer',
+        reviewLogOperationUser: 'Operator',
+        reviewLogDateTime: 'Review Time',
+        reviewLogEmpty: 'No approval records',
+        rejectButton: 'Reject',
+        rejectDialogTitle: 'Confirm Rejection',
+        rejectStepLabel: 'Reject to Step',
+        rejectStepPlaceholder: 'Please select the step to reject to',
+        rejectReasonLabel: 'Reject Reason',
+        rejectReasonPlaceholder: 'Please enter the rejection reason',
+        rejectReasonRequired: 'Rejection reason is required',
+        rejectStepRequired: 'Please select the step to reject to'
     },
     
     // Form Validation
