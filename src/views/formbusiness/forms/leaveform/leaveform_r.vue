@@ -322,7 +322,7 @@
           v-if="reviewLogTableRows.length"
           :data="reviewLogTableRows"
           :span-method="reviewLogSpanMethod"
-          :max-height="280"
+          :max-height="420"
           size="small"
           class="review-log-table"
         >
@@ -349,14 +349,14 @@
                   v-if="row.reviewType && row.reviewType.toLowerCase() === 'automatic'"
                   class="review-log-auto-badge"
                 >{{ row.reviewTypeName }}</span>
-                <!-- 第一行：实际操作人 -->
-                <span class="review-log-user-cell">{{ row.operationUserName }}</span>
-                <!-- 第二行：代理人 + 签核身份（有内容才显示） -->
+                <!-- 第一行：原审批人（originalUserName）；缺失时回落到实际审批人，避免空白 -->
+                <span class="review-log-user-cell">{{ row.originalUserName || row.operationUserName }}</span>
+                <!-- 第二行：实际审批人（operationUserName，与原审批人不同时显示）+ 签核身份 -->
                 <div
-                  v-if="(row.originalUserName && row.originalUserName !== row.operationUserName) || (row.appointmentType && row.appointmentType.toLowerCase() !== 'actual')"
+                  v-if="(row.operationUserName && row.originalUserName && row.operationUserName !== row.originalUserName) || (row.appointmentType && row.appointmentType.toLowerCase() !== 'actual')"
                   class="review-log-sub-row"
                 >
-                  <span v-if="row.originalUserName && row.originalUserName !== row.operationUserName" class="review-log-original-cell">{{ row.originalUserName }}</span>
+                  <span v-if="row.operationUserName && row.originalUserName && row.operationUserName !== row.originalUserName" class="review-log-original-cell">{{ row.operationUserName }}</span>
                   <span v-if="row.appointmentType && row.appointmentType.toLowerCase() !== 'actual'" class="review-log-appointment-cell">{{ row.appointmentTypeName }}</span>
                 </div>
               </div>
@@ -400,7 +400,7 @@
     <el-dialog
       v-model="rejectDialogVisible"
       :title="t('formbusiness.leaveform.rejectDialogTitle')"
-      width="480px"
+      width="580px"
       :close-on-click-modal="false"
       :append-to-body="true"
       class="modal-penetrable"
@@ -411,7 +411,7 @@
           <el-select
             v-model="rejectForm.rejectStepId"
             :placeholder="t('formbusiness.leaveform.rejectStepPlaceholder')"
-            style="width: 100%;"
+            class="reject-step-select"
           >
             <el-option
               v-for="step in rejectStepDropOptions"
@@ -425,8 +425,9 @@
           <el-input
             v-model="rejectForm.rejectReason"
             type="textarea"
-            :rows="3"
+            :rows="6"
             :placeholder="t('formbusiness.leaveform.rejectReasonPlaceholder')"
+            class="reject-reason-input"
           />
         </el-form-item>
       </el-form>
@@ -519,9 +520,11 @@ import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { usePMenuStore } from '@/stores/pmenu'
 
 // 获取翻译函数
 const { t } = i18n.global
@@ -531,6 +534,7 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const pmenuStore = usePMenuStore()
 
 // 加载状态
 const loading = ref(true)
@@ -1061,9 +1065,90 @@ function notifyOpenerRefreshPendingReview () {
   }
 }
 
-function closeCurrentPage () {
-  notifyOpenerRefreshPendingReview()
-  window.close()
+/** 待审批列表页路由路径（非弹框场景关闭后回跳目标） */
+const PENDING_REVIEW_ROUTE_PATH = '/formbusiness/form-operate/pendingreview'
+/** 业务模块路径标识，匹配 GetModuleList 返回项的 path 首段 */
+const FORMBUSINESS_MODULE_PATH = 'formbusiness'
+
+/**
+ * 判断当前页面是否为弹窗（由 window.open 打开）
+ * 仅以 opener 存在且未关闭为准；跨域时 opener.closed 仍可安全访问
+ */
+function isPopupWindow () {
+  try {
+    return !!(window.opener && !window.opener.closed)
+  } catch {
+    return !!window.opener
+  }
+}
+
+/**
+ * 确保 pmenuStore 已选中表单业务模块。
+ * leaveform_r 是独立路由（不挂 Layout），通过 token 进入时从未选过模块，
+ * 直接 push 到 Layout 子路由会被 fetchMenuData 转去 /module-select。
+ * 这里在跳转前补齐模块信息，避免被中转。
+ * 出参：成功 true / 失败 false（失败由调用方走兜底）
+ */
+async function ensureFormbusinessModuleSelected () {
+  if (
+    pmenuStore.currentModuleId &&
+    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
+  ) {
+    return true
+  }
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    if (!res || res.code !== 200) return false
+    const list = Array.isArray(res.data) ? res.data : []
+    const matched = list.find((m) => {
+      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
+      return seg === FORMBUSINESS_MODULE_PATH
+    })
+    if (!matched) return false
+    const nameCn =
+      matched.moduleNameCn ||
+      matched.ModuleNameCn ||
+      matched.moduleNameCh ||
+      matched.ModuleNameCh ||
+      matched.moduleName ||
+      matched.ModuleName ||
+      ''
+    const nameEn =
+      matched.moduleNameEn ||
+      matched.ModuleNameEn ||
+      matched.moduleName ||
+      matched.ModuleName ||
+      ''
+    pmenuStore.setCurrentPMenu(
+      String(matched.moduleId || ''),
+      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
+      FORMBUSINESS_MODULE_PATH,
+      nameCn,
+      nameEn
+    )
+    return !!matched.moduleId
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 关闭当前页：
+ * - 弹框：通知父级刷新待审批列表后关闭窗口
+ * - 非弹框：补齐模块信息后跳转到待审批列表页；模块信息缺失时回退到模块选择页
+ */
+async function closeCurrentPage () {
+  if (isPopupWindow()) {
+    notifyOpenerRefreshPendingReview()
+    window.close()
+    return
+  }
+  const ok = await ensureFormbusinessModuleSelected()
+  if (ok) {
+    router.push(PENDING_REVIEW_ROUTE_PATH)
+  } else {
+    router.push('/module-select')
+  }
 }
 
 /**
@@ -2151,6 +2236,17 @@ onMounted(async () => {
 /* ===== 驳回弹窗（modal-penetrable：半透明遮罩） ===== */
 .modal-penetrable :deep(.el-overlay) {
   background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* 步骤下拉：固定较窄宽度，避免在弹窗里被横向拉满 */
+.reject-step-select {
+  width: 260px;
+  max-width: 100%;
+}
+
+/* 意见输入框：占满表单可用宽度 */
+.reject-reason-input {
+  width: 100%;
 }
 
 </style>
