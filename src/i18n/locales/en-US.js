@@ -654,6 +654,7 @@ export default {
         reviewLog: 'Review Records',
         reviewLogStep: 'Step',
         reviewLogResult: 'Result',
+        reviewLogRejectStepName: 'Reject To Step',
         reviewLogComment: 'Comment',
         reviewLogReviewType: 'Review Type',
         reviewLogAppointmentType: 'Appointment Type',

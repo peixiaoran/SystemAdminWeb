@@ -339,7 +339,7 @@
           </el-table-column>
           <el-table-column
             :label="t('formbusiness.leaveform.reviewLogOperationUser')"
-            width="220"
+            width="160"
             align="left"
           >
             <template #default="{ row }">
@@ -372,6 +372,14 @@
                 {{ row.reviewResultName }}
               </el-tag>
             </template>
+          </el-table-column>
+          <el-table-column
+            :label="t('formbusiness.leaveform.reviewLogRejectStepName')"
+            min-width="140"
+            align="center"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">{{ getReviewRejectStepName(row) }}</template>
           </el-table-column>
           <el-table-column
             prop="comment"
@@ -1417,6 +1425,15 @@ async function confirmReject () {
 }
 
 /**
+ * 签核记录中的驳回目标步骤名（后端字段 RejectStepName / rejectStepName）
+ */
+function getReviewRejectStepName (row) {
+  const v = row?.rejectStepName ?? row?.RejectStepName
+  if (v == null || v === '') return ''
+  return String(v)
+}
+
+/**
  * 格式化签核时间显示
  */
 function formatReviewDateTime (dt) {
@@ -1433,11 +1450,7 @@ function getReviewResultTagType (row) {
   if (code === 'approve' || code === 'approved') return 'success'
   if (code === 'reject' || code === 'rejected') return 'danger'
   if (code === 'return') return 'warning'
-  if (code) return 'info'
-  // fallback：按中文名称匹配
-  const name = String(row?.reviewResultName ?? '').toLowerCase()
-  if (name.includes('核准') || name.includes('通过') || name.includes('同意')) return 'success'
-  if (name.includes('驳回') || name.includes('拒绝')) return 'danger'
+  if (code)
   return 'info'
 }
 
