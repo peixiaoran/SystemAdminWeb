@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
     <!-- 侧边菜单 -->
     <el-aside :width="isCollapse ? '64px' : '230px'" class="aside-container">
@@ -722,7 +722,7 @@ const logout = async () => {
       console.error('Logout failed:', result?.message)
     }
   } catch (error) {
-    // 员工取消，不处理
+    // 用户取消，不处理
     if (error !== 'cancel') {
       console.error('Logout error:', error)
     }

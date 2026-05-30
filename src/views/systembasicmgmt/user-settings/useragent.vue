@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <!-- 过滤条件 -->
@@ -147,7 +147,7 @@
       </template>
     </el-dialog>
 
-    <!-- 员工选择对话框 -->
+    <!-- 用户选择对话框 -->
     <el-dialog 
       v-model="userSelectDialogVisible"
       :title="`${$t('systembasicmgmt.userAgent.addAgent')} - ${currentUserInfo.userName || ''}`"
@@ -259,7 +259,7 @@
           </el-form-item>
         </el-form>
 
-        <!-- 员工表格 -->
+        <!-- 用户表格 -->
         <el-table 
           :data="userSelectList"
           border
@@ -307,7 +307,7 @@
       </template>
     </el-dialog>
 
-    <!-- 查看员工代理了哪些人对话框 -->
+    <!-- 查看用户代理了哪些人对话框 -->
     <el-dialog 
       v-model="proactiveAgentDialogVisible"
       :title="proactiveAgentDialogTitle"

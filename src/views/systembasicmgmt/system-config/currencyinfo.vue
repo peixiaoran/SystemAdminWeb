@@ -170,9 +170,12 @@ const showMessage = (message, type = 'error') => {
 }
 
 const scheduleSearch = () => {
-  pagination.pageIndex = 1
-  clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => fetchCurrencyPages(), DEBOUNCE_MS)
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchCurrencyPages()
+  }, DEBOUNCE_MS)
 }
 
 onMounted(() => {

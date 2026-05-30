@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
@@ -200,7 +200,7 @@ const handleLogin = () => {
             resetAuthErrorState()
             // 设置标题
             document.title = t('common.systemTitle')
-            // 获取员工store
+            // 获取用户store
             const userStore = useUserStore()
 
             // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token

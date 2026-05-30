@@ -1,4 +1,4 @@
-/**
+﻿/**
  * API配置文件
  * 集中管理API相关配置，区分开发环境和生产环境
  * 使用.env.[mode]文件中的环境变量
@@ -30,7 +30,7 @@ export const GET_REVIEW_MODE_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowS
 // 获取部门级别下拉框API
 export const GET_DEPARTMENT_LEVEL_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetDepartmentLevelDrop'
 
-// 获取员工职级下拉框API
+// 获取用户职级下拉框API
 export const GET_USER_POSITION_DROPDOWN_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetPositionDrop'
 
 // 获取部门下拉框API
@@ -47,3 +47,9 @@ export const GET_WORKFLOWSTEP_ENTITY_API = 'FormBusiness/FormWorkFlow/WorkflowSt
 
 // 更新流程步骤API
 export const UPDATE_WORKFLOWSTEP_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateWorkflowStep'
+
+// 获取流程步骤栏位权限列表API
+export const GET_STEP_FIELD_PERMISSION_LIST_API = 'FormBusiness/FormWorkFlow/WorkflowStep/GetStepFieldPermissionList'
+
+// 更新流程步骤栏位权限API
+export const UPDATE_STEP_FIELD_PERMISSION_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateStepFieldPermission'

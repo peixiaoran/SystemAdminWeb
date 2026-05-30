@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 统一的API配置文件
  * 集中管理所有API相关的基础配置
  * 说明：已移除对 `src/config/api/config.js` 的依赖
@@ -15,7 +15,7 @@ export const ME_API = {
   ME: env.VITE_AUTH_ME_API || ''
 }
 
-// 员工登录
+// 用户登录
 export const LOGIN_API = {
   USER_LOGIN: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserLogin'
 }
@@ -40,7 +40,7 @@ export const PWD_EXPIRATION_UPDATE_API = {
   PWD_EXPIRATION_UPDATE: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserPwdExpiration'
 }
 
-// 员工退出
+// 用户退出
 export const LOGOUT_API = {
   USER_LOGOUT: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserLogOut'
 }

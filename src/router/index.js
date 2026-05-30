@@ -415,6 +415,17 @@ const pmenuRoutes = [
                 noTag: false
               }
             },
+            {
+              path: 'formtypefield',
+              name: 'FormTypeField',
+              component: () => import('../views/formbusiness/form-basicinfo/formtypefield.vue'),
+              meta: { 
+                title: 'route.formTypeField', 
+                icon: 'Coin',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
           ]
         },
          // 表单基础信息子模块 - 使用嵌套结构
@@ -441,11 +452,11 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'pendingreview',
-              name: 'PendingReview',
-              component: () => import('../views/formbusiness/form-operate/pendingreview.vue'),
+              path: 'formpending',
+              name: 'FormPending',
+              component: () => import('../views/formbusiness/form-operate/formpending.vue'),
               meta: { 
-                title: 'route.pendingreview',
+                title: 'route.formPending',
                 icon: 'Check',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false

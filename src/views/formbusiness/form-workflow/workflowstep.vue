@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程步骤筛选">
@@ -51,7 +51,7 @@
         >
           <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
           <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="120" show-overflow-tooltip />
+          <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="150" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="120" align="center">
             <template #default="{ row }">
               <el-tag effect="dark" :type="getAssignmentTagType(row.assignment)">
@@ -69,10 +69,13 @@
               <span>{{ row.description}}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowstep.operation')" width="250" align="center" fixed="right">
+          <el-table-column :label="$t('formbusiness.workflowstep.operation')" width="340" align="center" fixed="right">
             <template #default="{ row }">
               <el-button type="primary" size="small" plain @click="handleEditStep(row)">
                 {{ $t('formbusiness.workflowstep.editStep') }}
+              </el-button>
+              <el-button type="warning" size="small" plain @click="handleEditFieldPermission(row)">
+                {{ $t('formbusiness.workflowstep.editFieldPermission') }}
               </el-button>
               <el-button type="danger" size="small" @click="handleDeleteStep(row)">
                 {{ $t('formbusiness.workflowstep.deleteStep') }}
@@ -90,7 +93,7 @@
       width="970px"
       :close-on-click-modal="false"
       :append-to-body="true"
-      @close="handleAddStepDialogClose"
+      @closed="handleAddStepDialogClose"
       draggable
     >
       <div v-loading="addStepDialogLoading">
@@ -386,6 +389,81 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 编辑栏位权限弹窗 -->
+    <el-dialog
+      v-model="fieldPermissionDialogVisible"
+      :title="$t('formbusiness.workflowstep.fieldPermissionTitle')"
+      width="600px"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      @close="handleFieldPermissionDialogClose"
+      draggable
+    >
+      <div v-loading="stepFieldPermissionLoading">
+        <div class="field-permission-toolbar">
+          <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsVisible') }}：</span>
+          <el-button size="small" @click="toggleAllPermission('isVisible', 1)">{{ $t('common.selectAll') }}</el-button>
+          <el-button size="small" @click="toggleAllPermission('isVisible', 0)">{{ $t('common.deselectAll') }}</el-button>
+          <el-divider direction="vertical" />
+          <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsDisabled') }}：</span>
+          <el-button size="small" @click="toggleAllPermission('isDisabled', 1)">{{ $t('common.selectAll') }}</el-button>
+          <el-button size="small" @click="toggleAllPermission('isDisabled', 0)">{{ $t('common.deselectAll') }}</el-button>
+        </div>
+        <el-table
+          :data="stepFieldPermissionList"
+          border
+          size="small"
+          max-height="430"
+          class="step-field-permission-table"
+          :header-cell-style="{ background: '#f5f7fa' }"
+          :empty-text="$t('formbusiness.workflowstep.fieldPermissionEmpty')"
+        >
+          <el-table-column
+            prop="fieldName"
+            :label="$t('formbusiness.workflowstep.fieldPermissionFieldName')"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            :label="$t('formbusiness.workflowstep.fieldPermissionIsVisible')"
+            width="110"
+            align="center"
+          >
+            <template #default="{ row }">
+              <el-switch
+                v-model="row.isVisible"
+                :active-value="1"
+                :inactive-value="0"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('formbusiness.workflowstep.fieldPermissionIsDisabled')"
+            width="120"
+            align="center"
+          >
+            <template #default="{ row }">
+              <el-switch
+                v-model="row.isDisabled"
+                :active-value="1"
+                :inactive-value="0"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="fieldPermissionDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" :loading="fieldPermissionSubmitting" @click="submitFieldPermission">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
   
@@ -408,7 +486,9 @@ import {
   GET_USER_INFO_PAGE_API,
   DELETE_WORKFLOWSTEP_API,
   GET_WORKFLOWSTEP_ENTITY_API,
-  UPDATE_WORKFLOWSTEP_API
+  UPDATE_WORKFLOWSTEP_API,
+  GET_STEP_FIELD_PERMISSION_LIST_API,
+  UPDATE_STEP_FIELD_PERMISSION_API
 } from '@/config/api/formbusiness/form-workflow/workflowstep.js'
 import { useI18n } from 'vue-i18n'
 
@@ -465,7 +545,7 @@ const reviewModeOptions = ref([])
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
-// User 区块：员工搜索（不算入 item）与表格
+// User 区块：用户搜索（不算入 item）与表格
 const userSearchForm = reactive({ userNo: '', userName: '' })
 const userTableRef = ref(null)
 const userTableData = ref([])
@@ -474,6 +554,13 @@ const userTableLoading = ref(false)
 const userPageIndex = ref(1)
 const userPageSize = ref(10)
 const isAdjustingUserSelection = ref(false)
+// 编辑栏位权限：独立弹窗的列表、加载、提交状态
+const fieldPermissionDialogVisible = ref(false)
+const stepFieldPermissionList = ref([])
+const stepFieldPermissionLoading = ref(false)
+const fieldPermissionSubmitting = ref(false)
+const fieldPermissionStepId = ref('')
+const fieldPermissionFormTypeId = ref('')
 const addStepForm = reactive({
   formGroupId: '',
   formTypeId: '',
@@ -673,6 +760,100 @@ const handleFormTypeChange = () => {
 }
 
 /**
+ * 打开编辑栏位权限弹窗：使用行内 formTypeId（不显示该列）+ stepId 拉取权限
+ */
+const handleEditFieldPermission = async (step) => {
+  fieldPermissionStepId.value = step.stepId
+  fieldPermissionFormTypeId.value = step.formTypeId || searchForm.formTypeId || ''
+  stepFieldPermissionList.value = []
+  fieldPermissionDialogVisible.value = true
+  await loadStepFieldPermissions(fieldPermissionFormTypeId.value, fieldPermissionStepId.value)
+}
+
+/**
+ * 加载步骤栏位权限列表（GetStepFieldPermissionList，参数 formTypeId、stepId）
+ */
+const loadStepFieldPermissions = async (formTypeId, stepId) => {
+  if (!formTypeId || !stepId) {
+    stepFieldPermissionList.value = []
+    return
+  }
+  stepFieldPermissionLoading.value = true
+  try {
+    const response = await post(
+      GET_STEP_FIELD_PERMISSION_LIST_API,
+      buildFormParams({ formTypeId, stepId }),
+      FORM_URLENCODED_CONFIG
+    )
+    if (response.code === 200) {
+      stepFieldPermissionList.value = (response.data || []).map((item) => ({
+        stepId: item.stepId ?? stepId,
+        fieldId: item.fieldId,
+        fieldName: item.fieldName,
+        isVisible: Number(item.isVisible) === 1 ? 1 : 0,
+        isDisabled: Number(item.isDisabled) === 1 ? 1 : 0
+      }))
+    } else {
+      stepFieldPermissionList.value = []
+      showMessage(response.message || t('formbusiness.workflowstep.getFieldPermissionFailed'))
+    }
+  } catch {
+    stepFieldPermissionList.value = []
+    showMessage(t('formbusiness.workflowstep.getFieldPermissionFailed'))
+  } finally {
+    stepFieldPermissionLoading.value = false
+  }
+}
+
+/**
+ * 全选 / 全不选：将所有行的指定字段（isVisible / isDisabled）统一设为 value
+ */
+const toggleAllPermission = (field, value) => {
+  stepFieldPermissionList.value.forEach((row) => {
+    row[field] = value
+  })
+}
+
+/**
+ * 提交步骤栏位权限（UpdateStepFieldPermission，参数为权限对象数组）
+ */
+const submitFieldPermission = async () => {
+  if (!stepFieldPermissionList.value.length) {
+    fieldPermissionDialogVisible.value = false
+    return
+  }
+  fieldPermissionSubmitting.value = true
+  try {
+    const payload = stepFieldPermissionList.value.map((row) => ({
+      stepId: row.stepId || fieldPermissionStepId.value,
+      fieldId: row.fieldId,
+      isVisible: row.isVisible,
+      isDisabled: row.isDisabled
+    }))
+    const response = await post(UPDATE_STEP_FIELD_PERMISSION_API, payload)
+    if (response.code === 200) {
+      showMessage(t('formbusiness.workflowstep.updateFieldPermissionSuccess'), 'success')
+      fieldPermissionDialogVisible.value = false
+    } else {
+      showMessage(response.message || t('formbusiness.workflowstep.updateFieldPermissionFailed'))
+    }
+  } catch {
+    showMessage(t('formbusiness.workflowstep.updateFieldPermissionFailed'))
+  } finally {
+    fieldPermissionSubmitting.value = false
+  }
+}
+
+/**
+ * 关闭栏位权限弹窗：清空列表
+ */
+const handleFieldPermissionDialogClose = () => {
+  stepFieldPermissionList.value = []
+  fieldPermissionStepId.value = ''
+  fieldPermissionFormTypeId.value = ''
+}
+
+/**
  * 编辑步骤：打开弹窗并通过 GetWorkflowStepEntity 拉取实体回填
  */
 const handleEditStep = async (step) => {
@@ -699,33 +880,38 @@ const handleEditStep = async (step) => {
       addStepForm.formTypeId = data.formTypeId || ''
       addStepForm.stepNameCn = data.stepNameCn || ''
       addStepForm.stepNameEn = data.stepNameEn || ''
-      addStepForm.isStartStep = data.isStartStep ?? 0
-      addStepForm.assignmentCode = data.assignment || ''
+      addStepForm.isStartStep = Number(data.isStartStep ?? 0)
+      const assignmentCode = data.assignment || step.assignment || ''
+      addStepForm.assignmentCode = assignmentCode
       addStepForm.reviewModeCode = data.reviewMode ?? data.approveMode ?? ''
-      addStepForm.isReminderEnabled = data.isReminderEnabled ?? 0
+      addStepForm.isReminderEnabled = Number(data.isReminderEnabled ?? 0)
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
       addStepForm.sortOrder = data.sortOrder ?? 0
 
       resetStepAssignmentUpserts()
 
-      if (data.assignment === 'Org' && data.workflowStepOrgDto) {
+      if (assignmentCode === 'Org' && data.workflowStepOrgDto) {
         const dto = data.workflowStepOrgDto
         addStepForm.stepOrgUpsert.deptLeaveId = dto.deptLeaveId || ''
         addStepForm.stepOrgUpsert.positionId = dto.positionId || ''
-        await Promise.all([loadDepartmentLevelOptions(), loadUserPositionOptions()])
-      } else if (data.assignment === 'DeptUser' && data.workflowStepDeptUserDto) {
+      } else if (assignmentCode === 'DeptUser' && data.workflowStepDeptUserDto) {
         const dto = data.workflowStepDeptUserDto
         addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
         addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
-        await Promise.all([loadDepartmentTreeOptions(), loadUserPositionOptions()])
-      } else if (data.assignment === 'User' && data.workflowStepUserDto) {
+      } else if (assignmentCode === 'User' && data.workflowStepUserDto) {
         const dto = data.workflowStepUserDto
         addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
         addStepForm.stepUserUpsert.userId = dto.userId || ''
-      } else if (data.assignment === 'Custom' && data.workflowStepCustomDto) {
+      } else if (assignmentCode === 'Custom' && data.workflowStepCustomDto) {
         const dto = data.workflowStepCustomDto
         addStepForm.stepCustomUpsert.handlerKey = dto.handlerKey || ''
         addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
+      }
+
+      await loadAssignmentRelatedOptions(assignmentCode)
+
+      if (assignmentCode === 'User' && addStepForm.stepUserUpsert.departmentId) {
+        await loadUserInfoPage()
       }
     } else {
       showMessage(entityRes?.message || t('formbusiness.workflowstep.getFailed'))
@@ -744,9 +930,7 @@ const deleteStepLoading = ref(false)
 const handleDeleteStep = async (step) => {
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.workflowstep.deleteStepConfirm', {
-        name: step.stepName || step.stepNameCn || step.stepId
-      }),
+      t('formbusiness.workflowstep.deleteStepConfirm'),
       t('common.tip'),
       { type: 'warning' }
     )
@@ -923,7 +1107,7 @@ const loadUserInfoPage = async () => {
 }
 
 /**
- * User 区块：查询员工
+ * User 区块：查询用户
  */
 const handleSearchUser = () => {
   userPageIndex.value = 1
@@ -1146,6 +1330,22 @@ onMounted(async () => {
 
 .add-step-form .assignment-divider {
   margin: 16px 0;
+}
+
+/* 栏位权限弹窗：全选/全不选工具栏 */
+.field-permission-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.field-permission-toolbar-label {
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+}
+.step-field-permission-table {
+  width: 100%;
 }
 
 /* User 筛选：靠左、文本与控件间距正常、宽度稍宽，与左右留距 */

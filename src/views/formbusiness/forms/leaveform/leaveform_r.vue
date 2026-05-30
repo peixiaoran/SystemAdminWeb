@@ -1,18 +1,18 @@
-<template>
-  <div class="leave-form-page">
+﻿<template>
+  <div
+    class="leave-form-page"
+    v-loading.fullscreen.lock="formActionLoading"
+    :element-loading-text="t('common.loading')"
+  >
     <!-- Skeleton 骨架屏 -->
     <template v-if="loading && !resultState.visible">
       <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <!-- 系统标题 -->
-            <div style="display:flex; justify-content:center; margin-bottom:16px;">
-              <el-skeleton-item variant="text" style="width:200px; height:28px;" />
-            </div>
             <!-- 表单标题 -->
             <div style="display:flex; justify-content:center; margin-bottom:24px;">
-              <el-skeleton-item variant="text" style="width:130px; height:22px;" />
+              <el-skeleton-item variant="text" style="width:200px; height:28px;" />
             </div>
             <!-- 分割线 -->
             <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:24px;" />
@@ -22,7 +22,7 @@
               <el-skeleton-item variant="text" style="width:33%; height:32px;" />
             </div>
 
-            <!-- 员工信息（3 列） -->
+            <!-- 用户信息（3 列） -->
             <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
               <el-skeleton-item variant="text" style="flex:1; height:32px;" />
               <el-skeleton-item variant="text" style="flex:1; height:32px;" />
@@ -104,22 +104,17 @@
         </template>
         <template #extra>
           <el-button type="primary" @click="closeCurrentPage">
-            {{ t('formbusiness.leaveform.backToPendingReview') }}
+            {{ t('formbusiness.leaveform.backToFormPending') }}
           </el-button>
         </template>
       </el-result>
     </el-card>
 
     <template v-else>
-    <el-card class="leave-form-card" shadow="never" v-loading="saving || approving">
-      <!-- 第一行：SystemAdmin管理系统文字（独占一行居中） -->
-      <div class="system-title-row">
-        <h2 class="system-title">{{ t('common.systemTitle') }}</h2>
-      </div>
-      
-      <!-- 第二行：员工请假单文字（独占一行居中） -->
+    <el-card class="leave-form-card" shadow="never">
+      <!-- 表单标题 -->
       <div class="form-title-row">
-        <h3 class="form-title">{{ t('formbusiness.leaveform.formTitle') }}</h3>
+        <h2 class="form-title">{{ t('formbusiness.leaveform.formTitle') }}</h2>
       </div>
       <el-divider style="margin: 22px 0;"></el-divider>
 
@@ -127,45 +122,54 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
         <!-- 基本信息 -->
-        <el-row :gutter="16" style="justify-content: flex-start;">
+        <el-row v-if="isStepFieldVisible('FormNo')" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col :span="8">
             <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
-              <el-input v-model="form.formNo" disabled />
+              <el-input v-model="form.formNo" :disabled="!isStepFieldEditable('FormNo')" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 申请人信息 -->
-        <el-row :gutter="16" align="middle" class="section-row">
-          <el-col :span="8">
+        <el-row
+          v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
+          :gutter="16"
+          align="middle"
+          class="basic-info-row"
+        >
+          <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')" prop="applicantUserNo">
-              <el-input v-model="form.applicantUserNo" disabled />
+              <el-input v-model="form.applicantUserNo" :disabled="!isStepFieldEditable('UserNo')" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col v-if="isStepFieldVisible('UserName')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.applicantUserName')" prop="applicantUserName">
-              <el-input v-model="form.applicantUserName" disabled />
+              <el-input v-model="form.applicantUserName" :disabled="!isStepFieldEditable('UserName')" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.applicantDeptName')" prop="applicantDeptName">
-              <el-input v-model="form.applicantDeptName" disabled />
+              <el-input v-model="form.applicantDeptName" :disabled="!isStepFieldEditable('Department')" />
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-divider></el-divider>
+        <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 请假信息 -->
-        <el-row :gutter="16" style="justify-content: flex-start;">
-          <el-col :span="8">
+        <el-row
+          v-if="isAnyStepFieldVisible(['LeaveType', 'LeavePeriod'])"
+          :gutter="16"
+          style="justify-content: flex-start;"
+        >
+          <el-col v-if="isStepFieldVisible('LeaveType')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.leaveType')" prop="leaveType">
-              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable @change="onSelectChange('leaveType')">
+              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable :disabled="!isStepFieldEditable('LeaveType')" @change="onSelectChange('leaveType')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="16">
+          <el-col v-if="isStepFieldVisible('LeavePeriod')" :span="16">
             <el-form-item :label="t('formbusiness.leaveform.leaveTimeRange')" prop="leaveTimeRange">
               <el-date-picker
                 v-model="form.leaveTimeRange"
@@ -173,6 +177,7 @@
                 value-format="YYYY-MM-DD HH:mm:ss"
                 :start-placeholder="t('formbusiness.leaveform.pleaseSelectStartTime')"
                 :end-placeholder="t('formbusiness.leaveform.pleaseSelectEndTime')"
+                :disabled="!isStepFieldEditable('LeavePeriod')"
                 @change="handleTimeRangeChange"
                 clearable
               />
@@ -181,13 +186,13 @@
         </el-row>
 
         <!-- 时长 / 代理人 -->
-        <el-row :gutter="16">
-          <el-col :span="8">
+        <el-row v-if="isAnyStepFieldVisible(['Agent', 'LeaveDays'])" :gutter="16">
+          <el-col v-if="isStepFieldVisible('Agent')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserNo">
-              <el-input v-model="form.agentUserNo" :placeholder="t('formbusiness.leaveform.pleaseInputAgentUserNo')" />
+              <el-input v-model="form.agentUserNo" :placeholder="t('formbusiness.leaveform.pleaseInputAgentUserNo')" :disabled="!isStepFieldEditable('Agent')" />
             </el-form-item>
           </el-col>
-          <el-col :span="16">
+          <el-col v-if="isStepFieldVisible('LeaveDays')" :span="16">
             <el-form-item :label="t('formbusiness.leaveform.days')" prop="days">
               <el-input-number
                 v-model="form.days"
@@ -196,23 +201,23 @@
                 :precision="2"
                 :controls="false"
                 style="width: 200px;"
-                disabled
+                :disabled="!isStepFieldEditable('LeaveDays')"
               />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 事由 -->
-        <el-row :gutter="16">
+        <el-row v-if="isStepFieldVisible('LeaveReason')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="reason">
-              <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" />
+              <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" :disabled="!isStepFieldEditable('LeaveReason')" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 附件上传 -->
-        <el-row :gutter="16">
+        <el-row v-if="isAnyStepFieldVisible(['Upload', 'AttachmentTable'])" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.attachments')">
               <div class="upload-section">
@@ -223,8 +228,8 @@
                   style="display: none;"
                   @change="onNativeFileChange"
                 />
-                <div class="upload-actions">
-                  <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading" @click="openFilePicker">
+                <div v-if="isStepFieldVisible('Upload')" class="upload-actions">
+                  <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading || !isStepFieldEditable('Upload')" @click="openFilePicker">
                     <el-icon><Upload /></el-icon>
                     {{ t('formbusiness.leaveform.uploadFile') }}
                   </el-button>
@@ -232,7 +237,7 @@
                     {{ getAttachmentRequirementTip() }}
                   </span>
                 </div>
-                <el-table v-if="uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
+                <el-table v-if="isStepFieldVisible('AttachmentTable') && uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
                   <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
                     <template #default="{ row }">
@@ -253,7 +258,7 @@
                         <el-icon><Download /></el-icon>
                         {{ t('formbusiness.leaveform.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" @click="removeAttachment(row, $index)">
+                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('AttachmentTable')" @click="removeAttachment(row, $index)">
                         <el-icon><Delete /></el-icon>
                         {{ t('formbusiness.leaveform.deleteFile') }}
                       </el-button>
@@ -265,7 +270,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="16">
+        <el-row :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.approvalComment')">
               <el-input
@@ -283,9 +288,9 @@
             <el-form-item class="form-actions-form-item">
               <div class="form-actions-row">
                 <div class="form-actions-buttons">
-                  <el-button type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="saving">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-                  <el-button type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="approving">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
-                  <el-button type="danger" round style="width:80px;" @click="onReject" :disabled="saving || approving">{{ t('formbusiness.leaveform.rejectButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Save')" type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="formActionLoading || !isStepFieldEditable('Save')">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Submit')" type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="formActionLoading || !isStepFieldEditable('Submit')">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Reject')" type="danger" round style="width:80px;" @click="onReject" :disabled="formActionLoading || !isStepFieldEditable('Reject')">{{ t('formbusiness.leaveform.rejectButton') }}</el-button>
                 </div>
                 <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
                   <el-button
@@ -639,6 +644,8 @@ const approvalComment = ref('')
 
 // 签核日志列表
 const reviewRecordList = ref([])
+/** 当前步骤栏位权限：fieldKey -> { isVisible, isEditable } */
+const stepFieldPermissionMap = ref({})
 // 驳回步骤下拉选项
 const rejectStepDropOptions = ref([])
 
@@ -704,6 +711,8 @@ function reviewLogSpanMethod ({ columnIndex, rowIndex }) {
 const rejectDialogVisible = ref(false)
 const rejectFormRef = ref(null)
 const rejecting = ref(false)
+/** 保存 / 送审 / 驳回期间，表单与审批记录区域统一 loading */
+const formActionLoading = computed(() => saving.value || approving.value || rejecting.value)
 const rejectForm = reactive({
   rejectStepId: '',
   rejectReason: ''
@@ -957,7 +966,12 @@ function bindFormData (data) {
     applicantDeptId: data.applicantDeptId || '',
     applicantTime: data.applicantTime || '',
     leaveType: normalizeSelectCode(
-      data.leaveTypeCode ?? data.LeaveTypeCode ?? data.leaveType ?? data.LeaveType
+      data.leaveTypeCode ??
+        data.LeaveTypeCode ??
+        data.leaveTypeId ??
+        data.LeaveTypeId ??
+        data.leaveType ??
+        data.LeaveType
     ),
     reason:
       data.leaveReason ??
@@ -1022,6 +1036,47 @@ function bindFormData (data) {
   if (Array.isArray(data.rejectStepDrop)) {
     rejectStepDropOptions.value = data.rejectStepDrop
   }
+  applyStepFieldPermissions(data.stepFieldPermissionList ?? data.StepFieldPermissionList)
+}
+
+/** 将接口 0/1 转为布尔；未配置时使用默认值 */
+function normalizePermissionFlag (val, defaultValue = true) {
+  if (val === undefined || val === null || val === '') return defaultValue
+  return Number(val) === 1
+}
+
+/** 绑定 stepFieldPermissionList 到栏位权限映射 */
+function applyStepFieldPermissions (list) {
+  const map = {}
+  if (Array.isArray(list)) {
+    for (const item of list) {
+      const fieldKey = item?.fieldKey ?? item?.FieldKey
+      if (!fieldKey) continue
+      map[String(fieldKey)] = {
+        isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
+        isEditable: normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
+      }
+    }
+  }
+  stepFieldPermissionMap.value = map
+}
+
+/** 栏位是否显示；未在权限列表中配置时默认显示 */
+function isStepFieldVisible (fieldKey) {
+  const perm = stepFieldPermissionMap.value[fieldKey]
+  if (!perm) return true
+  return perm.isVisible
+}
+
+/** 栏位是否可编辑；未在权限列表中配置时默认可编辑 */
+function isStepFieldEditable (fieldKey) {
+  const perm = stepFieldPermissionMap.value[fieldKey]
+  if (!perm) return true
+  return perm.isEditable
+}
+
+function isAnyStepFieldVisible (fieldKeys) {
+  return fieldKeys.some(key => isStepFieldVisible(key))
 }
 
 /**
@@ -1062,19 +1117,19 @@ function showBadRequestResult (message) {
 }
 
 /** 与待审批列表页约定：弹窗关闭前通知 opener 刷新列表 */
-const PENDING_REVIEW_REFRESH_MSG = 'PENDING_REVIEW_REFRESH'
+const FORM_PENDING_REFRESH_MSG = 'FORM_PENDING_REFRESH'
 
-function notifyOpenerRefreshPendingReview () {
+function notifyOpenerRefreshFormPending () {
   try {
     if (!window.opener || window.opener.closed) return
-    window.opener.postMessage({ type: PENDING_REVIEW_REFRESH_MSG }, window.location.origin)
+    window.opener.postMessage({ type: FORM_PENDING_REFRESH_MSG }, window.location.origin)
   } catch {
     /* opener 跨域或不可用时忽略 */
   }
 }
 
-/** 待审批列表页路由路径（非弹框场景关闭后回跳目标） */
-const PENDING_REVIEW_ROUTE_PATH = '/formbusiness/form-operate/pendingreview'
+/** 待签核列表页路由路径（非弹框场景关闭后回跳目标） */
+const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
 /** 业务模块路径标识，匹配 GetModuleList 返回项的 path 首段 */
 const FORMBUSINESS_MODULE_PATH = 'formbusiness'
 
@@ -1147,13 +1202,13 @@ async function ensureFormbusinessModuleSelected () {
  */
 async function closeCurrentPage () {
   if (isPopupWindow()) {
-    notifyOpenerRefreshPendingReview()
+    notifyOpenerRefreshFormPending()
     window.close()
     return
   }
   const ok = await ensureFormbusinessModuleSelected()
   if (ok) {
-    router.push(PENDING_REVIEW_ROUTE_PATH)
+    router.push(FORM_PENDING_ROUTE_PATH)
   } else {
     router.push('/module-select')
   }
@@ -1260,8 +1315,16 @@ async function getLeaveTypeOptions () {
     }
     const list = Array.isArray(res.data) ? res.data : []
     leaveTypeOptions.value = list.map(item => ({
-      label: item.leaveTypeName,
-      value: String(item.leaveTypeCode ?? item.leaveType ?? '')
+      label: item.leaveTypeName ?? item.LeaveTypeName ?? '',
+      value: String(
+        item.leaveTypeCode ??
+          item.LeaveTypeCode ??
+          item.leaveTypeId ??
+          item.LeaveTypeId ??
+          item.leaveType ??
+          item.LeaveType ??
+          ''
+      )
     }))
   } catch {
 
@@ -1280,12 +1343,11 @@ async function onSubmit () {
       formTypeId: String(currentFormTypeId.value || defaultFormTypeId || ''),
       formId: String(form.formId || ''),
       formNo: form.formNo || '',
-      LeaveTypeCode: form.leaveType || '',
-      LeaveReason: (form.reason || '').trim(),
-      LeaveStartTime: startTime ? toISO(startTime) : null,
-      LeaveEndTime: endTime ? toISO(endTime) : null,
-      LeaveDays: coerceDays(form.days),
-      LeaveHours: coerceDays(form.days),
+      leaveType: String(form.leaveType || ''),
+      leaveReason: (form.reason || '').trim(),
+      leaveStartTime: startTime ? toISO(startTime) : '',
+      leaveEndTime: endTime ? toISO(endTime) : '',
+      leaveDays: coerceDays(form.days),
       agentUserNo: (form.agentUserNo || '').trim()
     }
     try {
@@ -1783,9 +1845,23 @@ onMounted(async () => {
 
 <style scoped>
 
-/* 这一行里的 form-item 取消底部间距，防止和 divider 叠加 */
-.section-row .el-form-item {
+/* 基本信息行：行内 form-item 取消默认底部间距，由行间距统一控制，避免隐藏栏位后留白 */
+.basic-info-row .el-form-item {
   margin-bottom: 0;
+}
+
+/* 送审意见行：收紧上下间距 */
+.approval-comment-row {
+  margin-top: -6px;
+}
+
+.approval-comment-row .el-form-item {
+  margin-bottom: 6px;
+}
+
+/* 仅在两行同时显示时，为第二行补充顶部间距；隐藏时不会产生多余空白 */
+.basic-info-row + .basic-info-row {
+  margin-top: 18px;
 }
 
 
@@ -1796,6 +1872,7 @@ onMounted(async () => {
 }
 
 .leave-form-page {
+  position: relative;
   padding: 16px;
   height: 100%;
   overflow-y: auto;
@@ -1850,26 +1927,15 @@ onMounted(async () => {
   color: #909399;
 }
 
-.system-title-row {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.system-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #303133;
-  margin: 0;
-}
-
 .form-title-row {
   text-align: center;
   margin-bottom: 24px;
 }
 
 .form-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: bold;
+  color: #303133;
   margin: 0;
 }
 

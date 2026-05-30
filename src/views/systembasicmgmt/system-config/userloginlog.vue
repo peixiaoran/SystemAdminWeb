@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工操作日志搜索表单">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户操作日志搜索表单">
         <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.userNo')">
           <el-input v-model="filters.userNo"
                    style="width: 150px;"

@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="员工职业筛选">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="用户职业筛选">
         <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
           <el-input
             v-model="searchForm.laborName"
@@ -90,7 +90,7 @@
           label-width="100px"
           class="dialog-form"
           role="form"
-          aria-label="员工职业编辑"
+          aria-label="用户职业编辑"
         >
           <div class="form-row">
             <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameCn')" prop="laborNameCn">

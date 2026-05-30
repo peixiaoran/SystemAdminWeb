@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 <div class="conventional-table-container">
   <el-card class="conventional-card">
     
@@ -239,6 +239,16 @@
                <el-option :label="$t('systembasicmgmt.userInfo.expirationDaysOptions.180')" :value="180" />
              </el-select>
            </el-form-item>
+           <el-form-item :label="$t('systembasicmgmt.userInfo.noticeLanguage')" prop="noticeLanguage">
+             <el-select
+               v-model="editForm.noticeLanguage"
+               style="width:100%"
+               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNoticeLanguage')"
+             >
+               <el-option :label="$t('login.languages.zh-CN')" value="zh-CN" />
+               <el-option :label="$t('login.languages.en-US')" value="en-US" />
+             </el-select>
+           </el-form-item>
          </div>
          
          <div class="form-row four-columns">
@@ -319,7 +329,6 @@
                inline-prompt
                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
            </el-form-item>
-           <el-form-item></el-form-item>
          </div>
          
          <div class="form-row full-width">
@@ -463,7 +472,7 @@ const uploadAvatarUpdateConfig = reactive({
   }
 })
 
- // 员工数据
+ // 用户数据
  const userList = ref([])
  const loading = ref(false)
 
@@ -528,7 +537,8 @@ const editForm = reactive({
   expirationDays: null,
   modifiedBy: '',
   modifiedDate: '',
-  avatarAddress: ''
+  avatarAddress: '',
+  noticeLanguage: 'zh-CN'
 })
 
 // 头像上传相关
@@ -584,6 +594,9 @@ const formRules = reactive({
   ],
   expirationDays: [
     { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectExpirationDays'), trigger: 'change' }
+  ],
+  noticeLanguage: [
+    { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectNoticeLanguage'), trigger: 'change' }
   ],
   passWord: [
     { 
@@ -830,7 +843,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
     }
   }
 
-  // 获取员工实体
+  // 获取用户实体
   const fetchUserEntity = async (userId) => {
       const formData = new FormData()
       formData.append('userId', userId)
@@ -860,6 +873,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       editForm.hireDate = normalizeHireDateFromApi(
         res.data.hireDate ?? res.data.HireDate ?? editForm.hireDate
       )
+      editForm.noticeLanguage = res.data.noticeLanguage ?? res.data.NoticeLanguage ?? editForm.noticeLanguage ?? 'zh-CN'
           
           // 设置头像显示
           if (res.data.avatarAddress) {
@@ -872,7 +886,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       }
   }
 
-  // 获取员工列表
+  // 获取用户列表
   const fetchUserPages = async () => {
       loading.value = true
       const params = {
@@ -1039,7 +1053,8 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           isFreeze: 0,
           modifiedBy: '',
           modifiedDate: '',
-          avatarAddress: ''
+          avatarAddress: '',
+          noticeLanguage: 'zh-CN'
       })
       // 兜底：确保开关字段类型一致（避免被其它逻辑写入字符串）
       normalizeEditFormSwitches()
@@ -1090,6 +1105,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
 
           // expirationDays 无固定默认值，重置为 null
           editForm.expirationDays = null
+          editForm.noticeLanguage = 'zh-CN'
 
           // 用嵌套 nextTick 等 Vue 冲刷完所有响应式变更后再清除验证状态
           // （同步调用 clearValidate 会在 Vue 冲刷前执行，无法拦截 change 触发的校验）
@@ -1126,7 +1142,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   }
 
   /**
-   * 插入员工（新增）
+   * 插入用户（新增）
    * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
    */
   const insertUser = async () => {
@@ -1176,7 +1192,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
   }
 
   /**
-   * 删除员工
+   * 删除用户
    * 无 try/catch；错误处理遵循全局策略：code 401/403 不提示
    */
   const deleteUser = async (userId) => {
@@ -1233,7 +1249,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       await fetchRoleDropdown(false, false)
       initGenderOptions()
       await fetchLaborTypeDropdown(false)
-      // 获取员工实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
+      // 获取用户实体 (fetchUserEntity 内部已经初始化了 previousNotificationState)
       await fetchUserEntity(row.userId)
       // 打开对话框
       dialogTitle.value = t('systembasicmgmt.userInfo.editUser')

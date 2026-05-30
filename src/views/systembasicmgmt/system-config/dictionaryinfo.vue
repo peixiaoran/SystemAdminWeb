@@ -230,9 +230,12 @@ const showMessage = (message, type = 'error') => {
 }
 
 const scheduleSearch = () => {
-  pagination.pageIndex = 1
-  clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => fetchDictionaryPages(), DEBOUNCE_MS)
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchDictionaryPages()
+  }, DEBOUNCE_MS)
 }
 
 onMounted(async () => {
@@ -321,6 +324,7 @@ const handleSearch = () => {
 }
 
 const handleReset = async () => {
+  loading.value = true
   filters.dicName = ''
   filters.moduleId = moduleList.value.length > 0 ? moduleList.value[0].moduleId : ''
   filters.dicType = ''
@@ -329,6 +333,7 @@ const handleReset = async () => {
 }
 
 const handleModuleChange = async () => {
+  loading.value = true
   filters.dicType = ''
   await fetchDicTypeDropDown()
   scheduleSearch()

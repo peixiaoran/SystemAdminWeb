@@ -157,6 +157,21 @@
         </el-form-item>
       </div>
 
+      <!-- 通知语言 -->
+      <div class="form-row">
+        <el-form-item :label="$t('systembasicmgmt.personalInfo.noticeLanguage')" prop="noticeLanguage">
+          <el-select
+            v-model="personalInfoForm.noticeLanguage"
+            :disabled="loading"
+            style="width: 100%"
+            :placeholder="$t('systembasicmgmt.personalInfo.pleaseSelectNoticeLanguage')"
+          >
+            <el-option :label="$t('login.languages.zh-CN')" value="zh-CN" />
+            <el-option :label="$t('login.languages.en-US')" value="en-US" />
+          </el-select>
+        </el-form-item>
+      </div>
+
       <!-- 第六行：头像上传 -->
       <div class="form-row">
         <el-form-item :label="$t('systembasicmgmt.personalInfo.avatar')" prop="avatarAddress">
@@ -267,7 +282,8 @@ export default {
       laborId: '',
       avatarAddress: '',
       isRealtimeNotification: 0,
-      isScheduledNotification: 0
+      isScheduledNotification: 0,
+      noticeLanguage: 'zh-CN'
     })
 
     const originalFormData = reactive({})
@@ -321,7 +337,10 @@ export default {
           },
           trigger: 'blur'
         }
-        ]
+      ],
+      noticeLanguage: [
+        { required: true, message: () => t('systembasicmgmt.personalInfo.pleaseSelectNoticeLanguage'), trigger: 'change' }
+      ]
     }
 
     const beforeAvatarUpload = (file) => {
@@ -409,6 +428,7 @@ export default {
         delete personalInfoForm.isApproval
         delete personalInfoForm.IsApproval
         personalInfoForm.gender = personalInfoForm.gender != null ? String(personalInfoForm.gender) : ''
+        personalInfoForm.noticeLanguage = response.data.noticeLanguage ?? response.data.NoticeLanguage ?? personalInfoForm.noticeLanguage ?? 'zh-CN'
         personalInfoForm.password = ''
         if (response.data.avatarAddress) {
           avatarUrl.value = resolveFileUrl(response.data.avatarAddress)
@@ -481,7 +501,8 @@ export default {
          PassWord: personalInfoForm.password,
          avatarAddress: personalInfoForm.avatarAddress,
          isRealtimeNotification: personalInfoForm.isRealtimeNotification,
-         isScheduledNotification: personalInfoForm.isScheduledNotification
+         isScheduledNotification: personalInfoForm.isScheduledNotification,
+         noticeLanguage: personalInfoForm.noticeLanguage
        }
 
        const response = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, updateData)

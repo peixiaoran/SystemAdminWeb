@@ -1,11 +1,11 @@
-<template>
+﻿<template>
     <div>
     <el-config-provider :locale="elementPlusLocale">
     <div class="conventional-table-container">
         <el-card class="conventional-card">
   
             <!-- 过滤条件 -->
-            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="员工兼任搜索表单">
+            <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户兼任搜索表单">
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
                     <el-tree-select
                         v-model="filters.departmentId"
@@ -192,7 +192,7 @@
                     </el-form-item>
                 </el-form>
 
-                <!-- 员工表格 -->
+                <!-- 用户表格 -->
                 <el-table :data="dialogUserList"
                           border
                           stripe

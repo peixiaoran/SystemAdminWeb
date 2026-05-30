@@ -24,7 +24,8 @@
                          :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
                          format="YYYY-MM"
                          value-format="YYYY-MM"
-                         :clearable="false" />
+                         :clearable="false"
+                         @change="handleYearMonthChange" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -223,9 +224,12 @@ const showMessage = (message, type = 'error') => {
 }
 
 const scheduleSearch = () => {
-  pagination.pageIndex = 1
-  clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => fetchExchangeRatePages(), DEBOUNCE_MS)
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchExchangeRatePages()
+  }, DEBOUNCE_MS)
 }
 
 onMounted(async () => {
@@ -404,6 +408,10 @@ const handleDialogClose = () => {
 }
 
 const handleCurrencyChange = () => {
+  scheduleSearch()
+}
+
+const handleYearMonthChange = () => {
   scheduleSearch()
 }
 </script>

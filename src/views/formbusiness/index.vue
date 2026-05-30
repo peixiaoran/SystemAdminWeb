@@ -268,7 +268,7 @@ const initKLineChart = () => {
       gradBottom: 'rgba(77, 119, 255, 0.05)'
     },
     {
-      name: t('dashboard.charts.formSubmissions'),
+      name: t('dashboard.charts.formSubmits'),
       data: genData(250, 70, 3, count),
       lineColor: '#FFBF00',
       gradTop: 'rgba(255, 191, 0, 0.8)',
