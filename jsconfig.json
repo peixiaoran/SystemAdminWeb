@@ -7,11 +7,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["src/**/*", "src/**/*.vue", "env.d.ts"],
+  "include": ["src/**/*", "src/**/*.vue", "env.d.ts", "vite.config.mjs"],
   "exclude": ["node_modules", "dist"],
   "vueCompilerOptions": {
-    "globalTypesPath": "./node_modules/vue/runtime-core/dist/runtime-core.d.ts"
+    "target": 3.5
   }
 }
