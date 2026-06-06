@@ -4,6 +4,7 @@
     v-loading.fullscreen.lock="formActionLoading"
     :element-loading-text="t('common.loading')"
   >
+    <el-config-provider :locale="elementPlusLocale">
     <!-- Skeleton 骨架屏 -->
     <template v-if="loading && !resultState.visible">
       <!-- 表单卡片骨架 -->
@@ -349,14 +350,13 @@
           >
             <template #default="{ row }">
               <div class="review-log-user-wrap">
-                <!-- 自动标记：右上角小字 -->
-                <span
-                  v-if="row.reviewType && row.reviewType.toLowerCase() === 'automatic'"
-                  class="review-log-auto-badge"
-                >{{ row.reviewTypeName }}</span>
-                <!-- 第一行：原审批人（originalUserName）；缺失时回落到实际审批人，避免空白 -->
-                <span class="review-log-user-cell">{{ row.originalUserName || row.operationUserName }}</span>
-                <!-- 第二行：实际审批人（operationUserName，与原审批人不同时显示）+ 签核身份 -->
+                <div class="review-log-user-main">
+                  <span class="review-log-user-cell">{{ row.originalUserName || row.operationUserName }}</span>
+                  <span
+                    v-if="row.reviewType && row.reviewType.toLowerCase() === 'automatic'"
+                    class="review-log-auto-badge"
+                  >{{ row.reviewTypeName }}</span>
+                </div>
                 <div
                   v-if="(row.operationUserName && row.originalUserName && row.operationUserName !== row.originalUserName) || (row.appointmentType && row.appointmentType.toLowerCase() !== 'actual')"
                   class="review-log-sub-row"
@@ -369,29 +369,29 @@
           </el-table-column>
           <el-table-column
             :label="t('formbusiness.leaveform.reviewLogResult')"
-            width="100"
-            align="center"
+            min-width="110"
+            align="left"
           >
             <template #default="{ row }">
-              <el-tag :type="getReviewResultTagType(row)" size="small">
-                {{ row.reviewResultName }}
-              </el-tag>
+              <div class="review-log-result-cell">
+                <el-tag :type="getReviewResultTagType(row)" size="small">
+                  {{ row.reviewResultName }}
+                </el-tag>
+                <span
+                  v-if="isReviewRejectResult(row) && getReviewRejectStepName(row)"
+                  class="review-log-reject-step"
+                >（{{ t('formbusiness.leaveform.reviewLogRejectToStep', { step: getReviewRejectStepName(row) }) }}）</span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
-            :label="t('formbusiness.leaveform.reviewLogRejectStepName')"
-            min-width="140"
-            align="center"
-            show-overflow-tooltip
-          >
-            <template #default="{ row }">{{ getReviewRejectStepName(row) }}</template>
-          </el-table-column>
-          <el-table-column
-            prop="comment"
             :label="t('formbusiness.leaveform.reviewLogComment')"
-            min-width="180"
-            show-overflow-tooltip
-          />
+            min-width="200"
+          >
+            <template #default="{ row }">
+              <div class="review-log-comment-cell">{{ row.comment }}</div>
+            </template>
+          </el-table-column>
           <el-table-column
             :label="t('formbusiness.leaveform.reviewLogDateTime')"
             width="155"
@@ -459,9 +459,9 @@
       class="leaveform-workflow-drawer"
     >
       <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
-        <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewFlowList?.length">
+        <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewList?.length">
           <div
-            v-for="(step, stepIdx) in workflowOverview.stepReviewFlowList"
+            v-for="(step, stepIdx) in workflowOverview.stepReviewList"
             :key="step.stepId || stepIdx"
             class="workflow-step-block"
             :class="{ 'workflow-step-block--skipped': isWorkflowStepSkipped(step) }"
@@ -523,6 +523,7 @@
         <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaveform.workflowEmpty')" />
       </div>
     </el-drawer>
+    </el-config-provider>
   </div>
 </template>
 
@@ -530,6 +531,8 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
@@ -538,9 +541,13 @@ import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
+import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
+import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
-// 获取翻译函数
-const { t } = i18n.global
+const { t, locale } = i18n.global
+
+// Element Plus 组件语言（日期选择器等）跟随当前 i18n 语言
+const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 
 // 表单引用
 const formRef = ref(null)
@@ -559,7 +566,7 @@ const workflowDrawerLoading = ref(false)
 const workflowOverview = reactive({
   formId: '',
   rejectCount: 0,
-  stepReviewFlowList: []
+  stepReviewList: []
 })
 
 /** 步骤是否被跳过：skip = 1 整步置灰且不展示用户明细 */
@@ -623,10 +630,12 @@ function workflowUserHasAgent (u) {
   return String(id) !== '0'
 }
 
-/** appointmentTypeCode 为 Actual 时不展示 appointmentTypeName */
+/** appointmentType / appointmentTypeCode 为 Actual 时不展示 appointmentTypeName */
 function workflowUserShowAppointmentTypeName (u) {
   if (!u?.appointmentTypeName) return false
-  const code = String(u?.appointmentTypeCode ?? u?.AppointmentTypeCode ?? '').trim()
+  const code = String(
+    u?.appointmentType ?? u?.AppointmentType ?? u?.appointmentTypeCode ?? u?.AppointmentTypeCode ?? ''
+  ).trim()
   if (code.toLowerCase() === 'actual') return false
   return true
 }
@@ -1052,9 +1061,14 @@ function applyStepFieldPermissions (list) {
     for (const item of list) {
       const fieldKey = item?.fieldKey ?? item?.FieldKey
       if (!fieldKey) continue
+      // 后端以 isDisabled（1=禁用）下发；可编辑 = 未禁用。兼容历史 isEditable 字段。
+      const disabledRaw = item.isDisabled ?? item.IsDisabled
+      const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
+        ? Number(disabledRaw) !== 1
+        : normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
       map[String(fieldKey)] = {
         isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
-        isEditable: normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
+        isEditable
       }
     }
   }
@@ -1382,7 +1396,7 @@ async function onSubmit () {
 
 /**
  * 拉取完整签核流程：调用 GetFullReviewFlow，参数 formId（multipart）；签核人标识参数名为 ReviewUserId（原 UserId）
- * 数据结构：{ formId, rejectCount, stepReviewFlowList: [{ stepId, stepName, skip, stepReviewUser: [{ reviewUserId, reviewUserName, result, ... }] }] }（兼容旧 userId、userName）
+ * 数据结构：{ formId, rejectCount, stepReviewList: [{ stepId, stepName, skip, stepReviewUser: [{ reviewUserId, reviewUserName, result, ... }] }] }（兼容 stepReviewFlowList、userId、userName）
  */
 async function fetchFullReviewFlow () {
   const formId = String(form.formId || '')
@@ -1413,7 +1427,9 @@ async function fetchFullReviewFlow () {
     const data = res.data || {}
     workflowOverview.formId = data.formId || ''
     workflowOverview.rejectCount = Number(data.rejectCount) || 0
-    workflowOverview.stepReviewFlowList = Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : []
+    workflowOverview.stepReviewList = Array.isArray(data.stepReviewList)
+      ? data.stepReviewList
+      : (Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : [])
   } catch {
     ElMessage.error(t('formbusiness.leaveform.workflowLoadFailed'))
   } finally {
@@ -1484,6 +1500,14 @@ async function confirmReject () {
   } finally {
     rejecting.value = false
   }
+}
+
+/** 是否为驳回类审批结果 */
+function isReviewRejectResult (row) {
+  const code = String(row?.reviewResult ?? '').trim().toLowerCase()
+  if (code === 'reject' || code === 'rejected') return true
+  const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
+  return name === '驳回' || name === 'reject' || name === 'rejected'
 }
 
 /**
@@ -1743,14 +1767,28 @@ async function removeAttachment (file, idx) {
 }
 
 /**
- * 页面挂载
- * 说明：加载初始化数据与下拉
+ * URL ?lang= 仅作为首次初始值消费一次，应用后从 URL 移除；
+ * 之后语言以 localStorage 为准（刷新后按主界面语言显示）。
  */
-/**
- * 通过 token 换取表单信息
- * 入参：tokenValue（URL query 参数 token）
- * 出参：成功返回 formId 字符串，失败返回 null
- */
+async function syncRouteLanguage () {
+  const lang = persistRouteLanguage(
+    normalizeRouteLang(route.query.lang ?? route.query.Lang ?? getLocationQueryParam('lang', 'Lang'))
+  )
+  if (!lang) return
+  if (locale.value !== lang) locale.value = lang
+
+  if (route.query.lang != null || route.query.Lang != null) {
+    const restQuery = { ...route.query }
+    delete restQuery.lang
+    delete restQuery.Lang
+    try {
+      await router.replace({ path: route.path, query: restQuery })
+    } catch {
+      /* 重复/取消导航忽略 */
+    }
+  }
+}
+
 /**
  * 通过 token 换取表单信息并同步用户身份到 userStore
  * 后端同时写入 Cookie JWT + 返回用户信息；前端需将用户信息同步到 Pinia，
@@ -1806,6 +1844,7 @@ async function resolveTokenFormId (tokenValue) {
 
 onMounted(async () => {
   try {
+    await syncRouteLanguage()
     loading.value = true
 
     currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
@@ -1813,7 +1852,7 @@ onMounted(async () => {
     // token 场景：必须先换取身份（后端写入 Cookie JWT），再发其他任何需要鉴权的请求
     // 若先调 getLeaveTypeOptions() 等接口，此时没有 Cookie 会收到 401，
     // request.js 拦截器会直接 hardRedirectToLogin()，完全绕过 Vue Router。
-    const routeToken = route.query.token || route.query.Token
+    const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
     if (routeToken) {
       const tokenFormId = await resolveTokenFormId(String(routeToken))
       if (tokenFormId) {
@@ -2264,34 +2303,48 @@ onMounted(async () => {
   width: 100%;
 }
 
+.review-log-table :deep(.el-table__body .el-table__cell) {
+  vertical-align: top;
+}
+
 .review-log-step-cell {
   font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
 .review-log-user-wrap {
-  position: relative;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.review-log-user-main {
+  display: flex;
   align-items: flex-start;
-  padding-right: 24px;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
 }
 
 .review-log-auto-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
+  flex-shrink: 0;
+  margin-left: auto;
   font-size: 10px;
   line-height: 1.4;
   color: var(--el-color-info);
   background: var(--el-color-info-light-9);
   border-radius: 3px;
   padding: 0 4px;
+  white-space: nowrap;
 }
 
 .review-log-user-cell {
+  flex: 1;
+  min-width: 0;
   font-size: 13px;
   color: var(--el-text-color-primary);
+  word-break: break-all;
 }
 
 .review-log-sub-row {
@@ -2310,6 +2363,28 @@ onMounted(async () => {
 .review-log-appointment-cell {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+
+.review-log-result-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.review-log-reject-step {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  word-break: break-all;
+}
+
+.review-log-comment-cell {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  font-size: 13px;
+  color: var(--el-text-color-primary);
 }
 
 /* ===== 驳回弹窗（modal-penetrable：半透明遮罩） ===== */

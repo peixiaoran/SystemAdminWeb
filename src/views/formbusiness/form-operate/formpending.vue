@@ -85,7 +85,7 @@
           <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.formpending.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
-              <el-tag type="primary" effect="dark" round>
+              <el-tag :type="getFormStatusTagType(row)" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>
@@ -240,6 +240,28 @@ const buildFormData = (params) => {
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
+}
+
+const normalizeFormStatusKey = (value) =>
+  String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
+
+/** Approved → 绿色；UnderReview → 橙色；其余保持 primary */
+const getFormStatusTagType = (row) => {
+  const candidates = [
+    row?.formStatus,
+    row?.FormStatus,
+    row?.formStatusCode,
+    row?.FormStatusCode,
+    row?.formStatusName,
+    row?.FormStatusName
+  ]
+  for (const item of candidates) {
+    const key = normalizeFormStatusKey(item)
+    if (!key) continue
+    if (key === 'approved') return 'success'
+    if (key === 'underreview') return 'warning'
+  }
+  return 'primary'
 }
 
 const loading = ref(false)

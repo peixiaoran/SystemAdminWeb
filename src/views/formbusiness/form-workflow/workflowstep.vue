@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程步骤筛选">
@@ -54,7 +54,7 @@
           <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="150" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="120" align="center">
             <template #default="{ row }">
-              <el-tag effect="dark" :type="getAssignmentTagType(row.assignment)">
+              <el-tag effect="dark" :type="getAssignmentTagType(row.assignment || row.assignmentCode)">
                 {{ row.assignmentName}}
               </el-tag>
             </template>
@@ -359,11 +359,11 @@
               />
           </div>
           <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'Custom'" class="form-row assignment-block">
-            <el-form-item :label="$t('formbusiness.workflowstep.handlerKey')" prop="stepCustomUpsert.handlerKey">
+            <el-form-item :label="$t('formbusiness.workflowstep.guidance')" prop="stepCustomUpsert.guidance">
               <el-input
-                v-model="addStepForm.stepCustomUpsert.handlerKey"
+                v-model="addStepForm.stepCustomUpsert.guidance"
                 clearable
-                :placeholder="$t('formbusiness.workflowstep.handlerKey')"
+                :placeholder="$t('formbusiness.workflowstep.pleaseInputGuidance')"
                 style="width: 100%"
               />
             </el-form-item>
@@ -436,6 +436,7 @@
                 :active-value="1"
                 :inactive-value="0"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
+                @change="onFieldVisibleChange(row)"
               />
             </template>
           </el-table-column>
@@ -449,6 +450,7 @@
                 v-model="row.isDisabled"
                 :active-value="1"
                 :inactive-value="0"
+                :disabled="row.isVisible === 0"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
               />
             </template>
@@ -518,7 +520,7 @@ const buildFormParams = (params) => {
 const createEmptyOrgUpsert = () => ({ deptLeaveId: '', positionId: '' })
 const createEmptyDeptUserUpsert = () => ({ departmentId: '', positionId: '' })
 const createEmptyUserUpsert = () => ({ userId: '', departmentId: '' })
-const createEmptyCustomUpsert = () => ({ handlerKey: '', logicalExplanation: '' })
+const createEmptyCustomUpsert = () => ({ guidance: '', logicalExplanation: '' })
 
 // 响应式数据
 const loading = ref(false)
@@ -791,7 +793,8 @@ const loadStepFieldPermissions = async (formTypeId, stepId) => {
         fieldId: item.fieldId,
         fieldName: item.fieldName,
         isVisible: Number(item.isVisible) === 1 ? 1 : 0,
-        isDisabled: Number(item.isDisabled) === 1 ? 1 : 0
+        // 不显示时强制禁用
+        isDisabled: Number(item.isVisible) === 1 ? (Number(item.isDisabled) === 1 ? 1 : 0) : 1
       }))
     } else {
       stepFieldPermissionList.value = []
@@ -807,11 +810,18 @@ const loadStepFieldPermissions = async (formTypeId, stepId) => {
 
 /**
  * 全选 / 全不选：将所有行的指定字段（isVisible / isDisabled）统一设为 value
+ * 不显示（isVisible=0）时强制禁用（isDisabled=1）
  */
 const toggleAllPermission = (field, value) => {
   stepFieldPermissionList.value.forEach((row) => {
     row[field] = value
+    if (field === 'isVisible' && value === 0) row.isDisabled = 1
   })
+}
+
+/** 显示开关变更：关闭显示时强制禁用 */
+const onFieldVisibleChange = (row) => {
+  if (row.isVisible === 0) row.isDisabled = 1
 }
 
 /**
@@ -890,22 +900,30 @@ const handleEditStep = async (step) => {
 
       resetStepAssignmentUpserts()
 
-      if (assignmentCode === 'Org' && data.workflowStepOrgDto) {
-        const dto = data.workflowStepOrgDto
-        addStepForm.stepOrgUpsert.deptLeaveId = dto.deptLeaveId || ''
-        addStepForm.stepOrgUpsert.positionId = dto.positionId || ''
-      } else if (assignmentCode === 'DeptUser' && data.workflowStepDeptUserDto) {
-        const dto = data.workflowStepDeptUserDto
-        addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
-        addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
-      } else if (assignmentCode === 'User' && data.workflowStepUserDto) {
-        const dto = data.workflowStepUserDto
-        addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
-        addStepForm.stepUserUpsert.userId = dto.userId || ''
-      } else if (assignmentCode === 'Custom' && data.workflowStepCustomDto) {
-        const dto = data.workflowStepCustomDto
-        addStepForm.stepCustomUpsert.handlerKey = dto.handlerKey || ''
-        addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
+      if (assignmentCode === 'Org') {
+        const dto = data.workflowStepOrg || data.workflowStepOrgDto
+        if (dto) {
+          addStepForm.stepOrgUpsert.deptLeaveId = dto.deptLeaveId || ''
+          addStepForm.stepOrgUpsert.positionId = dto.positionId || ''
+        }
+      } else if (assignmentCode === 'DeptUser') {
+        const dto = data.workflowStepDeptUser || data.workflowStepDeptUserDto
+        if (dto) {
+          addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
+          addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
+        }
+      } else if (assignmentCode === 'User') {
+        const dto = data.workflowStepUser || data.workflowStepUserDto
+        if (dto) {
+          addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
+          addStepForm.stepUserUpsert.userId = dto.userId || ''
+        }
+      } else if (assignmentCode === 'Custom') {
+        const dto = data.workflowStepCustom || data.workflowStepCustomDto
+        if (dto) {
+          addStepForm.stepCustomUpsert.guidance = dto.guidance || ''
+          addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
+        }
       }
 
       await loadAssignmentRelatedOptions(assignmentCode)
@@ -958,15 +976,16 @@ const handleDeleteStep = async (step) => {
 }
 
 /**
- * 根据 Assignment 字段返回 Tag 类型：Org=primary, DeptUser=warning, User=danger
+ * 根据 Assignment 字段返回 Tag 类型：Org=primary, DeptUser=warning, User=danger, Custom=success
  */
 const getAssignmentTagType = (assignment) => {
   const map = {
     Org: 'primary',
     DeptUser: 'warning',
-    User: 'danger'
+    User: 'danger',
+    Custom: 'success'
   }
-  return map[assignment] || ''
+  return map[assignment] ?? 'info'
 }
 
 /**

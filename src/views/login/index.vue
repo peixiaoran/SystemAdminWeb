@@ -358,7 +358,7 @@ const handleLogin = () => {
 
 .login-form :deep(.el-input__wrapper) {
   box-shadow: 0 0 0 1px #e4e7ed inset !important;
-  background-color: #fafafa;
+  background-color: #ffffff;
   padding: 0 15px;
   height: 48px;
   border-radius: 12px;
@@ -374,7 +374,7 @@ const handleLogin = () => {
 
 .login-form :deep(.el-input__wrapper:hover:not(.is-focus)) {
   box-shadow: 0 0 0 1px #dcdfe6 inset !important;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 }
 
 .login-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -412,10 +412,12 @@ const handleLogin = () => {
   width: 100%;
 }
 
-.login-form :deep(.el-select .el-input__wrapper) {
+.login-form :deep(.el-select .el-input__wrapper),
+.login-form :deep(.el-select__wrapper) {
   box-shadow: 0 0 0 1px #e4e7ed inset !important;
-  background-color: #fafafa;
+  background-color: #ffffff;
   padding: 0 15px;
+  min-height: 48px;
   height: 48px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -423,12 +425,14 @@ const handleLogin = () => {
   align-items: center;
 }
 
-.login-form :deep(.el-select .el-input__wrapper:hover:not(.is-focus)) {
+.login-form :deep(.el-select .el-input__wrapper:hover:not(.is-focus)),
+.login-form :deep(.el-select__wrapper.is-hovering:not(.is-focused)) {
   box-shadow: 0 0 0 1px #dcdfe6 inset !important;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 }
 
-.login-form :deep(.el-select .el-input__wrapper.is-focus) {
+.login-form :deep(.el-select .el-input__wrapper.is-focus),
+.login-form :deep(.el-select__wrapper.is-focused) {
   box-shadow: 0 0 0 2px #1a1a1a inset !important;
   background-color: #ffffff;
 }

@@ -522,7 +522,7 @@ const handleUnlock = () => {
 
 .unlock-form :deep(.el-input__wrapper) {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   padding: 0 15px;
   height: 48px;
   border-radius: 12px;
@@ -538,7 +538,7 @@ const handleUnlock = () => {
 
 .unlock-form :deep(.el-input__wrapper:hover:not(.is-focus)) {
   box-shadow: 0 0 0 1px #dde1e6 inset !important;
-  background-color: #eef0f3;
+  background-color: #ffffff;
 }
 
 .unlock-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -578,10 +578,12 @@ const handleUnlock = () => {
   width: 100%;
 }
 
-.unlock-form :deep(.el-select .el-input__wrapper) {
+.unlock-form :deep(.el-select .el-input__wrapper),
+.unlock-form :deep(.el-select__wrapper) {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   padding: 0 15px;
+  min-height: 48px;
   height: 48px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -589,12 +591,14 @@ const handleUnlock = () => {
   align-items: center;
 }
 
-.unlock-form :deep(.el-select .el-input__wrapper:hover:not(.is-focus)) {
+.unlock-form :deep(.el-select .el-input__wrapper:hover:not(.is-focus)),
+.unlock-form :deep(.el-select__wrapper.is-hovering:not(.is-focused)) {
   box-shadow: 0 0 0 1px #dde1e6 inset !important;
-  background-color: #eef0f3;
+  background-color: #ffffff;
 }
 
-.unlock-form :deep(.el-select .el-input__wrapper.is-focus) {
+.unlock-form :deep(.el-select .el-input__wrapper.is-focus),
+.unlock-form :deep(.el-select__wrapper.is-focused) {
   box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.35) inset !important;
   background-color: #ffffff;
 }
@@ -715,7 +719,7 @@ const handleUnlock = () => {
 .unlock-form :deep(input:-webkit-autofill:hover),
 .unlock-form :deep(input:-webkit-autofill:focus),
 .unlock-form :deep(input:-webkit-autofill:active) {
-  -webkit-box-shadow: 0 0 0 1000px #f3f4f6 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
   -webkit-text-fill-color: #5c6370 !important;
   transition: background-color 5000s ease-in-out 0s !important;
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
@@ -723,7 +727,7 @@ const handleUnlock = () => {
 
 /* 进一步防止自动填充的样式 */
 .unlock-form :deep(input[autocomplete="new-password"]) {
-  background: #f3f4f6 !important;
+  background: #ffffff !important;
   color: #5c6370 !important;
 }
 

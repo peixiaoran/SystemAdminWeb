@@ -530,7 +530,7 @@ const handleBackToLogin = () => {
 
 .expiration-form :deep(.el-input__wrapper) {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   padding: 0 15px;
   height: 48px;
   border-radius: 12px;
@@ -546,7 +546,7 @@ const handleBackToLogin = () => {
 
 .expiration-form :deep(.el-input__wrapper:hover:not(.is-focus)) {
   box-shadow: 0 0 0 1px #dde1e6 inset !important;
-  background-color: #eef0f3;
+  background-color: #ffffff;
 }
 
 .expiration-form :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -647,7 +647,7 @@ const handleBackToLogin = () => {
 .expiration-form :deep(input:-webkit-autofill:hover),
 .expiration-form :deep(input:-webkit-autofill:focus),
 .expiration-form :deep(input:-webkit-autofill:active) {
-  -webkit-box-shadow: 0 0 0 1000px #f3f4f6 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
   -webkit-text-fill-color: #5c6370 !important;
   transition: background-color 5000s ease-in-out 0s !important;
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
@@ -655,7 +655,7 @@ const handleBackToLogin = () => {
 
 /* 进一步防止自动填充的样式 */
 .expiration-form :deep(input[autocomplete="new-password"]) {
-  background: #f3f4f6 !important;
+  background: #ffffff !important;
   color: #5c6370 !important;
 }
 
@@ -671,10 +671,12 @@ const handleBackToLogin = () => {
   width: 100%;
 }
 
-.language-select :deep(.el-input__wrapper) {
+.language-select :deep(.el-input__wrapper),
+.language-select :deep(.el-select__wrapper) {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   padding: 0 15px;
+  min-height: 48px;
   height: 48px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -682,12 +684,14 @@ const handleBackToLogin = () => {
   align-items: center;
 }
 
-.language-select :deep(.el-input__wrapper:hover:not(.is-focus)) {
+.language-select :deep(.el-input__wrapper:hover:not(.is-focus)),
+.language-select :deep(.el-select__wrapper.is-hovering:not(.is-focused)) {
   box-shadow: 0 0 0 1px #dde1e6 inset !important;
-  background-color: #eef0f3;
+  background-color: #ffffff;
 }
 
-.language-select :deep(.el-input__wrapper.is-focus) {
+.language-select :deep(.el-input__wrapper.is-focus),
+.language-select :deep(.el-select__wrapper.is-focused) {
   box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.35) inset !important;
   background-color: #ffffff;
 }

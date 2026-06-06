@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '../views/layout/index.vue'
 import i18n from '../i18n'
 import { useUserStore } from '@/stores/user'
+import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
 // 获取翻译函数
 const { t } = i18n.global
@@ -461,6 +462,17 @@ const pmenuRoutes = [
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
+            },
+            {
+              path: 'formhistory',
+              name: 'FormHistory',
+              component: () => import('../views/formbusiness/form-operate/formhistory.vue'),
+              meta: { 
+                title: 'route.formHistory',
+                icon: 'FolderRemove',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
             }
           ]
         },
@@ -521,6 +533,18 @@ const pmenuRoutes = [
     component: () => import('../views/formbusiness/forms/leaveform/leaveform_r.vue'),
     meta: {
       title: 'route.leaveform_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  // 独立请假单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/leaveform/leaveform_v',
+    name: 'LeaveFormV',
+    component: () => import('../views/formbusiness/forms/leaveform/leaveform_v.vue'),
+    meta: {
+      title: 'route.leaveform_v',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true,
       tokenBypass: true
@@ -611,7 +635,10 @@ router.beforeEach(async (to) => {
   // 检查是否需要登录权限
   if (to.meta.requiresAuth) {
     // tokenBypass：路由声明支持 token 免登录访问，由页面自行处理 token 换取身份
-    if (to.meta.tokenBypass && (to.query.token || to.query.Token)) {
+    if (
+      to.meta.tokenBypass &&
+      (to.query.token || to.query.Token || getLocationQueryParam('token', 'Token'))
+    ) {
       return
     }
     const userStore = useUserStore()
