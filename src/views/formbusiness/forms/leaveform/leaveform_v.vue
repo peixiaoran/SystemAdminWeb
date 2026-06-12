@@ -1173,6 +1173,7 @@
     try {
       const formData = new window.FormData()
       formData.append('formId', String(id))
+      formData.append('type', 'View')
       const res = await post(GET_LEAVEFORM_DETAIL_API, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         silentForbiddenError: false

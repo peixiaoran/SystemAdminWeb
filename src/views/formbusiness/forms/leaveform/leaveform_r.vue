@@ -535,7 +535,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
@@ -1042,9 +1042,6 @@ function bindFormData (data) {
       return ta - tb
     })
   }
-  if (Array.isArray(data.rejectStepDrop)) {
-    rejectStepDropOptions.value = data.rejectStepDrop
-  }
   applyStepFieldPermissions(data.stepFieldPermissionList ?? data.StepFieldPermissionList)
 }
 
@@ -1286,6 +1283,7 @@ async function getLeaveFormDetail (id) {
   try {
     const formData = new window.FormData()
     formData.append('formId', String(id))
+    formData.append('type', 'Review')
     const res = await post(GET_LEAVEFORM_DETAIL_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       silentForbiddenError: false
@@ -1447,11 +1445,53 @@ function openWorkflowDrawer () {
 }
 
 /**
+ * 拉取可驳回步骤下拉（PublicForm/GetRejectStepDrop）
+ */
+async function fetchRejectStepDrop () {
+  const formId = String(form.formId || '')
+  if (!formId) return false
+  try {
+    const formData = new window.FormData()
+    formData.append('formId', formId)
+    const res = await post(GET_REJECT_STEP_DROP_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
+    })
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      return false
+    }
+    if (!res || res.code !== 200) {
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+      }
+      rejectStepDropOptions.value = []
+      return false
+    }
+    rejectStepDropOptions.value = Array.isArray(res.data) ? res.data : []
+    return true
+  } catch {
+    rejectStepDropOptions.value = []
+    ElMessage.error(t('formbusiness.messages.loadError'))
+    return false
+  }
+}
+
+/**
  * 打开驳回弹窗
  */
-function onReject () {
+async function onReject () {
+  const formId = String(form.formId || '')
+  if (!formId) {
+    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    return
+  }
   rejectForm.rejectStepId = ''
   rejectForm.rejectReason = ''
+  const ok = await fetchRejectStepDrop()
+  if (!ok) return
   rejectDialogVisible.value = true
 }
 

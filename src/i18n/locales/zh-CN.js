@@ -457,6 +457,8 @@ export default {
       rule: '流程规则',
       currentStepName: '当前步骤',
       nextStepName: '下一步骤',
+      guidance: '导向',
+      pleaseInputGuidance: '请输入导向',
       sortOrder: '排序',
       index: '序号',
       operation: '操作',

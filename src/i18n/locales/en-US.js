@@ -522,6 +522,8 @@ export default {
       rule: 'Workflow Rule',
       currentStepName: 'Current Step',
       nextStepName: 'Next Step',
+      guidance: 'Guidance',
+      pleaseInputGuidance: 'Please input guidance',
       sortOrder: 'Sort',
       index: 'Index',
       operation: 'Operation',

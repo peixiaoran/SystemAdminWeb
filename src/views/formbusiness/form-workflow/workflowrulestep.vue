@@ -55,6 +55,7 @@
               {{ isNextStepEnd(row.nextStepId) ? $t('formbusiness.workflowrulestep.nextStepEnd') : (row.nextStepName || '') }}
             </template>
           </el-table-column>
+          <el-table-column prop="guidance" :label="$t('formbusiness.workflowrulestep.guidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="sortOrder" :label="$t('formbusiness.workflowrulestep.sortOrder')" width="90" align="center" />
           <el-table-column :label="$t('formbusiness.workflowrulestep.operation')" width="220" align="center" fixed="right">
             <template #default="{ row }">
@@ -173,6 +174,16 @@
                   :value="item.stepId"
                 />
               </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('formbusiness.workflowrulestep.guidance')" prop="guidance">
+              <el-input
+                v-model="dialogForm.guidance"
+                :placeholder="$t('formbusiness.workflowrulestep.pleaseInputGuidance')"
+                clearable
+                style="width:100%"
+              />
             </el-form-item>
           </div>
         </el-form>
@@ -358,6 +369,7 @@ const dialogForm = reactive({
   ruleId: '',
   currentStepId: '',
   nextStepId: '',
+  guidance: '',
   sortOrder: 0
 })
 
@@ -385,6 +397,7 @@ const resetDialogForm = () => {
   dialogForm.ruleId      = ''
   dialogForm.currentStepId = ''
   dialogForm.nextStepId  = ''
+  dialogForm.guidance    = ''
   dialogForm.sortOrder   = 0
 }
 
@@ -480,6 +493,7 @@ const handleAdd = async () => {
     }
     dialogForm.currentStepId = ''
     dialogForm.nextStepId    = ''
+    dialogForm.guidance      = ''
     dialogForm.sortOrder     = 0
   } finally {
     dialogLoading.value = false
@@ -504,6 +518,7 @@ const handleEdit = async (row) => {
       dialogForm.ruleId        = d.ruleId        || row.ruleId        || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
+      dialogForm.guidance      = d.guidance ?? d.Guidance ?? row.guidance ?? ''
       dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 0
 
       const tasks = []
@@ -557,6 +572,7 @@ const handleSubmit = async () => {
       ruleId:        dialogForm.ruleId,
       currentStepId: dialogForm.currentStepId,
       nextStepId:    isNextStepEnd(dialogForm.nextStepId) ? '0' : String(dialogForm.nextStepId),
+      guidance:      dialogForm.guidance,
       sortOrder:     dialogForm.sortOrder
     }
     const api        = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API
