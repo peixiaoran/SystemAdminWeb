@@ -18,6 +18,12 @@ export const GET_LEAVEFORM_DETAIL_API = 'FormBusiness/Forms/LeaveForm/GetLeaveFo
 // 获取请假类型下拉框API
 export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeaveTypeDrop'
 
+// 获取部门下拉框API
+export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetDepartmentDrop'
+
+// 获取可代理用户信息API
+export const GET_AGENT_USER_INFO_API = 'FormBusiness/Forms/LeaveForm/GetUserInfoAgentView'
+
 // 获取重要性下拉框API
 export const GET_IMPORTANCE_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetImportanceDrop'
 

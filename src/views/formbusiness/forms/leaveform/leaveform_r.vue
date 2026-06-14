@@ -123,10 +123,23 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
         <!-- 基本信息 -->
-        <el-row v-if="isStepFieldVisible('FormNo')" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
-          <el-col :span="8">
+        <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
+          <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
               <el-input v-model="form.formNo" :disabled="!isStepFieldEditable('FormNo')" />
+            </el-form-item>
+          </el-col>
+          <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.applyDate')" prop="applyDate">
+              <el-date-picker
+                v-model="form.applyDate"
+                type="date"
+                value-format="YYYY-MM-DD"
+                :placeholder="t('formbusiness.leaveform.pleaseSelectApplyDate')"
+                clearable
+                :disabled="!isStepFieldEditable('ApplyDate')"
+                style="width: 100%;"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -155,7 +168,7 @@
           </el-col>
         </el-row>
 
-        <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'UserNo', 'UserName', 'Department'])"></el-divider>
+        <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 请假信息 -->
         <el-row
@@ -180,21 +193,36 @@
                 :end-placeholder="t('formbusiness.leaveform.pleaseSelectEndTime')"
                 :disabled="!isStepFieldEditable('LeavePeriod')"
                 @change="handleTimeRangeChange"
-                clearable
               />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 时长 / 代理人 -->
-        <el-row v-if="isAnyStepFieldVisible(['Agent', 'LeaveDays'])" :gutter="16">
-          <el-col v-if="isStepFieldVisible('Agent')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserNo">
-              <el-input v-model="form.agentUserNo" :placeholder="t('formbusiness.leaveform.pleaseInputAgentUserNo')" :disabled="!isStepFieldEditable('Agent')" />
+        <el-row v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent', 'LeaveHours'])" :gutter="16">
+          <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="8">
+            <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserId">
+              <div class="agent-field-control">
+                <el-input
+                  :model-value="agentDisplayText"
+                  :placeholder="t('formbusiness.leaveform.pleaseSelectAgent')"
+                  disabled
+                />
+                <el-button
+                  v-if="isStepFieldVisible('SelectAgent') && isStepFieldEditable('SelectAgent')"
+                  type="primary"
+                  plain
+                  class="agent-picker-btn"
+                  :title="t('formbusiness.leaveform.selectAgent')"
+                  @click="openAgentPicker"
+                >
+                  <el-icon><Search /></el-icon>
+                </el-button>
+              </div>
             </el-form-item>
           </el-col>
-          <el-col v-if="isStepFieldVisible('LeaveDays')" :span="16">
-            <el-form-item :label="t('formbusiness.leaveform.days')" prop="days">
+          <el-col v-if="isStepFieldVisible('LeaveHours')" :span="16">
+            <el-form-item :label="t('formbusiness.leaveform.leaveHours')" prop="days">
               <el-input-number
                 v-model="form.days"
                 :min="0"
@@ -202,7 +230,7 @@
                 :precision="2"
                 :controls="false"
                 style="width: 200px;"
-                :disabled="!isStepFieldEditable('LeaveDays')"
+                :disabled="!isStepFieldEditable('LeaveHours')"
               />
             </el-form-item>
           </el-col>
@@ -218,7 +246,7 @@
         </el-row>
 
         <!-- 附件上传 -->
-        <el-row v-if="isAnyStepFieldVisible(['Upload', 'AttachmentTable'])" :gutter="16">
+        <el-row v-if="isStepFieldVisible('Upload')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.attachments')">
               <div class="upload-section">
@@ -238,7 +266,7 @@
                     {{ getAttachmentRequirementTip() }}
                   </span>
                 </div>
-                <el-table v-if="isStepFieldVisible('AttachmentTable') && uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
+                <el-table v-if="uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
                   <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
                     <template #default="{ row }">
@@ -259,7 +287,7 @@
                         <el-icon><Download /></el-icon>
                         {{ t('formbusiness.leaveform.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('AttachmentTable')" @click="removeAttachment(row, $index)">
+                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('Upload')" @click="removeAttachment(row, $index)">
                         <el-icon><Delete /></el-icon>
                         {{ t('formbusiness.leaveform.deleteFile') }}
                       </el-button>
@@ -293,26 +321,32 @@
                   <el-button v-if="isStepFieldVisible('Submit')" type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="formActionLoading || !isStepFieldEditable('Submit')">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
                   <el-button v-if="isStepFieldVisible('Reject')" type="danger" round style="width:80px;" @click="onReject" :disabled="formActionLoading || !isStepFieldEditable('Reject')">{{ t('formbusiness.leaveform.rejectButton') }}</el-button>
                 </div>
-                <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
-                  <el-button
-                    class="workflow-view-btn"
-                    circle
-                    plain
-                    type="primary"
-                    :disabled="!form.formId"
-                    @click="openWorkflowDrawer"
-                  >
-                    <el-icon class="workflow-view-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="4.5" r="2.15" />
-                        <line x1="12" y1="6.65" x2="12" y2="9.85" />
-                        <circle cx="12" cy="12" r="2.15" />
-                        <line x1="12" y1="14.15" x2="12" y2="17.35" />
-                        <circle cx="12" cy="19.5" r="2.15" />
-                      </svg>
-                    </el-icon>
-                  </el-button>
-                </el-tooltip>
+                <div class="workflow-view-entry">
+                  <div class="workflow-view-hint">
+                    <el-icon class="workflow-view-hint-icon"><QuestionFilled /></el-icon>
+                    <span class="workflow-view-hint-text">{{ t('formbusiness.leaveform.viewFullWorkflowHint') }}</span>
+                  </div>
+                  <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
+                    <el-button
+                      class="workflow-view-btn"
+                      circle
+                      plain
+                      type="primary"
+                      :disabled="!form.formId"
+                      @click="openWorkflowDrawer"
+                    >
+                      <el-icon class="workflow-view-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="12" cy="4.5" r="2.15" />
+                          <line x1="12" y1="6.65" x2="12" y2="9.85" />
+                          <circle cx="12" cy="12" r="2.15" />
+                          <line x1="12" y1="14.15" x2="12" y2="17.35" />
+                          <circle cx="12" cy="19.5" r="2.15" />
+                        </svg>
+                      </el-icon>
+                    </el-button>
+                  </el-tooltip>
+                </div>
               </div>
             </el-form-item>
           </el-col>
@@ -369,7 +403,7 @@
           </el-table-column>
           <el-table-column
             :label="t('formbusiness.leaveform.reviewLogResult')"
-            min-width="110"
+            width="95"
             align="left"
           >
             <template #default="{ row }">
@@ -408,6 +442,102 @@
       </div>
     </el-card>
     </template>
+
+    <!-- 选择代理人弹窗 -->
+    <el-dialog
+      v-model="agentDialogVisible"
+      :title="t('formbusiness.leaveform.selectAgentTitle')"
+      width="1100px"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      destroy-on-close
+      @closed="handleAgentDialogClosed"
+    >
+      <el-form :inline="true" class="agent-filter-form">
+        <el-form-item :label="t('formbusiness.leaveform.agentDepartment')">
+          <el-tree-select
+            v-model="agentFilters.departmentId"
+            :data="agentDepartmentOptions"
+            :props="{
+              value: 'departmentId',
+              label: 'departmentName',
+              children: 'departmentChildList',
+              disabled: 'disabled'
+            }"
+            check-strictly
+            filterable
+            :filter-node-method="agentDepartmentFilterNode"
+            class="agent-filter-dept-select"
+            :placeholder="t('formbusiness.leaveform.pleaseSelectDepartment')"
+            @change="handleAgentDepartmentChange"
+          />
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')">
+          <el-input
+            v-model="agentFilters.userNo"
+            class="agent-filter-input-compact"
+            clearable
+            :placeholder="t('formbusiness.leaveform.applicantUserNo')"
+            @input="handleAgentFilterInput"
+            @keyup.enter="handleAgentSearch"
+            @clear="handleAgentFilterInput"
+          />
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.leaveform.agentUserName')">
+          <el-input
+            v-model="agentFilters.userName"
+            class="agent-filter-input-compact"
+            clearable
+            :placeholder="t('formbusiness.leaveform.agentUserName')"
+            @input="handleAgentFilterInput"
+            @keyup.enter="handleAgentSearch"
+            @clear="handleAgentFilterInput"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" plain :loading="agentListLoading" @click="handleAgentSearch">{{ t('common.search') }}</el-button>
+          <el-button :disabled="agentListLoading" @click="handleAgentReset">{{ t('common.reset') }}</el-button>
+        </el-form-item>
+      </el-form>
+      <div
+        class="agent-table-wrap"
+        v-loading="agentListLoading"
+        :element-loading-text="t('common.loading')"
+      >
+        <el-table
+          ref="agentTableRef"
+          :data="agentList"
+          border
+          stripe
+          max-height="360"
+          class="agent-select-table"
+          :header-cell-style="{ background: '#f5f7fa' }"
+          :row-key="(row) => row.userId"
+          @selection-change="handleAgentTableSelectionChange"
+          @row-click="handleAgentRowClick"
+        >
+          <el-table-column type="selection" width="48" align="center" />
+          <el-table-column prop="userNo" :label="t('formbusiness.leaveform.applicantUserNo')" min-width="110" align="center" />
+          <el-table-column prop="userName" :label="t('formbusiness.leaveform.agentUserName')" min-width="120" align="left" show-overflow-tooltip />
+          <el-table-column prop="departmentName" :label="t('formbusiness.leaveform.agentDepartment')" min-width="160" align="left" show-overflow-tooltip />
+        </el-table>
+      </div>
+      <div class="agent-pagination">
+        <el-pagination
+          v-model:current-page="agentPagination.pageIndex"
+          v-model:page-size="agentPagination.pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="agentPagination.totalCount"
+          layout="total, sizes, prev, pager, next"
+          @size-change="handleAgentSizeChange"
+          @current-change="handleAgentPageChange"
+        />
+      </div>
+      <template #footer>
+        <el-button @click="agentDialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" :disabled="!selectedAgent" @click="confirmAgentSelect">{{ t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
 
     <!-- 驳回弹窗 -->
     <el-dialog
@@ -528,15 +658,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, QuestionFilled } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
+import { calculateLeaveTotalHours } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -751,17 +882,67 @@ const currentFormTypeId = ref('')
 const form = reactive({
   formId: '',
   formNo: '',
+  applyDate: '',
   applicantUserNo: '',
   applicantUserName: '',
   applicantDeptName: '',
   applicantDeptId: '',
-  applicantTime: '',
   leaveType: '',
   reason: '',
   leaveTimeRange: [],
   days: 0,
-  agentUserNo: ''
+  agentUserId: '',
+  agentUserNo: '',
+  agentUserName: ''
 })
+
+const agentDialogVisible = ref(false)
+const agentListLoading = ref(false)
+const agentList = ref([])
+const agentDepartmentOptions = ref([])
+const agentTableRef = ref(null)
+const isAdjustingAgentSelection = ref(false)
+const selectedAgent = ref(null)
+const selectedAgentUserId = ref('')
+const agentFilters = reactive({
+  departmentId: '',
+  userNo: '',
+  userName: ''
+})
+const agentPagination = reactive({
+  pageIndex: 1,
+  pageSize: 10,
+  totalCount: 0
+})
+const AGENT_SEARCH_DEBOUNCE_MS = 300
+let agentSearchTimer = null
+let agentListRequestId = 0
+
+function buildAgentDisplayValue (agentUserNo, agentUserName) {
+  const parts = []
+  const no = normalizeNullableText(agentUserNo)
+  const name = normalizeNullableText(agentUserName)
+  if (no) parts.push(no)
+  if (name) parts.push(name)
+  return parts.join(' / ')
+}
+
+function parseAgentDisplayValue (displayValue) {
+  const text = normalizeNullableText(displayValue)
+  if (!text) {
+    return { agentUserNo: '', agentUserName: '' }
+  }
+  const separatorIndex = text.indexOf(' / ')
+  if (separatorIndex === -1) {
+    return { agentUserNo: '', agentUserName: text }
+  }
+  return {
+    agentUserNo: text.slice(0, separatorIndex).trim(),
+    agentUserName: text.slice(separatorIndex + 3).trim()
+  }
+}
+
+const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo, form.agentUserName))
 
 // 下拉选项（来自接口）
 const leaveTypeOptions = ref([])
@@ -775,9 +956,9 @@ const rules = {
     { validator: validateTimeRange, trigger: 'change' }
   ],
 
-  agentUserNo: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
-    { validator: validateHandoverUserNameRequired, trigger: 'blur' }
+  agentUserId: [
+    { required: true, message: () => t('formbusiness.leaveform.pleaseSelectAgent'), trigger: 'change' },
+    { validator: validateAgentRequired, trigger: 'change' }
   ],
   reason: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
@@ -793,43 +974,20 @@ function coerceDays (v) {
 }
 
 /**
- * 计算请假天数（按自然日，含起止当日）
- * 示例：2025-11-22 08:00:00 至 2025-11-22 17:00:00 => 1.00 天
+ * 计算请假总时数：8-17 计工时，12-13 午休不计；首日早于 8 点、末日晚于 17 点时段计入
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
-    form.days = coerceDays(0)
+    form.days = undefined
     return
   }
   const [startTime, endTime] = form.leaveTimeRange
   if (!startTime || !endTime) {
-    form.days = coerceDays(0)
+    form.days = undefined
     return
   }
-  const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
-  const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
-    form.days = coerceDays(0)
-    return
-  }
-  const calendarDays = countCalendarDaysInclusive(startTime, endTime)
-  form.days = coerceDays(calendarDays)
-}
-
-/**
- * 计算跨越的自然日天数（包含起止当日）
- * 入参：开始/结束时间字符串或Date
- * 返回：end > start 时返回至少 1 的天数；否则返回 0
- */
-function countCalendarDaysInclusive (startStr, endStr) {
-  const start = new Date(typeof startStr === 'string' ? startStr.replace(' ', 'T') : startStr)
-  const end = new Date(typeof endStr === 'string' ? endStr.replace(' ', 'T') : endStr)
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
-  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate())
-  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate())
-  const msPerDay = 24 * 60 * 60 * 1000
-  const diffDays = Math.floor((endDate.getTime() - startDate.getTime()) / msPerDay)
-  return diffDays + 1
+  const hours = calculateLeaveTotalHours(startTime, endTime)
+  form.days = hours > 0 ? coerceDays(hours) : undefined
 }
 
 /**
@@ -871,14 +1029,25 @@ function validateDurationPositive (rule, value, callback) {
 }
 
 /**
- * 校验交接人姓名非空（去除空格后至少1个字符）
+ * 校验代理人已选择
  */
-function validateHandoverUserNameRequired (rule, value, callback) {
+function validateAgentRequired (rule, value, callback) {
+  if (!isStepFieldVisible('SelectAgent') || !isStepFieldEditable('SelectAgent')) {
+    callback()
+    return
+  }
   if (!value || !String(value).trim()) {
-    callback(new Error(t('formbusiness.validation.required')))
+    callback(new Error(t('formbusiness.leaveform.pleaseSelectAgent')))
     return
   }
   callback()
+}
+
+/**
+ * 栏位权限 fieldKey 归一化（兼容 "Attachment Table" 等含空格键名）
+ */
+function normalizeFieldKey (fieldKey) {
+  return String(fieldKey ?? '').replace(/\s+/g, '')
 }
 
 /**
@@ -969,52 +1138,27 @@ function bindFormData (data) {
     formTypeId: data.formTypeId || '',
     formId: data.formId || '',
     formNo: data.formNo || '',
+    applyDate: resolveApplyDateFromData(data),
     applicantUserNo: data.applicantUserNo || '',
     applicantUserName: data.applicantUserName || '',
     applicantDeptName: data.applicantDeptName || '',
     applicantDeptId: data.applicantDeptId || '',
-    applicantTime: data.applicantTime || '',
-    leaveType: normalizeSelectCode(
-      data.leaveTypeCode ??
-        data.LeaveTypeCode ??
-        data.leaveTypeId ??
-        data.LeaveTypeId ??
-        data.leaveType ??
-        data.LeaveType
-    ),
+    leaveType: resolveLeaveTypeFromData(data),
     reason:
       data.leaveReason ??
       data.LeaveReason ??
       data.Reason ??
       data.reason ??
       '',
-    leaveTimeRange: (() => {
-      const start = normalizeDateTime(
-        data.leaveStartTime ??
-          data.LeaveStartTime ??
-          data.startTime ??
-          data.starttime
-      )
-      const end = normalizeDateTime(
-        data.leaveEndTime ?? data.LeaveEndTime ?? data.endTime ?? data.endtime
-      )
-      return start && end ? [start, end] : []
-    })(),
-    days: coerceDays(
-      data.leaveDays ??
-        data.LeaveDays ??
-        data.leaveHours ??
-        data.LeaveHours ??
-        data.days ??
-        data.Days
-    ),
-    agentUserNo: data.agentUserNo || ''
+    leaveTimeRange: resolveLeaveTimeRangeFromData(data),
+    days: resolveLeaveHoursFromData(data),
+    ...resolveAgentFromData(data)
   })
   const [rangeStart, rangeEnd] = form.leaveTimeRange || []
   if (rangeStart && rangeEnd) {
     calculateDuration()
   }
-  const attachmentList = data.attachmentList
+  const attachmentList = data.attachment ?? data.attachmentList ?? data.Attachment
   if (Array.isArray(attachmentList)) {
     uploadedAttachments.value = attachmentList.filter(Boolean)
   }
@@ -1035,14 +1179,20 @@ function bindFormData (data) {
   if (formRef.value) {
     formRef.value.clearValidate(['leaveType'])
   }
-  if (Array.isArray(data.reviewRecordList)) {
-    reviewRecordList.value = [...data.reviewRecordList].sort((a, b) => {
+  const reviewRecords = data.reviewRecord ?? data.reviewRecordList ?? data.ReviewRecord
+  if (Array.isArray(reviewRecords)) {
+    reviewRecordList.value = [...reviewRecords].sort((a, b) => {
       const ta = a.reviewDateTime ? new Date(a.reviewDateTime).getTime() : 0
       const tb = b.reviewDateTime ? new Date(b.reviewDateTime).getTime() : 0
       return ta - tb
     })
   }
-  applyStepFieldPermissions(data.stepFieldPermissionList ?? data.StepFieldPermissionList)
+  applyStepFieldPermissions(
+    data.stepFieldPermission ??
+      data.stepFieldPermissionList ??
+      data.StepFieldPermissionList ??
+      data.StepFieldPermission
+  )
 }
 
 /** 将接口 0/1 转为布尔；未配置时使用默认值 */
@@ -1063,7 +1213,7 @@ function applyStepFieldPermissions (list) {
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
         ? Number(disabledRaw) !== 1
         : normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
-      map[String(fieldKey)] = {
+      map[normalizeFieldKey(fieldKey)] = {
         isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
         isEditable
       }
@@ -1074,14 +1224,14 @@ function applyStepFieldPermissions (list) {
 
 /** 栏位是否显示；未在权限列表中配置时默认显示 */
 function isStepFieldVisible (fieldKey) {
-  const perm = stepFieldPermissionMap.value[fieldKey]
+  const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
   return perm.isVisible
 }
 
 /** 栏位是否可编辑；未在权限列表中配置时默认可编辑 */
 function isStepFieldEditable (fieldKey) {
-  const perm = stepFieldPermissionMap.value[fieldKey]
+  const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
   return perm.isEditable
 }
@@ -1099,8 +1249,101 @@ function normalizeSelectCode (val) {
   return String(val)
 }
 
+function normalizeNullableText (val) {
+  if (val === undefined || val === null) return ''
+  return String(val)
+}
+
+/** 请假时数：null/空 保持空白，有效数字保留两位小数 */
+function normalizeLeaveHoursValue (val) {
+  if (val === undefined || val === null || val === '') return undefined
+  const n = Number(val)
+  if (!Number.isFinite(n)) return undefined
+  return parseFloat(Math.max(0, n).toFixed(2))
+}
+
+function resolveLeaveTypeFromData (data) {
+  return normalizeSelectCode(
+    data.leaveType ??
+      data.LeaveType ??
+      data.leaveTypeCode ??
+      data.LeaveTypeCode ??
+      data.leaveTypeId ??
+      data.LeaveTypeId ??
+      null
+  ) ?? ''
+}
+
+function resolveLeaveTimeRangeFromData (data) {
+  const start = normalizeDateTime(
+    data.startDateTime ??
+      data.StartDateTime ??
+      data.leaveStartTime ??
+      data.LeaveStartTime ??
+      data.startTime ??
+      data.starttime ??
+      null
+  )
+  const end = normalizeDateTime(
+    data.endDateTime ??
+      data.EndDateTime ??
+      data.leaveEndTime ??
+      data.LeaveEndTime ??
+      data.endTime ??
+      data.endtime ??
+      null
+  )
+  if (!start || !end) return []
+  return [start, end]
+}
+
+function resolveLeaveHoursFromData (data) {
+  return normalizeLeaveHoursValue(
+    data.leaveHours ??
+      data.LeaveHours ??
+      data.leaveDays ??
+      data.LeaveDays ??
+      data.days ??
+      data.Days ??
+      null
+  )
+}
+
+function resolveApplyDateFromData (data) {
+  const raw = data.applyDate ?? data.ApplyDate ?? data.applicantDate ?? data.ApplicantDate ?? data.applicantTime ?? data.ApplicantTime ?? ''
+  if (!raw) return ''
+  const text = String(raw).trim()
+  if (text.length >= 10) return text.slice(0, 10)
+  const d = new Date(text)
+  if (isNaN(d.getTime())) return text
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+function resolveAgentFromData (data) {
+  const agentUserId = normalizeNullableText(data.agentUserId ?? data.AgentUserId)
+  let agentUserNo = normalizeNullableText(data.agentUserNo ?? data.AgentUserNo)
+  let agentUserName = normalizeNullableText(data.agentUserName ?? data.AgentUserName)
+
+  if (!agentUserNo && agentUserName.includes(' / ')) {
+    const parsed = parseAgentDisplayValue(agentUserName)
+    agentUserNo = parsed.agentUserNo
+    agentUserName = parsed.agentUserName
+  }
+
+  return {
+    agentUserId,
+    agentUserNo,
+    agentUserName
+  }
+}
+
 function isForbiddenCode(code) {
   return String(code) === '403'
+}
+
+function isUnauthorizedCode (code) {
+  return String(code) === '402'
 }
 
 /** HTTP 400：request 封装将 status 写入 code，message 来自后端 */
@@ -1344,24 +1587,34 @@ async function getLeaveTypeOptions () {
 }
 
 /**
+ * 组装暂存请求参数（SaveLeaveForm）
+ */
+function buildSaveLeaveFormPayload () {
+  const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+  const leaveReason = (form.reason || '').trim()
+  const leaveType = normalizeNullableText(form.leaveType)
+  const agentUserId = normalizeNullableText(form.agentUserId)
+  const agentUserName = buildAgentDisplayValue(form.agentUserNo, form.agentUserName)
+
+  return {
+    formId: String(form.formId || ''),
+    leaveType: leaveType || null,
+    leaveReason: leaveReason || null,
+    startDateTime: startTime ? toISO(startTime) : '',
+    endDateTime: endTime ? toISO(endTime) : '',
+    agentUserId: agentUserId || null,
+    agentUserName: agentUserName || null
+  }
+}
+
+/**
  * 保存请假单：执行校验，通过后调用保存接口
  */
 async function onSubmit () {
   saving.value = true
   formRef.value?.validate(async (valid) => {
     if (!valid) { saving.value = false; return }
-    const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
-    const payload = {
-      formTypeId: String(currentFormTypeId.value || defaultFormTypeId || ''),
-      formId: String(form.formId || ''),
-      formNo: form.formNo || '',
-      leaveType: String(form.leaveType || ''),
-      leaveReason: (form.reason || '').trim(),
-      leaveStartTime: startTime ? toISO(startTime) : '',
-      leaveEndTime: endTime ? toISO(endTime) : '',
-      leaveDays: coerceDays(form.days),
-      agentUserNo: (form.agentUserNo || '').trim()
-    }
+    const payload = buildSaveLeaveFormPayload()
     try {
       const res = await post(SAVE_LEAVEFORM_API, payload, {
         silentForbiddenError: false
@@ -1443,6 +1696,253 @@ function openWorkflowDrawer () {
   workflowDrawerVisible.value = true
   fetchFullReviewFlow()
 }
+
+async function openAgentPicker () {
+  selectedAgent.value = null
+  selectedAgentUserId.value = form.agentUserId ? String(form.agentUserId) : ''
+  if (form.agentUserId) {
+    selectedAgent.value = {
+      userId: form.agentUserId,
+      userNo: form.agentUserNo,
+      userName: form.agentUserName
+    }
+  }
+  await fetchAgentDepartmentOptions()
+  const defaultDepartmentId = resolveDefaultAgentDepartmentId()
+  Object.assign(agentFilters, {
+    departmentId: defaultDepartmentId,
+    userNo: '',
+    userName: ''
+  })
+  agentPagination.pageIndex = 1
+  agentDialogVisible.value = true
+  await fetchAgentUserListImmediate()
+}
+
+function clearAgentSearchTimer () {
+  if (agentSearchTimer) {
+    clearTimeout(agentSearchTimer)
+    agentSearchTimer = null
+  }
+}
+
+function scheduleAgentListFetch () {
+  clearAgentSearchTimer()
+  agentSearchTimer = setTimeout(() => {
+    agentSearchTimer = null
+    fetchAgentUserList()
+  }, AGENT_SEARCH_DEBOUNCE_MS)
+}
+
+function fetchAgentUserListImmediate () {
+  clearAgentSearchTimer()
+  return fetchAgentUserList()
+}
+
+function agentDepartmentFilterNode (value, data) {
+  if (!value) return true
+  return String(data?.departmentName ?? '').includes(value)
+}
+
+function findFirstEnabledDepartment (departments) {
+  for (const dept of departments) {
+    if (!dept?.disabled) return dept.departmentId
+    if (Array.isArray(dept.departmentChildList) && dept.departmentChildList.length > 0) {
+      const childResult = findFirstEnabledDepartment(dept.departmentChildList)
+      if (childResult) return childResult
+    }
+  }
+  return ''
+}
+
+function departmentExistsInTree (departments, departmentId) {
+  if (!departmentId) return false
+  for (const dept of departments) {
+    if (String(dept?.departmentId) === String(departmentId)) return true
+    if (Array.isArray(dept?.departmentChildList) && departmentExistsInTree(dept.departmentChildList, departmentId)) {
+      return true
+    }
+  }
+  return false
+}
+
+function resolveDefaultAgentDepartmentId () {
+  const applicantDeptId = form.applicantDeptId ? String(form.applicantDeptId) : ''
+  if (applicantDeptId && departmentExistsInTree(agentDepartmentOptions.value, applicantDeptId)) {
+    return applicantDeptId
+  }
+  return findFirstEnabledDepartment(agentDepartmentOptions.value) || ''
+}
+
+async function fetchAgentDepartmentOptions () {
+  if (agentDepartmentOptions.value.length > 0) return
+  try {
+    const res = await post(GET_DEPARTMENT_DROPDOWN_API, {})
+    if (res?.code === 200) {
+      agentDepartmentOptions.value = Array.isArray(res.data) ? res.data : []
+      return
+    }
+    agentDepartmentOptions.value = []
+    ElMessage.error(res?.message || t('formbusiness.leaveform.getDepartmentFailed'))
+  } catch {
+    agentDepartmentOptions.value = []
+    ElMessage.error(t('formbusiness.leaveform.getDepartmentFailed'))
+  }
+}
+
+function handleAgentDepartmentChange () {
+  agentPagination.pageIndex = 1
+  scheduleAgentListFetch()
+}
+
+async function fetchAgentUserList () {
+  const requestId = ++agentListRequestId
+  agentListLoading.value = true
+  try {
+    const res = await post(GET_AGENT_USER_INFO_API, {
+      departmentId: agentFilters.departmentId || '',
+      userNo: agentFilters.userNo || '',
+      userName: agentFilters.userName || '',
+      pageIndex: String(agentPagination.pageIndex),
+      pageSize: String(agentPagination.pageSize),
+      totalCount: String(agentPagination.totalCount || 0)
+    })
+    if (requestId !== agentListRequestId) return
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      agentList.value = []
+      agentPagination.totalCount = 0
+      return
+    }
+    if (!res || res.code !== 200) {
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.leaveform.getAgentListFailed'))
+      }
+      agentList.value = []
+      agentPagination.totalCount = 0
+      return
+    }
+    agentList.value = Array.isArray(res.data) ? res.data : []
+    agentPagination.totalCount = Number(res.totalCount) || 0
+    restoreAgentTableSelection()
+  } catch {
+    if (requestId !== agentListRequestId) return
+    agentList.value = []
+    agentPagination.totalCount = 0
+    ElMessage.error(t('formbusiness.leaveform.getAgentListFailed'))
+  } finally {
+    if (requestId === agentListRequestId) {
+      agentListLoading.value = false
+    }
+  }
+}
+
+function handleAgentFilterInput () {
+  agentPagination.pageIndex = 1
+  scheduleAgentListFetch()
+}
+
+function handleAgentSearch () {
+  agentPagination.pageIndex = 1
+  fetchAgentUserListImmediate()
+}
+
+function handleAgentReset () {
+  agentFilters.departmentId = resolveDefaultAgentDepartmentId()
+  agentFilters.userNo = ''
+  agentFilters.userName = ''
+  agentPagination.pageIndex = 1
+  fetchAgentUserListImmediate()
+}
+
+function handleAgentPageChange () {
+  fetchAgentUserListImmediate()
+}
+
+function handleAgentSizeChange () {
+  agentPagination.pageIndex = 1
+  fetchAgentUserListImmediate()
+}
+
+function restoreAgentTableSelection () {
+  if (!selectedAgentUserId.value || !agentTableRef.value) return
+  const matchedRow = agentList.value.find((item) => String(item.userId) === selectedAgentUserId.value)
+  if (!matchedRow) return
+  selectedAgent.value = matchedRow
+  isAdjustingAgentSelection.value = true
+  nextTick(() => {
+    agentTableRef.value?.clearSelection()
+    agentTableRef.value?.toggleRowSelection(matchedRow, true)
+    isAdjustingAgentSelection.value = false
+  })
+}
+
+function handleAgentTableSelectionChange (selection) {
+  if (isAdjustingAgentSelection.value) return
+  if (selection.length === 0) {
+    selectedAgentUserId.value = ''
+    selectedAgent.value = null
+    return
+  }
+  const lastRow = selection[selection.length - 1]
+  selectedAgentUserId.value = String(lastRow.userId)
+  selectedAgent.value = lastRow
+  if (selection.length > 1 && agentTableRef.value) {
+    isAdjustingAgentSelection.value = true
+    nextTick(() => {
+      agentTableRef.value.clearSelection()
+      agentTableRef.value.toggleRowSelection(lastRow, true)
+      isAdjustingAgentSelection.value = false
+    })
+  }
+}
+
+function handleAgentRowClick (row) {
+  if (isAdjustingAgentSelection.value || !row?.userId || !agentTableRef.value) return
+  const isSelected = String(selectedAgentUserId.value) === String(row.userId)
+  if (isSelected) {
+    selectedAgentUserId.value = ''
+    selectedAgent.value = null
+  } else {
+    selectedAgentUserId.value = String(row.userId)
+    selectedAgent.value = row
+  }
+  isAdjustingAgentSelection.value = true
+  nextTick(() => {
+    agentTableRef.value.clearSelection()
+    if (!isSelected) {
+      agentTableRef.value.toggleRowSelection(row, true)
+    }
+    isAdjustingAgentSelection.value = false
+  })
+}
+
+function confirmAgentSelect () {
+  if (!selectedAgent.value?.userId) {
+    ElMessage.warning(t('formbusiness.leaveform.pleaseSelectAgent'))
+    return
+  }
+  form.agentUserId = String(selectedAgent.value.userId)
+  form.agentUserNo = selectedAgent.value.userNo || ''
+  form.agentUserName = selectedAgent.value.userName || ''
+  agentDialogVisible.value = false
+  formRef.value?.validateField('agentUserId')
+}
+
+function handleAgentDialogClosed () {
+  clearAgentSearchTimer()
+  agentListRequestId += 1
+  agentListLoading.value = false
+  selectedAgent.value = null
+  selectedAgentUserId.value = ''
+  agentList.value = []
+}
+
+onUnmounted(() => {
+  clearAgentSearchTimer()
+})
 
 /**
  * 拉取可驳回步骤下拉（PublicForm/GetRejectStepDrop）
@@ -1617,7 +2117,20 @@ async function onSubmitForApproval () {
       formId,
       rejectStepId: '0',
       comment: approvalComment.value || ''
-    }, { silentForbiddenError: false })
+    }, {
+      silentForbiddenError: false,
+      silentAuthError: false,
+      disableAutoLogout: true
+    })
+    if (isUnauthorizedCode(res?.code)) {
+      ElMessage({
+        message: res?.message || t('systembasicmgmt.errorHandler.unauthorized'),
+        type: 'warning',
+        plain: true,
+        showClose: true
+      })
+      return
+    }
     if (isForbiddenCode(res?.code)) {
       showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
       return
@@ -2112,6 +2625,30 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 
+.workflow-view-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.workflow-view-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.workflow-view-hint-icon {
+  font-size: 16px;
+  color: var(--el-text-color-secondary);
+}
+
+.workflow-view-hint-text {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.4;
+}
+
 .workflow-view-btn {
   flex-shrink: 0;
 }
@@ -2425,6 +2962,56 @@ onMounted(async () => {
   line-height: 1.5;
   font-size: 13px;
   color: var(--el-text-color-primary);
+}
+
+.leave-form :deep(.el-select) {
+  width: 100%;
+}
+
+.agent-field-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.agent-field-control .el-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-picker-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.agent-filter-form {
+  margin-bottom: 12px;
+}
+
+.agent-filter-form .agent-filter-dept-select {
+  width: 160px;
+}
+
+.agent-filter-form .agent-filter-input-compact {
+  width: 168px;
+}
+
+.agent-table-wrap {
+  position: relative;
+  min-height: 360px;
+}
+
+.agent-select-table {
+  width: 100%;
+}
+
+.agent-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
 /* ===== 驳回弹窗（modal-penetrable：半透明遮罩） ===== */

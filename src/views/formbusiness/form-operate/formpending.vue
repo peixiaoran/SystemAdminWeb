@@ -69,6 +69,7 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.formpending.index')" width="70" align="center" fixed />
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.formpending.formNo')" align="center" min-width="160">
             <template #default="{ row }">
               <el-link
@@ -82,7 +83,11 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.formpending.applicantDate')" align="center" min-width="170">
+            <template #default="{ row }">
+              {{ formatApplicantDate(row.applicantDate ?? row.ApplicantDate) }}
+            </template>
+          </el-table-column>
           <el-table-column :label="$t('formbusiness.formpending.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
               <el-tag :type="getFormStatusTagType(row)" effect="dark" round>
@@ -242,10 +247,21 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
+const formatApplicantDate = (val) => {
+  if (!val) return '-'
+  const d = new Date(val)
+  if (isNaN(d.getTime())) {
+    const text = String(val).trim()
+    return text.length >= 10 ? text.slice(0, 10) : text
+  }
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
 
-/** Approved → 绿色；UnderReview → 橙色；其余保持 primary */
+/** Approved → 绿色；UnderReview → 橙色；Rejected → 红色；其余保持 primary */
 const getFormStatusTagType = (row) => {
   const candidates = [
     row?.formStatus,
@@ -260,6 +276,7 @@ const getFormStatusTagType = (row) => {
     if (!key) continue
     if (key === 'approved') return 'success'
     if (key === 'underreview') return 'warning'
+    if (key === 'rejected') return 'danger'
   }
   return 'primary'
 }

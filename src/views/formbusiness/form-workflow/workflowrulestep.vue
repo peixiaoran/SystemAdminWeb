@@ -215,16 +215,21 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-// nextStepId 为 "0" 表示流程结束（后端 NextStepId 为 string 类型）
+// nextStepId 为 "0" 或 null 表示流程结束（后端 NextStepId 为 string 类型）
 const NEXT_STEP_END_ID = '0'
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
 // 最小 loading 显示时间，避免接口太快导致动画一闪而过
 const MIN_LOADING_DURATION = 300
 
-const isNextStepEnd = (id) => id === 0 || id === '0' || Number(id) === 0
+const isNextStepEnd = (id) => {
+  if (id === null || id === undefined) return true
+  if (id === '') return false
+  return id === 0 || id === '0' || Number(id) === 0
+}
 
 const normalizeNextStepIdForForm = (val) => {
-  if (val === null || val === undefined) return ''
+  if (val === null || val === undefined) return NEXT_STEP_END_ID
+  if (val === '') return ''
   return isNextStepEnd(val) ? NEXT_STEP_END_ID : val
 }
 

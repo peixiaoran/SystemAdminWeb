@@ -114,10 +114,23 @@
         <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
   
           <!-- 基本信息 -->
-          <el-row v-if="isStepFieldVisible('FormNo')" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
-            <el-col :span="8">
+          <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
+            <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
               <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
                 <el-input v-model="form.formNo" :disabled="!isStepFieldEditable('FormNo')" />
+              </el-form-item>
+            </el-col>
+            <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
+              <el-form-item :label="t('formbusiness.leaveform.applyDate')" prop="applyDate">
+                <el-date-picker
+                  v-model="form.applyDate"
+                  type="date"
+                  value-format="YYYY-MM-DD"
+                  :placeholder="t('formbusiness.leaveform.pleaseSelectApplyDate')"
+                  clearable
+                  :disabled="!isStepFieldEditable('ApplyDate')"
+                  style="width: 100%;"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -146,7 +159,7 @@
             </el-col>
           </el-row>
   
-          <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'UserNo', 'UserName', 'Department'])"></el-divider>
+          <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
   
           <!-- 请假信息 -->
           <el-row
@@ -171,7 +184,6 @@
                   :end-placeholder="t('formbusiness.leaveform.pleaseSelectEndTime')"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   @change="handleTimeRangeChange"
-                  clearable
                 />
               </el-form-item>
             </el-col>
@@ -180,8 +192,13 @@
           <!-- 时长 / 代理人 -->
           <el-row v-if="isAnyStepFieldVisible(['Agent', 'LeaveDays'])" :gutter="16">
             <el-col v-if="isStepFieldVisible('Agent')" :span="8">
-              <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserNo">
-                <el-input v-model="form.agentUserNo" :placeholder="t('formbusiness.leaveform.pleaseInputAgentUserNo')" :disabled="!isStepFieldEditable('Agent')" />
+              <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserId">
+                <el-input
+                  class="agent-field-input"
+                  :model-value="agentDisplayText"
+                  :placeholder="t('formbusiness.leaveform.pleaseSelectAgent')"
+                  disabled
+                />
               </el-form-item>
             </el-col>
             <el-col v-if="isStepFieldVisible('LeaveDays')" :span="16">
@@ -280,26 +297,32 @@
             <el-col :span="24">
               <el-form-item class="form-actions-form-item">
                 <div class="form-actions-row">
-                  <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
-                    <el-button
-                      class="workflow-view-btn"
-                      circle
-                      plain
-                      type="primary"
-                      :disabled="!form.formId"
-                      @click="openWorkflowDrawer"
-                    >
-                      <el-icon class="workflow-view-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <circle cx="12" cy="4.5" r="2.15" />
-                          <line x1="12" y1="6.65" x2="12" y2="9.85" />
-                          <circle cx="12" cy="12" r="2.15" />
-                          <line x1="12" y1="14.15" x2="12" y2="17.35" />
-                          <circle cx="12" cy="19.5" r="2.15" />
-                        </svg>
-                      </el-icon>
-                    </el-button>
-                  </el-tooltip>
+                  <div class="workflow-view-entry">
+                    <div class="workflow-view-hint">
+                      <el-icon class="workflow-view-hint-icon"><QuestionFilled /></el-icon>
+                      <span class="workflow-view-hint-text">{{ t('formbusiness.leaveform.viewFullWorkflowHint') }}</span>
+                    </div>
+                    <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
+                      <el-button
+                        class="workflow-view-btn"
+                        circle
+                        plain
+                        type="primary"
+                        :disabled="!form.formId"
+                        @click="openWorkflowDrawer"
+                      >
+                        <el-icon class="workflow-view-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="4.5" r="2.15" />
+                            <line x1="12" y1="6.65" x2="12" y2="9.85" />
+                            <circle cx="12" cy="12" r="2.15" />
+                            <line x1="12" y1="14.15" x2="12" y2="17.35" />
+                            <circle cx="12" cy="19.5" r="2.15" />
+                          </svg>
+                        </el-icon>
+                      </el-button>
+                    </el-tooltip>
+                  </div>
                 </div>
               </el-form-item>
             </el-col>
@@ -356,7 +379,7 @@
             </el-table-column>
             <el-table-column
               :label="t('formbusiness.leaveform.reviewLogResult')"
-              min-width="110"
+              width="95"
               align="left"
             >
               <template #default="{ row }">
@@ -479,11 +502,12 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading } from '@element-plus/icons-vue'
+  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, QuestionFilled } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
-  import { resolveFileUrl } from '@/utils/fileUrl'
+  import { calculateLeaveTotalHours } from '@/utils/leaveHours'
+import { resolveFileUrl } from '@/utils/fileUrl'
   import { useRoute, useRouter } from 'vue-router'
   import { useUserStore } from '@/stores/user'
   import { usePMenuStore } from '@/stores/pmenu'
@@ -671,17 +695,45 @@
     formNo: '',
     formStatus: '',
     formStatusName: '',
+    applyDate: '',
     applicantUserNo: '',
     applicantUserName: '',
     applicantDeptName: '',
     applicantDeptId: '',
-    applicantTime: '',
     leaveType: '',
     reason: '',
     leaveTimeRange: [],
     days: 0,
-    agentUserNo: ''
+    agentUserId: '',
+    agentUserNo: '',
+    agentUserName: ''
   })
+
+  function buildAgentDisplayValue (agentUserNo, agentUserName) {
+    const parts = []
+    const no = normalizeNullableText(agentUserNo)
+    const name = normalizeNullableText(agentUserName)
+    if (no) parts.push(no)
+    if (name) parts.push(name)
+    return parts.join(' / ')
+  }
+
+  function parseAgentDisplayValue (displayValue) {
+    const text = normalizeNullableText(displayValue)
+    if (!text) {
+      return { agentUserNo: '', agentUserName: '' }
+    }
+    const separatorIndex = text.indexOf(' / ')
+    if (separatorIndex === -1) {
+      return { agentUserNo: '', agentUserName: text }
+    }
+    return {
+      agentUserNo: text.slice(0, separatorIndex).trim(),
+      agentUserName: text.slice(separatorIndex + 3).trim()
+    }
+  }
+
+  const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo, form.agentUserName))
   
   // 下拉选项（来自接口）
   const leaveTypeOptions = ref([])
@@ -695,10 +747,6 @@
       { validator: validateTimeRange, trigger: 'change' }
     ],
   
-    agentUserNo: [
-      { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' },
-      { validator: validateHandoverUserNameRequired, trigger: 'blur' }
-    ],
     reason: [
       { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
     ]
@@ -713,45 +761,22 @@
   }
   
   /**
-   * 计算请假天数（按自然日，含起止当日）
-   * 示例：2025-11-22 08:00:00 至 2025-11-22 17:00:00 => 1.00 天
+   * 计算请假总时数：8-17 计工时，12-13 午休不计；首日早于 8 点、末日晚于 17 点时段计入
    */
   function calculateDuration () {
     if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
-      form.days = coerceDays(0)
+      form.days = undefined
       return
     }
     const [startTime, endTime] = form.leaveTimeRange
     if (!startTime || !endTime) {
-      form.days = coerceDays(0)
+      form.days = undefined
       return
     }
-    const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
-    const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
-    if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
-      form.days = coerceDays(0)
-      return
-    }
-    const calendarDays = countCalendarDaysInclusive(startTime, endTime)
-    form.days = coerceDays(calendarDays)
+    const hours = calculateLeaveTotalHours(startTime, endTime)
+    form.days = hours > 0 ? coerceDays(hours) : undefined
   }
-  
-  /**
-   * 计算跨越的自然日天数（包含起止当日）
-   * 入参：开始/结束时间字符串或Date
-   * 返回：end > start 时返回至少 1 的天数；否则返回 0
-   */
-  function countCalendarDaysInclusive (startStr, endStr) {
-    const start = new Date(typeof startStr === 'string' ? startStr.replace(' ', 'T') : startStr)
-    const end = new Date(typeof endStr === 'string' ? endStr.replace(' ', 'T') : endStr)
-    if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 0
-    const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate())
-    const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate())
-    const msPerDay = 24 * 60 * 60 * 1000
-    const diffDays = Math.floor((endDate.getTime() - startDate.getTime()) / msPerDay)
-    return diffDays + 1
-  }
-  
+
   /**
    * 校验时间范围有效性
    */
@@ -785,17 +810,6 @@
     const total = coerceDays(form.days)
     if (total <= 0) {
       callback(new Error(t('formbusiness.leaveform.durationRequired')))
-      return
-    }
-    callback()
-  }
-  
-  /**
-   * 校验交接人姓名非空（去除空格后至少1个字符）
-   */
-  function validateHandoverUserNameRequired (rule, value, callback) {
-    if (!value || !String(value).trim()) {
-      callback(new Error(t('formbusiness.validation.required')))
       return
     }
     callback()
@@ -891,52 +905,27 @@
       formNo: data.formNo || '',
       formStatus: data.formStatus ?? data.FormStatus ?? data.formStatusCode ?? data.FormStatusCode ?? '',
       formStatusName: data.formStatusName ?? data.FormStatusName ?? '',
+      applyDate: resolveApplyDateFromData(data),
       applicantUserNo: data.applicantUserNo || '',
       applicantUserName: data.applicantUserName || '',
       applicantDeptName: data.applicantDeptName || '',
       applicantDeptId: data.applicantDeptId || '',
-      applicantTime: data.applicantTime || '',
-      leaveType: normalizeSelectCode(
-        data.leaveTypeCode ??
-          data.LeaveTypeCode ??
-          data.leaveTypeId ??
-          data.LeaveTypeId ??
-          data.leaveType ??
-          data.LeaveType
-      ),
+      leaveType: resolveLeaveTypeFromData(data),
       reason:
         data.leaveReason ??
         data.LeaveReason ??
         data.Reason ??
         data.reason ??
         '',
-      leaveTimeRange: (() => {
-        const start = normalizeDateTime(
-          data.leaveStartTime ??
-            data.LeaveStartTime ??
-            data.startTime ??
-            data.starttime
-        )
-        const end = normalizeDateTime(
-          data.leaveEndTime ?? data.LeaveEndTime ?? data.endTime ?? data.endtime
-        )
-        return start && end ? [start, end] : []
-      })(),
-      days: coerceDays(
-        data.leaveDays ??
-          data.LeaveDays ??
-          data.leaveHours ??
-          data.LeaveHours ??
-          data.days ??
-          data.Days
-      ),
-      agentUserNo: data.agentUserNo || ''
+      leaveTimeRange: resolveLeaveTimeRangeFromData(data),
+      days: resolveLeaveHoursFromData(data),
+      ...resolveAgentFromData(data)
     })
     const [rangeStart, rangeEnd] = form.leaveTimeRange || []
     if (rangeStart && rangeEnd) {
       calculateDuration()
     }
-    const attachmentList = data.attachmentList
+    const attachmentList = data.attachment ?? data.attachmentList ?? data.Attachment
     if (Array.isArray(attachmentList)) {
       uploadedAttachments.value = attachmentList.filter(Boolean)
     }
@@ -957,8 +946,9 @@
     if (formRef.value) {
       formRef.value.clearValidate(['leaveType'])
     }
-    if (Array.isArray(data.reviewRecordList)) {
-      reviewRecordList.value = [...data.reviewRecordList].sort((a, b) => {
+    const reviewRecords = data.reviewRecord ?? data.reviewRecordList ?? data.ReviewRecord
+    if (Array.isArray(reviewRecords)) {
+      reviewRecordList.value = [...reviewRecords].sort((a, b) => {
         const ta = a.reviewDateTime ? new Date(a.reviewDateTime).getTime() : 0
         const tb = b.reviewDateTime ? new Date(b.reviewDateTime).getTime() : 0
         return ta - tb
@@ -987,6 +977,95 @@
     if (val === undefined || val === null || val === '') return undefined
     if (val === -1 || String(val) === '-1') return undefined
     return String(val)
+  }
+
+  function normalizeNullableText (val) {
+    if (val === undefined || val === null) return ''
+    return String(val)
+  }
+
+  /** 请假时数：null/空 保持空白，有效数字保留两位小数 */
+  function normalizeLeaveHoursValue (val) {
+    if (val === undefined || val === null || val === '') return undefined
+    const n = Number(val)
+    if (!Number.isFinite(n)) return undefined
+    return parseFloat(Math.max(0, n).toFixed(2))
+  }
+
+  function resolveLeaveTypeFromData (data) {
+    return normalizeSelectCode(
+      data.leaveType ??
+        data.LeaveType ??
+        data.leaveTypeCode ??
+        data.LeaveTypeCode ??
+        data.leaveTypeId ??
+        data.LeaveTypeId ??
+        null
+    ) ?? ''
+  }
+
+  function resolveLeaveTimeRangeFromData (data) {
+    const start = normalizeDateTime(
+      data.startDateTime ??
+        data.StartDateTime ??
+        data.leaveStartTime ??
+        data.LeaveStartTime ??
+        data.startTime ??
+        data.starttime ??
+        null
+    )
+    const end = normalizeDateTime(
+      data.endDateTime ??
+        data.EndDateTime ??
+        data.leaveEndTime ??
+        data.LeaveEndTime ??
+        data.endTime ??
+        data.endtime ??
+        null
+    )
+    if (!start || !end) return []
+    return [start, end]
+  }
+
+  function resolveLeaveHoursFromData (data) {
+    return normalizeLeaveHoursValue(
+      data.leaveHours ??
+        data.LeaveHours ??
+        data.leaveDays ??
+        data.LeaveDays ??
+        data.days ??
+        data.Days ??
+        null
+    )
+  }
+
+  function resolveApplyDateFromData (data) {
+    const raw = data.applyDate ?? data.ApplyDate ?? data.applicantDate ?? data.ApplicantDate ?? data.applicantTime ?? data.ApplicantTime ?? ''
+    if (!raw) return ''
+    const text = String(raw).trim()
+    if (text.length >= 10) return text.slice(0, 10)
+    const d = new Date(text)
+    if (isNaN(d.getTime())) return text
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  }
+
+  function resolveAgentFromData (data) {
+    const agentUserId = normalizeNullableText(data.agentUserId ?? data.AgentUserId)
+    let agentUserNo = normalizeNullableText(data.agentUserNo ?? data.AgentUserNo)
+    let agentUserName = normalizeNullableText(data.agentUserName ?? data.AgentUserName)
+
+    if (!agentUserNo && agentUserName.includes(' / ')) {
+      const parsed = parseAgentDisplayValue(agentUserName)
+      agentUserNo = parsed.agentUserNo
+      agentUserName = parsed.agentUserName
+    }
+
+    return {
+      agentUserId,
+      agentUserNo,
+      agentUserName
+    }
   }
   
   function isForbiddenCode(code) {
@@ -1664,6 +1743,14 @@
   .leave-form {
     padding: 0 20px;
   }
+
+  .leave-form :deep(.el-select) {
+    width: 100%;
+  }
+
+  .agent-field-input {
+    width: 100%;
+  }
   
   .leave-form :deep(.el-input__wrapper),
   .leave-form :deep(.el-select .el-input__wrapper),
@@ -1742,6 +1829,30 @@
     flex-wrap: wrap;
   }
   
+  .workflow-view-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .workflow-view-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .workflow-view-hint-icon {
+    font-size: 16px;
+    color: var(--el-text-color-secondary);
+  }
+
+  .workflow-view-hint-text {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    line-height: 1.4;
+  }
+
   .workflow-view-btn {
     flex-shrink: 0;
   }
