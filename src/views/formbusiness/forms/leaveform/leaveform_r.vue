@@ -193,6 +193,7 @@
                 :end-placeholder="t('formbusiness.leaveform.pleaseSelectEndTime')"
                 :disabled="!isStepFieldEditable('LeavePeriod')"
                 @change="handleTimeRangeChange"
+                @calendar-change="handleLeaveTimeCalendarChange"
               />
             </el-form-item>
           </el-col>
@@ -441,6 +442,50 @@
         />
       </div>
     </el-card>
+
+    <!-- 假期余额：右侧悬浮（LeaveBalance 权限控制） -->
+    <aside
+      v-if="isStepFieldVisible('LeaveBalance') && (leaveBalanceLoading || leaveBalances.length)"
+      class="leave-balance-float"
+      :aria-label="t('formbusiness.leaveform.leaveBalance')"
+    >
+      <div
+        class="leave-balance-float-card"
+        v-loading="leaveBalanceLoading"
+        :element-loading-text="t('common.loading')"
+      >
+        <div class="leave-balance-float-header">
+          <span class="leave-balance-float-title">{{ t('formbusiness.leaveform.leaveBalance') }}</span>
+        </div>
+        <div class="leave-balance-hint">
+          <div
+            v-for="item in leaveBalances"
+            :key="item.year"
+            class="leave-balance-hint-item"
+          >
+            <div class="leave-balance-year">{{ item.year }}</div>
+            <div class="leave-balance-type-row">
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.annualRemainingDays') }}</span>
+              <span class="leave-balance-value">
+                <span :class="['leave-balance-value-main', { 'leave-balance-value-main--deducted': isLeaveBalanceAffected(item.year, 'annual') }]">
+                  <span class="leave-balance-days">{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'annual')) }}</span>
+                  <span class="leave-balance-hours">({{ formatLeaveBalanceHours(getAdjustedLeaveBalanceDays(item, 'annual')) }}{{ t('formbusiness.leaveform.leaveBalanceHoursUnit') }})</span>
+                </span>
+              </span>
+            </div>
+            <div class="leave-balance-type-row">
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.sickRemainingDays') }}</span>
+              <span class="leave-balance-value">
+                <span :class="['leave-balance-value-main', { 'leave-balance-value-main--deducted': isLeaveBalanceAffected(item.year, 'sick') }]">
+                  <span class="leave-balance-days">{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'sick')) }}</span>
+                  <span class="leave-balance-hours">({{ formatLeaveBalanceHours(getAdjustedLeaveBalanceDays(item, 'sick')) }}{{ t('formbusiness.leaveform.leaveBalanceHoursUnit') }})</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
     </template>
 
     <!-- 选择代理人弹窗 -->
@@ -665,7 +710,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, QuestionFilled } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { calculateLeaveTotalHours } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -946,6 +991,11 @@ const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo,
 
 // 下拉选项（来自接口）
 const leaveTypeOptions = ref([])
+const leaveBalances = ref([])
+const leaveBalanceLoading = ref(false)
+/** 面板选时间过程中累积的起止时间，避免选结束时间时丢失开始年份 */
+const leaveBalanceQueryRange = ref(['', ''])
+let leaveBalanceRequestId = 0
 // 校验规则
 const rules = {
   leaveType: [
@@ -1056,6 +1106,202 @@ function normalizeFieldKey (fieldKey) {
  */
 function handleTimeRangeChange () {
   calculateDuration()
+  resetLeaveBalanceQueryRange(form.leaveTimeRange)
+  fetchLeaveBalances()
+}
+
+/** 面板内选择开始/结束时间时触发余额查询（合并已选起止，避免跨年只传结束年） */
+function handleLeaveTimeCalendarChange (val) {
+  mergeLeaveBalanceQueryRange(normalizeCalendarRangeValue(val))
+  if (!getLeaveBalanceQueryRange().some(Boolean)) return
+  fetchLeaveBalances()
+}
+
+function normalizeCalendarRangeValue (val) {
+  if (!Array.isArray(val)) return []
+  return val.map((item) => {
+    if (!item) return ''
+    return normalizeDateTime(item)
+  })
+}
+
+function resetLeaveBalanceQueryRange (range) {
+  if (!Array.isArray(range)) {
+    leaveBalanceQueryRange.value = ['', '']
+    return
+  }
+  leaveBalanceQueryRange.value = [
+    range[0] ? String(range[0]) : '',
+    range[1] ? String(range[1]) : ''
+  ]
+}
+
+function mergeLeaveBalanceQueryRange (range) {
+  if (!Array.isArray(range)) return
+  const [start, end] = range
+  if (start) leaveBalanceQueryRange.value[0] = String(start)
+  if (end) leaveBalanceQueryRange.value[1] = String(end)
+}
+
+function getLeaveBalanceQueryRange () {
+  const [formStart, formEnd] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+  const [queryStart, queryEnd] = leaveBalanceQueryRange.value
+  return [
+    formStart ? String(formStart) : queryStart || '',
+    formEnd ? String(formEnd) : queryEnd || ''
+  ]
+}
+
+/** 根据请假时间范围解析需查询的年份：无起止时间取当年；仅选开始/结束时用对应年份；跨年时包含区间内所有年份 */
+function resolveLeaveBalanceYears (leaveTimeRange) {
+  const [startTime, endTime] = Array.isArray(leaveTimeRange) ? leaveTimeRange : []
+  const startDate = startTime ? new Date(toISO(startTime)) : null
+  const endDate = endTime ? new Date(toISO(endTime)) : null
+  const startValid = startDate && !Number.isNaN(startDate.getTime())
+  const endValid = endDate && !Number.isNaN(endDate.getTime())
+
+  if (startValid && endValid) {
+    const startYear = startDate.getFullYear()
+    const endYear = endDate.getFullYear()
+    const fromYear = Math.min(startYear, endYear)
+    const toYear = Math.max(startYear, endYear)
+    const years = []
+    for (let year = fromYear; year <= toYear; year += 1) {
+      years.push(year)
+    }
+    return years
+  }
+  if (startValid) return [startDate.getFullYear()]
+  if (endValid) return [endDate.getFullYear()]
+  return [new Date().getFullYear()]
+}
+
+function formatLeaveBalanceDays (val) {
+  if (val === undefined || val === null || val === '') return '-'
+  const n = Number(val)
+  return Number.isFinite(n) ? formatLeaveBalanceNumber(n) : '-'
+}
+
+function formatLeaveBalanceHours (daysVal) {
+  if (daysVal === undefined || daysVal === null || daysVal === '') return '-'
+  const days = Number(daysVal)
+  if (!Number.isFinite(days)) return '-'
+  const hours = days * 8
+  return formatLeaveBalanceNumber(hours)
+}
+
+function formatLeaveBalanceNumber (val) {
+  if (!Number.isFinite(val)) return '-'
+  return Number.isInteger(val) ? val : parseFloat(val.toFixed(2))
+}
+
+function getLeaveBalanceRawDays (item, type) {
+  return type === 'annual' ? item?.annualRemainingDays : item?.sickRemainingDays
+}
+
+function getAdjustedLeaveBalanceDays (item, type) {
+  const rawDays = Number(getLeaveBalanceRawDays(item, type))
+  if (!Number.isFinite(rawDays)) return getLeaveBalanceRawDays(item, type)
+  if (!isLeaveBalanceAffected(item?.year, type)) return rawDays
+  const remainingHours = rawDays * 8 - getSelectedLeaveHoursByYear(item.year)
+  return remainingHours / 8
+}
+
+function isLeaveBalanceAffected (year, type) {
+  return resolveSelectedLeaveBalanceType() === type && getSelectedLeaveHoursByYear(year) > 0
+}
+
+function resolveSelectedLeaveBalanceType () {
+  const current = getCurrentLeaveTypeOption()
+  const candidates = [
+    normalizeLeaveTypeText(form.leaveType),
+    normalizeLeaveTypeText(current?.label),
+    normalizeLeaveTypeText(current?.value)
+  ].filter(Boolean)
+  if (candidates.some((text) => text.includes('annual') || text.includes('yearleave') || text.includes('年假'))) return 'annual'
+  if (candidates.some((text) => text.includes('sick') || text.includes('病假'))) return 'sick'
+  return ''
+}
+
+function getSelectedLeaveHoursByYear (year) {
+  const targetYear = Number(year)
+  const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+  if (!targetYear || !startTime || !endTime) return 0
+  const start = new Date(toISO(startTime))
+  const end = new Date(toISO(endTime))
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) return 0
+  if (targetYear < start.getFullYear() || targetYear > end.getFullYear()) return 0
+
+  if (start.getFullYear() === end.getFullYear()) {
+    return coerceDays(form.days)
+  }
+
+  const segmentStart = targetYear === start.getFullYear()
+    ? start
+    : new Date(targetYear, 0, 1, 8, 0, 0)
+  const segmentEnd = targetYear === end.getFullYear()
+    ? end
+    : new Date(targetYear, 11, 31, 17, 0, 0)
+  if (segmentEnd <= segmentStart) return 0
+  return calculateLeaveTotalHours(formatDateTimeForLeaveBalance(segmentStart), formatDateTimeForLeaveBalance(segmentEnd))
+}
+
+function formatDateTimeForLeaveBalance (date) {
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+}
+
+function normalizeLeaveBalanceItem (item) {
+  return {
+    year: Number(item?.year ?? item?.Year ?? 0),
+    annualRemainingDays: item?.annualRemainingDays ?? item?.AnnualRemainingDays,
+    sickRemainingDays: item?.sickRemainingDays ?? item?.SickRemainingDays
+  }
+}
+
+/** 获取请假余额（GetLeaveBalances）；year 无起止时间取当年，跨年传 2026,2027 形式 */
+async function fetchLeaveBalances () {
+  if (!isStepFieldVisible('LeaveBalance')) return
+
+  const years = resolveLeaveBalanceYears(getLeaveBalanceQueryRange())
+  const requestId = ++leaveBalanceRequestId
+  leaveBalanceLoading.value = true
+  try {
+    const formData = new window.FormData()
+    formData.append('year', years.join(','))
+    const res = await post(GET_LEAVE_BALANCES_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
+    })
+    if (requestId !== leaveBalanceRequestId) return
+    if (isForbiddenCode(res?.code)) {
+      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      leaveBalances.value = []
+      return
+    }
+    if (!res || res.code !== 200) {
+      leaveBalances.value = []
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else if (res?.message) {
+        ElMessage.error(res.message)
+      }
+      return
+    }
+    const list = Array.isArray(res.data) ? res.data : []
+    leaveBalances.value = list
+      .map(normalizeLeaveBalanceItem)
+      .filter((item) => item.year)
+      .sort((a, b) => a.year - b.year)
+  } catch {
+    if (requestId !== leaveBalanceRequestId) return
+    leaveBalances.value = []
+    ElMessage.error(t('formbusiness.leaveform.getLeaveBalanceFailed'))
+  } finally {
+    if (requestId === leaveBalanceRequestId) {
+      leaveBalanceLoading.value = false
+    }
+  }
 }
 
 /**
@@ -1158,6 +1404,7 @@ function bindFormData (data) {
   if (rangeStart && rangeEnd) {
     calculateDuration()
   }
+  resetLeaveBalanceQueryRange(form.leaveTimeRange)
   const attachmentList = data.attachment ?? data.attachmentList ?? data.Attachment
   if (Array.isArray(attachmentList)) {
     uploadedAttachments.value = attachmentList.filter(Boolean)
@@ -1193,6 +1440,7 @@ function bindFormData (data) {
       data.StepFieldPermissionList ??
       data.StepFieldPermission
   )
+  fetchLeaveBalances()
 }
 
 /** 将接口 0/1 转为布尔；未配置时使用默认值 */
@@ -1709,9 +1957,10 @@ async function openAgentPicker () {
   }
   await fetchAgentDepartmentOptions()
   const defaultDepartmentId = resolveDefaultAgentDepartmentId()
+  const prefilledUserNo = normalizeNullableText(form.agentUserNo)
   Object.assign(agentFilters, {
-    departmentId: defaultDepartmentId,
-    userNo: '',
+    departmentId: prefilledUserNo ? '' : defaultDepartmentId,
+    userNo: prefilledUserNo,
     userName: ''
   })
   agentPagination.pageIndex = 1
@@ -2966,6 +3215,126 @@ onMounted(async () => {
 
 .leave-form :deep(.el-select) {
   width: 100%;
+}
+
+.leave-balance-float {
+  position: fixed;
+  top: 35%;
+  left: calc(50% + 524px);
+  z-index: 20;
+  width: 220px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.leave-balance-float-card {
+  pointer-events: auto;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.leave-balance-float-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.leave-balance-float-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  line-height: 1.4;
+}
+
+.leave-balance-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 20px;
+  line-height: 1.5;
+}
+
+.leave-balance-hint :deep(.el-loading-spinner) {
+  margin-top: -10px;
+}
+
+.leave-balance-hint :deep(.el-loading-spinner .circular) {
+  width: 20px;
+  height: 20px;
+}
+
+.leave-balance-hint-item {
+  width: 100%;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--el-border-color-lighter);
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+}
+
+.leave-balance-hint-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.leave-balance-year {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.leave-balance-type-row {
+  display: grid;
+  grid-template-columns: minmax(84px, 1fr) auto;
+  align-items: baseline;
+  column-gap: 8px;
+  line-height: 1.7;
+}
+
+.leave-balance-type-name {
+  color: var(--el-text-color-regular);
+}
+
+.leave-balance-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.leave-balance-value-main {
+  line-height: 1.6;
+}
+
+.leave-balance-days,
+.leave-balance-hours {
+  color: #0058cc;
+  font-weight: 700;
+}
+
+.leave-balance-hours {
+  margin-left: 2px;
+}
+
+.leave-balance-value-main--deducted .leave-balance-days,
+.leave-balance-value-main--deducted .leave-balance-hours {
+  color: var(--el-color-danger);
+  font-weight: 700;
+}
+
+@media (max-width: 1488px) {
+  .leave-balance-float {
+    top: auto;
+    bottom: 24px;
+    left: auto;
+    right: 16px;
+    transform: none;
+    width: min(220px, calc(100vw - 32px));
+  }
 }
 
 .agent-field-control {
