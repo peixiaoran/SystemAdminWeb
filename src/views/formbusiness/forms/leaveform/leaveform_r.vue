@@ -226,6 +226,7 @@
             <el-form-item :label="t('formbusiness.leaveform.leaveHours')" prop="days">
               <el-input-number
                 v-model="form.days"
+                class="leave-hours-input"
                 :min="0"
                 :step="0.01"
                 :precision="2"
@@ -447,7 +448,7 @@
     <aside
       v-if="isStepFieldVisible('LeaveBalance') && (leaveBalanceLoading || leaveBalances.length)"
       class="leave-balance-float"
-      :aria-label="t('formbusiness.leaveform.leaveBalance')"
+      :aria-label="t('formbusiness.leaveform.leaveBalance') + t('formbusiness.leaveform.leaveBalanceDaysUnit')"
     >
       <div
         class="leave-balance-float-card"
@@ -455,7 +456,9 @@
         :element-loading-text="t('common.loading')"
       >
         <div class="leave-balance-float-header">
-          <span class="leave-balance-float-title">{{ t('formbusiness.leaveform.leaveBalance') }}</span>
+          <span class="leave-balance-float-title">
+            {{ t('formbusiness.leaveform.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaveform.leaveBalanceDaysUnit') }}</span>
+          </span>
         </div>
         <div class="leave-balance-hint">
           <div
@@ -466,20 +469,26 @@
             <div class="leave-balance-year">{{ item.year }}</div>
             <div class="leave-balance-type-row">
               <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.annualRemainingDays') }}</span>
-              <span class="leave-balance-value">
-                <span :class="['leave-balance-value-main', { 'leave-balance-value-main--deducted': isLeaveBalanceAffected(item.year, 'annual') }]">
-                  <span class="leave-balance-days">{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'annual')) }}</span>
-                  <span class="leave-balance-hours">({{ formatLeaveBalanceHours(getAdjustedLeaveBalanceDays(item, 'annual')) }}{{ t('formbusiness.leaveform.leaveBalanceHoursUnit') }})</span>
-                </span>
+              <span
+                :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'annual') }]"
+              >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'annual')) }}</span>
+              <span class="leave-balance-deduct-col">
+                <span
+                  v-if="getLeaveBalanceDeductDays(item, 'annual') > 0"
+                  class="leave-balance-deduct-inline"
+                >（{{ formatLeaveBalanceDays(getLeaveBalanceDeductDays(item, 'annual')) }}）</span>
               </span>
             </div>
             <div class="leave-balance-type-row">
               <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.sickRemainingDays') }}</span>
-              <span class="leave-balance-value">
-                <span :class="['leave-balance-value-main', { 'leave-balance-value-main--deducted': isLeaveBalanceAffected(item.year, 'sick') }]">
-                  <span class="leave-balance-days">{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'sick')) }}</span>
-                  <span class="leave-balance-hours">({{ formatLeaveBalanceHours(getAdjustedLeaveBalanceDays(item, 'sick')) }}{{ t('formbusiness.leaveform.leaveBalanceHoursUnit') }})</span>
-                </span>
+              <span
+                :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'sick') }]"
+              >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'sick')) }}</span>
+              <span class="leave-balance-deduct-col">
+                <span
+                  v-if="getLeaveBalanceDeductDays(item, 'sick') > 0"
+                  class="leave-balance-deduct-inline"
+                >（{{ formatLeaveBalanceDays(getLeaveBalanceDeductDays(item, 'sick')) }}）</span>
               </span>
             </div>
           </div>
@@ -712,7 +721,7 @@ import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, L
 import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
-import { calculateLeaveTotalHours } from '@/utils/leaveHours'
+import { calculateLeaveTotalHours, isLeaveTimeRangeAllowed } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -1024,7 +1033,7 @@ function coerceDays (v) {
 }
 
 /**
- * 计算请假总时数：8-17 计工时，12-13 午休不计；首日早于 8 点、末日晚于 17 点时段计入
+ * 计算请假总时数：仅 8-12 / 13-17 时段，午休不计，单日最多 8 小时
  */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
@@ -1033,6 +1042,10 @@ function calculateDuration () {
   }
   const [startTime, endTime] = form.leaveTimeRange
   if (!startTime || !endTime) {
+    form.days = undefined
+    return
+  }
+  if (!isLeaveTimeRangeAllowed(startTime, endTime)) {
     form.days = undefined
     return
   }
@@ -1057,6 +1070,10 @@ function validateTimeRange (rule, value, callback) {
   const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     callback()
+    return
+  }
+  if (!isLeaveTimeRangeAllowed(startTime, endTime)) {
+    callback(new Error(t('formbusiness.leaveform.leaveTimeWorkHoursError')))
     return
   }
   if (end <= start) {
@@ -1108,6 +1125,9 @@ function handleTimeRangeChange () {
   calculateDuration()
   resetLeaveBalanceQueryRange(form.leaveTimeRange)
   fetchLeaveBalances()
+  nextTick(() => {
+    formRef.value?.validateField('leaveTimeRange')
+  })
 }
 
 /** 面板内选择开始/结束时间时触发余额查询（合并已选起止，避免跨年只传结束年） */
@@ -1182,14 +1202,6 @@ function formatLeaveBalanceDays (val) {
   return Number.isFinite(n) ? formatLeaveBalanceNumber(n) : '-'
 }
 
-function formatLeaveBalanceHours (daysVal) {
-  if (daysVal === undefined || daysVal === null || daysVal === '') return '-'
-  const days = Number(daysVal)
-  if (!Number.isFinite(days)) return '-'
-  const hours = days * 8
-  return formatLeaveBalanceNumber(hours)
-}
-
 function formatLeaveBalanceNumber (val) {
   if (!Number.isFinite(val)) return '-'
   return Number.isInteger(val) ? val : parseFloat(val.toFixed(2))
@@ -1211,6 +1223,23 @@ function isLeaveBalanceAffected (year, type) {
   return resolveSelectedLeaveBalanceType() === type && getSelectedLeaveHoursByYear(year) > 0
 }
 
+function getLeaveBalanceDeductDays (item, type) {
+  if (!isLeaveBalanceAffected(item?.year, type)) return 0
+  const hours = getSelectedLeaveHoursByYear(item.year)
+  return hours > 0 ? hours / 8 : 0
+}
+
+function isLeaveBalanceExceeded (item, type) {
+  const adjustedDays = Number(getAdjustedLeaveBalanceDays(item, type))
+  if (Number.isFinite(adjustedDays) && adjustedDays < 0) return true
+
+  if (resolveSelectedLeaveBalanceType() !== type) return false
+  const rawDays = Number(getLeaveBalanceRawDays(item, type))
+  if (!Number.isFinite(rawDays)) return false
+  const selectedHours = getSelectedLeaveHoursByYear(item.year)
+  return selectedHours > 0 && selectedHours > rawDays * 8
+}
+
 function resolveSelectedLeaveBalanceType () {
   const current = getCurrentLeaveTypeOption()
   const candidates = [
@@ -1218,7 +1247,13 @@ function resolveSelectedLeaveBalanceType () {
     normalizeLeaveTypeText(current?.label),
     normalizeLeaveTypeText(current?.value)
   ].filter(Boolean)
-  if (candidates.some((text) => text.includes('annual') || text.includes('yearleave') || text.includes('年假'))) return 'annual'
+  if (candidates.some((text) =>
+    text.includes('annual') ||
+    text.includes('yearleave') ||
+    text.includes('annualleave') ||
+    text.includes('年假') ||
+    text.includes('年休')
+  )) return 'annual'
   if (candidates.some((text) => text.includes('sick') || text.includes('病假'))) return 'sick'
   return ''
 }
@@ -1227,6 +1262,7 @@ function getSelectedLeaveHoursByYear (year) {
   const targetYear = Number(year)
   const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
   if (!targetYear || !startTime || !endTime) return 0
+  if (!isLeaveTimeRangeAllowed(startTime, endTime)) return 0
   const start = new Date(toISO(startTime))
   const end = new Date(toISO(endTime))
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) return 0
@@ -3218,26 +3254,31 @@ onMounted(async () => {
 }
 
 .leave-balance-float {
+  --leave-balance-form-gap: 8px;
+  --leave-balance-side-gap: 20px;
   position: fixed;
   top: 35%;
-  left: calc(50% + 524px);
+  left: calc(50% + 500px + var(--leave-balance-form-gap));
+  right: var(--leave-balance-side-gap);
   z-index: 20;
-  width: 220px;
+  width: auto;
+  max-width: 420px;
   transform: translateY(-50%);
   pointer-events: none;
 }
 
 .leave-balance-float-card {
   pointer-events: auto;
-  padding: 14px 16px 16px;
+  padding: 14px 14px 16px;
   border: 1px solid var(--el-border-color-light);
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
 .leave-balance-float-header {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
@@ -3247,6 +3288,13 @@ onMounted(async () => {
   font-weight: 600;
   color: var(--el-text-color-primary);
   line-height: 1.4;
+}
+
+.leave-balance-days-unit {
+  margin-left: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
 }
 
 .leave-balance-hint {
@@ -3288,52 +3336,66 @@ onMounted(async () => {
 
 .leave-balance-type-row {
   display: grid;
-  grid-template-columns: minmax(84px, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 52px 56px;
+  column-gap: 2px;
   align-items: baseline;
-  column-gap: 8px;
   line-height: 1.7;
 }
 
 .leave-balance-type-name {
+  min-width: 0;
   color: var(--el-text-color-regular);
 }
 
-.leave-balance-value {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  white-space: nowrap;
+.leave-balance-days-col {
+  justify-self: end;
   text-align: right;
+  white-space: nowrap;
 }
 
-.leave-balance-value-main {
-  line-height: 1.6;
+.leave-balance-deduct-col {
+  justify-self: start;
+  min-width: 56px;
+  white-space: nowrap;
 }
 
-.leave-balance-days,
-.leave-balance-hours {
+.leave-balance-days {
   color: #0058cc;
   font-weight: 700;
 }
 
-.leave-balance-hours {
-  margin-left: 2px;
-}
-
-.leave-balance-value-main--deducted .leave-balance-days,
-.leave-balance-value-main--deducted .leave-balance-hours {
+.leave-balance-days--exceeded {
   color: var(--el-color-danger);
   font-weight: 700;
 }
 
-@media (max-width: 1488px) {
+.leave-balance-deduct-inline {
+  color: var(--el-color-danger);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.leave-form :deep(.leave-hours-input .el-input__inner),
+.leave-form :deep(.leave-hours-input .el-input__wrapper input) {
+  color: var(--el-color-danger);
+  font-weight: 700;
+  -webkit-text-fill-color: var(--el-color-danger);
+}
+
+.leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
+.leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
+  color: var(--el-color-danger);
+  -webkit-text-fill-color: var(--el-color-danger);
+}
+
+@media (max-width: 1340px) {
   .leave-balance-float {
     top: auto;
     bottom: 24px;
-    left: auto;
+    left: 16px;
     right: 16px;
+    max-width: none;
     transform: none;
-    width: min(220px, calc(100vw - 32px));
   }
 }
 

@@ -7,7 +7,7 @@
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 // 初始化请假单 API
-export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitializeLevel'
+export const INIT_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/InitLeaveForm'
 
 // 保存请假单API
 export const SAVE_LEAVEFORM_API = 'FormBusiness/Forms/LeaveForm/SaveLeaveForm'
