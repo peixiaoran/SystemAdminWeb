@@ -364,11 +364,12 @@
           v-if="reviewLogTableRows.length"
           :data="reviewLogTableRows"
           :span-method="reviewLogSpanMethod"
+          :row-class-name="reviewLogRowClassName"
           :max-height="420"
           size="small"
           class="review-log-table"
         >
-          <el-table-column type="index" label="#" width="46" align="center" />
+          <el-table-column type="index" label="#" width="46" align="center" class-name="review-log-index-col" />
           <el-table-column
             prop="stepName"
             :label="t('formbusiness.leaveform.reviewLogStep')"
@@ -410,7 +411,11 @@
           >
             <template #default="{ row }">
               <div class="review-log-result-cell">
-                <el-tag :type="getReviewResultTagType(row)" size="small">
+                <el-tag
+                  :type="getReviewResultTagType(row)"
+                  :class="{ 'review-log-tag--withdraw': isReviewWithdrawResult(row) }"
+                  size="small"
+                >
                   {{ row.reviewResultName }}
                 </el-tag>
                 <span
@@ -476,7 +481,7 @@
                 <span
                   v-if="getLeaveBalanceDeductDays(item, 'annual') > 0"
                   class="leave-balance-deduct-inline"
-                >（{{ formatLeaveBalanceDays(getLeaveBalanceDeductDays(item, 'annual')) }}）</span>
+                >（{{ formatLeaveBalanceDeductDays(getLeaveBalanceDeductDays(item, 'annual')) }}）</span>
               </span>
             </div>
             <div class="leave-balance-type-row">
@@ -488,7 +493,7 @@
                 <span
                   v-if="getLeaveBalanceDeductDays(item, 'sick') > 0"
                   class="leave-balance-deduct-inline"
-                >（{{ formatLeaveBalanceDays(getLeaveBalanceDeductDays(item, 'sick')) }}）</span>
+                >（{{ formatLeaveBalanceDeductDays(getLeaveBalanceDeductDays(item, 'sick')) }}）</span>
               </span>
             </div>
           </div>
@@ -719,9 +724,13 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, QuestionFilled } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
-import { calculateLeaveTotalHours, isLeaveTimeRangeAllowed } from '@/utils/leaveHours'
+import {
+  calculateLeaveTotalHours,
+  calculateLeaveHoursForYear,
+  isLeaveTimeRangeAllowed
+} from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -731,19 +740,15 @@ import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
 const { t, locale } = i18n.global
 
-// Element Plus 组件语言（日期选择器等）跟随当前 i18n 语言
 const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 
-// 表单引用
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const pmenuStore = usePMenuStore()
 
-// 加载状态
 const loading = ref(true)
-// 暂存与送审按钮加载状态
 const saving = ref(false)
 const approving = ref(false)
 const workflowDrawerVisible = ref(false)
@@ -754,12 +759,11 @@ const workflowOverview = reactive({
   stepReviewList: []
 })
 
-/** 步骤是否被跳过：skip = 1 整步置灰且不展示用户明细 */
+/** skip=1 时整步置灰 */
 function isWorkflowStepSkipped (step) {
   return Number(step?.skip) === 1
 }
 
-/** 用户签核状态：归一化到 approve / underReview / unsigned 三态 */
 function normalizeReviewResult (result) {
   const v = String(result ?? '').trim().toLowerCase()
   if (v === 'approve' || v === 'approved') return 'approve'
@@ -767,13 +771,7 @@ function normalizeReviewResult (result) {
   return 'unsigned'
 }
 
-/**
- * 步骤头部状态（聚合自 stepReviewUser.result）：
- * - skip=1：skipped
- * - 全部 approve：done
- * - 任一 underReview：current
- * - 否则：pending
- */
+/** 步骤头状态：skip / done / current / pending */
 function workflowStepHeadState (step) {
   if (isWorkflowStepSkipped(step)) return 'skipped'
   const users = Array.isArray(step?.stepReviewUser) ? step.stepReviewUser : []
@@ -802,7 +800,6 @@ function workflowUserStatusLabel (user) {
   return t('formbusiness.leaveform.workflowStatusUnsigned')
 }
 
-/** 签核人显示姓名：优先 reviewUserName / ReviewUserName，兼容 userName / UserName */
 function workflowReviewUserName (u) {
   const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
   if (name == null || name === '') return ''
@@ -815,7 +812,6 @@ function workflowUserHasAgent (u) {
   return String(id) !== '0'
 }
 
-/** appointmentType / appointmentTypeCode 为 Actual 时不展示 appointmentTypeName */
 function workflowUserShowAppointmentTypeName (u) {
   if (!u?.appointmentTypeName) return false
   const code = String(
@@ -833,24 +829,13 @@ const resultState = reactive({
   titleKey: 'formbusiness.leaveform.approvalResultTitle',
   subTitleKey: 'formbusiness.leaveform.approvalResultSubTitle'
 })
-// 送审意见
 const approvalComment = ref('')
 
-// 签核日志列表
 const reviewRecordList = ref([])
-/** 当前步骤栏位权限：fieldKey -> { isVisible, isEditable } */
 const stepFieldPermissionMap = ref({})
-// 驳回步骤下拉选项
 const rejectStepDropOptions = ref([])
 
-/**
- * 按 stepId（无则降级为 stepName）对签核记录分组，保持原始顺序
- */
-/**
- * 按 stepId（无则降级 stepName）对排序后的记录分组：
- * 只合并【相邻】的相同步骤，非相邻的同步骤单独成组，
- * 避免 ReviewDateTime 排序后跨位置误合并。
- */
+/** 相邻相同 stepId 分组（避免排序后跨段误合并） */
 const groupedReviewRecords = computed(() => {
   const groups = []
   for (const record of reviewRecordList.value) {
@@ -870,9 +855,6 @@ const groupedReviewRecords = computed(() => {
   return groups
 })
 
-/**
- * 将分组数据展平为表格行，附带步骤列合并所需的 _rowSpan
- */
 const reviewLogTableRows = computed(() => {
   const rows = []
   for (const group of groupedReviewRecords.value) {
@@ -888,9 +870,7 @@ const reviewLogTableRows = computed(() => {
   return rows
 })
 
-/**
- * 步骤列（第 0 列）按分组合并单元格
- */
+/** 序号列按 stepId 分组合并 */
 function reviewLogSpanMethod ({ columnIndex, rowIndex }) {
   if (columnIndex === 0) {
     const row = reviewLogTableRows.value[rowIndex]
@@ -901,11 +881,9 @@ function reviewLogSpanMethod ({ columnIndex, rowIndex }) {
   }
 }
 
-// 驳回弹窗状态
 const rejectDialogVisible = ref(false)
 const rejectFormRef = ref(null)
 const rejecting = ref(false)
-/** 保存 / 送审 / 驳回期间，表单与审批记录区域统一 loading */
 const formActionLoading = computed(() => saving.value || approving.value || rejecting.value)
 const rejectForm = reactive({
   rejectStepId: '',
@@ -921,18 +899,12 @@ const rejectRules = {
   ]
 }
 
-// 附件上传状态与列表（相对路径）
 const uploading = ref(false)
 const uploadedAttachments = ref([])
 
-// 默认formtypeId（需求指定）
 const defaultFormTypeId = '1987217256446300160'
 const currentFormTypeId = ref('')
 
-// 表单模型（与Need.md一致）
-/**
- * 表单模型
- */
 const form = reactive({
   formId: '',
   formNo: '',
@@ -998,14 +970,11 @@ function parseAgentDisplayValue (displayValue) {
 
 const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo, form.agentUserName))
 
-// 下拉选项（来自接口）
 const leaveTypeOptions = ref([])
 const leaveBalances = ref([])
 const leaveBalanceLoading = ref(false)
-/** 面板选时间过程中累积的起止时间，避免选结束时间时丢失开始年份 */
 const leaveBalanceQueryRange = ref(['', ''])
 let leaveBalanceRequestId = 0
-// 校验规则
 const rules = {
   leaveType: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
@@ -1024,7 +993,6 @@ const rules = {
   ]
 }
 
-/** 将接口或输入值规范为天数（非有限数或负值按 0，保留两位小数） */
 function coerceDays (v) {
   if (v === undefined || v === null || v === '') return 0
   const n = Number(v)
@@ -1032,9 +1000,7 @@ function coerceDays (v) {
   return parseFloat(Math.max(0, n).toFixed(2))
 }
 
-/**
- * 计算请假总时数：仅 8-12 / 13-17 时段，午休不计，单日最多 8 小时
- */
+/** 8-12 / 13-17 计工时，午休不计 */
 function calculateDuration () {
   if (!form.leaveTimeRange || form.leaveTimeRange.length !== 2) {
     form.days = undefined
@@ -1050,12 +1016,9 @@ function calculateDuration () {
     return
   }
   const hours = calculateLeaveTotalHours(startTime, endTime)
-  form.days = hours > 0 ? coerceDays(hours) : undefined
+  form.days = coerceDays(hours)
 }
 
-/**
- * 校验时间范围有效性
- */
 function validateTimeRange (rule, value, callback) {
   if (!value || value.length !== 2) {
     callback()
@@ -1083,10 +1046,12 @@ function validateTimeRange (rule, value, callback) {
   callback()
 }
 
-/**
- * 校验请假时长必须大于0（任一字段变更时触发）
- */
 function validateDurationPositive (rule, value, callback) {
+  const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+  if (startTime && endTime && isLeaveTimeRangeAllowed(startTime, endTime)) {
+    callback()
+    return
+  }
   const total = coerceDays(form.days)
   if (total <= 0) {
     callback(new Error(t('formbusiness.leaveform.durationRequired')))
@@ -1095,9 +1060,6 @@ function validateDurationPositive (rule, value, callback) {
   callback()
 }
 
-/**
- * 校验代理人已选择
- */
 function validateAgentRequired (rule, value, callback) {
   if (!isStepFieldVisible('SelectAgent') || !isStepFieldEditable('SelectAgent')) {
     callback()
@@ -1110,17 +1072,10 @@ function validateAgentRequired (rule, value, callback) {
   callback()
 }
 
-/**
- * 栏位权限 fieldKey 归一化（兼容 "Attachment Table" 等含空格键名）
- */
 function normalizeFieldKey (fieldKey) {
   return String(fieldKey ?? '').replace(/\s+/g, '')
 }
 
-/**
- * 时间范围选择变更处理
- * 说明：在时间范围变化时重新计算时长
- */
 function handleTimeRangeChange () {
   calculateDuration()
   resetLeaveBalanceQueryRange(form.leaveTimeRange)
@@ -1130,7 +1085,6 @@ function handleTimeRangeChange () {
   })
 }
 
-/** 面板内选择开始/结束时间时触发余额查询（合并已选起止，避免跨年只传结束年） */
 function handleLeaveTimeCalendarChange (val) {
   mergeLeaveBalanceQueryRange(normalizeCalendarRangeValue(val))
   if (!getLeaveBalanceQueryRange().some(Boolean)) return
@@ -1172,7 +1126,6 @@ function getLeaveBalanceQueryRange () {
   ]
 }
 
-/** 根据请假时间范围解析需查询的年份：无起止时间取当年；仅选开始/结束时用对应年份；跨年时包含区间内所有年份 */
 function resolveLeaveBalanceYears (leaveTimeRange) {
   const [startTime, endTime] = Array.isArray(leaveTimeRange) ? leaveTimeRange : []
   const startDate = startTime ? new Date(toISO(startTime)) : null
@@ -1204,7 +1157,13 @@ function formatLeaveBalanceDays (val) {
 
 function formatLeaveBalanceNumber (val) {
   if (!Number.isFinite(val)) return '-'
-  return Number.isInteger(val) ? val : parseFloat(val.toFixed(2))
+  return Number(val).toFixed(2)
+}
+
+function formatLeaveBalanceDeductDays (val) {
+  const n = Number(val)
+  if (!Number.isFinite(n) || n <= 0) return ''
+  return `-${n.toFixed(2)}`
 }
 
 function getLeaveBalanceRawDays (item, type) {
@@ -1259,32 +1218,9 @@ function resolveSelectedLeaveBalanceType () {
 }
 
 function getSelectedLeaveHoursByYear (year) {
-  const targetYear = Number(year)
   const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
-  if (!targetYear || !startTime || !endTime) return 0
-  if (!isLeaveTimeRangeAllowed(startTime, endTime)) return 0
-  const start = new Date(toISO(startTime))
-  const end = new Date(toISO(endTime))
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) return 0
-  if (targetYear < start.getFullYear() || targetYear > end.getFullYear()) return 0
-
-  if (start.getFullYear() === end.getFullYear()) {
-    return coerceDays(form.days)
-  }
-
-  const segmentStart = targetYear === start.getFullYear()
-    ? start
-    : new Date(targetYear, 0, 1, 8, 0, 0)
-  const segmentEnd = targetYear === end.getFullYear()
-    ? end
-    : new Date(targetYear, 11, 31, 17, 0, 0)
-  if (segmentEnd <= segmentStart) return 0
-  return calculateLeaveTotalHours(formatDateTimeForLeaveBalance(segmentStart), formatDateTimeForLeaveBalance(segmentEnd))
-}
-
-function formatDateTimeForLeaveBalance (date) {
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  if (!startTime || !endTime) return 0
+  return calculateLeaveHoursForYear(year, startTime, endTime)
 }
 
 function normalizeLeaveBalanceItem (item) {
@@ -1295,16 +1231,22 @@ function normalizeLeaveBalanceItem (item) {
   }
 }
 
-/** 获取请假余额（GetLeaveBalances）；year 无起止时间取当年，跨年传 2026,2027 形式 */
 async function fetchLeaveBalances () {
   if (!isStepFieldVisible('LeaveBalance')) return
+
+  const formId = String(form.formId || '')
+  if (!formId) {
+    leaveBalances.value = []
+    return
+  }
 
   const years = resolveLeaveBalanceYears(getLeaveBalanceQueryRange())
   const requestId = ++leaveBalanceRequestId
   leaveBalanceLoading.value = true
   try {
     const formData = new window.FormData()
-    formData.append('year', years.join(','))
+    formData.append('formId', formId)
+    formData.append('years', years.join(','))
     const res = await post(GET_LEAVE_BALANCES_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       silentForbiddenError: false
@@ -1340,10 +1282,6 @@ async function fetchLeaveBalances () {
   }
 }
 
-/**
- * 下拉选择变更时触发字段校验
- * 入参：字段名；出参：无（用于清除红色提示）
- */
 function onSelectChange (field) {
   if (!formRef.value) return
   try {
@@ -1353,10 +1291,6 @@ function onSelectChange (field) {
   }
 }
 
-/**
- * 规范化日期时间字符串为"YYYY-MM-DD HH:mm:ss"
- * 入参：字符串/Date/时间戳；出参：符合value-format的字符串，非法返回空字符串
- */
 function normalizeDateTime (val) {
   if (!val) return ''
   let d
@@ -1399,22 +1333,10 @@ function normalizeDateTime (val) {
   return `${Y}-${M}-${D} ${H}:${m}:${S}`
 }
 
-/**
- * 将 "YYYY-MM-DD HH:mm:ss" 转为可被 Date 可靠解析的 ISO 字符串
- * 入参：字符串；出参：替换空格为'T'后的字符串
- */
 function toISO (str) {
   return typeof str === 'string' ? str.replace(' ', 'T') : str
 }
 
-/**
- * 初始化请假单
- * 入参：固定formtypeId；出参：绑定返回的data到表单
- * 错误处理：401/403不提示，其他错误提示加载失败
- */
-/**
- * 绑定接口返回数据到表单
- */
 function bindFormData (data) {
   Object.assign(form, {
     formTypeId: data.formTypeId || '',
@@ -1445,11 +1367,9 @@ function bindFormData (data) {
   if (Array.isArray(attachmentList)) {
     uploadedAttachments.value = attachmentList.filter(Boolean)
   }
-  // 绑定返回的formTypeId作为当前类型（若有）
   if (data && data.formTypeId) {
     currentFormTypeId.value = String(data.formTypeId)
   }
-  // 路由驱动：当存在formId时，将其同步到URL，保证刷新后按详情加载
   if (form.formId) {
     const nextQuery = {
       ...route.query,
@@ -1458,7 +1378,6 @@ function bindFormData (data) {
     }
     router.replace({ path: route.path, query: nextQuery })
   }
-  // 赋值后清理可能残留的校验错误提示
   if (formRef.value) {
     formRef.value.clearValidate(['leaveType'])
   }
@@ -1479,20 +1398,17 @@ function bindFormData (data) {
   fetchLeaveBalances()
 }
 
-/** 将接口 0/1 转为布尔；未配置时使用默认值 */
 function normalizePermissionFlag (val, defaultValue = true) {
   if (val === undefined || val === null || val === '') return defaultValue
   return Number(val) === 1
 }
 
-/** 绑定 stepFieldPermissionList 到栏位权限映射 */
 function applyStepFieldPermissions (list) {
   const map = {}
   if (Array.isArray(list)) {
     for (const item of list) {
       const fieldKey = item?.fieldKey ?? item?.FieldKey
       if (!fieldKey) continue
-      // 后端以 isDisabled（1=禁用）下发；可编辑 = 未禁用。兼容历史 isEditable 字段。
       const disabledRaw = item.isDisabled ?? item.IsDisabled
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
         ? Number(disabledRaw) !== 1
@@ -1506,14 +1422,12 @@ function applyStepFieldPermissions (list) {
   stepFieldPermissionMap.value = map
 }
 
-/** 栏位是否显示；未在权限列表中配置时默认显示 */
 function isStepFieldVisible (fieldKey) {
   const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
   return perm.isVisible
 }
 
-/** 栏位是否可编辑；未在权限列表中配置时默认可编辑 */
 function isStepFieldEditable (fieldKey) {
   const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
@@ -1524,9 +1438,6 @@ function isAnyStepFieldVisible (fieldKeys) {
   return fieldKeys.some(key => isStepFieldVisible(key))
 }
 
-/**
- * 规范化下拉选择值：接口返回为-1时视为未选择
- */
 function normalizeSelectCode (val) {
   if (val === undefined || val === null || val === '') return undefined
   if (val === -1 || String(val) === '-1') return undefined
@@ -1538,7 +1449,6 @@ function normalizeNullableText (val) {
   return String(val)
 }
 
-/** 请假时数：null/空 保持空白，有效数字保留两位小数 */
 function normalizeLeaveHoursValue (val) {
   if (val === undefined || val === null || val === '') return undefined
   const n = Number(val)
@@ -1626,13 +1536,27 @@ function isForbiddenCode(code) {
   return String(code) === '403'
 }
 
-function isUnauthorizedCode (code) {
+function isLeaveBalanceValidationFailedCode (code) {
   return String(code) === '402'
 }
 
-/** HTTP 400：request 封装将 status 写入 code，message 来自后端 */
+/** 暂存/送审右上角提示 */
+function showFormActionNotice (message, type = 'success') {
+  const text = typeof message === 'string' ? message.trim() : ''
+  ElNotification({
+    title: '',
+    message: text || (type === 'success' ? t('common.success') : t('common.operationFailed')),
+    type,
+    position: 'top-right'
+  })
+}
+
+function showPlainWarningMessage (message) {
+  showFormActionNotice(message || t('formbusiness.leaveform.leaveBalanceValidateFailed'), 'warning')
+}
+
 function isBadRequestResponse (res) {
-  return Number(res?.code) === 400 || String(res?.code) === '400'
+  return Number(res?.code) === 400
 }
 
 function showResult(status, titleKey, subTitleKey) {
@@ -1654,7 +1578,6 @@ function showBadRequestResult (message) {
   resultState.subTitleKey = ''
 }
 
-/** 与待审批列表页约定：弹窗关闭前通知 opener 刷新列表 */
 const FORM_PENDING_REFRESH_MSG = 'FORM_PENDING_REFRESH'
 
 function notifyOpenerRefreshFormPending () {
@@ -1666,15 +1589,9 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-/** 待签核列表页路由路径（非弹框场景关闭后回跳目标） */
 const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
-/** 业务模块路径标识，匹配 GetModuleList 返回项的 path 首段 */
 const FORMBUSINESS_MODULE_PATH = 'formbusiness'
 
-/**
- * 判断当前页面是否为弹窗（由 window.open 打开）
- * 仅以 opener 存在且未关闭为准；跨域时 opener.closed 仍可安全访问
- */
 function isPopupWindow () {
   try {
     return !!(window.opener && !window.opener.closed)
@@ -1683,13 +1600,6 @@ function isPopupWindow () {
   }
 }
 
-/**
- * 确保 pmenuStore 已选中表单业务模块。
- * leaveform_r 是独立路由（不挂 Layout），通过 token 进入时从未选过模块，
- * 直接 push 到 Layout 子路由会被 fetchMenuData 转去 /module-select。
- * 这里在跳转前补齐模块信息，避免被中转。
- * 出参：成功 true / 失败 false（失败由调用方走兜底）
- */
 async function ensureFormbusinessModuleSelected () {
   if (
     pmenuStore.currentModuleId &&
@@ -1733,11 +1643,6 @@ async function ensureFormbusinessModuleSelected () {
   }
 }
 
-/**
- * 关闭当前页：
- * - 弹框：通知父级刷新待审批列表后关闭窗口
- * - 非弹框：补齐模块信息后跳转到待审批列表页；模块信息缺失时回退到模块选择页
- */
 async function closeCurrentPage () {
   if (isPopupWindow()) {
     notifyOpenerRefreshFormPending()
@@ -1752,11 +1657,7 @@ async function closeCurrentPage () {
   }
 }
 
-/**
- * 初始化请假单（InitializeLevel）
- * 正常情况 data 为完整实体，直接 bindFormData，不再请求 GetLeaveForm。
- * 兼容旧版：若 data 仅为表单 ID（数字或字符串），则占位时间并拉取详情。
- */
+/** InitLeaveForm：返回完整实体则直接 bind，旧版仅返回 formId 时再拉详情 */
 async function initLeaveForm () {
   try {
     const formData = new window.FormData()
@@ -1782,7 +1683,6 @@ async function initLeaveForm () {
     if (raw == null) {
       return
     }
-    // InitializeLevel：data 为完整实体对象；旧版仅返回表单 ID（number / 数字字符串）
     if (typeof raw === 'object' && !Array.isArray(raw)) {
       bindFormData(raw)
       return
@@ -1802,10 +1702,6 @@ async function initLeaveForm () {
   }
 }
 
-/**
- * 获取请假单详情
- * 入参：表单ID（字符串），以FormData方式提交
- */
 async function getLeaveFormDetail (id) {
   try {
     const formData = new window.FormData()
@@ -1835,11 +1731,6 @@ async function getLeaveFormDetail (id) {
   }
 }
 
-/**
- * 获取请假类型下拉
- * 入参：无；出参：转换为{label,value}数组
- * 错误处理：401/403不提示，其他错误提示加载失败
- */
 async function getLeaveTypeOptions () {
   try {
     const res = await post(GET_LEAVEFORM_DROPDOWN_API, {})
@@ -1870,9 +1761,6 @@ async function getLeaveTypeOptions () {
   }
 }
 
-/**
- * 组装暂存请求参数（SaveLeaveForm）
- */
 function buildSaveLeaveFormPayload () {
   const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
   const leaveReason = (form.reason || '').trim()
@@ -1891,35 +1779,70 @@ function buildSaveLeaveFormPayload () {
   }
 }
 
-/**
- * 保存请假单：执行校验，通过后调用保存接口
- */
+async function saveLeaveFormRequest () {
+  return post(SAVE_LEAVEFORM_API, buildSaveLeaveFormPayload(), {
+    silentForbiddenError: false
+  })
+}
+
+async function validateLeaveBalanceBeforeSubmit (formId) {
+  const formData = new window.FormData()
+  formData.append('formId', formId)
+  const res = await post(VALIDATE_LEAVE_BALANCE_API, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    silentForbiddenError: false,
+    disableAutoLogout: true
+  })
+  if (isForbiddenCode(res?.code)) {
+    showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+    return false
+  }
+  if (isLeaveBalanceValidationFailedCode(res?.code)) {
+    showPlainWarningMessage(res?.message)
+    return false
+  }
+  if (isSuccessCode(res?.code) && res.data === true) {
+    return true
+  }
+  if (isBadRequestResponse(res)) {
+    showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+    return false
+  }
+  showFormActionNotice(res?.message || t('formbusiness.leaveform.leaveBalanceValidateFailed'), 'error')
+  return false
+}
+
+async function saveLeaveFormBeforeSubmit () {
+  const saveRes = await saveLeaveFormRequest()
+  if (isForbiddenCode(saveRes?.code)) {
+    showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+    return false
+  }
+  if (!saveRes || !isSuccessCode(saveRes.code)) {
+    if (isBadRequestResponse(saveRes)) {
+      showFormActionNotice(saveRes?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+    } else {
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
+    }
+    return false
+  }
+  return true
+}
+
 async function onSubmit () {
   saving.value = true
   formRef.value?.validate(async (valid) => {
     if (!valid) { saving.value = false; return }
-    const payload = buildSaveLeaveFormPayload()
     try {
-      const res = await post(SAVE_LEAVEFORM_API, payload, {
-        silentForbiddenError: false
-      })
+      const res = await saveLeaveFormRequest()
       if (isForbiddenCode(res?.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
-      } else if (res && res.code === 200) {
-        ElNotification({
-          title: '',
-          message: res.message,
-          type: 'success',
-          position: 'top-left'
-        })
+        showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+      } else if (res && isSuccessCode(res.code)) {
+        showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
       } else if (isBadRequestResponse(res)) {
-        showBadRequestResult(res?.message)
+        showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
       } else {
-        ElNotification({
-          title: '',
-          message: res?.message,
-          type: 'error'
-        })
+        showFormActionNotice(res?.message || t('messages.saveError'), 'error')
       }
     } catch {
       
@@ -1929,10 +1852,6 @@ async function onSubmit () {
   })
 }
 
-/**
- * 拉取完整签核流程：调用 GetFullReviewFlow，参数 formId（multipart）；签核人标识参数名为 ReviewUserId（原 UserId）
- * 数据结构：{ formId, rejectCount, stepReviewList: [{ stepId, stepName, skip, stepReviewUser: [{ reviewUserId, reviewUserName, result, ... }] }] }（兼容 stepReviewFlowList、userId、userName）
- */
 async function fetchFullReviewFlow () {
   const formId = String(form.formId || '')
   if (!formId) return
@@ -2229,9 +2148,6 @@ onUnmounted(() => {
   clearAgentSearchTimer()
 })
 
-/**
- * 拉取可驳回步骤下拉（PublicForm/GetRejectStepDrop）
- */
 async function fetchRejectStepDrop () {
   const formId = String(form.formId || '')
   if (!formId) return false
@@ -2264,9 +2180,6 @@ async function fetchRejectStepDrop () {
   }
 }
 
-/**
- * 打开驳回弹窗
- */
 async function onReject () {
   const formId = String(form.formId || '')
   if (!formId) {
@@ -2327,7 +2240,17 @@ async function confirmReject () {
   }
 }
 
-/** 是否为驳回类审批结果 */
+function isReviewWithdrawResult (row) {
+  const code = String(row?.reviewResult ?? '').trim().toLowerCase()
+  if (code === 'withdraw' || code === 'withdrawn') return true
+  const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
+  return name === 'withdraw' || name === 'withdrawn' || name === '撤回'
+}
+
+function reviewLogRowClassName ({ row }) {
+  return isReviewWithdrawResult(row) ? 'review-log-row--withdraw' : ''
+}
+
 function isReviewRejectResult (row) {
   const code = String(row?.reviewResult ?? '').trim().toLowerCase()
   if (code === 'reject' || code === 'rejected') return true
@@ -2335,46 +2258,39 @@ function isReviewRejectResult (row) {
   return name === '驳回' || name === 'reject' || name === 'rejected'
 }
 
-/**
- * 签核记录中的驳回目标步骤名（后端字段 RejectStepName / rejectStepName）
- */
 function getReviewRejectStepName (row) {
   const v = row?.rejectStepName ?? row?.RejectStepName
   if (v == null || v === '') return ''
   return String(v)
 }
 
-/**
- * 格式化签核时间显示
- */
 function formatReviewDateTime (dt) {
   if (!dt) return ''
   return normalizeDateTime(dt)
 }
 
-/**
- * 根据 reviewResult 枚举值（优先）或 reviewResultName 文字返回 el-tag type
- * Approve → success, Reject/Rejected → danger, Return → warning, 其余 → info
- */
 function getReviewResultTagType (row) {
   const code = String(row?.reviewResult ?? '').trim().toLowerCase()
   if (code === 'approve' || code === 'approved') return 'success'
   if (code === 'reject' || code === 'rejected') return 'danger'
   if (code === 'return') return 'warning'
-  if (code)
+  if (code === 'withdraw' || code === 'withdrawn') return 'info'
+  const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
+  if (name === '通过' || name === 'approve' || name === 'approved') return 'success'
+  if (name === '驳回' || name === 'reject' || name === 'rejected') return 'danger'
+  if (name === '退回' || name === 'return') return 'warning'
+  if (name === 'withdraw' || name === 'withdrawn' || name === '撤回') return 'info'
   return 'info'
 }
 
-/**
- * 送审请假单：确认弹窗期间不加载；用户点确定后再进入加载并完成送审结果展示
- */
+/** 送审：暂存 → 余额验证 → 送审 */
 async function onSubmitForApproval () {
   const valid = await new Promise((resolve) => {
     formRef.value?.validate((v) => resolve(!!v))
   })
   if (!valid) return
   if (shouldRequireAttachment() && uploadedAttachments.value.length === 0) {
-    ElMessage({ message: getAttachmentRequirementTip(), type: 'warning', plain: true, showClose: true })
+    showFormActionNotice(getAttachmentRequirementTip(), 'warning')
     return
   }
   try {
@@ -2393,11 +2309,17 @@ async function onSubmitForApproval () {
   }
   const formId = String(form.formId || '')
   if (!formId) {
-    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    showFormActionNotice(t('formbusiness.leaveform.workflowNeedFormId'), 'warning')
     return
   }
   approving.value = true
   try {
+    const saved = await saveLeaveFormBeforeSubmit()
+    if (!saved) return
+
+    const balanceValid = await validateLeaveBalanceBeforeSubmit(formId)
+    if (!balanceValid) return
+
     const res = await post(APPROVE_LEAVEFORM_API, {
       formId,
       rejectStepId: '0',
@@ -2407,32 +2329,23 @@ async function onSubmitForApproval () {
       silentAuthError: false,
       disableAutoLogout: true
     })
-    if (isUnauthorizedCode(res?.code)) {
-      ElMessage({
-        message: res?.message || t('systembasicmgmt.errorHandler.unauthorized'),
-        type: 'warning',
-        plain: true,
-        showClose: true
-      })
+    if (isLeaveBalanceValidationFailedCode(res?.code)) {
+      showPlainWarningMessage(res?.message)
       return
     }
     if (isForbiddenCode(res?.code)) {
-      showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+      showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
       return
     }
     if (res && isSuccessCode(res.code)) {
-      showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
+      showFormActionNotice(res?.message || t('formbusiness.leaveform.approvalResultSubTitle'), 'success')
       return
     }
     if (isBadRequestResponse(res)) {
-      showBadRequestResult(res?.message)
+      showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
       return
     }
-    ElNotification({
-      title: '',
-      message: res?.message || t('formbusiness.leaveform.submitFailed'),
-      type: 'error'
-    })
+    showFormActionNotice(res?.message || t('formbusiness.leaveform.submitFailed'), 'error')
   } catch {
 
   } finally {
@@ -2503,9 +2416,6 @@ function onNativeFileChange(event) {
   }
 }
 
-/**
- * 批量上传：将所有待上传文件合并为一个请求发送
- */
 async function batchUpload(filesToUpload) {
   uploading.value = true
   try {
@@ -2536,9 +2446,6 @@ async function batchUpload(filesToUpload) {
   }
 }
 
-/**
- * 格式化文件大小（KB）为可读字符串
- */
 function formatFileSize(sizeKB) {
   if (!sizeKB && sizeKB !== 0) return '-'
   const size = Number(sizeKB)
@@ -2546,7 +2453,6 @@ function formatFileSize(sizeKB) {
   return `${(size / 1024).toFixed(2)} MB`
 }
 
-/** FormAttachment 字段优先，兼容旧 FormFile */
 function getAttachmentName (row) {
   return row?.attachmentName ?? row?.fileName ?? ''
 }
@@ -2559,15 +2465,11 @@ function getAttachmentId (row) {
   return row?.attachmentId ?? row?.fileId ?? ''
 }
 
-/** 附件大小（KB），新字段 attachmentSize，旧 fileSize */
 function getAttachmentSizeKb (row) {
   const v = row?.attachmentSize ?? row?.fileSize
   return v
 }
 
-/**
- * 下载文件：使用 resolveFileUrl 拼接 VITE_FILE_BROWSER_BASE_URL，触发浏览器下载
- */
 function handleDownload(file) {
   const url = resolveFileUrl(getAttachmentPath(file))
   if (!url) return
@@ -2580,9 +2482,6 @@ function handleDownload(file) {
   document.body.removeChild(a)
 }
 
-/**
- * 删除附件：调用 DELETE_FILE_API（后端 FormAttachment：attachmentId / attachmentPath）
- */
 async function removeAttachment (file, idx) {
   try {
     const formData = new window.FormData()
@@ -2604,10 +2503,6 @@ async function removeAttachment (file, idx) {
   }
 }
 
-/**
- * URL ?lang= 仅作为首次初始值消费一次，应用后从 URL 移除；
- * 之后语言以 localStorage 为准（刷新后按主界面语言显示）。
- */
 async function syncRouteLanguage () {
   const lang = persistRouteLanguage(
     normalizeRouteLang(route.query.lang ?? route.query.Lang ?? getLocationQueryParam('lang', 'Lang'))
@@ -2627,19 +2522,13 @@ async function syncRouteLanguage () {
   }
 }
 
-/**
- * 通过 token 换取表单信息并同步用户身份到 userStore
- * 后端同时写入 Cookie JWT + 返回用户信息；前端需将用户信息同步到 Pinia，
- * 否则 userStore.isLoggedIn = false，后续路由守卫仍会跳转登录页。
- * 出参：成功返回 formId 字符串，失败返回 null
- */
+/** token 换会话并同步 userStore（仅设 loginNo，不设 userId） */
 async function resolveTokenFormId (tokenValue) {
   try {
     const formData = new window.FormData()
     formData.append('tokenValue', String(tokenValue))
     const res = await post(GET_FORM_NOTIFICATION_TOKEN_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      // token 本身尚未换取会话，禁止 401/403 触发全局硬跳转登录页
       disableAutoLogout: true,
       silentAuthError: false,
       silentForbiddenError: false
@@ -2660,11 +2549,6 @@ async function resolveTokenFormId (tokenValue) {
     const formId = data.formId ? String(data.formId) : null
     if (!formId) return null
 
-    // 将后端返回的用户信息写入 userStore，令 isLoggedIn = true，
-    // 否则路由守卫 probeSession() 检测不到登录态，跳转其他页面仍会被打回登录页。
-    // 注意：仅设 loginNo（工号），不设 userId（内部数字 ID）——
-    //   userId 将在后续 probeSession() 调用 /me 时由服务端返回的真实值覆盖；
-    //   若此处误将 userNo 赋给 userId，fetchFullReviewFlow 等接口会携带错误的 ID 参数。
     userStore.setUserInfo({
       userId: '',
       loginNo: data.userNo || '',
@@ -2687,14 +2571,10 @@ onMounted(async () => {
 
     currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
 
-    // token 场景：必须先换取身份（后端写入 Cookie JWT），再发其他任何需要鉴权的请求
-    // 若先调 getLeaveTypeOptions() 等接口，此时没有 Cookie 会收到 401，
-    // request.js 拦截器会直接 hardRedirectToLogin()，完全绕过 Vue Router。
     const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
     if (routeToken) {
       const tokenFormId = await resolveTokenFormId(String(routeToken))
       if (tokenFormId) {
-        // Cookie 已由后端写入，后续请求均可正常鉴权
         await Promise.all([getLeaveTypeOptions()])
         form.formId = tokenFormId
         await getLeaveFormDetail(tokenFormId)
@@ -2702,14 +2582,12 @@ onMounted(async () => {
       return
     }
 
-    // 普通场景：已有 session，直接并行加载
     await Promise.all([getLeaveTypeOptions()])
     const routeFormId = route.query.formId || route.params?.formId
     if (routeFormId) {
       form.formId = String(routeFormId)
       await getLeaveFormDetail(form.formId)
     } else {
-      // 新建场景：InitializeLevel 返回完整实体则只调 init；旧接口仅返回 ID 时内部会再调 GetLeaveForm
       await initLeaveForm()
     }
   } catch (error) {
@@ -2722,12 +2600,10 @@ onMounted(async () => {
 
 <style scoped>
 
-/* 基本信息行：行内 form-item 取消默认底部间距，由行间距统一控制，避免隐藏栏位后留白 */
 .basic-info-row .el-form-item {
   margin-bottom: 0;
 }
 
-/* 送审意见行：收紧上下间距 */
 .approval-comment-row {
   margin-top: -6px;
 }
@@ -2736,16 +2612,14 @@ onMounted(async () => {
   margin-bottom: 6px;
 }
 
-/* 仅在两行同时显示时，为第二行补充顶部间距；隐藏时不会产生多余空白 */
 .basic-info-row + .basic-info-row {
   margin-top: 18px;
 }
 
 
 
-/* 分割线上下间距统一控制 */
 .section-divider {
-  margin: 16px 0; /* 上下相同 => 分割线与上下两行视觉距离一致 */
+  margin: 16px 0;
 }
 
 .leave-form-page {
@@ -2777,7 +2651,6 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* 400：主文案为 title，居中；下方为说明段落 */
 .result-content--bad-request :deep(.el-result__title) {
   max-width: 560px;
   margin-left: auto;
@@ -2839,7 +2712,6 @@ onMounted(async () => {
   border-color: #a8abb2;
 }
 
-/* 表单项当标签换行时居中对齐，避免两行时样式错乱 */
 .leave-form :deep(.el-form-item) {
   align-items: center;
 }
@@ -3144,12 +3016,10 @@ onMounted(async () => {
   color: var(--el-color-info);
 }
 
-/* 审批记录独立卡片 */
 .review-log-card {
   margin-top: 10px;
 }
 
-/* ===== 审批记录区域 ===== */
 .review-log-section {
   padding: 0 20px 20px;
 }
@@ -3167,6 +3037,29 @@ onMounted(async () => {
 
 .review-log-table :deep(.el-table__body .el-table__cell) {
   vertical-align: top;
+}
+
+.review-log-table :deep(.el-table__body .review-log-index-col) {
+  vertical-align: middle;
+}
+
+.review-log-table :deep(.review-log-row--withdraw > td.el-table__cell) {
+  background-color: var(--el-fill-color-lighter);
+  color: var(--el-text-color-secondary);
+}
+
+.review-log-table :deep(.review-log-row--withdraw .review-log-step-cell),
+.review-log-table :deep(.review-log-row--withdraw .review-log-user-cell),
+.review-log-table :deep(.review-log-row--withdraw .review-log-comment-cell),
+.review-log-table :deep(.review-log-row--withdraw .review-log-original-cell),
+.review-log-table :deep(.review-log-row--withdraw .review-log-appointment-cell) {
+  color: var(--el-text-color-secondary);
+}
+
+.review-log-tag--withdraw {
+  --el-tag-bg-color: var(--el-fill-color);
+  --el-tag-border-color: var(--el-border-color-lighter);
+  --el-tag-text-color: var(--el-text-color-secondary);
 }
 
 .review-log-step-cell {
@@ -3445,18 +3338,15 @@ onMounted(async () => {
   margin-top: 12px;
 }
 
-/* ===== 驳回弹窗（modal-penetrable：半透明遮罩） ===== */
 .modal-penetrable :deep(.el-overlay) {
   background-color: rgba(0, 0, 0, 0.25);
 }
 
-/* 步骤下拉：固定较窄宽度，避免在弹窗里被横向拉满 */
 .reject-step-select {
   width: 260px;
   max-width: 100%;
 }
 
-/* 意见输入框：占满表单可用宽度 */
 .reject-reason-input {
   width: 100%;
 }

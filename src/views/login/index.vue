@@ -221,8 +221,8 @@ const handleLogin = () => {
               router.replace('/module-select')
             }
             loading.value = false
-          } else if (res.code === 400) {
-            // 账号不存在
+          } else if (res.code === 406) {
+            // 账号不存在（UserNotFound）
             ElMessage({
               message: businessMsg,
               type: 'error',

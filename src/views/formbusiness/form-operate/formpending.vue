@@ -85,7 +85,7 @@
           </el-table-column>
           <el-table-column :label="$t('formbusiness.formpending.applicantDate')" align="center" min-width="170">
             <template #default="{ row }">
-              {{ formatApplicantDate(row.applicantDate ?? row.ApplicantDate) }}
+              {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.formpending.formStatus')" align="center" min-width="160">
@@ -257,6 +257,14 @@ const formatApplicantDate = (val) => {
   const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
+
+const resolveApplicantDate = (row) =>
+  row?.applicantDate ??
+  row?.ApplicantDate ??
+  row?.applyDate ??
+  row?.ApplyDate ??
+  row?.applicantTime ??
+  row?.ApplicantTime
 
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')

@@ -21,6 +21,9 @@ export const GET_LEAVEFORM_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetLeave
 // 获取请假余额信息API
 export const GET_LEAVE_BALANCES_API = 'FormBusiness/Forms/LeaveForm/GetLeaveBalances'
 
+// 验证请假余额信息API
+export const VALIDATE_LEAVE_BALANCE_API = 'FormBusiness/Forms/LeaveForm/ValidateLeaveBalance'
+
 // 获取部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/Forms/LeaveForm/GetDepartmentDrop'
 

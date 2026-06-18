@@ -111,3 +111,34 @@ export function calculateLeaveTotalHours (startStr, endStr) {
 
   return parseFloat(total.toFixed(2))
 }
+
+/**
+ * 指定年份内的请假时数（小时）
+ * 起止不在允许时段内、或该年不在请假区间内时返回 0
+ */
+export function calculateLeaveHoursForYear (year, startStr, endStr) {
+  const targetYear = Number(year)
+  const start = parseLeaveDateTime(startStr)
+  const end = parseLeaveDateTime(endStr)
+  if (!targetYear || !start || !end || end <= start) return 0
+  if (!isLeaveTimeRangeAllowed(startStr, endStr)) return 0
+  if (targetYear < start.getFullYear() || targetYear > end.getFullYear()) return 0
+
+  if (start.getFullYear() === end.getFullYear()) {
+    return calculateLeaveTotalHours(startStr, endStr)
+  }
+
+  const segmentStart = targetYear === start.getFullYear()
+    ? start
+    : atTime(new Date(targetYear, 0, 1), 8, 0, 0)
+  const segmentEnd = targetYear === end.getFullYear()
+    ? end
+    : atTime(new Date(targetYear, 11, 31), 17, 0, 0)
+  if (segmentEnd <= segmentStart) return 0
+
+  const pad = (n) => String(n).padStart(2, '0')
+  const format = (date) =>
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+
+  return calculateLeaveTotalHours(format(segmentStart), format(segmentEnd))
+}

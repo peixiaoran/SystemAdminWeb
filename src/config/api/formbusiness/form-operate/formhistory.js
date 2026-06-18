@@ -14,3 +14,5 @@ export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/FormHistory
 export const GET_APPLY_HISTORY_PAGE_API = 'FormBusiness/FormOperate/FormHistory/GetApplyHistoryPage'
 
 export const GET_REVIEW_HISTORY_PAGE_API = 'FormBusiness/FormOperate/FormHistory/GetReviewHistoryPage'
+
+export const WITHDRAW_FORM_API = 'FormBusiness/FormOperate/FormHistory/WithdrawForm'

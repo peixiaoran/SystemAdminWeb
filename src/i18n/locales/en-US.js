@@ -627,7 +627,12 @@ export default {
       getFormTypeFailed: 'Failed to get form type',
       getApplyHistoryFailed: 'Failed to get apply history',
       getReviewHistoryFailed: 'Failed to get review history',
-      getFailed: 'Failed to get form history'
+      getFailed: 'Failed to get form history',
+      operation: 'Operation',
+      withdraw: 'Withdraw',
+      withdrawConfirm: 'Are you sure you want to withdraw this form?',
+      withdrawSuccess: 'Withdrawn successfully',
+      withdrawFailed: 'Failed to withdraw form'
     },
 
     // Leave Form Page Specific
@@ -657,6 +662,7 @@ export default {
       sickRemainingDays: 'Sick Leave',
       leaveBalanceHoursUnit: ' hrs',
       getLeaveBalanceFailed: 'Failed to load leave balance',
+      leaveBalanceValidateFailed: 'Leave balance validation failed',
       days: 'Leave Days',
       leaveHours: 'Leave Hours',
       leaveHandoverUserId: 'Handover User',
@@ -714,7 +720,7 @@ export default {
       attachmentTipNursing: 'Nursing leave requires medical or hospitalization proof of the cared person',
       attachmentTipBereavement: 'Bereavement leave requires an obituary, death certificate, or proof of relationship',
       viewFullWorkflow: 'View full workflow',
-      viewFullWorkflowHint: 'Click icon to view full workflow',
+      viewFullWorkflowHint: 'Click to view full workflow',
       workflowDrawerTitle: 'Approval workflow',
       workflowStatusSigning: 'Pending approval',
       workflowStatusApproved: 'Approved',

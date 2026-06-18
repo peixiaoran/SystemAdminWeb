@@ -83,7 +83,7 @@
           </el-table-column>
           <el-table-column :label="$t('formbusiness.formhistory.applicantDate')" align="center" min-width="170">
             <template #default="{ row }">
-              {{ formatApplicantDate(row.applicantDate ?? row.ApplicantDate) }}
+              {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.formhistory.formStatus')" align="center" min-width="160">
@@ -95,6 +95,24 @@
           </el-table-column>
           <el-table-column prop="applyUserName" :label="$t('formbusiness.formhistory.applyUserName')" align="center" min-width="140" show-overflow-tooltip />
           <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.formhistory.applyUserDeptName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column
+            :label="$t('formbusiness.formhistory.operation')"
+            align="center"
+            min-width="100"
+            fixed="right"
+          >
+            <template #default="{ row }">
+              <el-link
+                v-if="canShowWithdraw(row)"
+                type="warning"
+                underline="never"
+                @click="handleWithdrawForm(row)"
+              >
+                {{ $t('formbusiness.formhistory.withdraw') }}
+              </el-link>
+              <span v-else>—</span>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -116,13 +134,14 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
   GET_APPLY_HISTORY_PAGE_API,
-  GET_REVIEW_HISTORY_PAGE_API
+  GET_REVIEW_HISTORY_PAGE_API,
+  WITHDRAW_FORM_API
 } from '@/config/api/formbusiness/form-operate/formhistory.js'
 import { useI18n } from 'vue-i18n'
 
@@ -155,6 +174,15 @@ const formatApplicantDate = (val) => {
   const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
+
+/** 申请日期字段兼容（与 pending 列表、请假单详情一致） */
+const resolveApplicantDate = (row) =>
+  row?.applicantDate ??
+  row?.ApplicantDate ??
+  row?.applyDate ??
+  row?.ApplyDate ??
+  row?.applicantTime ??
+  row?.ApplicantTime
 
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
@@ -395,6 +423,55 @@ const openFormPage = (row) => {
   openPopupWindow(resolved.href)
 }
 
+const parseTruthyFlag = (value) => {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value === 1
+  if (typeof value === 'string') return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
+  return false
+}
+
+const isSuccessCode = (code) => String(code) === '200'
+
+/** 列表 IsWithdraw / isWithdraw 字段 */
+const resolveIsWithdraw = (row) => row?.isWithdraw ?? row?.IsWithdraw
+
+const canShowWithdraw = (row) => {
+  if (!row?.formId) return false
+  return parseTruthyFlag(resolveIsWithdraw(row))
+}
+
+const handleWithdrawForm = async (row) => {
+  if (!row?.formId) return
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.formhistory.withdrawConfirm'),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  loading.value = true
+  try {
+    const res = await post(
+      WITHDRAW_FORM_API,
+      buildFormData({ formId: String(row.formId) }),
+      FORM_DATA_OPTIONS
+    )
+    if (isSuccessCode(res?.code)) {
+      const successMsg = res?.message || res?.data || t('formbusiness.formhistory.withdrawSuccess')
+      showMessage(typeof successMsg === 'string' ? successMsg : t('formbusiness.formhistory.withdrawSuccess'), 'success')
+      await getFormHistoryList()
+    } else {
+      showMessage(res?.message || t('formbusiness.formhistory.withdrawFailed'))
+    }
+  } catch {
+    showMessage(t('formbusiness.formhistory.withdrawFailed'))
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(async () => {
   await getFormGroupOptions()
   await getFormTypeOptions()
@@ -410,7 +487,7 @@ onMounted(async () => {
 }
 
 .conventional-table :deep(.el-table) {
-  min-width: 980px;
+  min-width: 1250px;
 }
 
 .history-filter-select {
