@@ -524,19 +524,16 @@ const createEmptyDeptUserUpsert = () => ({ departmentId: '', positionId: '' })
 const createEmptyUserUpsert = () => ({ userId: '', departmentId: '' })
 const createEmptyCustomUpsert = () => ({ guidance: '', logicalExplanation: '' })
 
-// 响应式数据
 const loading = ref(false)
 const workflowStepList = ref([])
 const formGroupOptions = ref([])
 const formTypeOptions = ref([])
 
-// 搜索表单
 const searchForm = reactive({
   formGroupId: '',
   formTypeId: ''
 })
 
-// 新增 / 编辑 步骤弹窗
 const addStepDialogVisible = ref(false)
 const addStepDialogLoading = ref(false)
 const addStepSubmitting = ref(false)
@@ -549,7 +546,6 @@ const reviewModeOptions = ref([])
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
-// User 区块：用户搜索（不算入 item）与表格
 const userSearchForm = reactive({ userNo: '', userName: '' })
 const userTableRef = ref(null)
 const userTableData = ref([])
@@ -558,7 +554,6 @@ const userTableLoading = ref(false)
 const userPageIndex = ref(1)
 const userPageSize = ref(10)
 const isAdjustingUserSelection = ref(false)
-// 编辑栏位权限：独立弹窗的列表、加载、提交状态
 const fieldPermissionDialogVisible = ref(false)
 const stepFieldPermissionList = ref([])
 const stepFieldPermissionLoading = ref(false)
@@ -656,10 +651,7 @@ const resetAddStepDialogState = () => {
   userPositionOptions.value = []
   departmentTreeOptions.value = []
 }
-  
-/**
- * 获取表单组别下拉选项
- */
+
 const getFormGroupOptions = async () => {
   try {
     const response = await post(GET_FORMGROUP_DROPDOWN_API, {})
@@ -677,9 +669,7 @@ const getFormGroupOptions = async () => {
   }
 }
 
-/**
- * 获取表单类别下拉选项；不论是否有数据，最终都会调用 getWorkflowStepList 走一遍 loading 流程
- */
+// 不论是否有数据，最终都会调用 getWorkflowStepList 走一遍 loading 流程
 const getFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) {
     formTypeOptions.value = []
@@ -714,9 +704,6 @@ const getFormTypeOptions = async (formGroupId) => {
 // 最小 loading 显示时间，避免接口太快导致动画一闪而过
 const MIN_LOADING_DURATION = 300
 
-/**
- * 获取流程步骤列表；formTypeId 为空时也走一遍 loading 流程并清空表格
- */
 const getWorkflowStepList = async () => {
   loading.value = true
   const loadingStart = Date.now()
@@ -749,23 +736,14 @@ const getWorkflowStepList = async () => {
   }
 }
 
-/**
- * 表单分组改变：立即联动表单类别下拉，由 getWorkflowStepList 内部触发表格加载动画
- */
 const handleFormGroupChange = (val) => {
   getFormTypeOptions(val)
 }
 
-/**
- * 表单类别改变：直接刷新表格
- */
 const handleFormTypeChange = () => {
   getWorkflowStepList()
 }
 
-/**
- * 打开编辑栏位权限弹窗：使用行内 formTypeId（不显示该列）+ stepId 拉取权限
- */
 const handleEditFieldPermission = async (step) => {
   fieldPermissionStepId.value = step.stepId
   fieldPermissionFormTypeId.value = step.formTypeId || searchForm.formTypeId || ''
@@ -774,9 +752,6 @@ const handleEditFieldPermission = async (step) => {
   await loadStepFieldPermissions(fieldPermissionFormTypeId.value, fieldPermissionStepId.value)
 }
 
-/**
- * 加载步骤栏位权限列表（GetStepFieldPermissionList，参数 formTypeId、stepId）
- */
 const loadStepFieldPermissions = async (formTypeId, stepId) => {
   if (!formTypeId || !stepId) {
     stepFieldPermissionList.value = []
@@ -795,8 +770,7 @@ const loadStepFieldPermissions = async (formTypeId, stepId) => {
         fieldId: item.fieldId,
         fieldName: item.fieldName,
         isVisible: Number(item.isVisible) === 1 ? 1 : 0,
-        // 不显示时强制禁用
-        isDisabled: Number(item.isVisible) === 1 ? (Number(item.isDisabled) === 1 ? 1 : 0) : 1
+        isDisabled: Number(item.isVisible) === 1 ? (Number(item.isDisabled) === 1 ? 1 : 0) : 1 // 不显示时强制禁用
       }))
     } else {
       stepFieldPermissionList.value = []
@@ -810,10 +784,7 @@ const loadStepFieldPermissions = async (formTypeId, stepId) => {
   }
 }
 
-/**
- * 全选 / 全不选：将所有行的指定字段（isVisible / isDisabled）统一设为 value
- * 不显示（isVisible=0）时强制禁用（isDisabled=1）
- */
+// 全选/全不选；关闭显示时强制禁用
 const toggleAllPermission = (field, value) => {
   stepFieldPermissionList.value.forEach((row) => {
     row[field] = value
@@ -821,14 +792,10 @@ const toggleAllPermission = (field, value) => {
   })
 }
 
-/** 显示开关变更：关闭显示时强制禁用 */
 const onFieldVisibleChange = (row) => {
   if (row.isVisible === 0) row.isDisabled = 1
 }
 
-/**
- * 提交步骤栏位权限（UpdateStepFieldPermission，参数为权限对象数组）
- */
 const submitFieldPermission = async () => {
   if (!stepFieldPermissionList.value.length) {
     fieldPermissionDialogVisible.value = false
@@ -856,18 +823,12 @@ const submitFieldPermission = async () => {
   }
 }
 
-/**
- * 关闭栏位权限弹窗：清空列表
- */
 const handleFieldPermissionDialogClose = () => {
   stepFieldPermissionList.value = []
   fieldPermissionStepId.value = ''
   fieldPermissionFormTypeId.value = ''
 }
 
-/**
- * 编辑步骤：打开弹窗并通过 GetWorkflowStepEntity 拉取实体回填
- */
 const handleEditStep = async (step) => {
   isEditMode.value = true
   currentStepId.value = step.stepId
@@ -943,9 +904,6 @@ const handleEditStep = async (step) => {
   }
 }
 
-/**
- * 删除流程步骤（DeleteWorkflowStep，请求参数 FromForm string stepId）
- */
 const deleteStepLoading = ref(false)
 const handleDeleteStep = async (step) => {
   try {
@@ -977,9 +935,6 @@ const handleDeleteStep = async (step) => {
   }
 }
 
-/**
- * 根据 Assignment 字段返回 Tag 类型：Org=primary, DeptUser=warning, User=danger, Custom=success
- */
 const getAssignmentTagType = (assignment) => {
   const map = {
     Org: 'primary',
@@ -990,9 +945,7 @@ const getAssignmentTagType = (assignment) => {
   return map[assignment] ?? 'info'
 }
 
-/**
- * Assignment 变更时：只显示当前选项对应区块，其余隐藏并清空
- */
+// Assignment 变更时只保留当前区块，其余清空
 const onAssignmentChange = (assignmentCode) => {
   resetStepAssignmentUpserts()
   if (assignmentCode === 'Org') {
@@ -1007,17 +960,12 @@ const onAssignmentChange = (assignmentCode) => {
   }
 }
 
-/**
- * 部门树节点过滤（el-tree-select filterable）
- */
 const filterDeptTreeNode = (value, data) => {
   if (!value || !data || !data.departmentName) return true
   return data.departmentName.includes(value)
 }
 
-/**
- * 加载部门级别下拉（stepOrgUpsert.deptLeaveId），有数据时默认选中第一项（联动 Assignment=Org）
- */
+// Assignment=Org 时默认选中第一项
 const loadDepartmentLevelOptions = async () => {
   try {
     const response = await post(GET_DEPARTMENT_LEVEL_DROPDOWN_API, {})
@@ -1034,9 +982,7 @@ const loadDepartmentLevelOptions = async () => {
   }
 }
 
-/**
- * 加载职级下拉（Org/DeptUser 共用），有数据时按当前 Assignment 默认选中第一项
- */
+// 职级下拉 Org/DeptUser 共用，按当前 Assignment 默认选中第一项
 const loadUserPositionOptions = async () => {
   try {
     const response = await post(GET_USER_POSITION_DROPDOWN_API, {})
@@ -1061,9 +1007,7 @@ const loadUserPositionOptions = async () => {
   }
 }
 
-/**
- * 加载部门树下拉（stepDeptUserUpsert.departmentId），接口 GetDepartmentDropDown，有数据时默认选中第一项（联动 Assignment=DeptUser）
- */
+// 部门树下拉，DeptUser/User 时默认选中第一个可用节点
 const loadDepartmentTreeOptions = async () => {
   try {
     const res = await post(GET_DEPARTMENT_DROPDOWN_API, {})
@@ -1098,9 +1042,6 @@ const loadDepartmentTreeOptions = async () => {
   }
 }
 
-/**
- * 加载用户分页列表（GetUserInfoPage），仅用于 User 区块表格
- */
 const loadUserInfoPage = async () => {
   userTableLoading.value = true
   try {
@@ -1127,17 +1068,12 @@ const loadUserInfoPage = async () => {
   }
 }
 
-/**
- * User 区块：查询用户
- */
 const handleSearchUser = () => {
   userPageIndex.value = 1
   loadUserInfoPage()
 }
 
-/**
- * User 区块：监听部门选择变化，自动触发查询
- */
+// 部门变化时自动查询用户
 watch(
   () => addStepForm.stepUserUpsert.departmentId,
   (val) => {
@@ -1148,9 +1084,7 @@ watch(
   }
 )
 
-/**
- * User 区块：表格单选（首列勾选），只保留最后勾选的一行，写入 stepUserUpsert.userId
- */
+// 表格单选：只保留最后勾选的一行
 function handleUserTableSelectionChange(selection) {
   if (isAdjustingUserSelection.value) return
   if (selection.length === 0) {
@@ -1167,9 +1101,6 @@ function handleUserTableSelectionChange(selection) {
   })
 }
 
-/**
- * User 区块：分页变更
- */
 const handleUserPageChange = (page) => {
   userPageIndex.value = page
   loadUserInfoPage()
@@ -1181,9 +1112,6 @@ const handleUserSizeChange = (size) => {
   loadUserInfoPage()
 }
 
-/**
- * 打开新增步骤弹窗
- */
 const openAddStepDialog = async () => {
   isEditMode.value = false
   currentStepId.value = ''
@@ -1220,9 +1148,6 @@ const openAddStepDialog = async () => {
   }
 }
 
-/**
- * 加载步骤指派规则下拉
- */
 const loadAssignmentOptions = async () => {
   try {
     const response = await post(GET_ASSIGNMENT_DROPDOWN_API, {})
@@ -1236,9 +1161,6 @@ const loadAssignmentOptions = async () => {
   }
 }
 
-/**
- * 加载审核方式下拉
- */
 const loadReviewModeOptions = async () => {
   try {
     const response = await post(GET_REVIEW_MODE_DROPDOWN_API, {})
@@ -1256,9 +1178,6 @@ const loadReviewModeOptions = async () => {
   }
 }
 
-/**
- * 弹窗内表单组别变更时加载表单类别
- */
 const onAddStepFormGroupChange = async (formGroupId) => {
   addStepForm.formTypeId = ''
   dialogFormTypeOptions.value = []
@@ -1267,9 +1186,7 @@ const onAddStepFormGroupChange = async (formGroupId) => {
   }
 }
 
-/**
- * 仅加载弹窗用的表单类别下拉（不影响页面筛选）
- */
+// 仅加载弹窗用的表单类别下拉，不影响页面筛选
 const loadDialogFormTypeOptions = async (formGroupId) => {
   if (!formGroupId) return
   addStepDialogLoading.value = true
@@ -1282,17 +1199,11 @@ const loadDialogFormTypeOptions = async (formGroupId) => {
   }
 }
 
-/**
- * 新增步骤弹窗关闭
- */
 const handleAddStepDialogClose = () => {
   addStepFormRef.value?.resetFields()
   dialogFormTypeOptions.value = []
 }
 
-/**
- * 提交新增步骤
- */
 const submitAddStep = async () => {
   if (!addStepFormRef.value) return
   await addStepFormRef.value.validate(async (valid) => {
@@ -1340,7 +1251,6 @@ const submitAddStep = async () => {
   })
 }
 
-// 组件挂载时获取数据
 onMounted(async () => {
   await getFormGroupOptions()
 })

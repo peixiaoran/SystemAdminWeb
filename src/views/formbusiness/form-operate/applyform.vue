@@ -107,11 +107,9 @@ import {
 const { t } = useI18n()
 const router = useRouter()
 
-// Constants
 const FILTER_DEBOUNCE_MS = 300
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
-// State
 const loading = ref(false)
 const debouncePending = ref(false)
 const formTypeList = ref([])
@@ -128,12 +126,10 @@ const pagination = reactive({
   totalCount: 0
 })
 
-// Utility functions
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-// Data fetching
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
@@ -175,7 +171,6 @@ const getFormTypeList = async () => {
   }
 }
 
-// Debounce scheduling
 let debounceTimer = null
 
 const scheduleSearch = async () => {
@@ -193,7 +188,6 @@ const scheduleSearch = async () => {
   }, FILTER_DEBOUNCE_MS)
 }
 
-// Event handlers
 const handleFormGroupChange = () => {
   if (!searchForm.formGroupId) {
     searchForm.formGroupId = formGroupOptions.value[0]?.formGroupId ?? ''
@@ -212,7 +206,6 @@ const handleSizeChange = () => {
   getFormTypeList()
 }
 
-// Path validation and window management
 const normalizePath = (p) => {
   if (!p || typeof p !== 'string') return ''
   const path = p.trim().replace(/^#/, '')
@@ -245,7 +238,6 @@ const openPopupWindow = (href, namePrefix = 'form_popup') => {
   } catch { /* resizeTo not available in all browsers */ }
 }
 
-// Form operations
 const openApproval = (row) => {
   if (!row?.reviewPath) return
   const path = normalizePath(row.reviewPath)

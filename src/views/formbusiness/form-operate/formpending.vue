@@ -99,7 +99,7 @@
           <el-table-column
             :label="$t('formbusiness.formpending.pendingReviewers')"
             align="center"
-            min-width="100"
+            min-width="180"
           >
             <template #default="{ row }">
               <el-link
@@ -277,7 +277,7 @@ const formPendingList = ref([])
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
-const listMode = ref('formPending')
+const listMode = ref('pendingSubmit')
 
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,

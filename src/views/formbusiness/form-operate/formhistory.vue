@@ -97,7 +97,7 @@
           <el-table-column
             :label="$t('formbusiness.formpending.pendingReviewers')"
             align="center"
-            min-width="100"
+            min-width="180"
           >
             <template #default="{ row }">
               <el-link
@@ -301,7 +301,6 @@ const pagination = reactive({
   totalCount: 0
 })
 
-// Helpers
 const getCurrentListApi = () =>
   listMode.value === 'applyHistory' ? GET_APPLY_HISTORY_PAGE_API : GET_REVIEW_HISTORY_PAGE_API
 
@@ -313,7 +312,6 @@ const getCurrentListErrorKey = () =>
 const normalizeFilterValue = (value) =>
   isUnsetFilter(value) ? String(ALL_OPTION_VALUE) : String(value)
 
-// Data fetching
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
@@ -377,7 +375,6 @@ const getFormHistoryList = async () => {
   }
 }
 
-// Debounce scheduling
 let debounceTimer = null
 
 const scheduleFilterRequest = async (callback) => {
@@ -394,7 +391,6 @@ const scheduleFilterRequest = async (callback) => {
   }, FILTER_DEBOUNCE_MS)
 }
 
-// Event handlers
 const handleListModeChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
@@ -445,7 +441,6 @@ const handleSizeChange = () => {
   getFormHistoryList()
 }
 
-// Path validation and window management
 const normalizePath = (p) => {
   if (!p || typeof p !== 'string') return ''
   const path = p.trim().replace(/^#/, '')
@@ -478,7 +473,6 @@ const openPopupWindow = (href, namePrefix = 'form_history_view') => {
   } catch { /* resizeTo not available in all browsers */ }
 }
 
-// Form operations
 const openFormPage = (row) => {
   if (!row?.viewPath) return
   const path = normalizePath(row.viewPath)
@@ -513,7 +507,6 @@ const canShowWithdraw = (row) => {
   return parseTruthyFlag(resolveIsWithdraw(row))
 }
 
-// Dialog operations
 const onFormPendingReviewersDialogClosed = () => {
   formPendingReviewersList.value = []
 }
@@ -543,14 +536,12 @@ const openFormPendingReviewers = async (row) => {
   }
 }
 
-// Visibility checks
 const canShowInvalidate = (row) => {
   if (listMode.value !== 'applyHistory') return false
   if (!row?.formId) return false
   return true
 }
 
-// Form actions
 const handleVoidForm = async (row) => {
   if (!row?.formId) return
   try {
