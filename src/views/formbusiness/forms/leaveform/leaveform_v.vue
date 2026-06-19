@@ -81,8 +81,29 @@
       </template>
       
       <!-- 实际表单内容 -->
-      <el-card v-else-if="resultState.visible" class="leave-form-card result-card" shadow="never">
+      <el-card
+        v-else-if="resultState.visible"
+        class="leave-form-card result-card"
+        :class="{ 'result-card--forbidden': resultState.variant === 'forbidden' }"
+        shadow="never"
+      >
+        <div v-if="resultState.variant === 'forbidden'" class="forbidden-result">
+          <div class="forbidden-result__visual" aria-hidden="true">
+            <span class="forbidden-result__orbit forbidden-result__orbit--one"></span>
+            <span class="forbidden-result__orbit forbidden-result__orbit--two"></span>
+            <span class="forbidden-result__icon-wrap">
+              <el-icon class="forbidden-result__icon"><Lock /></el-icon>
+            </span>
+          </div>
+          <p class="forbidden-result__eyebrow">{{ t('formbusiness.leaveform.forbiddenResultEyebrow') }}</p>
+          <h2 class="forbidden-result__title">{{ t('formbusiness.leaveform.forbiddenResultTitle') }}</h2>
+          <p class="forbidden-result__desc">{{ t('formbusiness.leaveform.forbiddenResultSubTitle') }}</p>
+          <el-button class="forbidden-result__action" type="primary" round @click="closeCurrentPage">
+            {{ t('formbusiness.leaveform.backToFormPending') }}
+          </el-button>
+        </div>
         <el-result
+          v-else
           class="result-content"
           :class="{ 'result-content--bad-request': resultState.variant === 'badRequest' }"
           :icon="resultState.status"
@@ -412,12 +433,13 @@
         <div
           class="leave-balance-float-card"
           v-loading="leaveBalanceLoading"
-          :element-loading-text="t('common.loading')"
+          element-loading-text=""
         >
           <div class="leave-balance-float-header">
             <span class="leave-balance-float-title">
               {{ t('formbusiness.leaveform.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaveform.leaveBalanceDaysUnit') }}</span>
             </span>
+            <p class="leave-balance-float-note">{{ t('formbusiness.leaveform.leaveBalanceNote') }}</p>
           </div>
           <div class="leave-balance-hint">
             <div
@@ -539,7 +561,7 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, QuestionFilled } from '@element-plus/icons-vue'
+  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, QuestionFilled, Lock } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -1083,7 +1105,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       })
       if (requestId !== leaveBalanceRequestId) return
       if (isForbiddenCode(res?.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+        showForbiddenResult()
         leaveBalances.value = []
         return
       }
@@ -1222,6 +1244,15 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     resultState.titleKey = titleKey
     resultState.subTitleKey = subTitleKey
   }
+
+  function showForbiddenResult () {
+    resultState.variant = 'forbidden'
+    resultState.detailMessage = ''
+    resultState.visible = true
+    resultState.status = 'warning'
+    resultState.titleKey = 'formbusiness.leaveform.forbiddenResultTitle'
+    resultState.subTitleKey = 'formbusiness.leaveform.forbiddenResultSubTitle'
+  }
   
   function showBadRequestResult (message) {
     const msg = typeof message === 'string' ? message.trim() : ''
@@ -1325,7 +1356,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
         silentForbiddenError: false
       })
       if (isForbiddenCode(res?.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+        showForbiddenResult()
         return
       }
       if (!res || res.code !== 200) {
@@ -1368,7 +1399,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       })
       if (!res) return
       if (isForbiddenCode(res.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+        showForbiddenResult()
         return
       }
       if (res.code !== 200) {
@@ -1429,7 +1460,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
         silentForbiddenError: false
       })
       if (isForbiddenCode(res?.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+        showForbiddenResult()
         workflowDrawerVisible.value = false
         return
       }
@@ -1664,7 +1695,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
         silentForbiddenError: false
       })
       if (isForbiddenCode(res?.code)) {
-        showResult('warning', 'formbusiness.leaveform.forbiddenResultTitle', 'formbusiness.leaveform.forbiddenResultSubTitle')
+        showForbiddenResult()
         return null
       }
       if (!res || res.code !== 200) {
@@ -1764,6 +1795,92 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .result-card--forbidden {
+    border: none;
+    background:
+      radial-gradient(circle at 18% 22%, rgba(245, 158, 11, 0.1), transparent 36%),
+      radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.08), transparent 32%),
+      linear-gradient(180deg, #fffdf8 0%, #ffffff 52%, #f8fbff 100%);
+  }
+
+  .forbidden-result {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+
+  .forbidden-result__visual {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 28px;
+  }
+
+  .forbidden-result__orbit {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .forbidden-result__orbit--one {
+    inset: 0;
+    border: 1px solid rgba(245, 158, 11, 0.22);
+  }
+
+  .forbidden-result__orbit--two {
+    inset: 14px;
+    border: 1px solid rgba(37, 99, 235, 0.12);
+  }
+
+  .forbidden-result__icon-wrap {
+    position: absolute;
+    inset: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff7ed, #eff6ff);
+    box-shadow:
+      0 10px 28px rgba(146, 64, 14, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .forbidden-result__icon {
+    font-size: 34px;
+    color: #b45309;
+  }
+
+  .forbidden-result__eyebrow {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #d97706;
+  }
+
+  .forbidden-result__title {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1e293b;
+  }
+
+  .forbidden-result__desc {
+    max-width: 400px;
+    margin: 0 auto 28px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #64748b;
+  }
+
+  .forbidden-result__action {
+    min-width: 168px;
   }
   
   .result-content {
@@ -2312,6 +2429,13 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     line-height: 1.4;
   }
 
+  .leave-balance-float-note {
+    margin: 6px 0 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--el-text-color-secondary);
+  }
+
   .leave-balance-days-unit {
     margin-left: 2px;
     font-size: 11px;
@@ -2328,13 +2452,25 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     line-height: 1.5;
   }
 
-  .leave-balance-hint :deep(.el-loading-spinner) {
-    margin-top: -10px;
+  .leave-balance-float-card :deep(.el-loading-text) {
+    display: none;
   }
 
-  .leave-balance-hint :deep(.el-loading-spinner .circular) {
-    width: 20px;
-    height: 20px;
+  .leave-balance-float-card :deep(.el-loading-mask) {
+    background-color: rgba(255, 255, 255, 0.72);
+  }
+
+  .leave-balance-float-card :deep(.el-loading-spinner) {
+    margin-top: 0;
+  }
+
+  .leave-balance-float-card :deep(.el-loading-spinner .circular) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .leave-balance-float-card :deep(.el-loading-spinner .path) {
+    stroke: var(--el-text-color-secondary, #909399);
   }
 
   .leave-balance-hint-item {

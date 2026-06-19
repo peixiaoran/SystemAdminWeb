@@ -59,7 +59,9 @@
                   stripe
                   :header-cell-style="{ background: '#f5f7fa' }"
                   v-loading="loading"
-                  class="conventional-table">
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.dictionaryInfo.index')" width="70" align="center" fixed />
           <el-table-column prop="dicType" :label="$t('systembasicmgmt.dictionaryInfo.dicType')" align="center" min-width="200" />
           <el-table-column prop="dicCode" :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" align="left" min-width="180" />

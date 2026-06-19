@@ -45,6 +45,7 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading || debouncePending"
           class="conventional-table"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.applyform.index')" width="70" align="center" fixed />
           <el-table-column :label="$t('formbusiness.applyform.apply')" align="center" width="130">

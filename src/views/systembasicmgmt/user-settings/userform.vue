@@ -48,7 +48,9 @@
                   stripe
                   :header-cell-style="{ background: '#f5f7fa' }"
                   v-loading="loading"
-                  class="conventional-table">
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.userform.index')" width="70" align="center" fixed />
           <el-table-column prop="userNo" :label="$t('systembasicmgmt.userform.userNo')" align="center" min-width="130" />
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userform.userName')" align="left" min-width="180" />

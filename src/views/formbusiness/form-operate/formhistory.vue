@@ -62,6 +62,7 @@
           :data="formHistoryList"
           border
           stripe
+          :empty-text="$t('common.noData')"
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading || filterPending"
           class="conventional-table"
@@ -98,7 +99,7 @@
           <el-table-column
             :label="$t('formbusiness.formhistory.operation')"
             align="center"
-            min-width="100"
+            min-width="180"
             fixed="right"
           >
             <template #default="{ row }">
@@ -144,6 +145,7 @@ import {
   WITHDRAW_FORM_API
 } from '@/config/api/formbusiness/form-operate/formhistory.js'
 import { useI18n } from 'vue-i18n'
+import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -163,26 +165,6 @@ const buildFormData = (params) => {
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
-
-const formatApplicantDate = (val) => {
-  if (!val) return '-'
-  const d = new Date(val)
-  if (isNaN(d.getTime())) {
-    const text = String(val).trim()
-    return text.length >= 10 ? text.slice(0, 10) : text
-  }
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-/** 申请日期字段兼容（与 pending 列表、请假单详情一致） */
-const resolveApplicantDate = (row) =>
-  row?.applicantDate ??
-  row?.ApplicantDate ??
-  row?.applyDate ??
-  row?.ApplyDate ??
-  row?.applicantTime ??
-  row?.ApplicantTime
 
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
@@ -487,7 +469,7 @@ onMounted(async () => {
 }
 
 .conventional-table :deep(.el-table) {
-  min-width: 1250px;
+  min-width: 1280px;
 }
 
 .history-filter-select {

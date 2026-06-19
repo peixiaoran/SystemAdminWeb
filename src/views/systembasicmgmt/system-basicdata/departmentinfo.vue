@@ -36,7 +36,9 @@
                   class="conventional-table"
                   row-key="departmentId"
                   :default-expand-all="true"
-                  :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }">
+                  :tree-props="{ children: 'departmentChildList', hasChildren: 'hasChildren' }"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
           <el-table-column prop="departmentCode" :label="$t('systembasicmgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
           <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />

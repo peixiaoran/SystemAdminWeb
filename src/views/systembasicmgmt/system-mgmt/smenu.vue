@@ -40,7 +40,9 @@
                   max-height="calc(100vh - 240px)"
                   :header-cell-style="{ background: '#f5f7fa' }"
                   v-loading="loading"
-                  class="conventional-table">
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
           <el-table-column prop="menuCode" :label="$t('systembasicmgmt.smenu.smenuCode')" align="left" min-width="180" />
           <el-table-column prop="menuNameCn" :label="$t('systembasicmgmt.smenu.smenuNameCn')" align="left" min-width="230" />

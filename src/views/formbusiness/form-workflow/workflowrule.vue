@@ -48,6 +48,7 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.workflowrule.index')" width="70" align="center" fixed />
           <el-table-column prop="ruleNameCn" :label="$t('formbusiness.workflowrule.ruleNameCn')" align="left" min-width="200" show-overflow-tooltip />

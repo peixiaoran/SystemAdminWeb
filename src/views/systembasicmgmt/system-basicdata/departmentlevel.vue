@@ -31,7 +31,9 @@
                 height="100%"
                 :header-cell-style="{ background: '#f5f7fa' }"
                 v-loading="loading"
-                class="conventional-table">
+                class="conventional-table"
+                :empty-text="$t('common.noData')"
+                >
         <el-table-column type="index" :label="$t('systembasicmgmt.departmentLevel.index')" width="70" align="center" fixed />
         <el-table-column prop="departmentLevelCode" :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
         <el-table-column prop="departmentLevelNameCn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />

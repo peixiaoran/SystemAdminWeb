@@ -2,7 +2,7 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <div class="table-container">
-        <el-table :data="positionList" style="width: 100%" border stripe height="80%" :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" :element-loading-text="$t('common.loading')" class="conventional-table">
+        <el-table :data="positionList" style="width: 100%" border stripe height="80%" :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" :element-loading-text="$t('common.loading')" class="conventional-table" :empty-text="$t('common.noData')">
           <el-table-column type="index" :label="$t('systembasicmgmt.userPosition.index')" width="70" align="center" fixed />
           <el-table-column prop="positionNo" :label="$t('systembasicmgmt.userPosition.positionNo')" align="center" min-width="120" />
           <el-table-column prop="positionNameCn" :label="$t('systembasicmgmt.userPosition.positionNameCn')" align="left" min-width="200" />

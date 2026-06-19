@@ -60,7 +60,7 @@
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table :data="userList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" class="conventional-table">
+        <el-table :data="userList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="loading" class="conventional-table" :empty-text="$t('common.noData')">
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" fixed />
           <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="left" min-width="120" />
           <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userName')" align="left" min-width="180" />
@@ -117,7 +117,7 @@
       class="agent-dialog"
     >
       <div style="height: 380px; padding-top: 20px;">
-        <el-table :data="agentList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="agentLoading" height="370" class="conventional-table">
+        <el-table :data="agentList" border stripe :header-cell-style="{ background: '#f5f7fa' }" v-loading="agentLoading" height="370" class="conventional-table" :empty-text="$t('common.noData')">
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
           <el-table-column prop="agentUserNo" :label="$t('systembasicmgmt.userAgent.agentUserNo')" align="left" min-width="110" />
           <el-table-column prop="agentUserName" :label="$t('systembasicmgmt.userAgent.agentUser')" align="left" min-width="200" />
@@ -270,6 +270,7 @@
           ref="userSelectTableRef"
           height="300"
           @selection-change="handleSelectionChange"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="80" />
@@ -328,6 +329,7 @@
           v-loading="proactiveAgentLoading"
           height="370"
           class="conventional-table"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('systembasicmgmt.userAgent.index')" width="70" align="center" />
           <el-table-column prop="substituteUserNo" :label="$t('systembasicmgmt.userAgent.substituteUserNo')" align="left" min-width="110" />

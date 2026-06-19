@@ -53,7 +53,9 @@
                           stripe
                           :header-cell-style="{ background: '#f5f7fa' }"
                           v-loading="loading"
-                          class="conventional-table">
+                          class="conventional-table"
+                          :empty-text="$t('common.noData')"
+                          >
                     <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
                     <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="170" />
@@ -201,7 +203,9 @@
                           class="conventional-table"
                           height="310"
                           ref="dialogUserTableRef"
-                          @selection-change="handleDialogUserSelectionChange">
+                          @selection-change="handleDialogUserSelectionChange"
+                          :empty-text="$t('common.noData')"
+                          >
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
                     <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />

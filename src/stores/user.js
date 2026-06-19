@@ -5,10 +5,33 @@ import { LOGOUT_API, ME_API } from '@/config/api/login/api'
 import { clearAuthStorage } from '@/utils/sessionCleanup'
 import i18n from '@/i18n'
 
-// /me 探活缓存：30s TTL + 并发合并
 let meInFlightPromise = null
 let lastMeAt = 0
 const ME_TTL_MS = 30 * 1000
+const LOGOUT_FAILED_MSG = '登出失败，请重试'
+
+const getResultCode = (response) => Number(response?.code ?? response?.Code)
+
+const isSuccessResult = (response) => getResultCode(response) === 200
+
+/** 登出 Result 406：JWT/会话已失效 */
+const isLogoutSessionExpired = (response) => getResultCode(response) === 406
+
+const parseMeUser = (data) => {
+  if (!data) return null
+  const userId = data.userId || data.id || ''
+  const loginNo = data.loginNo || data.userNo || ''
+  if (!userId && !loginNo) return null
+  return {
+    userId,
+    loginNo,
+    userNameCn: data.userNameCn || data.userName || '',
+    userNameEn: data.userNameEn || '',
+    avatar: data.avatar || data.avatarAddress || '',
+    roles: Array.isArray(data.roles) ? data.roles : [],
+    permissions: Array.isArray(data.permissions) ? data.permissions : []
+  }
+}
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -22,7 +45,6 @@ export const useUserStore = defineStore('user', {
   }),
 
   getters: {
-    // Cookie(HttpOnly) 模式：以本地用户标识是否存在作为前端登录态
     isLoggedIn: (state) => !!(state.loginNo || state.userId),
 
     getDisplayName: (state) => {
@@ -41,7 +63,6 @@ export const useUserStore = defineStore('user', {
       this.userNameEn = userInfo.userNameEn
       this.loginNo = userInfo.loginNo
       this.avatar = userInfo.avatar
-      // 注意：不需要手动 localStorage.setItem，persist 插件已负责持久化
     },
 
     setRolesAndPermissions(roles, permissions) {
@@ -49,12 +70,6 @@ export const useUserStore = defineStore('user', {
       this.permissions = permissions || []
     },
 
-    /**
-     * 会话探活：调用 /me 校验 Cookie 会话并同步前端状态
-     * - 已登录且在 TTL 内：直接命中缓存
-     * - 并发调用：合并为同一个请求
-     * - 网络异常：保守返回当前前端态，不强制登出
-     */
     async probeSession(options = {}) {
       const { force = false } = options
       const now = Date.now()
@@ -66,20 +81,12 @@ export const useUserStore = defineStore('user', {
       meInFlightPromise = (async () => {
         try {
           const res = await post(ME_API.ME, {}, { silentAuthError: false, disableAutoLogout: true })
-          const data = res?.data
-          const userId = data?.userId || data?.id || ''
-          const loginNo = data?.loginNo || data?.userNo || ''
+          const user = parseMeUser(res?.data)
 
-          if (res?.code === 200 && (userId || loginNo)) {
-            this.setUserInfo({
-              userId,
-              loginNo,
-              userNameCn: data?.userNameCn || data?.userName || '',
-              userNameEn: data?.userNameEn || '',
-              avatar: data?.avatar || data?.avatarAddress || ''
-            })
-            if (Array.isArray(data?.roles) || Array.isArray(data?.permissions)) {
-              this.setRolesAndPermissions(data?.roles || [], data?.permissions || [])
+          if (isSuccessResult(res) && user) {
+            this.setUserInfo(user)
+            if (user.roles.length || user.permissions.length) {
+              this.setRolesAndPermissions(user.roles, user.permissions)
             }
             lastMeAt = Date.now()
             return true
@@ -101,16 +108,23 @@ export const useUserStore = defineStore('user', {
     async logout() {
       try {
         const response = await post(LOGOUT_API.USER_LOGOUT)
-        if (response?.code === 200) {
+        const sessionExpired = isLogoutSessionExpired(response)
+
+        if (isSuccessResult(response) || sessionExpired) {
           clearAuthStorage()
-          return { success: true, data: response.data, message: response.message }
+          return {
+            success: true,
+            data: sessionExpired ? null : (response?.data ?? null),
+            message: sessionExpired ? '' : (response?.message || '')
+          }
         }
-        const errorMsg = response?.message || '登出失败，请重试'
+
+        const errorMsg = response?.message || LOGOUT_FAILED_MSG
         ElMessage.error(errorMsg)
         return { success: false, message: errorMsg }
       } catch {
-        ElMessage.error('登出失败，请重试')
-        return { success: false, message: '登出失败，请重试' }
+        ElMessage.error(LOGOUT_FAILED_MSG)
+        return { success: false, message: LOGOUT_FAILED_MSG }
       } finally {
         this.resetState()
       }

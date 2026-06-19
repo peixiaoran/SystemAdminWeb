@@ -48,6 +48,7 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           row-key="stepId"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
           <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="120" show-overflow-tooltip />
@@ -332,6 +333,7 @@
                 :data="userTableData"
                 v-loading="userTableLoading"
                 :row-key="(row) => row.userId"
+                :empty-text="$t('common.noData')"
                 @selection-change="handleUserTableSelectionChange"
                 height="150"
                 border

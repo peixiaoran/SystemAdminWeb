@@ -33,6 +33,7 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.formgroup.index')" width="70" align="center" fixed />
           <el-table-column prop="formGroupNameCn" :label="$t('formbusiness.formgroup.formGroupNameCn')" align="left" min-width="150" />

@@ -33,7 +33,9 @@
                   stripe
                   :header-cell-style="{ background: '#f5f7fa' }"
                   v-loading="loading"
-                  class="conventional-table">
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.index')" width="70" align="center" fixed />
           <el-table-column prop="roleCode" :label="$t('systembasicmgmt.role.roleCode')" align="left" min-width="140" />
           <el-table-column prop="roleNameCn" :label="$t('systembasicmgmt.role.roleNameCn')" align="left" min-width="200" />

@@ -67,6 +67,7 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading || filterPending"
           class="conventional-table"
+        :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.formpending.index')" width="70" align="center" fixed />
           <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
@@ -225,6 +226,7 @@ import {
   VOIDED_FORM_API
 } from '@/config/api/formbusiness/form-operate/formpending.js'
 import { useI18n } from 'vue-i18n'
+import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -246,25 +248,6 @@ const buildFormData = (params) => {
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
-
-const formatApplicantDate = (val) => {
-  if (!val) return '-'
-  const d = new Date(val)
-  if (isNaN(d.getTime())) {
-    const text = String(val).trim()
-    return text.length >= 10 ? text.slice(0, 10) : text
-  }
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-const resolveApplicantDate = (row) =>
-  row?.applicantDate ??
-  row?.ApplicantDate ??
-  row?.applyDate ??
-  row?.ApplyDate ??
-  row?.applicantTime ??
-  row?.ApplicantTime
 
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
