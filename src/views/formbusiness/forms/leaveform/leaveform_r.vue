@@ -358,15 +358,7 @@
                       :disabled="!form.formId"
                       @click="openWorkflowDrawer"
                     >
-                      <el-icon class="workflow-view-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <circle cx="12" cy="4.5" r="2.15" />
-                          <line x1="12" y1="6.65" x2="12" y2="9.85" />
-                          <circle cx="12" cy="12" r="2.15" />
-                          <line x1="12" y1="14.15" x2="12" y2="17.35" />
-                          <circle cx="12" cy="19.5" r="2.15" />
-                        </svg>
-                      </el-icon>
+                      <el-icon class="workflow-view-icon"><Rank /></el-icon>
                     </el-button>
                   </el-tooltip>
                 </div>
@@ -745,7 +737,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, QuestionFilled, Lock } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, QuestionFilled, Lock, Rank } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -2905,33 +2897,56 @@ onMounted(async () => {
 .workflow-view-entry {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.workflow-view-entry:hover {
+  transform: translateY(-1px);
 }
 
 .workflow-view-hint {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .workflow-view-hint-icon {
-  font-size: 16px;
-  color: var(--el-text-color-secondary);
+  font-size: 17px;
+  color: var(--el-color-primary);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.workflow-view-entry:hover .workflow-view-hint-icon {
+  transform: scale(1.1);
 }
 
 .workflow-view-hint-text {
   font-size: 13px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.4;
+  color: var(--el-text-color-regular);
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 .workflow-view-btn {
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.workflow-view-btn:hover {
+  transform: translateY(-2px);
 }
 
 .workflow-view-icon {
   font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.workflow-view-btn:hover .workflow-view-icon {
+  transform: rotate(90deg);
 }
 
 .workflow-view-icon svg {

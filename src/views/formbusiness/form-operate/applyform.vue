@@ -98,17 +98,20 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
+import { useI18n } from 'vue-i18n'
 import {
   GET_APPLYFORM_API,
   GET_FORMGROUP_DROPDOWN_API
 } from '@/config/api/formbusiness/form-operate/applyform.js'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const router = useRouter()
 
+// Constants
 const FILTER_DEBOUNCE_MS = 300
+const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
+// State
 const loading = ref(false)
 const debouncePending = ref(false)
 const formTypeList = ref([])
@@ -125,10 +128,12 @@ const pagination = reactive({
   totalCount: 0
 })
 
+// Utility functions
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
+// Data fetching
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
@@ -149,11 +154,11 @@ const getFormTypeList = async () => {
   loading.value = true
   try {
     const res = await post(GET_APPLYFORM_API, {
-      formGroupId:  searchForm.formGroupId,
+      formGroupId: searchForm.formGroupId,
       formTypeName: searchForm.formTypeName,
-      pageIndex:    pagination.pageIndex,
-      pageSize:     pagination.pageSize,
-      totalCount:   pagination.totalCount
+      pageIndex: pagination.pageIndex,
+      pageSize: pagination.pageSize,
+      totalCount: pagination.totalCount
     })
     if (res.code === 200) {
       formTypeList.value = res.data || []
@@ -170,7 +175,9 @@ const getFormTypeList = async () => {
   }
 }
 
+// Debounce scheduling
 let debounceTimer = null
+
 const scheduleSearch = async () => {
   if (debounceTimer) clearTimeout(debounceTimer)
   loading.value = true
@@ -186,6 +193,7 @@ const scheduleSearch = async () => {
   }, FILTER_DEBOUNCE_MS)
 }
 
+// Event handlers
 const handleFormGroupChange = () => {
   if (!searchForm.formGroupId) {
     searchForm.formGroupId = formGroupOptions.value[0]?.formGroupId ?? ''
@@ -204,8 +212,7 @@ const handleSizeChange = () => {
   getFormTypeList()
 }
 
-const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
-
+// Path validation and window management
 const normalizePath = (p) => {
   if (!p || typeof p !== 'string') return ''
   const path = p.trim().replace(/^#/, '')
@@ -224,7 +231,6 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-// 新窗口尽量占满可用屏幕；部分浏览器策略下 resizeTo 不可用，已用 features 尽量铺满
 const openPopupWindow = (href, namePrefix = 'form_popup') => {
   const aw = window.screen.availWidth
   const ah = window.screen.availHeight
@@ -239,6 +245,7 @@ const openPopupWindow = (href, namePrefix = 'form_popup') => {
   } catch { /* resizeTo not available in all browsers */ }
 }
 
+// Form operations
 const openApproval = (row) => {
   if (!row?.reviewPath) return
   const path = normalizePath(row.reviewPath)

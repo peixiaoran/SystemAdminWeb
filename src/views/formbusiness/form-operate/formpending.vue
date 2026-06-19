@@ -97,9 +97,9 @@
             </template>
           </el-table-column>
           <el-table-column
-            :label="$t('formbusiness.formpending.viewFormPendingReviewers')"
+            :label="$t('formbusiness.formpending.pendingReviewers')"
             align="center"
-            min-width="200"
+            min-width="100"
           >
             <template #default="{ row }">
               <el-link
@@ -109,7 +109,7 @@
                 class="form-pending-reviewers-link"
                 @click="openFormPendingReviewers(row)"
               >
-                {{ $t('formbusiness.formpending.viewFormPendingReviewers') }}
+                {{ $t('common.view') }}
               </el-link>
               <span v-else>—</span>
             </template>
@@ -119,7 +119,7 @@
           <el-table-column
             :label="$t('common.operation')"
             align="center"
-            min-width="180"
+            min-width="160"
             fixed="right"
           >
             <template #default="{ row }">
@@ -205,7 +205,7 @@
           show-overflow-tooltip
         />
         <el-table-column :label="$t('formbusiness.formpending.agentUserName')" min-width="120" align="center" header-align="center">
-          <template #default="{ row: r }">{{ r.agentUserName || '-' }}</template>
+          <template #default="{ row }">{{ row.agentUserName || '-' }}</template>
         </el-table-column>
       </el-table>
     </el-dialog>
@@ -217,6 +217,8 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { useI18n } from 'vue-i18n'
+import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
@@ -225,8 +227,6 @@ import {
   GET_FORM_PENDING_USERS_API,
   VOIDED_FORM_API
 } from '@/config/api/formbusiness/form-operate/formpending.js'
-import { useI18n } from 'vue-i18n'
-import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -234,8 +234,8 @@ const router = useRouter()
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
 const FILTER_DEBOUNCE_MS = 300
 const ALL_OPTION_VALUE = 0
-/** 与请假单等弹窗页约定：关闭前 postMessage 触发本页刷新 */
 const FORM_PENDING_REFRESH_MSG = 'FORM_PENDING_REFRESH'
+const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const isUnsetFilter = (v) => v === '' || v === undefined || v === null
 
@@ -252,7 +252,6 @@ const showMessage = (message, type = 'error') => {
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
 
-/** Approved → 绿色；UnderReview → 橙色；Rejected → 红色；其余保持 primary */
 const getFormStatusTagType = (row) => {
   const candidates = [
     row?.formStatus,
@@ -278,28 +277,30 @@ const formPendingList = ref([])
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
-/** 与 v-model 默认 0 同步，避免选项未加载时 el-select 短暂显示数字 0 */
+const listMode = ref('formPending')
+
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,
   formGroupName: t('formbusiness.formpending.pleaseSelect')
 })
+
 const formTypePlaceholder = () => ({
   formTypeId: ALL_OPTION_VALUE,
   formTypeName: t('formbusiness.formpending.pleaseSelect')
 })
+
 const formGroupOptions = ref([formGroupPlaceholder()])
 const formTypeOptions = ref([formTypePlaceholder()])
-const listMode = ref('formPending')
 
 const searchForm = reactive({
   formGroupId: ALL_OPTION_VALUE,
-  formTypeId:  ALL_OPTION_VALUE,
-  formNo:      ''
+  formTypeId: ALL_OPTION_VALUE,
+  formNo: ''
 })
 
 const pagination = reactive({
   pageIndex: 1,
-  pageSize:  10,
+  pageSize: 10,
   totalCount: 0
 })
 
@@ -384,6 +385,7 @@ const getFormPendingList = async () => {
 }
 
 let debounceTimer = null
+
 const scheduleFilterRequest = async (callback) => {
   if (debounceTimer) clearTimeout(debounceTimer)
   loading.value = true
@@ -434,9 +436,9 @@ const handleSearch = () => {
 }
 
 const handleReset = () => {
-  searchForm.formNo      = ''
+  searchForm.formNo = ''
   searchForm.formGroupId = ALL_OPTION_VALUE
-  searchForm.formTypeId  = ALL_OPTION_VALUE
+  searchForm.formTypeId = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -448,8 +450,6 @@ const handleSizeChange = () => {
   pagination.pageIndex = 1
   getFormPendingList()
 }
-
-const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const normalizePath = (p) => {
   if (!p || typeof p !== 'string') return ''
@@ -469,7 +469,6 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-// 新窗口铺满可用屏幕；部分浏览器策略下 resizeTo/moveTo 不可用，已用 features 尽量铺满
 const openPopupWindow = (href, namePrefix = 'form_popup') => {
   const aw = window.screen.availWidth
   const ah = window.screen.availHeight
@@ -558,13 +557,7 @@ const handleVoidForm = async (row) => {
   }
 }
 
-const canShowInvalidate = (row) => {
-  const value = row?.isDelete
-  if (typeof value === 'boolean') return value
-  if (typeof value === 'number')  return value === 1
-  if (typeof value === 'string')  return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
-  return false
-}
+const canShowInvalidate = () => listMode.value === 'pendingSubmit'
 
 const onFormPendingRefreshMessage = (event) => {
   if (event.origin !== window.location.origin) return

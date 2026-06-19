@@ -94,12 +94,30 @@
               </el-tag>
             </template>
           </el-table-column>
+          <el-table-column
+            :label="$t('formbusiness.formpending.pendingReviewers')"
+            align="center"
+            min-width="100"
+          >
+            <template #default="{ row }">
+              <el-link
+                v-if="row.formId"
+                type="primary"
+                underline="never"
+                class="form-pending-reviewers-link"
+                @click="openFormPendingReviewers(row)"
+              >
+                {{ $t('common.view') }}
+              </el-link>
+              <span v-else>—</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="applyUserName" :label="$t('formbusiness.formhistory.applyUserName')" align="center" min-width="140" show-overflow-tooltip />
           <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.formhistory.applyUserDeptName')" align="center" min-width="220" show-overflow-tooltip />
           <el-table-column
             :label="$t('formbusiness.formhistory.operation')"
             align="center"
-            min-width="180"
+            min-width="160"
             fixed="right"
           >
             <template #default="{ row }">
@@ -111,11 +129,72 @@
               >
                 {{ $t('formbusiness.formhistory.withdraw') }}
               </el-link>
-              <span v-else>—</span>
+              <el-link
+                v-if="canShowInvalidate(row)"
+                type="danger"
+                underline="never"
+                style="margin-left: 12px;"
+                @click="handleVoidForm(row)"
+              >
+                {{ $t('formbusiness.formpending.invalidate') }}
+              </el-link>
+              <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row)">—</span>
             </template>
           </el-table-column>
         </el-table>
       </div>
+
+      <el-dialog
+        v-model="formPendingReviewersDialogVisible"
+        :title="$t('formbusiness.formpending.formPendingReviewersTitle')"
+        width="920px"
+        destroy-on-close
+        append-to-body
+        class="form-pending-reviewers-dialog"
+        @closed="onFormPendingReviewersDialogClosed"
+      >
+        <el-table
+          :data="formPendingReviewersList"
+          border
+          stripe
+          max-height="420"
+          v-loading="formPendingReviewersLoading"
+          :empty-text="$t('formbusiness.formpending.noFormPendingReviewers')"
+          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa' }"
+          :cell-style="{ textAlign: 'center' }"
+        >
+          <el-table-column type="index" :label="$t('formbusiness.formpending.index')" width="75" align="center" header-align="center" />
+          <el-table-column
+            prop="stepName"
+            :label="$t('formbusiness.formpending.stepName')"
+            min-width="130"
+            align="center"
+            header-align="center"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="appointmentType"
+            :label="$t('formbusiness.formpending.appointmentType')"
+            min-width="120"
+            align="center"
+            header-align="center"
+            show-overflow-tooltip
+          >
+            <template #default="{ row: r }">{{ r.appointmentType || '-' }}</template>
+          </el-table-column>
+          <el-table-column
+            prop="reviewUserName"
+            :label="$t('formbusiness.formpending.reviewerUserName')"
+            min-width="120"
+            align="center"
+            header-align="center"
+            show-overflow-tooltip
+          />
+          <el-table-column :label="$t('formbusiness.formpending.agentUserName')" min-width="120" align="center" header-align="center">
+            <template #default="{ row }">{{ row.agentUserName || '-' }}</template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
 
       <div class="pagination-wrapper">
         <el-pagination
@@ -137,15 +216,17 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { useI18n } from 'vue-i18n'
+import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
   GET_APPLY_HISTORY_PAGE_API,
   GET_REVIEW_HISTORY_PAGE_API,
-  WITHDRAW_FORM_API
+  WITHDRAW_FORM_API,
+  VOIDED_FORM_API,
+  GET_FORM_PENDING_USERS_API
 } from '@/config/api/formbusiness/form-operate/formhistory.js'
-import { useI18n } from 'vue-i18n'
-import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -153,6 +234,7 @@ const router = useRouter()
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
 const FILTER_DEBOUNCE_MS = 300
 const ALL_OPTION_VALUE = 0
+const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const isUnsetFilter = (v) => v === '' || v === undefined || v === null
 
@@ -169,7 +251,6 @@ const showMessage = (message, type = 'error') => {
 const normalizeFormStatusKey = (value) =>
   String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
 
-/** Approved → 绿色；UnderReview → 橙色；其余保持 primary */
 const getFormStatusTagType = (row) => {
   const candidates = [
     row?.formStatus,
@@ -191,17 +272,23 @@ const getFormStatusTagType = (row) => {
 const loading = ref(false)
 const filterPending = ref(false)
 const formHistoryList = ref([])
+const formPendingReviewersDialogVisible = ref(false)
+const formPendingReviewersLoading = ref(false)
+const formPendingReviewersList = ref([])
+const listMode = ref('applyHistory')
+
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,
   formGroupName: t('formbusiness.formhistory.pleaseSelect')
 })
+
 const formTypePlaceholder = () => ({
   formTypeId: ALL_OPTION_VALUE,
   formTypeName: t('formbusiness.formhistory.pleaseSelect')
 })
+
 const formGroupOptions = ref([formGroupPlaceholder()])
 const formTypeOptions = ref([formTypePlaceholder()])
-const listMode = ref('applyHistory')
 
 const searchForm = reactive({
   formGroupId: ALL_OPTION_VALUE,
@@ -214,6 +301,7 @@ const pagination = reactive({
   totalCount: 0
 })
 
+// Helpers
 const getCurrentListApi = () =>
   listMode.value === 'applyHistory' ? GET_APPLY_HISTORY_PAGE_API : GET_REVIEW_HISTORY_PAGE_API
 
@@ -225,6 +313,7 @@ const getCurrentListErrorKey = () =>
 const normalizeFilterValue = (value) =>
   isUnsetFilter(value) ? String(ALL_OPTION_VALUE) : String(value)
 
+// Data fetching
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
@@ -288,7 +377,9 @@ const getFormHistoryList = async () => {
   }
 }
 
+// Debounce scheduling
 let debounceTimer = null
+
 const scheduleFilterRequest = async (callback) => {
   if (debounceTimer) clearTimeout(debounceTimer)
   loading.value = true
@@ -303,6 +394,7 @@ const scheduleFilterRequest = async (callback) => {
   }, FILTER_DEBOUNCE_MS)
 }
 
+// Event handlers
 const handleListModeChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
@@ -353,8 +445,7 @@ const handleSizeChange = () => {
   getFormHistoryList()
 }
 
-const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
-
+// Path validation and window management
 const normalizePath = (p) => {
   if (!p || typeof p !== 'string') return ''
   const path = p.trim().replace(/^#/, '')
@@ -387,6 +478,7 @@ const openPopupWindow = (href, namePrefix = 'form_history_view') => {
   } catch { /* resizeTo not available in all browsers */ }
 }
 
+// Form operations
 const openFormPage = (row) => {
   if (!row?.viewPath) return
   const path = normalizePath(row.viewPath)
@@ -414,12 +506,80 @@ const parseTruthyFlag = (value) => {
 
 const isSuccessCode = (code) => String(code) === '200'
 
-/** 列表 IsWithdraw / isWithdraw 字段 */
 const resolveIsWithdraw = (row) => row?.isWithdraw ?? row?.IsWithdraw
 
 const canShowWithdraw = (row) => {
   if (!row?.formId) return false
   return parseTruthyFlag(resolveIsWithdraw(row))
+}
+
+// Dialog operations
+const onFormPendingReviewersDialogClosed = () => {
+  formPendingReviewersList.value = []
+}
+
+const openFormPendingReviewers = async (row) => {
+  if (!row?.formId) return
+  formPendingReviewersDialogVisible.value = true
+  formPendingReviewersLoading.value = true
+  formPendingReviewersList.value = []
+  try {
+    const res = await post(
+      GET_FORM_PENDING_USERS_API,
+      buildFormData({ formId: String(row.formId) }),
+      FORM_DATA_OPTIONS
+    )
+    if (res?.code === 200) {
+      formPendingReviewersList.value = Array.isArray(res.data) ? res.data : []
+      return
+    }
+    formPendingReviewersDialogVisible.value = false
+    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'))
+  } catch {
+    formPendingReviewersDialogVisible.value = false
+    showMessage(t('formbusiness.formpending.getFormPendingReviewersFailed'))
+  } finally {
+    formPendingReviewersLoading.value = false
+  }
+}
+
+// Visibility checks
+const canShowInvalidate = (row) => {
+  if (listMode.value !== 'applyHistory') return false
+  if (!row?.formId) return false
+  return true
+}
+
+// Form actions
+const handleVoidForm = async (row) => {
+  if (!row?.formId) return
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.formpending.voidConfirm'),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  loading.value = true
+  try {
+    const res = await post(
+      VOIDED_FORM_API,
+      buildFormData({ formId: String(row.formId) }),
+      FORM_DATA_OPTIONS
+    )
+    if (isSuccessCode(res?.code)) {
+      showMessage(res?.message || t('formbusiness.formpending.voidSuccess'), 'success')
+      await getFormHistoryList()
+    } else {
+      showMessage(res?.message || t('formbusiness.formpending.voidFailed'))
+    }
+  } catch {
+    showMessage(t('formbusiness.formpending.voidFailed'))
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleWithdrawForm = async (row) => {

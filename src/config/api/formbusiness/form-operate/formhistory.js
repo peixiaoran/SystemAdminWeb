@@ -16,3 +16,7 @@ export const GET_APPLY_HISTORY_PAGE_API = 'FormBusiness/FormOperate/FormHistory/
 export const GET_REVIEW_HISTORY_PAGE_API = 'FormBusiness/FormOperate/FormHistory/GetReviewHistoryPage'
 
 export const WITHDRAW_FORM_API = 'FormBusiness/FormOperate/FormHistory/WithdrawForm'
+
+export const VOIDED_FORM_API = 'FormBusiness/FormOperate/FormPending/VoidedForm'
+
+export const GET_FORM_PENDING_USERS_API = 'FormBusiness/FormOperate/FormPending/GetFormPendingUsers'
