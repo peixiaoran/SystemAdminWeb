@@ -585,7 +585,7 @@ export default {
       submit: 'Edit',
       approval: 'Approval',
       invalidate: 'Voided',
-      voidConfirm: 'Are you sure you want to void this form? This action cannot be undone.',
+      voidConfirm: 'Are you sure you want to void this form? It cannot be undone after voiding.',
       voidSuccess: 'Voided successfully',
       voidFailed: 'Voided failed',
       pleaseSelectFormGroup: 'Please select form group',
@@ -607,6 +607,25 @@ export default {
       agentUserName: 'Agent',
       getFormPendingReviewersFailed: 'Failed to load pending reviewers',
       noFormPendingReviewers: 'No pending reviewers'
+    },
+
+    invalidform: {
+      pleaseSelect: 'Please select',
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      formStatus: 'Form Status',
+      formNo: 'Form No',
+      applicantDate: 'Applicant Date',
+      voidedDate: 'Voided Date',
+      index: 'Index',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseSelectFormType: 'Please select form type',
+      pleaseSelectFormStatus: 'Please select form status',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getFormStatusFailed: 'Failed to get form status',
+      getInvalidFormsFailed: 'Failed to get invalid forms list',
+      getFailed: 'Failed to load data'
     },
 
     formhistory: {
@@ -1002,6 +1021,7 @@ export default {
     formoperate: 'Form Operation',
     formPending: 'Form Pending',
     formHistory: 'Form History',
+    invalidForm: 'Invalid Form',
     applyform: 'Application Form',
     controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',

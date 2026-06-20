@@ -58,10 +58,10 @@ export const usePMenuStore = defineStore('pmenu', {
     }
   },
   
-  // 启用持久化 - 使用3.x版本API
+  // 启用持久化 - 使用 4.x 版本 API（paths 已更名为 pick）
   persist: {
     key: 'pmenu-store',
     storage: localStorage,
-    paths: ['currentModuleId', 'currentModuleName', 'currentModulePath', 'currentModuleNameCn', 'currentModuleNameEn']
+    pick: ['currentModuleId', 'currentModuleName', 'currentModulePath', 'currentModuleNameCn', 'currentModuleNameEn']
   }
 })

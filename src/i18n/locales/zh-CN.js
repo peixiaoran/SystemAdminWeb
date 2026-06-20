@@ -520,7 +520,7 @@ export default {
       submit: '修改',
       approval: '签核',
       invalidate: '作废',
-      voidConfirm: '确定要作废该表单吗？此操作不可恢复。',
+      voidConfirm: '确定作废此表单吗？作废后不可恢复',
       voidSuccess: '作废成功',
       voidFailed: '作废失败',
       pleaseSelectFormGroup: '请选择表单组别',
@@ -542,6 +542,25 @@ export default {
       agentUserName: '代理人姓名',
       getFormPendingReviewersFailed: '获取待审批人失败',
       noFormPendingReviewers: '暂无待审批人'
+    },
+
+    invalidform: {
+      pleaseSelect: '请选择',
+      formGroupName: '表单组别',
+      formTypeName: '表单类型',
+      formStatus: '表单状态',
+      formNo: '表单编号',
+      applicantDate: '申请日期',
+      voidedDate: '作废时间',
+      index: '序号',
+      pleaseSelectFormGroup: '请选择表单组别',
+      pleaseSelectFormType: '请选择表单类型',
+      pleaseSelectFormStatus: '请选择表单状态',
+      getFormGroupFailed: '获取表单组别失败',
+      getFormTypeFailed: '获取表单类型失败',
+      getFormStatusFailed: '获取表单状态失败',
+      getInvalidFormsFailed: '获取已作废表单列表失败',
+      getFailed: '获取数据失败'
     },
 
     formhistory: {
@@ -923,6 +942,7 @@ export default {
     formoperate: '表单操作',
     formPending: '待审表单列表',
     formHistory: '表单历史记录',
+    invalidForm: '作废表单列表',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',

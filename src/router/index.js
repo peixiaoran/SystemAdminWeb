@@ -473,6 +473,17 @@ const pmenuRoutes = [
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
+            },
+            {
+              path: 'invalidform',
+              name: 'InvalidForm',
+              component: () => import('../views/formbusiness/form-operate/invalidform.vue'),
+              meta: { 
+                title: 'route.invalidForm',
+                icon: 'FolderRemove',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
             }
           ]
         },

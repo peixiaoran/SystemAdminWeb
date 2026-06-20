@@ -38,14 +38,14 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     server: {
-      port: 3001, // 前端开发服务器端口，不影响API请求
-      open: true,
-      // Vite 6 安全配置 - 限制网络访问
-      host: 'localhost',
+      port: 3001, // 前端开发服务器端口，不影响 API 请求
+      host: 'localhost', // 仅允许本机访问，提高开发环境安全性
+      open: true, // 启动后自动打开浏览器
+
       headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block'
+        'X-Content-Type-Options': 'nosniff', // 防止浏览器 MIME 类型嗅探
+        'X-Frame-Options': 'DENY', // 禁止页面被 iframe 嵌入
+        'X-XSS-Protection': '1; mode=block' // 兼容旧版浏览器的 XSS 防护
       }
     },
     // 定义全局常量替换方式
@@ -86,9 +86,8 @@ export default defineConfig(({ command, mode }) => {
       reportCompressedSize: false, // 禁用压缩大小报告以提升构建速度
       // CSS相关优化
       cssCodeSplit: true,
-      // 确保生成正确的资源路径
-      rollupOptions: {
-        // 避免循环依赖警告
+      // 确保生成正确的资源路径（Vite 8 使用 rolldownOptions，底层已切换为 Rolldown/Rust）
+      rolldownOptions: {
         onwarn(warning, warn) {
           if (warning.code === 'CIRCULAR_DEPENDENCY') return;
           warn(warning);
@@ -144,7 +143,7 @@ export default defineConfig(({ command, mode }) => {
         }
       }
     },
-    // Vite 6 性能优化
+    // Vite 8 性能优化
     optimizeDeps: {
       include: [
         'vue-i18n', // 新增i18n库预构建
@@ -154,11 +153,7 @@ export default defineConfig(({ command, mode }) => {
         'element-plus',
         'axios',
         'echarts'
-      ],
-      exclude: ['vue-demi'],
-      // 新增vue-i18n预构建以提升启动速度,
-      // 新增缓存目录提升构建速度
-      cacheDir: 'node_modules/.vite_cache'
+      ]
     },
     // CSS 预处理器配置
     css: {
