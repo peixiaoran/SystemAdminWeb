@@ -88,16 +88,16 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.invalidform.applicantDate')" align="center" min-width="170">
-            <template #default="{ row }">
-              {{ formatApplicantDate(resolveApplicantDate(row)) }}
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('formbusiness.invalidform.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
               <el-tag type="info" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('formbusiness.invalidform.applicantDate')" align="center" min-width="170">
+            <template #default="{ row }">
+              {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.invalidform.voidedDate')" align="center" min-width="170">
