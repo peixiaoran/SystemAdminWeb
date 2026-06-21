@@ -418,7 +418,7 @@ const handleEdit = async (row) => {
       dialogForm.formTypeId  = d.formTypeId  || searchForm.formTypeId  || ''
       dialogForm.ruleNameCn  = d.ruleNameCn  || ''
       dialogForm.ruleNameEn  = d.ruleNameEn  || ''
-      dialogForm.positionId  = d.positionId  || ''
+      dialogForm.positionId  = d.positionId  || '0'
       dialogForm.guidance    = d.guidance    || ''
       dialogForm.sortOrder   = d.sortOrder   ?? 0
       if (dialogForm.formGroupId) await loadDialogFormTypeOptions(dialogForm.formGroupId)
@@ -457,8 +457,8 @@ const handleSubmit = async () => {
       formTypeId:  dialogForm.formTypeId,
       ruleNameCn:  dialogForm.ruleNameCn,
       ruleNameEn:  dialogForm.ruleNameEn,
-      positionId:  dialogForm.positionId,
-      guidance:    dialogForm.guidance,
+      positionId:  dialogForm.positionId === '0' ? null : dialogForm.positionId,
+      guidance:    dialogForm.guidance || null,
       sortOrder:   dialogForm.sortOrder
     }
     const api        = isEdit ? UPDATE_WORKFLOWRULE_API : INSERT_WORKFLOWRULE_API
