@@ -544,7 +544,7 @@
         <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')">
           <el-input
             v-model="agentFilters.userNo"
-            class="agent-filter-input-compact"
+            class="agent-filter-input-userno"
             clearable
             :placeholder="t('formbusiness.leaveform.applicantUserNo')"
             @input="handleAgentFilterInput"
@@ -2024,6 +2024,7 @@ async function fetchAgentUserList () {
   agentListLoading.value = true
   try {
     const res = await post(GET_AGENT_USER_INFO_API, {
+      formId: String(form.formId || ''),
       departmentId: agentFilters.departmentId || '',
       userNo: agentFilters.userNo || '',
       userName: agentFilters.userName || '',
@@ -3438,7 +3439,11 @@ onMounted(async () => {
 }
 
 .agent-filter-form .agent-filter-dept-select {
-  width: 160px;
+  width: 180px;
+}
+
+.agent-filter-form .agent-filter-input-userno {
+  width: 155px;
 }
 
 .agent-filter-form .agent-filter-input-compact {

@@ -213,12 +213,23 @@
           <el-row v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent', 'LeaveHours', 'LeaveDays'])" :gutter="16">
             <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="8">
               <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserId">
-                <el-input
-                  class="agent-field-input"
-                  :model-value="agentDisplayText"
-                  :placeholder="t('formbusiness.leaveform.pleaseSelectAgent')"
-                  disabled
-                />
+                <div class="agent-field-control">
+                  <el-input
+                    :model-value="agentDisplayText"
+                    :placeholder="t('formbusiness.leaveform.pleaseSelectAgent')"
+                    disabled
+                  />
+                  <el-button
+                    v-if="isStepFieldVisible('SelectAgent')"
+                    type="primary"
+                    plain
+                    disabled
+                    class="agent-picker-btn"
+                    :title="t('formbusiness.leaveform.selectAgent')"
+                  >
+                    <el-icon><Search /></el-icon>
+                  </el-button>
+                </div>
               </el-form-item>
             </el-col>
             <el-col v-if="isAnyStepFieldVisible(['LeaveHours', 'LeaveDays'])" :span="16">
@@ -549,7 +560,7 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock, View } from '@element-plus/icons-vue'
+  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -1926,8 +1937,23 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     width: 100%;
   }
 
-  .agent-field-input {
+  .agent-field-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     width: 100%;
+  }
+
+  .agent-field-control .el-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .agent-picker-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
   }
   
   .leave-form :deep(.el-input__wrapper),

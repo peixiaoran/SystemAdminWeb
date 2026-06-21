@@ -84,7 +84,7 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.formpending.applicantDate')" align="center" min-width="170">
+          <el-table-column :label="$t('formbusiness.formpending.applicantDate')" align="center" min-width="150">
             <template #default="{ row }">
               {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
@@ -99,7 +99,7 @@
           <el-table-column
             :label="$t('formbusiness.formpending.pendingReviewers')"
             align="center"
-            min-width="180"
+            min-width="110"
           >
             <template #default="{ row }">
               <el-link
@@ -119,7 +119,7 @@
           <el-table-column
             :label="$t('common.operation')"
             align="center"
-            min-width="160"
+            min-width="180"
             fixed="right"
           >
             <template #default="{ row }">
@@ -140,6 +140,7 @@
               >
                 {{ $t('formbusiness.formpending.invalidate') }}
               </el-link>
+              <span v-if="!row.reviewPath && !canShowInvalidate(row)">—</span>
             </template>
           </el-table-column>
         </el-table>
@@ -187,14 +188,14 @@
           show-overflow-tooltip
         />
         <el-table-column
-          prop="appointmentType"
+          prop="appointmentTypeName"
           :label="$t('formbusiness.formpending.appointmentType')"
           min-width="120"
           align="center"
           header-align="center"
           show-overflow-tooltip
         >
-          <template #default="{ row: r }">{{ r.appointmentType || '-' }}</template>
+          <template #default="{ row: r }">{{ r.appointmentTypeName || '-' }}</template>
         </el-table-column>
         <el-table-column
           prop="reviewUserName"
@@ -557,7 +558,28 @@ const handleVoidForm = async (row) => {
   }
 }
 
-const canShowInvalidate = () => listMode.value === 'pendingSubmit'
+const isFormVoided = (row) => {
+  const candidates = [
+    row?.formStatus,
+    row?.FormStatus,
+    row?.formStatusCode,
+    row?.FormStatusCode,
+    row?.formStatusName,
+    row?.FormStatusName
+  ]
+  for (const item of candidates) {
+    const key = normalizeFormStatusKey(item)
+    if (key === 'voided' || key === 'invalid' || key === 'cancelled') return true
+  }
+  return false
+}
+
+const canShowInvalidate = (row) => {
+  if (listMode.value !== 'pendingSubmit') return false
+  if (!row?.formId) return false
+  if (isFormVoided(row)) return false
+  return true
+}
 
 const onFormPendingRefreshMessage = (event) => {
   if (event.origin !== window.location.origin) return

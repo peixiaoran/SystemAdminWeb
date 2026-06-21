@@ -82,7 +82,7 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.formhistory.applicantDate')" align="center" min-width="170">
+          <el-table-column :label="$t('formbusiness.formhistory.applicantDate')" align="center" min-width="150">
             <template #default="{ row }">
               {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
@@ -97,7 +97,7 @@
           <el-table-column
             :label="$t('formbusiness.formpending.pendingReviewers')"
             align="center"
-            min-width="180"
+            min-width="110"
           >
             <template #default="{ row }">
               <el-link
@@ -117,7 +117,7 @@
           <el-table-column
             :label="$t('formbusiness.formhistory.operation')"
             align="center"
-            min-width="160"
+            min-width="180"
             fixed="right"
           >
             <template #default="{ row }">
@@ -173,14 +173,14 @@
             show-overflow-tooltip
           />
           <el-table-column
-            prop="appointmentType"
+            prop="appointmentTypeName"
             :label="$t('formbusiness.formpending.appointmentType')"
             min-width="120"
             align="center"
             header-align="center"
             show-overflow-tooltip
           >
-            <template #default="{ row: r }">{{ r.appointmentType || '-' }}</template>
+            <template #default="{ row: r }">{{ r.appointmentTypeName || '-' }}</template>
           </el-table-column>
           <el-table-column
             prop="reviewUserName"
@@ -265,6 +265,7 @@ const getFormStatusTagType = (row) => {
     if (!key) continue
     if (key === 'approved') return 'success'
     if (key === 'underreview') return 'warning'
+    if (key === 'voided' || key === 'invalid' || key === 'cancelled') return 'info'
   }
   return 'primary'
 }

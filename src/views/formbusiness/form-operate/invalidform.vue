@@ -90,7 +90,7 @@
           </el-table-column>
           <el-table-column :label="$t('formbusiness.invalidform.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
-              <el-tag type="info" round>
+              <el-tag type="info" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>

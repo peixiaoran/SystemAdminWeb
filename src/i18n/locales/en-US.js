@@ -599,11 +599,11 @@ export default {
       getPendingReviewFailed: 'Failed to get pending review list',
       getFailed: 'Failed to get form pending list',
       viewFormPendingReviewers: 'Pending reviewers',
-      pendingReviewers: 'Pending reviewers',
+      pendingReviewers: 'Pending',
       formPendingReviewersTitle: 'Pending reviewers',
       stepName: 'Step',
       reviewerUserName: 'Reviewer',
-      appointmentType: 'Approval identity',
+      appointmentType: 'Review identity',
       agentUserName: 'Agent',
       getFormPendingReviewersFailed: 'Failed to load pending reviewers',
       noFormPendingReviewers: 'No pending reviewers'
