@@ -469,7 +469,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-operate/formhistory.vue'),
               meta: { 
                 title: 'route.formHistory',
-                icon: 'FolderRemove',
+                icon: 'FolderOpened',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
@@ -480,7 +480,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-operate/invalidform.vue'),
               meta: { 
                 title: 'route.invalidForm',
-                icon: 'FolderRemove',
+                icon: 'FolderDelete',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
