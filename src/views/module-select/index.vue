@@ -76,7 +76,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ArrowDown, Loading, User, Setting } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -235,33 +235,13 @@ const enterPMenu = (pmenu) => {
 // 退出登录
 const logout = async () => {
   try {
-    await ElMessageBox.confirm(t('common.confirmLogout'), t('common.tip'), {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning'
-    })
-    
     const result = await userStore.logout()
-    
-    // 根据登出结果处理
     if (result && result.success) {
-      // 显示后端返回的退出成功信息，如果没有message则使用默认提示
-      const successMessage = result.message || t('common.logoutSuccess')
-      ElMessage({
-        message: successMessage,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      
-      // 企业标准：清理前端会话本地态（不无脑 localStorage.clear），并 replace 到登录页避免回退
       clearClientSession({ keepLanguage: true })
       router.replace('/login')
-    } else {
-      // 登出失败，错误信息已在 userStore.logout() 中显示
     }
-  } catch (error) {
-    // 用户取消或登出异常不额外打印控制台日志
+  } catch {
+    // 登出异常不额外处理
   }
 }
 </script>
