@@ -269,7 +269,7 @@
         </el-row>
 
         <!-- 附件上传 -->
-        <el-row v-if="isStepFieldVisible('Upload')" :gutter="16">
+        <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaveform.attachments')">
               <div class="upload-section">
@@ -289,7 +289,7 @@
                     {{ getAttachmentRequirementTip() }}
                   </span>
                 </div>
-                <el-table v-if="uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
+                <el-table :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
                   <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
                     <template #default="{ row }">
@@ -735,7 +735,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock, View } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
   calculateLeaveTotalHours,
@@ -912,6 +912,7 @@ const rejectRules = {
 
 const uploading = ref(false)
 const uploadedAttachments = ref([])
+const currentFormStatus = ref('')
 
 const defaultFormTypeId = '1987217256446300160'
 const currentFormTypeId = ref('')
@@ -1185,6 +1186,7 @@ function getAdjustedLeaveBalanceDays (item, type) {
   const rawDays = Number(getLeaveBalanceRawDays(item, type))
   if (!Number.isFinite(rawDays)) return getLeaveBalanceRawDays(item, type)
   if (!isLeaveBalanceAffected(item?.year, type)) return rawDays
+  if (currentFormStatus.value === 'approved') return rawDays
   const remainingHours = rawDays * 8 - getSelectedLeaveHoursByYear(item.year)
   return remainingHours / 8
 }
@@ -1373,6 +1375,7 @@ function bindFormData (data) {
   if (rangeStart && rangeEnd) {
     calculateDuration()
   }
+  currentFormStatus.value = String(data.formStatus ?? data.FormStatus ?? '').trim().toLowerCase()
   resetLeaveBalanceQueryRange(form.leaveTimeRange)
   const attachmentList = data.attachment ?? data.attachmentList ?? data.Attachment
   if (Array.isArray(attachmentList)) {
@@ -2549,7 +2552,7 @@ async function resolveTokenFormId (tokenValue) {
   try {
     const formData = new window.FormData()
     formData.append('tokenValue', String(tokenValue))
-    const res = await post(GET_FORM_NOTIFICATION_TOKEN_API, formData, {
+    const res = await post(GET_FORM_NOTIFY_TOKEN_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       disableAutoLogout: true,
       silentAuthError: false,

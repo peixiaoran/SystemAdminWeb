@@ -2,12 +2,12 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="已作废表单筛选">
-        <el-form-item :label="$t('formbusiness.invalidform.formGroupName')">
+        <el-form-item :label="$t('formbusiness.voidedform.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"
-            :placeholder="$t('formbusiness.invalidform.pleaseSelectFormGroup')"
+            :placeholder="$t('formbusiness.voidedform.pleaseSelectFormGroup')"
             filterable
-            class="invalidform-filter-select"
+            class="voidedform-filter-select"
             @change="handleFormGroupChange"
           >
             <el-option
@@ -19,12 +19,12 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.invalidform.formTypeName')">
+        <el-form-item :label="$t('formbusiness.voidedform.formTypeName')">
           <el-select
             v-model="searchForm.formTypeId"
-            :placeholder="$t('formbusiness.invalidform.pleaseSelectFormType')"
+            :placeholder="$t('formbusiness.voidedform.pleaseSelectFormType')"
             filterable
-            class="invalidform-filter-select"
+            class="voidedform-filter-select"
             @change="handleFormTypeChange"
           >
             <el-option
@@ -36,12 +36,12 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.invalidform.formStatus')">
+        <el-form-item :label="$t('formbusiness.voidedform.formStatus')">
           <el-select
             v-model="searchForm.formStatus"
-            :placeholder="$t('formbusiness.invalidform.pleaseSelectFormStatus')"
+            :placeholder="$t('formbusiness.voidedform.pleaseSelectFormStatus')"
             filterable
-            class="invalidform-filter-select"
+            class="voidedform-filter-select"
             @change="handleFilterChange"
           >
             <el-option
@@ -65,7 +65,7 @@
 
       <div class="table-container">
         <el-table
-          :data="formInvalidList"
+          :data="formVoidedList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
@@ -73,9 +73,9 @@
           class="conventional-table"
           :empty-text="$t('common.noData')"
         >
-          <el-table-column type="index" :label="$t('formbusiness.invalidform.index')" width="70" align="center" fixed />
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.invalidform.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
-          <el-table-column :label="$t('formbusiness.invalidform.formNo')" align="center" min-width="160">
+          <el-table-column type="index" :label="$t('formbusiness.voidedform.index')" width="70" align="center" fixed />
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.voidedform.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.voidedform.formNo')" align="center" min-width="160">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -88,19 +88,19 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.invalidform.formStatus')" align="center" min-width="160">
+          <el-table-column :label="$t('formbusiness.voidedform.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
               <el-tag type="info" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.invalidform.applicantDate')" align="center" min-width="170">
+          <el-table-column :label="$t('formbusiness.voidedform.applicantDate')" align="center" min-width="170">
             <template #default="{ row }">
               {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.invalidform.voidedDate')" align="center" min-width="170">
+          <el-table-column :label="$t('formbusiness.voidedform.voidedDate')" align="center" min-width="170">
             <template #default="{ row }">
               {{ formatVoidedDate(row.voidedDate) }}
             </template>
@@ -116,7 +116,7 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="getFormInvalidList"
+          @current-change="getFormVoidedList"
         />
       </div>
     </el-card>
@@ -134,8 +134,8 @@ import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
   GET_FORMSTATUS_DROPDOWN_API,
-  GET_FORM_INVALID_PAGE_API
-} from '@/config/api/formbusiness/form-operate/invalidform.js'
+  GET_FORM_VOIDED_PAGE_API
+} from '@/config/api/formbusiness/form-operate/voidedform.js'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -176,21 +176,21 @@ const formatVoidedDate = (dateStr) => {
 
 const loading = ref(false)
 const filterPending = ref(false)
-const formInvalidList = ref([])
+const formVoidedList = ref([])
 
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,
-  formGroupName: t('formbusiness.invalidform.pleaseSelect')
+  formGroupName: t('formbusiness.voidedform.pleaseSelect')
 })
 
 const formTypePlaceholder = () => ({
   formTypeId: ALL_OPTION_VALUE,
-  formTypeName: t('formbusiness.invalidform.pleaseSelect')
+  formTypeName: t('formbusiness.voidedform.pleaseSelect')
 })
 
 const formStatusPlaceholder = () => ({
   formStatus: '',
-  formStatusName: t('formbusiness.invalidform.pleaseSelect')
+  formStatusName: t('formbusiness.voidedform.pleaseSelect')
 })
 
 const formGroupOptions = ref([formGroupPlaceholder()])
@@ -217,15 +217,15 @@ const getFormGroupOptions = async () => {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (res?.code === 200) {
       formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.invalidform.pleaseSelect') },
+        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.voidedform.pleaseSelect') },
         ...(res.data || [])
       ]
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.invalidform.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getFormGroupFailed'))
   } catch {
-    showMessage(t('formbusiness.invalidform.getFormGroupFailed'))
+    showMessage(t('formbusiness.voidedform.getFormGroupFailed'))
   }
 }
 
@@ -237,14 +237,14 @@ const getFormTypeOptions = async () => {
     const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
       formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.invalidform.pleaseSelect') },
+        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.voidedform.pleaseSelect') },
         ...(res.data || [])
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.invalidform.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getFormTypeFailed'))
   } catch {
-    showMessage(t('formbusiness.invalidform.getFormTypeFailed'))
+    showMessage(t('formbusiness.voidedform.getFormTypeFailed'))
   }
 }
 
@@ -253,19 +253,19 @@ const getFormStatusOptions = async () => {
     const res = await post(GET_FORMSTATUS_DROPDOWN_API, {})
     if (res?.code === 200) {
       formStatusOptions.value = [
-        { formStatus: '', formStatusName: t('formbusiness.invalidform.pleaseSelect') },
+        { formStatus: '', formStatusName: t('formbusiness.voidedform.pleaseSelect') },
         // 过滤掉 formStatus 为 null/undefined 的脏数据，避免 el-option value 触发类型校验告警
         ...(res.data || []).filter((item) => !isUnsetFilter(item?.formStatus))
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.invalidform.getFormStatusFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getFormStatusFailed'))
   } catch {
-    showMessage(t('formbusiness.invalidform.getFormStatusFailed'))
+    showMessage(t('formbusiness.voidedform.getFormStatusFailed'))
   }
 }
 
-const getFormInvalidList = async () => {
+const getFormVoidedList = async () => {
   loading.value = true
   try {
     const params = {
@@ -276,17 +276,17 @@ const getFormInvalidList = async () => {
       pageSize: String(pagination.pageSize),
       totalCount: String(pagination.totalCount || 0)
     }
-    const res = await post(GET_FORM_INVALID_PAGE_API, params)
+    const res = await post(GET_FORM_VOIDED_PAGE_API, params)
     if (res?.code === 200) {
-      formInvalidList.value = res.data || []
+      formVoidedList.value = res.data || []
       pagination.totalCount = Number(res.totalCount || 0)
       return
     }
-    formInvalidList.value = []
-    showMessage(res?.message || t('formbusiness.invalidform.getInvalidFormsFailed'))
+    formVoidedList.value = []
+    showMessage(res?.message || t('formbusiness.voidedform.getVoidedFormsFailed'))
   } catch {
-    formInvalidList.value = []
-    showMessage(t('formbusiness.invalidform.getInvalidFormsFailed'))
+    formVoidedList.value = []
+    showMessage(t('formbusiness.voidedform.getVoidedFormsFailed'))
   } finally {
     loading.value = false
   }
@@ -313,14 +313,14 @@ const handleFormGroupChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getFormInvalidList()
+    await getFormVoidedList()
   })
 }
 
 const handleFilterChange = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
-    await getFormInvalidList()
+    await getFormVoidedList()
   })
 }
 
@@ -332,7 +332,7 @@ const handleFormTypeChange = () => {
 const handleSearch = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
-    await getFormInvalidList()
+    await getFormVoidedList()
   })
 }
 
@@ -343,13 +343,13 @@ const handleReset = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getFormInvalidList()
+    await getFormVoidedList()
   })
 }
 
 const handleSizeChange = () => {
   pagination.pageIndex = 1
-  getFormInvalidList()
+  getFormVoidedList()
 }
 
 const normalizePath = (p) => {
@@ -388,7 +388,7 @@ const openFormPage = (row, pathKey) => {
   if (!row?.[pathKey]) return
   const path = normalizePath(row[pathKey])
   if (!isPathSafe(path)) {
-    showMessage(t('formbusiness.invalidform.getFailed'))
+    showMessage(t('formbusiness.voidedform.getFailed'))
     return
   }
   const resolved = router.resolve({
@@ -396,7 +396,7 @@ const openFormPage = (row, pathKey) => {
     query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') }
   })
   if (!isRouteValid(resolved)) {
-    showMessage(t('formbusiness.invalidform.getFailed'))
+    showMessage(t('formbusiness.voidedform.getFailed'))
     return
   }
   openPopupWindow(resolved.href, 'form_view')
@@ -406,7 +406,7 @@ onMounted(async () => {
   await getFormGroupOptions()
   await getFormStatusOptions()
   await getFormTypeOptions()
-  await getFormInvalidList()
+  await getFormVoidedList()
 })
 </script>
 
@@ -421,7 +421,7 @@ onMounted(async () => {
   min-width: 1280px;
 }
 
-.invalidform-filter-select {
+.voidedform-filter-select {
   width: 220px;
   min-width: 200px;
 }

@@ -609,7 +609,7 @@ export default {
       noFormPendingReviewers: 'No pending reviewers'
     },
 
-    invalidform: {
+    voidedform: {
       pleaseSelect: 'Please select',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
@@ -624,7 +624,7 @@ export default {
       getFormGroupFailed: 'Failed to get form group',
       getFormTypeFailed: 'Failed to get form type',
       getFormStatusFailed: 'Failed to get form status',
-      getInvalidFormsFailed: 'Failed to get invalid forms list',
+      getVoidedFormsFailed: 'Failed to get voided forms list',
       getFailed: 'Failed to load data'
     },
 
@@ -653,7 +653,8 @@ export default {
       withdraw: 'Withdraw',
       withdrawConfirm: 'Are you sure you want to withdraw this form?',
       withdrawSuccess: 'Withdrawn successfully',
-      withdrawFailed: 'Failed to withdraw form'
+      withdrawFailed: 'Failed to withdraw form',
+      printPdf: 'Print'
     },
 
     // Leave Form Page Specific
@@ -1021,12 +1022,12 @@ export default {
     formoperate: 'Form Operation',
     formPending: 'Form Pending',
     formHistory: 'Form History',
-    invalidForm: 'Invalid Form',
-    applyform: 'Application Form',
+    voidedForm: 'Voided Form',
+    applyform: 'Apply Form',
     controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',
     nationalityInfo: 'Nationality Info',
-    custmat: 'Customer Production Plan',
+    custmat: 'Customer Production',
     custmatbasicinfo: 'CustMat Basic',
     custmatManufacturer: 'Manufacturer Info'
   },

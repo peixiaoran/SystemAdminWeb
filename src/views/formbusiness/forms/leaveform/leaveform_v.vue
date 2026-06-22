@@ -258,11 +258,11 @@
           </el-row>
   
           <!-- 附件 -->
-          <el-row v-if="isStepFieldVisible('Upload')" :gutter="16">
+          <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaveform.attachments')">
                 <div class="upload-section">
-                  <el-table v-if="uploadedAttachments.length > 0" :data="uploadedAttachments" border size="small" class="attachment-table">
+                  <el-table :data="uploadedAttachments" border size="small" class="attachment-table">
                     <el-table-column type="index" width="55" align="center" label="#" />
                     <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
                       <template #default="{ row }">
@@ -562,7 +562,7 @@
   import en from 'element-plus/dist/locale/en.mjs'
   import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
-  import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFICATION_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+  import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
   import { calculateLeaveHoursForYear } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -1025,6 +1025,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     const rawDays = Number(getLeaveBalanceRawDays(item, type))
     if (!Number.isFinite(rawDays)) return getLeaveBalanceRawDays(item, type)
     if (!isLeaveBalanceAffected(item?.year, type)) return rawDays
+    if (String(form.formStatus ?? '').trim().toLowerCase() === 'approved') return rawDays
     const remainingHours = rawDays * 8 - getSelectedLeaveHoursByYear(item.year)
     return remainingHours / 8
   }
@@ -1686,7 +1687,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     try {
       const formData = new window.FormData()
       formData.append('tokenValue', String(tokenValue))
-      const res = await post(GET_FORM_NOTIFICATION_TOKEN_API, formData, {
+      const res = await post(GET_FORM_NOTIFY_TOKEN_API, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         disableAutoLogout: true,
         silentAuthError: false,

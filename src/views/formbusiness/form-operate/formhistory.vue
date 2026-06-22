@@ -68,8 +68,8 @@
           class="conventional-table"
         >
           <el-table-column type="index" :label="$t('formbusiness.formhistory.index')" width="70" align="center" fixed />
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formhistory.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
-          <el-table-column :label="$t('formbusiness.formhistory.formNo')" align="center" min-width="160">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.formhistory.formTypeName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.formhistory.formNo')" align="center" min-width="200">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -138,7 +138,16 @@
               >
                 {{ $t('formbusiness.formpending.invalidate') }}
               </el-link>
-              <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row)">—</span>
+              <el-link
+                v-if="canShowPrint(row)"
+                type="primary"
+                underline="never"
+                style="margin-left: 12px;"
+                @click="handlePrintForm(row)"
+              >
+                {{ $t('formbusiness.formhistory.printPdf') }}
+              </el-link>
+              <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
             </template>
           </el-table-column>
         </el-table>
@@ -248,25 +257,14 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const normalizeFormStatusKey = (value) =>
-  String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
+const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
 
 const getFormStatusTagType = (row) => {
-  const candidates = [
-    row?.formStatus,
-    row?.FormStatus,
-    row?.formStatusCode,
-    row?.FormStatusCode,
-    row?.formStatusName,
-    row?.FormStatusName
-  ]
-  for (const item of candidates) {
-    const key = normalizeFormStatusKey(item)
-    if (!key) continue
-    if (key === 'approved') return 'success'
-    if (key === 'underreview') return 'warning'
-    if (key === 'voided' || key === 'invalid' || key === 'cancelled') return 'info'
-  }
+  const s = normalizeStatus(row)
+  if (s === 'approved') return 'success'
+  if (s === 'underreview') return 'warning'
+  if (s === 'rejected') return 'danger'
+  if (s === 'voided') return 'info'
   return 'primary'
 }
 
@@ -537,10 +535,19 @@ const openFormPendingReviewers = async (row) => {
   }
 }
 
+const isUnderReview = (row) => normalizeStatus(row) === 'underreview'
+
 const canShowInvalidate = (row) => {
   if (listMode.value !== 'applyHistory') return false
   if (!row?.formId) return false
-  return true
+  return isUnderReview(row)
+}
+
+const canShowPrint = (row) =>
+  !!row?.formId && normalizeStatus(row) === 'approved'
+
+const handlePrintForm = (_row) => {
+  // TODO: 实现打印PDF功能
 }
 
 const handleVoidForm = async (row) => {

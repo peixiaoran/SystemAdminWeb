@@ -544,7 +544,7 @@ export default {
       noFormPendingReviewers: '暂无待审批人'
     },
 
-    invalidform: {
+    voidedform: {
       pleaseSelect: '请选择',
       formGroupName: '表单组别',
       formTypeName: '表单类型',
@@ -559,7 +559,7 @@ export default {
       getFormGroupFailed: '获取表单组别失败',
       getFormTypeFailed: '获取表单类型失败',
       getFormStatusFailed: '获取表单状态失败',
-      getInvalidFormsFailed: '获取已作废表单列表失败',
+      getVoidedFormsFailed: '获取已作废表单列表失败',
       getFailed: '获取数据失败'
     },
 
@@ -588,7 +588,8 @@ export default {
       withdraw: '撤回',
       withdrawConfirm: '确定要撤回该表单吗？',
       withdrawSuccess: '撤回成功',
-      withdrawFailed: '撤回失败'
+      withdrawFailed: '撤回失败',
+      printPdf: '打印'
     },
 
     // 请假单页面专用
@@ -942,7 +943,7 @@ export default {
     formoperate: '表单操作',
     formPending: '待审表单列表',
     formHistory: '表单历史记录',
-    invalidForm: '作废表单列表',
+    voidedForm: '作废表单列表',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',

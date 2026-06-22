@@ -70,8 +70,8 @@
         :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.formpending.index')" width="70" align="center" fixed />
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="180" show-overflow-tooltip />
-          <el-table-column :label="$t('formbusiness.formpending.formNo')" align="center" min-width="160">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.formpending.formTypeName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.formpending.formNo')" align="center" min-width="200">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -250,25 +250,14 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const normalizeFormStatusKey = (value) =>
-  String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '')
+const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
 
 const getFormStatusTagType = (row) => {
-  const candidates = [
-    row?.formStatus,
-    row?.FormStatus,
-    row?.formStatusCode,
-    row?.FormStatusCode,
-    row?.formStatusName,
-    row?.FormStatusName
-  ]
-  for (const item of candidates) {
-    const key = normalizeFormStatusKey(item)
-    if (!key) continue
-    if (key === 'approved') return 'success'
-    if (key === 'underreview') return 'warning'
-    if (key === 'rejected') return 'danger'
-  }
+  const s = normalizeStatus(row)
+  if (s === 'approved') return 'success'
+  if (s === 'underreview') return 'warning'
+  if (s === 'rejected') return 'danger'
+  if (s === 'voided') return 'info'
   return 'primary'
 }
 
@@ -558,21 +547,7 @@ const handleVoidForm = async (row) => {
   }
 }
 
-const isFormVoided = (row) => {
-  const candidates = [
-    row?.formStatus,
-    row?.FormStatus,
-    row?.formStatusCode,
-    row?.FormStatusCode,
-    row?.formStatusName,
-    row?.FormStatusName
-  ]
-  for (const item of candidates) {
-    const key = normalizeFormStatusKey(item)
-    if (key === 'voided' || key === 'invalid' || key === 'cancelled') return true
-  }
-  return false
-}
+const isFormVoided = (row) => normalizeStatus(row) === 'voided'
 
 const canShowInvalidate = (row) => {
   if (listMode.value !== 'pendingSubmit') return false
