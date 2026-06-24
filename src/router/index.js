@@ -464,12 +464,23 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'formhistory',
-              name: 'FormHistory',
-              component: () => import('../views/formbusiness/form-operate/formhistory.vue'),
-              meta: { 
-                title: 'route.formHistory',
+              path: 'applyhistory',
+              name: 'ApplyHistory',
+              component: () => import('../views/formbusiness/form-operate/applyhistory.vue'),
+              meta: {
+                title: 'route.applyHistory',
                 icon: 'FolderOpened',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'reviewhistory',
+              name: 'ReviewHistory',
+              component: () => import('../views/formbusiness/form-operate/reviewhistory.vue'),
+              meta: {
+                title: 'route.reviewHistory',
+                icon: 'FolderChecked',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

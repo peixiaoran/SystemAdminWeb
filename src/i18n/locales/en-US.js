@@ -628,11 +628,9 @@ export default {
       getFailed: 'Failed to load data'
     },
 
-    formhistory: {
-      filterAriaLabel: 'Form history filter',
+    applyhistory: {
+      filterAriaLabel: 'Apply history filter',
       pleaseSelect: 'Please select',
-      applyHistory: 'Apply His',
-      reviewHistory: 'Review His',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
       formStatus: 'Form Status',
@@ -643,17 +641,35 @@ export default {
       index: 'Index',
       pleaseSelectFormGroup: 'Please select form group',
       pleaseSelectFormType: 'Please select form type',
-      pleaseInputFormNo: 'Please enter form number',
       getFormGroupFailed: 'Failed to get form group',
       getFormTypeFailed: 'Failed to get form type',
       getApplyHistoryFailed: 'Failed to get apply history',
-      getReviewHistoryFailed: 'Failed to get review history',
-      getFailed: 'Failed to get form history',
+      getFailed: 'Failed to get apply history',
       operation: 'Operation',
       withdraw: 'Withdraw',
       withdrawConfirm: 'Are you sure you want to withdraw this form?',
       withdrawSuccess: 'Withdrawn successfully',
-      withdrawFailed: 'Failed to withdraw form',
+      withdrawFailed: 'Failed to withdraw form'
+    },
+
+    reviewhistory: {
+      filterAriaLabel: 'Review history filter',
+      pleaseSelect: 'Please select',
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      formStatus: 'Form Status',
+      formNo: 'Form No',
+      applicantDate: 'Applicant Date',
+      applyUserName: 'Applicant',
+      applyUserDeptName: 'Applicant Department',
+      index: 'Index',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseSelectFormType: 'Please select form type',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getReviewHistoryFailed: 'Failed to get review history',
+      getFailed: 'Failed to get review history',
+      operation: 'Operation',
       printPdf: 'Print'
     },
 
@@ -1021,7 +1037,8 @@ export default {
     workflowrulestep: 'Wf Rule Step',
     formoperate: 'Form Operation',
     formPending: 'Form Pending',
-    formHistory: 'Form History',
+    applyHistory: 'Apply History',
+    reviewHistory: 'Review History',
     voidedForm: 'Voided Form',
     applyform: 'Apply Form',
     controlInfo: 'Control Info',

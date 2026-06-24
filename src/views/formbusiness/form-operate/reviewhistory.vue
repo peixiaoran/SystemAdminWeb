@@ -1,22 +1,11 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.formhistory.filterAriaLabel')">
-        <el-form-item>
-          <el-radio-group v-model="listMode" @change="handleListModeChange">
-            <el-radio-button value="applyHistory">
-              {{ $t('formbusiness.formhistory.applyHistory') }}
-            </el-radio-button>
-            <el-radio-button value="reviewHistory">
-              {{ $t('formbusiness.formhistory.reviewHistory') }}
-            </el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item :label="$t('formbusiness.formhistory.formGroupName')">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.reviewhistory.filterAriaLabel')">
+        <el-form-item :label="$t('formbusiness.reviewhistory.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"
-            :placeholder="$t('formbusiness.formhistory.pleaseSelectFormGroup')"
+            :placeholder="$t('formbusiness.reviewhistory.pleaseSelectFormGroup')"
             filterable
             class="history-filter-select"
             @change="handleFormGroupChange"
@@ -30,10 +19,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.formhistory.formTypeName')">
+        <el-form-item :label="$t('formbusiness.reviewhistory.formTypeName')">
           <el-select
             v-model="searchForm.formTypeId"
-            :placeholder="$t('formbusiness.formhistory.pleaseSelectFormType')"
+            :placeholder="$t('formbusiness.reviewhistory.pleaseSelectFormType')"
             filterable
             class="history-filter-select"
             @change="handleFormTypeChange"
@@ -59,7 +48,7 @@
 
       <div class="table-container">
         <el-table
-          :data="formHistoryList"
+          :data="formList"
           border
           stripe
           :empty-text="$t('common.noData')"
@@ -67,9 +56,9 @@
           v-loading="loading || filterPending"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('formbusiness.formhistory.index')" width="70" align="center" fixed />
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.formhistory.formTypeName')" align="center" min-width="220" show-overflow-tooltip />
-          <el-table-column :label="$t('formbusiness.formhistory.formNo')" align="center" min-width="200">
+          <el-table-column type="index" :label="$t('formbusiness.reviewhistory.index')" width="70" align="center" fixed />
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.reviewhistory.formTypeName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column :label="$t('formbusiness.reviewhistory.formNo')" align="center" min-width="200">
             <template #default="{ row }">
               <el-link
                 v-if="row.viewPath"
@@ -82,12 +71,12 @@
               <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.formhistory.applicantDate')" align="center" min-width="150">
+          <el-table-column :label="$t('formbusiness.reviewhistory.applicantDate')" align="center" min-width="150">
             <template #default="{ row }">
               {{ formatApplicantDate(resolveApplicantDate(row)) }}
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.formhistory.formStatus')" align="center" min-width="160">
+          <el-table-column :label="$t('formbusiness.reviewhistory.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
               <el-tag :type="getFormStatusTagType(row)" effect="dark" round>
                 {{ row.formStatusName || '-' }}
@@ -112,42 +101,24 @@
               <span v-else>—</span>
             </template>
           </el-table-column>
-          <el-table-column prop="applyUserName" :label="$t('formbusiness.formhistory.applyUserName')" align="center" min-width="140" show-overflow-tooltip />
-          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.formhistory.applyUserDeptName')" align="center" min-width="220" show-overflow-tooltip />
+          <el-table-column prop="applyUserName" :label="$t('formbusiness.reviewhistory.applyUserName')" align="center" min-width="140" show-overflow-tooltip />
+          <el-table-column prop="applyUserDeptName" :label="$t('formbusiness.reviewhistory.applyUserDeptName')" align="center" min-width="220" show-overflow-tooltip />
           <el-table-column
-            :label="$t('formbusiness.formhistory.operation')"
+            :label="$t('formbusiness.reviewhistory.operation')"
             align="center"
-            min-width="180"
+            min-width="120"
             fixed="right"
           >
             <template #default="{ row }">
               <el-link
-                v-if="canShowWithdraw(row)"
-                type="warning"
-                underline="never"
-                @click="handleWithdrawForm(row)"
-              >
-                {{ $t('formbusiness.formhistory.withdraw') }}
-              </el-link>
-              <el-link
-                v-if="canShowInvalidate(row)"
-                type="danger"
-                underline="never"
-                style="margin-left: 12px;"
-                @click="handleVoidForm(row)"
-              >
-                {{ $t('formbusiness.formpending.invalidate') }}
-              </el-link>
-              <el-link
                 v-if="canShowPrint(row)"
                 type="primary"
                 underline="never"
-                style="margin-left: 12px;"
                 @click="handlePrintForm(row)"
               >
-                {{ $t('formbusiness.formhistory.printPdf') }}
+                {{ $t('formbusiness.reviewhistory.printPdf') }}
               </el-link>
-              <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
+              <span v-if="!canShowPrint(row)">—</span>
             </template>
           </el-table-column>
         </el-table>
@@ -213,7 +184,7 @@
           :total="pagination.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
-          @current-change="getFormHistoryList"
+          @current-change="getFormList"
         />
       </div>
     </el-card>
@@ -223,19 +194,16 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
-  GET_APPLY_HISTORY_PAGE_API,
   GET_REVIEW_HISTORY_PAGE_API,
-  WITHDRAW_FORM_API,
-  VOIDED_FORM_API,
   GET_FORM_PENDING_USERS_API
-} from '@/config/api/formbusiness/form-operate/formhistory.js'
+} from '@/config/api/formbusiness/form-operate/reviewhistory.js'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -270,20 +238,19 @@ const getFormStatusTagType = (row) => {
 
 const loading = ref(false)
 const filterPending = ref(false)
-const formHistoryList = ref([])
+const formList = ref([])
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
-const listMode = ref('applyHistory')
 
 const formGroupPlaceholder = () => ({
   formGroupId: ALL_OPTION_VALUE,
-  formGroupName: t('formbusiness.formhistory.pleaseSelect')
+  formGroupName: t('formbusiness.reviewhistory.pleaseSelect')
 })
 
 const formTypePlaceholder = () => ({
   formTypeId: ALL_OPTION_VALUE,
-  formTypeName: t('formbusiness.formhistory.pleaseSelect')
+  formTypeName: t('formbusiness.reviewhistory.pleaseSelect')
 })
 
 const formGroupOptions = ref([formGroupPlaceholder()])
@@ -300,14 +267,6 @@ const pagination = reactive({
   totalCount: 0
 })
 
-const getCurrentListApi = () =>
-  listMode.value === 'applyHistory' ? GET_APPLY_HISTORY_PAGE_API : GET_REVIEW_HISTORY_PAGE_API
-
-const getCurrentListErrorKey = () =>
-  listMode.value === 'applyHistory'
-    ? 'formbusiness.formhistory.getApplyHistoryFailed'
-    : 'formbusiness.formhistory.getReviewHistoryFailed'
-
 const normalizeFilterValue = (value) =>
   isUnsetFilter(value) ? String(ALL_OPTION_VALUE) : String(value)
 
@@ -316,15 +275,15 @@ const getFormGroupOptions = async () => {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (res?.code === 200) {
       formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.formhistory.pleaseSelect') },
+        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.reviewhistory.pleaseSelect') },
         ...(res.data || [])
       ]
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.formhistory.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.reviewhistory.getFormGroupFailed'))
   } catch {
-    showMessage(t('formbusiness.formhistory.getFormGroupFailed'))
+    showMessage(t('formbusiness.reviewhistory.getFormGroupFailed'))
   }
 }
 
@@ -336,18 +295,18 @@ const getFormTypeOptions = async () => {
     const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
       formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.formhistory.pleaseSelect') },
+        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.reviewhistory.pleaseSelect') },
         ...(res.data || [])
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.formhistory.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.reviewhistory.getFormTypeFailed'))
   } catch {
-    showMessage(t('formbusiness.formhistory.getFormTypeFailed'))
+    showMessage(t('formbusiness.reviewhistory.getFormTypeFailed'))
   }
 }
 
-const getFormHistoryList = async () => {
+const getFormList = async () => {
   loading.value = true
   try {
     const params = {
@@ -358,17 +317,17 @@ const getFormHistoryList = async () => {
       pageSize: String(pagination.pageSize),
       totalCount: String(pagination.totalCount || 0)
     }
-    const res = await post(getCurrentListApi(), params)
+    const res = await post(GET_REVIEW_HISTORY_PAGE_API, params)
     if (res?.code === 200) {
-      formHistoryList.value = res.data || []
+      formList.value = res.data || []
       pagination.totalCount = Number(res.totalCount || 0)
       return
     }
-    formHistoryList.value = []
-    showMessage(res?.message || t(getCurrentListErrorKey()))
+    formList.value = []
+    showMessage(res?.message || t('formbusiness.reviewhistory.getReviewHistoryFailed'))
   } catch {
-    formHistoryList.value = []
-    showMessage(t(getCurrentListErrorKey()))
+    formList.value = []
+    showMessage(t('formbusiness.reviewhistory.getReviewHistoryFailed'))
   } finally {
     loading.value = false
   }
@@ -390,38 +349,27 @@ const scheduleFilterRequest = async (callback) => {
   }, FILTER_DEBOUNCE_MS)
 }
 
-const handleListModeChange = () => {
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormHistoryList()
-  })
-}
-
 const handleFormGroupChange = () => {
   if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getFormHistoryList()
-  })
-}
-
-const handleFilterChange = () => {
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormHistoryList()
+    await getFormList()
   })
 }
 
 const handleFormTypeChange = () => {
   if (isUnsetFilter(searchForm.formTypeId)) searchForm.formTypeId = ALL_OPTION_VALUE
-  handleFilterChange()
+  scheduleFilterRequest(async () => {
+    pagination.pageIndex = 1
+    await getFormList()
+  })
 }
 
 const handleSearch = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
-    await getFormHistoryList()
+    await getFormList()
   })
 }
 
@@ -431,13 +379,13 @@ const handleReset = () => {
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
-    await getFormHistoryList()
+    await getFormList()
   })
 }
 
 const handleSizeChange = () => {
   pagination.pageIndex = 1
-  getFormHistoryList()
+  getFormList()
 }
 
 const normalizePath = (p) => {
@@ -458,7 +406,7 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-const openPopupWindow = (href, namePrefix = 'form_history_view') => {
+const openPopupWindow = (href, namePrefix = 'review_history_view') => {
   const aw = window.screen.availWidth
   const ah = window.screen.availHeight
   const features = [
@@ -476,7 +424,7 @@ const openFormPage = (row) => {
   if (!row?.viewPath) return
   const path = normalizePath(row.viewPath)
   if (!isPathSafe(path)) {
-    showMessage(t('formbusiness.formhistory.getFailed'))
+    showMessage(t('formbusiness.reviewhistory.getFailed'))
     return
   }
   const resolved = router.resolve({
@@ -484,26 +432,10 @@ const openFormPage = (row) => {
     query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') }
   })
   if (!isRouteValid(resolved)) {
-    showMessage(t('formbusiness.formhistory.getFailed'))
+    showMessage(t('formbusiness.reviewhistory.getFailed'))
     return
   }
   openPopupWindow(resolved.href)
-}
-
-const parseTruthyFlag = (value) => {
-  if (typeof value === 'boolean') return value
-  if (typeof value === 'number') return value === 1
-  if (typeof value === 'string') return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
-  return false
-}
-
-const isSuccessCode = (code) => String(code) === '200'
-
-const resolveIsWithdraw = (row) => row?.isWithdraw ?? row?.IsWithdraw
-
-const canShowWithdraw = (row) => {
-  if (!row?.formId) return false
-  return parseTruthyFlag(resolveIsWithdraw(row))
 }
 
 const onFormPendingReviewersDialogClosed = () => {
@@ -535,14 +467,6 @@ const openFormPendingReviewers = async (row) => {
   }
 }
 
-const isUnderReview = (row) => normalizeStatus(row) === 'underreview'
-
-const canShowInvalidate = (row) => {
-  if (listMode.value !== 'applyHistory') return false
-  if (!row?.formId) return false
-  return isUnderReview(row)
-}
-
 const canShowPrint = (row) =>
   !!row?.formId && normalizeStatus(row) === 'approved'
 
@@ -550,73 +474,10 @@ const handlePrintForm = (_row) => {
   // TODO: 实现打印PDF功能
 }
 
-const handleVoidForm = async (row) => {
-  if (!row?.formId) return
-  try {
-    await ElMessageBox.confirm(
-      t('formbusiness.formpending.voidConfirm'),
-      t('common.tip'),
-      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
-    )
-  } catch {
-    return
-  }
-  loading.value = true
-  try {
-    const res = await post(
-      VOIDED_FORM_API,
-      buildFormData({ formId: String(row.formId) }),
-      FORM_DATA_OPTIONS
-    )
-    if (isSuccessCode(res?.code)) {
-      showMessage(res?.message || t('formbusiness.formpending.voidSuccess'), 'success')
-      await getFormHistoryList()
-    } else {
-      showMessage(res?.message || t('formbusiness.formpending.voidFailed'))
-    }
-  } catch {
-    showMessage(t('formbusiness.formpending.voidFailed'))
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleWithdrawForm = async (row) => {
-  if (!row?.formId) return
-  try {
-    await ElMessageBox.confirm(
-      t('formbusiness.formhistory.withdrawConfirm'),
-      t('common.tip'),
-      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
-    )
-  } catch {
-    return
-  }
-  loading.value = true
-  try {
-    const res = await post(
-      WITHDRAW_FORM_API,
-      buildFormData({ formId: String(row.formId) }),
-      FORM_DATA_OPTIONS
-    )
-    if (isSuccessCode(res?.code)) {
-      const successMsg = res?.message || res?.data || t('formbusiness.formhistory.withdrawSuccess')
-      showMessage(typeof successMsg === 'string' ? successMsg : t('formbusiness.formhistory.withdrawSuccess'), 'success')
-      await getFormHistoryList()
-    } else {
-      showMessage(res?.message || t('formbusiness.formhistory.withdrawFailed'))
-    }
-  } catch {
-    showMessage(t('formbusiness.formhistory.withdrawFailed'))
-  } finally {
-    loading.value = false
-  }
-}
-
 onMounted(async () => {
   await getFormGroupOptions()
   await getFormTypeOptions()
-  await getFormHistoryList()
+  await getFormList()
 })
 </script>
 

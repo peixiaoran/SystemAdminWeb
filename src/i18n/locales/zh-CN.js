@@ -563,11 +563,9 @@ export default {
       getFailed: '获取数据失败'
     },
 
-    formhistory: {
-      filterAriaLabel: '表单历史筛选',
+    applyhistory: {
+      filterAriaLabel: '申请历史筛选',
       pleaseSelect: '请选择',
-      applyHistory: '申请历史',
-      reviewHistory: '审批历史',
       formGroupName: '表单组别',
       formTypeName: '表单类型',
       formStatus: '表单状态',
@@ -578,17 +576,35 @@ export default {
       index: '序号',
       pleaseSelectFormGroup: '请选择表单组别',
       pleaseSelectFormType: '请选择表单类型',
-      pleaseInputFormNo: '请输入表单编号',
       getFormGroupFailed: '获取表单组别失败',
       getFormTypeFailed: '获取表单类型失败',
       getApplyHistoryFailed: '获取申请历史失败',
-      getReviewHistoryFailed: '获取签核历史失败',
-      getFailed: '获取表单历史失败',
+      getFailed: '获取申请历史失败',
       operation: '操作',
       withdraw: '撤回',
       withdrawConfirm: '确定要撤回该表单吗？',
       withdrawSuccess: '撤回成功',
-      withdrawFailed: '撤回失败',
+      withdrawFailed: '撤回失败'
+    },
+
+    reviewhistory: {
+      filterAriaLabel: '审批历史筛选',
+      pleaseSelect: '请选择',
+      formGroupName: '表单组别',
+      formTypeName: '表单类型',
+      formStatus: '表单状态',
+      formNo: '表单编号',
+      applicantDate: '申请日期',
+      applyUserName: '申请人',
+      applyUserDeptName: '申请部门',
+      index: '序号',
+      pleaseSelectFormGroup: '请选择表单组别',
+      pleaseSelectFormType: '请选择表单类型',
+      getFormGroupFailed: '获取表单组别失败',
+      getFormTypeFailed: '获取表单类型失败',
+      getReviewHistoryFailed: '获取审批历史失败',
+      getFailed: '获取审批历史失败',
+      operation: '操作',
       printPdf: '打印'
     },
 
@@ -942,7 +958,8 @@ export default {
     workflowrulestep: '流程规则步骤',
     formoperate: '表单操作',
     formPending: '待审表单列表',
-    formHistory: '表单历史记录',
+    applyHistory: '申请历史记录',
+    reviewHistory: '审批历史记录',
     voidedForm: '作废表单列表',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',

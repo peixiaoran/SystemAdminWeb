@@ -196,7 +196,7 @@ const dialogVisible = ref(false)
 
 const editForm = reactive({
   menuId: '',
-  parentMenuId: '',
+  parentMenuId: null,
   moduleId: '',
   menuCode: '',
   menuNameCn: '',
@@ -309,12 +309,6 @@ const fetchPMenuDrop = async (setDefaultValue = false) => {
       skipDedupe: true
     })
     pmenuDropList.value = res.data || []
-    if (setDefaultValue && dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && pmenuDropList.value.length > 0) {
-      const firstEnabledPMenu = pmenuDropList.value.find(item => !item.disabled)
-      if (firstEnabledPMenu) {
-        editForm.parentMenuId = firstEnabledPMenu.menuId
-      }
-    }
   } catch (error) {
     showMessage('获取父菜单数据失败，请刷新页面重试')
   }
@@ -401,6 +395,7 @@ const handleSizeChange = () => {
 const resetForm = () => {
   Object.assign(editForm, {
     menuId: '',
+    parentMenuId: null,
     menuCode: '',
     menuNameCn: '',
     menuNameEn: '',
@@ -518,7 +513,8 @@ const handleSave = async () => {
 }
 
 const handlemoduleChange = () => {
-  editForm.parentMenuId = ''
+  editForm.parentMenuId = null
+  nextTick(() => editFormRef.value?.clearValidate('parentMenuId'))
   fetchPMenuDrop(true)
 }
 
