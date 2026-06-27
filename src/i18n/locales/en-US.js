@@ -108,7 +108,6 @@ export default {
     charts: {
          userTrend: 'User Growth Trend',
          systemPerformance: 'System Performance',
-         resourceUsage: 'Resource Usage Distribution',
          trafficAnalysis: 'Traffic Analysis',
          operationStatistics: 'Operation Statistics',
          errorRate: 'Error Rate Trend',
@@ -319,10 +318,8 @@ export default {
     
     // Form category page specific
     formtype: {
-      formTypeName: 'Type Name',
       formName: 'Form Name',
       apply: 'Apply',
-      formTypeNameCn: 'Chinese Name',
       formTypeName: 'Form Type Name',
       formTypeNameCn: 'Chinese Name',
       formTypeNameEn: 'English Name',
@@ -1246,9 +1243,7 @@ export default {
       filter: {
          department: 'Department'
        },
-       getDepartmentFailed: 'Failed to get department data',
-        getFailed: 'Failed to get data',
-        index: 'Index'
+       getDepartmentFailed: 'Failed to get department data'
     },
     userform: {
       index: 'Index',
@@ -1367,8 +1362,8 @@ export default {
     dictionaryInfo: {
       title: 'Dictionary Information Management',
       index: 'Index',
-      dicType: 'Dictionary Type',
-      dicCode: 'Dictionary Code',
+      dicType: 'Dic Type',
+      dicCode: 'Dic Code',
       dicNameCn: 'Name (Ch)',
       dicNameEn: 'Name (En)',
       sortOrder: 'Sort Order',
@@ -1511,7 +1506,7 @@ export default {
     },
     // Secondary Menu
     smenu: {
-      title: 'Secondary Menu',
+      title: 'Secondary Menu Management',
       smenuCode: 'Menu Code',
       smenuName: 'Menu Name',
       menuType: 'Menu Type',
@@ -1548,8 +1543,7 @@ export default {
       updateSuccess: 'Update Successfully',
       deleteSuccess: 'Delete Successfully',
       operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data',
-      title: 'Secondary Menu Management'
+      getFailed: 'Failed to get data'
     },
     // Personal
     personalInfo: {
@@ -1784,7 +1778,6 @@ export default {
       userName: 'User Name',
       pleaseEnterUserNo: 'Please enter user number',
       pleaseEnterUserName: 'Please enter user name',
-      pleaseInputUserNo: 'Please enter user number',
       name: 'Name',
       index: 'Index',
       position: 'Level',

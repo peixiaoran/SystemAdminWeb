@@ -91,12 +91,6 @@ export default {
   dashboard: {
     title: '系统仪表板',
     subtitle: '欢迎使用工作流管理系统',
-    stats: {
-      totalUsers: '总用户数',
-      departments: '部门数量',
-      systemHealth: '系统健康度',
-      activeConnections: '活跃连接'
-    },
     charts: {
         userGrowth: '用户增长趋势',
         departmentStats: '部门统计',
@@ -1195,7 +1189,6 @@ export default {
       pleaseInputUserNo: '请输入用户工号',
       pleaseInputUserName: '请输入用户姓名',
       userNoPlaceholder: '请输入用户工号',
-      pleaseInputUserName: '请输入用户姓名',
       pleaseInputUserNameCn: '请输入中文姓名',
       pleaseInputUserNameEn: '请输入英文姓名',
       pleaseEnterUserNo: '请输入用户工号',
@@ -1300,9 +1293,7 @@ export default {
       filter: {
         department: '部门'
       },
-      getDepartmentFailed: '获取部门数据失败',
-      getFailed: '获取数据失败',
-      index: '序号'
+      getDepartmentFailed: '获取部门数据失败'
     },
     userform: {
       index: '序号',
@@ -1413,8 +1404,6 @@ export default {
     
     // 通用项
     index: '序号',
-    operation: '操作',
-    remark: '备注',
     remark: '备注',
     isEnabled: '是否启用',
     isVisible: '是否显示',
@@ -1428,8 +1417,7 @@ export default {
     selectPlaceholder: '请选择',
     inputPlaceholder: '请输入',
     fillRequiredInfo: '请填写必要信息',
-    invalidId: '无效的ID',
-    
+
     // 模块管理
     module: {
       title: '模块信息维护',
@@ -1498,8 +1486,6 @@ export default {
       pleaseInputRedirect: '请输入重定向',
       addModule: '新增一级菜单',
       editModule: '编辑一级菜单信息',
-      pleaseInputRoleCode: '请输入权限编码',
-      pleaseInputPagePath: '请输入页面Path',
       pleaseInputTarget: '请输入重定向'
     },
     
