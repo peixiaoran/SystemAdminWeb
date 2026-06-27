@@ -1168,7 +1168,7 @@ export default {
       isReview: '签核状态',
       isRealtimeNotification: '实时邮件通知',
       isScheduledNotification: '定时邮件通知',
-      noticeLanguage: '通知语言',
+      noticeLanguage: '语言',
       pleaseSelectNoticeLanguage: '请选择通知语言',
       isAgent: '代理其他用户',
       avatar: '用户头像',

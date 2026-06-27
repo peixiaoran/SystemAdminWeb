@@ -705,7 +705,7 @@
                     {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
                   </div>
                   <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
-                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}<span v-if="workflowUserShowAppointmentTypeName(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}
                   </div>
                 </div>
                 <span
@@ -1188,6 +1188,7 @@ function getAdjustedLeaveBalanceDays (item, type) {
 }
 
 function isLeaveBalanceAffected (year, type) {
+  if (currentFormStatus.value === 'voided') return false
   return resolveSelectedLeaveBalanceType() === type && getSelectedLeaveHoursByYear(year) > 0
 }
 
