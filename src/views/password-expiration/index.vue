@@ -1,8 +1,78 @@
 <template>
   <div class="password-expiration-container">
+    <!-- 工作流主题背景装饰（密码更新：暖灰色调） -->
+    <svg class="password-expiration-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <pattern id="pe-bg-dots" x="0" y="0" width="34" height="34" patternUnits="userSpaceOnUse">
+          <circle cx="1.6" cy="1.6" r="1.6" fill="#5d636e" opacity="0.05" />
+        </pattern>
+        <radialGradient id="pe-bg-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#5d636e" stop-opacity="0.06" />
+          <stop offset="100%" stop-color="#5d636e" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="pe-bg-line" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5d636e" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#5d636e" stop-opacity="0.035" />
+        </linearGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#pe-bg-dots)" />
+      <ellipse cx="180" cy="160" rx="520" ry="420" fill="url(#pe-bg-glow)" />
+      <ellipse cx="1280" cy="760" rx="560" ry="440" fill="url(#pe-bg-glow)" />
+      <g stroke="url(#pe-bg-line)" fill="none" stroke-width="2">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <path d="M150 314 V210" opacity="0.7" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#5d636e" fill-opacity="0.03" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#5d636e" fill-opacity="0.05" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#5d636e" fill-opacity="0.03" />
+      </g>
+      <g stroke="url(#pe-bg-line)" fill="none" stroke-width="2" transform="translate(1290 740) rotate(180)">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <path d="M150 314 V210" opacity="0.7" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#5d636e" fill-opacity="0.03" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#5d636e" fill-opacity="0.05" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#5d636e" fill-opacity="0.03" />
+      </g>
+    </svg>
     <div class="password-expiration-box">
       <div class="password-expiration-header">
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" class="logo" alt="Logo" />
+        <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Password renewal workflow">
+          <defs>
+            <linearGradient id="pe-grad" x1="6" y1="8" x2="57" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#9aa0a9" />
+              <stop offset="1" stop-color="#5d636e" />
+            </linearGradient>
+          </defs>
+          <!-- 循环流程线 -->
+          <path id="pe-c1" d="M22 16 H44.5 q4.5 0 4.5 4.5 V24" stroke="url(#pe-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <path id="pe-c2" d="M49 40 V43.5 q0 4.5 -4.5 4.5 H22" stroke="url(#pe-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <path id="pe-c3" d="M14 40 V24" stroke="url(#pe-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <!-- 闭环回流箭头 -->
+          <path d="M11.5 27 L14 24 L16.5 27" stroke="url(#pe-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+          <circle r="1.9" fill="#6b7280" class="wf-dot">
+            <animateMotion dur="3s" repeatCount="indefinite"><mpath href="#pe-c1" /></animateMotion>
+          </circle>
+          <circle r="1.9" fill="#6b7280" class="wf-dot">
+            <animateMotion dur="3s" begin="1s" repeatCount="indefinite"><mpath href="#pe-c2" /></animateMotion>
+          </circle>
+          <circle r="1.9" fill="#6b7280" class="wf-dot">
+            <animateMotion dur="3s" begin="2s" repeatCount="indefinite"><mpath href="#pe-c3" /></animateMotion>
+          </circle>
+          <!-- 节点1：密码表单 -->
+          <rect x="6" y="8" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#pe-grad)" stroke-width="2.4" />
+          <path d="M10.5 13.5 H17.5 M10.5 17 H15" stroke="url(#pe-grad)" stroke-width="1.8" stroke-linecap="round" />
+          <!-- 节点3：时效（时钟） -->
+          <rect x="6" y="40" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#pe-grad)" stroke-width="2.4" />
+          <circle cx="14" cy="48" r="4" fill="none" stroke="url(#pe-grad)" stroke-width="1.6" />
+          <path d="M14 48 V45.4 M14 48 L16 49" stroke="url(#pe-grad)" stroke-width="1.6" stroke-linecap="round" />
+          <!-- 节点2：更新（强调，刷新） -->
+          <rect class="wf-active" x="41" y="24" width="16" height="16" rx="5" fill="url(#pe-grad)" />
+          <path d="M45.6 29.6 A4 4 0 0 1 52.4 29.6" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" fill="none" />
+          <path d="M52.4 29.6 l1.5 -0.7 l0.1 1.9 z" fill="#ffffff" />
+          <path d="M52.4 34.4 A4 4 0 0 1 45.6 34.4" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" fill="none" />
+          <path d="M45.6 34.4 l-1.5 0.7 l-0.1 -1.9 z" fill="#ffffff" />
+        </svg>
         <h1 class="title">{{ $t('passwordExpiration.title') }}</h1>
       </div>
       
@@ -445,6 +515,17 @@ const handleBackToLogin = () => {
   z-index: 0;
 }
 
+/* 工作流主题背景装饰 */
+.password-expiration-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
 .password-expiration-box {
   width: 480px;
   padding: 0;
@@ -453,6 +534,7 @@ const handleBackToLogin = () => {
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06), 0 2px 12px rgba(15, 23, 42, 0.04);
   border: none;
   overflow: hidden;
+  position: relative;
   z-index: 1;
 }
 
@@ -466,9 +548,28 @@ const handleBackToLogin = () => {
 }
 
 .logo {
+  display: block;
   width: 60px;
   height: 60px;
   margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* 强调节点：柔和呼吸效果 */
+.wf-active {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wfPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes wfPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-active { animation: none; }
+  .wf-dot { display: none; }
 }
 
 .title {
@@ -507,7 +608,7 @@ const handleBackToLogin = () => {
 
 .send-code-button {
   width: 120px;
-  height: 48px;
+  height: 40px;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
@@ -532,7 +633,7 @@ const handleBackToLogin = () => {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  height: 48px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -562,8 +663,8 @@ const handleBackToLogin = () => {
 }
 
 .expiration-form :deep(.el-input__inner) {
-  line-height: 38px;
-  height: 38px;
+  line-height: 30px;
+  height: 30px;
   padding: 0;
   flex: 1;
 }
@@ -597,7 +698,7 @@ const handleBackToLogin = () => {
 
 .submit-button {
   width: 100%;
-  height: 48px;
+  height: 42px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
@@ -676,8 +777,8 @@ const handleBackToLogin = () => {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  min-height: 48px;
-  height: 48px;
+  min-height: 40px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;

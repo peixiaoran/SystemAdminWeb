@@ -1,8 +1,75 @@
 ﻿<template>
   <div class="login-container">
+    <!-- 工作流主题背景装饰 -->
+    <svg class="login-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <pattern id="wf-bg-dots" x="0" y="0" width="34" height="34" patternUnits="userSpaceOnUse">
+          <circle cx="1.6" cy="1.6" r="1.6" fill="#000000" opacity="0.04" />
+        </pattern>
+        <radialGradient id="wf-bg-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#000000" stop-opacity="0.05" />
+          <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="wf-bg-line" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#000000" stop-opacity="0.07" />
+          <stop offset="1" stop-color="#000000" stop-opacity="0.03" />
+        </linearGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#wf-bg-dots)" />
+      <ellipse cx="180" cy="160" rx="520" ry="420" fill="url(#wf-bg-glow)" />
+      <ellipse cx="1280" cy="760" rx="560" ry="440" fill="url(#wf-bg-glow)" />
+      <!-- 左上工作流线条 -->
+      <g stroke="url(#wf-bg-line)" fill="none" stroke-width="2">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#000000" fill-opacity="0.025" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#000000" fill-opacity="0.04" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#000000" fill-opacity="0.025" />
+      </g>
+      <!-- 右下工作流线条 -->
+      <g stroke="url(#wf-bg-line)" fill="none" stroke-width="2" transform="translate(1290 740) rotate(180)">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#000000" fill-opacity="0.025" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#000000" fill-opacity="0.04" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#000000" fill-opacity="0.025" />
+      </g>
+    </svg>
     <div class="login-box">
       <div class="login-header">
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" class="logo" alt="Logo" />
+        <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Workflow">
+          <defs>
+            <linearGradient id="wf-grad" x1="6" y1="8" x2="57" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#3a3a3a" />
+              <stop offset="1" stop-color="#000000" />
+            </linearGradient>
+          </defs>
+          <!-- 流程连接线 -->
+          <path id="wf-c1" d="M22 16 H44.5 q4.5 0 4.5 4.5 V24" stroke="url(#wf-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <path id="wf-c2" d="M49 40 V43.5 q0 4.5 -4.5 4.5 H22" stroke="url(#wf-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <!-- 沿流程流动的光点 -->
+          <circle r="2" fill="#1a1a1a" class="wf-dot">
+            <animateMotion dur="2.4s" repeatCount="indefinite">
+              <mpath href="#wf-c1" />
+            </animateMotion>
+          </circle>
+          <circle r="2" fill="#1a1a1a" class="wf-dot">
+            <animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite">
+              <mpath href="#wf-c2" />
+            </animateMotion>
+          </circle>
+          <!-- 节点1：表单/发起 -->
+          <rect x="6" y="8" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#wf-grad)" stroke-width="2.4" />
+          <path d="M10.5 13.5 H17.5 M10.5 17 H15" stroke="url(#wf-grad)" stroke-width="1.8" stroke-linecap="round" />
+          <!-- 节点2：处理中（强调） -->
+          <rect class="wf-active" x="41" y="24" width="16" height="16" rx="5" fill="url(#wf-grad)" />
+          <circle cx="45.6" cy="32" r="1.25" fill="#ffffff" />
+          <circle cx="49" cy="32" r="1.25" fill="#ffffff" />
+          <circle cx="52.4" cy="32" r="1.25" fill="#ffffff" />
+          <!-- 节点3：已审批 -->
+          <rect x="6" y="40" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#wf-grad)" stroke-width="2.4" />
+          <path d="M10.6 48 l2.8 2.8 l4.6 -5.6" stroke="url(#wf-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
         <h1 class="title">{{ $t('login.title') }}</h1>
       </div>
       
@@ -299,12 +366,23 @@ const handleLogin = () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #fff;
+  background: linear-gradient(160deg, #ffffff 0%, #f6f7f9 100%);
   position: relative;
   overflow: hidden;
   padding: 2px;
   flex: 1;
   width: 100%;
+}
+
+/* 工作流主题背景装饰 */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 .login-box {
@@ -315,6 +393,7 @@ const handleLogin = () => {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  position: relative;
   z-index: 1;
 }
 
@@ -328,9 +407,29 @@ const handleLogin = () => {
 }
 
 .logo {
+  display: block;
   width: 60px;
   height: 60px;
   margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* 处理中节点：柔和呼吸效果 */
+.wf-active {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wfPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes wfPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+/* 尊重系统的“减少动态效果”偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .wf-active { animation: none; }
+  .wf-dot { display: none; }
 }
 
 .title {
@@ -360,7 +459,7 @@ const handleLogin = () => {
   box-shadow: 0 0 0 1px #e4e7ed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  height: 48px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -390,8 +489,8 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-input__inner) {
-  line-height: 38px;
-  height: 38px;
+  line-height: 30px;
+  height: 30px;
   padding: 0;
   flex: 1;
 }
@@ -417,8 +516,8 @@ const handleLogin = () => {
   box-shadow: 0 0 0 1px #e4e7ed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  min-height: 48px;
-  height: 48px;
+  min-height: 40px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -438,8 +537,8 @@ const handleLogin = () => {
 }
 
 .login-form :deep(.el-select .el-input__inner) {
-  line-height: 38px;
-  height: 38px;
+  line-height: 30px;
+  height: 30px;
   padding: 0;
   flex: 1;
 }

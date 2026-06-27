@@ -1,8 +1,68 @@
 <template>
   <div class="unlock-container">
+    <!-- 工作流主题背景装饰（解锁：钢蓝灰色调） -->
+    <svg class="unlock-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <pattern id="ul-bg-dots" x="0" y="0" width="34" height="34" patternUnits="userSpaceOnUse">
+          <circle cx="1.6" cy="1.6" r="1.6" fill="#2b3340" opacity="0.05" />
+        </pattern>
+        <radialGradient id="ul-bg-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#2b3340" stop-opacity="0.06" />
+          <stop offset="100%" stop-color="#2b3340" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="ul-bg-line" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2b3340" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#2b3340" stop-opacity="0.035" />
+        </linearGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#ul-bg-dots)" />
+      <ellipse cx="180" cy="160" rx="520" ry="420" fill="url(#ul-bg-glow)" />
+      <ellipse cx="1280" cy="760" rx="560" ry="440" fill="url(#ul-bg-glow)" />
+      <g stroke="url(#ul-bg-line)" fill="none" stroke-width="2">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#2b3340" fill-opacity="0.03" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#2b3340" fill-opacity="0.05" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#2b3340" fill-opacity="0.03" />
+      </g>
+      <g stroke="url(#ul-bg-line)" fill="none" stroke-width="2" transform="translate(1290 740) rotate(180)">
+        <path d="M150 150 H250 q14 0 14 14 V210" />
+        <path d="M264 250 V300 q0 14 -14 14 H150" />
+        <rect x="120" y="120" width="60" height="60" rx="16" fill="#2b3340" fill-opacity="0.03" />
+        <rect x="236" y="180" width="56" height="56" rx="16" fill="#2b3340" fill-opacity="0.05" />
+        <rect x="120" y="290" width="56" height="56" rx="16" fill="#2b3340" fill-opacity="0.03" />
+      </g>
+    </svg>
     <div class="unlock-box">
       <div class="unlock-header">
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" class="logo" alt="Logo" />
+        <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Unlock workflow">
+          <defs>
+            <linearGradient id="ul-grad" x1="6" y1="8" x2="58" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#6b7480" />
+              <stop offset="1" stop-color="#2b3340" />
+            </linearGradient>
+          </defs>
+          <!-- 汇聚到锁的流程线 -->
+          <path id="ul-c1" d="M22 16 H44 q4 0 4 4 V23" stroke="url(#ul-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <path id="ul-c2" d="M22 48 H44 q4 0 4 -4 V41" stroke="url(#ul-grad)" stroke-width="2.4" stroke-linecap="round" opacity="0.5" />
+          <circle r="2" fill="#3a4452" class="wf-dot">
+            <animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#ul-c1" /></animateMotion>
+          </circle>
+          <circle r="2" fill="#3a4452" class="wf-dot">
+            <animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#ul-c2" /></animateMotion>
+          </circle>
+          <!-- 节点1：账号表单 -->
+          <rect x="6" y="8" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#ul-grad)" stroke-width="2.4" />
+          <path d="M10.5 13.5 H17.5 M10.5 17 H15" stroke="url(#ul-grad)" stroke-width="1.8" stroke-linecap="round" />
+          <!-- 节点3：验证 -->
+          <rect x="6" y="40" width="16" height="16" rx="5" fill="#ffffff" stroke="url(#ul-grad)" stroke-width="2.4" />
+          <path d="M10.6 48 l2.8 2.8 l4.6 -5.6" stroke="url(#ul-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- 节点2：解锁（强调，开锁） -->
+          <rect class="wf-active" x="39" y="23" width="18" height="18" rx="5" fill="url(#ul-grad)" />
+          <rect x="43" y="32" width="10" height="8" rx="2" fill="#ffffff" />
+          <path d="M45 32 V28.5 a4 4 0 0 1 7.6 -1.2" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" />
+          <circle cx="48" cy="35.6" r="1.15" fill="#2b3340" />
+        </svg>
         <h1 class="title">{{ $t('unlock.title') }}</h1>
       </div>
       
@@ -435,6 +495,17 @@ const handleUnlock = () => {
   z-index: 0;
 }
 
+/* 工作流主题背景装饰 */
+.unlock-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
 .unlock-box {
   width: 480px;
   padding: 0;
@@ -443,6 +514,7 @@ const handleUnlock = () => {
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06), 0 2px 12px rgba(15, 23, 42, 0.04);
   border: none;
   overflow: hidden;
+  position: relative;
   z-index: 1;
 }
 
@@ -456,9 +528,28 @@ const handleUnlock = () => {
 }
 
 .logo {
+  display: block;
   width: 60px;
   height: 60px;
   margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* 强调节点：柔和呼吸效果 */
+.wf-active {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wfPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes wfPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-active { animation: none; }
+  .wf-dot { display: none; }
 }
 
 .title {
@@ -498,7 +589,7 @@ const handleUnlock = () => {
 /* 与登录页输入区层次一致：浅底、细边框；高度与输入框 48px 对齐 */
 .send-code-button {
   width: 120px;
-  height: 48px;
+  height: 40px;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
@@ -524,7 +615,7 @@ const handleUnlock = () => {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  height: 48px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -554,8 +645,8 @@ const handleUnlock = () => {
 }
 
 .unlock-form :deep(.el-input__inner) {
-  line-height: 38px;
-  height: 38px;
+  line-height: 30px;
+  height: 30px;
   padding: 0;
   flex: 1;
 }
@@ -583,8 +674,8 @@ const handleUnlock = () => {
   box-shadow: 0 0 0 1px #e8eaed inset !important;
   background-color: #ffffff;
   padding: 0 15px;
-  min-height: 48px;
-  height: 48px;
+  min-height: 40px;
+  height: 40px;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -604,8 +695,8 @@ const handleUnlock = () => {
 }
 
 .unlock-form :deep(.el-select .el-input__inner) {
-  line-height: 38px;
-  height: 38px;
+  line-height: 30px;
+  height: 30px;
   padding: 0;
   flex: 1;
 }
@@ -631,7 +722,7 @@ const handleUnlock = () => {
   justify-content: center;
 }
 
-/* 与登录页 .login-button 一致（覆盖 el-button primary 默认色） */
+/* 解锁按钮：配色参考密码过期页提交按钮（暖灰渐变），保留 !important 覆盖 el-button primary 默认色 */
 .login-button {
   width: 100%;
   height: 42px;
@@ -639,31 +730,31 @@ const handleUnlock = () => {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
-  background: #1a1a1a !important;
+  background: linear-gradient(180deg, #8b9099 0%, #787f8a 100%) !important;
   color: #ffffff !important;
   border: none !important;
   margin-top: 10px;
-  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15);
+  box-shadow: 0 6px 16px rgba(82, 88, 102, 0.18);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-button:hover:not(:disabled) {
-  background: #303133 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2);
+  background: linear-gradient(180deg, #7a808a 0%, #6a707a 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(82, 88, 102, 0.22);
 }
 
 .login-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15);
+  box-shadow: 0 4px 12px rgba(82, 88, 102, 0.15);
 }
 
 .login-button:disabled {
-  opacity: 0.6;
+  opacity: 0.75;
   cursor: not-allowed;
   transform: none !important;
-  background: #1a1a1a !important;
-  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
+  background: #9ca3af !important;
+  box-shadow: 0 2px 8px rgba(82, 88, 102, 0.1) !important;
 }
 
 .unlock-link-container {
