@@ -317,7 +317,7 @@ const handleEdit = async (row) => {
       form.formTypeNameCn = d.formTypeNameCn
       form.formTypeNameEn = d.formTypeNameEn
       form.prefix         = d.prefix
-      form.sortOrder      = d.sortOrder
+      form.sortOrder      = Number(d.sortOrder ?? 0)
       form.descriptionCn  = d.descriptionCn
       form.descriptionEn  = d.descriptionEn
       form.reviewPath     = d.reviewPath || ''

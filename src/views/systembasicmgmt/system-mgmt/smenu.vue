@@ -8,7 +8,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-          <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFilterParentMenuChange">
+          <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.pmenu')" style="width:180px" @change="handleFilterParentMenuChange">
             <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
           </el-select>
         </el-form-item>
@@ -171,7 +171,6 @@ const submitLoading = ref(false)
 
 const moduleDropList = ref([])
 const pmenuDropList = ref([])
-const menuTypeOptions = ref([])
 
 const editFormRef = ref(null)
 
@@ -263,40 +262,39 @@ const scheduleSearch = () => {
   }, DEBOUNCE_MS)
 }
 
+// 拉取模块下拉数据，统一供初始化与新增弹窗复用
+const fetchModuleDropList = async () => {
+  const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
+  moduleDropList.value = res.data || []
+  return moduleDropList.value.find(item => !item.disabled)
+}
+
 const initPageData = async () => {
   try {
-    const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
-    moduleDropList.value = res.data || []
-    if (moduleDropList.value.length > 0) {
-      const firstEnabledmodule = moduleDropList.value.find(item => !item.disabled)
-      if (firstEnabledmodule) {
-        filters.moduleId = firstEnabledmodule.moduleId
-        await fetchFilterPMenuDrop()
-      }
+    const firstEnabledModule = await fetchModuleDropList()
+    if (firstEnabledModule) {
+      filters.moduleId = firstEnabledModule.moduleId
+      await fetchFilterPMenuDrop()
     }
     fetchSMenuPages()
-  } catch (error) {
+  } catch {
     showMessage('初始化页面数据失败，请刷新页面重试')
   }
 }
 
 const fetchModuleDrop = async () => {
   try {
-    const res = await post(GET_MODULE_DROP_API.GET_MODULE_DROP)
-    moduleDropList.value = res.data || []
-    if (dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && moduleDropList.value.length > 0) {
-      const firstEnabledModule = moduleDropList.value.find(item => !item.disabled)
-      if (firstEnabledModule) {
-        editForm.moduleId = firstEnabledModule.moduleId
-        fetchPMenuDrop(true)
-      }
+    const firstEnabledModule = await fetchModuleDropList()
+    if (dialogTitle.value === t('systembasicmgmt.smenu.addSMenu') && firstEnabledModule) {
+      editForm.moduleId = firstEnabledModule.moduleId
+      fetchPMenuDrop()
     }
-  } catch (error) {
+  } catch {
     showMessage('获取模块数据失败，请刷新页面重试')
   }
 }
 
-const fetchPMenuDrop = async (setDefaultValue = false) => {
+const fetchPMenuDrop = async () => {
   if (!editForm.moduleId) {
     pmenuDropList.value = []
     return
@@ -309,7 +307,7 @@ const fetchPMenuDrop = async (setDefaultValue = false) => {
       skipDedupe: true
     })
     pmenuDropList.value = res.data || []
-  } catch (error) {
+  } catch {
     showMessage('获取父菜单数据失败，请刷新页面重试')
   }
 }
@@ -329,7 +327,7 @@ const fetchSMenuEntity = async (menuId) => {
       editForm.menuType = String(res.data.menuType || '')
       editForm.menuUrl = res.data.menuUrl || ''
       editForm.menuIcon = res.data.menuIcon || ''
-      editForm.sortOrder = res.data.sortOrder
+      editForm.sortOrder = Number(res.data.sortOrder ?? 1)
       editForm.path = res.data.path || ''
       editForm.redirect = res.data.redirect || ''
       editForm.remark = res.data.remark || ''
@@ -337,11 +335,11 @@ const fetchSMenuEntity = async (menuId) => {
       editForm.level = res.data.level
       editForm.routePath = res.data.routePath || ''
       if (editForm.moduleId) {
-        await fetchPMenuDrop(false)
+        await fetchPMenuDrop()
         editForm.parentMenuId = originalParentMenuId
       }
     }
-  } catch (error) {
+  } catch {
     showMessage('获取实体数据失败，请刷新页面重试')
   }
 }
@@ -357,7 +355,7 @@ const fetchSMenuPages = async () => {
     const res = await post(GET_SMENU_PAGES_API.GET_SMENU_PAGES, params)
     smenuList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
-  } catch (error) {
+  } catch {
     showMessage('获取列表数据失败，请刷新页面重试')
   } finally {
     loading.value = false
@@ -515,12 +513,15 @@ const handleSave = async () => {
 const handlemoduleChange = () => {
   editForm.parentMenuId = null
   nextTick(() => editFormRef.value?.clearValidate('parentMenuId'))
-  fetchPMenuDrop(true)
+  fetchPMenuDrop()
 }
 
-const handleFiltermoduleChange = () => {
+const handleFiltermoduleChange = async () => {
+  loading.value = true
   filters.parentMenuId = ''
-  fetchFilterPMenuDrop()
+  // 先等父菜单下拉拉取完成（其内部会赋默认 parentMenuId），再触发查询，
+  // 否则查询可能读到尚未更新的空 parentMenuId，导致结果与所选模块不一致
+  await fetchFilterPMenuDrop()
   scheduleSearch()
 }
 
@@ -547,7 +548,7 @@ const fetchFilterPMenuDrop = async () => {
         filters.parentMenuId = firstEnabledPMenu.menuId
       }
     }
-  } catch (error) {
+  } catch {
     showMessage('获取过滤条件下的模块数据失败，请刷新页面重试')
   }
 }

@@ -1010,7 +1010,7 @@ export default {
 
     departmentInfo: 'Department Info',
     departmentLevel: 'Dept Level',
-    userposition: 'User Positions',
+    positioninfo: 'Position Info',
     userlabor: 'User Labor',
     userinfo: 'User Info',
     personalinfo: 'Personal Profile',
@@ -1342,7 +1342,7 @@ export default {
       pleaseInputDepartmentLevelNameEn: 'Please enter level name (En)',
       pleaseInputSortOrder: 'Please enter sort order'
     },
-    userPosition: {
+    positionInfo: {
       index: 'Index',
       positionNo: 'Level No.',
       positionNameCn: 'Chinese Name',

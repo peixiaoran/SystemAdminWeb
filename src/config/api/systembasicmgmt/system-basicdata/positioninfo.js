@@ -8,10 +8,10 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 职业实体API
 export const GET_USER_POSITION_ENTITY_API = {
-    GET_USER_POSITION_ENTITY: 'SystemBasicMgmt/SystemBasicData/UserPosition/GetUserPositionEntity'
+    GET_USER_POSITION_ENTITY: 'SystemBasicMgmt/SystemBasicData/PositionInfo/GetPositionInfoEntity'
 }
 
 // 职业列表API
 export const GET_USER_POSITION_LIST_API = {
-  GET_USER_POSITION_LIST: 'SystemBasicMgmt/SystemBasicData/UserPosition/GetUserPositionList'
+  GET_USER_POSITION_LIST: 'SystemBasicMgmt/SystemBasicData/PositionInfo/GetPositionInfoList'
 }

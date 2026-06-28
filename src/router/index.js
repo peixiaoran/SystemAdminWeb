@@ -192,11 +192,11 @@ const pmenuRoutes = [
             }
           },
           {
-            path: 'userposition',
-            name: 'UserPosition',
-            component: () => import('../views/systembasicmgmt/system-basicdata/userposition.vue'),
-            meta: { 
-              title: 'route.userposition', 
+            path: 'positioninfo',
+            name: 'PositionInfo',
+            component: () => import('../views/systembasicmgmt/system-basicdata/positioninfo.vue'),
+            meta: {
+              title: 'route.positioninfo',
               icon: 'GoldMedal',
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
@@ -480,7 +480,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/form-operate/reviewhistory.vue'),
               meta: {
                 title: 'route.reviewHistory',
-                icon: 'FolderChecked',
+                icon: 'FolderOpened',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

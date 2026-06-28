@@ -144,12 +144,6 @@ const fetchModules = async () => {
     
     if (res && res.code === 200) {
       pmenues.value = res.data || []
-      // 提取所有模块路径
-      const pmenuPaths = pmenues.value.map(pmenu => ({
-        moduleId: pmenu.moduleId,
-        moduleName: pmenu.moduleName,
-        path: pmenu.path
-      }))
     } else {
       ElMessage({
         message: res?.message || t('moduleSelect.moduleError'),
@@ -158,7 +152,7 @@ const fetchModules = async () => {
         showClose: true,
       })
     }
-  } catch (error) {
+  } catch {
     ElMessage({
       message: t('moduleSelect.moduleErrorRetry'),
       type: 'warning',
@@ -260,7 +254,8 @@ const enterPMenu = (pmenu) => {
   // 清空之前的标签记录
   try {
     localStorage.removeItem('tabs-store')
-  } catch (error) {
+  } catch {
+    // localStorage 不可用时忽略，不影响跳转
   }
   
   // 跳转到layout页面，然后由layout处理模块路由

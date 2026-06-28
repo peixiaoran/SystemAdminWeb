@@ -928,7 +928,7 @@ export default {
 
     departmentInfo: '部门信息维护',
     departmentLevel: '部门级别维护',
-    userposition: '职级信息维护',
+    positioninfo: '职级信息维护',
     userlabor: '用户职业维护',
     userinfo: '用户信息维护',
     personalinfo: '个人信息维护',
@@ -954,7 +954,7 @@ export default {
     formPending: '待审表单列表',
     applyHistory: '申请历史记录',
     reviewHistory: '审批历史记录',
-    voidedForm: '作废表单列表',
+    voidedForm: '已作废单据',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',
@@ -1326,7 +1326,7 @@ export default {
       formTreeNotReady: '表单树组件未准备就绪'
     },
     // 职级信息
-    userPosition: {
+    positionInfo: {
       title: '职级信息维护',
       positionNo: '职级编号',
       positionName: '职级名称',
