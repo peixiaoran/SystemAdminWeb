@@ -227,8 +227,8 @@ const fetchDepartmentTree = async (setDefaultFilter = false) => {
         }
       }
     }
-  } catch (error) {
-
+  } catch {
+    // 部门下拉获取失败，保持空列表
   }
 }
 
@@ -261,7 +261,7 @@ const fetchUserPages = async () => {
         showClose: true
       })
     }
-  } catch (error) {
+  } catch {
     ElMessage({
       message: t('systembasicmgmt.userform.getUserPagesFailed'),
       type: 'error',
@@ -280,10 +280,12 @@ const fetchUserFormViewTree = async (userId) => {
     formData.append('userId', userId)
     const res = await post(GET_USER_FORM_VIEW_TREE_API.GET_USER_FORM_VIEW_TREE, formData)
     if (res && res.code === 200) {
-      // 转换数据结构：将 formTypeChildren 转换为 children
+      // 转换数据结构：将 formTypeChildren 转换为 children，数值转换为布尔值
       const transformTreeData = (nodes) => {
         return nodes.map(node => ({
           ...node,
+          isChecked: node.isChecked === 1 || node.isChecked === '1',
+          disabled: false,
           children: node.formTypeChildren ? transformTreeData(node.formTypeChildren) : []
         }))
       }
@@ -316,7 +318,7 @@ const fetchUserFormViewTree = async (userId) => {
         showClose: true
       })
     }
-  } catch (error) {
+  } catch {
     ElMessage({
       message: t('systembasicmgmt.userform.getFormTreeFailed'),
       type: 'error',
