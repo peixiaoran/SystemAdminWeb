@@ -101,8 +101,7 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
       <div class="loading-content">
-        <el-icon class="loading-icon" :size="60"><Loading /></el-icon>
-        <div class="loading-text">{{ $t('moduleSelect.moduleLoading') }}</div>
+        <div class="loading-spinner"></div>
       </div>
     </div>
   </div>
@@ -112,7 +111,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowDown, Loading, User, Setting } from '@element-plus/icons-vue'
+import { ArrowDown, User, Setting } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
@@ -556,18 +555,16 @@ const logout = async () => {
   gap: 16px;
 }
 
-.loading-text {
-  color: var(--el-text-color-regular);
-  font-size: 14px;
+.loading-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 4px solid var(--el-color-primary-light-8);
+  border-top-color: var(--el-color-primary);
+  animation: spin 0.8s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
 }
 
-.loading-icon {
-  animation: rotate 1s linear infinite;
-  color: var(--el-color-primary);
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
+@keyframes spin {
   to { transform: rotate(360deg); }
 }
 

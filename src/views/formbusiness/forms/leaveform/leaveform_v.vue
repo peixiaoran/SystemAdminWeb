@@ -278,7 +278,7 @@
                       </template>
                     </el-table-column>
                     <el-table-column :label="t('common.operation')" width="170" align="center">
-                      <template #default="{ row, $index }">
+                      <template #default="{ row }">
                         <el-button type="primary" link size="small" @click="handleDownload(row)">
                           <el-icon><Download /></el-icon>
                           {{ t('formbusiness.leaveform.download') }}
@@ -560,9 +560,9 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
+  import { Document, Download, Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
-  import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, UPLOAD_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+  import { INIT_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
   import { calculateLeaveHoursForYear } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -711,7 +711,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     }
   }
   
-  const uploading = ref(false)
   const uploadedAttachments = ref([])
 
   const leaveBalances = ref([])
@@ -780,13 +779,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     ]
   }
 
-  function coerceDays (v) {
-    if (v === undefined || v === null || v === '') return 0
-    const n = Number(v)
-    if (!Number.isFinite(n)) return 0
-    return parseFloat(Math.max(0, n).toFixed(2))
-  }
-
   function validateTimeRange (rule, value, callback) {
     if (!value || value.length !== 2) {
       callback()
@@ -814,7 +806,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     if (!formRef.value) return
     try {
       formRef.value.validateField(field)
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -967,10 +959,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     const perm = resolveStepFieldPermission(fieldKey)
     if (!perm) return true
     return perm.isVisible
-  }
-
-  function isStepFieldEditable () {
-    return false
   }
 
   function isAnyStepFieldVisible (fieldKeys) {
@@ -1237,15 +1225,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     return Number(res?.code) === 400 || String(res?.code) === '400'
   }
   
-  function showResult(status, titleKey, subTitleKey) {
-    resultState.variant = 'standard'
-    resultState.detailMessage = ''
-    resultState.visible = true
-    resultState.status = status
-    resultState.titleKey = titleKey
-    resultState.subTitleKey = subTitleKey
-  }
-
   function showForbiddenResult () {
     resultState.variant = 'forbidden'
     resultState.detailMessage = ''
@@ -1385,7 +1364,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
       await getLeaveFormDetail(newFormId)
     } catch {
-  
+      // ignore
     }
   }
   
@@ -1414,7 +1393,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       const data = res.data || {}
       bindFormData(data)
     } catch {
-  
+      // ignore
     }
   }
   
@@ -1444,10 +1423,10 @@ import { resolveFileUrl } from '@/utils/fileUrl'
         )
       }))
     } catch {
-  
+      // ignore
     }
   }
-  
+
   async function fetchFullReviewFlow () {
     const formId = String(form.formId || '')
     if (!formId) return
@@ -1539,95 +1518,18 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     return 'info'
   }
   
-  const fileInputRef = ref(null)
-  
-  const leaveTypeAttachmentTipMap = [
-    { keywords: ['sick'], key: 'attachmentTipSick' },
-    { keywords: ['marriage'], key: 'attachmentTipMarriage' },
-    { keywords: ['maternity'], key: 'attachmentTipMaternity' },
-    { keywords: ['paternity'], key: 'attachmentTipPaternity' },
-    { keywords: ['nursing'], key: 'attachmentTipNursing' },
-    { keywords: ['bereavement'], key: 'attachmentTipBereavement' }
-  ]
-  
-  function isSuccessCode(code) {
-    return String(code) === '200'
-  }
-  
   function getCurrentLeaveTypeOption() {
     const current = leaveTypeOptions.value.find(item => String(item.value) === String(form.leaveType || ''))
     return current || null
   }
-  
+
   function normalizeLeaveTypeText(value) {
     return String(value || '')
       .trim()
       .toLowerCase()
       .replace(/[\s_-]+/g, '')
   }
-  
-  function getAttachmentRequirementKey() {
-    const current = getCurrentLeaveTypeOption()
-    const candidates = [
-      normalizeLeaveTypeText(form.leaveType),
-      normalizeLeaveTypeText(current?.label),
-      normalizeLeaveTypeText(current?.value)
-    ].filter(Boolean)
-  
-    const matched = leaveTypeAttachmentTipMap.find(item =>
-      item.keywords.some(keyword => candidates.some(text => text.includes(keyword)))
-    )
-  
-    return matched?.key || ''
-  }
-  
-  function getAttachmentRequirementTip() {
-    const key = getAttachmentRequirementKey()
-    return key ? t(`formbusiness.leaveform.${key}`) : ''
-  }
-  
-  function openFilePicker() {
-    if (uploading.value) return
-    fileInputRef.value?.click()
-  }
-  
-  function onNativeFileChange(event) {
-    const files = Array.from(event?.target?.files || [])
-    if (files.length > 0) {
-      batchUpload(files)
-    }
-  }
-  
-  async function batchUpload(filesToUpload) {
-    uploading.value = true
-    try {
-      const currentFormId = String(form.formId || '')
-      const formData = new window.FormData()
-      formData.append('formId', currentFormId)
-      for (const item of filesToUpload) {
-        if (item instanceof File) {
-          formData.append('files', item, item.name)
-        }
-      }
-      const res = await post(UPLOAD_FILE_API, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        skipDedupe: true
-      })
-      if (res && isSuccessCode(res.code)) {
-        const files = Array.isArray(res.data) ? res.data : []
-        uploadedAttachments.value = [...uploadedAttachments.value, ...files]
-      } else if (res && isBadRequestResponse(res)) {
-        showBadRequestResult(res?.message)
-      }
-    } catch (e) {
-    } finally {
-      uploading.value = false
-      if (fileInputRef.value) {
-        fileInputRef.value.value = ''
-      }
-    }
-  }
-  
+
   function formatFileSize(sizeKB) {
     if (!sizeKB && sizeKB !== 0) return '-'
     const size = Number(sizeKB)
@@ -1641,10 +1543,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   
   function getAttachmentPath (row) {
     return row?.attachmentPath ?? row?.filePath ?? ''
-  }
-  
-  function getAttachmentId (row) {
-    return row?.attachmentId ?? row?.fileId ?? ''
   }
   
   function getAttachmentSizeKb (row) {
@@ -1662,8 +1560,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     a.click()
     document.body.removeChild(a)
   }
-  
-  function removeAttachment () {}
   
   async function syncRouteLanguage () {
     const lang = persistRouteLanguage(
@@ -1740,7 +1636,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       } else {
         await initLeaveForm()
       }
-    } catch (error) {
+    } catch {
       ElMessage.error(t('formbusiness.messages.loadError'))
     } finally {
       loading.value = false

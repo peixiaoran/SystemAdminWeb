@@ -193,7 +193,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, watch, markRaw, computed, h } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
@@ -202,7 +202,7 @@ import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 import { clearClientSession } from '@/utils/sessionCleanup'
-import { Fold, Expand, ArrowDown, Back } from '@element-plus/icons-vue'
+import { Fold, Expand, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { resolveFileUrl } from '@/utils/fileUrl'
 
@@ -436,7 +436,7 @@ const isMenuActive = (menuPath) => {
 }
 
 // 处理菜单选择
-const handleMenuSelect = (index, indexPath) => {
+const handleMenuSelect = (index) => {
   activeMenu.value = index;
   
   // 检查点击的菜单路径是否对应一个标签
@@ -508,7 +508,7 @@ const saveTabsToStorage = () => {
         cachedTabs: cachedTabs.value
       }
       localStorage.setItem('tabs-store', JSON.stringify(tabsData))
-    } catch (error) {
+    } catch {
       // 静默处理错误
     }
   }, 100) // 100ms防抖延迟
@@ -620,10 +620,10 @@ const fetchMenuData = async () => {
       // 处理菜单数据，将其与路由数据对应起来
       menuList.value = processMenuData(res.data || [])
     } else {
-
+      // 静默处理错误
     }
-  } catch (error) {
-
+  } catch {
+    // 静默处理错误
   }
 }
 
@@ -797,8 +797,8 @@ const addTab = (menu) => {
     if (route.path !== formattedPath) {
       router.push(formattedPath)
     }
-  } catch (error) {
-
+  } catch {
+    // 静默处理错误
   }
 }
 
@@ -1032,8 +1032,8 @@ const restoreTabsFromStorage = () => {
         return true
       }
     }
-  } catch (error) {
-    console.error('恢复标签状态失败:', error)
+  } catch {
+    // 恢复标签状态失败时静默处理
   }
   return false
 }

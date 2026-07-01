@@ -213,6 +213,7 @@
               :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectRole')">
               <el-option
                 v-for="item in roleOptions"
+                 :key="`role-edit-${item.roleId}`"
                  :label="item.roleName"
                  :value="item.roleId"
                  :disabled="item.disabled" />

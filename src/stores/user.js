@@ -49,9 +49,10 @@ export const useUserStore = defineStore('user', {
 
     getDisplayName: (state) => {
       const lang = i18n?.global?.locale?.value || localStorage.getItem('language') || 'zh-CN'
+      // 未登录 / 退出清空后返回空串，避免退出瞬间闪现“管理员”默认文案
       return lang === 'zh-CN'
-        ? (state.userNameCn || state.loginNo || '管理员')
-        : (state.userNameEn || state.userNameCn || state.loginNo || 'Admin')
+        ? (state.userNameCn || state.loginNo || '')
+        : (state.userNameEn || state.userNameCn || state.loginNo || '')
     }
   },
 

@@ -1054,20 +1054,6 @@ function validateTimeRange (rule, value, callback) {
   callback()
 }
 
-function validateDurationPositive (rule, value, callback) {
-  const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
-  if (startTime && endTime && isLeaveTimeRangeAllowed(startTime, endTime)) {
-    callback()
-    return
-  }
-  const total = coerceDays(form.days)
-  if (total <= 0) {
-    callback(new Error(t('formbusiness.leaveform.durationRequired')))
-    return
-  }
-  callback()
-}
-
 function validateAgentRequired (rule, value, callback) {
   if (!isStepFieldVisible('SelectAgent') || !isStepFieldEditable('SelectAgent')) {
     callback()
@@ -1296,7 +1282,7 @@ function onSelectChange (field) {
   if (!formRef.value) return
   try {
     formRef.value.validateField(field)
-  } catch (e) {
+  } catch {
     // ignore
   }
 }
@@ -1718,7 +1704,7 @@ async function initLeaveForm () {
     form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
     await getLeaveFormDetail(newFormId)
   } catch {
-
+    // ignore
   }
 }
 
@@ -1747,7 +1733,7 @@ async function getLeaveFormDetail (id) {
     const data = res.data || {}
     bindFormData(data)
   } catch {
-
+    // ignore
   }
 }
 
@@ -1777,7 +1763,7 @@ async function getLeaveTypeOptions () {
       )
     }))
   } catch {
-
+    // ignore
   }
 }
 
@@ -1865,7 +1851,7 @@ async function onSubmit () {
         showFormActionNotice(res?.message || t('messages.saveError'), 'error')
       }
     } catch {
-      
+      // ignore
     } finally {
       saving.value = false
     }
@@ -2370,7 +2356,7 @@ async function onSubmitForApproval () {
     }
     showFormActionNotice(res?.message || t('formbusiness.leaveform.submitFailed'), 'error')
   } catch {
-
+    // ignore
   } finally {
     approving.value = false
   }
@@ -2460,7 +2446,8 @@ async function batchUpload(filesToUpload) {
     } else if (res && isBadRequestResponse(res)) {
       showBadRequestResult(res?.message)
     }
-  } catch (e) {
+  } catch {
+    // ignore
   } finally {
     uploading.value = false
     if (fileInputRef.value) {
@@ -2612,7 +2599,7 @@ onMounted(async () => {
     } else {
       await initLeaveForm()
     }
-  } catch (error) {
+  } catch {
     ElMessage.error(t('formbusiness.messages.loadError'))
   } finally {
     loading.value = false

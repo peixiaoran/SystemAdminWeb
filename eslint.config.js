@@ -24,6 +24,9 @@ export default [
         navigator: 'readonly',
         URL: 'readonly',
         FormData: 'readonly',
+        Blob: 'readonly',
+        URLSearchParams: 'readonly',
+        File: 'readonly',
         MutationObserver: 'readonly',
         IntersectionObserver: 'readonly',
         requestAnimationFrame: 'readonly',
@@ -45,7 +48,7 @@ export default [
       'no-console': 'warn',
       'no-debugger': 'warn',
       'vue/multi-word-component-names': 'off',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
       'no-useless-escape': 'warn'
     }
   }
