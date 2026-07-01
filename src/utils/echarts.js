@@ -21,6 +21,8 @@ import {
   AxisPointerComponent
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+// ECharts 6 起 grid.containLabel 需显式启用该兼容特性，否则运行时会提示改用 grid.outerBounds
+import { LegacyGridContainLabel } from 'echarts/features'
 
 echarts.use([
   LineChart,
@@ -32,7 +34,8 @@ echarts.use([
   DataZoomComponent,
   MarkPointComponent,
   AxisPointerComponent,
-  CanvasRenderer
+  CanvasRenderer,
+  LegacyGridContainLabel
 ])
 
 export default echarts
