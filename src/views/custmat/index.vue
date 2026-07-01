@@ -65,7 +65,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import * as echarts from 'echarts'
+import echarts from '@/utils/echarts'
 import {
   ArrowUp,
   ArrowDown,

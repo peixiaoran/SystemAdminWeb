@@ -5,7 +5,7 @@ import viteCompression from 'vite-plugin-compression' // 产物压缩 (gzip & br
 import path from 'path'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ mode }) => {
   // 根据当前工作目录中的 `mode` 加载 .env 文件
   const env = loadEnv(mode, process.cwd(), '')
   const isProd = mode === 'production'
@@ -63,8 +63,10 @@ export default defineConfig(({ command, mode }) => {
       emptyOutDir: true,
       assetsDir: 'assets',
       sourcemap: env.DEV === 'true', // 只在开发环境启用
-      // 提高警告阈值为 1000kB
-      chunkSizeWarningLimit: 1000,
+      // 警告阈值设为 1300kB：element-plus 为全局注册的大型组件库（约 1.16MB，已单独成 chunk
+      // 且启用了 gzip/brotli 压缩），无法在不改造为按需自动引入的前提下进一步拆分，故放宽阈值避免误报。
+      // 其余业务 chunk 均远小于此值；echarts 已按需引入（src/utils/echarts.js）。
+      chunkSizeWarningLimit: 1300,
       minify: 'terser', // 使用terser进行更彻底的代码压缩
       terserOptions: {
         compress: {
@@ -90,6 +92,9 @@ export default defineConfig(({ command, mode }) => {
       rolldownOptions: {
         onwarn(warning, warn) {
           if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+          // 忽略第三方依赖（如 @vueuse/core，被 element-plus 间接引入）预构建产物中
+          // 位置不规范的 /* #__PURE__ */ 注解告警：仅影响 tree-shaking 提示，不影响正确性
+          if (warning.code === 'INVALID_ANNOTATION' && /node_modules/.test(warning.id || warning.loc?.file || '')) return;
           warn(warning);
         },
         output: {
@@ -122,8 +127,8 @@ export default defineConfig(({ command, mode }) => {
                 return 'axios';
               }
 
-              // echarts 单独打包
-              if (id.includes('echarts')) {
+              // echarts 及其底层渲染引擎 zrender 单独打包（已按需引入，见 src/utils/echarts.js）
+              if (id.includes('echarts') || id.includes('zrender')) {
                 return 'echarts';
               }
 
@@ -152,7 +157,8 @@ export default defineConfig(({ command, mode }) => {
         'pinia',
         'element-plus',
         'axios',
-        'echarts'
+        // echarts 已改为按需引入（src/utils/echarts.js），由 Vite 自动发现 echarts/* 子路径
+        'echarts/core'
       ]
     },
     // CSS 预处理器配置
