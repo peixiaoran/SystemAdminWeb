@@ -79,21 +79,17 @@ const showErrorNotification = (errorInfo, level) => {
   })
 }
 
-const logError = () => {}
-
 export const handleError = (error, context = '', options = {}) => {
   const {
     showMessage = true,
     showNotification = false,
-    level = ERROR_LEVELS.ERROR,
-    type = ERROR_TYPES.UNKNOWN
+    level = ERROR_LEVELS.ERROR
   } = options
 
   const errorInfo = parseError(error, context)
 
   if (showMessage) showErrorMessage(errorInfo, level)
   if (showNotification) showErrorNotification(errorInfo, level)
-  logError(errorInfo, context, type)
 
   return errorInfo
 }
@@ -306,7 +302,7 @@ service.interceptors.response.use(
   }
 )
 
-const createPostRequest = () => async (url, data, options = {}) => {
+export const post = async (url, data, options = {}) => {
   const {
     skipDedupe = false,
     allowLoginBusinessCodes = false,
@@ -367,8 +363,6 @@ const createPostRequest = () => async (url, data, options = {}) => {
     return createHandledResponse({ success: false, handled: true })
   }
 }
-
-export const post = createPostRequest()
 
 export const cancelAllRequests = () => {
   for (const [, requestInfo] of pendingRequests.entries()) {
