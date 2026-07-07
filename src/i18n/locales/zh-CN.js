@@ -578,7 +578,10 @@ export default {
       withdraw: '撤回',
       withdrawConfirm: '确定要撤回该表单吗？',
       withdrawSuccess: '撤回成功',
-      withdrawFailed: '撤回失败'
+      withdrawFailed: '撤回失败',
+      printPdf: '打印',
+      printing: '打印中...',
+      printFailed: '打印失败'
     },
 
     reviewhistory: {

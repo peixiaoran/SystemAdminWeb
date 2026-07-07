@@ -1621,20 +1621,20 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       if (routeToken) {
         const tokenFormId = await resolveTokenFormId(String(routeToken))
         if (tokenFormId) {
-          await Promise.all([getLeaveTypeOptions()])
           form.formId = tokenFormId
-          await getLeaveFormDetail(tokenFormId)
+          // 下拉选项与表单详情相互独立，并行拉取以缩短加载等待
+          await Promise.all([getLeaveTypeOptions(), getLeaveFormDetail(tokenFormId)])
         }
         return
       }
 
-      await Promise.all([getLeaveTypeOptions()])
       const routeFormId = route.query.formId || route.params?.formId
       if (routeFormId) {
         form.formId = String(routeFormId)
-        await getLeaveFormDetail(form.formId)
+        // 下拉选项与表单详情相互独立，并行拉取以缩短加载等待
+        await Promise.all([getLeaveTypeOptions(), getLeaveFormDetail(form.formId)])
       } else {
-        await initLeaveForm()
+        await Promise.all([getLeaveTypeOptions(), initLeaveForm()])
       }
     } catch {
       ElMessage.error(t('formbusiness.messages.loadError'))
@@ -2193,10 +2193,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
   
   .review-log-table :deep(.el-table__body .el-table__cell) {
-    vertical-align: top;
-  }
-
-  .review-log-table :deep(.el-table__body .review-log-index-col) {
     vertical-align: middle;
   }
 

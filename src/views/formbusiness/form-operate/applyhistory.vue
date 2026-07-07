@@ -110,24 +110,35 @@
             fixed="right"
           >
             <template #default="{ row }">
-              <el-link
-                v-if="canShowWithdraw(row)"
-                type="warning"
-                underline="never"
-                @click="handleWithdrawForm(row)"
-              >
-                {{ $t('formbusiness.applyhistory.withdraw') }}
-              </el-link>
-              <el-link
-                v-if="canShowInvalidate(row)"
-                type="danger"
-                underline="never"
-                style="margin-left: 12px;"
-                @click="handleVoidForm(row)"
-              >
-                {{ $t('formbusiness.formpending.invalidate') }}
-              </el-link>
-              <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row)">—</span>
+              <div style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+                <el-link
+                  v-if="canShowWithdraw(row)"
+                  type="warning"
+                  underline="never"
+                  @click="handleWithdrawForm(row)"
+                >
+                  {{ $t('formbusiness.applyhistory.withdraw') }}
+                </el-link>
+                <el-link
+                  v-if="canShowInvalidate(row)"
+                  type="danger"
+                  underline="never"
+                  @click="handleVoidForm(row)"
+                >
+                  {{ $t('formbusiness.formpending.invalidate') }}
+                </el-link>
+                <el-link
+                  v-if="canShowPrint(row)"
+                  type="primary"
+                  underline="never"
+                  :disabled="printingFormIds.has(row.formId)"
+                  @click="handlePrintForm(row)"
+                >
+                  <el-icon v-if="printingFormIds.has(row.formId)" class="is-loading" style="margin-right: 4px;"><Loading /></el-icon>
+                  {{ printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf') }}
+                </el-link>
+                <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -204,7 +215,8 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { Loading } from '@element-plus/icons-vue'
+import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
@@ -213,7 +225,8 @@ import {
   GET_APPLY_HISTORY_PAGE_API,
   WITHDRAW_FORM_API,
   VOIDED_FORM_API,
-  GET_FORM_PENDING_USERS_API
+  GET_FORM_PENDING_USERS_API,
+  PRINT_FORM_PDF_API
 } from '@/config/api/formbusiness/form-operate/applyhistory.js'
 
 const { t } = useI18n()
@@ -250,6 +263,7 @@ const getFormStatusTagType = (row) => {
 const loading = ref(false)
 const filterPending = ref(false)
 const formList = ref([])
+const printingFormIds = ref(new Set())
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
@@ -499,6 +513,55 @@ const isUnderReview = (row) => normalizeStatus(row) === 'underreview'
 const canShowInvalidate = (row) => {
   if (!row?.formId) return false
   return isUnderReview(row)
+}
+
+const canShowPrint = (row) =>
+  !!row?.formId && normalizeStatus(row) === 'approved'
+
+const buildPrintPrefix = (row) =>
+  String(row?.formNo || '').split('-')[0] || ''
+
+const handlePrintForm = async (row) => {
+  if (!row?.formId || printingFormIds.value.has(row.formId)) return
+  printingFormIds.value.add(row.formId)
+  try {
+    const blob = await service({
+      url: PRINT_FORM_PDF_API,
+      method: 'post',
+      data: buildFormData({ formId: String(row.formId), prefix: buildPrintPrefix(row) }),
+      headers: { 'Content-Type': 'multipart/form-data' },
+      responseType: 'blob'
+    })
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error(t('formbusiness.applyhistory.printFailed'))
+    }
+
+    if (blob.type && blob.type.includes('application/json')) {
+      const text = await blob.text()
+      let message = t('formbusiness.applyhistory.printFailed')
+      try {
+        const json = JSON.parse(text)
+        message = json?.message || message
+      } catch {
+        // ignore
+      }
+      throw new Error(message)
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${row.formNo || buildPrintPrefix(row) || 'form'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    showMessage(error?.message || t('formbusiness.applyhistory.printFailed'))
+  } finally {
+    printingFormIds.value.delete(row.formId)
+  }
 }
 
 const handleVoidForm = async (row) => {

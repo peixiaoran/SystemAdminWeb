@@ -646,7 +646,10 @@ export default {
       withdraw: 'Withdraw',
       withdrawConfirm: 'Are you sure you want to withdraw this form?',
       withdrawSuccess: 'Withdrawn successfully',
-      withdrawFailed: 'Failed to withdraw form'
+      withdrawFailed: 'Failed to withdraw form',
+      printPdf: 'Print',
+      printing: 'Printing...',
+      printFailed: 'Failed to print form'
     },
 
     reviewhistory: {
