@@ -1,3 +1,8 @@
+/**
+ * API配置文件
+ * 集中管理 reviewhistory 相关 API
+ */
+
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/ReviewHistory/GetFormGroupDrop'
