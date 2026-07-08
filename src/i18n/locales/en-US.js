@@ -674,7 +674,7 @@ export default {
     },
 
     // Leave Form Page Specific
-    leaveform: {
+    leaverequest: {
       title: 'Leave Apply',
       formNo: 'Form No',
       applyDate: 'Apply Date',
@@ -996,8 +996,8 @@ export default {
   // Route Titles
   route: {
     login: 'Login',
-    leaveform_r: 'Leave Application',
-    leaveform_v: 'View Leave Application',
+    leaverequest_r: 'Leave Application',
+    leaverequest_v: 'View Leave Application',
     moduleSelect: 'Module Selection',
     unlock: 'Account Unlock',
     passwordExpiration: 'Password Expiration',

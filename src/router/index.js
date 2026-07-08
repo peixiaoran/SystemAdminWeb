@@ -550,11 +550,11 @@ const pmenuRoutes = [
   // 独立请假单申请页面（不使用Layout，无标签）
   // tokenBypass: true 表示携带 token 参数时跳过 session 检查，由页面自行用 token 换取身份
   {
-    path: '/formbusiness/forms/leaveform/leaveform_r',
-    name: 'LeaveFormR',
-    component: () => import('../views/formbusiness/forms/leaveform/leaveform_r.vue'),
+    path: '/formbusiness/forms/leaverequest/leaverequest_r',
+    name: 'LeaveRequestR',
+    component: () => import('../views/formbusiness/forms/leaverequest/leaverequest_r.vue'),
     meta: {
-      title: 'route.leaveform_r',
+      title: 'route.leaverequest_r',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true,
       tokenBypass: true
@@ -562,11 +562,11 @@ const pmenuRoutes = [
   },
   // 独立请假单查看页面（不使用Layout，无标签）
   {
-    path: '/formbusiness/forms/leaveform/leaveform_v',
-    name: 'LeaveFormV',
-    component: () => import('../views/formbusiness/forms/leaveform/leaveform_v.vue'),
+    path: '/formbusiness/forms/leaverequest/leaverequest_v',
+    name: 'LeaveRequestV',
+    component: () => import('../views/formbusiness/forms/leaverequest/leaverequest_v.vue'),
     meta: {
-      title: 'route.leaveform_v',
+      title: 'route.leaverequest_v',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true,
       tokenBypass: true

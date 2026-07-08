@@ -606,7 +606,7 @@ export default {
     },
 
     // 请假单页面专用
-    leaveform: {
+    leaverequest: {
         title: '假别',
         formNo: '表单编号',
         applyDate: '申请日期',
@@ -915,8 +915,8 @@ export default {
   route: {
     login: '登录',
     moduleSelect: '模块选择',
-    leaveform_r: '请假单申请',
-    leaveform_v: '请假单查看',
+    leaverequest_r: '请假单申请',
+    leaverequest_v: '请假单查看',
     unlock: '账号解锁',
     passwordExpiration: '密码过期修改',
     forbidden: '访问被拒绝',

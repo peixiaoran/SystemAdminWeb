@@ -104,10 +104,10 @@
             <el-icon class="forbidden-result__icon"><Lock /></el-icon>
           </span>
         </div>
-        <p class="forbidden-result__eyebrow">{{ t('formbusiness.leaveform.forbiddenResultEyebrow') }}</p>
-        <h2 class="forbidden-result__title">{{ t('formbusiness.leaveform.forbiddenResultTitle') }}</h2>
-        <p class="forbidden-result__desc">{{ t('formbusiness.leaveform.forbiddenResultSubTitle') }}</p>
-        <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.leaveform.backToFormPending') }} ]</span>
+        <p class="forbidden-result__eyebrow">{{ t('formbusiness.leaverequest.forbiddenResultEyebrow') }}</p>
+        <h2 class="forbidden-result__title">{{ t('formbusiness.leaverequest.forbiddenResultTitle') }}</h2>
+        <p class="forbidden-result__desc">{{ t('formbusiness.leaverequest.forbiddenResultSubTitle') }}</p>
+        <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.leaverequest.backToFormPending') }} ]</span>
       </div>
       <el-result
         v-else
@@ -117,13 +117,13 @@
         :title="resultState.variant === 'badRequest' ? resultState.detailMessage : t(resultState.titleKey)"
       >
         <template #sub-title>
-          <p v-if="resultState.variant === 'badRequest'" class="leaveform-bad-request-desc">
-            {{ t('formbusiness.leaveform.badRequestHint') }}
+          <p v-if="resultState.variant === 'badRequest'" class="leaverequest-bad-request-desc">
+            {{ t('formbusiness.leaverequest.badRequestHint') }}
           </p>
           <span v-else>{{ t(resultState.subTitleKey) }}</span>
         </template>
         <template #extra>
-          <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.leaveform.backToFormPending') }} ]</span>
+          <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.leaverequest.backToFormPending') }} ]</span>
         </template>
       </el-result>
     </el-card>
@@ -132,7 +132,7 @@
     <el-card class="leave-form-card" shadow="never">
       <!-- 表单标题 -->
       <div class="form-title-row">
-        <h2 class="form-title">{{ t('formbusiness.leaveform.formTitle') }}</h2>
+        <h2 class="form-title">{{ t('formbusiness.leaverequest.formTitle') }}</h2>
       </div>
       <el-divider style="margin: 22px 0;"></el-divider>
 
@@ -142,17 +142,17 @@
         <!-- 基本信息 -->
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.formNo')" prop="formNo">
+            <el-form-item :label="t('formbusiness.leaverequest.formNo')" prop="formNo">
               <el-input v-model="form.formNo" :disabled="!isStepFieldEditable('FormNo')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.applyDate')" prop="applyDate">
+            <el-form-item :label="t('formbusiness.leaverequest.applyDate')" prop="applyDate">
               <el-date-picker
                 v-model="form.applyDate"
                 type="date"
                 value-format="YYYY-MM-DD"
-                :placeholder="t('formbusiness.leaveform.pleaseSelectApplyDate')"
+                :placeholder="t('formbusiness.leaverequest.pleaseSelectApplyDate')"
                 clearable
                 :disabled="!isStepFieldEditable('ApplyDate')"
                 style="width: 100%;"
@@ -169,17 +169,17 @@
           class="basic-info-row"
         >
           <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')" prop="applicantUserNo">
+            <el-form-item :label="t('formbusiness.leaverequest.applicantUserNo')" prop="applicantUserNo">
               <el-input v-model="form.applicantUserNo" :disabled="!isStepFieldEditable('UserNo')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('UserName')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.applicantUserName')" prop="applicantUserName">
+            <el-form-item :label="t('formbusiness.leaverequest.applicantUserName')" prop="applicantUserName">
               <el-input v-model="form.applicantUserName" :disabled="!isStepFieldEditable('UserName')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('Department')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.applicantDeptName')" prop="applicantDeptName">
+            <el-form-item :label="t('formbusiness.leaverequest.applicantDeptName')" prop="applicantDeptName">
               <el-input v-model="form.applicantDeptName" :disabled="!isStepFieldEditable('Department')" />
             </el-form-item>
           </el-col>
@@ -194,20 +194,20 @@
           style="justify-content: flex-start;"
         >
           <el-col v-if="isStepFieldVisible('LeaveType')" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.leaveType')" prop="leaveType">
-              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaveform.pleaseSelectLeaveType')" clearable :disabled="!isStepFieldEditable('LeaveType')" @change="onSelectChange('leaveType')">
+            <el-form-item :label="t('formbusiness.leaverequest.leaveType')" prop="leaveType">
+              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" clearable :disabled="!isStepFieldEditable('LeaveType')" @change="onSelectChange('leaveType')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('LeavePeriod')" :span="16">
-            <el-form-item :label="t('formbusiness.leaveform.leaveTimeRange')" prop="leaveTimeRange">
+            <el-form-item :label="t('formbusiness.leaverequest.leaveTimeRange')" prop="leaveTimeRange">
               <el-date-picker
                 v-model="form.leaveTimeRange"
                 type="datetimerange"
                 value-format="YYYY-MM-DD HH:mm:ss"
-                :start-placeholder="t('formbusiness.leaveform.pleaseSelectStartTime')"
-                :end-placeholder="t('formbusiness.leaveform.pleaseSelectEndTime')"
+                :start-placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
+                :end-placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
                 :disabled="!isStepFieldEditable('LeavePeriod')"
                 @change="handleTimeRangeChange"
                 @calendar-change="handleLeaveTimeCalendarChange"
@@ -219,11 +219,11 @@
         <!-- 时长 / 代理人 -->
         <el-row v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent', 'LeaveHours'])" :gutter="16">
           <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="8">
-            <el-form-item :label="t('formbusiness.leaveform.agentUserNo')" prop="agentUserId">
+            <el-form-item :label="t('formbusiness.leaverequest.agentUserNo')" prop="agentUserId">
               <div class="agent-field-control">
                 <el-input
                   :model-value="agentDisplayText"
-                  :placeholder="t('formbusiness.leaveform.pleaseSelectAgent')"
+                  :placeholder="t('formbusiness.leaverequest.pleaseSelectAgent')"
                   disabled
                 />
                 <el-button
@@ -231,7 +231,7 @@
                   type="primary"
                   plain
                   class="agent-picker-btn"
-                  :title="t('formbusiness.leaveform.selectAgent')"
+                  :title="t('formbusiness.leaverequest.selectAgent')"
                   @click="openAgentPicker"
                 >
                   <el-icon><Search /></el-icon>
@@ -240,7 +240,7 @@
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('LeaveHours')" :span="16">
-            <el-form-item :label="t('formbusiness.leaveform.leaveHours')" prop="days">
+            <el-form-item :label="t('formbusiness.leaverequest.leaveHours')" prop="days">
               <el-input-number
                 v-model="form.days"
                 class="leave-hours-input"
@@ -258,8 +258,8 @@
         <!-- 事由 -->
         <el-row v-if="isStepFieldVisible('LeaveReason')" :gutter="16">
           <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leaveform.leaveReason')" prop="reason">
-              <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaveform.pleaseInputLeaveReason')" :disabled="!isStepFieldEditable('LeaveReason')" />
+            <el-form-item :label="t('formbusiness.leaverequest.leaveReason')" prop="reason">
+              <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaverequest.pleaseInputLeaveReason')" :disabled="!isStepFieldEditable('LeaveReason')" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -267,7 +267,7 @@
         <!-- 附件上传 -->
         <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16">
           <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leaveform.attachments')">
+            <el-form-item :label="t('formbusiness.leaverequest.attachments')">
               <div class="upload-section">
                 <input
                   ref="fileInputRef"
@@ -279,7 +279,7 @@
                 <div v-if="isStepFieldVisible('Upload')" class="upload-actions">
                   <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading || !isStepFieldEditable('Upload')" @click="openFilePicker">
                     <el-icon><Upload /></el-icon>
-                    {{ t('formbusiness.leaveform.uploadFile') }}
+                    {{ t('formbusiness.leaverequest.uploadFile') }}
                   </el-button>
                   <span v-if="getAttachmentRequirementTip()" class="attachment-tip">
                     {{ getAttachmentRequirementTip() }}
@@ -287,7 +287,7 @@
                 </div>
                 <el-table :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
-                  <el-table-column :label="t('formbusiness.leaveform.fileName')" min-width="200">
+                  <el-table-column :label="t('formbusiness.leaverequest.fileName')" min-width="200">
                     <template #default="{ row }">
                       <div style="display: flex; align-items: center; gap: 6px;">
                         <el-icon style="color: #409eff; flex-shrink: 0;"><Document /></el-icon>
@@ -295,7 +295,7 @@
                       </div>
                     </template>
                   </el-table-column>
-                  <el-table-column :label="t('formbusiness.leaveform.fileSize')" width="100" align="center">
+                  <el-table-column :label="t('formbusiness.leaverequest.fileSize')" width="100" align="center">
                     <template #default="{ row }">
                       {{ formatFileSize(getAttachmentSizeKb(row)) }}
                     </template>
@@ -304,11 +304,11 @@
                     <template #default="{ row, $index }">
                       <el-button type="primary" link size="small" @click="handleDownload(row)">
                         <el-icon><Download /></el-icon>
-                        {{ t('formbusiness.leaveform.download') }}
+                        {{ t('formbusiness.leaverequest.download') }}
                       </el-button>
                       <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('Upload')" @click="removeAttachment(row, $index)">
                         <el-icon><Delete /></el-icon>
-                        {{ t('formbusiness.leaveform.deleteFile') }}
+                        {{ t('formbusiness.leaverequest.deleteFile') }}
                       </el-button>
                     </template>
                   </el-table-column>
@@ -320,12 +320,12 @@
 
         <el-row :gutter="16" class="approval-comment-row">
           <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leaveform.approvalComment')">
+            <el-form-item :label="t('formbusiness.leaverequest.approvalComment')">
               <el-input
                 v-model="approvalComment"
                 type="textarea"
                 :rows="3"
-                :placeholder="t('formbusiness.leaveform.approvalCommentPlaceholder')"
+                :placeholder="t('formbusiness.leaverequest.approvalCommentPlaceholder')"
               />
             </el-form-item>
           </el-col>
@@ -336,15 +336,15 @@
             <el-form-item class="form-actions-form-item">
               <div class="form-actions-row">
                 <div class="form-actions-buttons">
-                  <el-button v-if="isStepFieldVisible('Save')" type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="formActionLoading || !isStepFieldEditable('Save')">{{ t('formbusiness.leaveform.saveButton') }}</el-button>
-                  <el-button v-if="isStepFieldVisible('Submit')" type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="formActionLoading || !isStepFieldEditable('Submit')">{{ t('formbusiness.leaveform.submitButton') }}</el-button>
-                  <el-button v-if="isStepFieldVisible('Reject')" type="danger" round style="width:80px;" @click="onReject" :disabled="formActionLoading || !isStepFieldEditable('Reject')">{{ t('formbusiness.leaveform.rejectButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Save')" type="primary" round style="width:80px;" @click="onSubmit" :loading="saving" :disabled="formActionLoading || !isStepFieldEditable('Save')">{{ t('formbusiness.leaverequest.saveButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Submit')" type="success" round style="width:80px;" @click="onSubmitForApproval" :loading="approving" :disabled="formActionLoading || !isStepFieldEditable('Submit')">{{ t('formbusiness.leaverequest.submitButton') }}</el-button>
+                  <el-button v-if="isStepFieldVisible('Reject')" type="danger" round style="width:80px;" @click="onReject" :disabled="formActionLoading || !isStepFieldEditable('Reject')">{{ t('formbusiness.leaverequest.rejectButton') }}</el-button>
                 </div>
                 <div class="workflow-view-entry">
                   <div class="workflow-view-hint">
-                    <span class="workflow-view-hint-text">{{ t('formbusiness.leaveform.viewFullWorkflowHint') }}</span>
+                    <span class="workflow-view-hint-text">{{ t('formbusiness.leaverequest.viewFullWorkflowHint') }}</span>
                   </div>
-                  <el-tooltip :content="t('formbusiness.leaveform.viewFullWorkflow')" placement="top">
+                  <el-tooltip :content="t('formbusiness.leaverequest.viewFullWorkflow')" placement="top">
                     <el-icon
                       class="workflow-view-icon"
                       :class="{ 'is-disabled': !form.formId }"
@@ -364,7 +364,7 @@
     <!-- 审批记录独立卡片 -->
     <el-card class="leave-form-card review-log-card" shadow="never">
       <div class="review-log-section">
-        <div class="review-log-title">{{ t('formbusiness.leaveform.reviewLog') }}</div>
+        <div class="review-log-title">{{ t('formbusiness.leaverequest.reviewLog') }}</div>
         <el-table
           v-if="reviewLogTableRows.length"
           :data="reviewLogTableRows"
@@ -377,7 +377,7 @@
           <el-table-column type="index" label="#" width="46" align="center" class-name="review-log-index-col" />
           <el-table-column
             prop="stepName"
-            :label="t('formbusiness.leaveform.reviewLogStep')"
+            :label="t('formbusiness.leaverequest.reviewLogStep')"
             width="130"
             align="left"
           >
@@ -386,7 +386,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            :label="t('formbusiness.leaveform.reviewLogOperationUser')"
+            :label="t('formbusiness.leaverequest.reviewLogOperationUser')"
             width="160"
             align="left"
           >
@@ -410,7 +410,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            :label="t('formbusiness.leaveform.reviewLogResult')"
+            :label="t('formbusiness.leaverequest.reviewLogResult')"
             width="95"
             align="left"
           >
@@ -426,12 +426,12 @@
                 <span
                   v-if="isReviewRejectResult(row) && getReviewRejectStepName(row)"
                   class="review-log-reject-step"
-                >（{{ t('formbusiness.leaveform.reviewLogRejectToStep', { step: getReviewRejectStepName(row) }) }}）</span>
+                >（{{ t('formbusiness.leaverequest.reviewLogRejectToStep', { step: getReviewRejectStepName(row) }) }}）</span>
               </div>
             </template>
           </el-table-column>
           <el-table-column
-            :label="t('formbusiness.leaveform.reviewLogComment')"
+            :label="t('formbusiness.leaverequest.reviewLogComment')"
             min-width="200"
           >
             <template #default="{ row }">
@@ -439,7 +439,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            :label="t('formbusiness.leaveform.reviewLogDateTime')"
+            :label="t('formbusiness.leaverequest.reviewLogDateTime')"
             width="155"
             align="center"
           >
@@ -448,7 +448,7 @@
         </el-table>
         <el-empty
           v-else
-          :description="t('formbusiness.leaveform.reviewLogEmpty')"
+          :description="t('formbusiness.leaverequest.reviewLogEmpty')"
           style="padding: 20px 0;"
         />
       </div>
@@ -458,7 +458,7 @@
     <aside
       v-if="isStepFieldVisible('LeaveBalance') && (leaveBalanceLoading || leaveBalances.length)"
       class="leave-balance-float"
-      :aria-label="t('formbusiness.leaveform.leaveBalance') + t('formbusiness.leaveform.leaveBalanceDaysUnit')"
+      :aria-label="t('formbusiness.leaverequest.leaveBalance') + t('formbusiness.leaverequest.leaveBalanceDaysUnit')"
     >
       <div
         class="leave-balance-float-card"
@@ -467,9 +467,9 @@
       >
         <div class="leave-balance-float-header">
           <span class="leave-balance-float-title">
-            {{ t('formbusiness.leaveform.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaveform.leaveBalanceDaysUnit') }}</span>
+            {{ t('formbusiness.leaverequest.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaverequest.leaveBalanceDaysUnit') }}</span>
           </span>
-          <p class="leave-balance-float-note">{{ t('formbusiness.leaveform.leaveBalanceNote') }}</p>
+          <p class="leave-balance-float-note">{{ t('formbusiness.leaverequest.leaveBalanceNote') }}</p>
         </div>
         <div class="leave-balance-hint">
           <div
@@ -479,7 +479,7 @@
           >
             <div class="leave-balance-year">{{ item.year }}</div>
             <div class="leave-balance-type-row">
-              <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.annualRemainingDays') }}</span>
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.annualRemainingDays') }}</span>
               <span
                 :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'annual') }]"
               >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'annual')) }}</span>
@@ -491,7 +491,7 @@
               </span>
             </div>
             <div class="leave-balance-type-row">
-              <span class="leave-balance-type-name">{{ t('formbusiness.leaveform.sickRemainingDays') }}</span>
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.sickRemainingDays') }}</span>
               <span
                 :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'sick') }]"
               >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'sick')) }}</span>
@@ -511,7 +511,7 @@
     <!-- 选择代理人弹窗 -->
     <el-dialog
       v-model="agentDialogVisible"
-      :title="t('formbusiness.leaveform.selectAgentTitle')"
+      :title="t('formbusiness.leaverequest.selectAgentTitle')"
       width="1100px"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -519,7 +519,7 @@
       @closed="handleAgentDialogClosed"
     >
       <el-form :inline="true" class="agent-filter-form">
-        <el-form-item :label="t('formbusiness.leaveform.agentDepartment')">
+        <el-form-item :label="t('formbusiness.leaverequest.agentDepartment')">
           <el-tree-select
             v-model="agentFilters.departmentId"
             :data="agentDepartmentOptions"
@@ -533,27 +533,27 @@
             filterable
             :filter-node-method="agentDepartmentFilterNode"
             class="agent-filter-dept-select"
-            :placeholder="t('formbusiness.leaveform.pleaseSelectDepartment')"
+            :placeholder="t('formbusiness.leaverequest.pleaseSelectDepartment')"
             @change="handleAgentDepartmentChange"
           />
         </el-form-item>
-        <el-form-item :label="t('formbusiness.leaveform.applicantUserNo')">
+        <el-form-item :label="t('formbusiness.leaverequest.applicantUserNo')">
           <el-input
             v-model="agentFilters.userNo"
             class="agent-filter-input-userno"
             clearable
-            :placeholder="t('formbusiness.leaveform.applicantUserNo')"
+            :placeholder="t('formbusiness.leaverequest.applicantUserNo')"
             @input="handleAgentFilterInput"
             @keyup.enter="handleAgentSearch"
             @clear="handleAgentFilterInput"
           />
         </el-form-item>
-        <el-form-item :label="t('formbusiness.leaveform.agentUserName')">
+        <el-form-item :label="t('formbusiness.leaverequest.agentUserName')">
           <el-input
             v-model="agentFilters.userName"
             class="agent-filter-input-compact"
             clearable
-            :placeholder="t('formbusiness.leaveform.agentUserName')"
+            :placeholder="t('formbusiness.leaverequest.agentUserName')"
             @input="handleAgentFilterInput"
             @keyup.enter="handleAgentSearch"
             @clear="handleAgentFilterInput"
@@ -583,9 +583,9 @@
           @row-click="handleAgentRowClick"
         >
           <el-table-column type="selection" width="48" align="center" />
-          <el-table-column prop="userNo" :label="t('formbusiness.leaveform.applicantUserNo')" min-width="110" align="center" />
-          <el-table-column prop="userName" :label="t('formbusiness.leaveform.agentUserName')" min-width="120" align="left" show-overflow-tooltip />
-          <el-table-column prop="departmentName" :label="t('formbusiness.leaveform.agentDepartment')" min-width="160" align="left" show-overflow-tooltip />
+          <el-table-column prop="userNo" :label="t('formbusiness.leaverequest.applicantUserNo')" min-width="110" align="center" />
+          <el-table-column prop="userName" :label="t('formbusiness.leaverequest.agentUserName')" min-width="120" align="left" show-overflow-tooltip />
+          <el-table-column prop="departmentName" :label="t('formbusiness.leaverequest.agentDepartment')" min-width="160" align="left" show-overflow-tooltip />
         </el-table>
       </div>
       <div class="agent-pagination">
@@ -608,7 +608,7 @@
     <!-- 驳回弹窗 -->
     <el-dialog
       v-model="rejectDialogVisible"
-      :title="t('formbusiness.leaveform.rejectDialogTitle')"
+      :title="t('formbusiness.leaverequest.rejectDialogTitle')"
       width="580px"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -616,10 +616,10 @@
       @close="onRejectDialogClose"
     >
       <el-form ref="rejectFormRef" :model="rejectForm" :rules="rejectRules" label-width="100px">
-        <el-form-item :label="t('formbusiness.leaveform.rejectStepLabel')" prop="rejectStepId">
+        <el-form-item :label="t('formbusiness.leaverequest.rejectStepLabel')" prop="rejectStepId">
           <el-select
             v-model="rejectForm.rejectStepId"
-            :placeholder="t('formbusiness.leaveform.rejectStepPlaceholder')"
+            :placeholder="t('formbusiness.leaverequest.rejectStepPlaceholder')"
             class="reject-step-select"
           >
             <el-option
@@ -630,12 +630,12 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('formbusiness.leaveform.rejectReasonLabel')" prop="rejectReason">
+        <el-form-item :label="t('formbusiness.leaverequest.rejectReasonLabel')" prop="rejectReason">
           <el-input
             v-model="rejectForm.rejectReason"
             type="textarea"
             :rows="6"
-            :placeholder="t('formbusiness.leaveform.rejectReasonPlaceholder')"
+            :placeholder="t('formbusiness.leaverequest.rejectReasonPlaceholder')"
             class="reject-reason-input"
           />
         </el-form-item>
@@ -648,11 +648,11 @@
 
     <el-drawer
       v-model="workflowDrawerVisible"
-      :title="t('formbusiness.leaveform.workflowDrawerTitle')"
+      :title="t('formbusiness.leaverequest.workflowDrawerTitle')"
       direction="rtl"
       size="420px"
       destroy-on-close
-      class="leaveform-workflow-drawer"
+      class="leaverequest-workflow-drawer"
     >
       <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
         <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewList?.length">
@@ -679,7 +679,7 @@
               </span>
               <span class="workflow-step-name">{{ step.stepName }}</span>
               <span v-if="isWorkflowStepSkipped(step)" class="workflow-step-tag workflow-step-tag--skipped">
-                {{ t('formbusiness.leaveform.workflowStatusSkipped') }}
+                {{ t('formbusiness.leaverequest.workflowStatusSkipped') }}
               </span>
             </div>
             <ul
@@ -705,7 +705,7 @@
                     {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
                   </div>
                   <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
-                    {{ t('formbusiness.leaveform.workflowAgent') }}：{{ u.agentUserName }}
+                    {{ t('formbusiness.leaverequest.workflowAgent') }}：{{ u.agentUserName }}
                   </div>
                 </div>
                 <span
@@ -716,7 +716,7 @@
             </ul>
           </div>
         </template>
-        <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaveform.workflowEmpty')" />
+        <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaverequest.workflowEmpty')" />
       </div>
     </el-drawer>
     </el-config-provider>
@@ -731,7 +731,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock, View } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
-import { INIT_LEAVEFORM_API, SAVE_LEAVEFORM_API, GET_LEAVEFORM_DETAIL_API, GET_LEAVEFORM_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEFORM_API, REJECT_LEAVEFORM_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaveform'
+import { INIT_LEAVEREQUEST_API, SAVE_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEREQUEST_API, REJECT_LEAVEREQUEST_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
   calculateLeaveTotalHours,
@@ -802,9 +802,9 @@ function workflowUserStatusClass (user) {
 
 function workflowUserStatusLabel (user) {
   const key = workflowUserStatusIcon(user)
-  if (key === 'approve') return t('formbusiness.leaveform.workflowStatusApprove')
-  if (key === 'underReview') return t('formbusiness.leaveform.workflowStatusUnderReview')
-  return t('formbusiness.leaveform.workflowStatusUnsigned')
+  if (key === 'approve') return t('formbusiness.leaverequest.workflowStatusApprove')
+  if (key === 'underReview') return t('formbusiness.leaverequest.workflowStatusUnderReview')
+  return t('formbusiness.leaverequest.workflowStatusUnsigned')
 }
 
 function workflowReviewUserName (u) {
@@ -833,8 +833,8 @@ const resultState = reactive({
   variant: 'standard',
   detailMessage: '',
   status: 'success',
-  titleKey: 'formbusiness.leaveform.approvalResultTitle',
-  subTitleKey: 'formbusiness.leaveform.approvalResultSubTitle'
+  titleKey: 'formbusiness.leaverequest.approvalResultTitle',
+  subTitleKey: 'formbusiness.leaverequest.approvalResultSubTitle'
 })
 const approvalComment = ref('')
 
@@ -899,10 +899,10 @@ const rejectForm = reactive({
 
 const rejectRules = {
   rejectStepId: [
-    { required: true, message: t('formbusiness.leaveform.rejectStepRequired'), trigger: 'change' }
+    { required: true, message: t('formbusiness.leaverequest.rejectStepRequired'), trigger: 'change' }
   ],
   rejectReason: [
-    { required: true, message: t('formbusiness.leaveform.rejectReasonRequired'), trigger: 'blur' }
+    { required: true, message: t('formbusiness.leaverequest.rejectReasonRequired'), trigger: 'blur' }
   ]
 }
 
@@ -993,7 +993,7 @@ const rules = {
   ],
 
   agentUserId: [
-    { required: true, message: () => t('formbusiness.leaveform.pleaseSelectAgent'), trigger: 'change' },
+    { required: true, message: () => t('formbusiness.leaverequest.pleaseSelectAgent'), trigger: 'change' },
     { validator: validateAgentRequired, trigger: 'change' }
   ],
   reason: [
@@ -1044,11 +1044,11 @@ function validateTimeRange (rule, value, callback) {
     return
   }
   if (!isLeaveTimeRangeAllowed(startTime, endTime)) {
-    callback(new Error(t('formbusiness.leaveform.leaveTimeWorkHoursError')))
+    callback(new Error(t('formbusiness.leaverequest.leaveTimeWorkHoursError')))
     return
   }
   if (end <= start) {
-    callback(new Error(t('formbusiness.leaveform.endAfterStartError')))
+    callback(new Error(t('formbusiness.leaverequest.endAfterStartError')))
     return
   }
   callback()
@@ -1060,7 +1060,7 @@ function validateAgentRequired (rule, value, callback) {
     return
   }
   if (!value || !String(value).trim()) {
-    callback(new Error(t('formbusiness.leaveform.pleaseSelectAgent')))
+    callback(new Error(t('formbusiness.leaverequest.pleaseSelectAgent')))
     return
   }
   callback()
@@ -1270,7 +1270,7 @@ async function fetchLeaveBalances () {
   } catch {
     if (requestId !== leaveBalanceRequestId) return
     leaveBalances.value = []
-    ElMessage.error(t('formbusiness.leaveform.getLeaveBalanceFailed'))
+    ElMessage.error(t('formbusiness.leaverequest.getLeaveBalanceFailed'))
   } finally {
     if (requestId === leaveBalanceRequestId) {
       leaveBalanceLoading.value = false
@@ -1549,7 +1549,7 @@ function showFormActionNotice (message, type = 'success') {
 }
 
 function showPlainWarningMessage (message) {
-  showFormActionNotice(message || t('formbusiness.leaveform.leaveBalanceValidateFailed'), 'warning')
+  showFormActionNotice(message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'warning')
 }
 
 function isBadRequestResponse (res) {
@@ -1570,14 +1570,14 @@ function showForbiddenResult () {
   resultState.detailMessage = ''
   resultState.visible = true
   resultState.status = 'warning'
-  resultState.titleKey = 'formbusiness.leaveform.forbiddenResultTitle'
-  resultState.subTitleKey = 'formbusiness.leaveform.forbiddenResultSubTitle'
+  resultState.titleKey = 'formbusiness.leaverequest.forbiddenResultTitle'
+  resultState.subTitleKey = 'formbusiness.leaverequest.forbiddenResultSubTitle'
 }
 
 function showBadRequestResult (message) {
   const msg = typeof message === 'string' ? message.trim() : ''
   resultState.variant = 'badRequest'
-  resultState.detailMessage = msg || t('formbusiness.leaveform.badRequestFallbackMessage')
+  resultState.detailMessage = msg || t('formbusiness.leaverequest.badRequestFallbackMessage')
   resultState.visible = true
   resultState.status = 'warning'
   resultState.titleKey = ''
@@ -1663,13 +1663,13 @@ async function closeCurrentPage () {
   }
 }
 
-/** InitLeaveForm：返回完整实体则直接 bind，旧版仅返回 formId 时再拉详情 */
-async function initLeaveForm () {
+/** InitLeaveRequest：返回完整实体则直接 bind，旧版仅返回 formId 时再拉详情 */
+async function initLeaveRequest () {
   try {
     const formData = new window.FormData()
     formData.append('formTypeId', currentFormTypeId.value || defaultFormTypeId)
 
-    const res = await post(INIT_LEAVEFORM_API, formData, {
+    const res = await post(INIT_LEAVEREQUEST_API, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
@@ -1702,18 +1702,18 @@ async function initLeaveForm () {
     const pad = (n) => (n < 10 ? `0${n}` : `${n}`)
     const formatDateTime = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
     form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
-    await getLeaveFormDetail(newFormId)
+    await getLeaveRequestDetail(newFormId)
   } catch {
     // ignore
   }
 }
 
-async function getLeaveFormDetail (id) {
+async function getLeaveRequestDetail (id) {
   try {
     const formData = new window.FormData()
     formData.append('formId', String(id))
     formData.append('type', 'Review')
-    const res = await post(GET_LEAVEFORM_DETAIL_API, formData, {
+    const res = await post(GET_LEAVEREQUEST_DETAIL_API, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       silentForbiddenError: false
     })
@@ -1739,7 +1739,7 @@ async function getLeaveFormDetail (id) {
 
 async function getLeaveTypeOptions () {
   try {
-    const res = await post(GET_LEAVEFORM_DROPDOWN_API, {})
+    const res = await post(GET_LEAVEREQUEST_DROPDOWN_API, {})
     if (!res) return
     if (res.code !== 200) {
       if (isBadRequestResponse(res)) {
@@ -1767,7 +1767,7 @@ async function getLeaveTypeOptions () {
   }
 }
 
-function buildSaveLeaveFormPayload () {
+function buildSaveLeaveRequestPayload () {
   const [startTime, endTime] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
   const leaveReason = (form.reason || '').trim()
   const leaveType = normalizeNullableText(form.leaveType)
@@ -1785,8 +1785,8 @@ function buildSaveLeaveFormPayload () {
   }
 }
 
-async function saveLeaveFormRequest () {
-  return post(SAVE_LEAVEFORM_API, buildSaveLeaveFormPayload(), {
+async function saveLeaveRequestRequest () {
+  return post(SAVE_LEAVEREQUEST_API, buildSaveLeaveRequestPayload(), {
     silentForbiddenError: false
   })
 }
@@ -1800,7 +1800,7 @@ async function validateLeaveBalanceBeforeSubmit (formId) {
     disableAutoLogout: true
   })
   if (isForbiddenCode(res?.code)) {
-    showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+    showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
     return false
   }
   if (isLeaveBalanceValidationFailedCode(res?.code)) {
@@ -1811,22 +1811,22 @@ async function validateLeaveBalanceBeforeSubmit (formId) {
     return true
   }
   if (isBadRequestResponse(res)) {
-    showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+    showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     return false
   }
-  showFormActionNotice(res?.message || t('formbusiness.leaveform.leaveBalanceValidateFailed'), 'error')
+  showFormActionNotice(res?.message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'error')
   return false
 }
 
-async function saveLeaveFormBeforeSubmit () {
-  const saveRes = await saveLeaveFormRequest()
+async function saveLeaveRequestBeforeSubmit () {
+  const saveRes = await saveLeaveRequestRequest()
   if (isForbiddenCode(saveRes?.code)) {
-    showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+    showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
     return false
   }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
     if (isBadRequestResponse(saveRes)) {
-      showFormActionNotice(saveRes?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+      showFormActionNotice(saveRes?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     } else {
       showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
     }
@@ -1840,13 +1840,13 @@ async function onSubmit () {
   formRef.value?.validate(async (valid) => {
     if (!valid) { saving.value = false; return }
     try {
-      const res = await saveLeaveFormRequest()
+      const res = await saveLeaveRequestRequest()
       if (isForbiddenCode(res?.code)) {
-        showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+        showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
       } else if (res && isSuccessCode(res.code)) {
         showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
       } else if (isBadRequestResponse(res)) {
-        showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+        showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       } else {
         showFormActionNotice(res?.message || t('messages.saveError'), 'error')
       }
@@ -1880,7 +1880,7 @@ async function fetchFullReviewFlow () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leaveform.workflowLoadFailed'))
+        ElMessage.error(res?.message || t('formbusiness.leaverequest.workflowLoadFailed'))
       }
       return
     }
@@ -1891,7 +1891,7 @@ async function fetchFullReviewFlow () {
       ? data.stepReviewList
       : (Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : [])
   } catch {
-    ElMessage.error(t('formbusiness.leaveform.workflowLoadFailed'))
+    ElMessage.error(t('formbusiness.leaverequest.workflowLoadFailed'))
   } finally {
     workflowDrawerLoading.value = false
   }
@@ -1899,7 +1899,7 @@ async function fetchFullReviewFlow () {
 
 function openWorkflowDrawer () {
   if (!form.formId) {
-    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    ElMessage.warning(t('formbusiness.leaverequest.workflowNeedFormId'))
     return
   }
   workflowDrawerVisible.value = true
@@ -1993,10 +1993,10 @@ async function fetchAgentDepartmentOptions () {
       return
     }
     agentDepartmentOptions.value = []
-    ElMessage.error(res?.message || t('formbusiness.leaveform.getDepartmentFailed'))
+    ElMessage.error(res?.message || t('formbusiness.leaverequest.getDepartmentFailed'))
   } catch {
     agentDepartmentOptions.value = []
-    ElMessage.error(t('formbusiness.leaveform.getDepartmentFailed'))
+    ElMessage.error(t('formbusiness.leaverequest.getDepartmentFailed'))
   }
 }
 
@@ -2029,7 +2029,7 @@ async function fetchAgentUserList () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leaveform.getAgentListFailed'))
+        ElMessage.error(res?.message || t('formbusiness.leaverequest.getAgentListFailed'))
       }
       agentList.value = []
       agentPagination.totalCount = 0
@@ -2042,7 +2042,7 @@ async function fetchAgentUserList () {
     if (requestId !== agentListRequestId) return
     agentList.value = []
     agentPagination.totalCount = 0
-    ElMessage.error(t('formbusiness.leaveform.getAgentListFailed'))
+    ElMessage.error(t('formbusiness.leaverequest.getAgentListFailed'))
   } finally {
     if (requestId === agentListRequestId) {
       agentListLoading.value = false
@@ -2132,7 +2132,7 @@ function handleAgentRowClick (row) {
 
 function confirmAgentSelect () {
   if (!selectedAgent.value?.userId) {
-    ElMessage.warning(t('formbusiness.leaveform.pleaseSelectAgent'))
+    ElMessage.warning(t('formbusiness.leaverequest.pleaseSelectAgent'))
     return
   }
   form.agentUserId = String(selectedAgent.value.userId)
@@ -2190,7 +2190,7 @@ async function fetchRejectStepDrop () {
 async function onReject () {
   const formId = String(form.formId || '')
   if (!formId) {
-    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    ElMessage.warning(t('formbusiness.leaverequest.workflowNeedFormId'))
     return
   }
   rejectForm.rejectStepId = ''
@@ -2212,7 +2212,7 @@ async function confirmReject () {
 
   const formId = String(form.formId || '')
   if (!formId) {
-    ElMessage.warning(t('formbusiness.leaveform.workflowNeedFormId'))
+    ElMessage.warning(t('formbusiness.leaverequest.workflowNeedFormId'))
     return
   }
 
@@ -2223,7 +2223,7 @@ async function confirmReject () {
 
   rejecting.value = true
   try {
-    const res = await post(REJECT_LEAVEFORM_API, {
+    const res = await post(REJECT_LEAVEREQUEST_API, {
       formId,
       rejectStepId,
       comment: rejectReason
@@ -2234,16 +2234,16 @@ async function confirmReject () {
       return
     }
     if (res && isSuccessCode(res.code)) {
-      showResult('success', 'formbusiness.leaveform.rejectResultTitle', 'formbusiness.leaveform.rejectResultSubTitle')
+      showResult('success', 'formbusiness.leaverequest.rejectResultTitle', 'formbusiness.leaverequest.rejectResultSubTitle')
       return
     }
     if (isBadRequestResponse(res)) {
       showBadRequestResult(res?.message)
       return
     }
-    ElNotification({ title: '', message: res?.message || t('formbusiness.leaveform.rejectFailed'), type: 'error' })
+    ElNotification({ title: '', message: res?.message || t('formbusiness.leaverequest.rejectFailed'), type: 'error' })
   } catch {
-    ElNotification({ title: '', message: t('formbusiness.leaveform.rejectFailed'), type: 'error' })
+    ElNotification({ title: '', message: t('formbusiness.leaverequest.rejectFailed'), type: 'error' })
   } finally {
     rejecting.value = false
   }
@@ -2304,8 +2304,8 @@ async function onSubmitForApproval () {
   }
   try {
     await ElMessageBox.confirm(
-      t('formbusiness.leaveform.submitConfirmMessage'),
-      t('formbusiness.leaveform.submitConfirmTitle'),
+      t('formbusiness.leaverequest.submitConfirmMessage'),
+      t('formbusiness.leaverequest.submitConfirmTitle'),
       {
         type: 'warning',
         confirmButtonText: t('common.confirm'),
@@ -2318,18 +2318,18 @@ async function onSubmitForApproval () {
   }
   const formId = String(form.formId || '')
   if (!formId) {
-    showFormActionNotice(t('formbusiness.leaveform.workflowNeedFormId'), 'warning')
+    showFormActionNotice(t('formbusiness.leaverequest.workflowNeedFormId'), 'warning')
     return
   }
   approving.value = true
   try {
-    const saved = await saveLeaveFormBeforeSubmit()
+    const saved = await saveLeaveRequestBeforeSubmit()
     if (!saved) return
 
     const balanceValid = await validateLeaveBalanceBeforeSubmit(formId)
     if (!balanceValid) return
 
-    const res = await post(APPROVE_LEAVEFORM_API, {
+    const res = await post(APPROVE_LEAVEREQUEST_API, {
       formId,
       rejectStepId: '0',
       comment: approvalComment.value || ''
@@ -2343,18 +2343,18 @@ async function onSubmitForApproval () {
       return
     }
     if (isForbiddenCode(res?.code)) {
-      showFormActionNotice(t('formbusiness.leaveform.forbiddenResultSubTitle'), 'warning')
+      showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
       return
     }
     if (res && isSuccessCode(res.code)) {
-      showResult('success', 'formbusiness.leaveform.approvalResultTitle', 'formbusiness.leaveform.approvalResultSubTitle')
+      showResult('success', 'formbusiness.leaverequest.approvalResultTitle', 'formbusiness.leaverequest.approvalResultSubTitle')
       return
     }
     if (isBadRequestResponse(res)) {
-      showFormActionNotice(res?.message || t('formbusiness.leaveform.badRequestFallbackMessage'), 'warning')
+      showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.leaveform.submitFailed'), 'error')
+    showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'error')
   } catch {
     // ignore
   } finally {
@@ -2406,7 +2406,7 @@ function getAttachmentRequirementKey() {
 
 function getAttachmentRequirementTip() {
   const key = getAttachmentRequirementKey()
-  return key ? t(`formbusiness.leaveform.${key}`) : ''
+  return key ? t(`formbusiness.leaverequest.${key}`) : ''
 }
 
 function shouldRequireAttachment() {
@@ -2505,10 +2505,10 @@ async function removeAttachment (file, idx) {
     } else if (isBadRequestResponse(res)) {
       showBadRequestResult(res?.message)
     } else {
-      ElMessage({ message: res?.message || t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
+      ElMessage({ message: res?.message || t('formbusiness.leaverequest.deleteFailed'), type: 'error', plain: true, showClose: true })
     }
   } catch {
-    ElMessage({ message: t('formbusiness.leaveform.deleteFailed'), type: 'error', plain: true, showClose: true })
+    ElMessage({ message: t('formbusiness.leaverequest.deleteFailed'), type: 'error', plain: true, showClose: true })
   }
 }
 
@@ -2586,7 +2586,7 @@ onMounted(async () => {
       if (tokenFormId) {
         form.formId = tokenFormId
         // 下拉选项与表单详情相互独立，并行拉取以缩短加载等待
-        await Promise.all([getLeaveTypeOptions(), getLeaveFormDetail(tokenFormId)])
+        await Promise.all([getLeaveTypeOptions(), getLeaveRequestDetail(tokenFormId)])
       }
       return
     }
@@ -2595,9 +2595,9 @@ onMounted(async () => {
     if (routeFormId) {
       form.formId = String(routeFormId)
       // 下拉选项与表单详情相互独立，并行拉取以缩短加载等待
-      await Promise.all([getLeaveTypeOptions(), getLeaveFormDetail(form.formId)])
+      await Promise.all([getLeaveTypeOptions(), getLeaveRequestDetail(form.formId)])
     } else {
-      await Promise.all([getLeaveTypeOptions(), initLeaveForm()])
+      await Promise.all([getLeaveTypeOptions(), initLeaveRequest()])
     }
   } catch {
     ElMessage.error(t('formbusiness.messages.loadError'))
@@ -2775,7 +2775,7 @@ onMounted(async () => {
   margin-top: 14px;
 }
 
-.leaveform-bad-request-desc {
+.leaverequest-bad-request-desc {
   max-width: 520px;
   margin: 0 auto;
   text-align: center;
@@ -2923,20 +2923,20 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.leaveform-workflow-drawer :deep(.el-drawer__header) {
+.leaverequest-workflow-drawer :deep(.el-drawer__header) {
   padding: 10px 20px !important;
   margin: 0 !important;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
-.leaveform-workflow-drawer :deep(.el-drawer__title) {
+.leaverequest-workflow-drawer :deep(.el-drawer__title) {
   font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
   margin: 0;
 }
 
-.leaveform-workflow-drawer :deep(.el-drawer__body) {
+.leaverequest-workflow-drawer :deep(.el-drawer__body) {
   padding: 10px 20px 20px !important;
 }
 
