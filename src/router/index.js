@@ -547,7 +547,6 @@ const pmenuRoutes = [
         }
       ]
   },
-  // 独立请假单申请页面（不使用Layout，无标签）
   // tokenBypass: true 表示携带 token 参数时跳过 session 检查，由页面自行用 token 换取身份
   {
     path: '/formbusiness/forms/leaverequest/leaverequest_r',
@@ -567,6 +566,29 @@ const pmenuRoutes = [
     component: () => import('../views/formbusiness/forms/leaverequest/leaverequest_v.vue'),
     meta: {
       title: 'route.leaverequest_v',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  {
+    path: '/formbusiness/forms/leavecancell/leavecancell_r',
+    name: 'LeaveCancellR',
+    component: () => import('../views/formbusiness/forms/leavecancell/leavecancell_r.vue'),
+    meta: {
+      title: 'route.leavecancell_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  // 独立销假单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/leavecancell/leavecancell_v',
+    name: 'LeaveCancellV',
+    component: () => import('../views/formbusiness/forms/leavecancell/leavecancell_v.vue'),
+    meta: {
+      title: 'route.leavecancell_v',
       [ROUTE_CONFIG.META.AUTH]: true,
       noTag: true,
       tokenBypass: true
