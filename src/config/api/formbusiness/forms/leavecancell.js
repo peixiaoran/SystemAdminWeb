@@ -18,6 +18,12 @@ export const SAVE_LEAVECANCELL_API = 'FormBusiness/Forms/LeaveCancell/SaveLeaveC
 // 获取原请假单查看信息API
 export const GET_LEAVEREQUEST_VIEW_API = 'FormBusiness/Forms/LeaveCancell/GetLeaveRequestView'
 
+// 获取原请假单详情API（用于回显请假信息表格）
+export const GET_LEAVEREQUEST_DETAIL_API = 'FormBusiness/Forms/LeaveCancell/GetLeaveRequestDetail'
+
+// 获取请假单剩余可销时数API
+export const GET_REMAINING_CANCELL_HOURS_API = 'FormBusiness/Forms/LeaveCancell/GetRemainingCancellHours'
+
 // 获取驳回步骤下拉框API
 export const GET_REJECT_STEP_DROP_API = 'FormBusiness/Forms/PublicForm/GetRejectStepDrop'
 

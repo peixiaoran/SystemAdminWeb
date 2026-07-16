@@ -22,7 +22,7 @@ export const GET_LEAVEREQUEST_DROPDOWN_API = 'FormBusiness/Forms/LeaveRequest/Ge
 export const GET_LEAVE_BALANCES_API = 'FormBusiness/Forms/LeaveRequest/GetLeaveBalances'
 
 // 验证请假余额信息API
-export const VALIDATE_LEAVE_BALANCE_API = 'FormBusiness/Forms/LeaveRequest/ValidateLeaveInfo'
+export const VALIDATE_LEAVE_BALANCE_API = 'FormBusiness/Forms/LeaveRequest/ValidateLeaveRequest'
 
 // 获取部门下拉框API
 export const GET_DEPARTMENT_DROPDOWN_API = 'FormBusiness/Forms/LeaveRequest/GetDepartmentDrop'

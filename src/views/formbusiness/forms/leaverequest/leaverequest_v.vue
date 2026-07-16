@@ -182,9 +182,9 @@
   
           <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
   
-          <!-- 请假信息 -->
+          <!-- 请假信息：类别 / 代理人 / 时数 -->
           <el-row
-            v-if="isAnyStepFieldVisible(['LeaveType', 'LeavePeriod'])"
+            v-if="isAnyStepFieldVisible(['LeaveType', 'Agent', 'SelectAgent'])"
             :gutter="16"
             style="justify-content: flex-start;"
           >
@@ -195,22 +195,6 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col v-if="isStepFieldVisible('LeavePeriod')" :span="16">
-              <el-form-item :label="t('formbusiness.leaverequest.leaveTimeRange')" prop="leaveTimeRange">
-                <el-date-picker
-                  v-model="form.leaveTimeRange"
-                  type="datetimerange"
-                  value-format="YYYY-MM-DD HH:mm:ss"
-                  :start-placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
-                  :end-placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
-                  disabled
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-  
-          <!-- 时长 / 代理人 -->
-          <el-row v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent', 'LeaveHours', 'LeaveDays'])" :gutter="16">
             <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.agentUserNo')" prop="agentUserId">
                 <div class="agent-field-control">
@@ -232,8 +216,65 @@
                 </div>
               </el-form-item>
             </el-col>
-            <el-col v-if="isAnyStepFieldVisible(['LeaveHours', 'LeaveDays'])" :span="16">
-              <el-form-item :label="t('formbusiness.leaverequest.leaveHours')" prop="days">
+          </el-row>
+
+          <el-row v-if="isAnyStepFieldVisible(['LeavePeriod', 'LeaveHours', 'LeaveDays'])" :gutter="16">
+            <el-col :span="24" class="leave-time-hours-row">
+              <el-form-item
+                v-if="isStepFieldVisible('LeavePeriod')"
+                :label="t('formbusiness.leaverequest.leaveTimeRange')"
+                prop="leaveTimeRange"
+                class="leave-time-range-item"
+              >
+                <div class="leave-time-range-fields">
+                  <el-date-picker
+                    v-model="leaveStartDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
+                    disabled
+                    class="leave-date-picker"
+                    style="width: 154px; flex: 0 0 154px;"
+                  />
+                  <el-time-select
+                    v-model="leaveStartTimeOfDay"
+                    start="08:00"
+                    end="17:00"
+                    step="00:10"
+                    :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
+                    disabled
+                    class="leave-time-of-day-select"
+                    style="width: 130px; flex: 0 0 130px;"
+                  />
+                  <span class="leave-time-range-separator"> ~ </span>
+                  <el-date-picker
+                    v-model="leaveEndDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
+                    disabled
+                    class="leave-date-picker"
+                    style="width: 154px; flex: 0 0 154px;"
+                  />
+                  <el-time-select
+                    v-model="leaveEndTimeOfDay"
+                    start="08:00"
+                    end="17:00"
+                    step="00:10"
+                    :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
+                    disabled
+                    class="leave-time-of-day-select"
+                    style="width: 130px; flex: 0 0 130px;"
+                  />
+                </div>
+              </el-form-item>
+              <el-form-item
+                v-if="isAnyStepFieldVisible(['LeaveHours', 'LeaveDays'])"
+                :label="t('formbusiness.leaverequest.leaveHours')"
+                prop="days"
+                label-width="auto"
+                class="leave-hours-item"
+              >
                 <el-input-number
                   v-model="form.days"
                   class="leave-hours-input"
@@ -241,7 +282,7 @@
                   :step="0.01"
                   :precision="2"
                   :controls="false"
-                  style="width: 200px;"
+                  style="width: 110px;"
                   disabled
                 />
               </el-form-item>
@@ -764,6 +805,70 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
 
   const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo, form.agentUserName))
+
+  // 展示层拆分：form.leaveTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），与 r 页面保持一致
+  const LEAVE_DEFAULT_START_TIME = '08:00'
+  const LEAVE_DEFAULT_END_TIME = '17:00'
+
+  function splitLeaveDateTime (val) {
+    if (!val) return { date: '', time: '' }
+    const s = String(val)
+    const spaceIdx = s.indexOf(' ')
+    if (spaceIdx === -1) return { date: s, time: '' }
+    return { date: s.slice(0, spaceIdx), time: s.slice(spaceIdx + 1, spaceIdx + 6) }
+  }
+
+  function setLeaveStart (date, time) {
+    const end = Array.isArray(form.leaveTimeRange) ? (form.leaveTimeRange[1] || '') : ''
+    const start = date ? `${date} ${time}:00` : ''
+    form.leaveTimeRange = (start || end) ? [start, end] : []
+  }
+
+  function setLeaveEnd (date, time) {
+    const start = Array.isArray(form.leaveTimeRange) ? (form.leaveTimeRange[0] || '') : ''
+    const end = date ? `${date} ${time}:00` : ''
+    form.leaveTimeRange = (start || end) ? [start, end] : []
+  }
+
+  const leaveStartDate = computed({
+    get () {
+      const [start] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+      return splitLeaveDateTime(start).date
+    },
+    set (val) {
+      setLeaveStart(val, leaveStartTimeOfDay.value)
+    }
+  })
+
+  const leaveStartTimeOfDay = computed({
+    get () {
+      const [start] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+      return splitLeaveDateTime(start).time || LEAVE_DEFAULT_START_TIME
+    },
+    set (val) {
+      setLeaveStart(leaveStartDate.value, val)
+    }
+  })
+
+  const leaveEndDate = computed({
+    get () {
+      const [, end] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+      return splitLeaveDateTime(end).date
+    },
+    set (val) {
+      setLeaveEnd(val, leaveEndTimeOfDay.value)
+    }
+  })
+
+  const leaveEndTimeOfDay = computed({
+    get () {
+      const [, end] = Array.isArray(form.leaveTimeRange) ? form.leaveTimeRange : []
+      return splitLeaveDateTime(end).time || LEAVE_DEFAULT_END_TIME
+    },
+    set (val) {
+      setLeaveEnd(leaveEndDate.value, val)
+    }
+  })
 
   const leaveTypeOptions = ref([])
   const rules = {
@@ -1866,7 +1971,54 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     box-shadow: 0 0 0 2px rgba(192, 196, 204, 0.35) inset;
     border-color: #a8abb2;
   }
-  
+
+  .leave-time-range-fields {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .leave-date-picker :deep(.el-input__wrapper) {
+    padding-left: 8px;
+    padding-right: 6px;
+  }
+
+  .leave-date-picker :deep(.el-input__inner) {
+    font-size: 13px;
+  }
+
+  .leave-time-of-day-select {
+    flex-shrink: 0;
+  }
+
+  .leave-time-range-separator {
+    flex-shrink: 0;
+    color: var(--el-text-color-secondary);
+  }
+
+  /* 请假时数不再单独分栏：紧随请假时间字段之后，标签宽度自适应使文本框紧贴标签 */
+  .leave-time-hours-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+  }
+
+  .leave-time-hours-row .leave-time-range-item {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .leave-time-hours-row .leave-time-range-item :deep(.el-form-item__content) {
+    min-width: 0;
+  }
+
+  .leave-time-hours-row .leave-hours-item {
+    flex: 0 0 auto;
+  }
+
   .leave-form :deep(.el-form-item) {
     align-items: center;
   }

@@ -178,17 +178,13 @@
                   </el-button>
                 </div>
                 <el-table v-else :data="[selectedLeaveRequest]" border size="small" class="leave-request-ref-table">
-                  <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" />
-                  <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" />
-                  <el-table-column :label="t('formbusiness.leavecancell.startDateTimeColumn')" min-width="150">
-                    <template #default="{ row }">{{ formatDateTimeCell(row.startDateTime) }}</template>
-                  </el-table-column>
-                  <el-table-column :label="t('formbusiness.leavecancell.endDateTimeColumn')" min-width="150">
-                    <template #default="{ row }">{{ formatDateTimeCell(row.endDateTime) }}</template>
+                  <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
+                  <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
+                  <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="280" align="center">
+                    <template #default="{ row }">{{ formatDateTimeCell(row.startDateTime) }} ~ {{ formatDateTimeCell(row.endDateTime) }}</template>
                   </el-table-column>
                   <el-table-column prop="leaveHours" :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" />
-                  <el-table-column prop="cancellableHours" :label="t('formbusiness.leavecancell.cancellableHoursColumn')" width="90" align="center" />
-                  <el-table-column :label="t('common.operation')" width="80" align="center">
+                  <el-table-column :label="t('common.operation')" width="95" align="center">
                     <template #default>
                       <el-button
                         type="primary"
@@ -207,36 +203,73 @@
           </el-row>
 
           <el-row v-if="selectedLeaveRequest" :gutter="16">
-            <el-col :span="16">
-              <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" prop="cancelTimeRange">
-                <el-date-picker
-                  v-model="form.cancelTimeRange"
-                  type="datetimerange"
-                  value-format="YYYY-MM-DD HH:mm:ss"
-                  :start-placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
-                  :end-placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
-                  :disabled-date="isCancelDateDisabled"
-                  :disabled="!isStepFieldEditable('LeaveRequestRef')"
-                  @change="handleCancelTimeRangeChange"
-                />
+            <el-col :span="24" class="cancel-time-hours-row">
+              <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" prop="cancelTimeRange" class="cancel-time-range-item">
+                <div class="leave-time-range-fields">
+                  <el-date-picker
+                    v-model="cancelStartDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
+                    :disabled-date="isCancelDateDisabled"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    class="leave-date-picker"
+                    style="width: 145px; flex: 0 0 145px;"
+                    @change="handleCancelTimeRangeChange"
+                  />
+                  <el-time-select
+                    v-model="cancelStartTimeOfDay"
+                    start="08:00"
+                    end="17:00"
+                    step="00:10"
+                    :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelStartDate"
+                    class="leave-time-of-day-select"
+                    style="width: 130px; flex: 0 0 130px;"
+                    @change="handleCancelTimeRangeChange"
+                  />
+                  <span class="leave-time-range-separator"> ~ </span>
+                  <el-date-picker
+                    v-model="cancelEndDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
+                    :disabled-date="isCancelDateDisabled"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    class="leave-date-picker"
+                    style="width: 145px; flex: 0 0 145px;"
+                    @change="handleCancelTimeRangeChange"
+                  />
+                  <el-time-select
+                    v-model="cancelEndTimeOfDay"
+                    start="08:00"
+                    end="17:00"
+                    step="00:10"
+                    :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelEndDate"
+                    class="leave-time-of-day-select"
+                    style="width: 130px; flex: 0 0 130px;"
+                    @change="handleCancelTimeRangeChange"
+                  />
+                </div>
               </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item :label="t('formbusiness.leavecancell.cancelHours')">
+              <el-form-item :label="t('formbusiness.leavecancell.cancelHours')" label-width="auto" class="cancel-hours-item">
                 <el-input-number
                   v-model="form.cancelHours"
+                  class="leave-hours-input"
                   :min="0"
                   :step="0.01"
                   :precision="2"
                   :controls="false"
-                  style="width: 100%;"
+                  style="width: 110px;"
                   disabled
                 />
               </el-form-item>
             </el-col>
           </el-row>
 
-          <el-divider></el-divider>
+          <!-- 上方还有表单项自带的 18px 下边距，6px 上边距使分割线到销假时间与到销假原因的距离一致（均 24px） -->
+          <el-divider style="margin: 6px 0 24px;"></el-divider>
         </template>
 
         <!-- 销假原因 -->
@@ -436,6 +469,7 @@
           :empty-text="t('common.noData')"
           @selection-change="handleLeaveRequestTableSelectionChange"
           @row-click="handleLeaveRequestRowClick"
+          @cell-mouse-enter="handleLeaveRequestCellMouseEnter"
         >
           <el-table-column type="selection" width="48" align="center" />
           <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
@@ -447,7 +481,12 @@
             <template #default="{ row }">{{ formatDateTimeCell(row.endDateTime) }}</template>
           </el-table-column>
           <el-table-column prop="leaveHours" :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" />
-          <el-table-column prop="cancellableHours" :label="t('formbusiness.leavecancell.cancellableHoursColumn')" width="90" align="center" />
+          <el-table-column prop="cancellableHours" :label="t('formbusiness.leavecancell.cancellableHoursColumn')" width="90" align="center">
+            <template #default="{ row }">
+              <el-icon v-if="remainingCancelHoursLoadingMap[row.leaveRequestId]" class="is-loading"><Loading /></el-icon>
+              <span v-else>{{ remainingCancelHoursMap[row.leaveRequestId] ?? '-' }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="applicantDate" :label="t('formbusiness.leavecancell.applicantDateColumn')" width="110" align="center" />
         </el-table>
       </div>
@@ -592,6 +631,8 @@ import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
   GET_LEAVEREQUEST_VIEW_API,
+  GET_LEAVEREQUEST_DETAIL_API,
+  GET_REMAINING_CANCELL_HOURS_API,
   GET_LEAVECANCELL_API,
   SAVE_LEAVECANCELL_API,
   GET_REJECT_STEP_DROP_API,
@@ -690,6 +731,8 @@ const leaveRequestPagination = reactive({
   totalCount: 0
 })
 let leaveRequestListRequestId = 0
+const remainingCancelHoursMap = reactive({})
+const remainingCancelHoursLoadingMap = reactive({})
 
 const rejectDialogVisible = ref(false)
 const rejectFormRef = ref(null)
@@ -890,7 +933,23 @@ function resolveCancelHoursFromData (data) {
   return Number.isFinite(n) ? n : undefined
 }
 
-function bindFormData (data) {
+/** 请假信息表格数据：优先使用 GetLeaveRequestDetail 返回值 */
+async function fetchLeaveRequestDetail (leaveRequestId) {
+  if (!leaveRequestId) return null
+  try {
+    const res = await post(
+      GET_LEAVEREQUEST_DETAIL_API,
+      new URLSearchParams({ leaveRequestId: String(leaveRequestId) }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+    if (!res || res.code !== 200) return null
+    return res.data || null
+  } catch {
+    return null
+  }
+}
+
+async function bindFormData (data) {
   Object.assign(form, {
     formId: data.formId != null ? String(data.formId) : '',
     formNo: data.formNo || '',
@@ -905,12 +964,14 @@ function bindFormData (data) {
   })
 
   if (data.leaveRequestId) {
+    const detail = await fetchLeaveRequestDetail(data.leaveRequestId)
     selectedLeaveRequest.value = {
-      leaveRequestId: data.leaveRequestId,
-      leaveRequestNo: data.leaveRequestNo || '',
-      startDateTime: data.leaveStartDateTime,
-      endDateTime: data.leaveEndDateTime,
-      leaveHours: data.leaveHours,
+      leaveRequestId: detail?.leaveRequestId ?? data.leaveRequestId,
+      leaveRequestNo: detail?.leaveRequestNo || data.leaveRequestNo || '',
+      leaveType: detail?.leaveTypeName || detail?.leaveType || '',
+      startDateTime: detail?.startDateTime ?? data.leaveStartDateTime,
+      endDateTime: detail?.endDateTime ?? data.leaveEndDateTime,
+      leaveHours: detail?.leaveHours ?? data.leaveHours,
       cancellableHours: undefined
     }
   }
@@ -950,7 +1011,7 @@ async function getLeaveCancellDetail (formId) {
       }
       return
     }
-    bindFormData(res.data || {})
+    await bindFormData(res.data || {})
   } catch {
     // ignore
   }
@@ -970,18 +1031,18 @@ function getOriginalLeaveEnd () {
   return d && !isNaN(d.getTime()) ? d : null
 }
 
-/** 今天工作日起点（08:00），销假开始时间不得早于该时间 */
-function getTodayWorkStart () {
+/** 本年度起点（1月1日 08:00），销假开始时间不得早于该时间 */
+function getCurrentYearWorkStart () {
   const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0)
+  return new Date(now.getFullYear(), 0, 1, 8, 0, 0)
 }
 
-/** 销假开始时间下限：原请假开始时间与今天 08:00 中较晚者（已过去的部分不可销假） */
+/** 销假开始时间下限：原请假开始时间与本年度起点中较晚者（去年及更早的请假时段不可销假） */
 function getMinCancelStartDateTime () {
   const originalStart = getOriginalLeaveStart()
-  const todayStart = getTodayWorkStart()
-  if (originalStart && originalStart > todayStart) return originalStart
-  return todayStart
+  const yearStart = getCurrentYearWorkStart()
+  if (originalStart && originalStart > yearStart) return originalStart
+  return yearStart
 }
 
 /** 销假结束时间上限：不得超过原请假单结束时间 */
@@ -999,6 +1060,71 @@ function isCancelDateDisabled (date) {
   const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate())
   return d < minDay || d > maxDay
 }
+
+// 展示层拆分：form.cancelTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），
+// 保存/送审时经 toISO 转 T 格式不受影响，这里拆成开始日期/时间段、结束日期/时间段四个可视化字段
+const CANCEL_DEFAULT_START_TIME = '08:00'
+const CANCEL_DEFAULT_END_TIME = '17:00'
+
+function splitCancelDateTime (val) {
+  if (!val) return { date: '', time: '' }
+  const s = String(val)
+  const spaceIdx = s.indexOf(' ')
+  if (spaceIdx === -1) return { date: s, time: '' }
+  return { date: s.slice(0, spaceIdx), time: s.slice(spaceIdx + 1, spaceIdx + 6) }
+}
+
+function setCancelStart (date, time) {
+  const end = Array.isArray(form.cancelTimeRange) ? (form.cancelTimeRange[1] || '') : ''
+  const start = date ? `${date} ${time}:00` : ''
+  form.cancelTimeRange = (start || end) ? [start, end] : []
+}
+
+function setCancelEnd (date, time) {
+  const start = Array.isArray(form.cancelTimeRange) ? (form.cancelTimeRange[0] || '') : ''
+  const end = date ? `${date} ${time}:00` : ''
+  form.cancelTimeRange = (start || end) ? [start, end] : []
+}
+
+const cancelStartDate = computed({
+  get () {
+    const [start] = Array.isArray(form.cancelTimeRange) ? form.cancelTimeRange : []
+    return splitCancelDateTime(start).date
+  },
+  set (val) {
+    setCancelStart(val, cancelStartTimeOfDay.value)
+  }
+})
+
+const cancelStartTimeOfDay = computed({
+  get () {
+    const [start] = Array.isArray(form.cancelTimeRange) ? form.cancelTimeRange : []
+    return splitCancelDateTime(start).time || CANCEL_DEFAULT_START_TIME
+  },
+  set (val) {
+    setCancelStart(cancelStartDate.value, val)
+  }
+})
+
+const cancelEndDate = computed({
+  get () {
+    const [, end] = Array.isArray(form.cancelTimeRange) ? form.cancelTimeRange : []
+    return splitCancelDateTime(end).date
+  },
+  set (val) {
+    setCancelEnd(val, cancelEndTimeOfDay.value)
+  }
+})
+
+const cancelEndTimeOfDay = computed({
+  get () {
+    const [, end] = Array.isArray(form.cancelTimeRange) ? form.cancelTimeRange : []
+    return splitCancelDateTime(end).time || CANCEL_DEFAULT_END_TIME
+  },
+  set (val) {
+    setCancelEnd(cancelEndDate.value, val)
+  }
+})
 
 /** 销假时数：与请假单时数计算规则一致（08-12/13-17，午休不计） */
 function calculateCancelDuration () {
@@ -1024,8 +1150,12 @@ function validateCancelTimeRange (rule, value, callback) {
     callback()
     return
   }
-  if (!value || value.length !== 2 || !value[0] || !value[1]) {
+  if (!value || value.length !== 2 || (!value[0] && !value[1])) {
     callback()
+    return
+  }
+  if (!value[0] || !value[1]) {
+    callback(new Error(t('formbusiness.leavecancell.cancelTimeIncompleteError')))
     return
   }
   const [startTime, endTime] = value
@@ -1090,8 +1220,36 @@ async function openLeaveRequestPicker () {
   leaveRequestFilters.leaveRequestNo = ''
   leaveRequestFilters.dateRange = getDefaultLeaveRequestDateRange()
   leaveRequestPagination.pageIndex = 1
+  resetRemainingCancelHoursCache()
   leaveRequestDialogVisible.value = true
   await fetchLeaveRequestListImmediate()
+}
+
+function resetRemainingCancelHoursCache () {
+  for (const key of Object.keys(remainingCancelHoursMap)) delete remainingCancelHoursMap[key]
+  for (const key of Object.keys(remainingCancelHoursLoadingMap)) delete remainingCancelHoursLoadingMap[key]
+}
+
+/** 鼠标移入"可销时数"列时按需拉取剩余可销时数 */
+async function handleLeaveRequestCellMouseEnter (row, column) {
+  if (column?.property !== 'cancellableHours') return
+  const leaveRequestId = row?.leaveRequestId
+  if (!leaveRequestId || remainingCancelHoursLoadingMap[leaveRequestId]) return
+  remainingCancelHoursLoadingMap[leaveRequestId] = true
+  try {
+    const res = await post(
+      GET_REMAINING_CANCELL_HOURS_API,
+      new URLSearchParams({ leaveRequestId: String(leaveRequestId), formId: String(form.formId || '') }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+    if (res && res.code === 200) {
+      remainingCancelHoursMap[leaveRequestId] = res.data
+    }
+  } catch {
+    // ignore
+  } finally {
+    remainingCancelHoursLoadingMap[leaveRequestId] = false
+  }
 }
 
 function fetchLeaveRequestListImmediate () {
@@ -1231,6 +1389,7 @@ function handleLeaveRequestDialogClosed () {
   selectedLeaveRequestRow.value = null
   selectedLeaveRequestRowId.value = ''
   leaveRequestList.value = []
+  resetRemainingCancelHoursCache()
 }
 
 function normalizeFieldKey (fieldKey) {
@@ -1845,6 +2004,58 @@ onMounted(async () => {
 
 .leave-request-ref-table {
   width: 100%;
+  font-size: 14px;
+}
+
+.leave-time-range-fields {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.leave-time-range-separator {
+  flex-shrink: 0;
+  color: var(--el-text-color-secondary);
+}
+
+.leave-time-of-day-select {
+  flex-shrink: 0;
+}
+
+/* 销假时数不再单独分栏：紧随销假时间字段之后，标签宽度自适应使文本框紧贴标签 */
+.cancel-time-hours-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+}
+
+.cancel-time-hours-row .cancel-time-range-item {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.cancel-time-hours-row .cancel-time-range-item :deep(.el-form-item__content) {
+  min-width: 0;
+}
+
+.cancel-time-hours-row .cancel-hours-item {
+  flex: 0 0 auto;
+}
+
+.leave-form :deep(.leave-hours-input .el-input__inner),
+.leave-form :deep(.leave-hours-input .el-input__wrapper input) {
+  color: var(--el-color-danger);
+  font-weight: 700;
+  -webkit-text-fill-color: var(--el-color-danger);
+}
+
+.leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
+.leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
+  color: var(--el-color-danger);
+  -webkit-text-fill-color: var(--el-color-danger);
 }
 
 .leave-request-filter-form .el-form-item {
