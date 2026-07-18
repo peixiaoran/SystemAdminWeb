@@ -183,7 +183,9 @@
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="280" align="center">
                     <template #default="{ row }">{{ formatDateTimeCell(row.startDateTime) }} ~ {{ formatDateTimeCell(row.endDateTime) }}</template>
                   </el-table-column>
-                  <el-table-column prop="leaveHours" :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" />
+                  <el-table-column :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" class-name="ref-leave-hours-col">
+                    <template #default="{ row }">{{ formatHoursCell(row.leaveHours) }}</template>
+                  </el-table-column>
                   <el-table-column :label="t('common.operation')" width="95" align="center">
                     <template #default>
                       <el-button
@@ -214,7 +216,7 @@
                     :disabled-date="isCancelDateDisabled"
                     :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-date-picker"
-                    style="width: 145px; flex: 0 0 145px;"
+                    style="width: 160px; flex: 0 0 160px;"
                     @change="handleCancelTimeRangeChange"
                   />
                   <el-time-select
@@ -225,7 +227,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
                     :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelStartDate"
                     class="leave-time-of-day-select"
-                    style="width: 130px; flex: 0 0 130px;"
+                    style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
                   />
                   <span class="leave-time-range-separator"> ~ </span>
@@ -237,7 +239,7 @@
                     :disabled-date="isCancelDateDisabled"
                     :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-date-picker"
-                    style="width: 145px; flex: 0 0 145px;"
+                    style="width: 160px; flex: 0 0 160px;"
                     @change="handleCancelTimeRangeChange"
                   />
                   <el-time-select
@@ -248,7 +250,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
                     :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelEndDate"
                     class="leave-time-of-day-select"
-                    style="width: 130px; flex: 0 0 130px;"
+                    style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
                   />
                 </div>
@@ -271,21 +273,6 @@
           <!-- 上方还有表单项自带的 18px 下边距，6px 上边距使分割线到销假时间与到销假原因的距离一致（均 24px） -->
           <el-divider style="margin: 6px 0 24px;"></el-divider>
         </template>
-
-        <!-- 销假原因 -->
-        <el-row v-if="isStepFieldVisible('CancelReason')" :gutter="16">
-          <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leavecancell.cancelReason')" prop="cancelReason">
-              <el-input
-                v-model="form.cancelReason"
-                type="textarea"
-                :rows="3"
-                :placeholder="t('formbusiness.leavecancell.pleaseInputCancelReason')"
-                :disabled="!isStepFieldEditable('CancelReason')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
 
         <el-row :gutter="16" class="approval-comment-row">
           <el-col :span="24">
@@ -314,13 +301,17 @@
                     <span class="workflow-view-hint-text">{{ t('formbusiness.leavecancell.viewFullWorkflowHint') }}</span>
                   </div>
                   <el-tooltip :content="t('formbusiness.leavecancell.viewFullWorkflow')" placement="top">
-                    <el-icon
+                    <span
                       class="workflow-view-icon"
                       :class="{ 'is-disabled': !form.formId }"
                       @click="openWorkflowDrawer"
                     >
-                      <View />
-                    </el-icon>
+                      <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="4.5" y="5.5" width="11" height="7.5" rx="2.4" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                        <path d="M15.5 9.3 H20.5 Q23 9.3 23 11.9 V18.5" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <rect x="17.5" y="19" width="11" height="7.5" rx="2.4" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                      </svg>
+                    </span>
                   </el-tooltip>
                 </div>
               </div>
@@ -415,13 +406,54 @@
         />
       </div>
     </el-card>
+
+    <!-- 本单可销假时数：表单右侧悬浮（参考请假单假别余额位置） -->
+    <aside
+      v-if="isStepFieldVisible('LeaveRequestRef') && selectedLeaveRequest"
+      class="remaining-cancell-hours-float"
+    >
+      <el-popover
+        placement="top"
+        popper-class="remaining-cancell-hours-popper"
+        :title="t('formbusiness.leavecancell.remainingCancellHoursTitle')"
+        :width="150"
+        trigger="click"
+        @show="fetchRemainingCancellHours"
+        @hide="resetRemainingCancellHours"
+      >
+        <template #reference>
+          <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
+            <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
+              <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+              <path d="M16 16.5 L20.6 18.7" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="16" cy="16.5" r="1.15" fill="#1f1f1f" />
+            </svg>
+          </button>
+        </template>
+        <div
+          v-loading="remainingCancellHoursLoading || !remainingCancellHoursFetched"
+          style="min-height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1.5;"
+        >
+          <span
+            v-if="remainingCancellHoursFetched && remainingCancellHoursValue !== null"
+            class="remaining-cancell-hours-value"
+          >
+            {{ t('formbusiness.leavecancell.remainingCancellHoursValue', { hours: remainingCancellHoursValue }) }}
+          </span>
+          <span v-else-if="remainingCancellHoursFetched" style="color:var(--el-text-color-secondary);">
+            {{ t('formbusiness.leavecancell.remainingCancellHoursEmpty') }}
+          </span>
+        </div>
+      </el-popover>
+    </aside>
     </template>
 
     <!-- 选择请假单弹窗 -->
     <el-dialog
       v-model="leaveRequestDialogVisible"
       :title="t('formbusiness.leavecancell.selectLeaveRequestTitle')"
-      width="900px"
+      width="1050px"
       :close-on-click-modal="false"
       :append-to-body="true"
       destroy-on-close
@@ -432,6 +464,7 @@
           <el-input
             v-model="leaveRequestFilters.leaveRequestNo"
             clearable
+            class="leave-request-filter-no"
             :placeholder="t('formbusiness.leavecancell.leaveRequestNoColumn')"
             @keyup.enter="handleLeaveRequestSearch"
             @clear="handleLeaveRequestSearch"
@@ -443,6 +476,7 @@
             type="daterange"
             value-format="YYYY-MM-DD"
             range-separator="-"
+            class="leave-request-filter-date"
             :start-placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
             :end-placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
           />
@@ -469,7 +503,6 @@
           :empty-text="t('common.noData')"
           @selection-change="handleLeaveRequestTableSelectionChange"
           @row-click="handleLeaveRequestRowClick"
-          @cell-mouse-enter="handleLeaveRequestCellMouseEnter"
         >
           <el-table-column type="selection" width="48" align="center" />
           <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
@@ -481,12 +514,6 @@
             <template #default="{ row }">{{ formatDateTimeCell(row.endDateTime) }}</template>
           </el-table-column>
           <el-table-column prop="leaveHours" :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" />
-          <el-table-column prop="cancellableHours" :label="t('formbusiness.leavecancell.cancellableHoursColumn')" width="90" align="center">
-            <template #default="{ row }">
-              <el-icon v-if="remainingCancelHoursLoadingMap[row.leaveRequestId]" class="is-loading"><Loading /></el-icon>
-              <span v-else>{{ remainingCancelHoursMap[row.leaveRequestId] ?? '-' }}</span>
-            </template>
-          </el-table-column>
           <el-table-column prop="applicantDate" :label="t('formbusiness.leavecancell.applicantDateColumn')" width="110" align="center" />
         </el-table>
       </div>
@@ -503,7 +530,7 @@
       </div>
       <template #footer>
         <el-button @click="leaveRequestDialogVisible = false">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" :disabled="!selectedLeaveRequestRow" @click="confirmLeaveRequestSelect">{{ t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="leaveRequestConfirmLoading" :disabled="!selectedLeaveRequestRow" @click="confirmLeaveRequestSelect">{{ t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
@@ -626,7 +653,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
+import { Clock, CircleCheck, RemoveFilled, Loading, Lock, Search } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
@@ -635,6 +662,7 @@ import {
   GET_REMAINING_CANCELL_HOURS_API,
   GET_LEAVECANCELL_API,
   SAVE_LEAVECANCELL_API,
+  VALIDATE_LEAVECANCELL_API,
   GET_REJECT_STEP_DROP_API,
   APPROVE_LEAVECANCELL_API,
   REJECT_LEAVECANCELL_API
@@ -695,8 +723,7 @@ const form = reactive({
   applicantDeptId: '',
   leaveRequestId: '',
   cancelTimeRange: [],
-  cancelHours: undefined,
-  cancelReason: ''
+  cancelHours: undefined
 })
 
 const rules = {
@@ -706,9 +733,6 @@ const rules = {
   cancelTimeRange: [
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' },
     { validator: validateCancelTimeRange, trigger: 'change' }
-  ],
-  cancelReason: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'blur' }
   ]
 }
 
@@ -721,6 +745,7 @@ const isAdjustingLeaveRequestSelection = ref(false)
 const selectedLeaveRequestRow = ref(null)
 const selectedLeaveRequestRowId = ref('')
 const selectedLeaveRequest = ref(null)
+const leaveRequestConfirmLoading = ref(false)
 const leaveRequestFilters = reactive({
   leaveRequestNo: '',
   dateRange: []
@@ -731,8 +756,11 @@ const leaveRequestPagination = reactive({
   totalCount: 0
 })
 let leaveRequestListRequestId = 0
-const remainingCancelHoursMap = reactive({})
-const remainingCancelHoursLoadingMap = reactive({})
+
+// 本单可销假时数 popover
+const remainingCancellHoursLoading = ref(false)
+const remainingCancellHoursValue = ref(null)
+const remainingCancellHoursFetched = ref(false)
 
 const rejectDialogVisible = ref(false)
 const rejectFormRef = ref(null)
@@ -907,6 +935,13 @@ function normalizeDateTime (val) {
 
 function formatDateTimeCell (val) {
   return normalizeDateTime(val) || '-'
+}
+
+/** 时数保留两位小数展示 */
+function formatHoursCell (val) {
+  if (val === undefined || val === null || val === '') return '-'
+  const n = Number(val)
+  return Number.isFinite(n) ? n.toFixed(2) : '-'
 }
 
 function toISO (str) {
@@ -1220,22 +1255,21 @@ async function openLeaveRequestPicker () {
   leaveRequestFilters.leaveRequestNo = ''
   leaveRequestFilters.dateRange = getDefaultLeaveRequestDateRange()
   leaveRequestPagination.pageIndex = 1
-  resetRemainingCancelHoursCache()
   leaveRequestDialogVisible.value = true
   await fetchLeaveRequestListImmediate()
 }
 
-function resetRemainingCancelHoursCache () {
-  for (const key of Object.keys(remainingCancelHoursMap)) delete remainingCancelHoursMap[key]
-  for (const key of Object.keys(remainingCancelHoursLoadingMap)) delete remainingCancelHoursLoadingMap[key]
-}
-
-/** 鼠标移入"可销时数"列时按需拉取剩余可销时数 */
-async function handleLeaveRequestCellMouseEnter (row, column) {
-  if (column?.property !== 'cancellableHours') return
-  const leaveRequestId = row?.leaveRequestId
-  if (!leaveRequestId || remainingCancelHoursLoadingMap[leaveRequestId]) return
-  remainingCancelHoursLoadingMap[leaveRequestId] = true
+/** 点击"查看本单可销假时数"按钮，拉取当前请假单的剩余可销时数 */
+async function fetchRemainingCancellHours () {
+  const leaveRequestId = selectedLeaveRequest.value?.leaveRequestId ?? form.leaveRequestId
+  // 打开即进入加载态，直到接口返回才展示时数，避免先闪一下空值/旧值
+  remainingCancellHoursLoading.value = true
+  remainingCancellHoursValue.value = null
+  if (!leaveRequestId) {
+    remainingCancellHoursLoading.value = false
+    remainingCancellHoursFetched.value = true
+    return
+  }
   try {
     const res = await post(
       GET_REMAINING_CANCELL_HOURS_API,
@@ -1243,13 +1277,23 @@ async function handleLeaveRequestCellMouseEnter (row, column) {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
     if (res && res.code === 200) {
-      remainingCancelHoursMap[leaveRequestId] = res.data
+      remainingCancellHoursValue.value = res.data ?? null
+    } else {
+      ElMessage.error(res?.message || t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
     }
   } catch {
-    // ignore
+    ElMessage.error(t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
   } finally {
-    remainingCancelHoursLoadingMap[leaveRequestId] = false
+    remainingCancellHoursLoading.value = false
+    remainingCancellHoursFetched.value = true
   }
+}
+
+/** 关闭 popover 时复位状态，下次打开重新加载，避免闪现上一次的时数 */
+function resetRemainingCancellHours () {
+  remainingCancellHoursFetched.value = false
+  remainingCancellHoursValue.value = null
+  remainingCancellHoursLoading.value = false
 }
 
 function fetchLeaveRequestListImmediate () {
@@ -1374,13 +1418,36 @@ function handleLeaveRequestRowClick (row) {
   })
 }
 
-function confirmLeaveRequestSelect () {
+async function confirmLeaveRequestSelect () {
   if (!selectedLeaveRequestRow.value?.leaveRequestId) {
     ElMessage.warning(t('formbusiness.leavecancell.pleaseSelectLeaveRequest'))
     return
   }
+  // 先本地应用所选请假单，得到 leaveRequestId 与默认销假时间范围
   applySelectedLeaveRequest(selectedLeaveRequestRow.value)
-  leaveRequestDialogVisible.value = false
+  // 勾选确认即调用 SaveLeaveCancell 保存（无需校验表单必填项）
+  leaveRequestConfirmLoading.value = true
+  try {
+    const res = await saveLeaveCancellRequest()
+    if (isForbiddenCode(res?.code)) {
+      showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
+      return
+    }
+    if (res && isSuccessCode(res.code)) {
+      if (res.data) form.formId = String(res.data)
+    } else if (isBadRequestResponse(res)) {
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
+      return
+    } else {
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+      return
+    }
+    leaveRequestDialogVisible.value = false
+  } catch {
+    showFormActionNotice(t('messages.saveError'), 'error')
+  } finally {
+    leaveRequestConfirmLoading.value = false
+  }
 }
 
 function handleLeaveRequestDialogClosed () {
@@ -1389,7 +1456,6 @@ function handleLeaveRequestDialogClosed () {
   selectedLeaveRequestRow.value = null
   selectedLeaveRequestRowId.value = ''
   leaveRequestList.value = []
-  resetRemainingCancelHoursCache()
 }
 
 function normalizeFieldKey (fieldKey) {
@@ -1571,6 +1637,34 @@ async function saveLeaveCancellRequest () {
   })
 }
 
+async function validateLeaveCancellRequest () {
+  return post(VALIDATE_LEAVECANCELL_API, buildSaveLeaveCancellPayload(), {
+    silentForbiddenError: false
+  })
+}
+
+/** 保存/送审前调用 ValidateLeaveCancell，校验通过（code=200 且 data=true）才返回 true */
+async function validateLeaveCancellBeforeAction () {
+  const res = await validateLeaveCancellRequest()
+  if (isForbiddenCode(res?.code)) {
+    showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
+    return false
+  }
+  if (!res || !isSuccessCode(res.code)) {
+    if (isBadRequestResponse(res)) {
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
+    } else {
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'error')
+    }
+    return false
+  }
+  if (res.data === false) {
+    showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'warning')
+    return false
+  }
+  return true
+}
+
 async function saveLeaveCancellBeforeSubmit () {
   const saveRes = await saveLeaveCancellRequest()
   if (isForbiddenCode(saveRes?.code)) {
@@ -1590,30 +1684,34 @@ async function saveLeaveCancellBeforeSubmit () {
 }
 
 async function onSubmit () {
-  saving.value = true
-  formRef.value?.validate(async (valid) => {
-    if (!valid) { saving.value = false; return }
-    try {
-      const res = await saveLeaveCancellRequest()
-      if (isForbiddenCode(res?.code)) {
-        showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
-      } else if (res && isSuccessCode(res.code)) {
-        if (res.data) form.formId = String(res.data)
-        showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
-      } else if (isBadRequestResponse(res)) {
-        showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
-      } else {
-        showFormActionNotice(res?.message || t('messages.saveError'), 'error')
-      }
-    } catch {
-      // ignore
-    } finally {
-      saving.value = false
-    }
+  const valid = await new Promise((resolve) => {
+    formRef.value?.validate((v) => resolve(!!v))
   })
+  if (!valid) return
+  saving.value = true
+  try {
+    // 保存前先调用 ValidateLeaveCancell 校验
+    const validated = await validateLeaveCancellBeforeAction()
+    if (!validated) return
+    const res = await saveLeaveCancellRequest()
+    if (isForbiddenCode(res?.code)) {
+      showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
+    } else if (res && isSuccessCode(res.code)) {
+      if (res.data) form.formId = String(res.data)
+      showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
+    } else if (isBadRequestResponse(res)) {
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
+    } else {
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+    }
+  } catch {
+    // ignore
+  } finally {
+    saving.value = false
+  }
 }
 
-/** 送审：暂存 → 送审 */
+/** 送审：校验 → 暂存 → 送审 */
 async function onSubmitForApproval () {
   const valid = await new Promise((resolve) => {
     formRef.value?.validate((v) => resolve(!!v))
@@ -1635,6 +1733,10 @@ async function onSubmitForApproval () {
   }
   approving.value = true
   try {
+    // 送审前：先校验 → 再保存 → 再送审
+    const validated = await validateLeaveCancellBeforeAction()
+    if (!validated) return
+
     const saved = await saveLeaveCancellBeforeSubmit()
     if (!saved) return
 
@@ -1984,7 +2086,7 @@ onMounted(async () => {
 }
 
 .approval-comment-row {
-  margin-top: -6px;
+  margin-top: 12px;
 }
 
 .approval-comment-row .el-form-item {
@@ -2002,9 +2104,62 @@ onMounted(async () => {
   color: var(--el-text-color-secondary);
 }
 
+/* 本单可销假时数：表单卡片右侧悬浮（参考请假单假别余额位置，位于表单线外面） */
+.remaining-cancell-hours-float {
+  --remaining-hours-form-gap: 8px;
+  --remaining-hours-side-gap: 20px;
+  position: fixed;
+  top: 33%;
+  left: calc(50% + 500px + var(--remaining-hours-form-gap));
+  right: var(--remaining-hours-side-gap);
+  z-index: 20;
+  display: flex;
+  justify-content: flex-start;
+  transform: translateY(-50%);
+}
+
+.remaining-cancell-hours-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.remaining-cancell-hours-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.remaining-cancell-hours-btn .hand-drawn-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.remaining-cancell-hours-value {
+  font-weight: 700;
+  color: #0058cc;
+}
+
 .leave-request-ref-table {
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+/* 表体文字：深灰色，字号与表单一致 */
+.leave-request-ref-table :deep(.el-table__body .cell) {
+  color: #4c4c4c;
+  font-size: 13px;
+}
+
+/* 请假时数列：仅数值加深红色，列头颜色不变 */
+.leave-request-ref-table :deep(.el-table__body .ref-leave-hours-col .cell) {
+  color: #c00c1f;
+  font-weight: 700;
 }
 
 .leave-time-range-fields {
@@ -2047,19 +2202,27 @@ onMounted(async () => {
 
 .leave-form :deep(.leave-hours-input .el-input__inner),
 .leave-form :deep(.leave-hours-input .el-input__wrapper input) {
-  color: var(--el-color-danger);
+  color: #0058cc;
   font-weight: 700;
-  -webkit-text-fill-color: var(--el-color-danger);
+  -webkit-text-fill-color: #0058cc;
 }
 
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
-  color: var(--el-color-danger);
-  -webkit-text-fill-color: var(--el-color-danger);
+  color: #0058cc;
+  -webkit-text-fill-color: #0058cc;
 }
 
 .leave-request-filter-form .el-form-item {
   margin-bottom: 12px;
+}
+
+.leave-request-filter-form .leave-request-filter-no {
+  width: 200px;
+}
+
+.leave-request-filter-form .leave-request-filter-date {
+  width: 230px;
 }
 
 .leave-request-table-wrap {
@@ -2121,14 +2284,21 @@ onMounted(async () => {
 }
 
 .workflow-view-icon {
-  font-size: 18px;
-  color: var(--el-color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
 }
 
+.workflow-view-icon .hand-drawn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .workflow-view-icon.is-disabled {
-  color: var(--el-text-color-disabled);
+  opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -2417,5 +2587,26 @@ onMounted(async () => {
 
 .reject-reason-input {
   width: 100%;
+}
+</style>
+
+<!-- popover 内容被 teleport 到 body，需用非 scoped 样式控制字号 -->
+<style>
+.remaining-cancell-hours-popper.el-popover.el-popper {
+  padding: 10px 12px;
+}
+
+.remaining-cancell-hours-popper .el-popover__title {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.remaining-cancell-hours-popper .el-loading-spinner {
+  margin-top: -11px;
+}
+
+.remaining-cancell-hours-popper .el-loading-spinner .circular {
+  width: 22px;
+  height: 22px;
 }
 </style>

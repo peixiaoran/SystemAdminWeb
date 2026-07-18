@@ -4,12 +4,24 @@ import { ElMessage, ElNotification } from 'element-plus'
 import { BASE_API_URL, API_TIMEOUT } from '@/config/api/login/api'
 import { clearClientSession } from '@/utils/sessionCleanup'
 
-/** replace + reload，避免 hash 跳转后 Pinia 内存态残留 */
+// 部署基路径（history 模式），生产为 /systemadminweb/，开发为 /；始终以 / 结尾
+const APP_BASE_URL = (import.meta.env.BASE_URL || '/').replace(/\/*$/, '/')
+// 去除 base 前缀，得到以 / 开头的应用内路由路径
+const stripAppBase = (pathname) => {
+  const base = APP_BASE_URL.replace(/\/$/, '') // 去掉末尾 /
+  let p = pathname || '/'
+  if (base && (p === base || p.startsWith(`${base}/`))) {
+    p = p.slice(base.length) || '/'
+  }
+  return p.startsWith('/') ? p : `/${p}`
+}
+// 拼接 base 下的完整目标地址
+const buildAppUrl = (routePath) => `${window.location.origin}${APP_BASE_URL}${routePath.replace(/^\//, '')}`
+
+/** replace + reload，避免跳转后 Pinia 内存态残留 */
 const hardRedirectToLogin = (redirectPath = '') => {
-  const origin = window.location.origin
-  const basePath = window.location.pathname || '/'
   const redirectQuery = redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ''
-  window.location.replace(`${origin}${basePath}#/login${redirectQuery}`)
+  window.location.replace(buildAppUrl(`login${redirectQuery}`))
   setTimeout(() => {
     try {
       window.location.reload()
@@ -147,8 +159,8 @@ let lastTimeoutShownTime = 0
 
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
 const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
-const SKIP_TRACK_HASH_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
-const SKIP_REDIRECT_HASH_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration'])
+const SKIP_TRACK_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
+const SKIP_REDIRECT_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration'])
 
 const isTimeoutError = (error) => {
   if (!error) return false
@@ -170,24 +182,23 @@ const safeSessionSet = (key, value) => {
   }
 }
 
-const getRawCurrentHashPath = () => {
+const getRawCurrentPath = () => {
   try {
-    const hash = window.location.hash || ''
-    return hash.startsWith('#') ? hash.slice(1) : hash
+    return stripAppBase(window.location.pathname)
   } catch {
     return ''
   }
 }
 
-const getCurrentHashPath = () => {
-  const current = getRawCurrentHashPath()
-  if (!current.startsWith('/') || SKIP_TRACK_HASH_PATHS.has(current)) return ''
+const getCurrentRoutePath = () => {
+  const current = getRawCurrentPath()
+  if (!current.startsWith('/') || SKIP_TRACK_PATHS.has(current)) return ''
   return current
 }
 
 const getRedirectPathAfterLogout = () => {
-  const current = getRawCurrentHashPath()
-  if (!current.startsWith('/') || current.startsWith('/login') || SKIP_REDIRECT_HASH_PATHS.has(current)) return ''
+  const current = getRawCurrentPath()
+  if (!current.startsWith('/') || current.startsWith('/login') || SKIP_REDIRECT_PATHS.has(current)) return ''
   return current
 }
 
@@ -243,12 +254,10 @@ const handleForbidden = (error = null, options = {}) => {
     return createAuthFailureResponse(403, forbiddenMessage)
   }
 
-  const currentPath = getCurrentHashPath()
+  const currentPath = getCurrentRoutePath()
   if (currentPath) safeSessionSet(FORBIDDEN_SOURCE_PATH_KEY, currentPath)
 
-  const origin = window.location.origin
-  const basePath = window.location.pathname || '/'
-  window.location.replace(`${origin}${basePath}#/403`)
+  window.location.replace(buildAppUrl('403'))
 
   if (error) handleNetworkError(error, { showMessage: false })
   return createHandledResponse({ success: true })

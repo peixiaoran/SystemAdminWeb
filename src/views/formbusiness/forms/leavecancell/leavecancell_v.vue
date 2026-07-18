@@ -167,7 +167,9 @@
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="300" align="center">
                     <template #default="{ row }">{{ formatDateTimeCell(row.startDateTime) }} ~ {{ formatDateTimeCell(row.endDateTime) }}</template>
                   </el-table-column>
-                  <el-table-column prop="leaveHours" :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" />
+                  <el-table-column :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" class-name="ref-leave-hours-col">
+                    <template #default="{ row }">{{ formatHoursCell(row.leaveHours) }}</template>
+                  </el-table-column>
                 </el-table>
               </el-form-item>
             </el-col>
@@ -184,7 +186,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
                     disabled
                     class="leave-date-picker"
-                    style="width: 145px; flex: 0 0 145px;"
+                    style="width: 160px; flex: 0 0 160px;"
                   />
                   <el-time-select
                     :model-value="cancelStartTimeOfDay"
@@ -194,7 +196,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
                     disabled
                     class="leave-time-of-day-select"
-                    style="width: 130px; flex: 0 0 130px;"
+                    style="width: 135px; flex: 0 0 135px;"
                   />
                   <span class="leave-time-range-separator"> ~ </span>
                   <el-date-picker
@@ -204,7 +206,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
                     disabled
                     class="leave-date-picker"
-                    style="width: 145px; flex: 0 0 145px;"
+                    style="width: 160px; flex: 0 0 160px;"
                   />
                   <el-time-select
                     :model-value="cancelEndTimeOfDay"
@@ -214,7 +216,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
                     disabled
                     class="leave-time-of-day-select"
-                    style="width: 130px; flex: 0 0 130px;"
+                    style="width: 135px; flex: 0 0 135px;"
                   />
                 </div>
               </el-form-item>
@@ -235,15 +237,6 @@
           <el-divider style="margin: 6px 0 24px;"></el-divider>
         </template>
 
-        <!-- 销假原因 -->
-        <el-row v-if="isStepFieldVisible('CancelReason')" :gutter="16">
-          <el-col :span="24">
-            <el-form-item :label="t('formbusiness.leavecancell.cancelReason')" prop="cancelReason">
-              <el-input v-model="form.cancelReason" type="textarea" :rows="3" disabled />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
         <el-row :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leavecancell.approvalComment')">
@@ -261,13 +254,17 @@
                     <span class="workflow-view-hint-text">{{ t('formbusiness.leavecancell.viewFullWorkflowHint') }}</span>
                   </div>
                   <el-tooltip :content="t('formbusiness.leavecancell.viewFullWorkflow')" placement="top">
-                    <el-icon
+                    <span
                       class="workflow-view-icon"
                       :class="{ 'is-disabled': !form.formId }"
                       @click="openWorkflowDrawer"
                     >
-                      <View />
-                    </el-icon>
+                      <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="4.5" y="5.5" width="11" height="7.5" rx="2.4" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                        <path d="M15.5 9.3 H20.5 Q23 9.3 23 11.9 V18.5" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <rect x="17.5" y="19" width="11" height="7.5" rx="2.4" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                      </svg>
+                    </span>
                   </el-tooltip>
                 </div>
               </div>
@@ -362,6 +359,47 @@
         />
       </div>
     </el-card>
+
+    <!-- 本单可销假时数：表单右侧悬浮（参考请假单假别余额位置） -->
+    <aside
+      v-if="isStepFieldVisible('LeaveRequestRef') && selectedLeaveRequest"
+      class="remaining-cancell-hours-float"
+    >
+      <el-popover
+        placement="top"
+        popper-class="remaining-cancell-hours-popper"
+        :title="t('formbusiness.leavecancell.remainingCancellHoursTitle')"
+        :width="150"
+        trigger="click"
+        @show="fetchRemainingCancellHours"
+        @hide="resetRemainingCancellHours"
+      >
+        <template #reference>
+          <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
+            <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
+              <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+              <path d="M16 16.5 L20.6 18.7" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="16" cy="16.5" r="1.15" fill="#1f1f1f" />
+            </svg>
+          </button>
+        </template>
+        <div
+          v-loading="remainingCancellHoursLoading || !remainingCancellHoursFetched"
+          style="min-height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1.5;"
+        >
+          <span
+            v-if="remainingCancellHoursFetched && remainingCancellHoursValue !== null"
+            class="remaining-cancell-hours-value"
+          >
+            {{ t('formbusiness.leavecancell.remainingCancellHoursValue', { hours: remainingCancellHoursValue }) }}
+          </span>
+          <span v-else-if="remainingCancellHoursFetched" style="color:var(--el-text-color-secondary);">
+            {{ t('formbusiness.leavecancell.remainingCancellHoursEmpty') }}
+          </span>
+        </div>
+      </el-popover>
+    </aside>
     </template>
 
     <!-- 完整审批流程 -->
@@ -442,10 +480,10 @@ import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Clock, CircleCheck, RemoveFilled, Loading, Lock, View } from '@element-plus/icons-vue'
+import { Clock, CircleCheck, RemoveFilled, Loading, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
-import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API } from '@/config/api/formbusiness/forms/leavecancell'
+import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_REMAINING_CANCELL_HOURS_API } from '@/config/api/formbusiness/forms/leavecancell'
 import { useRoute, useRouter } from 'vue-router'
 import { usePMenuStore } from '@/stores/pmenu'
 
@@ -496,11 +534,52 @@ const form = reactive({
   applicantDeptId: '',
   leaveRequestId: '',
   cancelTimeRange: [],
-  cancelHours: undefined,
-  cancelReason: ''
+  cancelHours: undefined
 })
 
 const selectedLeaveRequest = ref(null)
+
+// 本单可销假时数 popover
+const remainingCancellHoursLoading = ref(false)
+const remainingCancellHoursValue = ref(null)
+const remainingCancellHoursFetched = ref(false)
+
+/** 点击"查看本单可销假时数"按钮，拉取当前请假单的剩余可销时数 */
+async function fetchRemainingCancellHours () {
+  const leaveRequestId = selectedLeaveRequest.value?.leaveRequestId ?? form.leaveRequestId
+  // 打开即进入加载态，直到接口返回才展示时数，避免先闪一下空值/旧值
+  remainingCancellHoursLoading.value = true
+  remainingCancellHoursValue.value = null
+  if (!leaveRequestId) {
+    remainingCancellHoursLoading.value = false
+    remainingCancellHoursFetched.value = true
+    return
+  }
+  try {
+    const res = await post(
+      GET_REMAINING_CANCELL_HOURS_API,
+      new URLSearchParams({ leaveRequestId: String(leaveRequestId), formId: String(form.formId || '') }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+    if (res && res.code === 200) {
+      remainingCancellHoursValue.value = res.data ?? null
+    } else {
+      ElMessage.error(res?.message || t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
+    }
+  } catch {
+    ElMessage.error(t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
+  } finally {
+    remainingCancellHoursLoading.value = false
+    remainingCancellHoursFetched.value = true
+  }
+}
+
+/** 关闭 popover 时复位状态，下次打开重新加载，避免闪现上一次的时数 */
+function resetRemainingCancellHours () {
+  remainingCancellHoursFetched.value = false
+  remainingCancellHoursValue.value = null
+  remainingCancellHoursLoading.value = false
+}
 
 // 展示层拆分：form.cancelTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），与 r 页面保持一致
 const CANCEL_DEFAULT_START_TIME = '08:00'
@@ -692,6 +771,13 @@ function normalizeDateTime (val) {
 
 function formatDateTimeCell (val) {
   return normalizeDateTime(val) || '-'
+}
+
+/** 时数保留两位小数展示 */
+function formatHoursCell (val) {
+  if (val === undefined || val === null || val === '') return '-'
+  const n = Number(val)
+  return Number.isFinite(n) ? n.toFixed(2) : '-'
 }
 
 function normalizeFieldKey (fieldKey) {
@@ -1124,7 +1210,7 @@ onMounted(async () => {
 }
 
 .approval-comment-row {
-  margin-top: -6px;
+  margin-top: 12px;
 }
 
 .approval-comment-row .el-form-item {
@@ -1136,9 +1222,62 @@ onMounted(async () => {
   color: var(--el-text-color-secondary);
 }
 
+/* 本单可销假时数：表单卡片右侧悬浮（参考请假单假别余额位置，位于表单线外面） */
+.remaining-cancell-hours-float {
+  --remaining-hours-form-gap: 8px;
+  --remaining-hours-side-gap: 20px;
+  position: fixed;
+  top: 33%;
+  left: calc(50% + 500px + var(--remaining-hours-form-gap));
+  right: var(--remaining-hours-side-gap);
+  z-index: 20;
+  display: flex;
+  justify-content: flex-start;
+  transform: translateY(-50%);
+}
+
+.remaining-cancell-hours-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.remaining-cancell-hours-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.remaining-cancell-hours-btn .hand-drawn-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.remaining-cancell-hours-value {
+  font-weight: 700;
+  color: #0058cc;
+}
+
 .leave-request-ref-table {
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+/* 表体文字：深灰色，字号与表单一致 */
+.leave-request-ref-table :deep(.el-table__body .cell) {
+  color: #4c4c4c;
+  font-size: 13px;
+}
+
+/* 请假时数列：仅数值加深红色，列头颜色不变 */
+.leave-request-ref-table :deep(.el-table__body .ref-leave-hours-col .cell) {
+  color: #c00c1f;
+  font-weight: 700;
 }
 
 .leave-time-range-fields {
@@ -1181,15 +1320,15 @@ onMounted(async () => {
 
 .leave-form :deep(.leave-hours-input .el-input__inner),
 .leave-form :deep(.leave-hours-input .el-input__wrapper input) {
-  color: var(--el-color-danger);
+  color: #0058cc;
   font-weight: 700;
-  -webkit-text-fill-color: var(--el-color-danger);
+  -webkit-text-fill-color: #0058cc;
 }
 
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
-  color: var(--el-color-danger);
-  -webkit-text-fill-color: var(--el-color-danger);
+  color: #0058cc;
+  -webkit-text-fill-color: #0058cc;
 }
 
 .form-actions-form-item {
@@ -1230,14 +1369,21 @@ onMounted(async () => {
 }
 
 .workflow-view-icon {
-  font-size: 18px;
-  color: var(--el-color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
 }
 
+.workflow-view-icon .hand-drawn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .workflow-view-icon.is-disabled {
-  color: var(--el-text-color-disabled);
+  opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -1513,5 +1659,26 @@ onMounted(async () => {
   line-height: 1.5;
   font-size: 13px;
   color: var(--el-text-color-primary);
+}
+</style>
+
+<!-- popover 内容被 teleport 到 body，需用非 scoped 样式控制字号 -->
+<style>
+.remaining-cancell-hours-popper.el-popover.el-popper {
+  padding: 10px 12px;
+}
+
+.remaining-cancell-hours-popper .el-popover__title {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.remaining-cancell-hours-popper .el-loading-spinner {
+  margin-top: -11px;
+}
+
+.remaining-cancell-hours-popper .el-loading-spinner .circular {
+  width: 22px;
+  height: 22px;
 }
 </style>

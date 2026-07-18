@@ -10,12 +10,8 @@ import pinia from './stores'
 import i18n from './i18n'
 import { updateRouteTitle } from './utils/updateRouteTitle'
 import { useUserStore } from './stores/user'
-import { bootstrapHashRouteIfNeeded } from '@/utils/hashRouteBootstrap'
 
-// 通知外链等为 path 风格 URL，需在应用挂载前转为 hash 路由，否则会落到 /module-select
-bootstrapHashRouteIfNeeded()
-
-// 企业标准化：清理历史遗留的 ?_logout=xxx（仅移除该参数，保留 hash 路由）
+// 企业标准化：清理历史遗留的 ?_logout=xxx（仅移除该参数，保留当前路由与 query）
 try {
   const url = new URL(window.location.href)
   if (url.searchParams.has('_logout')) {

@@ -40,7 +40,7 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('systembasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
-          <el-table-column prop="departmentCode" :label="$t('systembasicmgmt.departmentInfo.departmentCode')" align="left" min-width="210" />
+          <el-table-column prop="departmentCode" :label="$t('systembasicmgmt.departmentInfo.departmentCode')" align="left" min-width="170" />
           <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
           <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
           <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
@@ -112,6 +112,18 @@
             </el-select>
           </el-form-item>
         </div>
+        <div class="form-row">
+          <el-form-item :label="$t('systembasicmgmt.departmentInfo.factory')" prop="factory">
+            <el-select v-model="editForm.factory" style="width: 100%" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
+              <el-option
+                v-for="item in factoryOptions"
+                :key="item.factory"
+                :label="item.factoryName"
+                :value="item.factory" />
+            </el-select>
+          </el-form-item>
+          <div class="form-row-spacer" style="flex: 1"></div>
+        </div>
         <div class="form-row full-width">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
             <el-input v-model="editForm.description" type="textarea" :rows="3" style="width: 100%" />
@@ -136,7 +148,8 @@ import {
   DELETE_DEPARTMENT_API,
   UPDATE_DEPARTMENT_API,
   GET_DEPARTMENTLEVEL_DROPDOWN_API,
-  GET_DEPARTMENT_TREE_DROPDOWN_API
+  GET_DEPARTMENT_TREE_DROPDOWN_API,
+  GET_FACTORY_DROP_API
 } from '@/config/api/systembasicmgmt/system-basicdata/department'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
@@ -165,6 +178,7 @@ const editForm = reactive({
   departmentNameEn: '',
   parentId: '',
   departmentLevelId: '',
+  factory: '',
   description: '',
   sortOrder: 1,
   landline: '',
@@ -200,6 +214,8 @@ const departmentOptionsWithNone = computed(() => {
 })
 
 const departmentLevelOptions = ref([])
+
+const factoryOptions = ref([])
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
@@ -250,6 +266,18 @@ const getDepartmentDropdown = async () => {
   }
 }
 
+const getFactoryDropdown = async () => {
+  const response = await post(GET_FACTORY_DROP_API.GET_FACTORY_DROP, {})
+  if (response?.code === 200) {
+    factoryOptions.value = response.data || []
+  } else {
+    if (response?.code !== 401 && response?.code !== 403) {
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+    }
+    factoryOptions.value = []
+  }
+}
+
 let searchTimer = null
 const scheduleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
@@ -273,6 +301,7 @@ const resetForm = () => {
     departmentNameEn: '',
     parentId: '0',
     departmentLevelId: getFirstEnabledDepartmentLevelId(),
+    factory: '',
     description: '',
     sortOrder: 1,
     landline: '',
@@ -313,6 +342,7 @@ const handleEdit = async (index, row) => {
       departmentNameEn: data.departmentNameEn,
       parentId: data.parentId,
       departmentLevelId: data.departmentLevelId || getFirstEnabledDepartmentLevelId(),
+      factory: data.factory || '',
       description: data.description,
       sortOrder: data.sortOrder,
       landline: data.landline,
@@ -365,6 +395,7 @@ const handleSubmit = async () => {
     departmentNameEn: editForm.departmentNameEn,
     parentId: editForm.parentId,
     departmentLevelId: editForm.departmentLevelId,
+    factory: editForm.factory,
     description: editForm.description,
     sortOrder: editForm.sortOrder,
     landline: editForm.landline,
@@ -406,6 +437,7 @@ onMounted(() => {
   getDepartmentTree()
   getDepartmentLevelDropdown()
   getDepartmentDropdown()
+  getFactoryDropdown()
 })
 </script>
 

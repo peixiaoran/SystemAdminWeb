@@ -40,3 +40,8 @@ export const GET_DEPARTMENT_TREE_DROPDOWN_API = {
 export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
   GET_DEPARTMENTLEVEL_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentLevelDrop'
 }
+
+// 厂区下拉框API
+export const GET_FACTORY_DROP_API = {
+  GET_FACTORY_DROP: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetFactoryDrop'
+}

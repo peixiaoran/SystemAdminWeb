@@ -195,7 +195,7 @@
         >
           <el-col v-if="isStepFieldVisible('LeaveType')" :span="8">
             <el-form-item :label="t('formbusiness.leaverequest.leaveType')" prop="leaveType">
-              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" clearable :disabled="!isStepFieldEditable('LeaveType')" @change="onSelectChange('leaveType')">
+              <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" :disabled="!isStepFieldEditable('LeaveType')" @change="onSelectChange('leaveType')">
                 <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
               </el-select>
             </el-form-item>
@@ -239,7 +239,7 @@
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-date-picker"
-                  style="width: 150px; flex: 0 0 150px;"
+                  style="width: 160px; flex: 0 0 160px;"
                   @change="handleTimeRangeChange"
                 />
                 <el-time-select
@@ -248,7 +248,7 @@
                   end="17:00"
                   step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
-                  :disabled="!isStepFieldEditable('LeavePeriod') || !leaveStartDate"
+                  :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
                   @change="handleTimeRangeChange"
@@ -261,7 +261,7 @@
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-date-picker"
-                  style="width: 145px; flex: 0 0 145px;"
+                  style="width: 160px; flex: 0 0 160px;"
                   @change="handleTimeRangeChange"
                 />
                 <el-time-select
@@ -270,7 +270,7 @@
                   end="17:00"
                   step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
-                  :disabled="!isStepFieldEditable('LeavePeriod') || !leaveEndDate"
+                  :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
                   @change="handleTimeRangeChange"
@@ -388,13 +388,17 @@
                     <span class="workflow-view-hint-text">{{ t('formbusiness.leaverequest.viewFullWorkflowHint') }}</span>
                   </div>
                   <el-tooltip :content="t('formbusiness.leaverequest.viewFullWorkflow')" placement="top">
-                    <el-icon
+                    <span
                       class="workflow-view-icon"
                       :class="{ 'is-disabled': !form.formId }"
                       @click="openWorkflowDrawer"
                     >
-                      <View />
-                    </el-icon>
+                      <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="4.5" y="5.5" width="11" height="7.5" rx="2.4" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                        <path d="M15.5 9.3 H20.5 Q23 9.3 23 11.9 V18.5" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <rect x="17.5" y="19" width="11" height="7.5" rx="2.4" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                      </svg>
+                    </span>
                   </el-tooltip>
                 </div>
               </div>
@@ -772,7 +776,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock, View } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEREQUEST_API, SAVE_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEREQUEST_API, REJECT_LEAVEREQUEST_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -1031,8 +1035,7 @@ const rules = {
     { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
   leaveTimeRange: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'change' },
-    { validator: validateTimeRange, trigger: 'change' }
+    { required: true, message: t('formbusiness.validation.required'), trigger: 'change' }
   ],
 
   agentUserId: [
@@ -1133,37 +1136,6 @@ function calculateDuration () {
   }
   const hours = calculateLeaveTotalHours(startTime, endTime)
   form.days = coerceDays(hours)
-}
-
-function validateTimeRange (rule, value, callback) {
-  if (!value || value.length !== 2) {
-    callback()
-    return
-  }
-  const [startTime, endTime] = value
-  if (!startTime && !endTime) {
-    callback()
-    return
-  }
-  if (!startTime || !endTime) {
-    callback(new Error(t('formbusiness.leaverequest.leaveTimeIncompleteError')))
-    return
-  }
-  const start = new Date(typeof startTime === 'string' ? startTime.replace(' ', 'T') : startTime)
-  const end = new Date(typeof endTime === 'string' ? endTime.replace(' ', 'T') : endTime)
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    callback()
-    return
-  }
-  if (!isLeaveTimeRangeAllowed(startTime, endTime)) {
-    callback(new Error(t('formbusiness.leaverequest.leaveTimeWorkHoursError')))
-    return
-  }
-  if (end <= start) {
-    callback(new Error(t('formbusiness.leaverequest.endAfterStartError')))
-    return
-  }
-  callback()
 }
 
 function validateAgentRequired (rule, value, callback) {
@@ -3049,14 +3021,21 @@ onMounted(async () => {
 }
 
 .workflow-view-icon {
-  font-size: 18px;
-  color: var(--el-color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
 }
 
+.workflow-view-icon .hand-drawn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .workflow-view-icon.is-disabled {
-  color: var(--el-text-color-disabled);
+  opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -3519,22 +3498,22 @@ onMounted(async () => {
 }
 
 .leave-balance-deduct-inline {
-  color: var(--el-color-danger);
+  color: #c00c1f;
   font-size: 12px;
   font-weight: 700;
 }
 
 .leave-form :deep(.leave-hours-input .el-input__inner),
 .leave-form :deep(.leave-hours-input .el-input__wrapper input) {
-  color: var(--el-color-danger);
+  color: #c00c1f;
   font-weight: 700;
-  -webkit-text-fill-color: var(--el-color-danger);
+  -webkit-text-fill-color: #c00c1f;
 }
 
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
 .leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
-  color: var(--el-color-danger);
-  -webkit-text-fill-color: var(--el-color-danger);
+  color: #c00c1f;
+  -webkit-text-fill-color: #c00c1f;
 }
 
 @media (max-width: 1340px) {

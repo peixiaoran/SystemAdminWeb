@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '../views/layout/index.vue'
 import i18n from '../i18n'
 import { useUserStore } from '@/stores/user'
@@ -652,7 +652,7 @@ const pmenuRoutes = [
 
 // 创建路由实例，合并所有路由
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [...constantRoutes, ...pmenuRoutes],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })

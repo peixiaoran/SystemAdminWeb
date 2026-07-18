@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
   const outDir = env.VITE_BUILD_OUT_DIR || 'dist'
   
   return {
+    // 生产环境部署在 /systemadminweb/ 子路径下，需设置 base 以保证静态资源引用路径正确；
+    // 开发环境使用根路径。createWebHashHistory 无参数会自动读取 import.meta.env.BASE_URL。
+    base: isProd ? '/systemadminweb/' : '/',
     plugins: [
       vue(),
       // 构建阶段按需启用图片优化，提升 dev 启动速度

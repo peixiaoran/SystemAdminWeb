@@ -15,6 +15,9 @@ export const GET_LEAVECANCELL_API = 'FormBusiness/Forms/LeaveCancell/GetLeaveCan
 // 保存销假单API
 export const SAVE_LEAVECANCELL_API = 'FormBusiness/Forms/LeaveCancell/SaveLeaveCancell'
 
+// 校验销假单API（保存/送审前调用）
+export const VALIDATE_LEAVECANCELL_API = 'FormBusiness/Forms/LeaveCancell/ValidateLeaveCancell'
+
 // 获取原请假单查看信息API
 export const GET_LEAVEREQUEST_VIEW_API = 'FormBusiness/Forms/LeaveCancell/GetLeaveRequestView'
 

@@ -190,7 +190,7 @@
           >
             <el-col v-if="isStepFieldVisible('LeaveType')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.leaveType')" prop="leaveType">
-                <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" clearable disabled @change="onSelectChange('leaveType')">
+                <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" disabled @change="onSelectChange('leaveType')">
                   <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
                 </el-select>
               </el-form-item>
@@ -234,7 +234,7 @@
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
                     disabled
                     class="leave-date-picker"
-                    style="width: 154px; flex: 0 0 154px;"
+                    style="width: 165px; flex: 0 0 165px;"
                   />
                   <el-time-select
                     v-model="leaveStartTimeOfDay"
@@ -254,7 +254,7 @@
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
                     disabled
                     class="leave-date-picker"
-                    style="width: 154px; flex: 0 0 154px;"
+                    style="width: 165px; flex: 0 0 165px;"
                   />
                   <el-time-select
                     v-model="leaveEndTimeOfDay"
@@ -355,13 +355,17 @@
                       <span class="workflow-view-hint-text">{{ t('formbusiness.leaverequest.viewFullWorkflowHint') }}</span>
                     </div>
                     <el-tooltip :content="t('formbusiness.leaverequest.viewFullWorkflow')" placement="top">
-                      <el-icon
+                      <span
                         class="workflow-view-icon"
                         :class="{ 'is-disabled': !form.formId }"
                         @click="openWorkflowDrawer"
                       >
-                        <View />
-                      </el-icon>
+                        <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <rect x="4.5" y="5.5" width="11" height="7.5" rx="2.4" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                          <path d="M15.5 9.3 H20.5 Q23 9.3 23 11.9 V18.5" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          <rect x="17.5" y="19" width="11" height="7.5" rx="2.4" fill="none" stroke="#1f1f1f" stroke-width="1.8" stroke-linejoin="round" />
+                        </svg>
+                      </span>
                     </el-tooltip>
                   </div>
                 </div>
@@ -601,7 +605,7 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Document, Download, Clock, CircleCheck, RemoveFilled, Loading, Lock, View, Search } from '@element-plus/icons-vue'
+  import { Document, Download, Clock, CircleCheck, RemoveFilled, Loading, Lock, Search } from '@element-plus/icons-vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -2035,15 +2039,15 @@ import { resolveFileUrl } from '@/utils/fileUrl'
 
   .leave-form :deep(.leave-hours-input .el-input__inner),
   .leave-form :deep(.leave-hours-input .el-input__wrapper input) {
-    color: var(--el-color-danger);
+    color: #c00c1f;
     font-weight: 700;
-    -webkit-text-fill-color: var(--el-color-danger);
+    -webkit-text-fill-color: #c00c1f;
   }
 
   .leave-form :deep(.leave-hours-input.is-disabled .el-input__inner),
   .leave-form :deep(.leave-hours-input.is-disabled .el-input__wrapper input) {
-    color: var(--el-color-danger);
-    -webkit-text-fill-color: var(--el-color-danger);
+    color: #c00c1f;
+    -webkit-text-fill-color: #c00c1f;
   }
   
   .upload-section {
@@ -2117,14 +2121,21 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
 
   .workflow-view-icon {
-    font-size: 18px;
-    color: var(--el-color-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
   }
 
+  .workflow-view-icon .hand-drawn-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+
   .workflow-view-icon.is-disabled {
-    color: var(--el-text-color-disabled);
+    opacity: 0.4;
     cursor: not-allowed;
     pointer-events: none;
   }
@@ -2583,7 +2594,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
 
   .leave-balance-deduct-inline {
-    color: var(--el-color-danger);
+    color: #c00c1f;
     font-size: 12px;
     font-weight: 700;
   }

@@ -4,35 +4,25 @@
     <svg class="module-select-bg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <pattern id="ms-bg-dots" x="0" y="0" width="44" height="44" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.5" fill="currentColor" opacity="0.05" />
+          <circle cx="2" cy="2" r="1.6" fill="#1f1f1f" opacity="0.045" />
         </pattern>
-        <radialGradient id="ms-bg-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="currentColor" stop-opacity="0.06" />
-          <stop offset="100%" stop-color="currentColor" stop-opacity="0" />
-        </radialGradient>
-        <linearGradient id="ms-bg-line" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="currentColor" stop-opacity="0.09" />
-          <stop offset="1" stop-color="currentColor" stop-opacity="0.04" />
-        </linearGradient>
       </defs>
       <rect width="1600" height="1000" fill="url(#ms-bg-dots)" />
-      <ellipse cx="120" cy="120" rx="560" ry="440" fill="url(#ms-bg-glow)" />
-      <ellipse cx="1480" cy="900" rx="620" ry="480" fill="url(#ms-bg-glow)" />
-      <!-- 左上工作流线条 -->
-      <g stroke="url(#ms-bg-line)" fill="none" stroke-width="2.4">
-        <path d="M120 130 H240 q16 0 16 16 V210" />
-        <path d="M256 256 V312 q0 16 -16 16 H120" />
-        <rect x="86" y="96" width="68" height="68" rx="18" fill="currentColor" fill-opacity="0.035" />
-        <rect x="226" y="166" width="60" height="60" rx="18" fill="currentColor" fill-opacity="0.055" />
-        <rect x="86" y="300" width="60" height="60" rx="18" fill="currentColor" fill-opacity="0.035" />
+      <!-- 左上手绘工作流水印 -->
+      <g opacity="0.1" stroke="#1f1f1f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4 6)">
+        <rect x="86" y="96" width="70" height="70" rx="20" fill="#E6D8B8" />
+        <path d="M156 131 H240 q16 0 16 16 V218" />
+        <rect x="226" y="166" width="62" height="62" rx="20" fill="#ffffff" />
+        <path d="M257 228 V312 q0 16 -16 16 H150" />
+        <rect x="86" y="300" width="62" height="62" rx="20" fill="#ffffff" />
       </g>
-      <!-- 右下工作流线条 -->
-      <g stroke="url(#ms-bg-line)" fill="none" stroke-width="2.4" transform="translate(1480 880) rotate(180)">
-        <path d="M120 130 H240 q16 0 16 16 V210" />
-        <path d="M256 256 V312 q0 16 -16 16 H120" />
-        <rect x="86" y="96" width="68" height="68" rx="18" fill="currentColor" fill-opacity="0.035" />
-        <rect x="226" y="166" width="60" height="60" rx="18" fill="currentColor" fill-opacity="0.055" />
-        <rect x="86" y="300" width="60" height="60" rx="18" fill="currentColor" fill-opacity="0.035" />
+      <!-- 右下手绘工作流水印 -->
+      <g opacity="0.1" stroke="#1f1f1f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(1510 904) rotate(180)">
+        <rect x="86" y="96" width="70" height="70" rx="20" fill="#E6D8B8" />
+        <path d="M156 131 H240 q16 0 16 16 V218" />
+        <rect x="226" y="166" width="62" height="62" rx="20" fill="#ffffff" />
+        <path d="M257 228 V312 q0 16 -16 16 H150" />
+        <rect x="86" y="300" width="62" height="62" rx="20" fill="#ffffff" />
       </g>
     </svg>
     <div class="header-actions">
