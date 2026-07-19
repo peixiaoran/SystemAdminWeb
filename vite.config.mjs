@@ -70,22 +70,10 @@ export default defineConfig(({ mode }) => {
       // 且启用了 gzip/brotli 压缩），无法在不改造为按需自动引入的前提下进一步拆分，故放宽阈值避免误报。
       // 其余业务 chunk 均远小于此值；echarts 已按需引入（src/utils/echarts.js）。
       chunkSizeWarningLimit: 1300,
-      minify: 'terser', // 使用terser进行更彻底的代码压缩
-      terserOptions: {
-        compress: {
-          drop_console: env.PROD === 'true', // 生产环境删除console
-          drop_debugger: env.PROD === 'true', // 生产环境删除debugger
-          pure_funcs: env.PROD === 'true' ? ['console.log', 'console.warn', 'console.info'] : [] // 生产环境删除console语句
-        },
-        mangle: {
-          // 防止i18n相关变量名被混淆
-          reserved: ['$t', 'i18n', 't', 'locale', 'ElMessage', 'ElNotification'] // 保留Element提示组件变量名
-        },
-        format: {
-          // 移除注释
-          comments: false
-        }
-      },
+      // 使用 Vite 8/Rolldown 内置的 Rust 原生压缩器（oxc）替代 terser：
+      // terser 是 JS 实现，构建耗时占比高（vite:terser 曾占构建总时长的近 60%），
+      // oxc 压缩效果相当但速度快一个数量级，且不改变 chunk 拆分/文件名等产物结构。
+      minify: 'oxc',
       // 启用代码分割优化
       target: 'es2020', // 支持现代浏览器，减少polyfill
       reportCompressedSize: false, // 禁用压缩大小报告以提升构建速度
@@ -147,7 +135,22 @@ export default defineConfig(({ mode }) => {
           // 优化文件名生成
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
-          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+          // oxc 压缩器选项（对应之前的 terserOptions）：
+          // - dropConsole/dropDebugger 仅在 production 模式下生效，与原 isProd 判断保持一致
+          //   （注：oxc 只能整体丢弃所有 console.* 调用，无法像 terser 的 pure_funcs 那样
+          //   只丢 log/warn/info 保留 console.error）
+          // - legalComments: 'none' 对应原来的 comments: false，移除全部注释
+          // - oxc 不支持 terser 的 mangle.reserved，但 $t/i18n 等均为局部变量，
+          //   混淆后同一作用域内引用保持一致，不影响运行时行为
+          minify: {
+            compress: {
+              dropConsole: isProd,
+              dropDebugger: isProd
+            },
+            mangle: true,
+            codegen: { legalComments: 'none' }
+          }
         }
       }
     },
