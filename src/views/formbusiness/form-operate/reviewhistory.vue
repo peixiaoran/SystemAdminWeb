@@ -114,9 +114,11 @@
                 v-if="canShowPrint(row)"
                 type="primary"
                 underline="never"
+                :disabled="printingFormIds.has(row.formId)"
                 @click="handlePrintForm(row)"
               >
-                {{ $t('formbusiness.reviewhistory.printPdf') }}
+                <el-icon v-if="printingFormIds.has(row.formId)" class="is-loading" style="margin-right: 4px;"><Loading /></el-icon>
+                {{ printingFormIds.has(row.formId) ? $t('formbusiness.reviewhistory.printing') : $t('formbusiness.reviewhistory.printPdf') }}
               </el-link>
               <span v-if="!canShowPrint(row)">—</span>
             </template>
@@ -195,14 +197,16 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { post } from '@/utils/request'
+import { Loading } from '@element-plus/icons-vue'
+import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
   GET_REVIEW_HISTORY_PAGE_API,
-  GET_FORM_PENDING_USERS_API
+  GET_FORM_PENDING_USERS_API,
+  PRINT_FORM_PDF_API
 } from '@/config/api/formbusiness/form-operate/reviewhistory.js'
 
 const { t } = useI18n()
@@ -239,6 +243,7 @@ const getFormStatusTagType = (row) => {
 const loading = ref(false)
 const filterPending = ref(false)
 const formList = ref([])
+const printingFormIds = ref(new Set())
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
@@ -470,8 +475,47 @@ const openFormPendingReviewers = async (row) => {
 const canShowPrint = (row) =>
   !!row?.formId && normalizeStatus(row) === 'approved'
 
-const handlePrintForm = (_row) => {
-  // TODO: 实现打印PDF功能
+const handlePrintForm = async (row) => {
+  if (!row?.formId || printingFormIds.value.has(row.formId)) return
+  printingFormIds.value.add(row.formId)
+  try {
+    const blob = await service({
+      url: PRINT_FORM_PDF_API,
+      method: 'post',
+      data: buildFormData({ formId: String(row.formId) }),
+      headers: { 'Content-Type': 'multipart/form-data' },
+      responseType: 'blob'
+    })
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error(t('formbusiness.reviewhistory.printFailed'))
+    }
+
+    if (blob.type && blob.type.includes('application/json')) {
+      const text = await blob.text()
+      let message = t('formbusiness.reviewhistory.printFailed')
+      try {
+        const json = JSON.parse(text)
+        message = json?.message || message
+      } catch {
+        // ignore
+      }
+      throw new Error(message)
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${row.formNo || 'form'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    showMessage(error?.message || t('formbusiness.reviewhistory.printFailed'))
+  } finally {
+    printingFormIds.value.delete(row.formId)
+  }
 }
 
 onMounted(async () => {

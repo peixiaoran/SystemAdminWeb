@@ -18,7 +18,6 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormGroup')"
             filterable
-            clearables
             class="pending-filter-select"
             @change="handleFormGroupChange"
           >
@@ -36,7 +35,6 @@
             v-model="searchForm.formTypeId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormType')"
             filterable
-            clearable
             class="pending-filter-select"
             @change="handleFormTypeChange"
           >

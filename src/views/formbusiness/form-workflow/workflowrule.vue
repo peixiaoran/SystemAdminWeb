@@ -56,10 +56,10 @@
           <el-table-column prop="positionName" :label="$t('formbusiness.workflowrule.positionName')" align="left" min-width="180" />
           <el-table-column prop="guidance" :label="$t('formbusiness.workflowrule.guidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="version" :label="$t('formbusiness.workflowrule.version')" width="90" align="center" />
-          <el-table-column :label="$t('formbusiness.workflowrule.effectiveStartTime')" width="120" align="center">
+          <el-table-column :label="$t('formbusiness.workflowrule.effectiveStartDate')" width="120" align="center">
             <template #default="{ row }">{{ row.effectiveStartDate }}</template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowrule.effectiveEndTime')" width="120" align="center">
+          <el-table-column :label="$t('formbusiness.workflowrule.effectiveEndDate')" width="120" align="center">
             <template #default="{ row }">{{ row.effectiveEndDate || $t('formbusiness.workflowrule.unlimited') }}</template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.workflowrule.operation')" width="200" align="center" fixed="right">
@@ -171,21 +171,21 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.workflowrule.effectiveStartTime')" prop="effectiveStartDate">
+            <el-form-item :label="$t('formbusiness.workflowrule.effectiveStartDate')" prop="effectiveStartDate">
               <el-date-picker
                 v-model="dialogForm.effectiveStartDate"
                 type="date"
                 value-format="YYYY-MM-DD"
-                :placeholder="$t('formbusiness.workflowrule.pleaseSelectEffectiveStartTime')"
+                :placeholder="$t('formbusiness.workflowrule.pleaseSelectEffectiveStartDate')"
                 style="width:100%"
               />
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.workflowrule.effectiveEndTime')" prop="effectiveEndDate">
+            <el-form-item :label="$t('formbusiness.workflowrule.effectiveEndDate')" prop="effectiveEndDate">
               <el-date-picker
                 v-model="dialogForm.effectiveEndDate"
                 type="date"
                 value-format="YYYY-MM-DD"
-                :placeholder="$t('formbusiness.workflowrule.effectiveEndTimeEmptyHint')"
+                :placeholder="$t('formbusiness.workflowrule.effectiveEndDateEmptyHint')"
                 style="width:100%"
               />
             </el-form-item>
@@ -384,7 +384,7 @@ const dialogFormRules = {
   ruleNameEn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur'   }],
   positionId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'),  trigger: 'change' }],
   guidance:    [],
-  effectiveStartDate: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectEffectiveStartTime'), trigger: 'change' }]
+  effectiveStartDate: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectEffectiveStartDate'), trigger: 'change' }]
 }
 
 const resetDialogForm = () => {

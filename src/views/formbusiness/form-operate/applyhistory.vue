@@ -518,9 +518,6 @@ const canShowInvalidate = (row) => {
 const canShowPrint = (row) =>
   !!row?.formId && normalizeStatus(row) === 'approved'
 
-const buildPrintPrefix = (row) =>
-  String(row?.formNo || '').split('-')[0] || ''
-
 const handlePrintForm = async (row) => {
   if (!row?.formId || printingFormIds.value.has(row.formId)) return
   printingFormIds.value.add(row.formId)
@@ -528,7 +525,7 @@ const handlePrintForm = async (row) => {
     const blob = await service({
       url: PRINT_FORM_PDF_API,
       method: 'post',
-      data: buildFormData({ formId: String(row.formId), prefix: buildPrintPrefix(row) }),
+      data: buildFormData({ formId: String(row.formId) }),
       headers: { 'Content-Type': 'multipart/form-data' },
       responseType: 'blob'
     })
@@ -552,7 +549,7 @@ const handlePrintForm = async (row) => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `${row.formNo || buildPrintPrefix(row) || 'form'}.pdf`
+    link.download = `${row.formNo || 'form'}.pdf`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

@@ -1,39 +1,14 @@
 <template>
   <div class="module-select-container">
-    <!-- 工作流主题背景装饰（跟随主题主色，尺寸适配整页） -->
-    <svg class="module-select-bg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <pattern id="ms-bg-dots" x="0" y="0" width="44" height="44" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.6" fill="#1f1f1f" opacity="0.045" />
-        </pattern>
-      </defs>
-      <rect width="1600" height="1000" fill="url(#ms-bg-dots)" />
-      <!-- 左上手绘工作流水印 -->
-      <g opacity="0.1" stroke="#1f1f1f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4 6)">
-        <rect x="86" y="96" width="70" height="70" rx="20" fill="#E6D8B8" />
-        <path d="M156 131 H240 q16 0 16 16 V218" />
-        <rect x="226" y="166" width="62" height="62" rx="20" fill="#ffffff" />
-        <path d="M257 228 V312 q0 16 -16 16 H150" />
-        <rect x="86" y="300" width="62" height="62" rx="20" fill="#ffffff" />
-      </g>
-      <!-- 右下手绘工作流水印 -->
-      <g opacity="0.1" stroke="#1f1f1f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(1510 904) rotate(180)">
-        <rect x="86" y="96" width="70" height="70" rx="20" fill="#E6D8B8" />
-        <path d="M156 131 H240 q16 0 16 16 V218" />
-        <rect x="226" y="166" width="62" height="62" rx="20" fill="#ffffff" />
-        <path d="M257 228 V312 q0 16 -16 16 H150" />
-        <rect x="86" y="300" width="62" height="62" rx="20" fill="#ffffff" />
-      </g>
-    </svg>
     <div class="header-actions">
       <language-switcher class="language-switcher" />
       <div class="user-info">
         <el-dropdown trigger="click">
           <div class="user-avatar-wrapper">
             <div class="user-avatar">
-              <el-avatar 
-                size="small" 
-                :src="userAvatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" 
+              <el-avatar
+                size="small"
+                :src="userAvatar"
                 :alt="username" />
               <div class="user-details">
                 <span class="username">{{ username }}</span>
@@ -277,31 +252,6 @@ const logout = async () => {
   overflow: hidden;
 }
 
-.module-select-container::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    115% 75% at 50% -18%,
-    var(--el-color-primary-light-9) 0%,
-    transparent 52%
-  );
-  z-index: 0;
-}
-
-/* 工作流主题背景装饰：currentColor 绑定主题主色，随主题/暗色联动 */
-.module-select-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  color: var(--el-color-primary);
-  pointer-events: none;
-  user-select: none;
-}
-
 .header-actions {
   display: flex;
   justify-content: flex-end;
@@ -355,9 +305,9 @@ const logout = async () => {
 }
 
 .pmenu-grid {
-  max-width: 1440px;
+  max-width: 1720px;
   margin: 40px auto 0;
-  padding: 20px;
+  padding: 20px 40px;
   flex: 1;
   display: flex;
   justify-content: center;
@@ -368,9 +318,10 @@ const logout = async () => {
 .pmenu-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  row-gap: 32px;
+  column-gap: 64px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1560px;
   justify-items: center;
 }
 
@@ -383,12 +334,14 @@ const logout = async () => {
 @media (min-width: 992px) and (max-width: 1199px) {
   .pmenu-row {
     grid-template-columns: repeat(3, 1fr);
+    column-gap: 40px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .pmenu-row {
     grid-template-columns: repeat(2, 1fr);
+    column-gap: 32px;
   }
 }
 
@@ -407,7 +360,7 @@ const logout = async () => {
 .pmenu-card {
   width: 100%;
   max-width: 280px;
-  height: 320px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   border-radius: calc(var(--el-border-radius-base) + 10px);
@@ -431,7 +384,7 @@ const logout = async () => {
 }
 
 .pmenu-icon {
-  height: 120px;
+  height: 108px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -461,7 +414,7 @@ const logout = async () => {
 
 .pmenu-info {
   flex: 1;
-  padding: 24px 20px 16px 20px;
+  padding: 22px 20px 14px 20px;
   background: var(--el-fill-color-blank);
   text-align: center;
   display: flex;
@@ -498,7 +451,7 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px 20px 20px 20px;
+  padding: 14px 20px 18px 20px;
   background: var(--el-fill-color-blank);
 }
 
@@ -586,11 +539,11 @@ const logout = async () => {
   }
   
   .pmenu-card {
-    height: 300px;
+    height: 282px;
   }
-  
+
   .pmenu-icon {
-    height: 100px;
+    height: 94px;
   }
   
   .pmenu-info {
@@ -636,11 +589,11 @@ const logout = async () => {
   }
   
   .pmenu-card {
-    height: 280px;
+    height: 264px;
   }
-  
+
   .pmenu-icon {
-    height: 90px;
+    height: 84px;
   }
   
   .pmenu-info h2 {
