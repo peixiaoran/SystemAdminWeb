@@ -69,9 +69,9 @@
             <el-icon class="forbidden-result__icon"><Lock /></el-icon>
           </span>
         </div>
-        <p class="forbidden-result__eyebrow">{{ t('formbusiness.leavecancell.forbiddenResultEyebrow') }}</p>
-        <h2 class="forbidden-result__title">{{ t('formbusiness.leavecancell.forbiddenResultTitle') }}</h2>
-        <p class="forbidden-result__desc">{{ t('formbusiness.leavecancell.forbiddenResultSubTitle') }}</p>
+        <p class="forbidden-result__eyebrow">{{ t('formbusiness.leavecancell.forbiddenViewEyebrow') }}</p>
+        <h2 class="forbidden-result__title">{{ t('formbusiness.leavecancell.forbiddenViewTitle') }}</h2>
+        <p class="forbidden-result__desc">{{ t('formbusiness.leavecancell.forbiddenViewSubTitle') }}</p>
         <el-button class="forbidden-result__action" type="primary" round @click="closeCurrentPage">
           {{ t('formbusiness.leavecancell.backToFormPending') }}
         </el-button>
@@ -155,7 +155,7 @@
 
         <!-- 原请假单引用 -->
         <template v-if="isStepFieldVisible('LeaveRequestRef')">
-          <el-row :gutter="16">
+          <el-row :gutter="16" class="leave-request-ref-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
                 <span v-if="!selectedLeaveRequest" class="leave-request-empty-text">
@@ -173,6 +173,49 @@
                 </el-table>
               </el-form-item>
             </el-col>
+
+            <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
+            <aside v-if="selectedLeaveRequest" class="remaining-cancell-hours-float">
+              <el-popover
+                placement="top"
+                popper-class="remaining-cancell-hours-popper"
+                :title="t('formbusiness.leavecancell.remainingCancellHoursTitle')"
+                :width="150"
+                trigger="click"
+                @show="fetchRemainingCancellHours"
+                @hide="resetRemainingCancellHours"
+              >
+                <template #reference>
+                  <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
+                    <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
+                      <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M16 16.5 L20.6 18.7" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
+                      <circle cx="16" cy="16.5" r="1.15" fill="#1f1f1f" />
+                    </svg>
+                  </button>
+                </template>
+                <div class="remaining-cancell-hours-body">
+                  <span
+                    v-if="remainingCancellHoursLoading || !remainingCancellHoursFetched"
+                    class="remaining-cancell-hours-dots"
+                    role="status"
+                    :aria-label="t('common.loading')"
+                  >
+                    <i></i><i></i><i></i>
+                  </span>
+                  <span
+                    v-else-if="remainingCancellHoursValue !== null"
+                    class="remaining-cancell-hours-value"
+                  >
+                    {{ t('formbusiness.leavecancell.remainingCancellHoursValue', { hours: formatHoursCell(remainingCancellHoursValue) }) }}
+                  </span>
+                  <span v-else class="remaining-cancell-hours-empty">
+                    {{ t('formbusiness.leavecancell.remainingCancellHoursEmpty') }}
+                  </span>
+                </div>
+              </el-popover>
+            </aside>
           </el-row>
 
           <el-row v-if="selectedLeaveRequest" :gutter="16">
@@ -360,46 +403,6 @@
       </div>
     </el-card>
 
-    <!-- 本单可销假时数：表单右侧悬浮（参考请假单假别余额位置） -->
-    <aside
-      v-if="isStepFieldVisible('LeaveRequestRef') && selectedLeaveRequest"
-      class="remaining-cancell-hours-float"
-    >
-      <el-popover
-        placement="top"
-        popper-class="remaining-cancell-hours-popper"
-        :title="t('formbusiness.leavecancell.remainingCancellHoursTitle')"
-        :width="150"
-        trigger="click"
-        @show="fetchRemainingCancellHours"
-        @hide="resetRemainingCancellHours"
-      >
-        <template #reference>
-          <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
-            <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
-              <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
-              <path d="M16 16.5 L20.6 18.7" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
-              <circle cx="16" cy="16.5" r="1.15" fill="#1f1f1f" />
-            </svg>
-          </button>
-        </template>
-        <div
-          v-loading="remainingCancellHoursLoading || !remainingCancellHoursFetched"
-          style="min-height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1.5;"
-        >
-          <span
-            v-if="remainingCancellHoursFetched && remainingCancellHoursValue !== null"
-            class="remaining-cancell-hours-value"
-          >
-            {{ t('formbusiness.leavecancell.remainingCancellHoursValue', { hours: remainingCancellHoursValue }) }}
-          </span>
-          <span v-else-if="remainingCancellHoursFetched" style="color:var(--el-text-color-secondary);">
-            {{ t('formbusiness.leavecancell.remainingCancellHoursEmpty') }}
-          </span>
-        </div>
-      </el-popover>
-    </aside>
     </template>
 
     <!-- 完整审批流程 -->
@@ -929,8 +932,8 @@ function showForbiddenResult () {
   resultState.detailMessage = ''
   resultState.visible = true
   resultState.status = 'warning'
-  resultState.titleKey = 'formbusiness.leavecancell.forbiddenResultTitle'
-  resultState.subTitleKey = 'formbusiness.leavecancell.forbiddenResultSubTitle'
+  resultState.titleKey = 'formbusiness.leavecancell.forbiddenViewTitle'
+  resultState.subTitleKey = 'formbusiness.leavecancell.forbiddenViewSubTitle'
 }
 
 function showBadRequestResult (message) {
@@ -1040,6 +1043,13 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   background: #ffffff;
+  /* el-card 默认 overflow: hidden、el-card__body 默认 overflow: auto，
+     都会裁掉溢出到卡片边框外的可销假时数入口 */
+  overflow: visible;
+}
+
+.leave-form-card :deep(.el-card__body) {
+  overflow: visible;
 }
 
 .result-card {
@@ -1222,18 +1232,31 @@ onMounted(async () => {
   color: var(--el-text-color-secondary);
 }
 
-/* 本单可销假时数：表单卡片右侧悬浮（参考请假单假别余额位置，位于表单线外面） */
+.leave-request-ref-row {
+  position: relative;
+}
+
+/* 原请假单引用行与销假时间行的间距收紧 */
+.leave-request-ref-row .el-form-item {
+  margin-bottom: 4px;
+}
+
+/* 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧外部
+   （偏移量 = 表单内边距 20px + 卡片内边距 20px + 边框，再减去 el-row 的 8px 负边距） */
 .remaining-cancell-hours-float {
-  --remaining-hours-form-gap: 8px;
-  --remaining-hours-side-gap: 20px;
-  position: fixed;
-  top: 33%;
-  left: calc(50% + 500px + var(--remaining-hours-form-gap));
-  right: var(--remaining-hours-side-gap);
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 42px);
   z-index: 20;
   display: flex;
-  justify-content: flex-start;
   transform: translateY(-50%);
+}
+
+/* 窄屏时卡片右侧无空间，隐藏悬浮入口 */
+@media (max-width: 1120px) {
+  .remaining-cancell-hours-float {
+    display: none;
+  }
 }
 
 .remaining-cancell-hours-btn {
@@ -1245,11 +1268,6 @@ onMounted(async () => {
   background: transparent;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.18s ease;
-}
-
-.remaining-cancell-hours-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .remaining-cancell-hours-btn .hand-drawn-icon {
@@ -1258,9 +1276,60 @@ onMounted(async () => {
   display: block;
 }
 
+.remaining-cancell-hours-body {
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .remaining-cancell-hours-value {
   font-weight: 700;
   color: #0058cc;
+}
+
+.remaining-cancell-hours-empty {
+  color: var(--el-text-color-secondary);
+}
+
+/* 加载中：三个灰点依次起伏 */
+.remaining-cancell-hours-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 16px;
+}
+
+.remaining-cancell-hours-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--el-text-color-placeholder);
+  animation: remaining-hours-dot 1.2s ease-in-out infinite;
+}
+
+.remaining-cancell-hours-dots i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.remaining-cancell-hours-dots i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes remaining-hours-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
 }
 
 .leave-request-ref-table {
@@ -1673,12 +1742,4 @@ onMounted(async () => {
   margin-bottom: 8px;
 }
 
-.remaining-cancell-hours-popper .el-loading-spinner {
-  margin-top: -11px;
-}
-
-.remaining-cancell-hours-popper .el-loading-spinner .circular {
-  width: 22px;
-  height: 22px;
-}
 </style>

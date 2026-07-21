@@ -94,9 +94,9 @@
           
           <el-dropdown trigger="click">
             <div class="avatar-wrapper">
-              <el-avatar 
-                size="small" 
-                :src="userAvatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" 
+              <el-avatar
+                size="small"
+                :src="userAvatar"
                 :alt="username" />
               <span class="username">{{ username }}</span>
               <el-icon class="el-icon-arrow-down"><ArrowDown /></el-icon>

@@ -1,30 +1,26 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { imagetools } from 'vite-imagetools' // 图片优化
-import viteCompression from 'vite-plugin-compression' // 产物压缩 (gzip & brotli)
+import { imagetools } from 'vite-imagetools'
+import viteCompression from 'vite-plugin-compression'
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // 根据当前工作目录中的 `mode` 加载 .env 文件
   const env = loadEnv(mode, process.cwd(), '')
   const isProd = mode === 'production'
   const outDir = env.VITE_BUILD_OUT_DIR || 'dist'
-  
+
   return {
-    // 生产环境部署在 /systemadminweb/ 子路径下，需设置 base 以保证静态资源引用路径正确；
-    // 开发环境使用根路径。createWebHashHistory 无参数会自动读取 import.meta.env.BASE_URL。
+    // 生产部署在 /systemadminweb/ 子路径；createWebHashHistory 会自动读取 import.meta.env.BASE_URL
     base: isProd ? '/systemadminweb/' : '/',
     plugins: [
       vue(),
-      // 构建阶段按需启用图片优化，提升 dev 启动速度
       isProd && imagetools(),
-      // 仅在生产环境生成 .gz/.br 双格式压缩包，降低线上带宽与首屏加载时长
       isProd && viteCompression({
         algorithm: 'brotliCompress',
         ext: '.br',
         deleteOriginFile: false, // 保留原始文件，交给服务器按需选择
-        threshold: 10240, // 仅压缩 10kb 以上文件
+        threshold: 10240,
         verbose: false
       }),
       isProd && viteCompression({
@@ -41,108 +37,79 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 3001, // 前端开发服务器端口，不影响 API 请求
-      host: 'localhost', // 仅允许本机访问，提高开发环境安全性
-      open: true, // 启动后自动打开浏览器
-
+      port: 3001,
+      host: 'localhost',
+      open: true,
       headers: {
-        'X-Content-Type-Options': 'nosniff', // 防止浏览器 MIME 类型嗅探
-        'X-Frame-Options': 'DENY', // 禁止页面被 iframe 嵌入
-        'X-XSS-Protection': '1; mode=block' // 兼容旧版浏览器的 XSS 防护
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
       }
     },
-    // 定义全局常量替换方式
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
-      // Vue 3.5 特性标志
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
     },
-    // 构建选项
     build: {
-      // 默认输出到相对路径 dist；支持通过 env 覆盖（建议仍使用相对路径，便于 CI/跨平台）
       outDir,
       emptyOutDir: true,
       assetsDir: 'assets',
-      sourcemap: env.DEV === 'true', // 只在开发环境启用
-      // 警告阈值设为 1300kB：element-plus 为全局注册的大型组件库（约 1.16MB，已单独成 chunk
-      // 且启用了 gzip/brotli 压缩），无法在不改造为按需自动引入的前提下进一步拆分，故放宽阈值避免误报。
-      // 其余业务 chunk 均远小于此值；echarts 已按需引入（src/utils/echarts.js）。
+      sourcemap: env.DEV === 'true',
+      // element-plus 为全局注册的大型库（约 1.16MB，已单独成 chunk 并压缩），放宽阈值避免误报
       chunkSizeWarningLimit: 1300,
-      // 使用 Vite 8/Rolldown 内置的 Rust 原生压缩器（oxc）替代 terser：
-      // terser 是 JS 实现，构建耗时占比高（vite:terser 曾占构建总时长的近 60%），
-      // oxc 压缩效果相当但速度快一个数量级，且不改变 chunk 拆分/文件名等产物结构。
+      // Rolldown 内置的 Rust 压缩器（oxc），替代 terser 后构建显著提速，产物结构不变
       minify: 'oxc',
-      // 启用代码分割优化
-      target: 'es2020', // 支持现代浏览器，减少polyfill
-      reportCompressedSize: false, // 禁用压缩大小报告以提升构建速度
-      // CSS相关优化
+      target: 'es2020',
+      reportCompressedSize: false,
       cssCodeSplit: true,
-      // 确保生成正确的资源路径（Vite 8 使用 rolldownOptions，底层已切换为 Rolldown/Rust）
       rolldownOptions: {
         onwarn(warning, warn) {
           if (warning.code === 'CIRCULAR_DEPENDENCY') return;
-          // 忽略第三方依赖（如 @vueuse/core，被 element-plus 间接引入）预构建产物中
-          // 位置不规范的 /* #__PURE__ */ 注解告警：仅影响 tree-shaking 提示，不影响正确性
+          // 第三方预构建产物中位置不规范的 /* #__PURE__ */ 注解，仅影响 tree-shaking 提示
           if (warning.code === 'INVALID_ANNOTATION' && /node_modules/.test(warning.id || warning.loc?.file || '')) return;
           warn(warning);
         },
         output: {
-          // 优化的代码分割策略
           manualChunks: function(id) {
-            // 按模块打包
             if (id.includes('node_modules')) {
-              // 将vue放入单独的chunk中，此时排除element-plus，因为element-plus依赖vue
+              // element-plus 依赖 vue，需先排除再归入 vue-core
               if (id.includes('vue') && !id.includes('element-plus') && !id.includes('@element-plus')) {
                 return 'vue-core';
               }
-              
-              // pinia单独打包
+
               if (id.includes('pinia')) {
                 return 'pinia';
               }
-              
-              // element-plus和图标库整体打包在一起
+
               if (id.includes('element-plus') || id.includes('@element-plus')) {
                 return 'element-plus';
               }
-              
-              // i18n单独打包确保不被错误优化
+
               if (id.includes('vue-i18n')) {
                 return 'i18n';
               }
-              
-              // axios
+
               if (id.includes('axios')) {
                 return 'axios';
               }
 
-              // echarts 及其底层渲染引擎 zrender 单独打包（已按需引入，见 src/utils/echarts.js）
               if (id.includes('echarts') || id.includes('zrender')) {
                 return 'echarts';
               }
 
-              // vue-router 单独打包
               if (id.includes('vue-router')) {
                 return 'router';
               }
-              
-              // 其他依赖
+
               return 'vendors';
             }
           },
-          // 优化文件名生成
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-          // oxc 压缩器选项（对应之前的 terserOptions）：
-          // - dropConsole/dropDebugger 仅在 production 模式下生效，与原 isProd 判断保持一致
-          //   （注：oxc 只能整体丢弃所有 console.* 调用，无法像 terser 的 pure_funcs 那样
-          //   只丢 log/warn/info 保留 console.error）
-          // - legalComments: 'none' 对应原来的 comments: false，移除全部注释
-          // - oxc 不支持 terser 的 mangle.reserved，但 $t/i18n 等均为局部变量，
-          //   混淆后同一作用域内引用保持一致，不影响运行时行为
+          // oxc 只能整体丢弃 console.*，无法像 terser 的 pure_funcs 那样保留 console.error
           minify: {
             compress: {
               dropConsole: isProd,
@@ -154,24 +121,22 @@ export default defineConfig(({ mode }) => {
         }
       }
     },
-    // Vite 8 性能优化
     optimizeDeps: {
       include: [
-        'vue-i18n', // 新增i18n库预构建
+        'vue-i18n',
         'vue',
         'vue-router',
         'pinia',
         'element-plus',
         'axios',
-        // echarts 已改为按需引入（src/utils/echarts.js），由 Vite 自动发现 echarts/* 子路径
+        // echarts 已按需引入（src/utils/echarts.js），仅预构建核心入口
         'echarts/core'
       ]
     },
-    // CSS 预处理器配置
     css: {
       preprocessorOptions: {
-        scss: { 
-          api: 'modern-compiler' // Sass 现代编译器API
+        scss: {
+          api: 'modern-compiler'
         }
       }
     }

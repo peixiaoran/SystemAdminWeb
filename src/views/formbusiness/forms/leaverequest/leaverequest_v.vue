@@ -1,80 +1,86 @@
 <template>
     <div class="leave-form-page">
       <el-config-provider :locale="elementPlusLocale">
-      <!-- Skeleton 骨架屏 -->
+      <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
       <template v-if="loading && !resultState.visible">
         <!-- 表单卡片骨架 -->
         <el-card class="leave-form-card" shadow="never">
           <el-skeleton animated>
             <template #template>
               <!-- 表单标题 -->
-              <div style="display:flex; justify-content:center; margin-bottom:24px;">
-                <el-skeleton-item variant="text" style="width:200px; height:28px;" />
+              <div class="sk-title-row">
+                <el-skeleton-item variant="text" class="sk-title" />
               </div>
-              <!-- 分割线 -->
-              <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:24px;" />
-  
-              <!-- 表单号（1/3 宽） -->
-              <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="width:33%; height:32px;" />
-              </div>
-  
-              <!-- 用户信息（3 列） -->
-              <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-                <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-                <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              </div>
-              <!-- 分割线 -->
-              <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:22px;" />
-  
-              <!-- 请假类型 + 时间范围 -->
-              <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="width:33%; height:32px;" />
-                <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              </div>
-  
-              <!-- 代理人 + 请假天数 -->
-              <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="width:33%; height:32px;" />
-                <el-skeleton-item variant="text" style="width:200px; height:32px;" />
-              </div>
-  
-              <!-- 请假事由 -->
-              <div style="margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="width:100%; height:76px;" />
-              </div>
-  
-              <!-- 附件区域 -->
-              <div style="margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="button" style="width:100px; height:32px;" />
-              </div>
-  
-              <!-- 审批意见 -->
-              <div style="margin-bottom:22px; padding:0 20px;">
-                <el-skeleton-item variant="text" style="width:100%; height:60px;" />
-              </div>
-  
-              <!-- 流程查询按钮 -->
-              <div style="display:flex; justify-content:flex-end; align-items:center; padding:0 20px;">
-                <el-skeleton-item variant="circle" style="width:32px; height:32px;" />
+              <div class="sk-divider"></div>
+
+              <div class="sk-body">
+                <!-- 表单号 / 申请日期 -->
+                <div class="sk-grid">
+                  <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
+                    <el-skeleton-item variant="text" class="sk-label" />
+                    <el-skeleton-item variant="text" class="sk-control" />
+                  </div>
+                </div>
+
+                <!-- 申请人工号 / 姓名 / 部门 -->
+                <div class="sk-grid">
+                  <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
+                    <el-skeleton-item variant="text" class="sk-label" />
+                    <el-skeleton-item variant="text" class="sk-control" />
+                  </div>
+                </div>
+
+                <div class="sk-divider"></div>
+
+                <!-- 请假类别 / 代理人 -->
+                <div class="sk-grid">
+                  <div v-for="n in 2" :key="`sk-leave-${n}`" class="sk-field">
+                    <el-skeleton-item variant="text" class="sk-label" />
+                    <el-skeleton-item variant="text" class="sk-control" />
+                  </div>
+                </div>
+
+                <!-- 请假时间 / 时数 -->
+                <div class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
+
+                <!-- 请假事由 -->
+                <div class="sk-field sk-field--top">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-textarea" />
+                </div>
+
+                <!-- 附件：上传按钮 + 附件表格 -->
+                <div class="sk-field sk-field--top">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-block" />
+                </div>
+
+                <!-- 审批意见 -->
+                <div class="sk-field sk-field--top">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-textarea" />
+                </div>
+
+                <!-- 流程查看入口（查看页无操作按钮） -->
+                <div class="sk-actions">
+                  <el-skeleton-item variant="text" class="sk-hint" />
+                </div>
               </div>
             </template>
           </el-skeleton>
         </el-card>
-  
+
         <!-- 审批记录卡片骨架 -->
         <el-card class="leave-form-card review-log-card" shadow="never">
           <el-skeleton animated>
             <template #template>
-              <!-- 标题 -->
-              <el-skeleton-item variant="text" style="width:80px; height:20px; margin-bottom:16px;" />
-              <!-- 表格头 -->
-              <el-skeleton-item variant="text" style="width:100%; height:36px; margin-bottom:2px;" />
-              <!-- 表格行 × 3 -->
-              <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
-              <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
-              <el-skeleton-item variant="text" style="width:100%; height:44px;" />
+              <div class="sk-log">
+                <el-skeleton-item variant="text" class="sk-section-title" />
+                <el-skeleton-item variant="text" class="sk-block sk-block--log" />
+              </div>
             </template>
           </el-skeleton>
         </el-card>
@@ -95,9 +101,9 @@
               <el-icon class="forbidden-result__icon"><Lock /></el-icon>
             </span>
           </div>
-          <p class="forbidden-result__eyebrow">{{ t('formbusiness.leaverequest.forbiddenResultEyebrow') }}</p>
-          <h2 class="forbidden-result__title">{{ t('formbusiness.leaverequest.forbiddenResultTitle') }}</h2>
-          <p class="forbidden-result__desc">{{ t('formbusiness.leaverequest.forbiddenResultSubTitle') }}</p>
+          <p class="forbidden-result__eyebrow">{{ t('formbusiness.leaverequest.forbiddenViewEyebrow') }}</p>
+          <h2 class="forbidden-result__title">{{ t('formbusiness.leaverequest.forbiddenViewTitle') }}</h2>
+          <p class="forbidden-result__desc">{{ t('formbusiness.leaverequest.forbiddenViewSubTitle') }}</p>
           <el-button class="forbidden-result__action" type="primary" round @click="closeCurrentPage">
             {{ t('formbusiness.leaverequest.backToFormPending') }}
           </el-button>
@@ -468,24 +474,41 @@
         </div>
       </el-card>
 
-      <!-- 假期余额：右侧悬浮（LeaveBalance 权限控制，查看页只读展示） -->
+      </template>
+
+      <!-- 假期余额：右侧悬浮（LeaveBalance 权限控制，加载中显示骨架） -->
       <aside
-        v-if="isStepFieldVisible('LeaveBalance') && (leaveBalanceLoading || leaveBalances.length)"
+        v-if="!resultState.visible && (loading || isStepFieldVisible('LeaveBalance'))"
         class="leave-balance-float"
         :aria-label="t('formbusiness.leaverequest.leaveBalance') + t('formbusiness.leaverequest.leaveBalanceDaysUnit')"
       >
-        <div
-          class="leave-balance-float-card"
-          v-loading="leaveBalanceLoading"
-          element-loading-text=""
-        >
+        <div class="leave-balance-float-card">
           <div class="leave-balance-float-header">
-            <span class="leave-balance-float-title">
-              {{ t('formbusiness.leaverequest.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaverequest.leaveBalanceDaysUnit') }}</span>
-            </span>
-            <p class="leave-balance-float-note">{{ t('formbusiness.leaverequest.leaveBalanceNote') }}</p>
+            <el-skeleton v-if="loading || leaveBalanceLoading" animated>
+              <template #template>
+                <el-skeleton-item variant="text" class="sk-balance-title" />
+                <el-skeleton-item variant="text" class="sk-balance-note" />
+              </template>
+            </el-skeleton>
+            <template v-else>
+              <span class="leave-balance-float-title">
+                {{ t('formbusiness.leaverequest.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaverequest.leaveBalanceDaysUnit') }}</span>
+              </span>
+              <p class="leave-balance-float-note">{{ t('formbusiness.leaverequest.leaveBalanceNote') }}</p>
+            </template>
           </div>
           <div class="leave-balance-hint">
+            <!-- 页面初始化或余额查询中：按年度分组的简化骨架 -->
+            <el-skeleton v-if="loading || leaveBalanceLoading" class="sk-balance" animated>
+              <template #template>
+                <div v-for="n in 2" :key="`sk-balance-${n}`" class="sk-balance-item">
+                  <el-skeleton-item variant="text" class="sk-balance-year" />
+                  <el-skeleton-item variant="text" class="sk-balance-line" />
+                  <el-skeleton-item variant="text" class="sk-balance-line" />
+                </div>
+              </template>
+            </el-skeleton>
+            <template v-else>
             <div
               v-for="item in leaveBalances"
               :key="item.year"
@@ -517,10 +540,14 @@
                 </span>
               </div>
             </div>
+            <!-- 未查询到余额时保留卡片，仅提示空数据 -->
+            <div v-if="!leaveBalances.length" class="leave-balance-empty">
+              {{ t('formbusiness.leaverequest.leaveBalanceEmpty') }}
+            </div>
+            </template>
           </div>
         </div>
       </aside>
-      </template>
   
       <el-drawer
         v-model="workflowDrawerVisible"
@@ -1339,8 +1366,8 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     resultState.detailMessage = ''
     resultState.visible = true
     resultState.status = 'warning'
-    resultState.titleKey = 'formbusiness.leaverequest.forbiddenResultTitle'
-    resultState.subTitleKey = 'formbusiness.leaverequest.forbiddenResultSubTitle'
+    resultState.titleKey = 'formbusiness.leaverequest.forbiddenViewTitle'
+    resultState.subTitleKey = 'formbusiness.leaverequest.forbiddenViewSubTitle'
   }
   
   function showBadRequestResult (message) {
@@ -1784,6 +1811,108 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     overflow-y: auto;
     box-sizing: border-box;
   }
+  /* 骨架屏：内边距、标签列宽、控件高度与真实表单一一对应 */
+  .sk-title-row {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  /* 对应 .form-title：20px 加粗标题的行高 */
+  .sk-title {
+    display: inline-block;
+    width: 180px;
+    height: 26px;
+  }
+
+  .sk-divider {
+    height: 1px;
+    margin: 22px 0;
+    background: var(--el-border-color-lighter);
+  }
+
+  /* 对应 .leave-form 的左右内边距 */
+  .sk-body {
+    padding: 0 20px;
+  }
+
+  .sk-grid {
+    display: flex;
+    gap: 0 16px;
+  }
+
+  .sk-grid .sk-field {
+    width: calc((100% - 32px) / 3);
+  }
+
+  .sk-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-bottom: 18px;
+  }
+
+  .sk-field--top {
+    align-items: flex-start;
+  }
+
+  /* label-width: 100px 减去与控件之间的间距 */
+  .sk-label {
+    flex: none;
+    width: 88px;
+    height: 14px;
+  }
+
+  .sk-control {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+  }
+
+  /* 对应 rows=3 的文本域 */
+  .sk-textarea {
+    flex: 1;
+    min-width: 0;
+    height: 76px;
+  }
+
+  /* 对应上传按钮 + 附件表格整体 */
+  .sk-block {
+    flex: 1;
+    min-width: 0;
+    height: 120px;
+  }
+
+  /* 无 label 的操作行：内容区左侧留出 label-width */
+  .sk-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0 18px 100px;
+  }
+
+  .sk-hint {
+    flex: none;
+    width: 170px;
+    height: 22px;
+  }
+
+  /* 对应 .review-log-section */
+  .sk-log {
+    padding: 0 20px 20px;
+  }
+
+  .sk-section-title {
+    width: 90px;
+    height: 22px;
+    margin-bottom: 12px;
+  }
+
+  .sk-block--log {
+    width: 100%;
+    height: 220px;
+  }
+
   .leave-form-card {
     max-width: 1000px;
     margin: 0 auto;
@@ -2464,10 +2593,11 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     position: fixed;
     top: 35%;
     left: calc(50% + 500px + var(--leave-balance-form-gap));
-    right: var(--leave-balance-side-gap);
+    right: auto;
     z-index: 20;
-    width: auto;
-    max-width: 420px;
+    /* 固定较窄宽度并紧贴表单右侧，不再拉伸到屏幕右边缘 */
+    width: 240px;
+    max-width: calc(50vw - 500px - var(--leave-balance-form-gap) - var(--leave-balance-side-gap));
     transform: translateY(-50%);
     pointer-events: none;
   }
@@ -2518,25 +2648,55 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     line-height: 1.5;
   }
 
-  .leave-balance-float-card :deep(.el-loading-text) {
-    display: none;
+  /* 假期余额骨架：与标题、说明、年度分组的高度对齐 */
+  .sk-balance-title {
+    width: 96px;
+    height: 18px;
   }
 
-  .leave-balance-float-card :deep(.el-loading-mask) {
-    background-color: rgba(255, 255, 255, 0.72);
-  }
-
-  .leave-balance-float-card :deep(.el-loading-spinner) {
-    margin-top: 0;
-  }
-
-  .leave-balance-float-card :deep(.el-loading-spinner .circular) {
-    width: 16px;
+  .sk-balance-note {
+    width: 100%;
     height: 16px;
+    margin-top: 6px;
   }
 
-  .leave-balance-float-card :deep(.el-loading-spinner .path) {
-    stroke: var(--el-text-color-secondary, #909399);
+  .sk-balance {
+    width: 100%;
+  }
+
+  .sk-balance-item {
+    width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--el-border-color-lighter);
+  }
+
+  .sk-balance-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .sk-balance-year {
+    width: 48px;
+    height: 16px;
+    margin-bottom: 8px;
+  }
+
+  .sk-balance-line {
+    width: 100%;
+    height: 16px;
+    margin-bottom: 8px;
+  }
+
+  .sk-balance-line:last-child {
+    margin-bottom: 0;
+  }
+
+  .leave-balance-empty {
+    width: 100%;
+    padding: 6px 0;
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+    text-align: center;
   }
 
   .leave-balance-hint-item {
@@ -2605,6 +2765,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       bottom: 24px;
       left: 16px;
       right: 16px;
+      width: auto;
       max-width: none;
       transform: none;
     }
