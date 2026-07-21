@@ -53,14 +53,14 @@
           <el-table-column type="index" :label="$t('formbusiness.workflowrule.index')" width="70" align="center" fixed />
           <el-table-column prop="ruleNameCn" :label="$t('formbusiness.workflowrule.ruleNameCn')" align="left" min-width="200" show-overflow-tooltip />
           <el-table-column prop="ruleNameEn" :label="$t('formbusiness.workflowrule.ruleNameEn')" align="left" min-width="240" show-overflow-tooltip />
-          <el-table-column prop="positionName" :label="$t('formbusiness.workflowrule.positionName')" align="left" min-width="120" />
+          <el-table-column prop="positionName" :label="$t('formbusiness.workflowrule.positionName')" align="left" min-width="180" />
           <el-table-column prop="guidance" :label="$t('formbusiness.workflowrule.guidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="version" :label="$t('formbusiness.workflowrule.version')" width="90" align="center" />
-          <el-table-column :label="$t('formbusiness.workflowrule.effectiveStartTime')" width="180" align="center">
-            <template #default="{ row }">{{ formatDateTime(row.effectiveStartTime) }}</template>
+          <el-table-column :label="$t('formbusiness.workflowrule.effectiveStartTime')" width="120" align="center">
+            <template #default="{ row }">{{ row.effectiveStartDate }}</template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowrule.effectiveEndTime')" width="180" align="center">
-            <template #default="{ row }">{{ row.effectiveEndTime ? formatDateTime(row.effectiveEndTime) : $t('formbusiness.workflowrule.unlimited') }}</template>
+          <el-table-column :label="$t('formbusiness.workflowrule.effectiveEndTime')" width="120" align="center">
+            <template #default="{ row }">{{ row.effectiveEndDate || $t('formbusiness.workflowrule.unlimited') }}</template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.workflowrule.operation')" width="200" align="center" fixed="right">
             <template #default="{ row }">
@@ -171,20 +171,20 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.workflowrule.effectiveStartTime')" prop="effectiveStartTime">
+            <el-form-item :label="$t('formbusiness.workflowrule.effectiveStartTime')" prop="effectiveStartDate">
               <el-date-picker
-                v-model="dialogForm.effectiveStartTime"
-                type="datetime"
-                value-format="YYYY-MM-DD HH:mm:ss"
+                v-model="dialogForm.effectiveStartDate"
+                type="date"
+                value-format="YYYY-MM-DD"
                 :placeholder="$t('formbusiness.workflowrule.pleaseSelectEffectiveStartTime')"
                 style="width:100%"
               />
             </el-form-item>
-            <el-form-item :label="$t('formbusiness.workflowrule.effectiveEndTime')" prop="effectiveEndTime">
+            <el-form-item :label="$t('formbusiness.workflowrule.effectiveEndTime')" prop="effectiveEndDate">
               <el-date-picker
-                v-model="dialogForm.effectiveEndTime"
-                type="datetime"
-                value-format="YYYY-MM-DD HH:mm:ss"
+                v-model="dialogForm.effectiveEndDate"
+                type="date"
+                value-format="YYYY-MM-DD"
                 :placeholder="$t('formbusiness.workflowrule.effectiveEndTimeEmptyHint')"
                 style="width:100%"
               />
@@ -241,17 +241,6 @@ const buildFormData = (params) => {
 }
 
 const isSuccess = (code) => code === 200 || code === '200'
-
-const formatDateTime = (val) => {
-  if (!val) return ''
-  const d = new Date(val)
-  if (isNaN(d.getTime())) return String(val)
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
-}
-
-// 后端以 T 分隔的 ISO 格式接收/返回时间，日期选择器内部用空格分隔，两者之间转换
-const toISODateTime = (str) => (str ? str.replace(' ', 'T') : null)
 
 const loading = ref(false)
 const ruleList = ref([])
@@ -384,8 +373,8 @@ const dialogForm = reactive({
   guidance: '',
   sortOrder: 0,
   version: '',
-  effectiveStartTime: '',
-  effectiveEndTime: ''
+  effectiveStartDate: '',
+  effectiveEndDate: ''
 })
 
 const dialogFormRules = {
@@ -395,7 +384,7 @@ const dialogFormRules = {
   ruleNameEn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur'   }],
   positionId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'),  trigger: 'change' }],
   guidance:    [],
-  effectiveStartTime: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectEffectiveStartTime'), trigger: 'change' }]
+  effectiveStartDate: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectEffectiveStartTime'), trigger: 'change' }]
 }
 
 const resetDialogForm = () => {
@@ -403,8 +392,8 @@ const resetDialogForm = () => {
   dialogForm.ruleId = ''
   dialogForm.positionId = '0'
   dialogForm.version = ''
-  dialogForm.effectiveStartTime = ''
-  dialogForm.effectiveEndTime = ''
+  dialogForm.effectiveStartDate = ''
+  dialogForm.effectiveEndDate = ''
 }
 
 const loadDialogFormTypeOptions = async (formGroupId) => {
@@ -473,8 +462,8 @@ const handleEdit = async (row) => {
       dialogForm.guidance    = d.guidance    || ''
       dialogForm.sortOrder   = Number(d.sortOrder ?? 0)
       dialogForm.version     = d.version || ''
-      dialogForm.effectiveStartTime = formatDateTime(d.effectiveStartTime)
-      dialogForm.effectiveEndTime   = formatDateTime(d.effectiveEndTime)
+      dialogForm.effectiveStartDate = d.effectiveStartDate || ''
+      dialogForm.effectiveEndDate   = d.effectiveEndDate || ''
       if (dialogForm.formGroupId) await loadDialogFormTypeOptions(dialogForm.formGroupId)
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
@@ -515,8 +504,8 @@ const handleSubmit = async () => {
       guidance:    dialogForm.guidance || null,
       sortOrder:   dialogForm.sortOrder,
       version:     dialogForm.version,
-      effectiveStartTime: toISODateTime(dialogForm.effectiveStartTime),
-      effectiveEndTime:   toISODateTime(dialogForm.effectiveEndTime)
+      effectiveStartDate: dialogForm.effectiveStartDate,
+      effectiveEndDate:   dialogForm.effectiveEndDate || null
     }
     const api        = isEdit ? UPDATE_WORKFLOWRULE_API : INSERT_WORKFLOWRULE_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
