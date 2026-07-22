@@ -158,10 +158,7 @@
           <el-row :gutter="16" class="leave-request-ref-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
-                <span v-if="!selectedLeaveRequest" class="leave-request-empty-text">
-                  {{ t('formbusiness.leavecancell.pleaseSelectLeaveRequest') }}
-                </span>
-                <el-table v-else :data="[selectedLeaveRequest]" border size="small" class="leave-request-ref-table">
+                <el-table :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
                   <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
                   <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="300" align="center">
@@ -175,7 +172,7 @@
             </el-col>
 
             <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
-            <aside v-if="selectedLeaveRequest" class="remaining-cancell-hours-float">
+            <aside class="remaining-cancell-hours-float">
               <el-popover
                 placement="top"
                 popper-class="remaining-cancell-hours-popper"
@@ -218,7 +215,7 @@
             </aside>
           </el-row>
 
-          <el-row v-if="selectedLeaveRequest" :gutter="16">
+          <el-row :gutter="16">
             <el-col :span="24" class="cancel-time-hours-row">
               <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" class="cancel-time-range-item">
                 <div class="leave-time-range-fields">
@@ -227,6 +224,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
+                    :clearable="false"
                     disabled
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
@@ -237,6 +235,7 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
+                    :clearable="false"
                     disabled
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
@@ -247,6 +246,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
+                    :clearable="false"
                     disabled
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
@@ -257,6 +257,7 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
+                    :clearable="false"
                     disabled
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
@@ -486,8 +487,9 @@ import en from 'element-plus/dist/locale/en.mjs'
 import { Clock, CircleCheck, RemoveFilled, Loading, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
-import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_REMAINING_CANCELL_HOURS_API } from '@/config/api/formbusiness/forms/leavecancell'
+import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_REMAINING_CANCELL_HOURS_API, GET_FULL_REVIEW_FLOW_API } from '@/config/api/formbusiness/forms/leavecancell'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 
 // GET_LEAVECANCELL_API（销假单明细，只读）已接入；
@@ -500,6 +502,7 @@ const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
@@ -741,10 +744,52 @@ function workflowReviewUserName (u) {
   return String(name)
 }
 
+async function fetchFullReviewFlow () {
+  const formId = String(form.formId || '')
+  if (!formId) return
+  workflowDrawerLoading.value = true
+  try {
+    const formData = new window.FormData()
+    formData.append('formId', formId)
+    formData.append('ReviewUserId', String(userStore.userId || ''))
+    const res = await post(GET_FULL_REVIEW_FLOW_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
+    })
+    if (isForbiddenCode(res?.code)) {
+      showForbiddenResult()
+      workflowDrawerVisible.value = false
+      return
+    }
+    if (!res || res.code !== 200) {
+      workflowDrawerVisible.value = false
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.leavecancell.workflowLoadFailed'))
+      }
+      return
+    }
+    const data = res.data || {}
+    workflowOverview.formId = data.formId || ''
+    workflowOverview.rejectCount = Number(data.rejectCount) || 0
+    workflowOverview.stepReviewList = Array.isArray(data.stepReviewList)
+      ? data.stepReviewList
+      : (Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : [])
+  } catch {
+    ElMessage.error(t('formbusiness.leavecancell.workflowLoadFailed'))
+  } finally {
+    workflowDrawerLoading.value = false
+  }
+}
+
 function openWorkflowDrawer () {
-  if (!form.formId) return
+  if (!form.formId) {
+    ElMessage.warning(t('formbusiness.leavecancell.workflowNeedFormId'))
+    return
+  }
   workflowDrawerVisible.value = true
-  // TODO: 对接 GET_FULL_REVIEW_FLOW_API，加载完整审批流程数据
+  fetchFullReviewFlow()
 }
 
 function normalizeDateTime (val) {
@@ -1225,11 +1270,6 @@ onMounted(async () => {
 
 .approval-comment-row .el-form-item {
   margin-bottom: 6px;
-}
-
-.leave-request-empty-text {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
 }
 
 .leave-request-ref-row {

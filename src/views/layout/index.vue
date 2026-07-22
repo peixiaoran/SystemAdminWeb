@@ -23,26 +23,26 @@
           <!-- 一级菜单（有子菜单） -->
           <el-sub-menu v-if="menu.menuChildList && menu.menuChildList.length > 0" :index="menu.path || menu.menuId">
             <template #title>
-              <el-icon><component :is="menu.menuIcon || 'Menu'" /></el-icon>
+              <el-icon><component :is="menu.menuIcon || 'Menu'" :key="menu.menuIcon || 'Menu'" /></el-icon>
               <span>{{ menu.menuName }}</span>
             </template>
-            
+
             <!-- 二级菜单 -->
-            <el-menu-item 
-              v-for="subMenu in menu.menuChildList" 
-              :key="subMenu.menuId" 
+            <el-menu-item
+              v-for="subMenu in menu.menuChildList"
+              :key="subMenu.menuId"
               :index="getFormattedPath(subMenu.path)"
               :class="{'custom-active': isMenuActive(subMenu.path)}"
               @click="handleMenuClick(subMenu)"
             >
-              <el-icon><component :is="subMenu.menuIcon || 'Document'" /></el-icon>
+              <el-icon><component :is="subMenu.menuIcon || 'Document'" :key="subMenu.menuIcon || 'Document'" /></el-icon>
               <span>{{ subMenu.menuName }}</span>
             </el-menu-item>
           </el-sub-menu>
-          
+
           <!-- 一级菜单（无子菜单） -->
           <el-menu-item v-else :index="menu.path" @click="handleMenuClick(menu)">
-            <el-icon><component :is="menu.menuIcon || 'Menu'" /></el-icon>
+            <el-icon><component :is="menu.menuIcon || 'Menu'" :key="menu.menuIcon || 'Menu'" /></el-icon>
             <span>{{ menu.menuName }}</span>
           </el-menu-item>
         </template>

@@ -27,6 +27,9 @@ export const GET_LEAVEREQUEST_DETAIL_API = 'FormBusiness/Forms/LeaveCancell/GetL
 // 获取请假单剩余可销时数API
 export const GET_REMAINING_CANCELL_HOURS_API = 'FormBusiness/Forms/LeaveCancell/GetRemainingCancellHours'
 
+// 获取完整签核流程API
+export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/PublicForm/GetFullReviewFlow'
+
 // 获取驳回步骤下拉框API
 export const GET_REJECT_STEP_DROP_API = 'FormBusiness/Forms/PublicForm/GetRejectStepDrop'
 

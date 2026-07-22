@@ -238,6 +238,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
+                    :clearable="false"
                     disabled
                     class="leave-date-picker"
                     style="width: 165px; flex: 0 0 165px;"
@@ -248,6 +249,7 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
+                    :clearable="false"
                     disabled
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
@@ -258,6 +260,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
+                    :clearable="false"
                     disabled
                     class="leave-date-picker"
                     style="width: 165px; flex: 0 0 165px;"
@@ -268,6 +271,7 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
+                    :clearable="false"
                     disabled
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
@@ -2074,9 +2078,9 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
 
   .agent-field-control {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
     width: 100%;
   }
 
@@ -2085,7 +2089,13 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     min-width: 0;
   }
 
+  /* 按钮移到输入框右侧外部，保持输入框与请假类别框等宽 */
   .agent-picker-btn {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 8px;
     flex-shrink: 0;
     width: 32px;
     height: 32px;

@@ -242,6 +242,7 @@
                   type="date"
                   value-format="YYYY-MM-DD"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
+                  :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-date-picker"
                   style="width: 160px; flex: 0 0 160px;"
@@ -253,6 +254,7 @@
                   end="17:00"
                   step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
+                  :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
@@ -264,6 +266,7 @@
                   type="date"
                   value-format="YYYY-MM-DD"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
+                  :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-date-picker"
                   style="width: 160px; flex: 0 0 160px;"
@@ -275,6 +278,7 @@
                   end="17:00"
                   step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
+                  :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
@@ -1181,9 +1185,9 @@ function normalizeFieldKey (fieldKey) {
 }
 
 function handleTimeRangeChange () {
+  // 仅重新计算时数，不再请求假期余额接口（避免整个余额卡片出现骨架刷新）
   calculateDuration()
   resetLeaveBalanceQueryRange(form.leaveTimeRange)
-  fetchLeaveBalances()
   nextTick(() => {
     formRef.value?.validateField('leaveTimeRange')
   })
@@ -3703,9 +3707,9 @@ onMounted(async () => {
 }
 
 .agent-field-control {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
   width: 100%;
 }
 
@@ -3714,7 +3718,13 @@ onMounted(async () => {
   min-width: 0;
 }
 
+/* 按钮移到输入框右侧外部，保持输入框与请假类别框等宽 */
 .agent-picker-btn {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
   flex-shrink: 0;
   width: 32px;
   height: 32px;

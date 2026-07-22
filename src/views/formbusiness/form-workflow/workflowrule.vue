@@ -95,6 +95,7 @@
       :close-on-click-modal="false"
       :append-to-body="true"
       :lock-scroll="true"
+      draggable
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
@@ -195,11 +196,11 @@
               <el-input
                 v-model="dialogForm.version"
                 :placeholder="$t('formbusiness.workflowrule.pleaseInputVersion')"
-                style="width:200px"
+                style="width:60%"
               />
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowrule.sortOrder')">
-              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:200px" />
+              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:50%" />
             </el-form-item>
           </div>
         </el-form>
@@ -383,6 +384,7 @@ const dialogFormRules = {
   ruleNameCn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameCn'), trigger: 'blur'   }],
   ruleNameEn:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputRuleNameEn'), trigger: 'blur'   }],
   positionId:  [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectPosition'),  trigger: 'change' }],
+  version:     [{ required: true, message: () => t('formbusiness.workflowrule.pleaseInputVersion'),    trigger: 'blur'   }],
   guidance:    [],
   effectiveStartDate: [{ required: true, message: () => t('formbusiness.workflowrule.pleaseSelectEffectiveStartDate'), trigger: 'change' }]
 }
@@ -439,6 +441,9 @@ const handleAdd = async () => {
     if (!dialogForm.positionId) {
       dialogForm.positionId = '0'
     }
+    const currentYear = new Date().getFullYear()
+    dialogForm.effectiveStartDate = `${currentYear}-01-01`
+    dialogForm.sortOrder = 1
   } finally {
     dialogLoading.value = false
     nextTick(() => dialogFormRef.value?.clearValidate())

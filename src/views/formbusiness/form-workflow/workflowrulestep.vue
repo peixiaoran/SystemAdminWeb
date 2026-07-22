@@ -79,6 +79,7 @@
       :close-on-click-modal="false"
       :append-to-body="true"
       :lock-scroll="true"
+      draggable
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
@@ -137,7 +138,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowrulestep.sortOrder')">
-              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:100%" />
+              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:50%" />
             </el-form-item>
           </div>
           <div class="form-row">
@@ -165,14 +166,14 @@
                 style="width:100%"
               >
                 <el-option
-                  :value="NEXT_STEP_END_ID"
-                  :label="$t('formbusiness.workflowrulestep.nextStepEnd')"
-                />
-                <el-option
                   v-for="item in dialogStepOptions"
                   :key="item.stepId"
                   :label="item.stepName"
                   :value="item.stepId"
+                />
+                <el-option
+                  :value="NEXT_STEP_END_ID"
+                  :label="$t('formbusiness.workflowrulestep.nextStepEnd')"
                 />
               </el-select>
             </el-form-item>
@@ -186,6 +187,7 @@
                 style="width:100%"
               />
             </el-form-item>
+            <div style="flex: 1"></div>
           </div>
         </el-form>
       </div>
@@ -500,7 +502,7 @@ const handleAdd = async () => {
     dialogForm.currentStepId = ''
     dialogForm.nextStepId    = ''
     dialogForm.guidance      = ''
-    dialogForm.sortOrder     = 0
+    dialogForm.sortOrder     = 1
   } finally {
     dialogLoading.value = false
     nextTick(() => dialogFormRef.value?.clearValidate())

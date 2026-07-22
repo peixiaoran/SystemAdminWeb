@@ -53,14 +53,14 @@
           <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
           <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="120" show-overflow-tooltip />
           <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="150" show-overflow-tooltip />
-          <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="120" align="center">
+          <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="100" align="center">
             <template #default="{ row }">
               <el-tag effect="dark" :type="getAssignmentTagType(row.assignment || row.assignmentCode)">
                 {{ row.assignmentName}}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowstep.isStartStep')" width="120" align="center">
+          <el-table-column :label="$t('formbusiness.workflowstep.isStartStep')" width="130" align="center">
             <template #default="{ row }">
               {{ Number(row.isStartStep) === 1 ? $t('common.yes') : $t('common.no') }}
             </template>
@@ -70,7 +70,7 @@
               <span>{{ row.description}}</span>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('formbusiness.workflowstep.operation')" width="340" align="center" fixed="right">
+          <el-table-column :label="$t('formbusiness.workflowstep.operation')" width="350" align="center" fixed="right">
             <template #default="{ row }">
               <el-button type="primary" size="small" plain @click="handleEditStep(row)">
                 {{ $t('formbusiness.workflowstep.editStep') }}
@@ -210,7 +210,7 @@
                 v-model="addStepForm.reminderIntervalMinutes"
                 :min="0"
                 :max="9999"
-                style="width: 200px"
+                style="width: 50%"
               />
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.sortOrder')" prop="sortOrder">
@@ -218,7 +218,7 @@
                 v-model="addStepForm.sortOrder"
                 :min="0"
                 :max="9999"
-                style="width: 200px"
+                style="width: 50%"
               />
             </el-form-item>
           </div>
@@ -1143,6 +1143,7 @@ const openAddStepDialog = async () => {
       }
       await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
     }
+    addStepForm.sortOrder = 1
   } finally {
     addStepDialogLoading.value = false
   }

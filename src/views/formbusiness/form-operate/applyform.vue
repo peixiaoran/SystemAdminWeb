@@ -48,7 +48,7 @@
         :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.applyform.index')" width="70" align="center" fixed />
-          <el-table-column :label="$t('formbusiness.applyform.apply')" align="center" width="130">
+          <el-table-column :label="$t('formbusiness.applyform.apply')" align="center" width="150">
             <template #default="scope">
               <el-link
                 v-if="scope.row.reviewPath"
@@ -60,8 +60,8 @@
               </el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="formTypeName" :label="$t('formbusiness.applyform.formName')" align="center" min-width="200" />
-          <el-table-column prop="description" :label="$t('formbusiness.applyform.description')" align="left" width="900">
+          <el-table-column prop="formTypeName" :label="$t('formbusiness.applyform.formName')" align="center" width="240" />
+          <el-table-column prop="description" :label="$t('formbusiness.applyform.description')" align="left" min-width="900">
             <template #default="scope">
               <el-tooltip
                 v-if="scope.row.description"

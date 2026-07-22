@@ -163,9 +163,8 @@
         <template v-if="isStepFieldVisible('LeaveRequestRef')">
           <el-row :gutter="16" class="leave-request-ref-row">
             <el-col :span="24">
-              <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
-                <div v-if="!selectedLeaveRequest" class="leave-request-empty">
-                  <span class="leave-request-empty-text">{{ t('formbusiness.leavecancell.pleaseSelectLeaveRequest') }}</span>
+              <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')">
+                <div class="leave-request-table-toolbar">
                   <el-button
                     plain
                     size="small"
@@ -177,7 +176,7 @@
                     {{ t('formbusiness.leavecancell.selectLeaveRequest') }}
                   </el-button>
                 </div>
-                <el-table v-else :data="[selectedLeaveRequest]" border size="small" class="leave-request-ref-table">
+                <el-table :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
                   <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
                   <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="280" align="center">
@@ -186,25 +185,12 @@
                   <el-table-column :label="t('formbusiness.leavecancell.leaveHoursColumn')" width="90" align="center" class-name="ref-leave-hours-col">
                     <template #default="{ row }">{{ formatHoursCell(row.leaveHours) }}</template>
                   </el-table-column>
-                  <el-table-column :label="t('common.operation')" width="95" align="center">
-                    <template #default>
-                      <el-button
-                        link
-                        size="small"
-                        class="leave-request-ref-btn"
-                        :disabled="!isStepFieldEditable('LeaveRequestRef')"
-                        @click="openLeaveRequestPicker"
-                      >
-                        {{ t('formbusiness.leavecancell.changeLeaveRequest') }}
-                      </el-button>
-                    </template>
-                  </el-table-column>
                 </el-table>
               </el-form-item>
             </el-col>
 
             <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
-            <aside v-if="selectedLeaveRequest" class="remaining-cancell-hours-float">
+            <aside class="remaining-cancell-hours-float">
               <el-popover
                 placement="top"
                 popper-class="remaining-cancell-hours-popper"
@@ -247,7 +233,7 @@
             </aside>
           </el-row>
 
-          <el-row v-if="selectedLeaveRequest" :gutter="16">
+          <el-row :gutter="16">
             <el-col :span="24" class="cancel-time-hours-row">
               <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" prop="cancelTimeRange" class="cancel-time-range-item">
                 <div class="leave-time-range-fields">
@@ -256,6 +242,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
+                    :clearable="false"
                     :disabled-date="isCancelDateDisabled"
                     :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-date-picker"
@@ -268,7 +255,8 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelStartDate"
+                    :clearable="false"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
@@ -279,6 +267,7 @@
                     type="date"
                     value-format="YYYY-MM-DD"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
+                    :clearable="false"
                     :disabled-date="isCancelDateDisabled"
                     :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-date-picker"
@@ -291,7 +280,8 @@
                     end="17:00"
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef') || !cancelEndDate"
+                    :clearable="false"
+                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
@@ -660,22 +650,22 @@ import { Clock, CircleCheck, RemoveFilled, Loading, Lock, Search } from '@elemen
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
+  INIT_LEAVECANCELL_API,
   GET_LEAVEREQUEST_VIEW_API,
   GET_LEAVEREQUEST_DETAIL_API,
   GET_REMAINING_CANCELL_HOURS_API,
   GET_LEAVECANCELL_API,
   SAVE_LEAVECANCELL_API,
   VALIDATE_LEAVECANCELL_API,
+  GET_FULL_REVIEW_FLOW_API,
   GET_REJECT_STEP_DROP_API,
   APPROVE_LEAVECANCELL_API,
   REJECT_LEAVECANCELL_API
 } from '@/config/api/formbusiness/forms/leavecancell'
 import { calculateLeaveTotalHours, isLeaveTimeRangeAllowed } from '@/utils/leaveHours'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
-
-// GET_LEAVEREQUEST_VIEW_API / GET_LEAVECANCELL_API / SAVE_LEAVECANCELL_API 及送审驳回相关接口已接入；
-// INIT_LEAVECANCELL_API（新建销假单初始化）仍待接入 —— 目前新增销假单直接由“保存”创建
 
 const { t, locale } = i18n.global
 
@@ -684,6 +674,7 @@ const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
@@ -729,13 +720,13 @@ const form = reactive({
   cancelHours: undefined
 })
 
+// leaveRequestId 无实际输入控件承载，不接入 el-form 的 prop/rules 校验体系（避免字段下方常驻红字），
+// 是否已选请假单改为暂存/送审时手动判断，见 onSubmit / onSubmitForApproval
 const rules = {
-  leaveRequestId: [
-    { required: true, message: () => t('formbusiness.leavecancell.pleaseSelectLeaveRequest'), trigger: 'change' }
-  ],
   cancelTimeRange: [
-    { required: true, message: t('formbusiness.validation.required'), trigger: 'change' },
-    { validator: validateCancelTimeRange, trigger: 'change' }
+    // type: 'array' 必须显式声明，否则 async-validator 不会把空数组 [] 判为空值
+    { required: true, type: 'array', message: t('formbusiness.validation.required'), trigger: 'blur' },
+    { validator: validateCancelTimeRange, trigger: 'blur' }
   ]
 }
 
@@ -905,10 +896,52 @@ function workflowReviewUserName (u) {
   return String(name)
 }
 
+async function fetchFullReviewFlow () {
+  const formId = String(form.formId || '')
+  if (!formId) return
+  workflowDrawerLoading.value = true
+  try {
+    const formData = new window.FormData()
+    formData.append('formId', formId)
+    formData.append('ReviewUserId', String(userStore.userId || ''))
+    const res = await post(GET_FULL_REVIEW_FLOW_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      silentForbiddenError: false
+    })
+    if (isForbiddenCode(res?.code)) {
+      showForbiddenResult()
+      workflowDrawerVisible.value = false
+      return
+    }
+    if (!res || res.code !== 200) {
+      workflowDrawerVisible.value = false
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else {
+        ElMessage.error(res?.message || t('formbusiness.leavecancell.workflowLoadFailed'))
+      }
+      return
+    }
+    const data = res.data || {}
+    workflowOverview.formId = data.formId || ''
+    workflowOverview.rejectCount = Number(data.rejectCount) || 0
+    workflowOverview.stepReviewList = Array.isArray(data.stepReviewList)
+      ? data.stepReviewList
+      : (Array.isArray(data.stepReviewFlowList) ? data.stepReviewFlowList : [])
+  } catch {
+    ElMessage.error(t('formbusiness.leavecancell.workflowLoadFailed'))
+  } finally {
+    workflowDrawerLoading.value = false
+  }
+}
+
 function openWorkflowDrawer () {
-  if (!form.formId) return
+  if (!form.formId) {
+    ElMessage.warning(t('formbusiness.leavecancell.workflowNeedFormId'))
+    return
+  }
   workflowDrawerVisible.value = true
-  // TODO: 对接 GET_FULL_REVIEW_FLOW_API，加载完整审批流程数据
+  fetchFullReviewFlow()
 }
 
 function normalizeDateTime (val) {
@@ -1055,6 +1088,43 @@ async function getLeaveCancellDetail (formId) {
   }
 }
 
+/** InitLeaveCancell：新建销假单初始化。返回完整实体则直接 bind，仅返回 formId 时再拉详情 */
+async function initLeaveCancell () {
+  try {
+    const res = await post(
+      INIT_LEAVECANCELL_API,
+      new URLSearchParams({ formTypeId: String(route.query.formTypeId || '') }),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        silentForbiddenError: false
+      }
+    )
+    if (isForbiddenCode(res?.code)) {
+      showForbiddenResult()
+      return
+    }
+    if (!res || res.code !== 200) {
+      if (isBadRequestResponse(res)) {
+        showBadRequestResult(res?.message)
+      } else if (res?.message) {
+        ElMessage.error(res.message)
+      }
+      return
+    }
+    const raw = res.data
+    if (raw == null) return
+    if (typeof raw === 'object' && !Array.isArray(raw)) {
+      await bindFormData(raw)
+      return
+    }
+    const newFormId = String(raw)
+    form.formId = newFormId
+    await getLeaveCancellDetail(newFormId)
+  } catch {
+    // ignore
+  }
+}
+
 function getOriginalLeaveStart () {
   if (!selectedLeaveRequest.value) return null
   const iso = normalizeDateTime(selectedLeaveRequest.value.startDateTime)
@@ -1089,10 +1159,11 @@ function getMaxCancelEndDateTime () {
 }
 
 function isCancelDateDisabled (date) {
-  if (!selectedLeaveRequest.value) return true
+  // 是否选择请假单不再影响日期可选性，仅在有原请假单时按其时间范围限制；未选择时不限制，交由暂存/送审时的校验提示
+  if (!selectedLeaveRequest.value) return false
   const min = getMinCancelStartDateTime()
   const max = getMaxCancelEndDateTime()
-  if (!min || !max) return true
+  if (!min || !max) return false
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
   const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate())
   const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate())
@@ -1179,8 +1250,8 @@ function calculateCancelDuration () {
 }
 
 function handleCancelTimeRangeChange () {
+  // 只重新计算时数，校验交给控件失焦（blur）时触发，与其余表单控件保持一致
   calculateCancelDuration()
-  nextTick(() => formRef.value?.validateField('cancelTimeRange'))
 }
 
 function validateCancelTimeRange (rule, value, callback) {
@@ -1189,7 +1260,7 @@ function validateCancelTimeRange (rule, value, callback) {
     return
   }
   if (!value || value.length !== 2 || (!value[0] && !value[1])) {
-    callback()
+    callback(new Error(t('formbusiness.validation.required')))
     return
   }
   if (!value[0] || !value[1]) {
@@ -1239,7 +1310,7 @@ function applySelectedLeaveRequest (row) {
     ? [formatDateTimeValue(minStart), formatDateTimeValue(maxEnd)]
     : []
   calculateCancelDuration()
-  nextTick(() => formRef.value?.validateField(['leaveRequestId', 'cancelTimeRange']))
+  nextTick(() => formRef.value?.validateField('cancelTimeRange'))
 }
 
 /** 请假单查询默认日期范围：开始时间两周前，结束时间今天 */
@@ -1422,15 +1493,11 @@ function handleLeaveRequestRowClick (row) {
 }
 
 async function confirmLeaveRequestSelect () {
-  if (!selectedLeaveRequestRow.value?.leaveRequestId) {
-    ElMessage.warning(t('formbusiness.leavecancell.pleaseSelectLeaveRequest'))
-    return
-  }
-  // 先本地应用所选请假单，得到 leaveRequestId 与默认销假时间范围
-  applySelectedLeaveRequest(selectedLeaveRequestRow.value)
-  // 勾选确认即调用 SaveLeaveCancell 保存（无需校验表单必填项）
   leaveRequestConfirmLoading.value = true
   try {
+    // 先本地应用所选请假单，得到 leaveRequestId 与默认销假时间范围
+    applySelectedLeaveRequest(selectedLeaveRequestRow.value)
+    // 勾选确认即调用 SaveLeaveCancell 保存（无需校验表单必填项）
     const res = await saveLeaveCancellRequest()
     if (isForbiddenCode(res?.code)) {
       showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
@@ -1524,6 +1591,12 @@ function showResult (status, titleKey, subTitleKey) {
 
 function isSuccessCode (code) {
   return String(code) === '200'
+}
+
+/** 取表单校验失败结果中第一条错误信息，用于暂存/送审时的右上角提示 */
+function getFirstValidateErrorMessage (invalidFields) {
+  const firstField = Object.values(invalidFields || {})[0]
+  return firstField?.[0]?.message || t('formbusiness.leavecancell.validateFailed')
 }
 
 /** 暂存/送审右上角提示 */
@@ -1687,10 +1760,17 @@ async function saveLeaveCancellBeforeSubmit () {
 }
 
 async function onSubmit () {
-  const valid = await new Promise((resolve) => {
-    formRef.value?.validate((v) => resolve(!!v))
+  if (!form.leaveRequestId) {
+    showFormActionNotice(t('formbusiness.leavecancell.pleaseSelectLeaveRequest'), 'warning')
+    return
+  }
+  const invalidFields = await new Promise((resolve) => {
+    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
   })
-  if (!valid) return
+  if (invalidFields) {
+    showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
+    return
+  }
   saving.value = true
   try {
     // 保存前先调用 ValidateLeaveCancell 校验
@@ -1716,10 +1796,17 @@ async function onSubmit () {
 
 /** 送审：校验 → 暂存 → 送审 */
 async function onSubmitForApproval () {
-  const valid = await new Promise((resolve) => {
-    formRef.value?.validate((v) => resolve(!!v))
+  if (!form.leaveRequestId) {
+    showFormActionNotice(t('formbusiness.leavecancell.pleaseSelectLeaveRequest'), 'warning')
+    return
+  }
+  const invalidFields = await new Promise((resolve) => {
+    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
   })
-  if (!valid) return
+  if (invalidFields) {
+    showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
+    return
+  }
   try {
     await ElMessageBox.confirm(
       t('formbusiness.leavecancell.submitConfirmMessage'),
@@ -1878,8 +1965,9 @@ onMounted(async () => {
     if (routeFormId) {
       form.formId = String(routeFormId)
       await getLeaveCancellDetail(form.formId)
+    } else {
+      await initLeaveCancell()
     }
-    // 无 formId 时表单保持空白，待用户选择请假单并保存后由 SAVE_LEAVECANCELL_API 创建
   } catch {
     ElMessage.error(t('formbusiness.messages.loadError'))
   } finally {
@@ -2103,15 +2191,12 @@ onMounted(async () => {
   margin-bottom: 6px;
 }
 
-.leave-request-empty {
+/* 选择请假单入口：固定在表格右上方（el-form-item__content 默认 flex 布局，需撑满宽度才能靠右） */
+.leave-request-table-toolbar {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.leave-request-empty-text {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 6px;
 }
 
 /* 选择 / 更改请假单入口：文字保持黑色，悬停时也不转为主题蓝 */

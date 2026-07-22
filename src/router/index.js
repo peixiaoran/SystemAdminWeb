@@ -103,9 +103,9 @@ const pmenuRoutes = [
         path: 'system-mgmt',
         name: 'System-Mgmt',
         redirect: '/systembasicmgmt/system-mgmt',
-        meta: { 
-          title: 'route.systemMgmt', 
-          icon: 'Setting',
+        meta: {
+          title: 'route.systemMgmt',
+          icon: 'Tools',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
         },
@@ -255,7 +255,7 @@ const pmenuRoutes = [
         redirect: '/systembasicmgmt/user-settings',
         meta: { 
           title: 'route.userSettings',
-          icon: 'SetUp',
+          icon: 'Share',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
         },
@@ -302,7 +302,7 @@ const pmenuRoutes = [
         redirect: '/systembasicmgmt/system-config',
         meta: { 
           title: 'route.systemConfig',
-          icon: 'Setting',
+          icon: 'Tools',
           [ROUTE_CONFIG.META.AUTH]: true,
           noTag: true
         },
