@@ -1,54 +1,74 @@
 <template>
   <div class="leave-form-page">
     <el-config-provider :locale="elementPlusLocale">
-    <!-- Skeleton 骨架屏 -->
+    <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
     <template v-if="loading && !resultState.visible">
+      <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <div style="display:flex; justify-content:center; margin-bottom:24px;">
-              <el-skeleton-item variant="text" style="width:200px; height:28px;" />
+            <!-- 表单标题 -->
+            <div class="sk-title-row">
+              <el-skeleton-item variant="text" class="sk-title" />
             </div>
-            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:24px;" />
+            <div class="sk-divider"></div>
 
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:33%; height:32px;" />
-            </div>
+            <div class="sk-body">
+              <!-- 表单号 / 申请日期 -->
+              <div class="sk-grid">
+                <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
+              </div>
 
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-            </div>
-            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:22px;" />
+              <!-- 申请人工号 / 姓名 / 部门 -->
+              <div class="sk-grid">
+                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
+              </div>
 
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-            </div>
+              <div class="sk-divider"></div>
 
-            <div style="margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:100%; height:76px;" />
-            </div>
+              <!-- 原请假单引用表格 -->
+              <div class="sk-field sk-field--top">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-block" />
+              </div>
 
-            <div style="margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:100%; height:60px;" />
-            </div>
+              <!-- 销假时间 / 销假时数 -->
+              <div class="sk-field">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-control" />
+              </div>
 
-            <div style="display:flex; justify-content:flex-end; align-items:center; padding:0 20px;">
-              <el-skeleton-item variant="circle" style="width:32px; height:32px;" />
+              <div class="sk-divider"></div>
+
+              <!-- 送审意见 -->
+              <div class="sk-field sk-field--top">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-textarea" />
+              </div>
+
+              <!-- 流程查看入口（查看页无操作按钮） -->
+              <div class="sk-actions sk-actions--end">
+                <el-skeleton-item variant="text" class="sk-hint" />
+              </div>
             </div>
           </template>
         </el-skeleton>
       </el-card>
 
+      <!-- 审批记录卡片骨架 -->
       <el-card class="leave-form-card review-log-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <el-skeleton-item variant="text" style="width:80px; height:20px; margin-bottom:16px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:36px; margin-bottom:2px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:44px;" />
+            <div class="sk-log">
+              <el-skeleton-item variant="text" class="sk-section-title" />
+              <el-skeleton-item variant="text" class="sk-block sk-block--log" />
+            </div>
           </template>
         </el-skeleton>
       </el-card>
@@ -393,7 +413,9 @@
             width="155"
             align="center"
           >
-            <template #default="{ row }">{{ formatReviewDateTime(row.reviewDateTime) }}</template>
+            <template #default="{ row }">
+              <span class="review-log-datetime-cell">{{ formatReviewDateTime(row.reviewDateTime) }}</span>
+            </template>
           </el-table-column>
         </el-table>
         <el-empty
@@ -461,7 +483,12 @@
                   <el-icon v-else><Clock /></el-icon>
                 </span>
                 <div class="workflow-user-text">
-                  <div class="workflow-user-name">{{ workflowReviewUserName(u) }}</div>
+                  <div class="workflow-user-name">
+                    {{ workflowReviewUserName(u) }}<span
+                      v-if="workflowHistoryUserName(u)"
+                      class="workflow-user-history"
+                    ><span class="workflow-user-history-badge">{{ t('formbusiness.leavecancell.workflowHistoryUser') }}</span>{{ workflowHistoryUserName(u) }}</span>
+                  </div>
                 </div>
                 <span
                   class="workflow-user-label"
@@ -740,6 +767,12 @@ function workflowUserStatusLabel (user) {
 
 function workflowReviewUserName (u) {
   const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
+  if (name == null || name === '') return ''
+  return String(name)
+}
+
+function workflowHistoryUserName (u) {
+  const name = u?.historyUserName ?? u?.HistoryUserName
   if (name == null || name === '') return ''
   return String(name)
 }
@@ -1079,6 +1112,107 @@ onMounted(async () => {
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
+}
+
+/* 骨架屏：内边距、标签列宽、控件高度与真实表单一一对应 */
+.sk-title-row {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sk-title {
+  display: inline-block;
+  width: 180px;
+  height: 26px;
+}
+
+.sk-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: var(--el-border-color-lighter);
+}
+
+.sk-body {
+  padding: 0 20px;
+}
+
+.sk-grid {
+  display: flex;
+  gap: 0 16px;
+}
+
+.sk-grid .sk-field {
+  width: calc((100% - 32px) / 3);
+}
+
+.sk-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.sk-field--top {
+  align-items: flex-start;
+}
+
+.sk-label {
+  flex: none;
+  width: 88px;
+  height: 14px;
+}
+
+.sk-control {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+}
+
+.sk-textarea {
+  flex: 1;
+  min-width: 0;
+  height: 76px;
+}
+
+/* 原请假单引用表格 */
+.sk-block {
+  flex: 1;
+  min-width: 0;
+  height: 110px;
+}
+
+.sk-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0 18px 100px;
+}
+
+.sk-actions--end {
+  justify-content: flex-end;
+}
+
+.sk-hint {
+  flex: none;
+  width: 170px;
+  height: 22px;
+}
+
+.sk-log {
+  padding: 0 20px 20px;
+}
+
+.sk-section-title {
+  width: 90px;
+  height: 22px;
+  margin-bottom: 12px;
+}
+
+.sk-block--log {
+  width: 100%;
+  height: 220px;
 }
 
 .leave-form-card {
@@ -1655,6 +1789,22 @@ onMounted(async () => {
   color: var(--el-text-color-primary);
 }
 
+.workflow-user-history {
+  margin-left: 28px;
+  font-size: 12px;
+  color: #de782e;
+}
+
+.workflow-user-history-badge {
+  margin-right: 4px;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #de782e;
+  background: rgba(222, 120, 46, 0.12);
+}
+
 .workflow-user-label {
   flex-shrink: 0;
   font-size: 12px;
@@ -1709,6 +1859,11 @@ onMounted(async () => {
 }
 
 .review-log-step-cell {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+}
+
+.review-log-datetime-cell {
   font-size: 13px;
   color: var(--el-text-color-primary);
 }

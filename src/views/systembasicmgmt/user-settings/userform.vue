@@ -186,7 +186,9 @@ const pagination = reactive({
 
 const treeProps = {
   children: 'children',
-  label: 'formGroupTypeName'
+  label: 'formGroupTypeName',
+  // 后端返回的 disabled 不参与渲染，所有节点均可勾选
+  disabled: () => false
 }
 
 const filterNodeMethod = (value, data) => {
@@ -285,23 +287,24 @@ const fetchUserFormViewTree = async (userId) => {
         return nodes.map(node => ({
           ...node,
           isChecked: node.isChecked === 1 || node.isChecked === '1',
-          disabled: false,
           children: node.formTypeChildren ? transformTreeData(node.formTypeChildren) : []
         }))
       }
 
       formTreeData.value = transformTreeData(res.data || [])
 
-      // 提取已选中的节点 - 叶子节点 isChecked=true 加入；父节点 isChecked=true 时加入，不考虑子节点状态
+      // 提取已选中的节点 - 树为父子联动模式，只回填叶子节点，
+      // 父节点的勾选/半选状态由 el-tree 依据子节点自行推导，
+      // 否则父节点 isChecked=1 会把 isChecked=0 的子节点一起选中
       const extractCheckedKeys = (nodes) => {
         const keys = []
         const traverse = (nodeList) => {
           nodeList.forEach(node => {
-            if (node.isChecked === true) {
-              keys.push(node.formGroupTypeId)
-            }
-            if (node.children && node.children.length > 0) {
+            const hasChildren = node.children && node.children.length > 0
+            if (hasChildren) {
               traverse(node.children)
+            } else if (node.isChecked === true) {
+              keys.push(node.formGroupTypeId)
             }
           })
         }

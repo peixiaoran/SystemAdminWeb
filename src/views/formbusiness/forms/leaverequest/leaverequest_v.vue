@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- 流程查看入口（查看页无操作按钮） -->
-                <div class="sk-actions">
+                <div class="sk-actions sk-actions--end">
                   <el-skeleton-item variant="text" class="sk-hint" />
                 </div>
               </div>
@@ -174,7 +174,8 @@
                 <el-input v-model="form.applicantUserNo" disabled />
               </el-form-item>
             </el-col>
-            <el-col v-if="isStepFieldVisible('UserName')" :span="8">
+            <!-- 申请人姓名始终显示在用户部门左侧，不受步骤字段权限控制 -->
+            <el-col :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applicantUserName')" prop="applicantUserName">
                 <el-input v-model="form.applicantUserName" disabled />
               </el-form-item>
@@ -309,7 +310,7 @@
           </el-row>
   
           <!-- 附件 -->
-          <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16">
+          <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16" class="attachment-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.attachments')">
                 <div class="upload-section">
@@ -342,6 +343,8 @@
             </el-col>
           </el-row>
   
+          <el-divider class="approval-divider"></el-divider>
+
           <el-row :gutter="16" class="approval-comment-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.approvalComment')">
@@ -467,7 +470,9 @@
               width="155"
               align="center"
             >
-              <template #default="{ row }">{{ formatReviewDateTime(row.reviewDateTime) }}</template>
+              <template #default="{ row }">
+                <span class="review-log-datetime-cell">{{ formatReviewDateTime(row.reviewDateTime) }}</span>
+              </template>
             </el-table-column>
           </el-table>
           <el-empty
@@ -609,7 +614,7 @@
                   </span>
                   <div class="workflow-user-text">
                     <div class="workflow-user-name">
-                      {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
+                      {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span><span v-if="workflowHistoryUserName(u)" class="workflow-user-history"><span class="workflow-user-history-badge">{{ t('formbusiness.leaverequest.workflowHistoryUser') }}</span>{{ workflowHistoryUserName(u) }}</span>
                     </div>
                     <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
                       {{ t('formbusiness.leaverequest.workflowAgent') }}：{{ u.agentUserName }}
@@ -710,6 +715,12 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   
   function workflowReviewUserName (u) {
     const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
+    if (name == null || name === '') return ''
+    return String(name)
+  }
+
+  function workflowHistoryUserName (u) {
+    const name = u?.historyUserName ?? u?.HistoryUserName
     if (name == null || name === '') return ''
     return String(name)
   }
@@ -1006,7 +1017,8 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       formStatusName: data.formStatusName ?? data.FormStatusName ?? '',
       applyDate: resolveApplyDateFromData(data),
       applicantUserNo: data.applicantUserNo || '',
-      applicantUserName: data.applicantUserName || '',
+      // 详情接口回传的是 PascalCase 的 ApplicantUserName
+      applicantUserName: data.applicantUserName || data.ApplicantUserName || '',
       applicantDeptName: data.applicantDeptName || '',
       applicantDeptId: data.applicantDeptId || '',
       leaveType: resolveLeaveTypeFromData(data),
@@ -1790,12 +1802,30 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     margin-bottom: 0;
   }
   
-  .approval-comment-row {
-    margin-top: -6px;
+  /* 附件、送审意见的内容较高，标签顶部对齐，与上一行的间距同「事由」保持一致 */
+  .attachment-row :deep(.el-form-item),
+  .approval-comment-row :deep(.el-form-item) {
+    align-items: flex-start;
   }
-  
-  .approval-comment-row .el-form-item {
-    margin-bottom: 6px;
+
+  /* 送审意见上方的分割线：上下留白严格各 24px。
+     前面是普通表单行时，表单项自带 18px 下边距，补 6px； */
+  .approval-divider {
+    margin: 6px 0 24px;
+  }
+
+  /* 前面是附件行时，清掉附件表单项的下边距，24px 全部由分割线自己给出 */
+  .attachment-row :deep(.el-form-item) {
+    margin-bottom: 0;
+  }
+
+  .attachment-row + .approval-divider {
+    margin-top: 24px;
+  }
+
+  .attachment-row :deep(.el-form-item__label),
+  .approval-comment-row :deep(.el-form-item__label) {
+    min-height: 32px;
   }
   
   .basic-info-row + .basic-info-row {
@@ -1893,6 +1923,11 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     align-items: center;
     gap: 16px;
     margin: 24px 0 18px 100px;
+  }
+
+  /* 查看页只有流程入口，靠右与真实位置对齐 */
+  .sk-actions--end {
+    justify-content: flex-end;
   }
 
   .sk-hint {
@@ -2220,6 +2255,20 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     width: 100%;
     margin-top: 4px;
   }
+
+  /* el-table 内部会在底部留出滚动条占位与空行块，导致 upload-section 比表格高，
+     进而把下方分割线推远，这里逐一压掉 */
+  .upload-section > :last-child {
+    margin-bottom: 0;
+  }
+
+  .attachment-table :deep(.el-scrollbar__wrap) {
+    padding-bottom: 0;
+  }
+
+  .attachment-table :deep(.el-table__inner-wrapper) {
+    height: auto;
+  }
   
   .form-actions-form-item {
     margin-top: 24px;
@@ -2439,6 +2488,22 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     font-size: 14px;
     color: var(--el-text-color-primary);
   }
+
+  .workflow-user-history {
+    margin-left: 28px;
+    font-size: 12px;
+    color: #de782e;
+  }
+
+  .workflow-user-history-badge {
+    margin-right: 4px;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-size: 10px;
+    line-height: 1.4;
+    color: #de782e;
+    background: rgba(222, 120, 46, 0.12);
+  }
   
   .workflow-user-appointment {
     color: var(--el-text-color-secondary);
@@ -2518,6 +2583,11 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
   
   .review-log-step-cell {
+    font-size: 13px;
+    color: var(--el-text-color-primary);
+  }
+
+  .review-log-datetime-cell {
     font-size: 13px;
     color: var(--el-text-color-primary);
   }

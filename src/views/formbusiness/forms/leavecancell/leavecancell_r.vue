@@ -5,59 +5,78 @@
     :element-loading-text="t('common.loading')"
   >
     <el-config-provider :locale="elementPlusLocale">
-    <!-- Skeleton 骨架屏 -->
+    <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
     <template v-if="loading && !resultState.visible">
+      <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <div style="display:flex; justify-content:center; margin-bottom:24px;">
-              <el-skeleton-item variant="text" style="width:200px; height:28px;" />
+            <!-- 表单标题 -->
+            <div class="sk-title-row">
+              <el-skeleton-item variant="text" class="sk-title" />
             </div>
-            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:24px;" />
+            <div class="sk-divider"></div>
 
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:33%; height:32px;" />
-            </div>
-
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-            </div>
-            <el-skeleton-item variant="text" style="width:100%; height:1px; margin-bottom:22px;" />
-
-            <div style="display:flex; gap:16px; margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-              <el-skeleton-item variant="text" style="flex:1; height:32px;" />
-            </div>
-
-            <div style="margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:100%; height:76px;" />
-            </div>
-
-            <div style="margin-bottom:22px; padding:0 20px;">
-              <el-skeleton-item variant="text" style="width:100%; height:60px;" />
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 20px;">
-              <div style="display:flex; gap:12px;">
-                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
-                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
-                <el-skeleton-item variant="button" style="width:80px; height:32px; border-radius:16px;" />
+            <div class="sk-body">
+              <!-- 表单号 / 申请日期 -->
+              <div class="sk-grid">
+                <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
               </div>
-              <el-skeleton-item variant="circle" style="width:32px; height:32px;" />
+
+              <!-- 申请人工号 / 姓名 / 部门 -->
+              <div class="sk-grid">
+                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
+              </div>
+
+              <div class="sk-divider"></div>
+
+              <!-- 原请假单引用：选择按钮 + 引用表格 -->
+              <div class="sk-field sk-field--top">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-block" />
+              </div>
+
+              <!-- 销假时间 / 销假时数 -->
+              <div class="sk-field">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-control" />
+              </div>
+
+              <div class="sk-divider"></div>
+
+              <!-- 送审意见 -->
+              <div class="sk-field sk-field--top">
+                <el-skeleton-item variant="text" class="sk-label" />
+                <el-skeleton-item variant="text" class="sk-textarea" />
+              </div>
+
+              <!-- 操作按钮行 + 流程查看入口 -->
+              <div class="sk-actions">
+                <div class="sk-actions-buttons">
+                  <el-skeleton-item variant="button" class="sk-action-btn" />
+                  <el-skeleton-item variant="button" class="sk-action-btn" />
+                </div>
+                <el-skeleton-item variant="text" class="sk-hint" />
+              </div>
             </div>
           </template>
         </el-skeleton>
       </el-card>
 
+      <!-- 审批记录卡片骨架 -->
       <el-card class="leave-form-card review-log-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <el-skeleton-item variant="text" style="width:80px; height:20px; margin-bottom:16px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:36px; margin-bottom:2px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:44px; margin-bottom:2px;" />
-            <el-skeleton-item variant="text" style="width:100%; height:44px;" />
+            <div class="sk-log">
+              <el-skeleton-item variant="text" class="sk-section-title" />
+              <el-skeleton-item variant="text" class="sk-block sk-block--log" />
+            </div>
           </template>
         </el-skeleton>
       </el-card>
@@ -115,7 +134,7 @@
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.formNo')" prop="formNo">
-              <el-input v-model="form.formNo" disabled />
+              <el-input v-model="form.formNo" :disabled="!isStepFieldEditable('FormNo')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
@@ -126,7 +145,7 @@
                 value-format="YYYY-MM-DD"
                 :placeholder="t('formbusiness.leavecancell.pleaseSelectApplyDate')"
                 clearable
-                disabled
+                :disabled="!isStepFieldEditable('ApplyDate')"
                 style="width: 100%;"
               />
             </el-form-item>
@@ -142,17 +161,17 @@
         >
           <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantUserNo')" prop="applicantUserNo">
-              <el-input v-model="form.applicantUserNo" disabled />
+              <el-input v-model="form.applicantUserNo" :disabled="!isStepFieldEditable('UserNo')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('UserName')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantUserName')" prop="applicantUserName">
-              <el-input v-model="form.applicantUserName" disabled />
+              <el-input v-model="form.applicantUserName" :disabled="!isStepFieldEditable('UserName')" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantDeptName')" prop="applicantDeptName">
-              <el-input v-model="form.applicantDeptName" disabled />
+              <el-input v-model="form.applicantDeptName" :disabled="!isStepFieldEditable('Department')" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -160,20 +179,21 @@
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 原请假单引用 -->
-        <template v-if="isStepFieldVisible('LeaveRequestRef')">
-          <el-row :gutter="16" class="leave-request-ref-row">
-            <el-col :span="24">
+        <template v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'AvailableHours', 'TimePeriod', 'Hour'])">
+          <el-row v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'AvailableHours'])" :gutter="16" class="leave-request-ref-row">
+            <el-col v-if="isStepFieldVisible('SelectLeaveRequest')" :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')">
                 <div class="leave-request-table-toolbar">
                   <el-button
                     plain
                     size="small"
                     class="leave-request-ref-btn"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    :disabled="!isStepFieldEditable('SelectLeaveRequest')"
+                    :title="t('formbusiness.leavecancell.selectLeaveRequest')"
+                    :aria-label="t('formbusiness.leavecancell.selectLeaveRequest')"
                     @click="openLeaveRequestPicker"
                   >
                     <el-icon><Search /></el-icon>
-                    {{ t('formbusiness.leavecancell.selectLeaveRequest') }}
                   </el-button>
                 </div>
                 <el-table :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
@@ -190,7 +210,7 @@
             </el-col>
 
             <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
-            <aside class="remaining-cancell-hours-float">
+            <aside v-if="isStepFieldVisible('AvailableHours')" class="remaining-cancell-hours-float">
               <el-popover
                 placement="top"
                 popper-class="remaining-cancell-hours-popper"
@@ -201,7 +221,12 @@
                 @hide="resetRemainingCancellHours"
               >
                 <template #reference>
-                  <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
+                  <button
+                    type="button"
+                    class="remaining-cancell-hours-btn"
+                    :disabled="!isStepFieldEditable('AvailableHours')"
+                    :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')"
+                  >
                     <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
                       <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
@@ -233,9 +258,14 @@
             </aside>
           </el-row>
 
-          <el-row :gutter="16">
+          <el-row v-if="isAnyStepFieldVisible(['TimePeriod', 'Hour'])" :gutter="16">
             <el-col :span="24" class="cancel-time-hours-row">
-              <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" prop="cancelTimeRange" class="cancel-time-range-item">
+              <el-form-item
+                v-if="isStepFieldVisible('TimePeriod')"
+                :label="t('formbusiness.leavecancell.cancelTimeRange')"
+                prop="cancelTimeRange"
+                class="cancel-time-range-item"
+              >
                 <div class="leave-time-range-fields">
                   <el-date-picker
                     v-model="cancelStartDate"
@@ -244,7 +274,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
                     :clearable="false"
                     :disabled-date="isCancelDateDisabled"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
                     @change="handleCancelTimeRangeChange"
@@ -256,7 +286,7 @@
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
                     :clearable="false"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
@@ -269,7 +299,7 @@
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
                     :clearable="false"
                     :disabled-date="isCancelDateDisabled"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
                     @change="handleCancelTimeRangeChange"
@@ -281,14 +311,19 @@
                     step="00:10"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
                     :clearable="false"
-                    :disabled="!isStepFieldEditable('LeaveRequestRef')"
+                    :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-time-of-day-select"
                     style="width: 135px; flex: 0 0 135px;"
                     @change="handleCancelTimeRangeChange"
                   />
                 </div>
               </el-form-item>
-              <el-form-item :label="t('formbusiness.leavecancell.cancelHours')" label-width="auto" class="cancel-hours-item">
+              <el-form-item
+                v-if="isStepFieldVisible('Hour')"
+                :label="t('formbusiness.leavecancell.cancelHours')"
+                label-width="auto"
+                class="cancel-hours-item"
+              >
                 <el-input-number
                   v-model="form.cancelHours"
                   class="leave-hours-input"
@@ -297,7 +332,7 @@
                   :precision="2"
                   :controls="false"
                   style="width: 110px;"
-                  disabled
+                  :disabled="!isStepFieldEditable('Hour')"
                 />
               </el-form-item>
             </el-col>
@@ -307,7 +342,7 @@
           <el-divider style="margin: 6px 0 24px;"></el-divider>
         </template>
 
-        <el-row :gutter="16" class="approval-comment-row">
+        <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leavecancell.approvalComment')">
               <el-input
@@ -315,6 +350,7 @@
                 type="textarea"
                 :rows="3"
                 :placeholder="t('formbusiness.leavecancell.approvalCommentPlaceholder')"
+                :disabled="!isStepFieldEditable('Comments')"
               />
             </el-form-item>
           </el-col>
@@ -429,7 +465,9 @@
             width="155"
             align="center"
           >
-            <template #default="{ row }">{{ formatReviewDateTime(row.reviewDateTime) }}</template>
+            <template #default="{ row }">
+              <span class="review-log-datetime-cell">{{ formatReviewDateTime(row.reviewDateTime) }}</span>
+            </template>
           </el-table-column>
         </el-table>
         <el-empty
@@ -623,7 +661,12 @@
                   <el-icon v-else><Clock /></el-icon>
                 </span>
                 <div class="workflow-user-text">
-                  <div class="workflow-user-name">{{ workflowReviewUserName(u) }}</div>
+                  <div class="workflow-user-name">
+                    {{ workflowReviewUserName(u) }}<span
+                      v-if="workflowHistoryUserName(u)"
+                      class="workflow-user-history"
+                    ><span class="workflow-user-history-badge">{{ t('formbusiness.leavecancell.workflowHistoryUser') }}</span>{{ workflowHistoryUserName(u) }}</span>
+                  </div>
                 </div>
                 <span
                   class="workflow-user-label"
@@ -892,6 +935,12 @@ function workflowUserStatusLabel (user) {
 
 function workflowReviewUserName (u) {
   const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
+  if (name == null || name === '') return ''
+  return String(name)
+}
+
+function workflowHistoryUserName (u) {
+  const name = u?.historyUserName ?? u?.HistoryUserName
   if (name == null || name === '') return ''
   return String(name)
 }
@@ -1541,7 +1590,7 @@ function applyStepFieldPermissions (list) {
   const map = {}
   if (Array.isArray(list)) {
     for (const item of list) {
-      const fieldKey = item?.fieldName ?? item?.FieldName
+      const fieldKey = item?.fieldKey ?? item?.FieldKey
       if (!fieldKey) continue
       const disabledRaw = item.isDisabled ?? item.IsDisabled
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
@@ -1985,6 +2034,114 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
+/* 骨架屏：内边距、标签列宽、控件高度与真实表单一一对应 */
+.sk-title-row {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sk-title {
+  display: inline-block;
+  width: 180px;
+  height: 26px;
+}
+
+.sk-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: var(--el-border-color-lighter);
+}
+
+.sk-body {
+  padding: 0 20px;
+}
+
+.sk-grid {
+  display: flex;
+  gap: 0 16px;
+}
+
+.sk-grid .sk-field {
+  width: calc((100% - 32px) / 3);
+}
+
+.sk-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.sk-field--top {
+  align-items: flex-start;
+}
+
+.sk-label {
+  flex: none;
+  width: 88px;
+  height: 14px;
+}
+
+.sk-control {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+}
+
+.sk-textarea {
+  flex: 1;
+  min-width: 0;
+  height: 76px;
+}
+
+/* 原请假单引用：选择按钮 + 单行引用表格 */
+.sk-block {
+  flex: 1;
+  min-width: 0;
+  height: 110px;
+}
+
+.sk-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0 18px 100px;
+}
+
+.sk-actions-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.sk-action-btn {
+  width: 80px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+.sk-hint {
+  flex: none;
+  width: 170px;
+  height: 22px;
+}
+
+.sk-log {
+  padding: 0 20px 20px;
+}
+
+.sk-section-title {
+  width: 90px;
+  height: 22px;
+  margin-bottom: 12px;
+}
+
+.sk-block--log {
+  width: 100%;
+  height: 220px;
+}
+
 .leave-form-card {
   max-width: 1000px;
   margin: 0 auto;
@@ -2196,7 +2353,7 @@ onMounted(async () => {
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 
 /* 选择 / 更改请假单入口：文字保持黑色，悬停时也不转为主题蓝 */
@@ -2627,6 +2784,22 @@ onMounted(async () => {
   color: var(--el-text-color-primary);
 }
 
+.workflow-user-history {
+  margin-left: 28px;
+  font-size: 12px;
+  color: #de782e;
+}
+
+.workflow-user-history-badge {
+  margin-right: 4px;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #de782e;
+  background: rgba(222, 120, 46, 0.12);
+}
+
 .workflow-user-label {
   flex-shrink: 0;
   font-size: 12px;
@@ -2681,6 +2854,11 @@ onMounted(async () => {
 }
 
 .review-log-step-cell {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+}
+
+.review-log-datetime-cell {
   font-size: 13px;
   color: var(--el-text-color-primary);
 }
