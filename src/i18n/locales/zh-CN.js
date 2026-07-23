@@ -721,7 +721,6 @@ export default {
         workflowStatusSkipped: '跳过',
         workflowRejectCount: '已被驳回 {count} 次',
         workflowAgent: '代理人',
-        workflowHistoryUser: '历史',
         workflowEmpty: '暂无流程数据',
         workflowLoadFailed: '加载流程失败',
         workflowNeedFormId: '请先完成表单初始化后再查看流程',
@@ -824,7 +823,6 @@ export default {
         workflowStatusUnderReview: '审批中',
         workflowStatusApprove: '已核准',
         workflowStatusSkipped: '跳过',
-        workflowHistoryUser: '历史',
         workflowEmpty: '暂无流程数据',
         reviewLog: '审批记录',
         reviewLogStep: '审批步骤',
@@ -1013,15 +1011,12 @@ export default {
   
   // 一级菜单选择页面
   moduleSelect: {
-    userInfo: '个人信息',
-    accountSettings: '账号设置',
     pmenuLoading: '正在加载数据...',
     pmenuError: '获取一级菜单数据失败',
     pmenuErrorRetry: '获取一级菜单数据失败，请稍后重试',
     pmenuIncomplete: '一级菜单信息不完整',
     enterPMenu: '进入一级菜单',
     moduleLoading: '正在加载模块数据...',
-    enterModule: '进入模块',
     selectModuleFirst: '未选择系统模块，请先选择一个模块'
   },
   
@@ -1527,11 +1522,8 @@ export default {
     index: '序号',
     remark: '备注',
     isEnabled: '是否启用',
-    isVisible: '是否显示',
     enabled: '启用',
     disabled: '禁用',
-    visible: '显示',
-    hidden: '隐藏',
     createdBy: '创建人',
     createdTime: '创建时间',
     updateBindings: '更新绑定',

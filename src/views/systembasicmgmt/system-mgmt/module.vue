@@ -38,15 +38,6 @@
           <el-table-column prop="moduleNameEn" :label="$t('systembasicmgmt.module.moduleNameEn')" align="left" min-width="280" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.module.pagePath')" align="left" min-width="230" />
           <el-table-column prop="moduleIcon" :label="$t('systembasicmgmt.module.moduleIcon')" align="center" min-width="150" />
-          <el-table-column :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
-            <template #default="scope">
-              <div class="flex">
-                <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                  {{ scope.row.isVisible ? $t('systembasicmgmt.visible') : $t('systembasicmgmt.hidden') }}
-                </el-tag>
-              </div>
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -111,17 +102,6 @@
             <el-input v-model="editForm.remarkEn" style="width:100%" type="textarea" :rows="2" />
           </el-form-item>
         </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.isVisible')">
-            <el-switch v-model="editForm.isVisible"
-                       :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-          </el-form-item>
-        </div>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
@@ -169,7 +149,6 @@ const editForm = reactive({
   moduleNameEn: '',
   moduleIcon: '',
   sortOrder: 1,
-  isVisible: 1,
   level: 1,
   path: '',
   redirect: '',
@@ -230,7 +209,6 @@ const fetchModuleEntity = async (moduleId) => {
     editForm.redirect = res.data.redirect
     editForm.remarkCh = res.data.remarkCh ?? res.data.remarksCh ?? ''
     editForm.remarkEn = res.data.remarkEn ?? res.data.remarksEn ?? ''
-    editForm.isVisible = res.data.isVisible
     editForm.level = res.data.level
   }
 }
@@ -278,7 +256,6 @@ const resetForm = () => {
   editForm.moduleNameEn = ''
   editForm.moduleIcon = ''
   editForm.sortOrder = 1
-  editForm.isVisible = 1
   editForm.path = ''
   editForm.redirect = ''
   editForm.remarkCh = ''

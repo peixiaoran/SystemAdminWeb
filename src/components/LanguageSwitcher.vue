@@ -71,7 +71,7 @@ const handleCommand = (command) => {
 }
 
 .language-icon {
-  margin-right: 6px;
+  margin-right: 1px;
   width: 16px;
   height: 16px;
   color: #606266;

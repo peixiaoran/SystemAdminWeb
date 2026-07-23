@@ -784,7 +784,7 @@
                 </span>
                 <div class="workflow-user-text">
                   <div class="workflow-user-name">
-                    {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span><span v-if="workflowHistoryUserName(u)" class="workflow-user-history"><span class="workflow-user-history-badge">{{ t('formbusiness.leaverequest.workflowHistoryUser') }}</span>{{ workflowHistoryUserName(u) }}</span>
+                    {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
                   </div>
                   <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
                     {{ t('formbusiness.leaverequest.workflowAgent') }}：{{ u.agentUserName }}
@@ -891,12 +891,6 @@ function workflowUserStatusLabel (user) {
 
 function workflowReviewUserName (u) {
   const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
-  if (name == null || name === '') return ''
-  return String(name)
-}
-
-function workflowHistoryUserName (u) {
-  const name = u?.historyUserName ?? u?.HistoryUserName
   if (name == null || name === '') return ''
   return String(name)
 }
@@ -3390,22 +3384,6 @@ onMounted(async () => {
 .workflow-user-name {
   font-size: 14px;
   color: var(--el-text-color-primary);
-}
-
-.workflow-user-history {
-  margin-left: 28px;
-  font-size: 12px;
-  color: #de782e;
-}
-
-.workflow-user-history-badge {
-  margin-right: 4px;
-  padding: 0 4px;
-  border-radius: 3px;
-  font-size: 10px;
-  line-height: 1.4;
-  color: #de782e;
-  background: rgba(222, 120, 46, 0.12);
 }
 
 .workflow-user-appointment {

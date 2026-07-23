@@ -19,15 +19,7 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>
-                <el-icon><User /></el-icon>
-                <span>{{ $t('moduleSelect.userInfo') }}</span>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-icon><Setting /></el-icon>
-                <span>{{ $t('moduleSelect.accountSettings') }}</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided @click="logout">
+              <el-dropdown-item @click="logout">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
                   <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
                 </svg>
@@ -53,11 +45,6 @@
               <h2>{{ getPMenuName(pmenu) }}</h2>
               <p>{{ getPMenuRemarks(pmenu) }}</p>
             </div>
-            <div class="pmenu-footer">
-              <el-button type="primary" size="small" class="module-enter-button">
-                {{ $t('moduleSelect.enterModule') }}
-              </el-button>
-            </div>
           </div>
         </div>
       </div>
@@ -76,7 +63,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowDown, User, Setting } from '@element-plus/icons-vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
@@ -244,7 +231,7 @@ const logout = async () => {
 /* 与 Element Plus 主题变量对齐，便于随主色 / 暗色链动 */
 .module-select-container {
   min-height: 100vh;
-  background: var(--el-bg-color-page);
+  background: #ffffff;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -256,20 +243,23 @@ const logout = async () => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 12px 0 0 0;
+  height: 45px;
+  padding: 0 8px 0 0;
   background-color: transparent;
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
   z-index: 1;
 }
 
 .language-switcher {
-  margin-right: 20px;
+  margin-right: 12px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
+  margin-right: 10px;
 }
 
 .user-avatar-wrapper {
@@ -289,6 +279,11 @@ const logout = async () => {
   background-color: var(--el-fill-color-light);
 }
 
+.user-avatar :deep(.el-avatar) {
+  position: relative;
+  left: -2px;
+}
+
 .user-details {
   margin: 0 8px;
 }
@@ -306,7 +301,7 @@ const logout = async () => {
 
 .pmenu-grid {
   max-width: 1720px;
-  margin: 40px auto 0;
+  margin: 90px auto 0;
   padding: 20px 40px;
   flex: 1;
   display: flex;
@@ -370,7 +365,7 @@ const logout = async () => {
     border-color 0.22s ease;
   cursor: pointer;
   overflow: hidden;
-  background: var(--el-fill-color-blank);
+  background: #f2f3f5;
   border: 1px solid var(--el-border-color-lighter);
   box-shadow: var(--el-box-shadow-light);
 }
@@ -415,11 +410,14 @@ const logout = async () => {
 .pmenu-info {
   flex: 1;
   padding: 22px 20px 14px 20px;
-  background: var(--el-fill-color-blank);
+  background: linear-gradient(
+    180deg,
+    var(--el-fill-color-extra-light, var(--el-fill-color-lighter)) 0%,
+    var(--el-fill-color-light) 100%
+  );
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .pmenu-info h2 {
@@ -445,36 +443,6 @@ const logout = async () => {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   word-wrap: break-word;
-}
-
-.pmenu-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 14px 20px 18px 20px;
-  background: var(--el-fill-color-blank);
-}
-
-/* 沿用主题主色，仅微调尺寸与圆角 */
-.module-enter-button {
-  border-radius: calc(var(--el-border-radius-base) + 8px) !important;
-  padding: 11px 26px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  min-width: 118px !important;
-  letter-spacing: 0.02em;
-  transition:
-    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.25s ease !important;
-}
-
-.module-enter-button:hover,
-.module-enter-button:focus {
-  transform: translateY(-1px);
-}
-
-.module-enter-button:active {
-  transform: translateY(0);
 }
 
 .loading-container {
@@ -520,6 +488,8 @@ const logout = async () => {
 /* 响应式调整 */
 @media (max-width: 768px) {
   .header-actions {
+    position: static;
+    height: auto;
     flex-direction: column;
     padding: 20px;
   }
@@ -561,17 +531,6 @@ const logout = async () => {
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
-  
-  .pmenu-footer {
-    padding: 12px 16px 16px 16px;
-  }
-  
-  .module-enter-button {
-    padding: 10px 20px !important;
-    font-size: 13px !important;
-    min-width: 100px !important;
-    border-radius: calc(var(--el-border-radius-base) + 8px) !important;
-  }
 }
 
 @media (max-width: 576px) {
@@ -603,12 +562,6 @@ const logout = async () => {
   .pmenu-info p {
     font-size: 11px;
     height: 42px;
-  }
-  
-  .module-enter-button {
-    padding: 8px 16px !important;
-    font-size: 12px !important;
-    min-width: 90px !important;
   }
 }
 

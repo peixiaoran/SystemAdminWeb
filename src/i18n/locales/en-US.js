@@ -789,7 +789,6 @@ export default {
       workflowStatusSkipped: 'Skipped',
       workflowRejectCount: 'Rejected {count} time(s)',
       workflowAgent: 'Agent',
-      workflowHistoryUser: 'History',
       workflowEmpty: 'No workflow data',
       workflowLoadFailed: 'Failed to load workflow',
       workflowNeedFormId: 'Please wait until the form is initialized',
@@ -892,7 +891,6 @@ export default {
       workflowStatusUnderReview: 'In review',
       workflowStatusApprove: 'Approved',
       workflowStatusSkipped: 'Skipped',
-      workflowHistoryUser: 'History',
       workflowEmpty: 'No workflow data',
       reviewLog: 'Review Records',
       reviewLogStep: 'Step',
@@ -1095,15 +1093,12 @@ export default {
   
   // Primary Menu Selection Page
   moduleSelect: {
-    userInfo: 'Personal Profile',
-    accountSettings: 'Account Settings',
     pmenuLoading: 'Loading data...',
     pmenuError: 'Failed to get primary menu data',
     pmenuErrorRetry: 'Failed to get primary menu data, please try again later',
     pmenuIncomplete: 'Primary menu information incomplete',
     enterPMenu: 'Enter Primary Menu',
     moduleLoading: 'Loading module data...',
-    enterModule: 'Enter Module',
     selectModuleFirst: 'No system module selected, please select a module first'
   },
   
@@ -1512,9 +1507,6 @@ export default {
     isEnabled: 'Enabled',
     enabled: 'Enabled',
     disabled: 'Disabled',
-    isVisible: 'Visible',
-    visible: 'Visible',
-    hidden: 'Hidden',
     createdBy: 'Created By',
     createdTime: 'Created Time',
     operation: 'Operation',

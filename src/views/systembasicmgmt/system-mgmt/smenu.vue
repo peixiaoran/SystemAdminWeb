@@ -50,15 +50,6 @@
           <el-table-column prop="menuTypeName" :label="$t('systembasicmgmt.smenu.menuType')" align="center" min-width="150" />
           <el-table-column prop="path" :label="$t('systembasicmgmt.smenu.pagePath')" align="left" min-width="420" />
           <el-table-column prop="menuIcon" :label="$t('systembasicmgmt.smenu.smenuIcon')" align="center" min-width="180" />
-          <el-table-column prop="isVisible" :label="$t('systembasicmgmt.isVisible')" align="center" min-width="90">
-            <template #default="scope">
-              <div class="flex">
-                <el-tag :type="scope.row.isVisible ? 'success' : 'danger'">
-                  {{ scope.row.isVisible ? $t('systembasicmgmt.visible') : $t('systembasicmgmt.hidden') }}
-                </el-tag>
-              </div>
-            </template>
-          </el-table-column>
           <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
@@ -133,17 +124,6 @@
             <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
           </el-form-item>
         </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.isVisible')">
-            <el-switch v-model="editForm.isVisible"
-                       :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
-          </el-form-item>
-        </div>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
@@ -204,7 +184,6 @@ const editForm = reactive({
   menuUrl: '',
   menuIcon: '',
   sortOrder: 1,
-  isVisible: 1,
   level: 1,
   routePath: '',
   path: '',
@@ -331,7 +310,6 @@ const fetchSMenuEntity = async (menuId) => {
       editForm.path = res.data.path || ''
       editForm.redirect = res.data.redirect || ''
       editForm.remark = res.data.remark || ''
-      editForm.isVisible = res.data.isVisible
       editForm.level = res.data.level
       editForm.routePath = res.data.routePath || ''
       if (editForm.moduleId) {
@@ -403,7 +381,6 @@ const resetForm = () => {
     path: '',
     menuIcon: '',
     sortOrder: 1,
-    isVisible: 1,
     routePath: '',
     remark: ''
   })
@@ -457,7 +434,6 @@ const handleAdd = () => {
   resetForm()
   editForm.menuId = '0'
   editForm.sortOrder = 1
-  editForm.isVisible = 1
   dialogTitle.value = t('systembasicmgmt.smenu.addSMenu')
   fetchModuleDrop()
   dialogVisible.value = true
