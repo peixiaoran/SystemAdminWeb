@@ -174,11 +174,11 @@
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 原请假单引用 -->
-        <template v-if="isStepFieldVisible('LeaveRequestRef')">
+        <template v-if="isAnyStepFieldVisible(['LeaveRequestTable', 'AvailableHours', 'TimePeriod', 'Hour'])">
           <el-row :gutter="16" class="leave-request-ref-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
-                <el-table :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
+                <el-table v-if="isStepFieldVisible('LeaveRequestTable')" :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
                   <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
                   <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="300" align="center">
@@ -192,7 +192,7 @@
             </el-col>
 
             <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
-            <aside class="remaining-cancell-hours-float">
+            <aside v-if="isStepFieldVisible('AvailableHours')" class="remaining-cancell-hours-float">
               <el-popover
                 placement="top"
                 popper-class="remaining-cancell-hours-popper"
@@ -203,7 +203,7 @@
                 @hide="resetRemainingCancellHours"
               >
                 <template #reference>
-                  <button type="button" class="remaining-cancell-hours-btn" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
+                  <button type="button" class="remaining-cancell-hours-btn" :disabled="!isStepFieldEditable('AvailableHours')" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
                     <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
                       <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
@@ -237,7 +237,7 @@
 
           <el-row :gutter="16">
             <el-col :span="24" class="cancel-time-hours-row">
-              <el-form-item :label="t('formbusiness.leavecancell.cancelTimeRange')" class="cancel-time-range-item">
+              <el-form-item v-if="isStepFieldVisible('TimePeriod')" :label="t('formbusiness.leavecancell.cancelTimeRange')" class="cancel-time-range-item">
                 <div class="leave-time-range-fields">
                   <el-date-picker
                     :model-value="cancelStartDate"
@@ -284,7 +284,7 @@
                   />
                 </div>
               </el-form-item>
-              <el-form-item :label="t('formbusiness.leavecancell.cancelHours')" label-width="auto" class="cancel-hours-item">
+              <el-form-item v-if="isStepFieldVisible('Hour')" :label="t('formbusiness.leavecancell.cancelHours')" label-width="auto" class="cancel-hours-item">
                 <el-input-number
                   v-model="form.cancelHours"
                   class="leave-hours-input"
@@ -865,7 +865,7 @@ function applyStepFieldPermissions (list) {
   const map = {}
   if (Array.isArray(list)) {
     for (const item of list) {
-      const fieldKey = item?.fieldName ?? item?.FieldName
+      const fieldKey = item?.fieldKey ?? item?.FieldKey
       if (!fieldKey) continue
       const disabledRaw = item.isDisabled ?? item.IsDisabled
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
@@ -884,6 +884,12 @@ function isStepFieldVisible (fieldKey) {
   const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
   return perm.isVisible
+}
+
+function isStepFieldEditable (fieldKey) {
+  const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
+  if (!perm) return true
+  return perm.isEditable
 }
 
 function isAnyStepFieldVisible (fieldKeys) {
@@ -956,7 +962,12 @@ async function bindFormData (data) {
     })
   }
 
-  applyStepFieldPermissions(data.stepFieldPermission)
+  applyStepFieldPermissions(
+    data.stepFieldPermission ??
+      data.stepFieldPermissionList ??
+      data.StepFieldPermissionList ??
+      data.StepFieldPermission
+  )
 }
 
 async function getLeaveCancellDetail (formId) {

@@ -46,7 +46,7 @@
           <el-table-column
             v-if="showIndex"
             type="index"
-            :label="indexLabel"
+            :label="indexLabelText"
             width="60"
             align="center"
             fixed
@@ -69,7 +69,7 @@
                   :name="column.prop"
                   :row="scope.row"
                   :column="column"
-                  :$index="scope.$index"
+                  :index="scope.$index"
                 >
                   {{ formatCellValue(scope.row, column) }}
                 </slot>
@@ -80,7 +80,7 @@
           <!-- 操作列 -->
           <el-table-column
             v-if="showActions"
-            :label="actionsLabel"
+            :label="actionsLabelText"
             :width="actionsWidth"
             :min-width="actionsMinWidth"
             fixed="right"
@@ -90,7 +90,7 @@
               <slot
                 name="actions"
                 :row="scope.row"
-                :$index="scope.$index"
+                :index="scope.$index"
                 :handleEdit="(row) => handleEdit(scope.$index, row)"
                 :handleDelete="(row) => handleDelete(scope.$index, row)"
               ></slot>
@@ -195,14 +195,14 @@ const props = defineProps({
     type: Object,
     default: () => ({ background: '#f5f7fa' })
   },
-  // 标签配置
+  // 标签配置（默认 undefined，由计算属性兜底翻译，避免 defineProps 引用局部变量 t）
   indexLabel: {
     type: String,
-    default: () => t('common.index')
+    default: undefined
   },
   actionsLabel: {
     type: String,
-    default: () => t('common.actions')
+    default: undefined
   },
   actionsWidth: {
     type: String,
@@ -244,6 +244,10 @@ const emit = defineEmits([
   'edit',
   'delete'
 ])
+
+// 标签文案（props 未传时回退到 i18n）
+const indexLabelText = computed(() => props.indexLabel ?? t('common.index'))
+const actionsLabelText = computed(() => props.actionsLabel ?? t('common.actions'))
 
 // 响应式数据
 const currentPage = ref(props.pagination.pageIndex)

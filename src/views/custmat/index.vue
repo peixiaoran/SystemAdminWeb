@@ -278,13 +278,15 @@ const initKLineChart = () => {
       const gapRate = (Math.random() - 0.5) * 0.15 * volatilityMultiplier
       let open = basePrice * (1 + gapRate)
       
-      let dailyReturn = 0
+      let dailyReturn
       let close, high, low
       
       // 根据周期调整涨跌幅概率和幅度
       const extremeProb = timeUnit === 'year' ? 0.2 : timeUnit === 'week' ? 0.15 : 0.1
       const largeProb = timeUnit === 'year' ? 0.15 : timeUnit === 'week' ? 0.12 : 0.08
       const mediumProb = timeUnit === 'year' ? 0.25 : timeUnit === 'week' ? 0.2 : 0.15
+      // 中等跌幅使用独立掷值，与中等涨幅互不影响（同时避免 else-if 条件文本重复）
+      const mediumDownRoll = Math.random()
       
       // 极端大涨
       if (Math.random() < extremeProb) {
@@ -308,7 +310,7 @@ const initKLineChart = () => {
         low = Math.min(open, close) * (1 - Math.random() * 0.03)
       }
       // 中等跌幅
-      else if (Math.random() < mediumProb) {
+      else if (mediumDownRoll < mediumProb) {
         dailyReturn = -(0.05 + Math.random() * 0.1) * volatilityMultiplier
         close = open * (1 + dailyReturn)
         low = Math.min(open, close) * (1 - Math.random() * 0.05)

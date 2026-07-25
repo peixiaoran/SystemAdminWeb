@@ -365,7 +365,7 @@ const logout = async () => {
     border-color 0.22s ease;
   cursor: pointer;
   overflow: hidden;
-  background: #f2f3f5;
+  background: var(--el-bg-color, #ffffff);
   border: 1px solid var(--el-border-color-lighter);
   box-shadow: var(--el-box-shadow-light);
 }
@@ -383,11 +383,7 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(
-    180deg,
-    var(--el-fill-color-extra-light, var(--el-fill-color-lighter)) 0%,
-    var(--el-fill-color-light) 100%
-  );
+  background: var(--el-color-primary-light-9);
   color: var(--el-color-primary);
   position: relative;
 }
@@ -410,11 +406,7 @@ const logout = async () => {
 .pmenu-info {
   flex: 1;
   padding: 22px 20px 14px 20px;
-  background: linear-gradient(
-    180deg,
-    var(--el-fill-color-extra-light, var(--el-fill-color-lighter)) 0%,
-    var(--el-fill-color-light) 100%
-  );
+  background: var(--el-bg-color, #ffffff);
   text-align: center;
   display: flex;
   flex-direction: column;

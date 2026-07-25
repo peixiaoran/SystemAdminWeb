@@ -179,11 +179,11 @@
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 原请假单引用 -->
-        <template v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'AvailableHours', 'TimePeriod', 'Hour'])">
-          <el-row v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'AvailableHours'])" :gutter="16" class="leave-request-ref-row">
-            <el-col v-if="isStepFieldVisible('SelectLeaveRequest')" :span="24">
+        <template v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable', 'AvailableHours', 'TimePeriod', 'Hour'])">
+          <el-row v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable', 'AvailableHours'])" :gutter="16" class="leave-request-ref-row">
+            <el-col v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable'])" :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')">
-                <div class="leave-request-table-toolbar">
+                <div v-if="isStepFieldVisible('SelectLeaveRequest')" class="leave-request-table-toolbar">
                   <el-button
                     plain
                     size="small"
@@ -196,7 +196,7 @@
                     <el-icon><Search /></el-icon>
                   </el-button>
                 </div>
-                <el-table :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
+                <el-table v-if="isStepFieldVisible('LeaveRequestTable')" :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
                   <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
                   <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="280" align="center">
@@ -1096,7 +1096,12 @@ async function bindFormData (data) {
     })
   }
 
-  applyStepFieldPermissions(data.stepFieldPermission)
+  applyStepFieldPermissions(
+    data.stepFieldPermission ??
+      data.stepFieldPermissionList ??
+      data.StepFieldPermissionList ??
+      data.StepFieldPermission
+  )
 }
 
 async function getLeaveCancellDetail (formId) {
@@ -1544,7 +1549,7 @@ async function confirmLeaveRequestSelect () {
       return
     }
     if (res && isSuccessCode(res.code)) {
-      if (res.data) form.formId = String(res.data)
+      if (!form.formId && res.data) form.formId = String(res.data)
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
       return
@@ -1795,7 +1800,9 @@ async function saveLeaveCancellBeforeSubmit () {
     }
     return false
   }
-  if (saveRes.data) form.formId = String(saveRes.data)
+  // formId 一旦建立即不可变：仅在为空（真正新建）时才采纳 save 返回值，
+  // 避免更新态下后端返回的状态标志（如 1）覆盖真实 formId
+  if (!form.formId && saveRes.data) form.formId = String(saveRes.data)
   return true
 }
 
@@ -1820,7 +1827,7 @@ async function onSubmit () {
     if (isForbiddenCode(res?.code)) {
       showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
     } else if (res && isSuccessCode(res.code)) {
-      if (res.data) form.formId = String(res.data)
+      if (!form.formId && res.data) form.formId = String(res.data)
       showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')

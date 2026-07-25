@@ -435,6 +435,7 @@ export default {
       sortOrder: 'Sort Order',
       editStep: 'Edit Step',
       editStepSuccess: 'Step updated successfully',
+      editStepFailed: 'Failed to update step',
       operation: 'Operation',
       editFieldPermission: 'Edit Permission',
       fieldPermissionTitle: 'Field Permissions',

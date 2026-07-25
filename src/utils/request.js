@@ -224,6 +224,10 @@ const showWarningMessage = (message) => {
   ElMessage({ type: 'warning', message, duration: 3000, plain: true, showClose: true })
 }
 
+const showErrorMessageToast = (message) => {
+  ElMessage({ type: 'error', message, duration: 3000, plain: true, showClose: true })
+}
+
 const markThrottledWarning = (cooldownMs, lastShownAt) => {
   const now = Date.now()
   if (now - lastShownAt <= cooldownMs) return null
@@ -366,7 +370,7 @@ export const post = async (url, data, options = {}) => {
     const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
     if (ts) {
       lastNetworkErrorTime = ts
-      showWarningMessage(info.message)
+      showErrorMessageToast(info.message)
     }
 
     return createHandledResponse({ success: false, handled: true })

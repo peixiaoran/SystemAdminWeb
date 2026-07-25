@@ -367,6 +367,7 @@ export default {
       sortOrder: '排序',
       editStep: '编辑步骤',
       editStepSuccess: '编辑步骤成功',
+      editStepFailed: '编辑步骤失败',
       operation: '操作',
       editFieldPermission: '编辑权限',
       fieldPermissionTitle: '编辑栏位权限',

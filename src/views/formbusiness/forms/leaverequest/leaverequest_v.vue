@@ -174,8 +174,7 @@
                 <el-input v-model="form.applicantUserNo" disabled />
               </el-form-item>
             </el-col>
-            <!-- 申请人姓名始终显示在用户部门左侧，不受步骤字段权限控制 -->
-            <el-col :span="8">
+            <el-col v-if="isStepFieldVisible('UserName')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applicantUserName')" prop="applicantUserName">
                 <el-input v-model="form.applicantUserName" disabled />
               </el-form-item>

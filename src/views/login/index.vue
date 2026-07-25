@@ -324,20 +324,15 @@ const handleLogin = () => {
             loading.value = false
           }
         })
-        .catch(error => {
-          // 401错误已经在请求拦截器中处理，不再显示额外的错误提示
-          if (error?.response?.status !== 401 && error?.code !== 401) {
-            ElMessage({
-              message: t('login.loginFailedTip'),
-              type: 'error',
-              plain: true,
-              showClose: true,
-            })
-          }
+        .catch(() => {
+          // 业务码与 401/403/网络错误均由 post 内部统一处理；此处仅兜底提示并复位 loading
+          ElMessage({
+            message: t('login.loginFailedTip'),
+            type: 'error',
+            plain: true,
+            showClose: true,
+          })
           loading.value = false
-        })
-        .finally(() => {
-          // 冻结(401/402)与密码过期(405)在跳转前保持 loading，避免重复点击
         })
     }
   })

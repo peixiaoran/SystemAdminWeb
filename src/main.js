@@ -86,7 +86,7 @@ router.isReady().then(async () => {
   app.mount('#app')
   
   // 优化的对话框处理 - 即时处理避免闪烁
-  let dialogObserver = null
+  let dialogObserver
   
   // 创建一个高效且即时的对话框处理函数
   const handleDialogElements = () => {

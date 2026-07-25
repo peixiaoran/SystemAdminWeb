@@ -1245,7 +1245,11 @@ const submitAddStep = async () => {
         showMessage(response.message)
       }
     } catch {
-      showMessage(response.message)
+      showMessage(
+        isEditMode.value
+          ? t('formbusiness.workflowstep.editStepFailed')
+          : t('formbusiness.workflowstep.addStepFailed')
+      )
     } finally {
       addStepSubmitting.value = false
     }
