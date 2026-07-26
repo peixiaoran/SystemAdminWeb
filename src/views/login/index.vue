@@ -266,7 +266,10 @@ const handleLogin = () => {
       ).then(res => {
           const businessMsg = res?.message ?? ''
           if (res.code === 200) {
+            const submittedLoginNo = loginForm.loginNo
             resetAuthErrorState()
+            loginForm.loginNo = ''
+            loginForm.password = ''
             // 设置标题
             document.title = t('common.systemTitle')
             // 获取用户store
@@ -278,7 +281,7 @@ const handleLogin = () => {
               userId: res?.data?.userId || '',
               userNameCn: res?.data?.userNameCn || '',
               userNameEn: res?.data?.userNameEn || '',
-              loginNo: res?.data?.loginNo || loginForm.loginNo,
+              loginNo: res?.data?.loginNo || submittedLoginNo,
               avatar: res?.data?.avatarAddress || ''
             })
             
