@@ -29,7 +29,12 @@
               :key="item.ruleId"
               :label="item.ruleName"
               :value="item.ruleId"
-            />
+            >
+              <div class="rule-option">
+                <span class="rule-option-name">{{ item.ruleName }}</span>
+                <span v-if="item.version" class="rule-option-version">{{ item.version }}</span>
+              </div>
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="form-right-button">
@@ -134,7 +139,12 @@
                   :key="item.ruleId"
                   :label="item.ruleName"
                   :value="item.ruleId"
-                />
+                >
+                  <div class="rule-option">
+                    <span class="rule-option-name">{{ item.ruleName }}</span>
+                    <span v-if="item.version" class="rule-option-version">{{ item.version }}</span>
+                  </div>
+                </el-option>
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowrulestep.sortOrder')">
@@ -638,4 +648,24 @@ onMounted(async () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.rule-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.rule-option-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-option-version {
+  flex-shrink: 0;
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+}
 </style>

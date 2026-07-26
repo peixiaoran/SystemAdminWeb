@@ -64,7 +64,7 @@
           :rules="loginRules"
           class="login-form"
           size="large"
-          autocomplete="off"
+          autocomplete="new-password"
           @submit.prevent
         >
           <el-form-item prop="loginNo">
@@ -72,12 +72,18 @@
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
               clearable
-              autocomplete="off"
+              :name="loginNoFieldName"
+              :readonly="credentialInputsReadonly"
+              autocomplete="new-password"
               autocapitalize="off"
               autocorrect="off"
               spellcheck="false"
               data-lpignore="true"
+              data-1p-ignore="true"
               data-form-type="other"
+              @mousedown="enableCredentialInputs"
+              @touchstart="enableCredentialInputs"
+              @focus="enableCredentialInputs"
             >
               <template #prefix>
                 <el-icon><User /></el-icon>
@@ -91,12 +97,18 @@
               type="password"
               :placeholder="$t('login.passwordPlaceholder')"
               show-password
-              autocomplete="off"
+              :name="passwordFieldName"
+              :readonly="credentialInputsReadonly"
+              autocomplete="new-password"
               autocapitalize="off"
               autocorrect="off"
               spellcheck="false"
               data-lpignore="true"
+              data-1p-ignore="true"
               data-form-type="other"
+              @mousedown="enableCredentialInputs"
+              @touchstart="enableCredentialInputs"
+              @focus="enableCredentialInputs"
               @keyup.enter="handleLogin"
             >
               <template #prefix>
@@ -157,6 +169,9 @@ const router = useRouter()
 const route = useRoute()
 const loginFormRef = ref(null)
 const loading = ref(false)
+const credentialInputsReadonly = ref(true)
+const loginNoFieldName = `login_no_${Date.now()}`
+const passwordFieldName = `login_pwd_${Date.now()}`
 
 // 与 request.js 保持一致：401 整页刷新后在登录页补弹“登录已过期”提示
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
@@ -228,6 +243,9 @@ const handleUnlockAccount = () => {
 }
 
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
+const enableCredentialInputs = () => {
+  credentialInputsReadonly.value = false
+}
 
 const handleLogin = () => {
   loginFormRef.value.validate(valid => {
@@ -653,4 +671,3 @@ const handleLogin = () => {
   margin-top: -5px;
 }
 </style>
-
