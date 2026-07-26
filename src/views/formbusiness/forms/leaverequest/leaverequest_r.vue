@@ -736,6 +736,12 @@
       class="leaverequest-workflow-drawer"
     >
       <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
+        <div
+          v-if="!workflowDrawerLoading && workflowOverview.rejectCount > 0"
+          class="workflow-reject-count"
+        >
+          {{ t('formbusiness.leaverequest.workflowRejectCount', { count: workflowOverview.rejectCount }) }}
+        </div>
         <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewList?.length">
           <div
             v-for="(step, stepIdx) in workflowOverview.stepReviewList"
@@ -3243,6 +3249,13 @@ onMounted(async () => {
 
 .workflow-drawer-body {
   min-height: 120px;
+}
+
+.workflow-reject-count {
+  margin-bottom: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--el-color-danger);
 }
 
 .workflow-step-block {

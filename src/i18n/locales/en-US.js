@@ -892,6 +892,7 @@ export default {
       workflowStatusUnderReview: 'In review',
       workflowStatusApprove: 'Approved',
       workflowStatusSkipped: 'Skipped',
+      workflowRejectCount: 'Rejected {count} time(s)',
       workflowEmpty: 'No workflow data',
       reviewLog: 'Review Records',
       reviewLogStep: 'Step',

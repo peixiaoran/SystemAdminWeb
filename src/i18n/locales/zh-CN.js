@@ -824,6 +824,7 @@ export default {
         workflowStatusUnderReview: '审批中',
         workflowStatusApprove: '已核准',
         workflowStatusSkipped: '跳过',
+        workflowRejectCount: '已被驳回 {count} 次',
         workflowEmpty: '暂无流程数据',
         reviewLog: '审批记录',
         reviewLogStep: '审批步骤',
