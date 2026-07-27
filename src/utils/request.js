@@ -240,8 +240,13 @@ const handleUnauthorized = (options = {}) => {
 
   if (!has401ErrorOccurred) {
     has401ErrorOccurred = true
-    safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, unauthorizedMessage)
-    showWarningMessage(unauthorizedMessage)
+    if (disableAutoLogout) {
+      // 不会跳转到登录页，只能在当前页面立即提示一次
+      showWarningMessage(unauthorizedMessage)
+    } else {
+      // 即将硬跳转刷新到登录页，改由登录页 onMounted 统一弹出，避免跳转前后重复提示
+      safeSessionSet(AUTH_EXPIRED_MESSAGE_KEY, unauthorizedMessage)
+    }
     handleLogout({ redirect: !disableAutoLogout })
   }
 
