@@ -88,7 +88,7 @@
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
-        <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogFormRules" label-width="auto" class="dialog-form">
+        <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogFormRules" label-width="120px" class="dialog-form">
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.workflowrulestep.formGroupName')" prop="formGroupId">
               <el-select
@@ -148,7 +148,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowrulestep.sortOrder')">
-              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:50%" />
+              <el-input-number v-model="dialogForm.sortOrder" :min="0" :max="9999" style="width:100%" />
             </el-form-item>
           </div>
           <div class="form-row">

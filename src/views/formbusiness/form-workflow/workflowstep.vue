@@ -210,7 +210,7 @@
                 v-model="addStepForm.reminderIntervalMinutes"
                 :min="0"
                 :max="9999"
-                style="width: 50%"
+                style="width: 100%"
               />
             </el-form-item>
             <el-form-item :label="$t('formbusiness.workflowstep.sortOrder')" prop="sortOrder">
@@ -218,7 +218,7 @@
                 v-model="addStepForm.sortOrder"
                 :min="0"
                 :max="9999"
-                style="width: 50%"
+                style="width: 100%"
               />
             </el-form-item>
           </div>
@@ -1265,7 +1265,8 @@ onMounted(async () => {
 @import '@/assets/styles/conventionalTablePage.css';
 
 .add-step-form .assignment-divider {
-  margin: 16px 0;
+  /* 与相邻 .form-row 的 margin-bottom(18px) 保持一致，使分割线上下间距在 margin 折叠后视觉相等 */
+  margin: 18px 0;
 }
 
 /* 栏位权限弹窗：全选/全不选工具栏 */
