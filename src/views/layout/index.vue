@@ -1306,6 +1306,12 @@ const openMenuForPath = (path) => {
   right: 12px;
 }
 
+/* 一级菜单文字略微右移 */
+.el-menu-vertical:deep(.el-menu > .el-menu-item span),
+.el-menu-vertical:deep(.el-sub-menu__title span) {
+  margin-left: 3px;
+}
+
 .el-menu-vertical:deep(.el-menu-item.is-active) {
   background-color: #ecf5ff;
   color: #409eff;

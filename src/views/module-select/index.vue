@@ -34,7 +34,11 @@
     <!-- 模块展示区域 -->
     <div v-if="!loading" class="pmenu-grid">
       <div class="pmenu-row">
-        <div v-for="pmenu in pmenues" :key="pmenu.moduleId" class="pmenu-col">
+        <div
+          v-for="(pmenu, index) in pmenues"
+          :key="pmenu.moduleId"
+          class="pmenu-col card-enter"
+          :style="{ animationDelay: `${Math.min(index, 11) * 70}ms` }">
           <div class="pmenu-card" @click="enterPMenu(pmenu)">
             <div class="pmenu-icon">
               <el-icon :size="48">
@@ -51,9 +55,16 @@
     </div>
 
     <!-- 加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
+    <div v-else class="module-loading">
+      <div class="loading-indicator">
+        <span class="loading-halo"></span>
+        <span class="loading-ring"></span>
+        <span class="loading-ring is-inner"></span>
+        <el-icon class="loading-core" :size="24"><Grid /></el-icon>
+      </div>
+      <p class="loading-text">{{ $t('moduleSelect.moduleLoading') }}</p>
+      <div class="loading-dots">
+        <i></i><i></i><i></i>
       </div>
     </div>
   </div>
@@ -63,7 +74,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, Grid } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
@@ -314,7 +325,7 @@ const logout = async () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   row-gap: 32px;
-  column-gap: 64px;
+  column-gap: 96px;
   width: 100%;
   max-width: 1560px;
   justify-items: center;
@@ -329,14 +340,14 @@ const logout = async () => {
 @media (min-width: 992px) and (max-width: 1199px) {
   .pmenu-row {
     grid-template-columns: repeat(3, 1fr);
-    column-gap: 40px;
+    column-gap: 56px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .pmenu-row {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 32px;
+    column-gap: 44px;
   }
 }
 
@@ -437,38 +448,187 @@ const logout = async () => {
   word-wrap: break-word;
 }
 
-.loading-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: color-mix(in srgb, var(--el-bg-color-page) 90%, transparent);
-  backdrop-filter: blur(8px);
-  z-index: 10;
+/* ============ 卡片进场动画 ============ */
+.card-enter {
+  animation: card-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
-.loading-content {
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============ 加载状态 ============ */
+.module-loading {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+  animation: loading-in 0.35s ease both;
 }
 
-.loading-spinner {
-  width: 56px;
-  height: 56px;
+@keyframes loading-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loading-indicator {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 外层光晕：主色扩散呼吸 */
+.loading-halo {
+  position: absolute;
+  inset: -14px;
   border-radius: 50%;
-  border: 4px solid var(--el-color-primary-light-8);
-  border-top-color: var(--el-color-primary);
-  animation: spin 0.8s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--el-color-primary) 16%, transparent) 0%,
+    transparent 68%
+  );
+  animation: halo-pulse 2s ease-in-out infinite;
 }
 
-@keyframes spin {
+@keyframes halo-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+/* 渐变圆环：conic 渐变 + 圆环遮罩，形成带拖尾的旋转弧 */
+.loading-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    var(--el-color-primary-light-7) 35%,
+    var(--el-color-primary) 100%
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 4px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 4px),
+    #000 calc(100% - 4px)
+  );
+  animation: ring-spin 1.1s linear infinite;
+}
+
+/* 内环：反向慢转，细一档 */
+.loading-ring.is-inner {
+  inset: 13px;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0%,
+    var(--el-color-primary-light-5) 60%,
+    var(--el-color-primary-light-3) 100%
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 2px),
+    #000 calc(100% - 2px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 2px),
+    #000 calc(100% - 2px)
+  );
+  animation: ring-spin 1.8s linear infinite reverse;
+}
+
+@keyframes ring-spin {
   to { transform: rotate(360deg); }
+}
+
+/* 中心图标：轻微呼吸缩放 */
+.loading-core {
+  position: relative;
+  color: var(--el-color-primary);
+  animation: core-breathe 2s ease-in-out infinite;
+}
+
+@keyframes core-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+
+.loading-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  letter-spacing: 0.04em;
+}
+
+.loading-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -8px;
+}
+
+.loading-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--el-color-primary-light-5);
+  animation: dot-wave 1.2s ease-in-out infinite;
+}
+
+.loading-dots i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.loading-dots i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes dot-wave {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    background: var(--el-color-primary-light-7);
+  }
+  30% {
+    transform: translateY(-5px);
+    background: var(--el-color-primary);
+  }
+}
+
+/* 尊重系统「减少动态效果」设置 */
+@media (prefers-reduced-motion: reduce) {
+  .card-enter,
+  .module-loading,
+  .loading-halo,
+  .loading-core,
+  .loading-dots i {
+    animation: none;
+  }
+
+  .loading-ring {
+    animation-duration: 2.4s;
+  }
+
+  .pmenu-card {
+    transition: none;
+  }
 }
 
 /* 单个模块卡片宽度优化 */
@@ -523,6 +683,11 @@ const logout = async () => {
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
+
+  .loading-indicator {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -554,6 +719,11 @@ const logout = async () => {
   .pmenu-info p {
     font-size: 11px;
     height: 42px;
+  }
+
+  .loading-indicator {
+    width: 56px;
+    height: 56px;
   }
 }
 

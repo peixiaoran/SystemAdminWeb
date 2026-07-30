@@ -735,7 +735,8 @@
       destroy-on-close
       class="leaverequest-workflow-drawer"
     >
-      <div v-loading="workflowDrawerLoading" class="workflow-drawer-body">
+      <div v-loading="workflowDrawerLoading" class="workflow-drawer-loading-host">
+      <div class="workflow-drawer-body">
         <div
           v-if="!workflowDrawerLoading && workflowOverview.rejectCount > 0"
           class="workflow-reject-count"
@@ -804,6 +805,7 @@
           </div>
         </template>
         <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaverequest.workflowEmpty')" />
+      </div>
       </div>
     </el-drawer>
     </el-config-provider>
@@ -3247,8 +3249,15 @@ onMounted(async () => {
   padding: 10px 20px 20px !important;
 }
 
+/* v-loading 宿主：高度恒为抽屉可视区高度，不随数据渲染变化，
+   遮罩尺寸因此保持不变，转圈图标始终上下左右居中且原地淡出，不会位移 */
+.workflow-drawer-loading-host {
+  height: 100%;
+}
+
 .workflow-drawer-body {
-  min-height: 120px;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .workflow-reject-count {
