@@ -11,9 +11,6 @@ export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/VoidedForm/G
 // 获取表单类型下拉框API
 export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormOperate/VoidedForm/GetFormTypeDrop'
 
-// 获取表单状态下拉框API
-export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/VoidedForm/GetFormStatusDrop'
-
 // 获取已作废分页API
 export const GET_FORM_VOIDED_PAGE_API = 'FormBusiness/FormOperate/VoidedForm/GetVoidedFormsPage'
 

@@ -11,9 +11,6 @@ export const GET_FORMGROUP_DROPDOWN_API = 'FormBusiness/FormOperate/FormPending/
 // 获取表单类型下拉框API
 export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/FormOperate/FormPending/GetFormTypeDrop'
 
-// 获取表单状态下拉框API
-export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/FormPending/GetFormStatusDrop'
-
 // 获取待送审分页API
 export const GET_FORM_PENDING_SUBMIT_PAGE_API = 'FormBusiness/FormOperate/FormPending/GetPendingSubmitPage'
 

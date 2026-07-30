@@ -36,23 +36,6 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('formbusiness.voidedform.formStatus')">
-          <el-select
-            v-model="searchForm.formStatus"
-            :placeholder="$t('formbusiness.voidedform.pleaseSelectFormStatus')"
-            filterable
-            class="voidedform-filter-select"
-            @change="handleFilterChange"
-          >
-            <el-option
-              v-for="item in formStatusOptions"
-              :key="item.formStatus"
-              :label="item.formStatusName"
-              :value="item.formStatus"
-            />
-          </el-select>
-        </el-form-item>
-
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
             {{ $t('common.search') }}
@@ -146,7 +129,6 @@ import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicant
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
-  GET_FORMSTATUS_DROPDOWN_API,
   GET_FORM_VOIDED_PAGE_API,
   DELETE_FORM_API
 } from '@/config/api/formbusiness/form-operate/voidedform.js'
@@ -214,19 +196,12 @@ const formTypePlaceholder = () => ({
   formTypeName: t('formbusiness.voidedform.pleaseSelect')
 })
 
-const formStatusPlaceholder = () => ({
-  formStatus: '',
-  formStatusName: t('formbusiness.voidedform.pleaseSelect')
-})
-
 const formGroupOptions = ref([formGroupPlaceholder()])
 const formTypeOptions = ref([formTypePlaceholder()])
-const formStatusOptions = ref([formStatusPlaceholder()])
 
 const searchForm = reactive({
   formGroupId: ALL_OPTION_VALUE,
-  formTypeId: ALL_OPTION_VALUE,
-  formStatus: ''
+  formTypeId: ALL_OPTION_VALUE
 })
 
 const pagination = reactive({
@@ -274,30 +249,12 @@ const getFormTypeOptions = async () => {
   }
 }
 
-const getFormStatusOptions = async () => {
-  try {
-    const res = await post(GET_FORMSTATUS_DROPDOWN_API, {})
-    if (res?.code === 200) {
-      formStatusOptions.value = [
-        { formStatus: '', formStatusName: t('formbusiness.voidedform.pleaseSelect') },
-        // 过滤掉 formStatus 为 null/undefined 的脏数据，避免 el-option value 触发类型校验告警
-        ...(res.data || []).filter((item) => !isUnsetFilter(item?.formStatus))
-      ]
-      return
-    }
-    showMessage(res?.message || t('formbusiness.voidedform.getFormStatusFailed'))
-  } catch {
-    showMessage(t('formbusiness.voidedform.getFormStatusFailed'))
-  }
-}
-
 const getFormVoidedList = async () => {
   loading.value = true
   try {
     const params = {
       formGroupId: normalizeFilterValue(searchForm.formGroupId),
       formTypeId: normalizeFilterValue(searchForm.formTypeId),
-      formStatus: String(searchForm.formStatus || ''),
       pageIndex: String(pagination.pageIndex),
       pageSize: String(pagination.pageSize),
       totalCount: String(pagination.totalCount || 0)
@@ -365,7 +322,6 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.formGroupId = ALL_OPTION_VALUE
   searchForm.formTypeId = ALL_OPTION_VALUE
-  searchForm.formStatus = ''
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -474,7 +430,6 @@ const openFormPage = (row, pathKey) => {
 
 onMounted(async () => {
   await getFormGroupOptions()
-  await getFormStatusOptions()
   await getFormTypeOptions()
   await getFormVoidedList()
 })
