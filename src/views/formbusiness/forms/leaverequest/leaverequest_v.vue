@@ -2349,8 +2349,9 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
 
   .workflow-reject-count {
-    margin-bottom: 18px;
+    margin-bottom: 28px;
     font-size: 13px;
+    font-weight: 600;
     line-height: 1.5;
     color: var(--el-color-danger);
   }

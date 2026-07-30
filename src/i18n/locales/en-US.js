@@ -631,7 +631,11 @@ export default {
       getFormTypeFailed: 'Failed to get form type',
       getFormStatusFailed: 'Failed to get form status',
       getVoidedFormsFailed: 'Failed to get voided forms list',
-      getFailed: 'Failed to load data'
+      getFailed: 'Failed to load data',
+      delete: 'Delete',
+      deleteConfirm: 'Are you sure you want to delete this form? This action cannot be undone.',
+      deleteSuccess: 'Deleted successfully',
+      deleteFailed: 'Failed to delete'
     },
 
     applyhistory: {

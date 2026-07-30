@@ -563,7 +563,11 @@ export default {
       getFormTypeFailed: '获取表单类型失败',
       getFormStatusFailed: '获取表单状态失败',
       getVoidedFormsFailed: '获取已作废表单列表失败',
-      getFailed: '获取数据失败'
+      getFailed: '获取数据失败',
+      delete: '删除',
+      deleteConfirm: '确定要删除该表单吗？删除后不可恢复。',
+      deleteSuccess: '删除成功',
+      deleteFailed: '删除失败'
     },
 
     applyhistory: {

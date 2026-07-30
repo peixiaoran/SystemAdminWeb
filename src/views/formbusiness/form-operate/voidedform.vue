@@ -105,6 +105,19 @@
               {{ formatVoidedDate(row.voidedDate) }}
             </template>
           </el-table-column>
+          <el-table-column :label="$t('common.operation')" min-width="110" fixed="right" align="center">
+            <template #default="{ row }">
+              <el-button
+                type="danger"
+                size="small"
+                :loading="deletingFormId === row.formId"
+                :disabled="deleteLoading"
+                @click="handleDeleteForm(row)"
+              >
+                {{ $t('formbusiness.voidedform.delete') }}
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
 
@@ -126,7 +139,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
@@ -134,7 +147,8 @@ import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
   GET_FORMSTATUS_DROPDOWN_API,
-  GET_FORM_VOIDED_PAGE_API
+  GET_FORM_VOIDED_PAGE_API,
+  DELETE_FORM_API
 } from '@/config/api/formbusiness/form-operate/voidedform.js'
 
 const { t } = useI18n()
@@ -147,10 +161,22 @@ const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const isUnsetFilter = (v) => v === '' || v === undefined || v === null
 
+const FORM_URLENCODED_CONFIG = {
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+}
+
 const buildFormData = (params) => {
   const fd = new FormData()
   Object.entries(params).forEach(([k, v]) => fd.append(k, v ?? ''))
   return fd
+}
+
+const buildFormParams = (params) => {
+  const formParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formParams.append(key, value ?? '')
+  })
+  return formParams
 }
 
 const showMessage = (message, type = 'error') => {
@@ -350,6 +376,50 @@ const handleReset = () => {
 const handleSizeChange = () => {
   pagination.pageIndex = 1
   getFormVoidedList()
+}
+
+const deleteLoading = ref(false)
+const deletingFormId = ref(null)
+
+const handleDeleteForm = async (row) => {
+  const formId = row?.formId
+  if (!formId) {
+    showMessage(t('formbusiness.voidedform.deleteFailed'))
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.voidedform.deleteConfirm'),
+      t('common.tip'),
+      { type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  deleteLoading.value = true
+  deletingFormId.value = formId
+  try {
+    const res = await post(
+      DELETE_FORM_API,
+      buildFormParams({ formId: String(formId) }),
+      FORM_URLENCODED_CONFIG
+    )
+    if (res?.code === 200 && res.data === true) {
+      showMessage(t('formbusiness.voidedform.deleteSuccess'), 'success')
+      // 删掉当前页最后一条时回退一页，避免停在空白页
+      if (formVoidedList.value.length === 1 && pagination.pageIndex > 1) {
+        pagination.pageIndex -= 1
+      }
+      await getFormVoidedList()
+      return
+    }
+    showMessage(res?.message || t('formbusiness.voidedform.deleteFailed'))
+  } catch {
+    showMessage(t('formbusiness.voidedform.deleteFailed'))
+  } finally {
+    deleteLoading.value = false
+    deletingFormId.value = null
+  }
 }
 
 const normalizePath = (p) => {

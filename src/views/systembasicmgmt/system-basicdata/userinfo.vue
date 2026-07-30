@@ -19,7 +19,7 @@
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
         <el-input 
           v-model="filters.userNo" 
-          style="width: 150px;"
+          style="width: 180px;"
           :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" 
          />
       </el-form-item>

@@ -16,3 +16,6 @@ export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/FormOperate/VoidedForm/
 
 // 获取已作废分页API
 export const GET_FORM_VOIDED_PAGE_API = 'FormBusiness/FormOperate/VoidedForm/GetVoidedFormsPage'
+
+// 删除表单API
+export const DELETE_FORM_API = 'FormBusiness/FormOperate/VoidedForm/DeleteForm'
