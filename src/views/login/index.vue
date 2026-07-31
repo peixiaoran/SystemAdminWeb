@@ -71,7 +71,6 @@
             <el-input
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
-              clearable
               :name="loginNoFieldName"
               :readonly="credentialInputsReadonly"
               autocomplete="new-password"

@@ -39,7 +39,7 @@
           <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
           <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
           <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
-          <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="130" fixed="right" align="center">
+          <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
               <el-button size="small"
@@ -70,38 +70,32 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="编辑表单">
+      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="130px" class="dialog-form" role="form" aria-label="编辑表单">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
             <el-input v-model="editForm.currencyCode"
                      style="width:100%"
                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
           </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.currencyInfo.isEnabled')" prop="isEnabled">
-            <el-switch v-model="editForm.isEnabled"
-                      :active-value="1"
-                      :inactive-value="0"
-                      :active-text="$t('common.yes')"
-                      :inactive-text="$t('common.no')"
-                      inline-prompt
-                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399"/>
-          </el-form-item>
-        </div>
-        <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
             <el-input v-model="editForm.currencyNameCn"
                      style="width:100%"
                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn')" />
           </el-form-item>
+        </div>
+        <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
             <el-input v-model="editForm.currencyNameEn"
                      style="width:100%"
                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameEn')" />
           </el-form-item>
+          <el-form-item>
+            
+          </el-form-item>
         </div>
-        <div class="form-row">
+        <div class="form-row full-width">
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
-            <el-input v-model="editForm.remark" style="width:100%" />
+            <el-input v-model="editForm.remark" type="textarea" :rows="4" style="width:100%" />
           </el-form-item>
         </div>
       </el-form>
@@ -154,7 +148,6 @@ const editForm = reactive({
   currencyCode: '',
   currencyNameCn: '',
   currencyNameEn: '',
-  isEnabled: 1,
   remark: ''
 })
 
@@ -242,7 +235,6 @@ const resetForm = () => {
   editForm.currencyCode = ''
   editForm.currencyNameCn = ''
   editForm.currencyNameEn = ''
-  editForm.isEnabled = 1
   editForm.remark = ''
 }
 
@@ -272,7 +264,6 @@ const updateCurrency = async () => {
     currencyCode: editForm.currencyCode,
     currencyNameCn: editForm.currencyNameCn,
     currencyNameEn: editForm.currencyNameEn || '',
-    isEnabled: editForm.isEnabled,
     remark: editForm.remark || ''
   }
   const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, params)
@@ -352,4 +343,9 @@ const handleDialogClose = () => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.form-row-placeholder {
+  flex: 1;
+  margin-right: 20px;
+}
 </style>

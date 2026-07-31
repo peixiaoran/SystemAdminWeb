@@ -1730,7 +1730,6 @@ export default {
        currencyCode: '币别编码',
        currencyNameCn: '中文名称',
        currencyNameEn: '英文名称',
-       isEnabled: '启用状态',
        remark: '备注',
        operation: '操作',
        addCurrency: '新增币别',
