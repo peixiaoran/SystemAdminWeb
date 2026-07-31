@@ -999,7 +999,6 @@ const uploading = ref(false)
 const uploadedAttachments = ref([])
 const currentFormStatus = ref('')
 
-const defaultFormTypeId = '1987217256446300160'
 const currentFormTypeId = ref('')
 
 const form = reactive({
@@ -1477,7 +1476,7 @@ function bindFormData (data) {
     const nextQuery = {
       ...route.query,
       formId: String(form.formId),
-      formTypeId: String(currentFormTypeId.value || route.query.formTypeId || defaultFormTypeId)
+      formTypeId: String(currentFormTypeId.value || route.query.formTypeId || '')
     }
     router.replace({ path: route.path, query: nextQuery })
   }
@@ -1773,7 +1772,7 @@ async function closeCurrentPage () {
 async function initLeaveRequest () {
   try {
     const formData = new window.FormData()
-    formData.append('formTypeId', currentFormTypeId.value || defaultFormTypeId)
+    formData.append('formTypeId', currentFormTypeId.value || '')
 
     const res = await post(INIT_LEAVEREQUEST_API, formData, {
       headers: {
@@ -2687,7 +2686,7 @@ onMounted(async () => {
     await syncRouteLanguage()
     loading.value = true
 
-    currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
+    currentFormTypeId.value = String(route.query.formTypeId || '')
 
     const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
     if (routeToken) {

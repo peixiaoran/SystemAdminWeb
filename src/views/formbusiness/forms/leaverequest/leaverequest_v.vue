@@ -805,7 +805,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   const leaveBalanceLoading = ref(false)
   let leaveBalanceRequestId = 0
   
-  const defaultFormTypeId = '1987217256446300160'
   const currentFormTypeId = ref('')
   
   const form = reactive({
@@ -1044,7 +1043,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       const nextQuery = {
         ...route.query,
         formId: String(form.formId),
-        formTypeId: String(currentFormTypeId.value || route.query.formTypeId || defaultFormTypeId)
+        formTypeId: String(currentFormTypeId.value || route.query.formTypeId || '')
       }
       router.replace({ path: route.path, query: nextQuery })
     }
@@ -1480,7 +1479,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   async function initLeaveRequest () {
     try {
       const formData = new window.FormData()
-      formData.append('formTypeId', currentFormTypeId.value || defaultFormTypeId)
+      formData.append('formTypeId', currentFormTypeId.value || '')
   
       const res = await post(INIT_LEAVEREQUEST_API, formData, {
         headers: {
@@ -1768,7 +1767,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
       await syncRouteLanguage()
       loading.value = true
   
-      currentFormTypeId.value = String(route.query.formTypeId || defaultFormTypeId)
+      currentFormTypeId.value = String(route.query.formTypeId || '')
   
       const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
       if (routeToken) {

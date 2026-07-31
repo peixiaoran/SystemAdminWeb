@@ -595,6 +595,29 @@ const pmenuRoutes = [
     }
   },
   {
+    path: '/formbusiness/forms/documentcirculate/documentcirculate_r',
+    name: 'DocumentCirculateR',
+    component: () => import('../views/formbusiness/forms/documentcirculate/documentcirculate_r.vue'),
+    meta: {
+      title: 'route.documentcirculate_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  // 独立传签单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/documentcirculate/documentcirculate_v',
+    name: 'DocumentCirculateV',
+    component: () => import('../views/formbusiness/forms/documentcirculate/documentcirculate_v.vue'),
+    meta: {
+      title: 'route.documentcirculate_v',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  {
       path: '/custmat',
       component: Layout,
       redirect: '/custmat/index',
