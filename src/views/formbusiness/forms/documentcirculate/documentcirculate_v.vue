@@ -254,6 +254,41 @@
           </el-col>
         </el-row>
 
+        <el-divider v-if="isAddReviewVisible()" class="add-review-divider"></el-divider>
+
+        <!-- 加审人员：固定 5 行，顺序 1-5（查看页只读，无操作列） -->
+        <el-row v-if="isAddReviewVisible()" :gutter="16" class="add-review-row">
+          <el-col :span="24">
+            <el-form-item :label="t('formbusiness.documentcirculate.addReview')">
+              <el-table :data="addReviewRows" border size="small" class="add-review-table">
+                <el-table-column
+                  prop="sortOrder"
+                  :label="t('formbusiness.documentcirculate.addReviewSortOrder')"
+                  width="70"
+                  align="center"
+                />
+                <el-table-column
+                  prop="deptName"
+                  :label="t('formbusiness.documentcirculate.addReviewDepartment')"
+                  min-width="200"
+                  show-overflow-tooltip
+                />
+                <el-table-column
+                  prop="userNo"
+                  :label="t('formbusiness.documentcirculate.addReviewUserNo')"
+                  width="120"
+                />
+                <el-table-column
+                  prop="userName"
+                  :label="t('formbusiness.documentcirculate.addReviewUserName')"
+                  min-width="130"
+                  show-overflow-tooltip
+                />
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-divider class="approval-divider"></el-divider>
 
         <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
@@ -537,6 +572,50 @@ const approvalComment = ref('')
 const reviewRecordList = ref([])
 const stepFieldPermissionMap = ref({})
 const uploadedAttachments = ref([])
+
+/* ---------------- 加审人员（查看页只读，仅显隐受权限控制） ---------------- */
+
+const ADD_REVIEW_MAX_ROWS = 5
+// 后端加审字典存在 AddReivew 拼写，两种键都判断，避免键名不匹配时误放行
+const ADD_REVIEW_FIELD_KEYS = ['AddReview', 'AddReivew']
+
+const createAddReviewRows = () =>
+  Array.from({ length: ADD_REVIEW_MAX_ROWS }, (_, idx) => ({
+    sortOrder: idx + 1,
+    userId: '',
+    userNo: '',
+    userName: '',
+    deptName: ''
+  }))
+
+const addReviewRows = ref(createAddReviewRows())
+
+// 权限键缺失时 isStepFieldVisible 默认返回 true，故用 every：任一拼写判否即隐藏
+function isAddReviewVisible () {
+  return ADD_REVIEW_FIELD_KEYS.every((key) => isStepFieldVisible(key))
+}
+
+/** 详情反填：按 sortOrder 归位，顺序缺失或越界则顺延填入空行 */
+function applyAddReviewList (list) {
+  const rows = createAddReviewRows()
+  if (Array.isArray(list)) {
+    for (const item of list) {
+      if (!item) continue
+      const userId = item.userId
+      if (userId == null || String(userId) === '') continue
+      const sortOrder = Number(item.sortOrder)
+      const row = (Number.isInteger(sortOrder) && sortOrder >= 1 && sortOrder <= ADD_REVIEW_MAX_ROWS)
+        ? rows[sortOrder - 1]
+        : rows.find((r) => !r.userId)
+      if (!row) continue
+      row.userId = String(userId)
+      row.userNo = item.userNo ?? ''
+      row.userName = item.userName ?? ''
+      row.deptName = item.deptName ?? ''
+    }
+  }
+  addReviewRows.value = rows
+}
 
 const form = reactive({
   formId: '',
@@ -924,6 +1003,8 @@ function bindFormData (data) {
       data.StepFieldPermissionList ??
       data.StepFieldPermission
   )
+
+  applyAddReviewList(data.addReview)
 }
 
 async function getDocumentCirculateDetail (formId) {
@@ -1394,7 +1475,6 @@ onMounted(async () => {
   color: #909399;
 }
 
-.attachment-row :deep(.el-form-item),
 .approval-comment-row :deep(.el-form-item) {
   align-items: flex-start;
 }
@@ -1403,12 +1483,8 @@ onMounted(async () => {
   margin: 6px 0 24px;
 }
 
-.attachment-row :deep(.el-form-item) {
-  margin-bottom: 0;
-}
-
-.attachment-row + .approval-divider {
-  margin-top: 24px;
+.add-review-table {
+  width: 100%;
 }
 
 .attachment-row :deep(.el-form-item__label),
@@ -1425,19 +1501,6 @@ onMounted(async () => {
 
 .attachment-table {
   width: 100%;
-  margin-top: 4px;
-}
-
-.upload-section > :last-child {
-  margin-bottom: 0;
-}
-
-.attachment-table :deep(.el-scrollbar__wrap) {
-  padding-bottom: 0;
-}
-
-.attachment-table :deep(.el-table__inner-wrapper) {
-  height: auto;
 }
 
 .approval-comment-row {
@@ -1529,11 +1592,13 @@ onMounted(async () => {
 .workflow-drawer-body {
   height: 100%;
   overflow-y: auto;
+  /* 留出滚动条宽度，避免右侧审批状态与滚动条重叠 */
+  padding-right: 12px;
 }
 
 .workflow-reject-count {
   margin-bottom: 28px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
   color: var(--el-color-danger);
@@ -1604,6 +1669,7 @@ onMounted(async () => {
 }
 
 .workflow-step-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
@@ -1611,7 +1677,7 @@ onMounted(async () => {
 .workflow-step-tag {
   margin-left: 8px;
   padding: 1px 6px;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.4;
   border-radius: 4px;
 }
@@ -1672,7 +1738,7 @@ onMounted(async () => {
 }
 
 .workflow-user-name {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
@@ -1682,15 +1748,16 @@ onMounted(async () => {
 
 .workflow-user-meta {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--el-text-color-secondary);
 }
 
 .workflow-user-label {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   margin-top: 2px;
+  margin-left: 4px;
 }
 
 .workflow-user-label--approve {

@@ -3,7 +3,7 @@
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.workflowrulestep.title')">
         <el-form-item :label="$t('formbusiness.workflowrulestep.formGroupName')">
-          <el-select v-model="searchForm.formGroupId" filterable style="width: 180px" @change="getFormTypeOptions">
+          <el-select v-model="searchForm.formGroupId" filterable style="width: 220px" @change="getFormTypeOptions">
             <el-option
               v-for="item in formGroupOptions"
               :key="item.formGroupId"
@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrulestep.formTypeName')">
-          <el-select v-model="searchForm.formTypeId" filterable style="width: 180px" @change="getRuleOptions">
+          <el-select v-model="searchForm.formTypeId" filterable style="width: 220px" @change="getRuleOptions">
             <el-option
               v-for="item in formTypeOptions"
               :key="item.formTypeId"

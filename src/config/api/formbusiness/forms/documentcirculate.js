@@ -35,3 +35,18 @@ export const REJECT_DOCUMENTCIRCULATE_API = 'FormBusiness/Forms/PublicForm/FromR
 
 // 获取表单通知令牌API
 export const GET_FORM_NOTIFY_TOKEN_API = 'FormBusiness/Forms/PublicForm/GetFormNotifyToken'
+
+// 加审人员选择：部门下拉框API
+export const GET_ADD_REVIEW_DEPARTMENT_DROP_API = 'FormBusiness/Forms/PublicForm/GetDepartmentDrop'
+
+// 加审人员选择：分页查询可加审人员API
+export const GET_ADD_REVIEW_USER_PAGE_API = 'FormBusiness/Forms/PublicForm/GetAddReviewUserPage'
+
+// 新增加审人员API
+export const INSERT_FORM_ADD_REVIEW_API = 'FormBusiness/Forms/PublicForm/InsertFormAddReview'
+
+// 更新加审人员API
+export const UPDATE_FORM_ADD_REVIEW_API = 'FormBusiness/Forms/PublicForm/UpdateFormAddReview'
+
+// 删除加审人员API
+export const DELETE_FORM_ADD_REVIEW_API = 'FormBusiness/Forms/PublicForm/DeleteFormAddReview'

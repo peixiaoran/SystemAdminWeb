@@ -295,6 +295,64 @@
           </el-col>
         </el-row>
 
+        <el-divider v-if="isAddReviewVisible()" class="add-review-divider"></el-divider>
+
+        <!-- 加审人员：固定 5 行，顺序 1-5 -->
+        <el-row v-if="isAddReviewVisible()" :gutter="16" class="add-review-row">
+          <el-col :span="24">
+            <el-form-item :label="t('formbusiness.documentcirculate.addReview')">
+              <el-table :data="addReviewRows" border size="small" class="add-review-table">
+                <el-table-column
+                  prop="sortOrder"
+                  :label="t('formbusiness.documentcirculate.addReviewSortOrder')"
+                  width="70"
+                  align="center"
+                />
+                <el-table-column
+                  prop="deptName"
+                  :label="t('formbusiness.documentcirculate.addReviewDepartment')"
+                  min-width="200"
+                  show-overflow-tooltip
+                />
+                <el-table-column
+                  prop="userNo"
+                  :label="t('formbusiness.documentcirculate.addReviewUserNo')"
+                  width="120"
+                />
+                <el-table-column
+                  prop="userName"
+                  :label="t('formbusiness.documentcirculate.addReviewUserName')"
+                  width="130"
+                  show-overflow-tooltip
+                />
+                <el-table-column :label="t('common.operation')" width="150" align="center">
+                  <template #default="{ row }">
+                    <el-button
+                      type="primary"
+                      link
+                      size="small"
+                      :disabled="!isAddReviewEditable()"
+                      @click="openAddReviewDialog(row)"
+                    >
+                      {{ row.userId ? t('formbusiness.documentcirculate.addReviewChange') : t('formbusiness.documentcirculate.addReviewSelect') }}
+                    </el-button>
+                    <el-button
+                      v-if="row.userId"
+                      type="danger"
+                      link
+                      size="small"
+                      :disabled="!isAddReviewEditable()"
+                      @click="clearAddReviewRow(row)"
+                    >
+                      {{ t('formbusiness.documentcirculate.addReviewClear') }}
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-divider class="approval-divider"></el-divider>
 
         <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
@@ -483,6 +541,106 @@
       </template>
     </el-dialog>
 
+    <!-- 加审人员选择 -->
+    <el-dialog
+      v-model="addReviewDialogVisible"
+      :title="t('formbusiness.documentcirculate.addReviewDialogTitle')"
+      width="1100px"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      destroy-on-close
+      @closed="onAddReviewDialogClosed"
+    >
+      <el-form :inline="true" class="add-review-filter-form">
+        <el-form-item :label="t('formbusiness.documentcirculate.addReviewDepartment')">
+          <el-tree-select
+            v-model="addReviewFilters.departmentId"
+            :data="addReviewDeptOptions"
+            :props="{
+              value: 'departmentId',
+              label: 'departmentName',
+              children: 'departmentChildList',
+              disabled: 'disabled'
+            }"
+            check-strictly
+            filterable
+            :filter-node-method="filterAddReviewDeptNode"
+            class="add-review-filter-dept-select"
+            popper-class="documentcirculate-dept-tree-popper"
+            :placeholder="t('formbusiness.documentcirculate.addReviewPleaseSelectDepartment')"
+            @change="handleAddReviewDepartmentChange"
+          />
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.documentcirculate.applicantUserNo')">
+          <el-input
+            v-model="addReviewFilters.userNo"
+            class="add-review-filter-input-userno"
+            clearable
+            :placeholder="t('formbusiness.documentcirculate.applicantUserNo')"
+            @input="handleAddReviewFilterInput"
+            @keyup.enter="handleAddReviewSearch"
+            @clear="handleAddReviewFilterInput"
+          />
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.documentcirculate.applicantUserName')">
+          <el-input
+            v-model="addReviewFilters.userName"
+            class="add-review-filter-input-compact"
+            clearable
+            :placeholder="t('formbusiness.documentcirculate.applicantUserName')"
+            @input="handleAddReviewFilterInput"
+            @keyup.enter="handleAddReviewSearch"
+            @clear="handleAddReviewFilterInput"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" plain :loading="addReviewListLoading" @click="handleAddReviewSearch">{{ t('common.search') }}</el-button>
+          <el-button :disabled="addReviewListLoading" @click="handleAddReviewReset">{{ t('common.reset') }}</el-button>
+        </el-form-item>
+      </el-form>
+      <div
+        class="add-review-table-wrap"
+        v-loading="addReviewListLoading"
+        :element-loading-text="t('common.loading')"
+      >
+        <el-table
+          ref="addReviewTableRef"
+          :data="addReviewUserList"
+          border
+          stripe
+          max-height="360"
+          class="add-review-select-table"
+          :header-cell-style="{ background: '#f5f7fa' }"
+          :row-key="(row) => row.userId"
+          :empty-text="t('common.noData')"
+          @selection-change="handleAddReviewTableSelectionChange"
+          @row-click="handleAddReviewRowClick"
+        >
+          <el-table-column type="selection" width="48" align="center" />
+          <el-table-column prop="userNo" :label="t('formbusiness.documentcirculate.applicantUserNo')" min-width="110" align="center" />
+          <el-table-column prop="userName" :label="t('formbusiness.documentcirculate.applicantUserName')" min-width="120" align="left" show-overflow-tooltip />
+          <el-table-column :label="t('formbusiness.documentcirculate.addReviewDepartment')" min-width="160" align="left" show-overflow-tooltip>
+            <template #default="{ row }">{{ row.deptName || row.departmentName || '' }}</template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="add-review-pagination">
+        <el-pagination
+          v-model:current-page="addReviewPagination.pageIndex"
+          v-model:page-size="addReviewPagination.pageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="addReviewPagination.totalCount"
+          layout="total, sizes, prev, pager, next"
+          @size-change="handleAddReviewSizeChange"
+          @current-change="handleAddReviewPageChange"
+        />
+      </div>
+      <template #footer>
+        <el-button @click="addReviewDialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" :disabled="!selectedAddReviewUser" @click="confirmAddReviewUser">{{ t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 完整审批流程 -->
     <el-drawer
       v-model="workflowDrawerVisible"
@@ -589,7 +747,12 @@ import {
   GET_REJECT_STEP_DROP_API,
   APPROVE_DOCUMENTCIRCULATE_API,
   REJECT_DOCUMENTCIRCULATE_API,
-  GET_FORM_NOTIFY_TOKEN_API
+  GET_FORM_NOTIFY_TOKEN_API,
+  GET_ADD_REVIEW_DEPARTMENT_DROP_API,
+  GET_ADD_REVIEW_USER_PAGE_API,
+  INSERT_FORM_ADD_REVIEW_API,
+  UPDATE_FORM_ADD_REVIEW_API,
+  DELETE_FORM_ADD_REVIEW_API
 } from '@/config/api/formbusiness/forms/documentcirculate'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -653,7 +816,37 @@ const form = reactive({
   contentSummary: ''
 })
 
-const rules = {}
+/** 富文本判空：空编辑器的 getHTML() 返回 <p></p>，须按纯文本判断 */
+function isRichTextEmpty (html) {
+  return String(html || '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .trim() === ''
+}
+
+function validateContentSummary (rule, value, callback) {
+  if (isRichTextEmpty(value)) {
+    callback(new Error(t('formbusiness.documentcirculate.pleaseInputContentSummary')))
+    return
+  }
+  callback()
+}
+
+// 仅对当前步骤可编辑的栏位做必填校验：只读栏位用户改不了，必填会让保存/送审无法进行
+const rules = computed(() => {
+  const requiredWhenEditable = (fieldKey, messageKey) =>
+    isStepFieldEditable(fieldKey)
+      ? [{ required: true, message: t(messageKey), trigger: 'blur' }]
+      : []
+
+  return {
+    issueDept: requiredWhenEditable('IssueDept', 'formbusiness.documentcirculate.pleaseInputIssueDept'),
+    circulationPurpose: requiredWhenEditable('CirculationPurpose', 'formbusiness.documentcirculate.pleaseInputCirculationPurpose'),
+    contentSummary: isStepFieldEditable('ContentSummary')
+      ? [{ required: true, validator: validateContentSummary, trigger: 'change' }]
+      : []
+  }
+})
 
 // 内容摘要富文本编辑器
 const editor = useEditor({
@@ -661,6 +854,10 @@ const editor = useEditor({
   extensions: [StarterKit],
   onUpdate: ({ editor: ed }) => {
     form.contentSummary = ed.getHTML()
+    // 仅在有内容时触发校验，用于清掉已有的必填提示；空内容不主动报错，避免加载时误报
+    if (!isRichTextEmpty(form.contentSummary)) {
+      formRef.value?.validateField('contentSummary', () => {})
+    }
   }
 })
 
@@ -677,6 +874,7 @@ watch(() => isStepFieldEditable('ContentSummary'), (val) => {
 
 onBeforeUnmount(() => {
   editor.value?.destroy()
+  clearAddReviewSearchTimer()
 })
 
 const rejectDialogVisible = ref(false)
@@ -697,6 +895,358 @@ const rejectRules = {
 const uploading = ref(false)
 const uploadedAttachments = ref([])
 const fileInputRef = ref(null)
+
+/* ---------------- 加审人员 ---------------- */
+
+const ADD_REVIEW_MAX_ROWS = 5
+// 后端加审字典存在 AddReivew 拼写，两种键都判断，避免键名不匹配时误放行
+const ADD_REVIEW_FIELD_KEYS = ['AddReview', 'AddReivew']
+
+const createAddReviewRows = () =>
+  Array.from({ length: ADD_REVIEW_MAX_ROWS }, (_, idx) => ({
+    sortOrder: idx + 1,
+    userId: '',
+    userNo: '',
+    userName: '',
+    deptName: '',
+    persisted: false, // 后端该顺序已有记录 → 走 Update，否则走 Insert
+    dirty: false      // 本地有改动，待随表单保存一并同步
+  }))
+
+const addReviewRows = ref(createAddReviewRows())
+const addReviewDialogVisible = ref(false)
+const addReviewTargetSortOrder = ref(0)
+const addReviewDeptOptions = ref([])
+const addReviewUserList = ref([])
+const addReviewListLoading = ref(false)
+const addReviewTableRef = ref(null)
+const isAdjustingAddReviewSelection = ref(false)
+const selectedAddReviewUser = ref(null)
+const selectedAddReviewUserId = ref('')
+const addReviewFilters = reactive({ departmentId: '', userNo: '', userName: '' })
+const addReviewPagination = reactive({ pageIndex: 1, pageSize: 10, totalCount: 0 })
+const ADD_REVIEW_SEARCH_DEBOUNCE_MS = 300
+let addReviewSearchTimer = null
+let addReviewListRequestId = 0
+
+// 权限键缺失时 isStepFieldVisible/Editable 默认返回 true，故用 every：任一拼写判否即生效
+function isAddReviewVisible () {
+  return ADD_REVIEW_FIELD_KEYS.every((key) => isStepFieldVisible(key))
+}
+
+function isAddReviewEditable () {
+  return ADD_REVIEW_FIELD_KEYS.every((key) => isStepFieldEditable(key))
+}
+
+/** 详情反填：按 sortOrder 归位，顺序缺失或越界则顺延填入空行 */
+function applyAddReviewList (list) {
+  const rows = createAddReviewRows()
+  if (Array.isArray(list)) {
+    for (const item of list) {
+      if (!item) continue
+      const userId = item.userId
+      if (userId == null || String(userId) === '') continue
+      const sortOrder = Number(item.sortOrder)
+      const row = (Number.isInteger(sortOrder) && sortOrder >= 1 && sortOrder <= ADD_REVIEW_MAX_ROWS)
+        ? rows[sortOrder - 1]
+        : rows.find((r) => !r.userId)
+      if (!row) continue
+      row.userId = String(userId)
+      row.userNo = item.userNo ?? ''
+      row.userName = item.userName ?? ''
+      row.deptName = item.deptName ?? ''
+      row.persisted = true
+      row.dirty = false
+    }
+  }
+  addReviewRows.value = rows
+}
+
+function filterAddReviewDeptNode (value, data) {
+  if (!value || !data?.departmentName) return true
+  return data.departmentName.includes(value)
+}
+
+/** 取树中第一个可选部门，逐层向下找 */
+function findFirstEnabledAddReviewDept (departments) {
+  for (const dept of departments) {
+    if (!dept?.disabled) return dept.departmentId
+    if (Array.isArray(dept.departmentChildList) && dept.departmentChildList.length > 0) {
+      const childResult = findFirstEnabledAddReviewDept(dept.departmentChildList)
+      if (childResult) return childResult
+    }
+  }
+  return ''
+}
+
+function resolveDefaultAddReviewDepartmentId () {
+  return findFirstEnabledAddReviewDept(addReviewDeptOptions.value) || ''
+}
+
+async function loadAddReviewDeptOptions () {
+  if (addReviewDeptOptions.value.length > 0) return
+  try {
+    const res = await post(GET_ADD_REVIEW_DEPARTMENT_DROP_API, {}, { silentForbiddenError: false })
+    const raw = res && isSuccessCode(res.code) && Array.isArray(res.data) ? res.data : []
+    const validate = (dept) => {
+      if (!dept || dept.departmentId == null || dept.departmentName == null) return false
+      if (Array.isArray(dept.departmentChildList)) {
+        dept.departmentChildList = dept.departmentChildList.filter(validate)
+      }
+      return true
+    }
+    addReviewDeptOptions.value = raw.filter(validate)
+  } catch {
+    addReviewDeptOptions.value = []
+  }
+}
+
+async function fetchAddReviewUserList () {
+  const requestId = ++addReviewListRequestId
+  addReviewListLoading.value = true
+  try {
+    const res = await post(GET_ADD_REVIEW_USER_PAGE_API, {
+      formId: String(form.formId || ''),
+      departmentId: addReviewFilters.departmentId || '',
+      userNo: addReviewFilters.userNo || '',
+      userName: addReviewFilters.userName || '',
+      pageIndex: String(addReviewPagination.pageIndex),
+      pageSize: String(addReviewPagination.pageSize),
+      totalCount: String(addReviewPagination.totalCount || 0)
+    }, { silentForbiddenError: false })
+    if (requestId !== addReviewListRequestId) return
+    if (!res || !isSuccessCode(res.code)) {
+      addReviewUserList.value = []
+      addReviewPagination.totalCount = 0
+      return
+    }
+    addReviewUserList.value = Array.isArray(res.data) ? res.data : []
+    addReviewPagination.totalCount = Number(res.totalCount) || 0
+    restoreAddReviewTableSelection()
+  } catch {
+    if (requestId !== addReviewListRequestId) return
+    addReviewUserList.value = []
+    addReviewPagination.totalCount = 0
+  } finally {
+    if (requestId === addReviewListRequestId) {
+      addReviewListLoading.value = false
+    }
+  }
+}
+
+function clearAddReviewSearchTimer () {
+  if (addReviewSearchTimer) {
+    clearTimeout(addReviewSearchTimer)
+    addReviewSearchTimer = null
+  }
+}
+
+function scheduleAddReviewListFetch () {
+  clearAddReviewSearchTimer()
+  addReviewSearchTimer = setTimeout(() => {
+    addReviewSearchTimer = null
+    fetchAddReviewUserList()
+  }, ADD_REVIEW_SEARCH_DEBOUNCE_MS)
+}
+
+function fetchAddReviewUserListImmediate () {
+  clearAddReviewSearchTimer()
+  return fetchAddReviewUserList()
+}
+
+function handleAddReviewFilterInput () {
+  addReviewPagination.pageIndex = 1
+  scheduleAddReviewListFetch()
+}
+
+function handleAddReviewSearch () {
+  addReviewPagination.pageIndex = 1
+  fetchAddReviewUserListImmediate()
+}
+
+function handleAddReviewReset () {
+  addReviewFilters.departmentId = resolveDefaultAddReviewDepartmentId()
+  addReviewFilters.userNo = ''
+  addReviewFilters.userName = ''
+  addReviewPagination.pageIndex = 1
+  fetchAddReviewUserListImmediate()
+}
+
+function handleAddReviewDepartmentChange () {
+  addReviewPagination.pageIndex = 1
+  scheduleAddReviewListFetch()
+}
+
+function handleAddReviewPageChange () {
+  fetchAddReviewUserListImmediate()
+}
+
+function handleAddReviewSizeChange () {
+  addReviewPagination.pageIndex = 1
+  fetchAddReviewUserListImmediate()
+}
+
+/** 翻页后回显已选中行 */
+function restoreAddReviewTableSelection () {
+  if (!selectedAddReviewUserId.value || !addReviewTableRef.value) return
+  const matchedRow = addReviewUserList.value.find((item) => String(item.userId) === selectedAddReviewUserId.value)
+  if (!matchedRow) return
+  selectedAddReviewUser.value = matchedRow
+  isAdjustingAddReviewSelection.value = true
+  nextTick(() => {
+    addReviewTableRef.value?.clearSelection()
+    addReviewTableRef.value?.toggleRowSelection(matchedRow, true)
+    isAdjustingAddReviewSelection.value = false
+  })
+}
+
+// 勾选列表现为单选：只保留最后勾选的一行
+function handleAddReviewTableSelectionChange (selection) {
+  if (isAdjustingAddReviewSelection.value) return
+  if (selection.length === 0) {
+    selectedAddReviewUserId.value = ''
+    selectedAddReviewUser.value = null
+    return
+  }
+  const lastRow = selection[selection.length - 1]
+  selectedAddReviewUserId.value = String(lastRow.userId)
+  selectedAddReviewUser.value = lastRow
+  if (selection.length > 1 && addReviewTableRef.value) {
+    isAdjustingAddReviewSelection.value = true
+    nextTick(() => {
+      addReviewTableRef.value.clearSelection()
+      addReviewTableRef.value.toggleRowSelection(lastRow, true)
+      isAdjustingAddReviewSelection.value = false
+    })
+  }
+}
+
+function handleAddReviewRowClick (row) {
+  if (isAdjustingAddReviewSelection.value || !row?.userId || !addReviewTableRef.value) return
+  const isSelected = String(selectedAddReviewUserId.value) === String(row.userId)
+  if (isSelected) {
+    selectedAddReviewUserId.value = ''
+    selectedAddReviewUser.value = null
+  } else {
+    selectedAddReviewUserId.value = String(row.userId)
+    selectedAddReviewUser.value = row
+  }
+  isAdjustingAddReviewSelection.value = true
+  nextTick(() => {
+    addReviewTableRef.value.clearSelection()
+    if (!isSelected) {
+      addReviewTableRef.value.toggleRowSelection(row, true)
+    }
+    isAdjustingAddReviewSelection.value = false
+  })
+}
+
+async function openAddReviewDialog (row) {
+  addReviewTargetSortOrder.value = row.sortOrder
+  selectedAddReviewUserId.value = row.userId ? String(row.userId) : ''
+  selectedAddReviewUser.value = row.userId
+    ? { userId: row.userId, userNo: row.userNo, userName: row.userName, deptName: row.deptName }
+    : null
+  addReviewFilters.userNo = ''
+  addReviewFilters.userName = ''
+  addReviewPagination.pageIndex = 1
+  addReviewPagination.totalCount = 0
+  addReviewUserList.value = []
+  addReviewDialogVisible.value = true
+  // 部门默认选中第一个可选项，并作为初次查询条件带入
+  await loadAddReviewDeptOptions()
+  addReviewFilters.departmentId = resolveDefaultAddReviewDepartmentId()
+  await fetchAddReviewUserListImmediate()
+}
+
+function onAddReviewDialogClosed () {
+  clearAddReviewSearchTimer()
+  addReviewListRequestId += 1
+  addReviewListLoading.value = false
+  addReviewUserList.value = []
+  addReviewPagination.totalCount = 0
+  selectedAddReviewUser.value = null
+  selectedAddReviewUserId.value = ''
+  addReviewTargetSortOrder.value = 0
+}
+
+/** 保存单行加审人员：该顺序已落库走 Update，否则走 Insert；静默不提示 */
+async function saveAddReviewRow (row, isUpdate) {
+  const formId = String(form.formId || '')
+  if (!formId || !row.userId) return
+  try {
+    const res = await post(
+      isUpdate ? UPDATE_FORM_ADD_REVIEW_API : INSERT_FORM_ADD_REVIEW_API,
+      {
+        formId,
+        deptName: row.deptName || '',
+        userId: String(row.userId),
+        userNo: row.userNo || '',
+        userName: row.userName || '',
+        sortOrder: String(row.sortOrder)
+      },
+      { silentForbiddenError: false }
+    )
+    if (res && isSuccessCode(res.code)) {
+      row.persisted = true
+      row.dirty = false
+    }
+  } catch {
+    // 静默：失败时保留 dirty，保存表单时再补一次
+  }
+}
+
+async function confirmAddReviewUser () {
+  const user = selectedAddReviewUser.value
+  const row = addReviewRows.value.find((r) => r.sortOrder === addReviewTargetSortOrder.value)
+  if (!user?.userId || !row) {
+    addReviewDialogVisible.value = false
+    return
+  }
+  // 该顺序原本是否已有记录，须在覆盖行数据前取，用于区分新增/修改
+  const isUpdate = row.persisted
+  row.userId = String(user.userId)
+  row.userNo = user.userNo ?? ''
+  row.userName = user.userName ?? ''
+  row.deptName = user.deptName ?? user.departmentName ?? ''
+  row.dirty = true
+  addReviewDialogVisible.value = false
+  await saveAddReviewRow(row, isUpdate)
+}
+
+/** 清空该行：已落库则先删除，全程静默不提示 */
+async function clearAddReviewRow (row) {
+  const formId = String(form.formId || '')
+  if (formId && row.persisted && row.userId) {
+    try {
+      const formData = new window.FormData()
+      formData.append('formId', formId)
+      formData.append('userId', String(row.userId))
+      formData.append('sortOrder', String(row.sortOrder))
+      await post(DELETE_FORM_ADD_REVIEW_API, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        skipDedupe: true,
+        silentForbiddenError: false
+      })
+    } catch {
+      // 静默：删除失败不打断页面操作
+    }
+  }
+  row.userId = ''
+  row.userNo = ''
+  row.userName = ''
+  row.deptName = ''
+  row.persisted = false
+  row.dirty = false
+}
+
+/** 保存表单前补发未成功落库的加审行（弹窗确定时已保存过的不会重复提交） */
+async function syncAddReviewRows () {
+  for (const row of addReviewRows.value) {
+    if (!row.dirty || !row.userId) continue
+    await saveAddReviewRow(row, row.persisted)
+  }
+}
 
 /** 相邻相同 stepId 分组（避免排序后跨段误合并） */
 const groupedReviewRecords = computed(() => {
@@ -1085,6 +1635,8 @@ async function bindFormData (data) {
       data.StepFieldPermissionList ??
       data.StepFieldPermission
   )
+
+  applyAddReviewList(data.addReview)
 }
 
 async function getDocumentCirculateDetail (formId) {
@@ -1161,20 +1713,19 @@ function buildSaveDocumentCirculatePayload () {
 }
 
 async function saveDocumentCirculateRequest () {
+  // 先同步加审人员，再保存表单；保存与送审两条路径都经过这里
+  await syncAddReviewRows()
   return post(SAVE_DOCUMENTCIRCULATE_API, buildSaveDocumentCirculatePayload(), {
     silentForbiddenError: false
   })
 }
 
 async function onSubmit () {
-  const invalidFields = await new Promise((resolve) => {
-    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
+  // 校验不通过时只保留表单内的红色提示，不再额外弹窗
+  const valid = await new Promise((resolve) => {
+    formRef.value?.validate((ok) => resolve(!!ok))
   })
-  if (invalidFields) {
-    const firstField = Object.values(invalidFields || {})[0]
-    showFormActionNotice(firstField?.[0]?.message || t('common.operationFailed'), 'warning')
-    return
-  }
+  if (!valid) return
   saving.value = true
   try {
     const res = await saveDocumentCirculateRequest()
@@ -1215,14 +1766,11 @@ async function saveDocumentCirculateBeforeSubmit () {
 
 /** 送审：暂存 → 送审 */
 async function onSubmitForApproval () {
-  const invalidFields = await new Promise((resolve) => {
-    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
+  // 校验不通过时只保留表单内的红色提示，不再额外弹窗
+  const valid = await new Promise((resolve) => {
+    formRef.value?.validate((ok) => resolve(!!ok))
   })
-  if (invalidFields) {
-    const firstField = Object.values(invalidFields || {})[0]
-    showFormActionNotice(firstField?.[0]?.message || t('common.operationFailed'), 'warning')
-    return
-  }
+  if (!valid) return
   try {
     await ElMessageBox.confirm(
       t('formbusiness.documentcirculate.submitConfirmMessage'),
@@ -1958,22 +2506,51 @@ onMounted(async () => {
   color: #909399;
 }
 
-.attachment-row :deep(.el-form-item),
 .approval-comment-row :deep(.el-form-item) {
   align-items: flex-start;
+}
+
+/* 加审标签相对整张表格上下居中（沿用 .leave-form 的 align-items: center） */
+.add-review-table {
+  width: 100%;
+}
+
+/* 选人弹窗：与请假单选择代理人弹窗保持一致 */
+.add-review-filter-form {
+  margin-bottom: 12px;
+}
+
+.add-review-filter-form .add-review-filter-dept-select {
+  width: 180px;
+}
+
+.add-review-filter-form .add-review-filter-input-userno {
+  width: 155px;
+}
+
+.add-review-filter-form .add-review-filter-input-compact {
+  width: 168px;
+}
+
+.add-review-table-wrap {
+  position: relative;
+  min-height: 360px;
+}
+
+.add-review-select-table {
+  width: 100%;
+}
+
+.add-review-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
 .approval-divider {
   margin: 6px 0 24px;
 }
 
-.attachment-row :deep(.el-form-item) {
-  margin-bottom: 0;
-}
-
-.attachment-row + .approval-divider {
-  margin-top: 24px;
-}
 
 .attachment-row :deep(.el-form-item__label),
 .approval-comment-row :deep(.el-form-item__label) {
@@ -2001,19 +2578,6 @@ onMounted(async () => {
 
 .attachment-table {
   width: 100%;
-  margin-top: 4px;
-}
-
-.upload-section > :last-child {
-  margin-bottom: 0;
-}
-
-.attachment-table :deep(.el-scrollbar__wrap) {
-  padding-bottom: 0;
-}
-
-.attachment-table :deep(.el-table__inner-wrapper) {
-  height: auto;
 }
 
 .approval-comment-row {
@@ -2112,11 +2676,13 @@ onMounted(async () => {
 .workflow-drawer-body {
   height: 100%;
   overflow-y: auto;
+  /* 留出滚动条宽度，避免右侧审批状态与滚动条重叠 */
+  padding-right: 12px;
 }
 
 .workflow-reject-count {
   margin-bottom: 28px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
   color: var(--el-color-danger);
@@ -2187,6 +2753,7 @@ onMounted(async () => {
 }
 
 .workflow-step-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
@@ -2194,7 +2761,7 @@ onMounted(async () => {
 .workflow-step-tag {
   margin-left: 8px;
   padding: 1px 6px;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.4;
   border-radius: 4px;
 }
@@ -2255,7 +2822,7 @@ onMounted(async () => {
 }
 
 .workflow-user-name {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
@@ -2265,15 +2832,16 @@ onMounted(async () => {
 
 .workflow-user-meta {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--el-text-color-secondary);
 }
 
 .workflow-user-label {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   margin-top: 2px;
+  margin-left: 4px;
 }
 
 .workflow-user-label--approve {
@@ -2409,5 +2977,26 @@ onMounted(async () => {
 
 .reject-reason-input {
   width: 100%;
+}
+</style>
+
+<!-- 加审选人的部门树下拉挂载到 body，需非 scoped 样式，参考 workflowstep.vue -->
+<style>
+.documentcirculate-dept-tree-popper {
+  width: auto !important;
+  min-width: 320px !important;
+}
+.documentcirculate-dept-tree-popper .el-select-dropdown__wrap,
+.documentcirculate-dept-tree-popper .el-scrollbar__view,
+.documentcirculate-dept-tree-popper .el-tree {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+.documentcirculate-dept-tree-popper .el-tree-node__content {
+  height: 36px;
+  line-height: 36px;
+  padding-left: 12px;
+  width: 100% !important;
+  min-width: 100% !important;
 }
 </style>

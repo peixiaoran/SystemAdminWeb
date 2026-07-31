@@ -2745,15 +2745,6 @@ onMounted(async () => {
   margin: 6px 0 24px;
 }
 
-/* 前面是附件行时，清掉附件表单项的下边距，24px 全部由分割线自己给出 */
-.attachment-row :deep(.el-form-item) {
-  margin-bottom: 0;
-}
-
-.attachment-row + .approval-divider {
-  margin-top: 24px;
-}
-
 .attachment-row :deep(.el-form-item__label),
 .approval-comment-row :deep(.el-form-item__label) {
   min-height: 32px;
@@ -3149,21 +3140,6 @@ onMounted(async () => {
 
 .attachment-table {
   width: 100%;
-  margin-top: 4px;
-}
-
-/* el-table 内部会在底部留出滚动条占位与空行块，导致 upload-section 比表格高，
-   进而把下方分割线推远，这里逐一压掉 */
-.upload-section > :last-child {
-  margin-bottom: 0;
-}
-
-.attachment-table :deep(.el-scrollbar__wrap) {
-  padding-bottom: 0;
-}
-
-.attachment-table :deep(.el-table__inner-wrapper) {
-  height: auto;
 }
 
 .form-actions-form-item {
@@ -3257,11 +3233,13 @@ onMounted(async () => {
 .workflow-drawer-body {
   height: 100%;
   overflow-y: auto;
+  /* 留出滚动条宽度，避免右侧审批状态与滚动条重叠 */
+  padding-right: 12px;
 }
 
 .workflow-reject-count {
   margin-bottom: 28px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
   color: var(--el-color-danger);
@@ -3334,6 +3312,7 @@ onMounted(async () => {
 }
 
 .workflow-step-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
@@ -3341,7 +3320,7 @@ onMounted(async () => {
 .workflow-step-tag {
   margin-left: 8px;
   padding: 1px 6px;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.4;
   border-radius: 4px;
 }
@@ -3403,7 +3382,7 @@ onMounted(async () => {
 }
 
 .workflow-user-name {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
@@ -3412,7 +3391,7 @@ onMounted(async () => {
 }
 
 .workflow-user-meta {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--el-text-color-secondary);
   margin-top: 2px;
 }
@@ -3425,9 +3404,10 @@ onMounted(async () => {
 
 .workflow-user-label {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   margin-top: 2px;
+  margin-left: 4px;
 }
 
 .workflow-user-label--approve {

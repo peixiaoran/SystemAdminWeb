@@ -380,6 +380,16 @@
               />
             </el-form-item>
           </div>
+          <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'AddReview'" class="form-row assignment-block">
+            <el-form-item :label="$t('formbusiness.workflowstep.sortOrder')" prop="stepAddReviewUpsert.sortOrder" class="half-width-item">
+              <el-input-number
+                v-model="addStepForm.stepAddReviewUpsert.sortOrder"
+                :min="0"
+                :max="9999"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </div>
         </el-form>
       </div>
       <template #footer>
@@ -523,6 +533,7 @@ const createEmptyOrgUpsert = () => ({ deptLeaveId: '', positionId: '' })
 const createEmptyDeptUserUpsert = () => ({ departmentId: '', positionId: '' })
 const createEmptyUserUpsert = () => ({ userId: '', departmentId: '' })
 const createEmptyCustomUpsert = () => ({ guidance: '', logicalExplanation: '' })
+const createEmptyAddReviewUpsert = () => ({ sortOrder: 0 })
 
 const loading = ref(false)
 const workflowStepList = ref([])
@@ -575,7 +586,8 @@ const addStepForm = reactive({
   stepOrgUpsert: createEmptyOrgUpsert(),
   stepDeptUserUpsert: createEmptyDeptUserUpsert(),
   stepUserUpsert: createEmptyUserUpsert(),
-  stepCustomUpsert: createEmptyCustomUpsert()
+  stepCustomUpsert: createEmptyCustomUpsert(),
+  stepAddReviewUpsert: createEmptyAddReviewUpsert()
 })
 const addStepRules = {
   formGroupId: [{ required: true, message: () => t('formbusiness.workflowstep.pleaseSelectFormGroup'), trigger: 'change' }],
@@ -597,6 +609,7 @@ const resetStepAssignmentUpserts = () => {
   addStepForm.stepDeptUserUpsert = createEmptyDeptUserUpsert()
   addStepForm.stepUserUpsert = createEmptyUserUpsert()
   addStepForm.stepCustomUpsert = createEmptyCustomUpsert()
+  addStepForm.stepAddReviewUpsert = createEmptyAddReviewUpsert()
 }
 
 const resetUserPickerState = () => {
@@ -887,6 +900,11 @@ const handleEditStep = async (step) => {
           addStepForm.stepCustomUpsert.guidance = dto.guidance || ''
           addStepForm.stepCustomUpsert.logicalExplanation = dto.logicalExplanation || ''
         }
+      } else if (assignmentCode === 'AddReview') {
+        const dto = data.workflowStepAddReview || data.workflowStepAddReviewDto
+        if (dto) {
+          addStepForm.stepAddReviewUpsert.sortOrder = dto.sortOrder ?? 0
+        }
       }
 
       await loadAssignmentRelatedOptions(assignmentCode)
@@ -940,7 +958,8 @@ const getAssignmentTagType = (assignment) => {
     Org: 'primary',
     DeptUser: 'warning',
     User: 'danger',
-    Custom: 'success'
+    Custom: 'success',
+    AddReview: 'success'
   }
   return map[assignment] ?? 'info'
 }
@@ -1179,22 +1198,23 @@ const loadReviewModeOptions = async () => {
   }
 }
 
-const onAddStepFormGroupChange = async (formGroupId) => {
-  addStepForm.formTypeId = ''
-  dialogFormTypeOptions.value = []
-  if (formGroupId) {
-    await loadDialogFormTypeOptions(formGroupId)
-  }
-}
-
 // 仅加载弹窗用的表单类别下拉，不影响页面筛选
-const loadDialogFormTypeOptions = async (formGroupId) => {
-  if (!formGroupId) return
+const onAddStepFormGroupChange = async (formGroupId) => {
+  if (!formGroupId) {
+    dialogFormTypeOptions.value = []
+    addStepForm.formTypeId = ''
+    return
+  }
   addStepDialogLoading.value = true
   try {
-    dialogFormTypeOptions.value = await fetchFormTypeDropdown(formGroupId)
+    const formTypes = await fetchFormTypeDropdown(formGroupId)
+    // 选项与默认值必须同批赋值：el-select 会在 modelValue 变化时触发一次 change 校验，
+    // 若先置空再赋值，中间那次校验会让必填提示闪现一下
+    dialogFormTypeOptions.value = formTypes
+    addStepForm.formTypeId = formTypes.length > 0 ? formTypes[0].formTypeId : ''
   } catch {
     dialogFormTypeOptions.value = []
+    addStepForm.formTypeId = ''
   } finally {
     addStepDialogLoading.value = false
   }
@@ -1226,7 +1246,8 @@ const submitAddStep = async () => {
         stepOrgUpsert: { ...addStepForm.stepOrgUpsert },
         stepDeptUserUpsert: { ...addStepForm.stepDeptUserUpsert },
         stepUserUpsert: { ...addStepForm.stepUserUpsert },
-        stepCustomUpsert: { ...addStepForm.stepCustomUpsert }
+        stepCustomUpsert: { ...addStepForm.stepCustomUpsert },
+        stepAddReviewUpsert: { ...addStepForm.stepAddReviewUpsert }
       }
       const response = await post(
         isEditMode.value ? UPDATE_WORKFLOWSTEP_API : INSERT_WORKFLOWSTEP_API,
@@ -1267,6 +1288,11 @@ onMounted(async () => {
 .add-step-form .assignment-divider {
   /* 与相邻 .form-row 的 margin-bottom(18px) 保持一致，使分割线上下间距在 margin 折叠后视觉相等 */
   margin: 18px 0;
+}
+
+/* 加审（AddReivew）排序栏位：单独占半行宽度，右侧留空 */
+.dialog-form .form-row .el-form-item.half-width-item {
+  flex: 0 0 calc(50% - 10px);
 }
 
 /* 栏位权限弹窗：全选/全不选工具栏 */
