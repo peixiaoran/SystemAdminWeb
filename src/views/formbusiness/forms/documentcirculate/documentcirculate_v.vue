@@ -525,6 +525,11 @@ import en from 'element-plus/dist/locale/en.mjs'
 import { Document, Download, Clock, CircleCheck, RemoveFilled, Loading, Lock } from '@element-plus/icons-vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { TextStyle } from '@tiptap/extension-text-style'
+import Color from '@tiptap/extension-color'
+import Highlight from '@tiptap/extension-highlight'
+import TextAlign from '@tiptap/extension-text-align'
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import { post } from '@/utils/request'
 import {
   GET_DOCUMENTCIRCULATE_API,
@@ -632,11 +637,22 @@ const form = reactive({
   contentSummary: ''
 })
 
-// 内容摘要富文本编辑器（查看页始终只读）
+// 内容摘要富文本编辑器（查看页始终只读；扩展需与 documentcirculate_r.vue 编辑态保持一致，否则送审内容里的
+// 下划线/颜色/高亮/对齐/表格会因扩展缺失而渲染不出来）
 const editor = useEditor({
   content: '',
   editable: false,
-  extensions: [StarterKit]
+  extensions: [
+    StarterKit,
+    TextStyle,
+    Color,
+    Highlight.configure({ multicolor: true }),
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    Table.configure({ resizable: false }),
+    TableRow,
+    TableHeader,
+    TableCell
+  ]
 })
 
 function setContentSummaryEditorContent (html) {
@@ -1473,6 +1489,42 @@ onMounted(async () => {
   padding-left: 12px;
   border-left: 3px solid #dcdfe6;
   color: #909399;
+}
+
+.content-summary-body :deep(.ProseMirror table) {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0 0 8px;
+}
+
+.content-summary-body :deep(.ProseMirror th),
+.content-summary-body :deep(.ProseMirror td) {
+  min-width: 60px;
+  border: 1px solid #dcdfe6;
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+.content-summary-body :deep(.ProseMirror th) {
+  background: #f5f7fa;
+  font-weight: 600;
+  text-align: left;
+}
+
+.content-summary-body :deep(.ProseMirror pre) {
+  background: #282c34;
+  color: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0 0 8px;
+}
+
+.content-summary-body :deep(.ProseMirror hr) {
+  border: none;
+  border-top: 1px solid #dcdfe6;
+  margin: 12px 0;
 }
 
 .approval-comment-row :deep(.el-form-item) {

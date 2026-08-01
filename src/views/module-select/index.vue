@@ -324,8 +324,8 @@ const logout = async () => {
 .pmenu-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  row-gap: 32px;
-  column-gap: 96px;
+  row-gap: 28px;
+  column-gap: 72px;
   width: 100%;
   max-width: 1560px;
   justify-items: center;
@@ -340,14 +340,14 @@ const logout = async () => {
 @media (min-width: 992px) and (max-width: 1199px) {
   .pmenu-row {
     grid-template-columns: repeat(3, 1fr);
-    column-gap: 56px;
+    column-gap: 44px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .pmenu-row {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 44px;
+    column-gap: 36px;
   }
 }
 

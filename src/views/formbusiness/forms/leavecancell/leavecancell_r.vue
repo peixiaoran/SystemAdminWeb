@@ -1136,6 +1136,9 @@ async function getLeaveCancellDetail (formId) {
       return
     }
     await bindFormData(res.data || {})
+    if (isStepFieldVisible('Reject')) {
+      await fetchRejectStepDrop()
+    }
   } catch {
     // ignore
   }
@@ -1952,7 +1955,7 @@ async function fetchRejectStepDrop () {
   }
 }
 
-async function onReject () {
+function onReject () {
   const formId = String(form.formId || '')
   if (!formId) {
     ElMessage.warning(t('formbusiness.leavecancell.workflowNeedFormId'))
@@ -1960,8 +1963,6 @@ async function onReject () {
   }
   rejectForm.rejectStepId = ''
   rejectForm.rejectReason = ''
-  const ok = await fetchRejectStepDrop()
-  if (!ok) return
   rejectDialogVisible.value = true
 }
 

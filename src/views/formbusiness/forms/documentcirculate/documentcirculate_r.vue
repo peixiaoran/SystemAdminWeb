@@ -224,21 +224,51 @@
             <el-form-item :label="t('formbusiness.documentcirculate.contentSummary')" prop="contentSummary" class="content-summary-item">
               <div class="content-summary-editor" :class="{ 'is-disabled': !isStepFieldEditable('ContentSummary') }">
                 <div v-if="isStepFieldEditable('ContentSummary')" class="content-summary-toolbar">
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('bold') }" @click="editor?.chain().focus().toggleBold().run()">B</button>
-                  <button type="button" class="cs-tb-btn cs-tb-btn--italic" :class="{ 'is-active': editor?.isActive('italic') }" @click="editor?.chain().focus().toggleItalic().run()">I</button>
-                  <button type="button" class="cs-tb-btn cs-tb-btn--strike" :class="{ 'is-active': editor?.isActive('strike') }" @click="editor?.chain().focus().toggleStrike().run()">S</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('bold') }" title="Bold" @click="editor?.chain().focus().toggleBold().run()">B</button>
+                  <button type="button" class="cs-tb-btn cs-tb-btn--italic" :class="{ 'is-active': editor?.isActive('italic') }" title="Italic" @click="editor?.chain().focus().toggleItalic().run()">I</button>
+                  <button type="button" class="cs-tb-btn cs-tb-btn--underline" :class="{ 'is-active': editor?.isActive('underline') }" title="Underline" @click="editor?.chain().focus().toggleUnderline().run()">U</button>
+                  <button type="button" class="cs-tb-btn cs-tb-btn--strike" :class="{ 'is-active': editor?.isActive('strike') }" title="Strike" @click="editor?.chain().focus().toggleStrike().run()">S</button>
                   <span class="cs-tb-sep"></span>
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 1 }) }" @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()">H1</button>
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">H2</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 1 }) }" title="H1" @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()">H1</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }" title="H2" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">H2</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }" title="H3" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()">H3</button>
                   <span class="cs-tb-sep"></span>
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('bulletList') }" @click="editor?.chain().focus().toggleBulletList().run()">•</button>
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('orderedList') }" @click="editor?.chain().focus().toggleOrderedList().run()">1.</button>
-                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('blockquote') }" @click="editor?.chain().focus().toggleBlockquote().run()">”</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'left' }) }" title="Align left" @click="editor?.chain().focus().setTextAlign('left').run()">⇤</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'center' }) }" title="Align center" @click="editor?.chain().focus().setTextAlign('center').run()">⇔</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'right' }) }" title="Align right" @click="editor?.chain().focus().setTextAlign('right').run()">⇥</button>
                   <span class="cs-tb-sep"></span>
-                  <button type="button" class="cs-tb-btn" @click="editor?.chain().focus().undo().run()">⟲</button>
-                  <button type="button" class="cs-tb-btn" @click="editor?.chain().focus().redo().run()">⟳</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('bulletList') }" title="Bullet list" @click="editor?.chain().focus().toggleBulletList().run()">•</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('orderedList') }" title="Ordered list" @click="editor?.chain().focus().toggleOrderedList().run()">1.</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('blockquote') }" title="Blockquote" @click="editor?.chain().focus().toggleBlockquote().run()">”</button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('codeBlock') }" title="Code block" @click="editor?.chain().focus().toggleCodeBlock().run()">{ }</button>
+                  <button type="button" class="cs-tb-btn" title="Horizontal rule" @click="editor?.chain().focus().setHorizontalRule().run()">―</button>
+                  <span class="cs-tb-sep"></span>
+                  <label class="cs-tb-color" title="Text color">
+                    A
+                    <input type="color" @input="onTextColorInput" />
+                  </label>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('highlight') }" title="Highlight" @click="editor?.chain().focus().toggleHighlight({ color: '#fff3a3' }).run()">
+                    <el-icon><MagicStick /></el-icon>
+                  </button>
+                  <button type="button" class="cs-tb-btn" :class="{ 'is-active': editor?.isActive('link') }" title="Link" @click="onToggleLink">
+                    <el-icon><Link /></el-icon>
+                  </button>
+                  <button type="button" class="cs-tb-btn" title="Insert table" @click="editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
+                    <el-icon><Grid /></el-icon>
+                  </button>
+                  <span class="cs-tb-sep"></span>
+                  <button type="button" class="cs-tb-btn" title="Undo" @click="editor?.chain().focus().undo().run()">⟲</button>
+                  <button type="button" class="cs-tb-btn" title="Redo" @click="editor?.chain().focus().redo().run()">⟳</button>
                 </div>
-                <editor-content :editor="editor" class="content-summary-body" />
+                <div v-if="isStepFieldEditable('ContentSummary') && editor?.isActive('table')" class="content-summary-toolbar content-summary-toolbar--table">
+                  <button type="button" class="cs-tb-btn" :title="t('formbusiness.documentcirculate.tableAddColumn')" @click="editor?.chain().focus().addColumnBefore().run()"><el-icon><Plus /></el-icon>{{ t('formbusiness.documentcirculate.tableColumn') }}</button>
+                  <button type="button" class="cs-tb-btn" :title="t('formbusiness.documentcirculate.tableDeleteColumn')" @click="editor?.chain().focus().deleteColumn().run()"><el-icon><Minus /></el-icon>{{ t('formbusiness.documentcirculate.tableColumn') }}</button>
+                  <button type="button" class="cs-tb-btn" :title="t('formbusiness.documentcirculate.tableAddRow')" @click="editor?.chain().focus().addRowAfter().run()"><el-icon><Plus /></el-icon>{{ t('formbusiness.documentcirculate.tableRow') }}</button>
+                  <button type="button" class="cs-tb-btn" :title="t('formbusiness.documentcirculate.tableDeleteRow')" @click="editor?.chain().focus().deleteRow().run()"><el-icon><Minus /></el-icon>{{ t('formbusiness.documentcirculate.tableRow') }}</button>
+                  <span class="cs-tb-sep"></span>
+                  <button type="button" class="cs-tb-btn" :title="t('formbusiness.documentcirculate.tableDeleteTable')" @click="editor?.chain().focus().deleteTable().run()"><el-icon><Close /></el-icon>{{ t('formbusiness.documentcirculate.tableDeleteTable') }}</button>
+                </div>
+                <editor-content :editor="editor" class="content-summary-body" @click="onContentSummaryClick" />
               </div>
             </el-form-item>
           </el-col>
@@ -733,9 +763,15 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock } from '@element-plus/icons-vue'
+import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Lock, Link, Grid, Plus, Minus, Close, MagicStick } from '@element-plus/icons-vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { TextStyle } from '@tiptap/extension-text-style'
+import Color from '@tiptap/extension-color'
+import Highlight from '@tiptap/extension-highlight'
+import TextAlign from '@tiptap/extension-text-align'
+import Placeholder from '@tiptap/extension-placeholder'
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import { post } from '@/utils/request'
 import {
   INIT_DOCUMENTCIRCULATE_API,
@@ -851,7 +887,24 @@ const rules = computed(() => {
 // 内容摘要富文本编辑器
 const editor = useEditor({
   content: '',
-  extensions: [StarterKit],
+  extensions: [
+    StarterKit.configure({
+      link: {
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' }
+      }
+    }),
+    TextStyle,
+    Color,
+    Highlight.configure({ multicolor: true }),
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    Table.configure({ resizable: true }),
+    TableRow,
+    TableHeader,
+    TableCell,
+    Placeholder.configure({ placeholder: () => t('formbusiness.documentcirculate.contentSummaryPlaceholder') })
+  ],
   onUpdate: ({ editor: ed }) => {
     form.contentSummary = ed.getHTML()
     // 仅在有内容时触发校验，用于清掉已有的必填提示；空内容不主动报错，避免加载时误报
@@ -865,6 +918,47 @@ function setContentSummaryEditorContent (html) {
   const value = html || ''
   if (editor.value && editor.value.getHTML() !== value) {
     editor.value.commands.setContent(value, false)
+  }
+}
+
+function onTextColorInput (event) {
+  const value = event?.target?.value
+  if (!value) return
+  editor.value?.chain().focus().setColor(value).run()
+}
+
+/** Link 扩展设置了 openOnClick: false（避免编辑时误触跳转），这里补一个手动打开：
+ *  只读态直接点击打开；可编辑态需按住 Ctrl/Cmd 点击，避免和光标定位冲突 */
+function onContentSummaryClick (event) {
+  const anchor = event.target?.closest?.('a')
+  if (!anchor?.href) return
+  const isEditable = isStepFieldEditable('ContentSummary')
+  if (!isEditable || event.ctrlKey || event.metaKey) {
+    event.preventDefault()
+    window.open(anchor.href, '_blank', 'noopener,noreferrer')
+  }
+}
+
+async function onToggleLink () {
+  if (!editor.value) return
+  if (editor.value.isActive('link')) {
+    editor.value.chain().focus().unsetLink().run()
+    return
+  }
+  try {
+    const { value } = await ElMessageBox.prompt(
+      t('formbusiness.documentcirculate.linkUrlPlaceholder'),
+      t('formbusiness.documentcirculate.linkDialogTitle'),
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        inputPattern: /^https?:\/\/.+/i,
+        inputErrorMessage: t('formbusiness.documentcirculate.linkInvalidUrl')
+      }
+    )
+    editor.value.chain().focus().extendMarkRange('link').setLink({ href: value }).run()
+  } catch {
+    // 用户取消
   }
 }
 
@@ -1663,6 +1757,9 @@ async function getDocumentCirculateDetail (formId) {
       return
     }
     await bindFormData(res.data || {})
+    if (isStepFieldVisible('Reject')) {
+      await fetchRejectStepDrop()
+    }
   } catch {
     // ignore
   }
@@ -1857,7 +1954,7 @@ async function fetchRejectStepDrop () {
   }
 }
 
-async function onReject () {
+function onReject () {
   const formId = String(form.formId || '')
   if (!formId) {
     ElMessage.warning(t('formbusiness.documentcirculate.workflowNeedFormId'))
@@ -1865,8 +1962,6 @@ async function onReject () {
   }
   rejectForm.rejectStepId = ''
   rejectForm.rejectReason = ''
-  const ok = await fetchRejectStepDrop()
-  if (!ok) return
   rejectDialogVisible.value = true
 }
 
@@ -2466,12 +2561,62 @@ onMounted(async () => {
   text-decoration: line-through;
 }
 
+.cs-tb-btn--underline {
+  text-decoration: underline;
+}
+
+.cs-tb-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cs-tb-color {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 4px;
+  color: #606266;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cs-tb-color:hover {
+  background: #ecf5ff;
+  color: var(--el-color-primary);
+}
+
+.cs-tb-color input[type='color'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
 .cs-tb-sep {
   display: inline-block;
   width: 1px;
   height: 16px;
   margin: 0 4px;
   background: #e4e7ed;
+}
+
+.content-summary-toolbar--table {
+  border-bottom: 1px dashed #e4e7ed;
+  background: #f5f9ff;
+}
+
+.content-summary-toolbar--table .cs-tb-btn {
+  font-weight: 400;
+  gap: 2px;
 }
 
 .content-summary-body {
@@ -2504,6 +2649,55 @@ onMounted(async () => {
   padding-left: 12px;
   border-left: 3px solid #dcdfe6;
   color: #909399;
+}
+
+.content-summary-body :deep(.ProseMirror table) {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0 0 8px;
+}
+
+.content-summary-body :deep(.ProseMirror th),
+.content-summary-body :deep(.ProseMirror td) {
+  min-width: 60px;
+  border: 1px solid #dcdfe6;
+  padding: 6px 8px;
+  vertical-align: top;
+  position: relative;
+}
+
+.content-summary-body :deep(.ProseMirror th) {
+  background: #f5f7fa;
+  font-weight: 600;
+  text-align: left;
+}
+
+.content-summary-body :deep(.ProseMirror .selectedCell) {
+  background: color-mix(in srgb, var(--el-color-primary) 12%, transparent);
+}
+
+.content-summary-body :deep(.ProseMirror pre) {
+  background: #282c34;
+  color: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0 0 8px;
+}
+
+.content-summary-body :deep(.ProseMirror hr) {
+  border: none;
+  border-top: 1px solid #dcdfe6;
+  margin: 12px 0;
+}
+
+.content-summary-body :deep(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  color: #a8abb2;
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 .approval-comment-row :deep(.el-form-item) {
