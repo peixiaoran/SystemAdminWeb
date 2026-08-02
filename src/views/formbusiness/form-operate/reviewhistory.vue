@@ -411,18 +411,8 @@ const isRouteValid = (resolved) => {
   return !resolved.matched.some(r => r.path === '/:pathMatch(.*)*')
 }
 
-const openPopupWindow = (href, namePrefix = 'review_history_view') => {
-  const aw = window.screen.availWidth
-  const ah = window.screen.availHeight
-  const features = [
-    `width=${aw}`, `height=${ah}`, 'left=0', 'top=0', 'resizable=yes', 'scrollbars=yes'
-  ].join(',')
-  const popup = window.open(href, `${namePrefix}_${Date.now()}`, features)
-  popup?.focus()
-  try {
-    popup?.moveTo(0, 0)
-    popup?.resizeTo(aw, ah)
-  } catch { /* resizeTo not available in all browsers */ }
+const openPopupWindow = (href) => {
+  window.open(href, '_blank', 'noopener')
 }
 
 const openFormPage = (row) => {
