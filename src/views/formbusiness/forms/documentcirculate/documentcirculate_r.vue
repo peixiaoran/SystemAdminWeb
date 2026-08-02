@@ -450,7 +450,7 @@
           <el-table-column
             prop="stepName"
             :label="t('formbusiness.documentcirculate.reviewLogStep')"
-            width="130"
+            width="150"
             align="left"
           >
             <template #default="{ row }">
@@ -459,7 +459,7 @@
           </el-table-column>
           <el-table-column
             :label="t('formbusiness.documentcirculate.reviewLogOperationUser')"
-            width="160"
+            width="165"
             align="left"
           >
             <template #default="{ row }">
@@ -512,7 +512,7 @@
           </el-table-column>
           <el-table-column
             :label="t('formbusiness.documentcirculate.reviewLogDateTime')"
-            width="155"
+            width="180"
             align="center"
           >
             <template #default="{ row }">
