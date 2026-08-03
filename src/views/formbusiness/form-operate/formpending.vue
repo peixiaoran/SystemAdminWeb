@@ -18,7 +18,7 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormGroup')"
             filterable
-            class="pending-filter-select"
+            style="width: 220px;"
             @change="handleFormGroupChange"
           >
             <el-option
@@ -35,7 +35,7 @@
             v-model="searchForm.formTypeId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormType')"
             filterable
-            class="pending-filter-select"
+            style="width: 220px;"
             @change="handleFormTypeChange"
           >
             <el-option
@@ -574,10 +574,6 @@ onUnmounted(() => {
   min-width: 1280px;
 }
 
-.pending-filter-select {
-  width: 220px;
-  min-width: 200px;
-}
 
 .form-pending-reviewers-link {
   font-size: 12px;

@@ -7,7 +7,7 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.applyform.pleaseSelectFormGroup')"
             filterable
-            style="width: 180px"
+            style="width: 220px"
             @change="handleFormGroupChange"
           >
             <el-option

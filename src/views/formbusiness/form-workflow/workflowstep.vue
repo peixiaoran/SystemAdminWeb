@@ -6,7 +6,7 @@
           <el-select 
             v-model="searchForm.formGroupId" 
             filterable
-            style="width: 180px"
+            style="width: 220px"
             @change="handleFormGroupChange"
           >
             <el-option
@@ -21,7 +21,7 @@
           <el-select 
             v-model="searchForm.formTypeId" 
             filterable
-            style="width: 180px"
+            style="width: 220px"
             @change="handleFormTypeChange"
           >
             <el-option
@@ -1139,7 +1139,8 @@ const openAddStepDialog = async () => {
   resetAddStepDialogState()
   addStepFormRef.value?.resetFields()
 
-  const formGroupId = formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : ''
+  // 优先带入当前查询条件已选中的表单组/类别，找不到时才回退到第一个选项
+  const formGroupId = searchForm.formGroupId || (formGroupOptions.value.length > 0 ? formGroupOptions.value[0].formGroupId : '')
 
   try {
     const [, , formTypes] = await Promise.all([
@@ -1158,7 +1159,10 @@ const openAddStepDialog = async () => {
       addStepForm.formGroupId = formGroupId
       dialogFormTypeOptions.value = formTypes
       if (dialogFormTypeOptions.value.length > 0) {
-        addStepForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
+        const queriedFormType = formGroupId === searchForm.formGroupId
+          ? dialogFormTypeOptions.value.find(item => item.formTypeId === searchForm.formTypeId)
+          : null
+        addStepForm.formTypeId = queriedFormType ? queriedFormType.formTypeId : dialogFormTypeOptions.value[0].formTypeId
       }
       await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
     }

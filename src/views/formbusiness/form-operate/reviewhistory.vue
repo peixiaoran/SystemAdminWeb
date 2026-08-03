@@ -7,7 +7,7 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.reviewhistory.pleaseSelectFormGroup')"
             filterable
-            class="history-filter-select"
+            style="width: 220px;"
             @change="handleFormGroupChange"
           >
             <el-option
@@ -24,7 +24,7 @@
             v-model="searchForm.formTypeId"
             :placeholder="$t('formbusiness.reviewhistory.pleaseSelectFormType')"
             filterable
-            class="history-filter-select"
+            style="width: 220px;"
             @change="handleFormTypeChange"
           >
             <el-option
@@ -526,8 +526,4 @@ onMounted(async () => {
   min-width: 1280px;
 }
 
-.history-filter-select {
-  width: 220px;
-  min-width: 200px;
-}
 </style>

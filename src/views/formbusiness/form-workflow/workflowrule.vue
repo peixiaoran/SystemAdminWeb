@@ -3,7 +3,7 @@
     <el-card class="conventional-card">
       <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程规则筛选">
         <el-form-item :label="$t('formbusiness.workflowrule.formGroupName')">
-          <el-select v-model="searchForm.formGroupId" filterable style="width: 180px" @change="getFormTypeOptions">
+          <el-select v-model="searchForm.formGroupId" filterable style="width: 220px" @change="getFormTypeOptions">
             <el-option
               v-for="item in formGroupOptions"
               :key="item.formGroupId"
@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrule.formTypeName')">
-          <el-select v-model="searchForm.formTypeId" filterable style="width: 180px" @change="handleFilterChange">
+          <el-select v-model="searchForm.formTypeId" filterable style="width: 220px" @change="handleFilterChange">
             <el-option
               v-for="item in formTypeOptions"
               :key="item.formTypeId"
@@ -23,7 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrule.positionName')">
-          <el-select v-model="searchForm.positionId" filterable style="width: 180px" @change="handleFilterChange">
+          <el-select v-model="searchForm.positionId" filterable style="width: 220px" @change="handleFilterChange">
             <el-option :label="$t('formbusiness.workflowrule.pleaseSelect')" value="0" />
             <el-option
               v-for="item in positionOptions"

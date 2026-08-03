@@ -439,9 +439,9 @@ const loadDialogRuleOptions = async (formTypeId) => {
   }
 }
 
-// formTypeId 取弹窗内 dialogForm.formTypeId，确保步骤选项与所选表单类别一致
-const loadDialogStepOptions = async () => {
-  const formTypeId = dialogForm.formTypeId
+// 默认取弹窗内 dialogForm.formTypeId，确保步骤选项与所选表单类别一致；
+// handleEdit 场景需要在赋值 dialogForm.formTypeId 之前预取选项，因此支持显式传参
+const loadDialogStepOptions = async (formTypeId = dialogForm.formTypeId) => {
   if (!formTypeId) { dialogStepOptions.value = []; return }
   try {
     const res = await post(GET_WORKFLOWSTEP_DROPDOWN_API, buildFormData({ formTypeId: String(formTypeId) }), FORM_DATA_OPTIONS)
@@ -523,29 +523,31 @@ const handleEdit = async (row) => {
   dialogVisible.value = true
   dialogLoading.value = true
   try {
-    const res = await post(
-      GET_WORKFLOWRULESTEP_ENTITY_API,
-      buildFormData({ ruleId: row.ruleId, currentStepId: row.currentStepId }),
-      FORM_DATA_OPTIONS
-    )
+    // 当前列表本就是在选定的表单组/类别下查询出来的，可提前作为下拉选项的加载依据，
+    // 与实体数据并行请求，避免下拉框先回显裸 id、待 options 到位后再刷新成名称
+    const formGroupId = row.formGroupId || searchForm.formGroupId || ''
+    const formTypeId  = row.formTypeId  || searchForm.formTypeId  || ''
+    const [res] = await Promise.all([
+      post(
+        GET_WORKFLOWRULESTEP_ENTITY_API,
+        buildFormData({ ruleId: row.ruleId, currentStepId: row.currentStepId }),
+        FORM_DATA_OPTIONS
+      ),
+      loadDialogFormTypeOptions(formGroupId),
+      loadDialogRuleOptions(formTypeId),
+      loadDialogStepOptions(formTypeId)
+    ])
     if (res.code === 200 && res.data) {
       isEditMode.value = true
       const d = res.data
-      dialogForm.formGroupId   = d.formGroupId   ?? searchForm.formGroupId ?? ''
-      dialogForm.formTypeId    = d.formTypeId    ?? searchForm.formTypeId  ?? ''
+      // options 已就绪，此时再绑定 id，下拉框可直接显示正确名称
+      dialogForm.formGroupId   = d.formGroupId   ?? formGroupId
+      dialogForm.formTypeId    = d.formTypeId    ?? formTypeId
       dialogForm.ruleId        = d.ruleId        || row.ruleId        || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
       dialogForm.guidance      = d.guidance ?? d.Guidance ?? row.guidance ?? ''
       dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 0
-
-      const tasks = []
-      if (dialogForm.formGroupId) tasks.push(loadDialogFormTypeOptions(dialogForm.formGroupId))
-      if (dialogForm.formTypeId) {
-        tasks.push(loadDialogRuleOptions(dialogForm.formTypeId))
-        tasks.push(loadDialogStepOptions())
-      }
-      if (tasks.length) await Promise.all(tasks)
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false

@@ -281,17 +281,6 @@ const pmenuRoutes = [
               [ROUTE_CONFIG.META.AUTH]: true,
               noTag: false
             },
-          },
-          {
-            path: 'userform',
-            name: 'UserForm',
-            component: () => import('../views/systembasicmgmt/user-settings/userform.vue'),
-            meta: { 
-              title: 'route.userform', 
-              icon: 'Management',
-              [ROUTE_CONFIG.META.AUTH]: true,
-              noTag: false
-            },
           }
         ]
       },
