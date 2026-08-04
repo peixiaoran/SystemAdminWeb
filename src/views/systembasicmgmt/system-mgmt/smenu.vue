@@ -3,17 +3,17 @@
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索表单">
         <el-form-item :label="$t('systembasicmgmt.smenu.module')">
-          <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:180px" @change="handleFiltermoduleChange">
+          <el-select v-model="filters.moduleId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.module')" style="width:220px" @change="handleFiltermoduleChange">
             <el-option v-for="item in moduleDropList" :key="item.moduleId" :label="item.moduleName" :value="item.moduleId" :disabled="item.disabled" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')">
-          <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.pmenu')" style="width:180px" @change="handleFilterParentMenuChange">
+          <el-select v-model="filters.parentMenuId" :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.smenu.pmenu')" style="width:220px" @change="handleFilterParentMenuChange">
             <el-option v-for="item in filterPMenuList" :key="item.menuId" :label="item.menuName" :value="item.menuId" :disabled="item.disabled" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.smenu.smenuName')">
-          <el-input style="width: 180px"
+          <el-input style="width: 220px"
                     v-model="filters.menuName"
                     :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.smenu.smenuName')" />
         </el-form-item>

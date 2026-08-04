@@ -3,10 +3,10 @@
   <el-card class="conventional-card">
     <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索部门级别">
       <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')">
-        <el-input v-model="filters.departmentLevelCode" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:170px" />
+        <el-input v-model="filters.departmentLevelCode" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" style="width:220px" />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelName')">
-        <el-input v-model="filters.departmentLevelName" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:170px" />
+        <el-input v-model="filters.departmentLevelName" :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelName')" style="width:220px" />
       </el-form-item>
       <el-form-item class="form-button-group">
         <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>
@@ -37,7 +37,7 @@
         <el-table-column type="index" :label="$t('systembasicmgmt.departmentLevel.index')" width="70" align="center" fixed />
         <el-table-column prop="departmentLevelCode" :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" align="center" min-width="150" />
         <el-table-column prop="departmentLevelNameCn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" align="left" min-width="200" />
-        <el-table-column prop="departmentLevelNameEn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="200" />
+        <el-table-column prop="departmentLevelNameEn" :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" align="left" min-width="280" />
         <el-table-column prop="description" :label="$t('systembasicmgmt.departmentLevel.description')" align="left" min-width="250" />
         <el-table-column :label="$t('systembasicmgmt.departmentLevel.operation')" min-width="130" fixed="right" align="center">
           <template #default="scope">

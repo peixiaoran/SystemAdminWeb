@@ -3,7 +3,7 @@
   <el-card class="conventional-card">
     <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="国籍信息">
       <el-form-item :label="$t('systembasicmgmt.nationalityInfo.filter.nationalityName')">
-        <el-input style="width: 180px;"
+        <el-input style="width: 220px;"
                   v-model="filters.nationalityName"
                   :placeholder="$t('systembasicmgmt.nationalityInfo.pleaseInputName')" />
       </el-form-item>

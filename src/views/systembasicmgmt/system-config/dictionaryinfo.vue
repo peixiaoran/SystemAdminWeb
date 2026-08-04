@@ -6,7 +6,7 @@
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.module')">
           <el-select v-model="filters.moduleId"
-                    style="width: 180px;"
+                    style="width: 220px;"
                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
                     @change="handleModuleChange"
                     :clearable="false">
@@ -20,7 +20,7 @@
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicType')">
           <el-select v-model="filters.dicType"
-                    style="width: 180px;"
+                    style="width: 220px;"
                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
                     :clearable="false"
                     @change="handleDicTypeChange">
@@ -33,7 +33,7 @@
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicNameCn')">
           <el-input v-model="filters.dicName"
-                   style="width: 180px;"
+                   style="width: 220px;"
                    :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')"
                    clearable />
         </el-form-item>

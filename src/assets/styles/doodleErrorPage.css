@@ -1,0 +1,336 @@
+/* ============================================================
+   手绘涂鸦风格错误页（403 / 404）共用样式
+   版面：左文右图紧凑成组，整组偏左，右侧留白，无卡片无外框
+   规则：仅描边 + 硬阴影，无渐变 / 模糊阴影 / 发光 / 玻璃拟态
+   调色板：纸色 #FAF9F7、墨色 #1A1A1A、主色块 #E8E5DE
+          各页另有一枚浅色点缀（--doodle-accent），克制使用
+   ============================================================ */
+
+.doodle-page {
+  --doodle-ink: #1A1A1A;
+  --doodle-paper: #FAF9F7;
+  --doodle-tint: #E8E5DE;
+  /* 默认点缀色与主色块一致，由各页覆盖 */
+  --doodle-accent: #E8E5DE;
+
+  height: 100%;
+  min-height: 100%;
+  /* 全局 html/body 为 overflow:hidden，滚动交给页面容器自己处理 */
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(40px, 7vh, 80px) clamp(24px, 5vw, 88px);
+  background-color: var(--doodle-paper);
+  color: var(--doodle-ink);
+  font-family: Inter, 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC',
+    'Microsoft YaHei', system-ui, sans-serif;
+}
+
+.doodle-page *,
+.doodle-page *::before,
+.doodle-page *::after {
+  box-sizing: border-box;
+}
+
+/* 文案与插图并排成一组：列宽收紧，避免两栏被拉开 */
+.doodle-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 430px) auto;
+  align-items: center;
+  gap: clamp(28px, 4vw, 68px);
+  /* 整组偏左，右侧留白是构图的一部分 */
+  margin-left: clamp(0px, 4vw, 72px);
+  margin-right: auto;
+}
+
+/* ---------- 左侧文案 ---------- */
+
+.doodle-copy {
+  text-align: left;
+}
+
+/* 眉标：短横线 + 小字，无边框 */
+.doodle-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: rgba(26, 26, 26, 0.6);
+}
+
+.doodle-eyebrow svg {
+  flex: none;
+  width: 30px;
+  height: 6px;
+}
+
+.doodle-eyebrow svg path {
+  fill: none;
+  stroke: var(--doodle-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.doodle-code {
+  margin: 0;
+  font-size: clamp(68px, 9vw, 132px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+}
+
+/* 数字下方的手绘横线，替代规整分隔线 */
+.doodle-underline {
+  display: block;
+  width: clamp(132px, 16vw, 196px);
+  height: 9px;
+  margin: 18px 0 0;
+}
+
+.doodle-underline path {
+  fill: none;
+  stroke: var(--doodle-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.doodle-title {
+  margin: 26px 0 0;
+  font-size: clamp(21px, 2.2vw, 28px);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.doodle-desc {
+  margin: 14px 0 0;
+  max-width: 430px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(26, 26, 26, 0.66);
+}
+
+/* ---------- 右侧插图区 ---------- */
+
+.doodle-figure {
+  position: relative;
+  justify-self: start;
+  width: clamp(260px, 30vw, 380px);
+  height: clamp(260px, 30vw, 380px);
+  /* 相对文案略微上提，两栏不齐平 */
+  transform: translateY(-12px);
+}
+
+/* 浅色底衬：一团手绘的不规则色块，把主图与配件收成一组 */
+.doodle-blob {
+  position: absolute;
+  top: 8%;
+  left: 9%;
+  width: 84%;
+  height: 84%;
+}
+
+.doodle-blob path {
+  fill: var(--doodle-accent);
+  stroke: none;
+}
+
+/* 主插图 */
+.doodle-art {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: 62%;
+  height: 62%;
+  transform: translate(-50%, -50%);
+}
+
+/* 配件插图：钥匙、放大镜之类 */
+.doodle-sticker {
+  position: absolute;
+  width: 27%;
+  height: 27%;
+}
+
+/* 散落的小笔画：星点、弧线、点阵 */
+.doodle-mark {
+  position: absolute;
+  width: 15%;
+  height: 15%;
+}
+
+/* 远处的一笔，用来压住右侧留白 */
+.doodle-drift {
+  position: absolute;
+  width: clamp(46px, 5vw, 68px);
+  height: clamp(46px, 5vw, 68px);
+  right: clamp(-40px, -4vw, -20px);
+  bottom: -6%;
+}
+
+/* 统一笔触；线宽按显示尺寸补偿，保证是"同一支笔" */
+.art-line {
+  fill: none;
+  stroke: var(--doodle-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.doodle-sticker .art-line {
+  stroke-width: 3;
+}
+
+.doodle-mark .art-line,
+.doodle-drift .art-line {
+  stroke-width: 4;
+}
+
+.art-line--thin {
+  stroke-width: 1.6;
+}
+
+/* 色块：与描边故意错位 1~2px，模拟手工上色出界 */
+.art-tint {
+  fill: var(--doodle-tint);
+  stroke: none;
+}
+
+.art-accent {
+  fill: var(--doodle-accent);
+  stroke: none;
+}
+
+/* 叠在底衬上的配件，用纸色垫底，避免与底衬糊在一起 */
+.art-paper {
+  fill: var(--doodle-paper);
+  stroke: none;
+}
+
+/* ---------- 操作 ---------- */
+
+.doodle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 38px;
+}
+
+.doodle-btn {
+  min-width: 140px;
+  padding: 12px 24px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--doodle-ink);
+  background-color: transparent;
+  /* 保留线框：这是手绘 line-art 的语言，与被去掉的卡片外框不同 */
+  border: 1.5px solid var(--doodle-ink);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+.doodle-btn:hover {
+  background-color: var(--doodle-accent);
+}
+
+.doodle-btn:active {
+  transform: translate(1px, 1px);
+}
+
+.doodle-btn:focus-visible {
+  outline: 2px solid var(--doodle-ink);
+  outline-offset: 3px;
+}
+
+/* 主操作：填入主色块，并抬起一层硬阴影 */
+.doodle-btn--solid {
+  background-color: var(--doodle-tint);
+  box-shadow: 3px 3px 0 var(--doodle-ink);
+}
+
+.doodle-btn--solid:hover {
+  background-color: var(--doodle-tint);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--doodle-ink);
+}
+
+.doodle-btn--solid:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--doodle-ink);
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 900px) {
+  .doodle-page {
+    align-items: flex-start;
+    padding: clamp(40px, 7vh, 64px) clamp(24px, 6vw, 48px);
+  }
+
+  .doodle-scene {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin-left: 0;
+  }
+
+  /* 插图移到文案上方，仍靠左，不回到居中构图 */
+  .doodle-figure {
+    order: -1;
+    justify-self: start;
+    width: 250px;
+    height: 220px;
+    margin-left: -10px;
+    transform: none;
+  }
+
+  .doodle-blob {
+    top: 4%;
+    left: 6%;
+    width: 78%;
+    height: 88%;
+  }
+
+  .doodle-art {
+    width: 58%;
+    height: 66%;
+  }
+
+  .doodle-drift {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .doodle-desc {
+    font-size: 14px;
+  }
+
+  .doodle-actions {
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .doodle-btn {
+    flex: 1 1 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doodle-btn {
+    transition: none;
+  }
+
+  .doodle-btn:hover,
+  .doodle-btn:active,
+  .doodle-btn--solid:hover,
+  .doodle-btn--solid:active {
+    transform: none;
+  }
+}

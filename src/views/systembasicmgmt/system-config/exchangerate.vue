@@ -6,7 +6,7 @@
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="汇率搜索表单">
         <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.currencyCode')">
           <el-select v-model="filters.currencyCode"
-                    style="width: 180px;"
+                    style="width: 220px;"
                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
                     :clearable="false"
                     @change="handleCurrencyChange">
@@ -20,7 +20,7 @@
         <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.yearMonth')">
           <el-date-picker v-model="filters.yearMonth"
                          type="month"
-                         style="width: 180px;"
+                         style="width: 220px;"
                          :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
                          format="YYYY-MM"
                          value-format="YYYY-MM"

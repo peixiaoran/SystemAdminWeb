@@ -15,20 +15,20 @@
                         filterable
                         :filter-node-method="filterNodeMethod"
                         @change="handleDepartmentChange"
-                        style="width: 190px;"
+                        style="width: 220px;"
                         popper-class="main-dept-filter-popper"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                     <el-input 
                         v-model="filters.userNo"
-                        style="width: 150px;"
+                        style="width: 220px;"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')" />
                 </el-form-item>
                 <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
-                    <el-input 
+                    <el-input
                         v-model="filters.userName"
-                        style="width: 180px;"
+                        style="width: 220px;"
                         :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')" />
                 </el-form-item>
                 <el-form-item class="form-button-group">
@@ -169,7 +169,7 @@
                             filterable
                             @change="handleDialogDeptFilterChange"
                             :filter-node-method="filterNodeMethod"
-                            style="width: 210px;"
+                            style="width: 220px;"
                             popper-class="main-dept-filter-popper"
                             :clearable="false"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseSelectDepartment')" />
@@ -177,14 +177,14 @@
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.userNo')">
                         <el-input
                             v-model="dialogUserFilters.userNo"
-                            style="width: 180px;"
+                            style="width: 220px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserNo')"
                             clearable />
                     </el-form-item>
                     <el-form-item :label="$t('systembasicmgmt.userPartTime.name')">
                         <el-input
                             v-model="dialogUserFilters.userName"
-                            style="width: 180px;"
+                            style="width: 220px;"
                             :placeholder="$t('systembasicmgmt.userPartTime.pleaseEnterUserName')"
                             clearable />
                     </el-form-item>

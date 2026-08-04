@@ -3,10 +3,10 @@
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleCode')">
-          <el-input v-model="filters.moduleCode" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleCode')" style="width:170px" />
+          <el-input v-model="filters.moduleCode" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleCode')" style="width:220px" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleNameCh')">
-          <el-input v-model="filters.moduleName" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleNameCh')" style="width:200px" />
+          <el-input v-model="filters.moduleName" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleNameCh')" style="width:220px" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>

@@ -6,7 +6,7 @@
           <el-input
             v-model="searchForm.laborName"
             :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
-            style="width: 200px"
+            style="width: 220px"
           />
         </el-form-item>
         <el-form-item class="form-button-group">

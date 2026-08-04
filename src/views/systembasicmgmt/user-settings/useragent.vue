@@ -23,7 +23,7 @@
             filterable
             :filter-node-method="filterNodeMethod"
             @change="handleDepartmentChange"
-            style="width: 190px;"
+            style="width: 220px;"
             popper-class="main-dept-filter-popper"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
           />
@@ -31,7 +31,7 @@
         <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
           <el-input 
             v-model="filters.userNo"
-            style="width: 150px;"
+            style="width: 220px;"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserNo')"
             clearable 
           />
@@ -39,7 +39,7 @@
         <el-form-item :label="$t('systembasicmgmt.userAgent.userName')">
           <el-input 
             v-model="filters.userName"
-            style="width: 200px;"
+            style="width: 220px;"
             :placeholder="$t('systembasicmgmt.userAgent.pleaseEnterUserName')"
             clearable 
           />
@@ -177,7 +177,7 @@
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectStartTime')"
               :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
               @change="handleStartTimeChange"
-              style="width: 200px;"
+              style="width: 220px;"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss" 
             />
@@ -193,7 +193,7 @@
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectEndTime')"
               :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
               @change="handleEndTimeChange"
-              style="width: 200px;"
+              style="width: 220px;"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss" 
             />
@@ -224,7 +224,7 @@
               filterable
               :filter-node-method="filterNodeMethod"
               @change="handleUserSelectSearch"
-              style="width: 210px;"
+              style="width: 220px;"
               popper-class="main-dept-filter-popper"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')"
               :clearable="false"
@@ -233,7 +233,7 @@
           <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
             <el-input 
               v-model="userSelectFilters.userNo"
-              style="width: 150px;"
+              style="width: 220px;"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
               clearable 
             />
@@ -241,7 +241,7 @@
           <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
             <el-input 
               v-model="userSelectFilters.userName"
-              style="width: 200px;"
+              style="width: 220px;"
               :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
               clearable 
             />

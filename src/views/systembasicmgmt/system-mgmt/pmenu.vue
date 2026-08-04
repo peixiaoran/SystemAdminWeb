@@ -3,7 +3,7 @@
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="模块搜索表单">
         <el-form-item :label="$t('systembasicmgmt.pmenu.module')">
-          <el-select style="width: 180px"
+          <el-select style="width: 220px"
                      v-model="filters.moduleId"
                      :placeholder="$t('systembasicmgmt.selectPlaceholder') + $t('systembasicmgmt.pmenu.module')"
                      @change="handleModuleChange">
@@ -11,10 +11,10 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.pmenu.menuCode')">
-          <el-input v-model="filters.menuCode" :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.pmenu.menuCode')" style="width:170px" />
+          <el-input v-model="filters.menuCode" :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.pmenu.menuCode')" style="width:220px" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.pmenu.menuName')">
-          <el-input v-model="filters.menuName" :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.pmenu.menuName')" style="width:200px" />
+          <el-input v-model="filters.menuName" :placeholder="$t('systembasicmgmt.inputPlaceholder') + $t('systembasicmgmt.pmenu.menuName')" style="width:220px" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch" class="conventional-filter-form-button" plain>

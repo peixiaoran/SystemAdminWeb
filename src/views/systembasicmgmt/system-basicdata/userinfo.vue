@@ -12,21 +12,21 @@
           filterable
           :filter-node-method="filterNodeMethod"
           @change="handleDepartmentChange"
-          style="width: 190px;"
+          style="width: 220px;"
           popper-class="main-dept-filter-popper"
           :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectDepartment')" />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userNo')">
-        <el-input 
-          v-model="filters.userNo" 
-          style="width: 180px;"
-          :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')" 
+        <el-input
+          v-model="filters.userNo"
+          style="width: 220px;"
+          :placeholder="$t('systembasicmgmt.userInfo.filter.userNoPlaceholder')"
          />
       </el-form-item>
       <el-form-item :label="$t('systembasicmgmt.userInfo.filter.userName')">
-        <el-input 
-          v-model="filters.userName" 
-          style="width: 180px;"
+        <el-input
+          v-model="filters.userName"
+          style="width: 220px;"
           :placeholder="$t('systembasicmgmt.userInfo.filter.userNamePlaceholder')" 
          />
       </el-form-item>

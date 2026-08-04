@@ -3,12 +3,12 @@
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
         <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
-          <el-input style="width: 180px;"
+          <el-input style="width: 220px;"
                     v-model="filters.roleCode"
                     :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.role.roleName')">
-          <el-input style="width: 180px;"
+          <el-input style="width: 220px;"
                     v-model="filters.roleName"
                     :placeholder="$t('systembasicmgmt.role.pleaseInputRoleName')" />
         </el-form-item>

@@ -4,7 +4,7 @@
       <!-- 搜索 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
         <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
-          <el-input v-model="filters.currencyCode" :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:170px" />
+          <el-input v-model="filters.currencyCode" :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" style="width:220px" />
         </el-form-item>
         <el-form-item style="visibility: hidden; width: 0; margin: 0; padding: 0;">
           <el-input style="width: 0; height: 0; border: none; padding: 0; margin: 0;" />

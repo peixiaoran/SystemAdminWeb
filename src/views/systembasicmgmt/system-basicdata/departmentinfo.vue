@@ -3,12 +3,12 @@
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
         <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentCode')">
-          <el-input style="width: 180px"
+          <el-input style="width: 220px"
                     v-model="filters.departmentCode"
                     :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentName')">
-          <el-input style="width: 180px"
+          <el-input style="width: 220px"
                     v-model="filters.departmentName"
                     :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputName')" />
         </el-form-item>

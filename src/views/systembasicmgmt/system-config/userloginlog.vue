@@ -4,13 +4,13 @@
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户操作日志搜索表单">
         <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.userNo')">
           <el-input v-model="filters.userNo"
-                   style="width: 150px;"
+                   style="width: 220px;"
                    :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputUserNo')"
                    clearable />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.ip')">
           <el-input v-model="filters.ip"
-                   style="width: 150px;"
+                   style="width: 220px;"
                    :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputIp')"
                    clearable />
         </el-form-item>
@@ -18,7 +18,7 @@
           <el-date-picker
             v-model="filters.startTime"
             type="datetime"
-            style="width: 200px;"
+            style="width: 220px;"
             :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectStartTime')"
             format="YYYY/MM/DD HH:mm:ss"
             value-format="YYYY/MM/DD HH:mm:ss" />
@@ -27,7 +27,7 @@
           <el-date-picker
             v-model="filters.endTime"
             type="datetime"
-            style="width: 200px;"
+            style="width: 220px;"
             :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectEndTime')"
             format="YYYY/MM/DD HH:mm:ss"
             value-format="YYYY/MM/DD HH:mm:ss" />
