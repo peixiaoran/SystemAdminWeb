@@ -458,7 +458,8 @@ const isRouteValid = (resolved) => {
 }
 
 const openPopupWindow = (href) => {
-  window.open(href, '_blank', 'noopener')
+  // 不加 noopener：子页面签核完成后需要通过 window.opener 通知本页面刷新列表
+  window.open(href, '_blank')
 }
 
 const onFormPendingReviewersDialogClosed = () => {

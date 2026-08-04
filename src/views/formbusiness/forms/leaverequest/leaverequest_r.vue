@@ -248,18 +248,17 @@
                   style="width: 160px; flex: 0 0 160px;"
                   @change="handleTimeRangeChange"
                 />
-                <el-time-select
+                <el-select
                   v-model="leaveStartTimeOfDay"
-                  start="08:00"
-                  end="17:00"
-                  step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
                   :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
                   @change="handleTimeRangeChange"
-                />
+                >
+                  <el-option v-for="time in LEAVE_WORK_TIME_OPTIONS" :key="time" :label="time" :value="time" />
+                </el-select>
                 <span class="leave-time-range-separator"> ~ </span>
                 <el-date-picker
                   v-model="leaveEndDate"
@@ -272,18 +271,17 @@
                   style="width: 160px; flex: 0 0 160px;"
                   @change="handleTimeRangeChange"
                 />
-                <el-time-select
+                <el-select
                   v-model="leaveEndTimeOfDay"
-                  start="08:00"
-                  end="17:00"
-                  step="00:10"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
                   :clearable="false"
                   :disabled="!isStepFieldEditable('LeavePeriod')"
                   class="leave-time-of-day-select"
                   style="width: 130px; flex: 0 0 130px;"
                   @change="handleTimeRangeChange"
-                />
+                >
+                  <el-option v-for="time in LEAVE_WORK_TIME_OPTIONS" :key="time" :label="time" :value="time" />
+                </el-select>
               </div>
             </el-form-item>
             <el-form-item
@@ -372,7 +370,7 @@
 
         <el-divider class="approval-divider"></el-divider>
 
-        <el-row :gutter="16" class="approval-comment-row">
+        <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaverequest.approvalComment')">
               <el-input
@@ -815,22 +813,21 @@
 <script setup>
 import { reactive, ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import i18n from '@/i18n'
-import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { INIT_LEAVEREQUEST_API, SAVE_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEREQUEST_API, REJECT_LEAVEREQUEST_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
-import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
   calculateLeaveTotalHours,
   calculateLeaveHoursForYear,
-  isLeaveTimeRangeAllowed
+  isLeaveTimeRangeAllowed,
+  LEAVE_WORK_TIME_OPTIONS
 } from '@/utils/leaveHours'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { usePMenuStore } from '@/stores/pmenu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
@@ -842,7 +839,6 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -1700,72 +1696,10 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
-const FORMBUSINESS_MODULE_PATH = 'formbusiness'
-
-function isPopupWindow () {
-  try {
-    return !!(window.opener && !window.opener.closed)
-  } catch {
-    return !!window.opener
-  }
-}
-
-async function ensureFormbusinessModuleSelected () {
-  if (
-    pmenuStore.currentModuleId &&
-    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
-  ) {
-    return true
-  }
-  try {
-    const res = await post(MODULE_API.GET_MODULES)
-    if (!res || res.code !== 200) return false
-    const list = Array.isArray(res.data) ? res.data : []
-    const matched = list.find((m) => {
-      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
-      return seg === FORMBUSINESS_MODULE_PATH
-    })
-    if (!matched) return false
-    const nameCn =
-      matched.moduleNameCn ||
-      matched.ModuleNameCn ||
-      matched.moduleNameCh ||
-      matched.ModuleNameCh ||
-      matched.moduleName ||
-      matched.ModuleName ||
-      ''
-    const nameEn =
-      matched.moduleNameEn ||
-      matched.ModuleNameEn ||
-      matched.moduleName ||
-      matched.ModuleName ||
-      ''
-    pmenuStore.setCurrentPMenu(
-      String(matched.moduleId || ''),
-      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
-      FORMBUSINESS_MODULE_PATH,
-      nameCn,
-      nameEn
-    )
-    return !!matched.moduleId
-  } catch {
-    return false
-  }
-}
-
-async function closeCurrentPage () {
-  if (isPopupWindow()) {
-    notifyOpenerRefreshFormPending()
-    window.close()
-    return
-  }
-  const ok = await ensureFormbusinessModuleSelected()
-  if (ok) {
-    router.push(FORM_PENDING_ROUTE_PATH)
-  } else {
-    router.push('/module-select')
-  }
+/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
+function closeCurrentPage () {
+  notifyOpenerRefreshFormPending()
+  window.close()
 }
 
 /** InitLeaveRequest：返回完整实体则直接 bind，旧版仅返回 formId 时再拉详情 */
@@ -1933,7 +1867,9 @@ async function saveLeaveRequestBeforeSubmit () {
     return false
   }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
-    if (isBadRequestResponse(saveRes)) {
+    if (isLeaveBalanceValidationFailedCode(saveRes?.code)) {
+      showPlainWarningMessage(saveRes?.message)
+    } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     } else {
       showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
@@ -1956,6 +1892,8 @@ async function onSubmit () {
         const formId = String(form.formId || '')
         if (formId && !(await validateLeaveBalance(formId))) return
         showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
+      } else if (isLeaveBalanceValidationFailedCode(res?.code)) {
+        showPlainWarningMessage(res?.message)
       } else if (isBadRequestResponse(res)) {
         showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       } else {
@@ -2409,20 +2347,6 @@ async function onSubmitForApproval () {
   if (!valid) return
   if (shouldRequireAttachment() && uploadedAttachments.value.length === 0) {
     showFormActionNotice(getAttachmentRequirementTip(), 'warning')
-    return
-  }
-  try {
-    await ElMessageBox.confirm(
-      t('formbusiness.leaverequest.submitConfirmMessage'),
-      t('formbusiness.leaverequest.submitConfirmTitle'),
-      {
-        type: 'warning',
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        closeOnClickModal: false
-      }
-    )
-  } catch {
     return
   }
   const formId = String(form.formId || '')

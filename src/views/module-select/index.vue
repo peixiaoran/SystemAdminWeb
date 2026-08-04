@@ -366,7 +366,7 @@ const logout = async () => {
 .pmenu-card {
   width: 100%;
   max-width: 280px;
-  height: 300px;
+  height: 286px;
   display: flex;
   flex-direction: column;
   border-radius: calc(var(--el-border-radius-base) + 10px);
@@ -390,7 +390,7 @@ const logout = async () => {
 }
 
 .pmenu-icon {
-  height: 108px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -416,7 +416,7 @@ const logout = async () => {
 
 .pmenu-info {
   flex: 1;
-  padding: 22px 20px 14px 20px;
+  padding: 20px 20px 13px 20px;
   background: var(--el-bg-color, #ffffff);
   text-align: center;
   display: flex;
@@ -439,7 +439,7 @@ const logout = async () => {
   color: var(--el-text-color-secondary);
   margin: 0;
   line-height: 1.55;
-  height: 60px;
+  height: 56px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -661,11 +661,11 @@ const logout = async () => {
   }
   
   .pmenu-card {
-    height: 282px;
+    height: 268px;
   }
 
   .pmenu-icon {
-    height: 94px;
+    height: 86px;
   }
   
   .pmenu-info {
@@ -679,7 +679,7 @@ const logout = async () => {
   
   .pmenu-info p {
     font-size: 12px;
-    height: 48px;
+    height: 44px;
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
@@ -705,11 +705,11 @@ const logout = async () => {
   }
   
   .pmenu-card {
-    height: 264px;
+    height: 250px;
   }
 
   .pmenu-icon {
-    height: 84px;
+    height: 78px;
   }
   
   .pmenu-info h2 {
@@ -718,7 +718,7 @@ const logout = async () => {
   
   .pmenu-info p {
     font-size: 11px;
-    height: 42px;
+    height: 39px;
   }
 
   .loading-indicator {

@@ -103,13 +103,7 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="goToPersonalInfo">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                  </svg>
-                  {{ $t('common.editPersonalInfo') }}
-                </el-dropdown-item>
-                <el-dropdown-item divided @click="logout">
+                <el-dropdown-item @click="logout">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
                     <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
                   </svg>
@@ -673,22 +667,6 @@ const processMenuData = (menuData) => {
 // 切换菜单折叠状态
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
-}
-
-// 跳转到个人信息页面
-const goToPersonalInfo = () => {
-  const personalInfoPath = '/systembasicmgmt/system-basicdata/personal'
-  
-  // 创建个人信息菜单对象
-  const personalInfoMenu = {
-    menuName: t('common.editPersonalInfo'),
-    path: personalInfoPath,
-    menuIcon: 'User'
-  }
-  
-  // 添加标签并跳转
-  addTab(personalInfoMenu)
-  router.push(personalInfoPath)
 }
 
 // 退出登录

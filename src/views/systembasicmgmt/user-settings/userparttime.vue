@@ -204,6 +204,7 @@
                           height="310"
                           ref="dialogUserTableRef"
                           @selection-change="handleDialogUserSelectionChange"
+                          @row-click="handleDialogUserRowClick"
                           :empty-text="$t('common.noData')"
                           >
                     <el-table-column type="selection" width="55" align="center" />
@@ -688,7 +689,13 @@
             dialogForm.userId = selection.length > 0 ? String(selection[0].userId) : ''
         }
     }
-    
+
+    const handleDialogUserRowClick = (row) => {
+        if (dialogUserTableRef.value) {
+            dialogUserTableRef.value.toggleRowSelection(row)
+        }
+    }
+
     const fetchDialogUserPages = async () => {
         dialogUserLoading.value = true
         try {

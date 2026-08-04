@@ -5,6 +5,17 @@
 
 const MAX_HOURS_PER_DAY = 8
 
+/** 请假/销假时间下拉选项：08:00-17:00 每 10 分钟一档，跳过午休 12:00-13:00（保留 12:00、13:00 边界值） */
+export const LEAVE_WORK_TIME_OPTIONS = (() => {
+  const options = []
+  for (let minutes = 8 * 60; minutes <= 17 * 60; minutes += 10) {
+    if (minutes > 12 * 60 && minutes < 13 * 60) continue
+    const pad = (n) => String(n).padStart(2, '0')
+    options.push(`${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`)
+  }
+  return options
+})()
+
 export function parseLeaveDateTime (val) {
   if (!val) return null
   if (val instanceof Date) return isNaN(val.getTime()) ? null : val

@@ -270,6 +270,7 @@
           ref="userSelectTableRef"
           height="300"
           @selection-change="handleSelectionChange"
+          @row-click="handleUserSelectRowClick"
         :empty-text="$t('common.noData')"
         >
           <el-table-column type="selection" width="50" align="center" />
@@ -784,6 +785,12 @@ const handleUserSelectSizeChange = () => {
 
 const handleSelectionChange = (selection) => {
   selectedUsers.value = selection
+}
+
+const handleUserSelectRowClick = (row) => {
+  if (userSelectTableRef.value) {
+    userSelectTableRef.value.toggleRowSelection(row)
+  }
 }
 
 const handleStartTimeChange = (value) => {

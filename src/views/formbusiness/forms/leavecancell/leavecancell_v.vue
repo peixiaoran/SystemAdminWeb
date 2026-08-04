@@ -174,7 +174,7 @@
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
         <!-- 原请假单引用 -->
-        <template v-if="isAnyStepFieldVisible(['LeaveRequestTable', 'AvailableHours', 'TimePeriod', 'Hour'])">
+        <template v-if="isAnyStepFieldVisible(['LeaveRequestTable', 'TimePeriod', 'Hour'])">
           <el-row :gutter="16" class="leave-request-ref-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
@@ -190,49 +190,6 @@
                 </el-table>
               </el-form-item>
             </el-col>
-
-            <!-- 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧 -->
-            <aside v-if="isStepFieldVisible('AvailableHours')" class="remaining-cancell-hours-float">
-              <el-popover
-                placement="top"
-                popper-class="remaining-cancell-hours-popper"
-                :title="t('formbusiness.leavecancell.remainingCancellHoursTitle')"
-                :width="150"
-                trigger="click"
-                @show="fetchRemainingCancellHours"
-                @hide="resetRemainingCancellHours"
-              >
-                <template #reference>
-                  <button type="button" class="remaining-cancell-hours-btn" :disabled="!isStepFieldEditable('AvailableHours')" :aria-label="t('formbusiness.leavecancell.viewRemainingCancellHours')">
-                    <svg class="hand-drawn-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <circle cx="16" cy="16.5" r="10.5" fill="#E6D8B8" stroke="#1f1f1f" stroke-width="1.8" />
-                      <path d="M16 16.5 V9.8" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
-                      <path d="M16 16.5 L20.6 18.7" stroke="#1f1f1f" stroke-width="1.8" stroke-linecap="round" />
-                      <circle cx="16" cy="16.5" r="1.15" fill="#1f1f1f" />
-                    </svg>
-                  </button>
-                </template>
-                <div class="remaining-cancell-hours-body">
-                  <span
-                    v-if="remainingCancellHoursLoading || !remainingCancellHoursFetched"
-                    class="remaining-cancell-hours-dots"
-                    role="status"
-                    :aria-label="t('common.loading')"
-                  >
-                    <i></i><i></i><i></i>
-                  </span>
-                  <span
-                    v-else-if="remainingCancellHoursValue !== null"
-                    class="remaining-cancell-hours-value"
-                  >
-                    {{ t('formbusiness.leavecancell.remainingCancellHoursValue', { hours: formatHoursCell(remainingCancellHoursValue) }) }}
-                  </span>
-                  <span v-else class="remaining-cancell-hours-empty">
-                    {{ t('formbusiness.leavecancell.remainingCancellHoursEmpty') }}
-                  </span>
-                </div>
-              </el-popover>
-            </aside>
           </el-row>
 
           <el-row :gutter="16">
@@ -301,7 +258,7 @@
           <el-divider style="margin: 6px 0 24px;"></el-divider>
         </template>
 
-        <el-row :gutter="16" class="approval-comment-row">
+        <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leavecancell.approvalComment')">
               <el-input v-model="approvalComment" type="textarea" :rows="3" disabled />
@@ -519,7 +476,7 @@ import en from 'element-plus/dist/locale/en.mjs'
 import { Clock, CircleCheck, RemoveFilled, Loading, Lock } from '@element-plus/icons-vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
-import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_REMAINING_CANCELL_HOURS_API, GET_FULL_REVIEW_FLOW_API } from '@/config/api/formbusiness/forms/leavecancell'
+import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_FULL_REVIEW_FLOW_API } from '@/config/api/formbusiness/forms/leavecancell'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
@@ -576,48 +533,6 @@ const form = reactive({
 })
 
 const selectedLeaveRequest = ref(null)
-
-// 本单可销假时数 popover
-const remainingCancellHoursLoading = ref(false)
-const remainingCancellHoursValue = ref(null)
-const remainingCancellHoursFetched = ref(false)
-
-/** 点击"查看本单可销假时数"按钮，拉取当前请假单的剩余可销时数 */
-async function fetchRemainingCancellHours () {
-  const leaveRequestId = selectedLeaveRequest.value?.leaveRequestId ?? form.leaveRequestId
-  // 打开即进入加载态，直到接口返回才展示时数，避免先闪一下空值/旧值
-  remainingCancellHoursLoading.value = true
-  remainingCancellHoursValue.value = null
-  if (!leaveRequestId) {
-    remainingCancellHoursLoading.value = false
-    remainingCancellHoursFetched.value = true
-    return
-  }
-  try {
-    const res = await post(
-      GET_REMAINING_CANCELL_HOURS_API,
-      new URLSearchParams({ leaveRequestId: String(leaveRequestId), formId: String(form.formId || '') }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    )
-    if (res && res.code === 200) {
-      remainingCancellHoursValue.value = res.data ?? null
-    } else {
-      ElMessage.error(res?.message || t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
-    }
-  } catch {
-    ElMessage.error(t('formbusiness.leavecancell.getRemainingCancellHoursFailed'))
-  } finally {
-    remainingCancellHoursLoading.value = false
-    remainingCancellHoursFetched.value = true
-  }
-}
-
-/** 关闭 popover 时复位状态，下次打开重新加载，避免闪现上一次的时数 */
-function resetRemainingCancellHours () {
-  remainingCancellHoursFetched.value = false
-  remainingCancellHoursValue.value = null
-  remainingCancellHoursLoading.value = false
-}
 
 // 展示层拆分：form.cancelTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），与 r 页面保持一致
 const CANCEL_DEFAULT_START_TIME = '08:00'
@@ -892,12 +807,6 @@ function isStepFieldVisible (fieldKey) {
   const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
   if (!perm) return true
   return perm.isVisible
-}
-
-function isStepFieldEditable (fieldKey) {
-  const perm = stepFieldPermissionMap.value[normalizeFieldKey(fieldKey)]
-  if (!perm) return true
-  return perm.isEditable
 }
 
 function isAnyStepFieldVisible (fieldKeys) {
@@ -1425,97 +1334,6 @@ onMounted(async () => {
   margin-bottom: 4px;
 }
 
-/* 本单可销假时数：与原请假单引用行同一水平线，悬浮在表单卡片右侧外部
-   （偏移量 = 表单内边距 20px + 卡片内边距 20px + 边框，再减去 el-row 的 8px 负边距） */
-.remaining-cancell-hours-float {
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 42px);
-  z-index: 20;
-  display: flex;
-  transform: translateY(-50%);
-}
-
-/* 窄屏时卡片右侧无空间，隐藏悬浮入口 */
-@media (max-width: 1120px) {
-  .remaining-cancell-hours-float {
-    display: none;
-  }
-}
-
-.remaining-cancell-hours-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  border: none;
-  background: transparent;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.remaining-cancell-hours-btn .hand-drawn-icon {
-  width: 30px;
-  height: 30px;
-  display: block;
-}
-
-.remaining-cancell-hours-body {
-  min-height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.remaining-cancell-hours-value {
-  font-weight: 700;
-  color: #0058cc;
-}
-
-.remaining-cancell-hours-empty {
-  color: var(--el-text-color-secondary);
-}
-
-/* 加载中：三个灰点依次起伏 */
-.remaining-cancell-hours-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 16px;
-}
-
-.remaining-cancell-hours-dots i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--el-text-color-placeholder);
-  animation: remaining-hours-dot 1.2s ease-in-out infinite;
-}
-
-.remaining-cancell-hours-dots i:nth-child(2) {
-  animation-delay: 0.16s;
-}
-
-.remaining-cancell-hours-dots i:nth-child(3) {
-  animation-delay: 0.32s;
-}
-
-@keyframes remaining-hours-dot {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.45;
-  }
-
-  30% {
-    transform: translateY(-5px);
-    opacity: 1;
-  }
-}
-
 .leave-request-ref-table {
   width: 100%;
   font-size: 13px;
@@ -1527,9 +1345,9 @@ onMounted(async () => {
   font-size: 13px;
 }
 
-/* 请假时数列：仅数值加深红色，列头颜色不变 */
+/* 请假时数列：仅数值加黑色，列头颜色不变 */
 .leave-request-ref-table :deep(.el-table__body .ref-leave-hours-col .cell) {
-  color: #c00c1f;
+  color: #000000;
   font-weight: 700;
 }
 
@@ -1937,17 +1755,4 @@ onMounted(async () => {
   font-size: 13px;
   color: var(--el-text-color-primary);
 }
-</style>
-
-<!-- popover 内容被 teleport 到 body，需用非 scoped 样式控制字号 -->
-<style>
-.remaining-cancell-hours-popper.el-popover.el-popper {
-  padding: 10px 12px;
-}
-
-.remaining-cancell-hours-popper .el-popover__title {
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
 </style>

@@ -790,11 +790,9 @@ import {
   UPDATE_FORM_ADD_REVIEW_API,
   DELETE_FORM_ADD_REVIEW_API
 } from '@/config/api/formbusiness/forms/documentcirculate'
-import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { usePMenuStore } from '@/stores/pmenu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
@@ -806,7 +804,6 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -1578,6 +1575,11 @@ function isForbiddenCode (code) {
   return String(code) === '403'
 }
 
+/** 402：业务性校验未通过（如加签人员规则等），以告警而非错误呈现 */
+function isValidationWarningCode (code) {
+  return String(code) === '402'
+}
+
 function isBadRequestResponse (res) {
   return Number(res?.code) === 400
 }
@@ -1625,17 +1627,6 @@ function showBadRequestResult (message) {
   resultState.subTitleKey = ''
 }
 
-const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
-const FORMBUSINESS_MODULE_PATH = 'formbusiness'
-
-function isPopupWindow () {
-  try {
-    return !!(window.opener && !window.opener.closed)
-  } catch {
-    return !!window.opener
-  }
-}
-
 function notifyOpenerRefreshFormPending () {
   try {
     if (!window.opener || window.opener.closed) return
@@ -1645,52 +1636,10 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-async function ensureFormbusinessModuleSelected () {
-  if (
-    pmenuStore.currentModuleId &&
-    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
-  ) {
-    return true
-  }
-  try {
-    const res = await post(MODULE_API.GET_MODULES)
-    if (!res || res.code !== 200) return false
-    const list = Array.isArray(res.data) ? res.data : []
-    const matched = list.find((m) => {
-      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
-      return seg === FORMBUSINESS_MODULE_PATH
-    })
-    if (!matched) return false
-    const nameCn =
-      matched.moduleNameCn || matched.ModuleNameCn || matched.moduleNameCh || matched.ModuleNameCh ||
-      matched.moduleName || matched.ModuleName || ''
-    const nameEn =
-      matched.moduleNameEn || matched.ModuleNameEn || matched.moduleName || matched.ModuleName || ''
-    pmenuStore.setCurrentPMenu(
-      String(matched.moduleId || ''),
-      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
-      FORMBUSINESS_MODULE_PATH,
-      nameCn,
-      nameEn
-    )
-    return !!matched.moduleId
-  } catch {
-    return false
-  }
-}
-
-async function closeCurrentPage () {
-  if (isPopupWindow()) {
-    notifyOpenerRefreshFormPending()
-    window.close()
-    return
-  }
-  const ok = await ensureFormbusinessModuleSelected()
-  if (ok) {
-    router.push(FORM_PENDING_ROUTE_PATH)
-  } else {
-    router.push('/module-select')
-  }
+/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
+function closeCurrentPage () {
+  notifyOpenerRefreshFormPending()
+  window.close()
 }
 
 async function bindFormData (data) {
@@ -1831,6 +1780,8 @@ async function onSubmit () {
     } else if (res && isSuccessCode(res.code)) {
       if (!form.formId && res.data) form.formId = String(res.data)
       showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
+    } else if (isValidationWarningCode(res?.code)) {
+      showFormActionNotice(res?.message, 'warning')
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
@@ -1850,7 +1801,9 @@ async function saveDocumentCirculateBeforeSubmit () {
     return false
   }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
-    if (isBadRequestResponse(saveRes)) {
+    if (isValidationWarningCode(saveRes?.code)) {
+      showFormActionNotice(saveRes?.message, 'warning')
+    } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
       showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
@@ -1868,20 +1821,6 @@ async function onSubmitForApproval () {
     formRef.value?.validate((ok) => resolve(!!ok))
   })
   if (!valid) return
-  try {
-    await ElMessageBox.confirm(
-      t('formbusiness.documentcirculate.submitConfirmMessage'),
-      t('formbusiness.documentcirculate.submitConfirmTitle'),
-      {
-        type: 'warning',
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        closeOnClickModal: false
-      }
-    )
-  } catch {
-    return
-  }
   approving.value = true
   try {
     const saved = await saveDocumentCirculateBeforeSubmit()
@@ -1908,6 +1847,10 @@ async function onSubmitForApproval () {
     }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.documentcirculate.approvalResultTitle', 'formbusiness.documentcirculate.approvalResultSubTitle')
+      return
+    }
+    if (isValidationWarningCode(res?.code)) {
+      showFormActionNotice(res?.message, 'warning')
       return
     }
     if (isBadRequestResponse(res)) {

@@ -344,7 +344,7 @@
   
           <el-divider class="approval-divider"></el-divider>
 
-          <el-row :gutter="16" class="approval-comment-row">
+          <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.approvalComment')">
                 <el-input

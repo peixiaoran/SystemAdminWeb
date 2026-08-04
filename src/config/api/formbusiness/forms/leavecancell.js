@@ -24,9 +24,6 @@ export const GET_LEAVEREQUEST_VIEW_API = 'FormBusiness/Forms/LeaveCancell/GetLea
 // 获取原请假单详情API（用于回显请假信息表格）
 export const GET_LEAVEREQUEST_DETAIL_API = 'FormBusiness/Forms/LeaveCancell/GetLeaveRequestDetail'
 
-// 获取请假单剩余可销时数API
-export const GET_REMAINING_CANCELL_HOURS_API = 'FormBusiness/Forms/LeaveCancell/GetRemainingCancellHours'
-
 // 获取完整签核流程API
 export const GET_FULL_REVIEW_FLOW_API = 'FormBusiness/Forms/PublicForm/GetFullReviewFlow'
 
