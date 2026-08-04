@@ -44,10 +44,22 @@
             {{ $t('common.reset') }}
           </el-button>
         </el-form-item>
+
+        <el-form-item class="form-right-button">
+          <el-button
+            class="batch-print-btn"
+            :disabled="selectedRows.length === 0"
+            :loading="batchPrinting"
+            @click="handleBatchPrintForm"
+          >
+            {{ $t('formbusiness.applyhistory.batchPrint') }}
+          </el-button>
+        </el-form-item>
       </el-form>
 
       <div class="table-container">
         <el-table
+          ref="formTableRef"
           :data="formList"
           border
           stripe
@@ -55,7 +67,9 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading || filterPending"
           class="conventional-table"
+          @selection-change="handleSelectionChange"
         >
+          <el-table-column type="selection" width="50" align="center" fixed :selectable="canShowPrint" />
           <el-table-column type="index" :label="$t('formbusiness.applyhistory.index')" width="70" align="center" fixed />
           <el-table-column prop="formTypeName" :label="$t('formbusiness.applyhistory.formTypeName')" align="center" min-width="220" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.applyhistory.formNo')" align="center" min-width="200">
@@ -106,30 +120,33 @@
           <el-table-column
             :label="$t('formbusiness.applyhistory.operation')"
             align="center"
-            min-width="180"
+            min-width="240"
             fixed="right"
           >
             <template #default="{ row }">
-              <div style="display: flex; justify-content: center; align-items: center; gap: 12px;">
-                <el-link
-                  v-if="canShowWithdraw(row)"
-                  type="warning"
-                  underline="never"
-                  @click="handleWithdrawForm(row)"
-                >
-                  {{ $t('formbusiness.applyhistory.withdraw') }}
-                </el-link>
-                <el-link
-                  v-if="canShowInvalidate(row)"
-                  type="danger"
-                  underline="never"
-                  @click="handleVoidForm(row)"
-                >
-                  {{ $t('formbusiness.formpending.invalidate') }}
-                </el-link>
+              <div class="apply-history-operation-cell">
+                <div class="apply-history-operation-left">
+                  <el-link
+                    v-if="canShowWithdraw(row)"
+                    type="warning"
+                    underline="never"
+                    @click="handleWithdrawForm(row)"
+                  >
+                    {{ $t('formbusiness.applyhistory.withdraw') }}
+                  </el-link>
+                  <el-link
+                    v-if="canShowInvalidate(row)"
+                    type="danger"
+                    underline="never"
+                    @click="handleVoidForm(row)"
+                  >
+                    {{ $t('formbusiness.formpending.invalidate') }}
+                  </el-link>
+                  <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
+                </div>
                 <el-link
                   v-if="canShowPrint(row)"
-                  type="primary"
+                  class="apply-history-print-link"
                   underline="never"
                   :disabled="printingFormIds.has(row.formId)"
                   @click="handlePrintForm(row)"
@@ -137,7 +154,6 @@
                   <el-icon v-if="printingFormIds.has(row.formId)" class="is-loading" style="margin-right: 4px;"><Loading /></el-icon>
                   {{ printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf') }}
                 </el-link>
-                <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
               </div>
             </template>
           </el-table-column>
@@ -226,7 +242,8 @@ import {
   WITHDRAW_FORM_API,
   VOIDED_FORM_API,
   GET_FORM_PENDING_USERS_API,
-  PRINT_FORM_PDF_API
+  PRINT_FORM_PDF_API,
+  PRINT_FORM_PDF_BATCH_API
 } from '@/config/api/formbusiness/form-operate/applyhistory.js'
 
 const { t } = useI18n()
@@ -264,6 +281,9 @@ const loading = ref(false)
 const filterPending = ref(false)
 const formList = ref([])
 const printingFormIds = ref(new Set())
+const formTableRef = ref(null)
+const selectedRows = ref([])
+const batchPrinting = ref(false)
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
@@ -346,6 +366,7 @@ const getFormList = async () => {
     if (res?.code === 200) {
       formList.value = res.data || []
       pagination.totalCount = Number(res.totalCount || 0)
+      selectedRows.value = []
       return
     }
     formList.value = []
@@ -552,6 +573,60 @@ const handlePrintForm = async (row) => {
   }
 }
 
+const handleSelectionChange = (selection) => {
+  selectedRows.value = selection
+}
+
+const handleBatchPrintForm = async () => {
+  if (selectedRows.value.length === 0) {
+    showMessage(t('formbusiness.applyhistory.pleaseSelectFormsToPrint'), 'warning')
+    return
+  }
+  batchPrinting.value = true
+  try {
+    const formIds = selectedRows.value.map((row) => String(row.formId))
+    const blob = await service({
+      url: PRINT_FORM_PDF_BATCH_API,
+      method: 'post',
+      data: formIds,
+      headers: { 'Content-Type': 'application/json' },
+      responseType: 'blob'
+    })
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error(t('formbusiness.applyhistory.batchPrintFailed'))
+    }
+
+    if (blob.type && blob.type.includes('application/json')) {
+      const text = await blob.text()
+      let message = t('formbusiness.applyhistory.batchPrintFailed')
+      try {
+        const json = JSON.parse(text)
+        message = json?.message || message
+      } catch {
+        // ignore
+      }
+      throw new Error(message)
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `forms_${Date.now()}.zip`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    formTableRef.value?.clearSelection()
+    selectedRows.value = []
+  } catch (error) {
+    showMessage(error?.message || t('formbusiness.applyhistory.batchPrintFailed'))
+  } finally {
+    batchPrinting.value = false
+  }
+}
+
 const handleVoidForm = async (row) => {
   if (!row?.formId) return
   try {
@@ -631,6 +706,51 @@ onMounted(async () => {
 
 .conventional-table :deep(.el-table) {
   min-width: 1280px;
+}
+
+.batch-print-btn {
+  color: #fff;
+  background-color: #e67e22;
+  border-color: #e67e22;
+}
+
+.batch-print-btn:hover:not(.is-disabled) {
+  color: #fff;
+  background-color: #f39c4a;
+  border-color: #f39c4a;
+}
+
+.batch-print-btn.is-disabled {
+  color: #fff;
+  background-color: #f3c08a;
+  border-color: #f3c08a;
+}
+
+.apply-history-operation-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 12px;
+}
+
+.apply-history-operation-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.apply-history-operation-cell :deep(.apply-history-print-link) {
+  margin-left: auto;
+  color: #e67e22;
+}
+
+.apply-history-operation-cell :deep(.apply-history-print-link:hover) {
+  color: #f39c4a;
+}
+
+.apply-history-operation-cell :deep(.apply-history-print-link.is-disabled) {
+  color: var(--el-link-disabled-text-color);
 }
 
 </style>

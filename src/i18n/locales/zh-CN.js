@@ -590,7 +590,11 @@ export default {
       withdrawFailed: '撤回失败',
       printPdf: '打印',
       printing: '打印中...',
-      printFailed: '打印失败'
+      printFailed: '打印失败',
+      batchPrint: '批量打印',
+      batchPrinting: '打印中...',
+      batchPrintFailed: '批量打印失败',
+      pleaseSelectFormsToPrint: '请先勾选要打印的表单'
     },
 
     reviewhistory: {
@@ -613,7 +617,11 @@ export default {
       operation: '操作',
       printPdf: '打印',
       printing: '打印中...',
-      printFailed: '打印失败'
+      printFailed: '打印失败',
+      batchPrint: '批量打印',
+      batchPrinting: '打印中...',
+      batchPrintFailed: '批量打印失败',
+      pleaseSelectFormsToPrint: '请先勾选要打印的表单'
     },
 
     // 请假单页面专用

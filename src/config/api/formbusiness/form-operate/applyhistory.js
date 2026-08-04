@@ -18,3 +18,5 @@ export const VOIDED_FORM_API = 'FormBusiness/FormOperate/ApplyHistory/VoidedForm
 export const GET_FORM_PENDING_USERS_API = 'FormBusiness/FormOperate/ApplyHistory/GetFormPendingUsers'
 
 export const PRINT_FORM_PDF_API = 'FormBusiness/FormOperate/ApplyHistory/PrintFormPdf'
+
+export const PRINT_FORM_PDF_BATCH_API = 'FormBusiness/FormOperate/ApplyHistory/PrintFormPdfBatch'

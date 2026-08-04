@@ -658,7 +658,11 @@ export default {
       withdrawFailed: 'Failed to withdraw form',
       printPdf: 'Print',
       printing: 'Printing...',
-      printFailed: 'Failed to print form'
+      printFailed: 'Failed to print form',
+      batchPrint: 'Batch Print',
+      batchPrinting: 'Printing...',
+      batchPrintFailed: 'Failed to batch print forms',
+      pleaseSelectFormsToPrint: 'Please select forms to print first'
     },
 
     reviewhistory: {
@@ -681,7 +685,11 @@ export default {
       operation: 'Operation',
       printPdf: 'Print',
       printing: 'Printing...',
-      printFailed: 'Failed to print form'
+      printFailed: 'Failed to print form',
+      batchPrint: 'Batch Print',
+      batchPrinting: 'Printing...',
+      batchPrintFailed: 'Failed to batch print forms',
+      pleaseSelectFormsToPrint: 'Please select forms to print first'
     },
 
     // Leave Form Page Specific
