@@ -120,7 +120,7 @@
           <el-table-column
             :label="$t('formbusiness.reviewhistory.operation')"
             align="center"
-            min-width="120"
+            min-width="240"
             fixed="right"
           >
             <template #default="{ row }">
@@ -446,7 +446,7 @@ const openFormPage = (row) => {
   }
   const resolved = router.resolve({
     path,
-    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') }
+    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || ''), type: 'View' }
   })
   if (!isRouteValid(resolved)) {
     showMessage(t('formbusiness.reviewhistory.getFailed'))
@@ -604,20 +604,20 @@ onMounted(async () => {
 
 .batch-print-btn {
   color: #fff;
-  background-color: #e67e22;
-  border-color: #e67e22;
+  background-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
 }
 
 .batch-print-btn:hover:not(.is-disabled) {
   color: #fff;
-  background-color: #f39c4a;
-  border-color: #f39c4a;
+  background-color: var(--el-color-primary-light-3);
+  border-color: var(--el-color-primary-light-3);
 }
 
 .batch-print-btn.is-disabled {
   color: #fff;
-  background-color: #f3c08a;
-  border-color: #f3c08a;
+  background-color: var(--el-color-primary-light-7);
+  border-color: var(--el-color-primary-light-7);
 }
 
 </style>

@@ -1027,7 +1027,7 @@ async function getDocumentCirculateDetail (formId) {
   try {
     const res = await post(
       GET_DOCUMENTCIRCULATE_API,
-      new URLSearchParams({ formId: String(formId || ''), type: 'View' }),
+      new URLSearchParams({ formId: String(formId || ''), type: String(route.query.type || 'View') }),
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         silentForbiddenError: false

@@ -125,25 +125,23 @@
           >
             <template #default="{ row }">
               <div class="apply-history-operation-cell">
-                <div class="apply-history-operation-left">
-                  <el-link
-                    v-if="canShowWithdraw(row)"
-                    type="warning"
-                    underline="never"
-                    @click="handleWithdrawForm(row)"
-                  >
-                    {{ $t('formbusiness.applyhistory.withdraw') }}
-                  </el-link>
-                  <el-link
-                    v-if="canShowInvalidate(row)"
-                    type="danger"
-                    underline="never"
-                    @click="handleVoidForm(row)"
-                  >
-                    {{ $t('formbusiness.formpending.invalidate') }}
-                  </el-link>
-                  <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
-                </div>
+                <el-link
+                  v-if="canShowWithdraw(row)"
+                  class="apply-history-withdraw-link"
+                  underline="never"
+                  @click="handleWithdrawForm(row)"
+                >
+                  {{ $t('formbusiness.applyhistory.withdraw') }}
+                </el-link>
+                <el-link
+                  v-if="canShowInvalidate(row)"
+                  type="danger"
+                  underline="never"
+                  @click="handleVoidForm(row)"
+                >
+                  {{ $t('formbusiness.formpending.invalidate') }}
+                </el-link>
+                <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
                 <el-link
                   v-if="canShowPrint(row)"
                   class="apply-history-print-link"
@@ -466,7 +464,7 @@ const openFormPage = (row) => {
   }
   const resolved = router.resolve({
     path,
-    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || '') }
+    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || ''), type: 'View' }
   })
   if (!isRouteValid(resolved)) {
     showMessage(t('formbusiness.applyhistory.getFailed'))
@@ -475,21 +473,9 @@ const openFormPage = (row) => {
   openPopupWindow(resolved.href)
 }
 
-const parseTruthyFlag = (value) => {
-  if (typeof value === 'boolean') return value
-  if (typeof value === 'number') return value === 1
-  if (typeof value === 'string') return ['1', 'true', 'yes', 'y'].includes(value.trim().toLowerCase())
-  return false
-}
-
 const isSuccessCode = (code) => String(code) === '200'
 
-const resolveIsWithdraw = (row) => row?.isWithdraw ?? row?.IsWithdraw
-
-const canShowWithdraw = (row) => {
-  if (!row?.formId) return false
-  return parseTruthyFlag(resolveIsWithdraw(row))
-}
+const canShowWithdraw = (row) => canShowInvalidate(row)
 
 const onFormPendingReviewersDialogClosed = () => {
   formPendingReviewersList.value = []
@@ -710,43 +696,43 @@ onMounted(async () => {
 
 .batch-print-btn {
   color: #fff;
-  background-color: #e67e22;
-  border-color: #e67e22;
+  background-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
 }
 
 .batch-print-btn:hover:not(.is-disabled) {
   color: #fff;
-  background-color: #f39c4a;
-  border-color: #f39c4a;
+  background-color: var(--el-color-primary-light-3);
+  border-color: var(--el-color-primary-light-3);
 }
 
 .batch-print-btn.is-disabled {
   color: #fff;
-  background-color: #f3c08a;
-  border-color: #f3c08a;
+  background-color: var(--el-color-primary-light-7);
+  border-color: var(--el-color-primary-light-7);
 }
 
 .apply-history-operation-cell {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-right: 12px;
-}
-
-.apply-history-operation-left {
-  display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 
-.apply-history-operation-cell :deep(.apply-history-print-link) {
-  margin-left: auto;
+.apply-history-operation-cell :deep(.apply-history-withdraw-link) {
   color: #e67e22;
 }
 
-.apply-history-operation-cell :deep(.apply-history-print-link:hover) {
+.apply-history-operation-cell :deep(.apply-history-withdraw-link:hover) {
   color: #f39c4a;
+}
+
+.apply-history-operation-cell :deep(.apply-history-print-link) {
+  color: var(--el-color-primary);
+}
+
+.apply-history-operation-cell :deep(.apply-history-print-link:hover) {
+  color: var(--el-color-primary-light-3);
 }
 
 .apply-history-operation-cell :deep(.apply-history-print-link.is-disabled) {

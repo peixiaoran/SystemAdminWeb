@@ -891,7 +891,7 @@ async function getLeaveCancellDetail (formId) {
   try {
     const res = await post(
       GET_LEAVECANCELL_API,
-      new URLSearchParams({ formId: String(formId || ''), type: 'View' }),
+      new URLSearchParams({ formId: String(formId || ''), type: String(route.query.type || 'View') }),
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         silentForbiddenError: false
