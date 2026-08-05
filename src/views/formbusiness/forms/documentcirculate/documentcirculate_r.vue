@@ -2146,7 +2146,7 @@ onMounted(async () => {
   position: relative;
   padding: 16px;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
   box-sizing: border-box;
 }
 

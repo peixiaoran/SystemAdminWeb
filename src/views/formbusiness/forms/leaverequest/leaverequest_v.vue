@@ -1833,7 +1833,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     position: relative;
     padding: 16px;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
     box-sizing: border-box;
   }
   /* 骨架屏：内边距、标签列宽、控件高度与真实表单一一对应 */

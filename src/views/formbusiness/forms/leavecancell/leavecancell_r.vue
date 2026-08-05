@@ -249,7 +249,7 @@
                     :clearable="false"
                     :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-time-of-day-select"
-                    style="width: 135px; flex: 0 0 135px;"
+                    style="width: 130px; flex: 0 0 130px;"
                     @change="handleCancelTimeRangeChange"
                   >
                     <el-option v-for="time in LEAVE_WORK_TIME_OPTIONS" :key="time" :label="time" :value="time" />
@@ -273,7 +273,7 @@
                     :clearable="false"
                     :disabled="!isStepFieldEditable('TimePeriod')"
                     class="leave-time-of-day-select"
-                    style="width: 135px; flex: 0 0 135px;"
+                    style="width: 130px; flex: 0 0 130px;"
                     @change="handleCancelTimeRangeChange"
                   >
                     <el-option v-for="time in LEAVE_WORK_TIME_OPTIONS" :key="time" :label="time" :value="time" />
@@ -1900,7 +1900,7 @@ onMounted(async () => {
   position: relative;
   padding: 16px;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
   box-sizing: border-box;
 }
 
@@ -2284,6 +2284,15 @@ onMounted(async () => {
 .leave-time-range-separator {
   flex-shrink: 0;
   color: var(--el-text-color-secondary);
+}
+
+.leave-date-picker :deep(.el-input__wrapper) {
+  padding-left: 8px;
+  padding-right: 6px;
+}
+
+.leave-date-picker :deep(.el-input__inner) {
+  font-size: 13px;
 }
 
 .leave-time-of-day-select {
