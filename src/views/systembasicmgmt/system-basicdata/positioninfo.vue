@@ -119,7 +119,7 @@ const getPositionList = async () => {
     positionList.value = response.data || []
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.positionInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.positionInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     positionList.value = []
   }
@@ -137,7 +137,7 @@ const handleEdit = async (row) => {
     editForm.value = { ...response.data }
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.positionInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.positionInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     dialogVisible.value = false
   }

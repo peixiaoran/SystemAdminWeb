@@ -248,7 +248,7 @@ const getFormGroupOptions = async () => {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
-      showMessage(res.message || t('formbusiness.formtypefield.getFormGroupFailed'))
+      showMessage(res.message || t('formbusiness.formtypefield.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtypefield.getFormGroupFailed'))
@@ -276,7 +276,7 @@ const getFormTypeOptions = async (formGroupId = searchForm.formGroupId) => {
     } else {
       formTypeOptions.value = []
       searchForm.formTypeId = ''
-      showMessage(res.message || t('formbusiness.formtypefield.getFormTypeFailed'))
+      showMessage(res.message || t('formbusiness.formtypefield.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     formTypeOptions.value = []
@@ -304,7 +304,7 @@ const getFieldList = async () => {
       fieldList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message || t('formbusiness.formtypefield.getFailed'))
+      showMessage(res.message || t('formbusiness.formtypefield.getFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
       fieldList.value = []
       pagination.totalCount = 0
     }
@@ -391,7 +391,7 @@ const handleEdit = async (row) => {
       form.sortOrder = Number(d.sortOrder ?? 0)
       nextTick(() => formRef.value?.clearValidate())
     } else {
-      showMessage(res.message || t('formbusiness.formtypefield.getFailed'))
+      showMessage(res.message || t('formbusiness.formtypefield.getFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
       dialogVisible.value = false
     }
   } catch {
@@ -421,7 +421,7 @@ const handleDelete = async (row) => {
       }
       getFieldList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtypefield.operationFailed'))
@@ -453,7 +453,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       getFieldList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtypefield.operationFailed'))

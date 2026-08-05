@@ -255,7 +255,7 @@ const fetchModuleDropDown = async () => {
         filters.moduleId = moduleList.value[0].moduleId
       }
     } else {
-      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'))
+      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'))
@@ -276,7 +276,7 @@ const fetchDicTypeDropDown = async () => {
         filters.dicType = dicTypeList.value[0].dicTypeCode
       }
     } else {
-      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'))
+      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'))
@@ -289,7 +289,7 @@ const fetchDictionaryEntity = async (dicId) => {
     if (res && res.code === 200) {
       return res.data
     }
-    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
+    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     return null
   } catch {
     showMessage(t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
@@ -312,7 +312,7 @@ const fetchDictionaryPages = async () => {
       dictionaryList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryPagesFailed'))
+      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryPagesFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.dictionaryInfo.getDictionaryPagesFailed'))
@@ -382,7 +382,7 @@ const insertDictionary = async () => {
     dialogVisible.value = false
     fetchDictionaryPages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -404,7 +404,7 @@ const updateDictionary = async () => {
     dialogVisible.value = false
     fetchDictionaryPages()
   } else {
-    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'))
+    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.updateDictionaryFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -418,7 +418,7 @@ const deleteDictionary = async (dicId) => {
     }
     fetchDictionaryPages()
   } else {
-    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.deleteDictionaryFailed'))
+    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.deleteDictionaryFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

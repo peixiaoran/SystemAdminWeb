@@ -173,7 +173,7 @@ const fetchDepartmentLevelList = async () => {
     departmentLevelList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else if (res) {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     departmentLevelList.value = []
   }
   loading.value = false
@@ -258,7 +258,7 @@ const handleDelete = async (index, row) => {
     showMessage(res.message || t('systembasicmgmt.departmentLevel.deleteSuccess'), 'success')
     fetchDepartmentLevelList()
   } else {
-    showMessage(res?.message || t('systembasicmgmt.departmentLevel.deleteFailed'))
+    showMessage(res?.message || t('systembasicmgmt.departmentLevel.deleteFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -277,7 +277,7 @@ const handleSave = async () => {
       dialogVisible.value = false
       fetchDepartmentLevelList()
     } else {
-      showMessage(res?.message || t('systembasicmgmt.departmentLevel.saveFailed'))
+      showMessage(res?.message || t('systembasicmgmt.departmentLevel.saveFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.departmentLevel.saveFailed'))

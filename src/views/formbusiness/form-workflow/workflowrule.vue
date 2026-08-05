@@ -276,7 +276,7 @@ const getFormGroupOptions = async () => {
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowrule.getFormGroupFailed'))
@@ -296,7 +296,7 @@ const getFormTypeOptions = async (formGroupId) => {
       formTypeOptions.value = res.data || []
       searchForm.formTypeId = formTypeOptions.value[0]?.formTypeId ?? ''
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
@@ -331,7 +331,7 @@ const getRuleList = async () => {
       ruleList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       ruleList.value = []
     }
   } catch {
@@ -473,7 +473,7 @@ const handleEdit = async (row) => {
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false
-      showMessage(res.message || t('formbusiness.workflowrule.getEntityFailed'))
+      showMessage(res.message || t('formbusiness.workflowrule.getEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     dialogVisible.value = false
@@ -521,7 +521,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       if (dialogForm.formTypeId === searchForm.formTypeId) await getRuleList()
     } else {
-      showMessage(res.message || t(`formbusiness.workflowrule.${failKey}`))
+      showMessage(res.message || t(`formbusiness.workflowrule.${failKey}`), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t(`formbusiness.workflowrule.${isEdit ? 'editFailed' : 'addFailed'}`))
@@ -548,7 +548,7 @@ const handleDelete = async (row) => {
       if (ruleList.value.length === 1 && pagination.pageIndex > 1) pagination.pageIndex--
       await getRuleList()
     } else {
-      showMessage(res.message || t('formbusiness.workflowrule.deleteFailed'))
+      showMessage(res.message || t('formbusiness.workflowrule.deleteFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowrule.deleteFailed'))

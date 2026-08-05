@@ -350,7 +350,7 @@ export default {
       if (!isJPG) {
         ElMessage({
           message: t('systembasicmgmt.userInfo.avatarFormatError'),
-          type: 'error',
+          type: 'warning',
           plain: true,
           showClose: true
         })
@@ -359,7 +359,7 @@ export default {
       if (!isLt2M) {
         ElMessage({
           message: t('systembasicmgmt.userInfo.avatarSizeError'),
-          type: 'error',
+          type: 'warning',
           plain: true,
           showClose: true
         })
@@ -439,7 +439,7 @@ export default {
         if (response.code !== 401 && response.code !== 403) {
           ElMessage({
             message: response.message || t('systembasicmgmt.personalInfo.getPersonalInfoFailed'),
-            type: 'error',
+            type: Number(response?.code) === 400 ? 'warning' : 'error',
             plain: true,
             showClose: true
           })
@@ -526,7 +526,7 @@ export default {
          if (response.code !== 401 && response.code !== 403) {
            ElMessage({
              message: response.message || t('systembasicmgmt.personalInfo.savePersonalInfoFailed'),
-             type: 'error',
+             type: Number(response?.code) === 400 ? 'warning' : 'error',
              plain: true,
              showClose: true
            })

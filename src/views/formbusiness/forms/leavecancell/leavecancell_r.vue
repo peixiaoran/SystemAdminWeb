@@ -2547,7 +2547,7 @@ onMounted(async () => {
 }
 
 .workflow-step-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
@@ -2555,7 +2555,7 @@ onMounted(async () => {
 .workflow-step-tag {
   margin-left: 8px;
   padding: 1px 6px;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
   border-radius: 4px;
 }
@@ -2616,7 +2616,7 @@ onMounted(async () => {
 }
 
 .workflow-user-name {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--el-text-color-primary);
 }
 
@@ -2626,6 +2626,7 @@ onMounted(async () => {
   white-space: nowrap;
   margin-top: 2px;
   margin-left: 4px;
+  margin-right: 4px;
 }
 
 .workflow-user-label--approve {

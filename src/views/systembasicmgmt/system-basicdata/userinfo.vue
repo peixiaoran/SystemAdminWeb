@@ -915,7 +915,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       } else {
           ElMessage({
               message: res.message,
-              type: 'error',
+              type: Number(res?.code) === 400 ? 'warning' : 'error',
               plain: true,
               showClose: true
           })
@@ -1169,7 +1169,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
             fetchUserPages()
       } else {
           if (res.code !== 401 && res.code !== 403) {
-              ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
+              ElMessage({ message: res.message, type: Number(res?.code) === 400 ? 'warning' : 'error', plain: true, showClose: true })
           }
       }
       submitLoading.value = false
@@ -1188,7 +1188,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           fetchUserPages()
       } else {
           if (res.code !== 401 && res.code !== 403) {
-              ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
+              ElMessage({ message: res.message, type: Number(res?.code) === 400 ? 'warning' : 'error', plain: true, showClose: true })
           }
       }
       submitLoading.value = false
@@ -1216,7 +1216,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
           if (res.code !== 401 && res.code !== 403) {
               ElMessage({
                   message: res.message,
-                  type: 'error',
+                  type: Number(res?.code) === 400 ? 'warning' : 'error',
                   plain: true,
                   showClose: true
               })
@@ -1298,7 +1298,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       if (!isJPG) {
           ElMessage({
               message: t('systembasicmgmt.userInfo.avatarTypeLimit') || '只支持 JPG/PNG 格式!',
-              type: 'error',
+              type: 'warning',
               plain: true,
               showClose: true
           })
@@ -1307,7 +1307,7 @@ const fetchRoleDropdown = async (setDefaultFilter = false, setDefaultForm = fals
       if (!isLt5M) {
           ElMessage({
               message: t('systembasicmgmt.userInfo.avatarSizeLimit') || '图片大小不能超过 5MB!',
-              type: 'error',
+              type: 'warning',
               plain: true,
               showClose: true
           })

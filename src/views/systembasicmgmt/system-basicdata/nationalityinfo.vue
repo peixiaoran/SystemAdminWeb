@@ -147,7 +147,7 @@ const fetchNationalityList = async () => {
     nationalityList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else if (res) {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   loading.value = false
 }
@@ -223,7 +223,7 @@ const handleDelete = async (index, row) => {
     showMessage(res.message, 'success')
     fetchNationalityList()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -241,7 +241,7 @@ const handleSave = async () => {
     dialogVisible.value = false
     fetchNationalityList()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }

@@ -324,7 +324,7 @@ const getFormGroupOptions = async () => {
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.applyhistory.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.applyhistory.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.applyhistory.getFormGroupFailed'))
   }
@@ -343,7 +343,7 @@ const getFormTypeOptions = async () => {
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.applyhistory.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.applyhistory.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.applyhistory.getFormTypeFailed'))
   }
@@ -368,7 +368,7 @@ const getFormList = async () => {
       return
     }
     formList.value = []
-    showMessage(res?.message || t('formbusiness.applyhistory.getApplyHistoryFailed'))
+    showMessage(res?.message || t('formbusiness.applyhistory.getApplyHistoryFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formList.value = []
     showMessage(t('formbusiness.applyhistory.getApplyHistoryFailed'))
@@ -497,7 +497,7 @@ const openFormPendingReviewers = async (row) => {
       return
     }
     formPendingReviewersDialogVisible.value = false
-    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'))
+    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formPendingReviewersDialogVisible.value = false
     showMessage(t('formbusiness.formpending.getFormPendingReviewersFailed'))
@@ -635,7 +635,7 @@ const handleVoidForm = async (row) => {
       showMessage(res?.message || t('formbusiness.formpending.voidSuccess'), 'success')
       await getFormList()
     } else {
-      showMessage(res?.message || t('formbusiness.formpending.voidFailed'))
+      showMessage(res?.message || t('formbusiness.formpending.voidFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formpending.voidFailed'))
@@ -667,7 +667,7 @@ const handleWithdrawForm = async (row) => {
       showMessage(typeof successMsg === 'string' ? successMsg : t('formbusiness.applyhistory.withdrawSuccess'), 'success')
       await getFormList()
     } else {
-      showMessage(res?.message || t('formbusiness.applyhistory.withdrawFailed'))
+      showMessage(res?.message || t('formbusiness.applyhistory.withdrawFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.applyhistory.withdrawFailed'))

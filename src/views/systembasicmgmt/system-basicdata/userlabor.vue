@@ -197,7 +197,7 @@ const getLaborList = async () => {
     pagination.totalCount = response.totalCount || 0
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     laborList.value = []
   }
@@ -252,7 +252,7 @@ const handleEdit = async (row) => {
     Object.assign(form, response.data)
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     dialogVisible.value = false
   }
@@ -277,7 +277,7 @@ const handleDelete = async (row) => {
     getLaborList()
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message)
+      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
     }
   }
 }
@@ -296,7 +296,7 @@ const handleSubmit = async () => {
     getLaborList()
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.operationFailed'))
+      showMessage(response?.message || t('systembasicmgmt.userLabor.operationFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
   }
   submitLoading.value = false

@@ -183,7 +183,7 @@ const fetchCurrencyEntity = async (currencyId) => {
     if (res && res.code === 200) {
       return res.data
     }
-    showMessage(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'))
+    showMessage(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('systembasicmgmt.currencyInfo.getCurrencyEntityFailed'))
     return null
@@ -203,7 +203,7 @@ const fetchCurrencyPages = async () => {
       currencyList.value = res.data || []
       pagination.totalCount = res.data?.totalCount || 0
     } else {
-      showMessage(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'))
+      showMessage(res?.message || t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.currencyInfo.getCurrencyPagesFailed'))
@@ -252,7 +252,7 @@ const insertCurrency = async () => {
     dialogVisible.value = false
     fetchCurrencyPages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -272,7 +272,7 @@ const updateCurrency = async () => {
     dialogVisible.value = false
     fetchCurrencyPages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -286,7 +286,7 @@ const deleteCurrency = async (currencyId) => {
     }
     fetchCurrencyPages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

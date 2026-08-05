@@ -250,7 +250,7 @@ const fetchCurrencyDropDown = async () => {
       }
     }
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -268,7 +268,7 @@ const fetchExchangeRatePages = async () => {
       exchangeRateList.value = res.data || []
       pagination.totalCount = res.data?.totalCount || 0
     } else {
-      showMessage(res?.message || t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'))
+      showMessage(res?.message || t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'))
@@ -320,7 +320,7 @@ const insertExchangeRate = async () => {
     dialogVisible.value = false
     fetchExchangeRatePages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -340,7 +340,7 @@ const updateExchangeRate = async () => {
     dialogVisible.value = false
     fetchExchangeRatePages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -354,7 +354,7 @@ const deleteExchangeRate = async (exchangeRateId) => {
     }
     fetchExchangeRatePages()
   } else {
-    showMessage(res?.message)
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

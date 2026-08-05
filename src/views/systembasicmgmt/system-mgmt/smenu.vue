@@ -395,7 +395,7 @@ const insertSMenu = async () => {
     dialogVisible.value = false
     fetchSMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -409,7 +409,7 @@ const updateSMenu = async () => {
     dialogVisible.value = false
     fetchSMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -426,7 +426,7 @@ const deleteSMenu = async (menuId) => {
     showMessage(res.message, 'success')
     fetchSMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

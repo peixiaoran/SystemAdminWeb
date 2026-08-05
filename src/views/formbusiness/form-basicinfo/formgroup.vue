@@ -193,7 +193,7 @@ const getFormGroupList = async () => {
       formGroupList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       formGroupList.value = []
     }
   } catch {
@@ -253,7 +253,7 @@ const handleEdit = async (row) => {
       form.sortOrder       = d.sortOrder
       form.description     = d.description
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       dialogVisible.value = false
     }
   } catch {
@@ -280,7 +280,7 @@ const handleDelete = async (row) => {
       showMessage(res.message, 'success')
       getFormGroupList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formgroup.operationFailed'))
@@ -309,7 +309,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       getFormGroupList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formgroup.operationFailed'))

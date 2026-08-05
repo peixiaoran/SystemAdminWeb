@@ -405,7 +405,7 @@ const handleSendCode = async () => {
     } else {
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -454,7 +454,7 @@ const handleSubmit = async () => {
       } else {
         ElMessage({
           message: res.message,
-          type: 'error',
+          type: Number(res?.code) === 400 ? 'warning' : 'error',
           plain: true,
           showClose: true
         })

@@ -284,7 +284,7 @@ const getRuleStepList = async () => {
     if (res.code === 200) {
       ruleStepList.value = res.data || []
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       ruleStepList.value = []
     }
   } catch {
@@ -318,7 +318,7 @@ const getRuleOptions = async (formTypeId) => {
       ruleOptions.value = res.data || []
       searchForm.ruleId = ruleOptions.value[0]?.ruleId ?? ''
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       ruleOptions.value = []
       searchForm.ruleId = ''
     }
@@ -346,7 +346,7 @@ const getFormTypeOptions = async (formGroupId) => {
       formTypeOptions.value = res.data || []
       searchForm.formTypeId = formTypeOptions.value[0]?.formTypeId ?? ''
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
@@ -368,7 +368,7 @@ const getFormGroupOptions = async () => {
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowrulestep.getFormGroupFailed'))
@@ -551,7 +551,7 @@ const handleEdit = async (row) => {
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false
-      showMessage(res.message || t('formbusiness.workflowrulestep.getEntityFailed'))
+      showMessage(res.message || t('formbusiness.workflowrulestep.getEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     dialogVisible.value = false
@@ -582,7 +582,7 @@ const handleSubmit = async () => {
     && !isNextStepEnd(dialogForm.nextStepId)
     && String(dialogForm.currentStepId) === String(dialogForm.nextStepId)
   ) {
-    showMessage(t('formbusiness.workflowrulestep.stepDuplicated'))
+    showMessage(t('formbusiness.workflowrulestep.stepDuplicated'), 'warning')
     return
   }
   submitLoading.value = true
@@ -604,7 +604,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       if (dialogForm.ruleId === searchForm.ruleId) await getRuleStepList()
     } else {
-      showMessage(res.message || t(`formbusiness.workflowrulestep.${failKey}`))
+      showMessage(res.message || t(`formbusiness.workflowrulestep.${failKey}`), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t(`formbusiness.workflowrulestep.${isEdit ? 'editFailed' : 'addFailed'}`))
@@ -634,7 +634,7 @@ const handleDelete = async (row) => {
       showMessage(res.message || t('formbusiness.workflowrulestep.deleteSuccess'), 'success')
       await getRuleStepList()
     } else {
-      showMessage(res.message || t('formbusiness.workflowrulestep.deleteFailed'))
+      showMessage(res.message || t('formbusiness.workflowrulestep.deleteFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowrulestep.deleteFailed'))

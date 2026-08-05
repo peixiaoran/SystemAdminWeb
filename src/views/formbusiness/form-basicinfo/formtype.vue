@@ -232,7 +232,7 @@ const getFormGroupOptions = async () => {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtype.getFormGroupFailed'))
@@ -253,7 +253,7 @@ const getFormTypeList = async () => {
       formTypeList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       formTypeList.value = []
     }
   } catch {
@@ -325,7 +325,7 @@ const handleEdit = async (row) => {
       // 数据回填后清除验证，避免瞬间显示校验红框
       nextTick(() => formRef.value?.clearValidate())
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       dialogVisible.value = false
     }
   } catch {
@@ -352,7 +352,7 @@ const handleDelete = async (row) => {
       showMessage(res.message, 'success')
       getFormTypeList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtype.operationFailed'))
@@ -386,7 +386,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       getFormTypeList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formtype.operationFailed'))

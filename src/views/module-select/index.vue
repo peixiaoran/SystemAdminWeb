@@ -109,7 +109,7 @@ const fetchModules = async () => {
     } else {
       ElMessage({
         message: res?.message || t('moduleSelect.moduleError'),
-        type: isHttpError(res) ? 'error' : 'warning',
+        type: !isHttpError(res) && Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true,
       })

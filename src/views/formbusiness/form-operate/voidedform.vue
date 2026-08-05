@@ -224,7 +224,7 @@ const getFormGroupOptions = async () => {
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.voidedform.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.voidedform.getFormGroupFailed'))
   }
@@ -243,7 +243,7 @@ const getFormTypeOptions = async () => {
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.voidedform.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.voidedform.getFormTypeFailed'))
   }
@@ -266,7 +266,7 @@ const getFormVoidedList = async () => {
       return
     }
     formVoidedList.value = []
-    showMessage(res?.message || t('formbusiness.voidedform.getVoidedFormsFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.getVoidedFormsFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formVoidedList.value = []
     showMessage(t('formbusiness.voidedform.getVoidedFormsFailed'))
@@ -369,7 +369,7 @@ const handleDeleteForm = async (row) => {
       await getFormVoidedList()
       return
     }
-    showMessage(res?.message || t('formbusiness.voidedform.deleteFailed'))
+    showMessage(res?.message || t('formbusiness.voidedform.deleteFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.voidedform.deleteFailed'))
   } finally {

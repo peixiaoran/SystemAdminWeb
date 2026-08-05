@@ -306,7 +306,7 @@ const getFormGroupOptions = async () => {
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.reviewhistory.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.reviewhistory.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.reviewhistory.getFormGroupFailed'))
   }
@@ -325,7 +325,7 @@ const getFormTypeOptions = async () => {
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.reviewhistory.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.reviewhistory.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.reviewhistory.getFormTypeFailed'))
   }
@@ -350,7 +350,7 @@ const getFormList = async () => {
       return
     }
     formList.value = []
-    showMessage(res?.message || t('formbusiness.reviewhistory.getReviewHistoryFailed'))
+    showMessage(res?.message || t('formbusiness.reviewhistory.getReviewHistoryFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formList.value = []
     showMessage(t('formbusiness.reviewhistory.getReviewHistoryFailed'))
@@ -475,7 +475,7 @@ const openFormPendingReviewers = async (row) => {
       return
     }
     formPendingReviewersDialogVisible.value = false
-    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'))
+    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formPendingReviewersDialogVisible.value = false
     showMessage(t('formbusiness.formpending.getFormPendingReviewersFailed'))

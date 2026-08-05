@@ -177,7 +177,7 @@ const getControlList = async () => {
       controlList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       controlList.value = []
     }
   } catch {
@@ -236,7 +236,7 @@ const handleDelete = async (row) => {
       showMessage(res.message, 'success')
       getControlList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.controlinfo.operationFailed'))
@@ -262,7 +262,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false
       getControlList()
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.controlinfo.operationFailed'))

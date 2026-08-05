@@ -235,7 +235,7 @@ const getDepartmentTree = async () => {
     departmentList.value = response.data || []
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     departmentList.value = []
   }
@@ -248,7 +248,7 @@ const getDepartmentLevelDropdown = async () => {
     departmentLevelOptions.value = response.data || []
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     departmentLevelOptions.value = []
   }
@@ -260,7 +260,7 @@ const getDepartmentDropdown = async () => {
     departmentOptions.value = response.data || []
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     departmentOptions.value = []
   }
@@ -272,7 +272,7 @@ const getFactoryDropdown = async () => {
     factoryOptions.value = response.data || []
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
     factoryOptions.value = []
   }
@@ -356,7 +356,7 @@ const handleEdit = async (index, row) => {
     nextTick(() => editFormRef.value?.clearValidate())
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'))
+      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
   }
 }
@@ -379,7 +379,7 @@ const handleDelete = async (index, row) => {
     getDepartmentTree()
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message)
+      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
     }
   }
 }
@@ -417,7 +417,7 @@ const handleSubmit = async () => {
     getDepartmentTree()
   } else {
     if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message)
+      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
     }
   }
   submitLoading.value = false

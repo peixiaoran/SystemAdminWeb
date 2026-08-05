@@ -363,7 +363,7 @@ const insertRole = async () => {
     dialogVisible.value = false
     fetchRolePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -386,7 +386,7 @@ const updateRole = async () => {
     dialogVisible.value = false
     fetchRolePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -403,7 +403,7 @@ const deleteRole = async (roleId) => {
     showMessage(res.message, 'success')
     fetchRolePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -498,7 +498,7 @@ const fetchRoleModuleList = async (roleId) => {
       .filter(item => item.isChecked)
       .map(item => item.moduleId)
   } else {
-    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleListFail'))
+    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleListFail'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -526,7 +526,7 @@ const saveModuleConfig = async () => {
     moduleDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.moduleConfigSuccess'), 'success')
   } else {
-    showMessage(res?.message || t('systembasicmgmt.role.moduleConfigFailed'))
+    showMessage(res?.message || t('systembasicmgmt.role.moduleConfigFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -552,7 +552,7 @@ const fetchRoleModuleDropdown = async () => {
       await fetchRoleMenuTree(currentRoleId.value, firstValidModule.moduleId)
     }
   } else {
-    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleDropdownFail'))
+    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleDropdownFail'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -575,7 +575,7 @@ const fetchRoleMenuTree = async (roleId, moduleId) => {
       }
     })
   } else {
-    showMessage(res?.message || t('systembasicmgmt.role.fetchMenuTreeFail'))
+    showMessage(res?.message || t('systembasicmgmt.role.fetchMenuTreeFail'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -610,7 +610,7 @@ const saveMenuConfig = async () => {
     menuDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.menuConfigSuccess'), 'success')
   } else {
-    showMessage(res?.message || t('systembasicmgmt.role.menuConfigFailed'))
+    showMessage(res?.message || t('systembasicmgmt.role.menuConfigFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 </script>

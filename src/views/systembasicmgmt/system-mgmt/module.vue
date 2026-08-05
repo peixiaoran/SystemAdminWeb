@@ -225,7 +225,7 @@ const fetchModulePages = async () => {
     moduleList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   loading.value = false
 }
@@ -271,7 +271,7 @@ const insertModule = async () => {
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -285,7 +285,7 @@ const updateModule = async () => {
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -302,7 +302,7 @@ const deleteModule = async (moduleId) => {
     showMessage(res.message, 'success')
     fetchModulePages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

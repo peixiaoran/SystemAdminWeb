@@ -2331,7 +2331,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     height: 100%;
     overflow-y: auto;
     /* 留出滚动条宽度，避免右侧审批状态与滚动条重叠 */
-    padding-right: 12px;
+    padding-right: 20px;
   }
 
   .workflow-reject-count {
@@ -2409,15 +2409,15 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
   
   .workflow-step-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--el-text-color-primary);
   }
-  
+
   .workflow-step-tag {
     margin-left: 8px;
     padding: 1px 6px;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.4;
     border-radius: 4px;
   }
@@ -2479,7 +2479,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
   
   .workflow-user-name {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--el-text-color-primary);
   }
 
@@ -2488,7 +2488,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   }
   
   .workflow-user-meta {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--el-text-color-secondary);
     margin-top: 2px;
   }
@@ -2501,10 +2501,11 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   
   .workflow-user-label {
     flex-shrink: 0;
-    font-size: 11px;
+    font-size: 12px;
     white-space: nowrap;
     margin-top: 2px;
     margin-left: 4px;
+    margin-right: 4px;
   }
   
   .workflow-user-label--approve {

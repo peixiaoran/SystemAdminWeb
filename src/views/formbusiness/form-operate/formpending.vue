@@ -320,7 +320,7 @@ const getFormGroupOptions = async () => {
       if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
       return
     }
-    showMessage(res?.message || t('formbusiness.formpending.getFormGroupFailed'))
+    showMessage(res?.message || t('formbusiness.formpending.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.formpending.getFormGroupFailed'))
   }
@@ -339,7 +339,7 @@ const getFormTypeOptions = async () => {
       ]
       return
     }
-    showMessage(res?.message || t('formbusiness.formpending.getFormTypeFailed'))
+    showMessage(res?.message || t('formbusiness.formpending.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     showMessage(t('formbusiness.formpending.getFormTypeFailed'))
   }
@@ -363,7 +363,7 @@ const getFormPendingList = async () => {
       return
     }
     formPendingList.value = []
-    showMessage(res?.message || t(getCurrentListErrorKey()))
+    showMessage(res?.message || t(getCurrentListErrorKey()), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formPendingList.value = []
     showMessage(t(getCurrentListErrorKey()))
@@ -482,7 +482,7 @@ const openFormPendingReviewers = async (row) => {
       return
     }
     formPendingReviewersDialogVisible.value = false
-    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'))
+    showMessage(res?.message || t('formbusiness.formpending.getFormPendingReviewersFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   } catch {
     formPendingReviewersDialogVisible.value = false
     showMessage(t('formbusiness.formpending.getFormPendingReviewersFailed'))
@@ -527,7 +527,7 @@ const handleVoidForm = async (row) => {
       showMessage(res.message || t('formbusiness.formpending.voidSuccess'), 'success')
       await getFormPendingList()
     } else {
-      showMessage(res?.message || t('formbusiness.formpending.voidFailed'))
+      showMessage(res?.message || t('formbusiness.formpending.voidFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.formpending.voidFailed'))

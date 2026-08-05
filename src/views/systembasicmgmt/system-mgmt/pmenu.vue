@@ -362,7 +362,7 @@ const insertPMenu = async () => {
     dialogVisible.value = false
     fetchPMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -376,7 +376,7 @@ const updatePMenu = async () => {
     dialogVisible.value = false
     fetchPMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -393,7 +393,7 @@ const deletePMenu = async (menuId) => {
     showMessage(res.message, 'success')
     fetchPMenuPages()
   } else {
-    showMessage(res.message)
+    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 

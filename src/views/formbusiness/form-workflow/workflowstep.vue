@@ -675,7 +675,7 @@ const getFormGroupOptions = async () => {
         await getFormTypeOptions(searchForm.formGroupId)
       }
     } else {
-      showMessage(response.message)
+      showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
     }
   } catch (error) {
     showMessage(t('formbusiness.workflowstep.getFormGroupFailed'))
@@ -702,7 +702,7 @@ const getFormTypeOptions = async (formGroupId) => {
         ? formTypeOptions.value[0].formTypeId
         : ''
     } else {
-      showMessage(response.message)
+      showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
@@ -734,7 +734,7 @@ const getWorkflowStepList = async () => {
     if (response.code === 200) {
       workflowStepList.value = response.data || []
     } else {
-      showMessage(response.message)
+      showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
       workflowStepList.value = []
     }
   } catch (error) {
@@ -787,7 +787,7 @@ const loadStepFieldPermissions = async (formTypeId, stepId) => {
       }))
     } else {
       stepFieldPermissionList.value = []
-      showMessage(response.message || t('formbusiness.workflowstep.getFieldPermissionFailed'))
+      showMessage(response.message || t('formbusiness.workflowstep.getFieldPermissionFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     stepFieldPermissionList.value = []
@@ -827,7 +827,7 @@ const submitFieldPermission = async () => {
       showMessage(t('formbusiness.workflowstep.updateFieldPermissionSuccess'), 'success')
       fieldPermissionDialogVisible.value = false
     } else {
-      showMessage(response.message || t('formbusiness.workflowstep.updateFieldPermissionFailed'))
+      showMessage(response.message || t('formbusiness.workflowstep.updateFieldPermissionFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowstep.updateFieldPermissionFailed'))
@@ -913,7 +913,7 @@ const handleEditStep = async (step) => {
         await loadUserInfoPage()
       }
     } else {
-      showMessage(entityRes?.message || t('formbusiness.workflowstep.getFailed'))
+      showMessage(entityRes?.message || t('formbusiness.workflowstep.getFailed'), Number(entityRes?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowstep.getFailed'))
@@ -944,7 +944,7 @@ const handleDeleteStep = async (step) => {
       showMessage(t('formbusiness.workflowstep.deleteStepSuccess'), 'success')
       await getWorkflowStepList()
     } else {
-      showMessage(response.message || t('formbusiness.workflowstep.deleteStepFailed'))
+      showMessage(response.message || t('formbusiness.workflowstep.deleteStepFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.workflowstep.deleteStepFailed'))
@@ -1267,7 +1267,7 @@ const submitAddStep = async () => {
           await getWorkflowStepList()
         }
       } else {
-        showMessage(response.message)
+        showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
       }
     } catch {
       showMessage(

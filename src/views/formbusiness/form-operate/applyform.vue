@@ -139,7 +139,7 @@ const getFormGroupOptions = async () => {
         searchForm.formGroupId = formGroupOptions.value[0].formGroupId
       }
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
     showMessage(t('formbusiness.applyform.getFormGroupFailed'))
@@ -160,7 +160,7 @@ const getFormTypeList = async () => {
       formTypeList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res.message)
+      showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       formTypeList.value = []
     }
   } catch {
