@@ -533,6 +533,31 @@ const pmenuRoutes = [
               }
             }
           ]
+        },
+        // 综合查询子模块 - 使用嵌套结构
+        {
+          path: 'compre-query',
+          name: 'CompreQuery',
+          redirect: '/formbusiness/compre-query',
+          meta: {
+            title: 'route.comprequery',
+            icon: 'Search',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'basicquery',
+              name: 'BasicQuery',
+              component: () => import('../views/formbusiness/compre-query/basicquery.vue'),
+              meta: {
+                title: 'route.basicQuery',
+                icon: 'Document',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
         }
       ]
   },

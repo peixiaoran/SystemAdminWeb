@@ -817,7 +817,7 @@ import { ElMessage, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Document, Download, Delete, Clock, CircleCheck, RemoveFilled, Loading, Search, Lock } from '@element-plus/icons-vue'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { INIT_LEAVEREQUEST_API, SAVE_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEREQUEST_API, REJECT_LEAVEREQUEST_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
 import {
   calculateLeaveTotalHours,
@@ -1856,7 +1856,11 @@ async function validateLeaveBalance (formId) {
     showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     return false
   }
-  showFormActionNotice(res?.message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'error')
+  // 请求未真正到达后端（网络异常/超时等），request.js 已提示过一次，这里不再额外弹出"余额校验未通过"造成误导
+  if (isHandled(res)) {
+    return false
+  }
+  showFormActionNotice(res?.message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'warning')
   return false
 }
 
@@ -1866,13 +1870,17 @@ async function saveLeaveRequestBeforeSubmit () {
     showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
     return false
   }
+  // 请求未真正到达后端（网络异常/超时等），request.js 已提示过一次，不能当作保存成功放行
+  if (isHandled(saveRes)) {
+    return false
+  }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
     if (isLeaveBalanceValidationFailedCode(saveRes?.code)) {
       showPlainWarningMessage(saveRes?.message)
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
     }
     return false
   }
@@ -1887,6 +1895,8 @@ async function onSubmit () {
       const res = await saveLeaveRequestRequest()
       if (isForbiddenCode(res?.code)) {
         showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
+      } else if (isHandled(res)) {
+        // 请求未真正到达后端，request.js 已提示过一次
       } else if (res && isSuccessCode(res.code)) {
         // 暂存后同样执行假期余额校验，未通过时只提示校验结果（数据已保存）
         const formId = String(form.formId || '')
@@ -1897,7 +1907,7 @@ async function onSubmit () {
       } else if (isBadRequestResponse(res)) {
         showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       } else {
-        showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+        showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
       }
     } catch {
       // ignore
@@ -2379,6 +2389,9 @@ async function onSubmitForApproval () {
       showFormActionNotice(t('formbusiness.leaverequest.forbiddenResultSubTitle'), 'warning')
       return
     }
+    if (isHandled(res)) {
+      return
+    }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.leaverequest.approvalResultTitle', 'formbusiness.leaverequest.approvalResultSubTitle')
       return
@@ -2387,7 +2400,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'error')
+    showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'warning')
   } catch {
     // ignore
   } finally {

@@ -658,7 +658,7 @@ import { ElMessage, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Clock, CircleCheck, RemoveFilled, Loading, Lock, Search } from '@element-plus/icons-vue'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import {
   INIT_LEAVECANCELL_API,
   GET_LEAVEREQUEST_VIEW_API,
@@ -728,8 +728,7 @@ const form = reactive({
 
 // leaveRequestId 无实际输入控件承载，不接入 el-form 的 prop/rules 校验体系（避免字段下方常驻红字），
 // 是否已选请假单改为暂存/送审时手动判断，见 onSubmit / onSubmitForApproval
-// cancelTimeRange 的业务性校验（时间过早/过晚、超出可销时数等）不接入 rules，
-// 避免字段下方常驻红字；改为暂存/送审时手动调用 getCancelTimeRangeBusinessError，仅以右上角提示呈现
+// cancelTimeRange 的业务性校验（时间过早/过晚、超出可销时数等）统一交给后端 ValidateLeaveCancell 接口
 const rules = {
   cancelTimeRange: [
     // type: 'array' 必须显式声明，否则 async-validator 不会把空数组 [] 判为空值
@@ -1266,43 +1265,6 @@ function handleCancelTimeRangeChange () {
   calculateCancelDuration()
 }
 
-/** 销假时间的业务性校验：不接入 el-form 规则、不显示字段下方红字，
- *  仅在暂存/送审时手动调用，校验失败以右上角提示呈现 */
-function getCancelTimeRangeBusinessError () {
-  if (!selectedLeaveRequest.value) return ''
-  const value = form.cancelTimeRange
-  if (!value || value.length !== 2 || (!value[0] && !value[1])) {
-    return t('formbusiness.validation.required')
-  }
-  if (!value[0] || !value[1]) {
-    return t('formbusiness.leavecancell.cancelTimeIncompleteError')
-  }
-  const [startTime, endTime] = value
-  const start = new Date(toISO(startTime))
-  const end = new Date(toISO(endTime))
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) return ''
-  if (end <= start) {
-    return t('formbusiness.leavecancell.endAfterStartError')
-  }
-  if (!isLeaveTimeRangeAllowed(startTime, endTime)) {
-    return t('formbusiness.leavecancell.cancelTimeWorkHoursError')
-  }
-  const minStart = getMinCancelStartDateTime()
-  const maxEnd = getMaxCancelEndDateTime()
-  if (minStart && start < minStart) {
-    return t('formbusiness.leavecancell.cancelStartTooEarlyError', { time: formatDateTimeValue(minStart) })
-  }
-  if (maxEnd && end > maxEnd) {
-    return t('formbusiness.leavecancell.cancelEndTooLateError', { time: formatDateTimeValue(maxEnd) })
-  }
-  const hours = calculateLeaveTotalHours(startTime, endTime)
-  const cancellable = Number(selectedLeaveRequest.value.cancellableHours)
-  if (Number.isFinite(cancellable) && hours > cancellable + 0.001) {
-    return t('formbusiness.leavecancell.cancelHoursExceedError', { hours: cancellable })
-  }
-  return ''
-}
-
 function applySelectedLeaveRequest (row) {
   selectedLeaveRequest.value = { ...row }
   form.leaveRequestId = String(row.leaveRequestId || '')
@@ -1334,10 +1296,10 @@ async function removeSelectedLeaveRequest () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
     }
   } catch {
-    showFormActionNotice(t('messages.saveError'), 'error')
+    showFormActionNotice(t('messages.saveError'), 'warning')
   } finally {
     leaveRequestRemoveLoading.value = false
   }
@@ -1504,10 +1466,10 @@ async function confirmLeaveRequestSelect () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
     }
   } catch {
-    showFormActionNotice(t('messages.saveError'), 'error')
+    showFormActionNotice(t('messages.saveError'), 'warning')
   } finally {
     leaveRequestConfirmLoading.value = false
   }
@@ -1673,13 +1635,17 @@ async function validateLeaveCancellBeforeAction () {
     showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
     return false
   }
+  // 请求未真正到达后端（网络异常/超时等），request.js 已提示过一次，不能当作校验通过放行
+  if (isHandled(res)) {
+    return false
+  }
   if (!res || !isSuccessCode(res.code)) {
     if (isValidationWarningCode(res?.code)) {
       showFormActionNotice(res?.message, 'warning')
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'error')
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'warning')
     }
     return false
   }
@@ -1696,13 +1662,17 @@ async function saveLeaveCancellBeforeSubmit () {
     showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
     return false
   }
+  // 请求未真正到达后端（网络异常/超时等），request.js 已提示过一次，不能当作保存成功放行
+  if (isHandled(saveRes)) {
+    return false
+  }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
     if (isValidationWarningCode(saveRes?.code)) {
       showFormActionNotice(saveRes?.message, 'warning')
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
     }
     return false
   }
@@ -1733,6 +1703,8 @@ async function onSubmit () {
     const res = await saveLeaveCancellRequest()
     if (isForbiddenCode(res?.code)) {
       showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
+    } else if (isHandled(res)) {
+      // 请求未真正到达后端，request.js 已提示过一次
     } else if (res && isSuccessCode(res.code)) {
       if (!form.formId && res.data) form.formId = String(res.data)
       showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
@@ -1741,7 +1713,7 @@ async function onSubmit () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
     }
   } catch {
     // ignore
@@ -1761,11 +1733,6 @@ async function onSubmitForApproval () {
   })
   if (invalidFields) {
     showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
-    return
-  }
-  const businessError = getCancelTimeRangeBusinessError()
-  if (businessError) {
-    showFormActionNotice(businessError, 'warning')
     return
   }
   approving.value = true
@@ -1796,6 +1763,9 @@ async function onSubmitForApproval () {
       showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
       return
     }
+    if (isHandled(res)) {
+      return
+    }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.leavecancell.approvalResultTitle', 'formbusiness.leavecancell.approvalResultSubTitle')
       return
@@ -1808,7 +1778,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.leavecancell.submitFailed'), 'error')
+    showFormActionNotice(res?.message || t('formbusiness.leavecancell.submitFailed'), 'warning')
   } catch {
     // ignore
   } finally {

@@ -624,6 +624,39 @@ export default {
       pleaseSelectFormsToPrint: '请先勾选要打印的表单'
     },
 
+    basicquery: {
+      filterAriaLabel: '基础查询筛选',
+      pleaseSelect: '请选择',
+      formGroupName: '表单组别',
+      formTypeName: '表单类型',
+      formStatus: '表单状态',
+      formNo: '表单编号',
+      applicantDate: '申请日期',
+      applyUserName: '申请人',
+      applyUserDeptName: '申请部门',
+      index: '序号',
+      pleaseSelectFormGroup: '请选择表单组别',
+      pleaseSelectFormType: '请选择表单类型',
+      getFormGroupFailed: '获取表单组别失败',
+      getFormTypeFailed: '获取表单类型失败',
+      getFormStatusFailed: '获取表单状态失败',
+      getBasicFormQueryFailed: '获取表单查询数据失败',
+      getFailed: '获取表单查询数据失败',
+      operation: '操作',
+      printPdf: '打印',
+      printing: '打印中...',
+      printFailed: '打印失败',
+      batchPrint: '批量打印',
+      batchPrinting: '打印中...',
+      batchPrintFailed: '批量打印失败',
+      pleaseSelectFormsToPrint: '请先勾选要打印的表单',
+      filterQuery: '筛选查询',
+      clearAll: '清除全部条件',
+      dateRange: '申请日期范围',
+      startDate: '开始日期',
+      endDate: '结束日期'
+    },
+
     // 请假单页面专用
     leaverequest: {
         title: '假别',
@@ -1175,6 +1208,8 @@ export default {
     applyHistory: '申请历史记录',
     reviewHistory: '审批历史记录',
     voidedForm: '已作废单据',
+    comprequery: '表单综合查询',
+    basicQuery: '表单基础查询',
     applyform: '申请表单作业',
     controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',
@@ -1295,7 +1330,12 @@ export default {
       unauthorized: '登录已过期，请重新登录',
       forbidden: '没有权限访问此资源',
       serverError: '服务器内部错误，请稍后重试',
-      networkError: '网络连接失败，请检查网络设置'
+      networkError: '网络连接失败，请检查网络设置',
+      httpError: 'HTTP错误 {status}',
+      unknownError: '未知错误',
+      businessFailed: '业务处理失败',
+      systemTip: '系统提示',
+      formValidationFailed: '表单验证失败'
     },
 
      // 部门信息

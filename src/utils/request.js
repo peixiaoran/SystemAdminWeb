@@ -47,18 +47,18 @@ export const ERROR_LEVELS = {
 }
 
 const parseError = (error, context) => {
-  let message = '未知错误'
+  let message = i18n.global.t('systembasicmgmt.errorHandler.unknownError')
   let code = 'UNKNOWN'
   let details = null
 
   if (error?.response) {
     const { status, data } = error.response
     code = `HTTP_${status}`
-    message = data?.message || `HTTP错误 ${status}`
+    message = data?.message || i18n.global.t('systembasicmgmt.errorHandler.httpError', { status })
     details = data
   } else if (error?.code) {
     code = error.code
-    message = error.message || '业务处理失败'
+    message = error.message || i18n.global.t('systembasicmgmt.errorHandler.businessFailed')
     details = error.data
   } else if (error?.message) {
     message = error.message
@@ -84,7 +84,7 @@ const showErrorMessage = (errorInfo, level) => {
 const showErrorNotification = (errorInfo, level) => {
   ElNotification({
     type: level === ERROR_LEVELS.WARNING ? 'warning' : 'error',
-    title: '系统提示',
+    title: i18n.global.t('systembasicmgmt.errorHandler.systemTip'),
     message: errorInfo.message,
     duration: 8000,
     showClose: true
@@ -120,7 +120,7 @@ export const withErrorHandling = (asyncFn, context, options = {}) => {
 export const handleFormValidationError = (errors, formRef) => {
   if (formRef?.setFields) formRef.setFields(errors)
   const firstError = Object.values(errors)[0]
-  if (firstError) ElMessage.warning(firstError.message || '表单验证失败')
+  if (firstError) ElMessage.warning(firstError.message || i18n.global.t('systembasicmgmt.errorHandler.formValidationFailed'))
 }
 
 export const handleNetworkError = (error, options = {}) => {
@@ -369,20 +369,16 @@ export const post = async (url, data, options = {}) => {
       if (status === 401) return handleUnauthorized(options)
       if (status === 403) return handleForbidden(error, options)
 
-      if ([400, 404].includes(status)) {
-        return (responseData && typeof responseData === 'object')
-          ? { ...responseData, __isHttpError: true }
-          : { code: status, data: null, message: `HTTP错误 ${status}`, success: false, __isHttpError: true }
-      }
-
+      // 非 200 的 HTTP 状态码属于传输层错误，统一在这里提示，不再把状态码/message 透传给页面当业务结果处理，
+      // 避免页面把"请求根本没成功"误判成某个具体的业务校验失败
       const info = handleNetworkError(error, { showMessage: false })
-      return {
-        code: status,
-        data: responseData ?? null,
-        message: responseData?.message || info.message,
-        success: false,
-        __isHttpError: true
+      const message = (responseData && typeof responseData === 'object' && responseData.message) || info.message
+      const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
+      if (ts) {
+        lastNetworkErrorTime = ts
+        showErrorMessageToast(message)
       }
+      return createHandledResponse({ success: false, handled: true })
     }
 
     const info = handleNetworkError(error, { showMessage: false })

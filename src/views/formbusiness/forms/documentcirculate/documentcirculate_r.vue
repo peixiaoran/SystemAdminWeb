@@ -772,7 +772,7 @@ import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import {
   INIT_DOCUMENTCIRCULATE_API,
   GET_DOCUMENTCIRCULATE_API,
@@ -1777,6 +1777,8 @@ async function onSubmit () {
     const res = await saveDocumentCirculateRequest()
     if (isForbiddenCode(res?.code)) {
       showFormActionNotice(t('formbusiness.documentcirculate.forbiddenResultSubTitle'), 'warning')
+    } else if (isHandled(res)) {
+      // 请求未真正到达后端，request.js 已提示过一次
     } else if (res && isSuccessCode(res.code)) {
       if (!form.formId && res.data) form.formId = String(res.data)
       showFormActionNotice(res.message || t('messages.saveSuccess'), 'success')
@@ -1785,7 +1787,7 @@ async function onSubmit () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
     }
   } catch {
     // ignore
@@ -1800,13 +1802,17 @@ async function saveDocumentCirculateBeforeSubmit () {
     showFormActionNotice(t('formbusiness.documentcirculate.forbiddenResultSubTitle'), 'warning')
     return false
   }
+  // 请求未真正到达后端（网络异常/超时等），request.js 已提示过一次，不能当作保存成功放行
+  if (isHandled(saveRes)) {
+    return false
+  }
   if (!saveRes || !isSuccessCode(saveRes.code)) {
     if (isValidationWarningCode(saveRes?.code)) {
       showFormActionNotice(saveRes?.message, 'warning')
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
     }
     return false
   }
@@ -1845,6 +1851,9 @@ async function onSubmitForApproval () {
       showFormActionNotice(t('formbusiness.documentcirculate.forbiddenResultSubTitle'), 'warning')
       return
     }
+    if (isHandled(res)) {
+      return
+    }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.documentcirculate.approvalResultTitle', 'formbusiness.documentcirculate.approvalResultSubTitle')
       return
@@ -1857,7 +1866,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.documentcirculate.submitFailed'), 'error')
+    showFormActionNotice(res?.message || t('formbusiness.documentcirculate.submitFailed'), 'warning')
   } catch {
     // ignore
   } finally {

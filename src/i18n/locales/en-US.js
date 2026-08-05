@@ -692,6 +692,39 @@ export default {
       pleaseSelectFormsToPrint: 'Please select forms to print first'
     },
 
+    basicquery: {
+      filterAriaLabel: 'Basic form query filter',
+      pleaseSelect: 'Please select',
+      formGroupName: 'Form Group',
+      formTypeName: 'Form Type',
+      formStatus: 'Form Status',
+      formNo: 'Form No',
+      applicantDate: 'Applicant Date',
+      applyUserName: 'Applicant',
+      applyUserDeptName: 'Applicant Department',
+      index: 'Index',
+      pleaseSelectFormGroup: 'Please select form group',
+      pleaseSelectFormType: 'Please select form type',
+      getFormGroupFailed: 'Failed to get form group',
+      getFormTypeFailed: 'Failed to get form type',
+      getFormStatusFailed: 'Failed to get form status',
+      getBasicFormQueryFailed: 'Failed to get form query data',
+      getFailed: 'Failed to get form query data',
+      operation: 'Operation',
+      printPdf: 'Print',
+      printing: 'Printing...',
+      printFailed: 'Failed to print form',
+      batchPrint: 'Batch Print',
+      batchPrinting: 'Printing...',
+      batchPrintFailed: 'Failed to batch print forms',
+      pleaseSelectFormsToPrint: 'Please select forms to print first',
+      filterQuery: 'Filter',
+      clearAll: 'Clear All',
+      dateRange: 'Applicant Date',
+      startDate: 'Start Date',
+      endDate: 'End Date'
+    },
+
     // Leave Form Page Specific
     leaverequest: {
       title: 'Leave Apply',
@@ -1257,6 +1290,8 @@ export default {
     applyHistory: 'Apply History',
     reviewHistory: 'Review History',
     voidedForm: 'Voided Form',
+    comprequery: 'Compre Query',
+    basicQuery: 'Basic Query',
     applyform: 'Apply Form',
     controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',
@@ -1875,7 +1910,12 @@ export default {
       unauthorized: 'Login expired, please login again',
       forbidden: 'You do not have permission to access this resource',
       serverError: 'Internal server error, please try again later',
-      networkError: 'Network connection failed, please check your network settings'
+      networkError: 'Network connection failed, please check your network settings',
+      httpError: 'HTTP Error {status}',
+      unknownError: 'Unknown error',
+      businessFailed: 'Business processing failed',
+      systemTip: 'System Notice',
+      formValidationFailed: 'Form validation failed'
     },
 
     userloginlog: {
