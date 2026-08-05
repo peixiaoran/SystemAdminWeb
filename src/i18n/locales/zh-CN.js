@@ -1119,7 +1119,10 @@ export default {
     pmenuIncomplete: '一级菜单信息不完整',
     enterPMenu: '进入一级菜单',
     moduleLoading: '正在加载模块数据...',
-    selectModuleFirst: '未选择系统模块，请先选择一个模块'
+    selectModuleFirst: '未选择系统模块，请先选择一个模块',
+    moduleError: '获取模块数据失败',
+    moduleErrorRetry: '获取模块数据失败，请稍后重试',
+    moduleIncomplete: '模块信息不完整'
   },
   
   // 路由标题

@@ -215,10 +215,18 @@ const createAuthFailureResponse = (code, message) => ({
   code,
   data: null,
   message,
-  success: false
+  success: false,
+  __isHttpError: true
 })
 
 export const isHandled = (res) => res?.__handled === true
+
+/**
+ * 区分「HTTP 状态码错误」（如 500/502/400/404 等，请求本身失败）
+ * 与「HTTP 200 内返回的业务 resultful code 失败」（请求成功，业务逻辑判定失败）。
+ * 前者页面展示时应使用 error 提示，后者沿用 warning。
+ */
+export const isHttpError = (res) => res?.__isHttpError === true
 
 const showWarningMessage = (message) => {
   ElMessage({ type: 'warning', message, duration: 3000, plain: true, showClose: true })
@@ -358,16 +366,22 @@ export const post = async (url, data, options = {}) => {
     if (error?.response) {
       const { status, data: responseData } = error.response
 
-      if (![400, 401, 403, 404].includes(status)) return responseData
       if (status === 401) return handleUnauthorized(options)
       if (status === 403) return handleForbidden(error, options)
+
+      if ([400, 404].includes(status)) {
+        return (responseData && typeof responseData === 'object')
+          ? { ...responseData, __isHttpError: true }
+          : { code: status, data: null, message: `HTTP错误 ${status}`, success: false, __isHttpError: true }
+      }
 
       const info = handleNetworkError(error, { showMessage: false })
       return {
         code: status,
         data: responseData ?? null,
         message: responseData?.message || info.message,
-        success: false
+        success: false,
+        __isHttpError: true
       }
     }
 

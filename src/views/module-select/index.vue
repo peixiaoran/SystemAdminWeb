@@ -75,7 +75,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowDown, Grid } from '@element-plus/icons-vue'
-import { post } from '@/utils/request'
+import { post, isHttpError } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
@@ -109,7 +109,7 @@ const fetchModules = async () => {
     } else {
       ElMessage({
         message: res?.message || t('moduleSelect.moduleError'),
-        type: 'warning',
+        type: isHttpError(res) ? 'error' : 'warning',
         plain: true,
         showClose: true,
       })

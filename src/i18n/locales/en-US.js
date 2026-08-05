@@ -1201,7 +1201,10 @@ export default {
     pmenuIncomplete: 'Primary menu information incomplete',
     enterPMenu: 'Enter Primary Menu',
     moduleLoading: 'Loading module data...',
-    selectModuleFirst: 'No system module selected, please select a module first'
+    selectModuleFirst: 'No system module selected, please select a module first',
+    moduleError: 'Failed to get module data',
+    moduleErrorRetry: 'Failed to get module data, please try again later',
+    moduleIncomplete: 'Module information incomplete'
   },
   
   // Route Titles
