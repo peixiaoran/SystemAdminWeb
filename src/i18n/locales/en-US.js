@@ -628,10 +628,10 @@ export default {
       getFormTypeFailed: 'Failed to get form type',
       getVoidedFormsFailed: 'Failed to get voided forms list',
       getFailed: 'Failed to load data',
-      delete: 'Delete',
-      deleteConfirm: 'Are you sure you want to delete this form? This action cannot be undone.',
-      deleteSuccess: 'Deleted successfully',
-      deleteFailed: 'Failed to delete'
+      delete: 'Permanently Delete',
+      deleteConfirm: 'Are you sure you want to permanently delete this form? This action cannot be undone.',
+      deleteSuccess: 'Permanently deleted successfully',
+      deleteFailed: 'Failed to permanently delete'
     },
 
     applyhistory: {
@@ -662,7 +662,10 @@ export default {
       batchPrint: 'Batch Print',
       batchPrinting: 'Printing...',
       batchPrintFailed: 'Failed to batch print forms',
-      pleaseSelectFormsToPrint: 'Please select forms to print first'
+      pleaseSelectFormsToPrint: 'Please select forms to print first',
+      exportExcel: 'Export Excel',
+      exporting: 'Exporting...',
+      exportFailed: 'Failed to export'
     },
 
     reviewhistory: {
@@ -689,7 +692,10 @@ export default {
       batchPrint: 'Batch Print',
       batchPrinting: 'Printing...',
       batchPrintFailed: 'Failed to batch print forms',
-      pleaseSelectFormsToPrint: 'Please select forms to print first'
+      pleaseSelectFormsToPrint: 'Please select forms to print first',
+      exportExcel: 'Export Excel',
+      exporting: 'Exporting...',
+      exportFailed: 'Failed to export'
     },
 
     basicquery: {
@@ -722,7 +728,10 @@ export default {
       clearAll: 'Clear All',
       dateRange: 'Applicant Date',
       startDate: 'Start Date',
-      endDate: 'End Date'
+      endDate: 'End Date',
+      exportExcel: 'Export Excel',
+      exporting: 'Exporting...',
+      exportFailed: 'Failed to export'
     },
 
     // Leave Form Page Specific
@@ -780,7 +789,7 @@ export default {
       pleaseSelectStartDate: 'Please select start date',
       pleaseSelectEndDate: 'Please select end date',
       pleaseSelectHandoverUser: 'Please select handover user',
-      formTitle: 'Leave Application',
+      formTitle: 'Leave Request Form',
       endAfterStartError: 'End time must be later than start time',
       leaveTimeIncompleteError: 'Please select both a date and time segment for start and end',
       leaveTimeWorkHoursError: 'Time must be within 08:00-12:00 or 13:00-17:00 only',
@@ -788,7 +797,7 @@ export default {
       saveButton: 'Save',
       submitButton: 'Approval',
       submitConfirmTitle: 'Confirm submit',
-      submitConfirmMessage: 'Submit this form for approval? It will enter the approval workflow.',
+      submitConfirmMessage: 'Submit this form for approval? It will enter the review workflow.',
       submitSuccess: 'Submitted successfully',
       submitFailed: 'Submit failed',
       approvalResultTitle: 'Approval Submitted',
@@ -821,7 +830,7 @@ export default {
       attachmentTipBereavement: 'Death certificate or proof of relationship required',
       viewFullWorkflow: 'View full workflow',
       viewFullWorkflowHint: 'View full workflow',
-      workflowDrawerTitle: 'Approval workflow',
+      workflowDrawerTitle: 'Review workflow',
       workflowStatusSigning: 'Pending review',
       workflowStatusApproved: 'Approved',
       workflowStatusNotSigned: 'Not',
@@ -863,7 +872,7 @@ export default {
 
     // Leave Cancellation Form Page
     leavecancell: {
-      formTitle: 'Leave Cancellation',
+      formTitle: 'Leave Cancellation Form',
       formNo: 'Form No',
       applyDate: 'Apply Date',
       pleaseSelectApplyDate: 'Please select application date',
@@ -903,7 +912,7 @@ export default {
       saveButton: 'Save',
       submitButton: 'Approval',
       submitConfirmTitle: 'Confirm submit',
-      submitConfirmMessage: 'Submit this form for approval? It will enter the approval workflow.',
+      submitConfirmMessage: 'Submit this form for approval? It will enter the review workflow.',
       submitFailed: 'Submit failed',
       workflowNeedFormId: 'Please save the form before continuing',
       workflowLoadFailed: 'Failed to load workflow',
@@ -911,10 +920,10 @@ export default {
       approvalResultSubTitle: 'The form has been approval successfully. Please wait for the approval process.',
       forbiddenResultSubTitle: 'This action is restricted by workflow rules.',
       forbiddenReviewEyebrow: 'Approval Restricted',
-      forbiddenReviewTitle: 'Unable to Review This Leave Cancellation',
+      forbiddenReviewTitle: 'Unable to Review This Leave Cancellation Form',
       forbiddenReviewSubTitle: 'You are not an approver of the current step, or this leave cancellation has already been processed. Please refresh the pending list and try again.',
       forbiddenViewEyebrow: 'Access Restricted',
-      forbiddenViewTitle: 'Unable to View This Leave Cancellation',
+      forbiddenViewTitle: 'Unable to View This Leave Cancellation Form',
       forbiddenViewSubTitle: 'You do not have permission to view this leave cancellation. Please check the link or contact the system administrator.',
       badRequestFallbackMessage: 'No detailed message was returned by the server.',
       badRequestHint: 'Invalid parameters, wrong form state, or access denied. Verify URL and form type.',
@@ -923,7 +932,7 @@ export default {
       approvalCommentPlaceholder: 'Say something...',
       viewFullWorkflow: 'View full workflow',
       viewFullWorkflowHint: 'View full workflow',
-      workflowDrawerTitle: 'Approval workflow',
+      workflowDrawerTitle: 'Review workflow',
       workflowStatusUnsigned: 'Pending review',
       workflowStatusUnderReview: 'In review',
       workflowStatusApprove: 'Approved',
@@ -1017,7 +1026,7 @@ export default {
       approvalCommentPlaceholder: 'Say something...',
       viewFullWorkflow: 'View full workflow',
       viewFullWorkflowHint: 'View full workflow',
-      workflowDrawerTitle: 'Approval workflow',
+      workflowDrawerTitle: 'Review workflow',
       workflowStatusUnsigned: 'Pending review',
       workflowStatusUnderReview: 'In review',
       workflowStatusApprove: 'Approved',
@@ -1245,8 +1254,8 @@ export default {
     login: 'Login',
     leaverequest_r: 'Leave Application',
     leaverequest_v: 'View Leave Application',
-    leavecancell_r: 'Leave Cancellation Application',
-    leavecancell_v: 'View Leave Cancellation',
+    leavecancell_r: 'Leave Cancellation Form Application',
+    leavecancell_v: 'View Leave Cancellation Form',
     documentcirculate_r: 'Document Circulate Application',
     documentcirculate_v: 'View Document Circulate',
     moduleSelect: 'Module Selection',

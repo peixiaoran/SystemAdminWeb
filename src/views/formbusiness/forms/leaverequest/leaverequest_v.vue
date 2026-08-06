@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="leave-form-page">
       <el-config-provider :locale="elementPlusLocale">
       <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
@@ -317,10 +317,7 @@
                     <el-table-column type="index" width="55" align="center" label="#" />
                     <el-table-column :label="t('formbusiness.leaverequest.fileName')" min-width="200">
                       <template #default="{ row }">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                          <el-icon style="color: #409eff; flex-shrink: 0;"><Document /></el-icon>
-                          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
-                        </div>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
                       </template>
                     </el-table-column>
                     <el-table-column :label="t('formbusiness.leaverequest.fileSize')" width="100" align="center">
@@ -328,10 +325,9 @@
                         {{ formatFileSize(getAttachmentSizeKb(row)) }}
                       </template>
                     </el-table-column>
-                    <el-table-column :label="t('common.operation')" width="170" align="center">
+                    <el-table-column :label="t('common.operation')" width="150" align="center">
                       <template #default="{ row }">
                         <el-button type="primary" link size="small" @click="handleDownload(row)">
-                          <el-icon><Download /></el-icon>
                           {{ t('formbusiness.leaverequest.download') }}
                         </el-button>
                       </template>
@@ -388,99 +384,7 @@
       </el-card>
   
       <!-- 审批记录独立卡片 -->
-      <el-card class="leave-form-card review-log-card" shadow="never">
-        <div class="review-log-section">
-          <div class="review-log-title">{{ t('formbusiness.leaverequest.reviewLog') }}</div>
-          <el-table
-            v-if="reviewLogTableRows.length"
-            :data="reviewLogTableRows"
-            :span-method="reviewLogSpanMethod"
-            :row-class-name="reviewLogRowClassName"
-            :max-height="420"
-            size="small"
-            class="review-log-table"
-          >
-            <el-table-column type="index" label="#" width="46" align="center" class-name="review-log-index-col" />
-            <el-table-column
-              prop="stepName"
-              :label="t('formbusiness.leaverequest.reviewLogStep')"
-              width="150"
-              align="left"
-            >
-              <template #default="{ row }">
-                <span class="review-log-step-cell">{{ row.stepName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :label="t('formbusiness.leaverequest.reviewLogOperationUser')"
-              width="165"
-              align="left"
-            >
-              <template #default="{ row }">
-                <div class="review-log-user-wrap">
-                  <div class="review-log-user-main">
-                    <span class="review-log-user-cell">{{ row.originalUserName || row.operationUserName }}</span>
-                    <span
-                      v-if="row.reviewType && row.reviewType.toLowerCase() === 'automatic'"
-                      class="review-log-auto-badge"
-                    >{{ row.reviewTypeName }}</span>
-                  </div>
-                  <div
-                    v-if="(row.operationUserName && row.originalUserName && row.operationUserName !== row.originalUserName) || (row.appointmentType && row.appointmentType.toLowerCase() !== 'actual')"
-                    class="review-log-sub-row"
-                  >
-                    <span v-if="row.operationUserName && row.originalUserName && row.operationUserName !== row.originalUserName" class="review-log-original-cell">{{ row.operationUserName }}</span>
-                    <span v-if="row.appointmentType && row.appointmentType.toLowerCase() !== 'actual'" class="review-log-appointment-cell">{{ row.appointmentTypeName }}</span>
-                  </div>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :label="t('formbusiness.leaverequest.reviewLogResult')"
-              width="95"
-              align="left"
-            >
-              <template #default="{ row }">
-                <div class="review-log-result-cell">
-                  <el-tag
-                    :type="getReviewResultTagType(row)"
-                    :class="{ 'review-log-tag--withdraw': isReviewWithdrawResult(row) }"
-                    size="small"
-                  >
-                    {{ row.reviewResultName }}
-                  </el-tag>
-                  <span
-                    v-if="isReviewRejectResult(row) && getReviewRejectStepName(row)"
-                    class="review-log-reject-step"
-                  >（{{ t('formbusiness.leaverequest.reviewLogRejectToStep', { step: getReviewRejectStepName(row) }) }}）</span>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :label="t('formbusiness.leaverequest.reviewLogComment')"
-              min-width="200"
-            >
-              <template #default="{ row }">
-                <div class="review-log-comment-cell">{{ row.comment }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :label="t('formbusiness.leaverequest.reviewLogDateTime')"
-              width="180"
-              align="center"
-            >
-              <template #default="{ row }">
-                <span class="review-log-datetime-cell">{{ formatReviewDateTime(row.reviewDateTime) }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-empty
-            v-else
-            :description="t('formbusiness.leaverequest.reviewLogEmpty')"
-            style="padding: 20px 0;"
-          />
-        </div>
-      </el-card>
+      <ReviewLogCard :records="reviewRecordList" i18n-prefix="formbusiness.leaverequest" />
 
       </template>
 
@@ -557,87 +461,13 @@
         </div>
       </aside>
   
-      <el-drawer
-        v-model="workflowDrawerVisible"
-        :title="t('formbusiness.leaverequest.workflowDrawerTitle')"
-        direction="rtl"
-        size="420px"
-        destroy-on-close
-        class="leaverequest-workflow-drawer"
-      >
-        <div v-loading="workflowDrawerLoading" class="workflow-drawer-loading-host">
-        <div class="workflow-drawer-body">
-          <div
-            v-if="!workflowDrawerLoading && workflowOverview.rejectCount > 0"
-            class="workflow-reject-count"
-          >
-            {{ t('formbusiness.leaverequest.workflowRejectCount', { count: workflowOverview.rejectCount }) }}
-          </div>
-          <template v-if="!workflowDrawerLoading && workflowOverview.stepReviewList?.length">
-            <div
-              v-for="(step, stepIdx) in workflowOverview.stepReviewList"
-              :key="step.stepId || stepIdx"
-              class="workflow-step-block"
-              :class="{ 'workflow-step-block--skipped': isWorkflowStepSkipped(step) }"
-            >
-              <div class="workflow-step-head">
-                <span
-                  class="workflow-step-icon"
-                  :class="{
-                    'is-done-step': workflowStepHeadState(step) === 'done',
-                    'is-current-step': workflowStepHeadState(step) === 'current',
-                    'is-pending-step': workflowStepHeadState(step) === 'pending',
-                    'is-skipped-step': workflowStepHeadState(step) === 'skipped'
-                  }"
-                >
-                  <el-icon v-if="workflowStepHeadState(step) === 'skipped'"><RemoveFilled /></el-icon>
-                  <el-icon v-else-if="workflowStepHeadState(step) === 'done'"><CircleCheck /></el-icon>
-                  <el-icon v-else-if="workflowStepHeadState(step) === 'current'"><Loading /></el-icon>
-                  <el-icon v-else><Clock /></el-icon>
-                </span>
-                <span class="workflow-step-name">{{ step.stepName }}</span>
-                <span v-if="isWorkflowStepSkipped(step)" class="workflow-step-tag workflow-step-tag--skipped">
-                  {{ t('formbusiness.leaverequest.workflowStatusSkipped') }}
-                </span>
-              </div>
-              <ul
-                v-if="step.stepReviewUser?.length && !isWorkflowStepSkipped(step)"
-                class="workflow-user-list"
-              >
-                <li
-                  v-for="(u, uIdx) in step.stepReviewUser"
-                  :key="String(u.reviewUserId ?? u.ReviewUserId ?? u.userId ?? u.UserId ?? 'u') + '-' + uIdx"
-                  class="workflow-user-row"
-                  :class="{ 'workflow-user-row--has-agent': workflowUserHasAgent(u) }"
-                >
-                  <span
-                    class="workflow-user-status-icon"
-                    :class="workflowUserStatusClass(u)"
-                  >
-                    <el-icon v-if="workflowUserStatusIcon(u) === 'approve'"><CircleCheck /></el-icon>
-                    <el-icon v-else-if="workflowUserStatusIcon(u) === 'underReview'"><Loading /></el-icon>
-                    <el-icon v-else><Clock /></el-icon>
-                  </span>
-                  <div class="workflow-user-text">
-                    <div class="workflow-user-name">
-                      {{ workflowReviewUserName(u) }}<span v-if="workflowUserShowAppointmentTypeName(u) && !workflowUserHasAgent(u)" class="workflow-user-appointment">（{{ u.appointmentTypeName }}）</span>
-                    </div>
-                    <div v-if="workflowUserHasAgent(u) && (u.agentUserName || workflowUserShowAppointmentTypeName(u))" class="workflow-user-meta">
-                      {{ t('formbusiness.leaverequest.workflowAgent') }}：{{ u.agentUserName }}
-                    </div>
-                  </div>
-                  <span
-                    class="workflow-user-label"
-                    :class="'workflow-user-label--' + workflowUserStatusIcon(u)"
-                  >{{ workflowUserStatusLabel(u) }}</span>
-                </li>
-              </ul>
-            </div>
-          </template>
-          <el-empty v-else-if="!workflowDrawerLoading" :description="t('formbusiness.leaverequest.workflowEmpty')" />
-        </div>
-        </div>
-      </el-drawer>
+      <WorkflowDrawer
+        :visible="workflowDrawerVisible"
+        @update:visible="workflowDrawerVisible = $event"
+        :loading="workflowDrawerLoading"
+        :overview="workflowOverview"
+        i18n-prefix="formbusiness.leaverequest"
+      />
       </el-config-provider>
     </div>
   </template>
@@ -648,12 +478,14 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Document, Download, Clock, CircleCheck, RemoveFilled, Loading, Lock, Search } from '@element-plus/icons-vue'
+  import { Lock, Search } from '@element-plus/icons-vue'
+  import ReviewLogCard from '../components/reviewlogcard.vue'
+  import WorkflowDrawer from '../components/workflowdrawer.vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
   import { calculateLeaveHoursForYear } from '@/utils/leaveHours'
-import { resolveFileUrl } from '@/utils/fileUrl'
+import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
   import { useRoute, useRouter } from 'vue-router'
   import { useUserStore } from '@/stores/user'
   import { usePMenuStore } from '@/stores/pmenu'
@@ -679,68 +511,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     stepReviewList: []
   })
   
-  /** skip=1 时整步置灰 */
-  function isWorkflowStepSkipped (step) {
-    return Number(step?.skip) === 1
-  }
-  
-  function normalizeReviewResult (result) {
-    const v = String(result ?? '').trim().toLowerCase()
-    if (v === 'approve' || v === 'approved') return 'approve'
-    if (v === 'underreview' || v === 'under_review' || v === 'reviewing') return 'underReview'
-    return 'unsigned'
-  }
-  
-  /** 步骤头状态：skip / done / current / pending */
-  function workflowStepHeadState (step) {
-    if (isWorkflowStepSkipped(step)) return 'skipped'
-    const users = Array.isArray(step?.stepReviewUser) ? step.stepReviewUser : []
-    if (users.length === 0) return 'pending'
-    const states = users.map((u) => normalizeReviewResult(u?.result))
-    if (states.every((s) => s === 'approve')) return 'done'
-    if (states.some((s) => s === 'underReview')) return 'current'
-    return 'pending'
-  }
-  
-  function workflowUserStatusIcon (user) {
-    return normalizeReviewResult(user?.result)
-  }
-  
-  function workflowUserStatusClass (user) {
-    const key = workflowUserStatusIcon(user)
-    if (key === 'approve') return 'is-user-done'
-    if (key === 'underReview') return 'is-user-doing'
-    return 'is-user-none'
-  }
-  
-  function workflowUserStatusLabel (user) {
-    const key = workflowUserStatusIcon(user)
-    if (key === 'approve') return t('formbusiness.leaverequest.workflowStatusApprove')
-    if (key === 'underReview') return t('formbusiness.leaverequest.workflowStatusUnderReview')
-    return t('formbusiness.leaverequest.workflowStatusUnsigned')
-  }
-  
-  function workflowReviewUserName (u) {
-    const name = u?.reviewUserName ?? u?.ReviewUserName ?? u?.userName ?? u?.UserName
-    if (name == null || name === '') return ''
-    return String(name)
-  }
-
-  function workflowUserHasAgent (u) {
-    const id = u?.agentUserId
-    if (id === undefined || id === null || id === '') return false
-    return String(id) !== '0'
-  }
-  
-  function workflowUserShowAppointmentTypeName (u) {
-    if (!u?.appointmentTypeName) return false
-    const code = String(
-      u?.appointmentType ?? u?.AppointmentType ?? u?.appointmentTypeCode ?? u?.AppointmentTypeCode ?? ''
-    ).trim()
-    if (code.toLowerCase() === 'actual') return false
-    return true
-  }
-  
   const resultState = reactive({
     visible: false,
     variant: 'standard',
@@ -753,52 +523,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   
   const reviewRecordList = ref([])
   const stepFieldPermissionMap = ref({})
-  /** 相邻相同 stepId 分组（避免排序后跨段误合并） */
-  const groupedReviewRecords = computed(() => {
-    const groups = []
-    for (const record of reviewRecordList.value) {
-      const key = record.stepId != null && String(record.stepId) !== ''
-        ? String(record.stepId)
-        : (record.stepName || '')
-      const last = groups[groups.length - 1]
-      const lastKey = last
-        ? (last.stepId || last.stepName)
-        : null
-      if (last && lastKey === key) {
-        last.records.push(record)
-      } else {
-        groups.push({ stepId: record.stepId || '', stepName: record.stepName || '', records: [record] })
-      }
-    }
-    return groups
-  })
-  
-  const reviewLogTableRows = computed(() => {
-    const rows = []
-    for (const group of groupedReviewRecords.value) {
-      group.records.forEach((record, rIdx) => {
-        rows.push({
-          ...record,
-          stepName: group.stepName,
-          stepId: group.stepId,
-          _rowSpan: rIdx === 0 ? group.records.length : 0
-        })
-      })
-    }
-    return rows
-  })
-  
-  /** 序号列按 stepId 分组合并 */
-  function reviewLogSpanMethod ({ columnIndex, rowIndex }) {
-    if (columnIndex === 0) {
-      const row = reviewLogTableRows.value[rowIndex]
-      if (!row) return { rowspan: 1, colspan: 1 }
-      return row._rowSpan > 0
-        ? { rowspan: row._rowSpan, colspan: 1 }
-        : { rowspan: 0, colspan: 0 }
-    }
-  }
-  
+
   const uploadedAttachments = ref([])
 
   const leaveBalances = ref([])
@@ -1627,49 +1352,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     fetchFullReviewFlow()
   }
   
-  function isReviewWithdrawResult (row) {
-    const code = String(row?.reviewResult ?? '').trim().toLowerCase()
-    if (code === 'withdraw' || code === 'withdrawn') return true
-    const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
-    return name === 'withdraw' || name === 'withdrawn' || name === '撤回'
-  }
-
-  function reviewLogRowClassName ({ row }) {
-    return isReviewWithdrawResult(row) ? 'review-log-row--withdraw' : ''
-  }
-
-  function isReviewRejectResult (row) {
-    const code = String(row?.reviewResult ?? '').trim().toLowerCase()
-    if (code === 'reject' || code === 'rejected') return true
-    const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
-    return name === '驳回' || name === 'reject' || name === 'rejected'
-  }
-  
-  function getReviewRejectStepName (row) {
-    const v = row?.rejectStepName ?? row?.RejectStepName
-    if (v == null || v === '') return ''
-    return String(v)
-  }
-  
-  function formatReviewDateTime (dt) {
-    if (!dt) return ''
-    return normalizeDateTime(dt)
-  }
-  
-  function getReviewResultTagType (row) {
-    const code = String(row?.reviewResult ?? '').trim().toLowerCase()
-    if (code === 'approve' || code === 'approved') return 'success'
-    if (code === 'reject' || code === 'rejected') return 'danger'
-    if (code === 'return') return 'warning'
-    if (code === 'withdraw' || code === 'withdrawn') return 'info'
-    const name = String(row?.reviewResultName ?? '').trim().toLowerCase()
-    if (name === '通过' || name === 'approve' || name === 'approved') return 'success'
-    if (name === '驳回' || name === 'reject' || name === 'rejected') return 'danger'
-    if (name === '退回' || name === 'return') return 'warning'
-    if (name === 'withdraw' || name === 'withdrawn' || name === '撤回') return 'info'
-    return 'info'
-  }
-  
   function getCurrentLeaveTypeOption() {
     const current = leaveTypeOptions.value.find(item => String(item.value) === String(form.leaveType || ''))
     return current || null
@@ -1705,12 +1387,7 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   function handleDownload(file) {
     const url = resolveFileUrl(getAttachmentPath(file))
     if (!url) return
-    const a = document.createElement('a')
-    a.href = url
-    a.download = getAttachmentName(file)
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    downloadFileFromUrl(url, getAttachmentName(file))
   }
   
   async function syncRouteLanguage () {
@@ -1941,6 +1618,10 @@ import { resolveFileUrl } from '@/utils/fileUrl'
   .sk-block--log {
     width: 100%;
     height: 220px;
+  }
+
+  .review-log-card.leave-form-card {
+    margin-top: 10px;
   }
 
   .leave-form-card {
@@ -2304,349 +1985,6 @@ import { resolveFileUrl } from '@/utils/fileUrl'
     pointer-events: none;
   }
   
-  .leaverequest-workflow-drawer :deep(.el-drawer__header) {
-    padding: 10px 20px !important;
-    margin: 0 !important;
-    border-bottom: 1px solid var(--el-border-color-lighter);
-  }
-  
-  .leaverequest-workflow-drawer :deep(.el-drawer__title) {
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.4;
-    margin: 0;
-  }
-  
-  .leaverequest-workflow-drawer :deep(.el-drawer__body) {
-    padding: 10px 20px 20px !important;
-  }
-  
-  /* v-loading 宿主：高度恒为抽屉可视区高度，不随数据渲染变化，
-     遮罩尺寸因此保持不变，转圈图标始终上下左右居中且原地淡出，不会位移 */
-  .workflow-drawer-loading-host {
-    height: 100%;
-  }
-
-  .workflow-drawer-body {
-    height: 100%;
-    overflow-y: auto;
-    /* 留出滚动条宽度，避免右侧审批状态与滚动条重叠 */
-    padding-right: 20px;
-  }
-
-  .workflow-reject-count {
-    margin-bottom: 28px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: var(--el-color-danger);
-  }
-  
-  .workflow-step-block {
-    padding-bottom: 20px;
-    border-left: 2px solid var(--el-border-color-lighter);
-    margin-left: 11px;
-    padding-left: 20px;
-  }
-  
-  .workflow-step-block:last-child {
-    border-left-color: transparent;
-  }
-  
-  .workflow-step-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    margin-left: -31px;
-  }
-  
-  .workflow-step-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  
-  .workflow-step-icon.is-done-step {
-    color: var(--el-color-success);
-    background: var(--el-color-success-light-9);
-  }
-  
-  .workflow-step-icon.is-current-step {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-  
-  .workflow-step-icon.is-current-step .el-icon {
-    animation: workflow-step-rotate 1.4s linear infinite;
-  }
-  
-  /* 未到步骤 / 后续流程：中性灰，与「未签核」同一视觉体系 */
-  .workflow-step-icon.is-pending-step {
-    color: var(--el-color-info);
-    background: var(--el-color-info-light-9, var(--el-fill-color-light));
-  }
-  
-  /* skip=1：更淡的灰，与「未到/未签核」区分 */
-  .workflow-step-icon.is-skipped-step {
-    color: var(--el-text-color-disabled);
-    background: var(--el-fill-color-darker);
-  }
-  
-  .workflow-step-block--skipped {
-    border-left-color: var(--el-border-color-extra-light, var(--el-border-color-lighter));
-    opacity: 0.65;
-  }
-  
-  .workflow-step-block--skipped .workflow-step-name {
-    color: var(--el-text-color-disabled);
-    font-weight: 500;
-  }
-  
-  .workflow-step-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--el-text-color-primary);
-  }
-
-  .workflow-step-tag {
-    margin-left: 8px;
-    padding: 1px 6px;
-    font-size: 11px;
-    line-height: 1.4;
-    border-radius: 4px;
-  }
-  
-  .workflow-step-tag--skipped {
-    color: var(--el-text-color-secondary);
-    background: var(--el-fill-color-darker);
-  }
-  
-  
-  .workflow-user-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .workflow-user-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 0 8px 4px;
-    border-bottom: 1px solid var(--el-border-color-lighter);
-  }
-  
-  .workflow-user-row:last-child {
-    border-bottom: none;
-  }
-  
-  .workflow-user-status-icon {
-    display: inline-flex;
-    margin-top: 2px;
-    flex-shrink: 0;
-  }
-  
-  .workflow-user-status-icon.is-user-done {
-    color: var(--el-color-success);
-  }
-  
-  .workflow-user-status-icon.is-user-doing {
-    color: var(--el-color-primary);
-  }
-  
-  .workflow-user-status-icon.is-user-doing .el-icon {
-    animation: workflow-step-rotate 1.4s linear infinite;
-  }
-  
-  .workflow-user-status-icon.is-user-none {
-    color: var(--el-color-info);
-  }
-  
-  @keyframes workflow-step-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  
-  .workflow-user-text {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .workflow-user-name {
-    font-size: 14px;
-    color: var(--el-text-color-primary);
-  }
-
-  .workflow-user-appointment {
-    color: var(--el-text-color-secondary);
-  }
-  
-  .workflow-user-meta {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-    margin-top: 2px;
-  }
-  
-  /* 仅「代理人：xxx」一行：略右移，与上行姓名拉开一点纵向间距 */
-  .workflow-user-row--has-agent .workflow-user-meta {
-    margin-left: 12px;
-    margin-top: 8px;
-  }
-  
-  .workflow-user-label {
-    flex-shrink: 0;
-    font-size: 12px;
-    white-space: nowrap;
-    margin-top: 2px;
-    margin-left: 4px;
-    margin-right: 4px;
-  }
-  
-  .workflow-user-label--approve {
-    color: var(--el-color-success);
-  }
-  
-  .workflow-user-label--underReview {
-    color: var(--el-color-primary);
-  }
-  
-  .workflow-user-label--unsigned {
-    color: var(--el-color-info);
-  }
-  
-.review-log-card {
-    margin-top: 10px;
-  }
-  
-.review-log-section {
-    padding: 0 20px 20px;
-  }
-  
-  .review-log-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--el-text-color-primary);
-    margin-bottom: 12px;
-  }
-  
-  .review-log-table {
-    width: 100%;
-  }
-  
-  .review-log-table :deep(.el-table__body .el-table__cell) {
-    vertical-align: middle;
-  }
-
-  .review-log-table :deep(.review-log-row--withdraw > td.el-table__cell) {
-    background-color: var(--el-fill-color-lighter);
-    color: var(--el-text-color-secondary);
-  }
-
-  .review-log-table :deep(.review-log-row--withdraw .review-log-step-cell),
-  .review-log-table :deep(.review-log-row--withdraw .review-log-user-cell),
-  .review-log-table :deep(.review-log-row--withdraw .review-log-comment-cell),
-  .review-log-table :deep(.review-log-row--withdraw .review-log-original-cell),
-  .review-log-table :deep(.review-log-row--withdraw .review-log-appointment-cell) {
-    color: var(--el-text-color-secondary);
-  }
-
-  .review-log-tag--withdraw {
-    --el-tag-bg-color: var(--el-fill-color);
-    --el-tag-border-color: var(--el-border-color-lighter);
-    --el-tag-text-color: var(--el-text-color-secondary);
-  }
-  
-  .review-log-step-cell {
-    font-size: 13px;
-    color: var(--el-text-color-primary);
-  }
-
-  .review-log-datetime-cell {
-    font-size: 13px;
-    color: var(--el-text-color-primary);
-  }
-  
-  .review-log-user-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-  
-  .review-log-user-main {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-  }
-  
-  .review-log-auto-badge {
-    flex-shrink: 0;
-    margin-left: auto;
-    font-size: 10px;
-    line-height: 1.4;
-    color: var(--el-color-info);
-    background: var(--el-color-info-light-9);
-    border-radius: 3px;
-    padding: 0 4px;
-    white-space: nowrap;
-  }
-  
-  .review-log-user-cell {
-    flex: 1;
-    min-width: 0;
-    font-size: 13px;
-    color: var(--el-text-color-primary);
-    word-break: break-all;
-  }
-  
-  .review-log-sub-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 2px;
-  }
-  
-  .review-log-original-cell {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-  }
-  
-  .review-log-appointment-cell {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-  }
-  
-  .review-log-result-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-  
-  .review-log-reject-step {
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--el-text-color-secondary);
-    word-break: break-all;
-  }
-  
-  .review-log-comment-cell {
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.5;
-    font-size: 13px;
-    color: var(--el-text-color-primary);
-  }
-
   .leave-balance-float {
     --leave-balance-form-gap: 8px;
     --leave-balance-side-gap: 20px;

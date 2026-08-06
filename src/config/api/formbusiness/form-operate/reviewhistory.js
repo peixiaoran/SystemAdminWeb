@@ -16,3 +16,5 @@ export const GET_FORM_PENDING_USERS_API = 'FormBusiness/FormOperate/ReviewHistor
 export const PRINT_FORM_PDF_API = 'FormBusiness/FormOperate/ReviewHistory/PrintFormPdf'
 
 export const PRINT_FORM_PDF_BATCH_API = 'FormBusiness/FormOperate/ReviewHistory/PrintFormPdfBatch'
+
+export const EXPORT_APPLY_HISTORY_EXCEL_API = 'FormBusiness/FormOperate/ReviewHistory/ExportReviewHistoryExcel'

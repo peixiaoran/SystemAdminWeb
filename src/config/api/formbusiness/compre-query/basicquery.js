@@ -18,3 +18,5 @@ export const GET_FORM_PENDING_USERS_API = 'FormBusiness/CompreQuery/BasicQuery/G
 export const PRINT_FORM_PDF_API = 'FormBusiness/CompreQuery/BasicQuery/PrintFormPdf'
 
 export const PRINT_FORM_PDF_BATCH_API = 'FormBusiness/CompreQuery/BasicQuery/PrintFormPdfBatch'
+
+export const EXPORT_APPLY_HISTORY_EXCEL_API = 'FormBusiness/CompreQuery/BasicQuery/ExportFormQueryExcel'

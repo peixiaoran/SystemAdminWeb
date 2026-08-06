@@ -73,7 +73,7 @@
           </el-table-column>
           <el-table-column :label="$t('formbusiness.voidedform.formStatus')" align="center" min-width="160">
             <template #default="{ row }">
-              <el-tag type="info" effect="dark" round>
+              <el-tag type="danger" effect="dark" round>
                 {{ row.formStatusName || '-' }}
               </el-tag>
             </template>

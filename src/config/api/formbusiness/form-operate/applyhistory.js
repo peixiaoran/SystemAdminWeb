@@ -20,3 +20,5 @@ export const GET_FORM_PENDING_USERS_API = 'FormBusiness/FormOperate/ApplyHistory
 export const PRINT_FORM_PDF_API = 'FormBusiness/FormOperate/ApplyHistory/PrintFormPdf'
 
 export const PRINT_FORM_PDF_BATCH_API = 'FormBusiness/FormOperate/ApplyHistory/PrintFormPdfBatch'
+
+export const EXPORT_APPLY_HISTORY_EXCEL_API = 'FormBusiness/FormOperate/ApplyHistory/ExportApplyHistoryExcel'

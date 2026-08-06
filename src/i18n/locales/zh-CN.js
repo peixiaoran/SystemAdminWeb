@@ -560,10 +560,10 @@ export default {
       getFormTypeFailed: '获取表单类型失败',
       getVoidedFormsFailed: '获取已作废表单列表失败',
       getFailed: '获取数据失败',
-      delete: '删除',
-      deleteConfirm: '确定要删除该表单吗？删除后不可恢复。',
-      deleteSuccess: '删除成功',
-      deleteFailed: '删除失败'
+      delete: '彻底删除',
+      deleteConfirm: '确定要彻底删除该表单吗？删除后不可恢复。',
+      deleteSuccess: '彻底删除成功',
+      deleteFailed: '彻底删除失败'
     },
 
     applyhistory: {
@@ -594,7 +594,10 @@ export default {
       batchPrint: '批量打印',
       batchPrinting: '打印中...',
       batchPrintFailed: '批量打印失败',
-      pleaseSelectFormsToPrint: '请先勾选要打印的表单'
+      pleaseSelectFormsToPrint: '请先勾选要打印的表单',
+      exportExcel: '导出Excel',
+      exporting: '导出中...',
+      exportFailed: '导出失败'
     },
 
     reviewhistory: {
@@ -621,7 +624,10 @@ export default {
       batchPrint: '批量打印',
       batchPrinting: '打印中...',
       batchPrintFailed: '批量打印失败',
-      pleaseSelectFormsToPrint: '请先勾选要打印的表单'
+      pleaseSelectFormsToPrint: '请先勾选要打印的表单',
+      exportExcel: '导出Excel',
+      exporting: '导出中...',
+      exportFailed: '导出失败'
     },
 
     basicquery: {
@@ -654,7 +660,10 @@ export default {
       clearAll: '清除全部条件',
       dateRange: '申请日期范围',
       startDate: '开始日期',
-      endDate: '结束日期'
+      endDate: '结束日期',
+      exportExcel: '导出Excel',
+      exporting: '导出中...',
+      exportFailed: '导出失败'
     },
 
     // 请假单页面专用

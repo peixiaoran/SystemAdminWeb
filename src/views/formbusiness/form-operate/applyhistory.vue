@@ -54,6 +54,13 @@
           >
             {{ $t('formbusiness.applyhistory.batchPrint') }}
           </el-button>
+          <el-button
+            type="success"
+            :loading="exporting"
+            @click="handleExportExcel"
+          >
+            {{ $t('formbusiness.applyhistory.exportExcel') }}
+          </el-button>
         </el-form-item>
       </el-form>
 
@@ -241,7 +248,8 @@ import {
   VOIDED_FORM_API,
   GET_FORM_PENDING_USERS_API,
   PRINT_FORM_PDF_API,
-  PRINT_FORM_PDF_BATCH_API
+  PRINT_FORM_PDF_BATCH_API,
+  EXPORT_APPLY_HISTORY_EXCEL_API
 } from '@/config/api/formbusiness/form-operate/applyhistory.js'
 
 const { t } = useI18n()
@@ -282,6 +290,7 @@ const printingFormIds = ref(new Set())
 const formTableRef = ref(null)
 const selectedRows = ref([])
 const batchPrinting = ref(false)
+const exporting = ref(false)
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
@@ -561,6 +570,55 @@ const handlePrintForm = async (row) => {
 
 const handleSelectionChange = (selection) => {
   selectedRows.value = selection
+}
+
+const handleExportExcel = async () => {
+  exporting.value = true
+  try {
+    const params = {
+      formGroupId: normalizeFilterValue(searchForm.formGroupId),
+      formTypeId: normalizeFilterValue(searchForm.formTypeId),
+      formNo: '',
+      pageIndex: String(pagination.pageIndex),
+      pageSize: String(pagination.pageSize),
+      totalCount: String(pagination.totalCount || 0)
+    }
+    const blob = await service({
+      url: EXPORT_APPLY_HISTORY_EXCEL_API,
+      method: 'post',
+      data: params,
+      responseType: 'blob'
+    })
+
+    if (!(blob instanceof Blob) || blob.size === 0) {
+      throw new Error(t('formbusiness.applyhistory.exportFailed'))
+    }
+
+    if (blob.type && blob.type.includes('application/json')) {
+      const text = await blob.text()
+      let message = t('formbusiness.applyhistory.exportFailed')
+      try {
+        const json = JSON.parse(text)
+        message = json?.message || message
+      } catch {
+        // ignore
+      }
+      throw new Error(message)
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `applyhistory_${Date.now()}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    showMessage(error?.message || t('formbusiness.applyhistory.exportFailed'))
+  } finally {
+    exporting.value = false
+  }
 }
 
 const handleBatchPrintForm = async () => {
