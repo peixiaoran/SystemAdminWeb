@@ -18,15 +18,15 @@ export const GET_CUSTOMER_LIST_API = {
 
 // 客户新增API
 export const INSERT_CUSTOMER_API = {
-    INSERT_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/InsertCustomerInfo'
+    INSERT_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/InsertCustomer'
 }
 
 // 客户更新API
 export const UPDATE_CUSTOMER_API = {
-    UPDATE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/UpdateCustomerInfo'
+    UPDATE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/UpdateCustomer'
 }
 
 // 客户删除API
 export const DELETE_CUSTOMER_API = {
-    DELETE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/DeleteCustomerInfo'
+    DELETE_CUSTOMER: 'CustMat/CustMatBasicInfo/CustomerInfo/DeleteCustomer'
 }

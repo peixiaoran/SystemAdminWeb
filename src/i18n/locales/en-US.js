@@ -12,6 +12,7 @@ export default {
     view: 'View',
     search: 'Search',
     reset: 'Reset',
+    pleaseSelect: 'Please select',
     success: 'Success',
     failed: 'Failed',
     loading: 'Loading...',
@@ -1306,8 +1307,9 @@ export default {
     personalInfoTitle: 'Personal Profile',
     nationalityInfo: 'Nationality Info',
     custmat: 'Customer Production',
-    custmatbasicinfo: 'CustMat Basic',
-    custmatManufacturer: 'Manufacturer Info'
+    custmatbasicinfo: 'Production Basic',
+    custmatCustomer: 'Customer Info',
+    custmatProPartNumber: 'Pro PartNumber'
   },
   
   // System Basic Management
@@ -2063,36 +2065,73 @@ export default {
       getPartTimeDetailFailed: 'Failed to get part-time details'
     }
   },
-  
-  // Manufacturer Info Management
+
+  // Customer Info Management
   custmat: {
-    manufacturer: {
-      title: 'Manufacturer Info Management',
+    customer: {
       index: 'Index',
-      manufacturerCode: 'Manufacturer Code',
-      manufacturerName: 'Manufacturer Name',
-      manufacturerNameCh: 'Chinese Name',
-      manufacturerNameEn: 'English Name',
-      email: 'Email',
-      fax: 'Fax',
-      description: 'Description',
-      operation: 'Operation',
-      addManufacturer: 'Add Manufacturer',
-      editManufacturer: 'Edit Manufacturer Info',
-      deleteConfirm: 'Are you sure you want to delete this manufacturer?',
-      pleaseInputManufacturerCode: 'Please enter manufacturer code',
-      pleaseInputManufacturerName: 'Please enter manufacturer name',
-      pleaseInputManufacturerNameCh: 'Please enter Chinese name',
-      pleaseInputManufacturerNameEn: 'Please enter English name',
-      pleaseInputEmail: 'Please enter email',
-      pleaseInputFax: 'Please enter fax',
-      pleaseInputDescription: 'Please enter description',
+      customerCode: 'Customer Code',
+      customerName: 'Customer Name',
+      customerNameCn: 'Chinese Name',
+      customerNameEn: 'English Name',
+      customerDescription: 'Description',
+      addCustomer: 'Add Customer',
+      editCustomer: 'Edit Customer Info',
+      deleteConfirm: 'Are you sure you want to delete this customer?',
+      pleaseInputCustomerCode: 'Please enter customer code',
+      pleaseInputCustomerName: 'Please enter customer name',
+      pleaseInputCustomerNameCn: 'Please enter Chinese name',
+      pleaseInputCustomerNameEn: 'Please enter English name',
+      pleaseInputCustomerDescription: 'Please enter description',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed'
+    },
+    propartnumber: {
+      index: 'Index',
+      partNumber: 'Part Number',
+      partNameCn: 'Chinese Name',
+      partNameEn: 'English Name',
+      specifications: 'Specifications',
+      partType: 'Part Type',
+      category: 'Category',
+      model: 'Model',
+      drawingNumber: 'Drawing Number',
+      version: 'Version',
+      material: 'Material',
+      baseUnit: 'Base Unit',
+      sourceType: 'Source Type',
+      manufacturer: 'Manufacturer',
+      manufacturerPartNumber: 'Manufacturer Part Number',
+      lotControl: 'Lot Control',
+      status: 'Status',
+      statusEnabled: 'Enabled',
+      statusDisabled: 'Disabled',
+      remark: 'Remark',
+      addProPartNumber: 'Add Part Number',
+      editProPartNumber: 'Edit Part Number',
+      deleteConfirm: 'Are you sure you want to delete this part number?',
+      pleaseInputPartNumber: 'Please enter part number',
+      pleaseInputPartNameCn: 'Please enter Chinese name',
+      pleaseInputPartNameEn: 'Please enter English name',
+      pleaseInputSpecifications: 'Please enter specifications',
+      pleaseInputModel: 'Please enter model',
+      pleaseInputDrawingNumber: 'Please enter drawing number',
+      pleaseInputVersion: 'Please enter version',
+      pleaseInputMaterial: 'Please enter material',
+      pleaseInputBaseUnit: 'Please enter base unit',
+      pleaseInputManufacturer: 'Please enter manufacturer',
+      pleaseInputManufacturerPartNumber: 'Please enter manufacturer part number',
+      pleaseInputRemark: 'Please enter remark',
       getFailed: 'Failed to get data',
       operationFailed: 'Operation Failed',
-      filter: {
-        manufacturerCode: 'Manufacturer Code',
-        manufacturerName: 'Manufacturer Name'
-      }
+      import: 'Import',
+      export: 'Export',
+      exportFailed: 'Export failed',
+      downloadTemplate: 'Download Template',
+      downloadTemplateFailed: 'Failed to download template',
+      dragFileHint: 'Drag file here, or click to upload',
+      startImport: 'Start Import',
+      fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.'
     }
   }
 }

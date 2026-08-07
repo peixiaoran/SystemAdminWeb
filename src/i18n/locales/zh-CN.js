@@ -12,6 +12,7 @@ export default {
     view: '查看',
     search: '搜索',
     reset: '重置',
+    pleaseSelect: '请选择',
     success: '成功',
     failed: '失败',
     loading: '加载中...',
@@ -1224,8 +1225,9 @@ export default {
     personalInfoTitle: '个人资料',
     nationalityInfo: '国籍信息维护',
     custmat: '客户生产计划',
-    custmatbasicinfo: '客户物料基础信息',
-    custmatManufacturer: '厂商信息维护'
+    custmatbasicinfo: '生产基础信息',
+    custmatCustomer: '客户信息维护',
+    custmatProPartNumber: '生产料号维护'
   },
   
   // 系统基础管理
@@ -2032,36 +2034,73 @@ export default {
       getUserFailed: '获取用户列表失败'
     }
   },
-  
-  // 厂商信息管理
+
+  // 客户信息管理
   custmat: {
-    manufacturer: {
-      title: '厂商信息维护',
+    customer: {
       index: '序号',
-      manufacturerCode: '厂商编码',
-      manufacturerName: '厂商名称',
-      manufacturerNameCh: '中文名称',
-      manufacturerNameEn: '英文名称',
-      email: '邮箱',
-      fax: '传真',
-      description: '描述',
-      operation: '操作',
-      addManufacturer: '新增厂商',
-      editManufacturer: '编辑厂商信息',
-      deleteConfirm: '确定要删除该厂商吗？',
-      pleaseInputManufacturerCode: '请输入厂商编码',
-      pleaseInputManufacturerName: '请输入厂商名称',
-      pleaseInputManufacturerNameCh: '请输入中文名称',
-      pleaseInputManufacturerNameEn: '请输入英文名称',
-      pleaseInputEmail: '请输入邮箱',
-      pleaseInputFax: '请输入传真',
-      pleaseInputDescription: '请输入描述',
+      customerCode: '客户编码',
+      customerName: '客户名称',
+      customerNameCn: '中文名称',
+      customerNameEn: '英文名称',
+      customerDescription: '描述',
+      addCustomer: '新增客户',
+      editCustomer: '编辑客户信息',
+      deleteConfirm: '确定要删除该客户吗？',
+      pleaseInputCustomerCode: '请输入客户编码',
+      pleaseInputCustomerName: '请输入客户名称',
+      pleaseInputCustomerNameCn: '请输入中文名称',
+      pleaseInputCustomerNameEn: '请输入英文名称',
+      pleaseInputCustomerDescription: '请输入描述',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败'
+    },
+    propartnumber: {
+      index: '序号',
+      partNumber: '料号',
+      partNameCn: '中文名称',
+      partNameEn: '英文名称',
+      specifications: '规格',
+      partType: '料号类型',
+      category: '物料分类',
+      model: '型号',
+      drawingNumber: '图号',
+      version: '版本',
+      material: '材质',
+      baseUnit: '基本单位',
+      sourceType: '来源类型',
+      manufacturer: '厂商',
+      manufacturerPartNumber: '厂商料号',
+      lotControl: '批次管控',
+      status: '状态',
+      statusEnabled: '启用',
+      statusDisabled: '停用',
+      remark: '备注',
+      addProPartNumber: '新增料号',
+      editProPartNumber: '编辑料号',
+      deleteConfirm: '确定要删除该料号吗？',
+      pleaseInputPartNumber: '请输入料号',
+      pleaseInputPartNameCn: '请输入中文名称',
+      pleaseInputPartNameEn: '请输入英文名称',
+      pleaseInputSpecifications: '请输入规格',
+      pleaseInputModel: '请输入型号',
+      pleaseInputDrawingNumber: '请输入图号',
+      pleaseInputVersion: '请输入版本',
+      pleaseInputMaterial: '请输入材质',
+      pleaseInputBaseUnit: '请输入基本单位',
+      pleaseInputManufacturer: '请输入厂商',
+      pleaseInputManufacturerPartNumber: '请输入厂商料号',
+      pleaseInputRemark: '请输入备注',
       getFailed: '获取数据失败',
       operationFailed: '操作失败',
-      filter: {
-        manufacturerCode: '厂商编码',
-        manufacturerName: '厂商名称'
-      }
+      import: '导入',
+      export: '导出',
+      exportFailed: '导出失败',
+      downloadTemplate: '下载模板',
+      downloadTemplateFailed: '下载模板失败',
+      dragFileHint: '将文件拖到此处，或点击上传',
+      startImport: '开始导入',
+      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
     }
   }
 }

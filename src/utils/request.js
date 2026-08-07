@@ -392,6 +392,24 @@ export const post = async (url, data, options = {}) => {
   }
 }
 
+/**
+ * 用于文件下载：绕过响应拦截器的 data 解包，返回完整响应（可读取 headers，如 Content-Disposition 里的文件名）
+ */
+export const postBlob = (url, data, options = {}) => {
+  return axios({
+    ...service.defaults,
+    method: 'post',
+    url,
+    data,
+    responseType: 'blob',
+    headers: {
+      ...service.defaults.headers,
+      'Accept-Language': localStorage.getItem('language') || 'zh-CN'
+    },
+    ...options
+  })
+}
+
 export const cancelAllRequests = () => {
   for (const [, requestInfo] of pendingRequests.entries()) {
     requestInfo.source.cancel('Request cancelled by user')

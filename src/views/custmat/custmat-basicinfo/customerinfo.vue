@@ -1,11 +1,19 @@
 ﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="用户职业筛选">
-        <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="客户信息筛选">
+        <el-form-item :label="$t('custmat.customer.customerCode')">
           <el-input
-            v-model="searchForm.laborName"
-            :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
+            v-model="searchForm.customerCode"
+            :placeholder="$t('custmat.customer.pleaseInputCustomerCode')"
+            clearable
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('custmat.customer.customerName')">
+          <el-input
+            v-model="searchForm.customerName"
+            :placeholder="$t('custmat.customer.pleaseInputCustomerName')"
             clearable
             style="width: 200px"
           />
@@ -20,31 +28,32 @@
         </el-form-item>
         <el-form-item class="form-right-button">
           <el-button type="primary" @click="handleAdd">
-            {{ $t('systembasicmgmt.userLabor.addLabor') }}
+            {{ $t('custmat.customer.addCustomer') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table 
-          :data="laborList"
+        <el-table
+          :data="customerList"
           border
           stripe
           :header-cell-style="{ background: '#f5f7fa' }"
           v-loading="loading"
           class="conventional-table"
         >
-          <el-table-column type="index" :label="$t('systembasicmgmt.userLabor.index')" width="70" align="center" fixed />
-          <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="200" />
-          <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
-          <el-table-column prop="laborDescription" :label="$t('systembasicmgmt.userLabor.laborDescription')" align="left" min-width="250" />
+          <el-table-column type="index" :label="$t('custmat.customer.index')" width="70" align="center" fixed />
+          <el-table-column prop="customerCode" :label="$t('custmat.customer.customerCode')" align="left" min-width="160" />
+          <el-table-column prop="customerNameCn" :label="$t('custmat.customer.customerNameCn')" align="left" min-width="200" />
+          <el-table-column prop="customerNameEn" :label="$t('custmat.customer.customerNameEn')" align="left" min-width="200" />
+          <el-table-column prop="description" :label="$t('custmat.customer.customerDescription')" align="left" min-width="250" />
           <el-table-column :label="$t('common.operation')" min-width="120" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.laborId">
+              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.customerId">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.laborId">
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.customerId">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -64,10 +73,10 @@
         />
       </div>
     </el-card>
-    
-    <el-dialog 
+
+    <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? $t('systembasicmgmt.userLabor.editLabor') : $t('systembasicmgmt.userLabor.addLabor')"
+      :title="isEdit ? $t('custmat.customer.editCustomer') : $t('custmat.customer.addCustomer')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -76,40 +85,49 @@
       @close="handleDialogClose"
     >
       <div v-loading="dialogLoading">
-        <el-form 
+        <el-form
           :inline="true"
           ref="formRef"
-          :model="form" 
+          :model="form"
           :rules="rules"
-          label-width="100px" 
+          label-width="100px"
           class="dialog-form"
-          role="form" 
-          aria-label="用户职业编辑"
+          role="form"
+          aria-label="客户信息编辑"
         >
           <div class="form-row">
-            <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameCn')" prop="laborNameCn">
-              <el-input 
-                v-model="form.laborNameCn" 
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameCn')"
-                style="width:100%" 
+            <el-form-item :label="$t('custmat.customer.customerCode')" prop="customerCode">
+              <el-input
+                v-model="form.customerCode"
+                :placeholder="$t('custmat.customer.pleaseInputCustomerCode')"
+                style="width:100%"
               />
             </el-form-item>
-            <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameEn')" prop="laborNameEn">
+            <el-form-item :label="$t('custmat.customer.customerNameCn')" prop="customerNameCn">
               <el-input
-                v-model="form.laborNameEn"
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameEn')"
-                style="width:100%" 
+                v-model="form.customerNameCn"
+                :placeholder="$t('custmat.customer.pleaseInputCustomerNameCn')"
+                style="width:100%"
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.customer.customerNameEn')" prop="customerNameEn">
+              <el-input
+                v-model="form.customerNameEn"
+                :placeholder="$t('custmat.customer.pleaseInputCustomerNameEn')"
+                style="width:100%"
               />
             </el-form-item>
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('systembasicmgmt.userLabor.laborDescription')" prop="laborDescription">
-              <el-input 
-                v-model="form.laborDescription" 
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborDescription')"
-                style="width:100%" 
-                type="textarea" 
-                :rows="3" 
+            <el-form-item :label="$t('custmat.customer.customerDescription')" prop="description">
+              <el-input
+                v-model="form.description"
+                :placeholder="$t('custmat.customer.pleaseInputCustomerDescription')"
+                style="width:100%"
+                type="textarea"
+                :rows="3"
               />
             </el-form-item>
           </div>
@@ -129,13 +147,13 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
-import { 
-  GET_USERLABOR_LIST_API,
-  GET_USER_LABOR_ENTITY_API,
-  INSERT_USER_LABOR_API,
-  UPDATE_USER_LABOR_API,
-  DELETE_USER_LABOR_API
-} from '@/config/api/systembasicmgmt/system-basicdata/userlabor.js'
+import {
+  GET_CUSTOMER_LIST_API,
+  GET_CUSTOMER_ENTITY_API,
+  INSERT_CUSTOMER_API,
+  UPDATE_CUSTOMER_API,
+  DELETE_CUSTOMER_API
+} from '@/config/api/custmat/custmat-basicinfo/customerinfo.js'
 import { useI18n } from 'vue-i18n'
 import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
 
@@ -148,14 +166,15 @@ const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editingId = ref(null)
 const deletingId = ref(null)
-const laborList = ref([])
+const customerList = ref([])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
 
 // 搜索表单
 const searchForm = reactive({
-  laborName: ''
+  customerCode: '',
+  customerName: ''
 })
 
 // 分页信息
@@ -167,98 +186,105 @@ const pagination = reactive({
 
 // 表单数据
 const form = reactive({
-  laborId: '',
-  laborNameCn: '',
-  laborNameEn: '',
-  laborDescription: ''
+  customerId: '',
+  customerCode: '',
+  customerNameCn: '',
+  customerNameEn: '',
+  description: ''
 })
 
 // 表单验证规则
 const rules = {
-  laborNameCn: [
-    { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
+  customerCode: [
+    { required: true, message: () => t('custmat.customer.pleaseInputCustomerCode'), trigger: 'blur' }
   ],
-  laborNameEn: [
-    { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameEn'), trigger: 'blur' }
+  customerNameCn: [
+    { required: true, message: () => t('custmat.customer.pleaseInputCustomerNameCn'), trigger: 'blur' }
+  ],
+  customerNameEn: [
+    { required: true, message: () => t('custmat.customer.pleaseInputCustomerNameEn'), trigger: 'blur' }
   ]
 }
 
-// 获取职业列表
-const getLaborList = async () => {
+// 获取客户列表
+const getCustomerList = async () => {
   loading.value = true
   try {
-  const params = {
-    laborName: searchForm.laborName,
-    pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    totalCount: pagination.total
-  }
-  
-  const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, params)
-  if (response.code === 200) {
-    laborList.value = response.data || []
-    pagination.totalCount = response.totalCount || 0
-  } else {
-    ElMessage({
-      message: response.message,
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
-    laborList.value = []
-  }
+    const params = {
+      customerCode: searchForm.customerCode,
+      customerName: searchForm.customerName,
+      pageIndex: pagination.pageIndex,
+      pageSize: pagination.pageSize,
+      totalCount: pagination.totalCount
+    }
+
+    const response = await post(GET_CUSTOMER_LIST_API.GET_CUSTOMER_LIST, params)
+    if (response.code === 200) {
+      customerList.value = response.data || []
+      pagination.totalCount = response.totalCount || 0
+    } else {
+      ElMessage({
+        message: response.message,
+        type: 'error',
+        plain: true,
+        showClose: true
+      })
+      customerList.value = []
+    }
   } catch (error) {
     ElMessage({
-      message: t('systembasicmgmt.userLabor.getFailed'),
+      message: t('custmat.customer.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
     })
-    laborList.value = []
+    customerList.value = []
   } finally {
     loading.value = false
   }
 }
 
 // 使用通用防抖工具
-const debouncedGetLaborList = debounce(() => {
-  getLaborList()
+const debouncedGetCustomerList = debounce(() => {
+  getCustomerList()
 }, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
 
 // 处理搜索操作（带防抖）
 const handleSearch = () => {
   pagination.pageIndex = 1
   loading.value = true
-  debouncedGetLaborList()
+  debouncedGetCustomerList()
 }
 
 // 重置搜索
 const handleReset = () => {
-  searchForm.laborName = ''
+  searchForm.customerCode = ''
+  searchForm.customerName = ''
   loading.value = true // 立即显示加载状态
   pagination.pageIndex = 1
-  getLaborList()
+  getCustomerList()
 }
 
 // 分页大小改变
 const handleSizeChange = (val) => {
   pagination.pageSize = val
   pagination.pageIndex = 1
-  getLaborList()
+  getCustomerList()
 }
 
 // 当前页改变
 const handleCurrentChange = (val) => {
   pagination.pageIndex = val
-  getLaborList()
+  getCustomerList()
 }
 
 // 重置表单
 const resetForm = () => {
-  form.laborId = ''
-  form.laborNameCn = ''
-  form.laborNameEn = ''
-  form.laborDescription = ''
+  form.customerId = ''
+  form.customerCode = ''
+  form.customerNameCn = ''
+  form.customerNameEn = ''
+  form.description = ''
 }
 
 // 新增
@@ -275,24 +301,25 @@ const handleAdd = () => {
 
 // 编辑
 const handleEdit = async (row) => {
-  editingId.value = row.laborId
+  editingId.value = row.customerId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
-  
+
   try {
-    const params = {
-      laborId: row.laborId
-    }
-    
-    const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, params)
-    
+    const response = await post(
+      GET_CUSTOMER_ENTITY_API.GET_CUSTOMER_ENTITY,
+      new URLSearchParams({ customerId: String(row.customerId) }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+
     if (response.code === 200) {
       const data = response.data
-      form.laborId = data.laborId
-      form.laborNameCn = data.laborNameCn
-      form.laborNameEn = data.laborNameEn
-      form.laborDescription = data.laborDescription
+      form.customerId = data.customerId
+      form.customerCode = data.customerCode
+      form.customerNameCn = data.customerNameCn
+      form.customerNameEn = data.customerNameEn
+      form.description = data.description
     } else {
       ElMessage({
         message: response.message,
@@ -304,7 +331,7 @@ const handleEdit = async (row) => {
     }
   } catch (error) {
     ElMessage({
-      message: t('systembasicmgmt.userLabor.getFailed'),
+      message: t('custmat.customer.getFailed'),
       type: 'error',
       plain: true,
       showClose: true
@@ -320,7 +347,7 @@ const handleEdit = async (row) => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('systembasicmgmt.userLabor.deleteConfirm'),
+      t('custmat.customer.deleteConfirm'),
       t('common.tip'),
       {
         confirmButtonText: t('common.confirm'),
@@ -328,15 +355,15 @@ const handleDelete = async (row) => {
         type: 'warning'
       }
     )
-    
-    deletingId.value = row.laborId
-    
-    const params = {
-      laborId: row.laborId
-    }
-    
-    const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, params)
-    
+
+    deletingId.value = row.customerId
+
+    const response = await post(
+      DELETE_CUSTOMER_API.DELETE_CUSTOMER,
+      new URLSearchParams({ customerId: String(row.customerId) }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+
     if (response.code === 200) {
       ElMessage({
         message: response.message,
@@ -344,7 +371,7 @@ const handleDelete = async (row) => {
         plain: true,
         showClose: true
       })
-      getLaborList()
+      getCustomerList()
     } else {
       ElMessage({
         message: response.message,
@@ -356,7 +383,7 @@ const handleDelete = async (row) => {
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage({
-        message: t('systembasicmgmt.userLabor.operationFailed'),
+        message: t('custmat.customer.operationFailed'),
         type: 'error',
         plain: true,
         showClose: true
@@ -373,19 +400,20 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     submitLoading.value = true
-    
+
     const params = {
-      laborId: form.laborId,
-      laborNameCn: form.laborNameCn,
-      laborNameEn: form.laborNameEn,
-      laborDescription: form.laborDescription
+      customerId: form.customerId,
+      customerCode: form.customerCode,
+      customerNameCn: form.customerNameCn,
+      customerNameEn: form.customerNameEn,
+      description: form.description
     }
-    
-    const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
+
+    const api = isEdit.value ? UPDATE_CUSTOMER_API.UPDATE_CUSTOMER : INSERT_CUSTOMER_API.INSERT_CUSTOMER
     const response = await post(api, params)
-    
+
     if (response.code === 200) {
       ElMessage({
         message: response.message,
@@ -394,7 +422,7 @@ const handleSubmit = async () => {
         showClose: true
       })
       dialogVisible.value = false
-      getLaborList()
+      getCustomerList()
     } else {
       ElMessage({
         message: response.message,
@@ -406,7 +434,7 @@ const handleSubmit = async () => {
   } catch (error) {
      if (error !== false) {
        ElMessage({
-         message: t('systembasicmgmt.userLabor.operationFailed'),
+         message: t('custmat.customer.operationFailed'),
          type: 'error',
          plain: true,
          showClose: true
@@ -427,11 +455,10 @@ const handleDialogClose = () => {
 
 // 组件挂载时获取数据
 onMounted(() => {
-  getLaborList()
+  getCustomerList()
 })
 </script>
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 </style>
-

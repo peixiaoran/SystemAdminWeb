@@ -660,23 +660,23 @@ const pmenuRoutes = [
           },
           children: [
             {
-              path: 'manufacturerinfo',
-              name: 'ManufacturerInfo',
-              component: () => import('../views/custmat/custmat-basicinfo/manufacturerinfo.vue'),
-              meta: { 
-                title: 'route.custmatManufacturer', 
-                icon: 'Van',
+              path: 'customerinfo',
+              name: 'CustomerInfo',
+              component: () => import('../views/custmat/custmat-basicinfo/customerinfo.vue'),
+              meta: {
+                title: 'route.custmatCustomer',
+                icon: 'UserFilled',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
             },
             {
-              path: 'customerinfo',
-              name: 'CustomerInfo',
-              component: () => import('../views/custmat/custmat-basicinfo/customerinfo.vue'),
-              meta: { 
-                title: 'route.custmatCustomer', 
-                icon: 'Collection',
+              path: 'propartnumber',
+              name: 'ProPartNumber',
+              component: () => import('../views/custmat/custmat-basicinfo/propartnumber.vue'),
+              meta: {
+                title: 'route.custmatProPartNumber',
+                icon: 'Cpu',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
