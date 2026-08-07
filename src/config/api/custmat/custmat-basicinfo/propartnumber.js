@@ -8,55 +8,55 @@ export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } fro
 
 // 料号实体API
 export const GET_PRO_PART_NUMBER_ENTITY_API = {
-    GET_PRO_PART_NUMBER_ENTITY: 'CustMat/CustMatBasicInfo/ProPartNumber/GetProPartNumberEntity'
+    GET_PRO_PART_NUMBER_ENTITY: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberEntity'
 }
 
 // 料号列表API
 export const GET_PRO_PART_NUMBER_LIST_API = {
-    GET_PRO_PART_NUMBER_LIST: 'CustMat/CustMatBasicInfo/ProPartNumber/GetProPartNumberPage'
+    GET_PRO_PART_NUMBER_LIST: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberPage'
 }
 
 // 料号新增API
 export const INSERT_PRO_PART_NUMBER_API = {
-    INSERT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/ProPartNumber/InsertProPartNumber'
+    INSERT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/InsertProPartNumber'
 }
 
 // 料号更新API
 export const UPDATE_PRO_PART_NUMBER_API = {
-    UPDATE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/ProPartNumber/UpdateProPartNumber'
+    UPDATE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/UpdateProPartNumber'
 }
 
 // 料号删除API
 export const DELETE_PRO_PART_NUMBER_API = {
-    DELETE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/ProPartNumber/DeleteProPartNumber'
+    DELETE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/DeleteProPartNumber'
 }
 
 // 料号类型下拉API
 export const GET_PART_TYPE_DROP_API = {
-    GET_PART_TYPE_DROP: 'CustMat/CustMatBasicInfo/ProPartNumber/GetPartTypeDrop'
+    GET_PART_TYPE_DROP: 'CustMat/CustMatBasicInfo/PartNumber/GetPartTypeDrop'
 }
 
 // 物料分类下拉API
 export const GET_CATEGORY_DROP_API = {
-    GET_CATEGORY_DROP: 'CustMat/CustMatBasicInfo/ProPartNumber/GetCategoryDrop'
+    GET_CATEGORY_DROP: 'CustMat/CustMatBasicInfo/PartNumber/GetCategoryDrop'
 }
 
 // 来源类型下拉API
 export const GET_SOURCE_TYPE_DROP_API = {
-    GET_SOURCE_TYPE_DROP: 'CustMat/CustMatBasicInfo/ProPartNumber/GetSourceTypeDrop'
+    GET_SOURCE_TYPE_DROP: 'CustMat/CustMatBasicInfo/PartNumber/GetSourceTypeDrop'
 }
 
 // 料号导入模板下载API
 export const GET_PRO_PART_NUMBER_TEMPLATE_API = {
-    GET_PRO_PART_NUMBER_TEMPLATE: 'CustMat/CustMatBasicInfo/ProPartNumber/GetProPartNumberTemplate'
+    GET_PRO_PART_NUMBER_TEMPLATE: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberTemplate'
 }
 
 // 料号导入API
 export const IMPORT_PRO_PART_NUMBER_API = {
-    IMPORT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/ProPartNumber/ImportProPartNumber'
+    IMPORT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/ImportProPartNumber'
 }
 
 // 料号导出API
 export const GET_PRO_PART_NUMBER_EXCEL_API = {
-    GET_PRO_PART_NUMBER_EXCEL: 'CustMat/CustMatBasicInfo/ProPartNumber/GetProPartNumberExcel'
+    GET_PRO_PART_NUMBER_EXCEL: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberExcel'
 }
