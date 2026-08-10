@@ -1,15 +1,15 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="角色过滤表单">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.role.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.role.roleCode')">
-          <el-input style="width: 220px;"
-                    v-model="filters.roleCode"
+          <el-input v-model="filters.roleCode"
+                    style="width: 220px"
                     :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.role.roleName')">
-          <el-input style="width: 220px;"
-                    v-model="filters.roleName"
+          <el-input v-model="filters.roleName"
+                    style="width: 220px"
                     :placeholder="$t('systembasicmgmt.role.pleaseInputRoleName')" />
         </el-form-item>
         <el-form-item class="form-button-group">
@@ -42,20 +42,10 @@
           <el-table-column prop="roleNameEn" :label="$t('systembasicmgmt.role.roleNameEn')" align="left" min-width="200" />
           <el-table-column :label="$t('systembasicmgmt.operation')" min-width="220" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-                {{ $t('common.edit') }}
-              </el-button>
-              <el-button size="small" @click="handleConfigModule(scope.row)">
-                {{ $t('systembasicmgmt.role.configModule') }}
-              </el-button>
-              <el-button size="small" @click="handleConfigMenu(scope.row)">
-                {{ $t('systembasicmgmt.role.configMenu') }}
-              </el-button>
-              <el-button size="small"
-                         type="danger"
-                         @click="handleDelete(scope.$index, scope.row)">
-                {{ $t('common.delete') }}
-              </el-button>
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" @click="handleConfigModule(scope.row)">{{ $t('systembasicmgmt.role.configModule') }}</el-button>
+              <el-button size="small" @click="handleConfigMenu(scope.row)">{{ $t('systembasicmgmt.role.configMenu') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -72,6 +62,7 @@
       </div>
     </el-card>
 
+    <!-- 角色编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"
@@ -79,26 +70,37 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="角色编辑表单">
+      <el-form :model="editForm"
+               :rules="formRules"
+               ref="editFormRef"
+               label-width="100px"
+               class="dialog-form"
+               role="form"
+               :aria-label="$t('systembasicmgmt.role.editFormLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.role.roleCode')" prop="roleCode">
-            <el-input v-model="editForm.roleCode" style="width:100%" :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
+            <el-input v-model="editForm.roleCode"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.role.pleaseInputRoleCode')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.role.roleNameCn')" prop="roleNameCn">
-            <el-input v-model="editForm.roleNameCn" style="width:100%" :placeholder="$t('systembasicmgmt.role.pleaseInputRoleNameCn')" />
+            <el-input v-model="editForm.roleNameCn"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.role.pleaseInputRoleNameCn')" />
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.role.roleNameEn')" prop="roleNameEn">
-            <el-input v-model="editForm.roleNameEn" style="width:100%" :placeholder="$t('systembasicmgmt.role.pleaseInputRoleNameEn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.remark')">
-            <el-input v-model="editForm.remark"
-                      type="textarea"
+            <el-input v-model="editForm.roleNameEn"
                       style="width:100%"
-                      :rows="3" />
+                      :placeholder="$t('systembasicmgmt.role.pleaseInputRoleNameEn')" />
+          </el-form-item>
+          <!-- 占位项：保持与上方两列布局对齐 -->
+          <el-form-item />
+        </div>
+        <div class="form-row full-width">
+          <el-form-item :label="$t('systembasicmgmt.remark')">
+            <el-input v-model="editForm.remark" type="textarea" :rows="3" style="width:100%" />
           </el-form-item>
         </div>
         <!-- 是否启用：按企业标准化需求去掉该字段的前端功能（不展示/不允许编辑） -->
@@ -109,6 +111,7 @@
       </template>
     </el-dialog>
 
+    <!-- 模块权限配置对话框 -->
     <el-dialog v-model="moduleDialogVisible"
                :title="$t('systembasicmgmt.role.configModule')"
                width="30%"
@@ -120,14 +123,12 @@
         <strong>{{ $t('systembasicmgmt.role.currentRole') }}: {{ currentRoleName }}</strong>
       </div>
       <div class="module-tree-container">
-        <el-tree
-            ref="moduleTreeRef"
-            :data="moduleTreeData"
-            show-checkbox
-            node-key="moduleId"
-            :props="moduleTreeProps"
-            :default-checked-keys="defaultCheckedModules">
-        </el-tree>
+        <el-tree ref="moduleTreeRef"
+                 :data="moduleTreeData"
+                 show-checkbox
+                 node-key="moduleId"
+                 :props="MODULE_TREE_PROPS"
+                 :default-checked-keys="defaultCheckedModules" />
       </div>
       <template #footer>
         <el-button @click="moduleDialogVisible = false">{{ $t('common.cancel') }}</el-button>
@@ -135,6 +136,7 @@
       </template>
     </el-dialog>
 
+    <!-- 菜单权限配置对话框 -->
     <el-dialog v-model="menuDialogVisible"
                :title="$t('systembasicmgmt.role.configMenu')"
                width="40%"
@@ -149,31 +151,27 @@
         <div class="module-select-section">
           <div class="section-title">{{ $t('systembasicmgmt.role.selectModule') }}</div>
           <el-select v-model="selectedModuleId"
-                     @change="handleModuleChange"
-                     style="width: 100%;"
-                     :placeholder="$t('systembasicmgmt.role.selectModule')">
-            <el-option
-                v-for="item in moduleOptions"
-                :key="item.moduleId"
-                :label="item.moduleName"
-                :value="item.moduleId"
-                :disabled="item.disabled">
-            </el-option>
+                     style="width: 100%"
+                     :placeholder="$t('systembasicmgmt.role.selectModule')"
+                     @change="handleModuleChange">
+            <el-option v-for="item in moduleOptions"
+                       :key="item.moduleId"
+                       :label="item.moduleName"
+                       :value="item.moduleId"
+                       :disabled="item.disabled" />
           </el-select>
         </div>
 
         <div class="menu-tree-section">
           <div class="section-title">{{ $t('systembasicmgmt.role.configMenu') }}</div>
-          <el-tree
-              ref="menuTreeRef"
-              :data="menuTreeData"
-              show-checkbox
-              node-key="menuId"
-              :props="menuTreeProps"
-              :default-checked-keys="defaultCheckedMenus"
-              :check-strictly="false"
-              check-on-click-node>
-          </el-tree>
+          <el-tree ref="menuTreeRef"
+                   :data="menuTreeData"
+                   show-checkbox
+                   node-key="menuId"
+                   :props="MENU_TREE_PROPS"
+                   :default-checked-keys="defaultCheckedMenus"
+                   :check-strictly="false"
+                   check-on-click-node />
         </div>
       </div>
       <template #footer>
@@ -185,32 +183,34 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import {
   GET_ROLE_PAGES_API,
   GET_ROLE_ENTITY_API,
   INSERT_ROLE_API,
-  DELETE_ROLE_API,
   UPDATE_ROLE_API,
+  DELETE_ROLE_API,
   GET_ROLE_MODULE_LIST_API,
   GET_ROLE_MODULE_DROPDOWN_API,
   GET_ROLE_MENU_TREE_API,
   UPDATE_ROLE_MODULE_CONFIG_API,
   UPDATE_ROLE_MENU_CONFIG_API
 } from '@/config/api/systembasicmgmt/system-mgmt/role'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const DEBOUNCE_MS = 300
 let searchTimer = null
 
+const MODULE_TREE_PROPS = { label: 'moduleName', children: 'children' }
+const MENU_TREE_PROPS = { label: 'menuName', children: 'menuChildren' }
+
 const roleList = ref([])
 const loading = ref(false)
 const submitLoading = ref(false)
-
 const editFormRef = ref(null)
 
 const pagination = reactive({
@@ -225,6 +225,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogTitle = ref(t('systembasicmgmt.role.editRole'))
 
 const editForm = reactive({
   roleId: '',
@@ -236,30 +237,6 @@ const editForm = reactive({
   isEnabled: 1,
   remark: ''
 })
-
-const dialogTitle = ref(t('systembasicmgmt.role.editRole'))
-
-const moduleDialogVisible = ref(false)
-const moduleTreeRef = ref(null)
-const moduleTreeData = ref([])
-const defaultCheckedModules = ref([])
-const currentRoleId = ref('')
-const currentRoleName = ref('')
-const moduleTreeProps = {
-  label: 'moduleName',
-  children: 'children'
-}
-
-const menuDialogVisible = ref(false)
-const menuTreeRef = ref(null)
-const menuTreeData = ref([])
-const defaultCheckedMenus = ref([])
-const selectedModuleId = ref('')
-const moduleOptions = ref([])
-const menuTreeProps = {
-  label: 'menuName',
-  children: 'menuChildren'
-}
 
 const formRules = {
   roleCode: [
@@ -273,31 +250,37 @@ const formRules = {
   ]
 }
 
-const showMessage = (message, type = 'error') => ElMessage({ message, type, plain: true, showClose: true })
+// 当前正在配置权限的角色
+const currentRoleId = ref('')
+const currentRoleName = ref('')
 
-onMounted(() => {
-  fetchRolePages()
-})
+// 模块权限配置
+const moduleDialogVisible = ref(false)
+const moduleTreeRef = ref(null)
+const moduleTreeData = ref([])
+const defaultCheckedModules = ref([])
 
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchRolePages()
-  }, DEBOUNCE_MS)
+// 菜单权限配置
+const menuDialogVisible = ref(false)
+const menuTreeRef = ref(null)
+const menuTreeData = ref([])
+const defaultCheckedMenus = ref([])
+const selectedModuleId = ref('')
+const moduleOptions = ref([])
+
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
 }
 
 const fetchRolePages = async () => {
   loading.value = true
-  const params = {
+  const res = await post(GET_ROLE_PAGES_API.GET_ROLE_PAGES, {
     ...filters,
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize
-  }
-  const res = await post(GET_ROLE_PAGES_API.GET_ROLE_PAGES, params)
-  roleList.value = res.data || []
-  pagination.totalCount = res.totalCount || 0
+  })
+  roleList.value = res?.data || []
+  pagination.totalCount = res?.totalCount || 0
   loading.value = false
 }
 
@@ -305,88 +288,58 @@ const fetchRoleEntity = async (roleId) => {
   const formData = new FormData()
   formData.append('roleId', roleId)
   const res = await post(GET_ROLE_ENTITY_API.GET_ROLE_ENTITY, formData)
-  if (res && res.code === 200) {
-    editForm.roleId = res.data.roleId
-    editForm.roleCode = res.data.roleCode || ''
-    editForm.roleNameCn = res.data.roleNameCn || ''
-    editForm.roleNameEn = res.data.roleNameEn || ''
-    editForm.description = res.data.description || ''
-    editForm.isEnabled = res.data.isEnabled
-    editForm.remark = res.data.remark || ''
-  }
-}
-
-const handleSearch = () => {
-  scheduleSearch()
-}
-
-const handleReset = () => {
-  filters.roleCode = ''
-  filters.roleName = ''
-  scheduleSearch()
-}
-
-const handlePageChange = () => {
-  fetchRolePages()
-}
-
-const handleSizeChange = () => {
-  pagination.pageIndex = 1
-  fetchRolePages()
-}
-
-const resetForm = () => {
-  editForm.roleId = ''
-  editForm.roleCode = ''
-  editForm.roleNameCn = ''
-  editForm.roleNameEn = ''
-  editForm.description = ''
-  editForm.isEnabled = 1
-  editForm.remark = ''
+  if (res?.code !== 200) return
+  Object.assign(editForm, {
+    roleId: res.data.roleId,
+    roleCode: res.data.roleCode || '',
+    roleNameCn: res.data.roleNameCn || '',
+    roleNameEn: res.data.roleNameEn || '',
+    description: res.data.description || '',
+    isEnabled: res.data.isEnabled,
+    remark: res.data.remark || ''
+  })
 }
 
 const insertRole = async () => {
   submitLoading.value = true
-  const params = {
+  const res = await post(INSERT_ROLE_API.INSERT_ROLE, {
     roleId: '',
     roleCode: editForm.roleCode,
     roleNameCn: editForm.roleNameCn,
     roleNameEn: editForm.roleNameEn,
     description: editForm.description,
-    isEnabled: 1, // 前端不提供"是否启用"开关：新增默认启用
+    isEnabled: 1, // 前端不提供“是否启用”开关：新增默认启用
     remark: editForm.remark
-  }
-  const res = await post(INSERT_ROLE_API.INSERT_ROLE, params)
-  if (res && res.code === 200) {
+  })
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
-    resetForm()
+    resetEditForm()
     dialogVisible.value = false
     fetchRolePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
 
 const updateRole = async () => {
   submitLoading.value = true
-  const params = {
+  const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, {
     roleId: editForm.roleId,
     roleCode: editForm.roleCode,
     roleNameCn: editForm.roleNameCn,
     roleNameEn: editForm.roleNameEn,
     description: editForm.description,
-    isEnabled: editForm.isEnabled, // 前端不提供"是否启用"开关：编辑时沿用后端原值，避免无意变更
+    isEnabled: editForm.isEnabled, // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
     remark: editForm.remark
-  }
-  const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, params)
-  if (res && res.code === 200) {
+  })
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
-    resetForm()
+    resetEditForm()
     dialogVisible.value = false
     fetchRolePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -399,68 +352,73 @@ const deleteRole = async (roleId) => {
   const formData = new FormData()
   formData.append('roleId', roleId)
   const res = await post(DELETE_ROLE_API.DELETE_ROLE, formData)
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchRolePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
-const handleAdd = () => {
-  resetForm()
-  dialogTitle.value = t('systembasicmgmt.role.addRole')
-  dialogVisible.value = true
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchRolePages()
+  }, DEBOUNCE_MS)
 }
 
-const handleEdit = async (index, row) => {
-  resetForm()
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    roleId: '',
+    roleCode: '',
+    roleNameCn: '',
+    roleNameEn: '',
+    description: '',
+    isEnabled: 1,
+    remark: ''
+  })
+}
+
+const handleSearch = () => scheduleSearch()
+
+const handleReset = () => {
+  filters.roleCode = ''
+  filters.roleName = ''
+  scheduleSearch()
+}
+
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchRolePages()
+}
+
+const handlePageChange = () => {
+  fetchRolePages()
+}
+
+const handleAdd = () => {
+  resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.role.addRole')
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
+const handleEdit = async (row) => {
+  resetEditForm()
   dialogTitle.value = t('systembasicmgmt.role.editRole')
   await fetchRoleEntity(row.roleId)
   dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleDialogClose = () => {
-  resetForm()
-  editFormRef.value?.clearValidate()
-}
-
-const handleModuleDialogClose = () => {
-  moduleTreeData.value = []
-  defaultCheckedModules.value = []
-  currentRoleId.value = ''
-  currentRoleName.value = ''
-  nextTick(() => {
-    if (moduleTreeRef.value) {
-      moduleTreeRef.value.setCheckedKeys([])
-    }
-  })
-}
-
-const handleMenuDialogClose = () => {
-  menuTreeData.value = []
-  defaultCheckedMenus.value = []
-  moduleOptions.value = []
-  selectedModuleId.value = ''
-  currentRoleId.value = ''
-  currentRoleName.value = ''
-  nextTick(() => {
-    if (menuTreeRef.value) {
-      menuTreeRef.value.setCheckedKeys([])
-    }
-  })
-}
-
-const handleDelete = async (index, row) => {
+const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.role.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
@@ -469,16 +427,31 @@ const handleDelete = async (index, row) => {
 }
 
 const handleSave = async () => {
-  try {
-    await editFormRef.value.validate()
-  } catch {
-    return
-  }
-  const isNew = !editForm.roleId || editForm.roleId === ''
-  if (isNew) {
-    await insertRole()
-  } else {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  if (!valid) return
+  if (editForm.roleId) {
     await updateRole()
+  } else {
+    await insertRole()
+  }
+}
+
+const handleDialogClose = () => {
+  resetEditForm()
+  editFormRef.value?.clearValidate()
+}
+
+/* ---------------- 模块权限配置 ---------------- */
+
+const fetchRoleModuleList = async (roleId) => {
+  const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, { roleId })
+  if (res?.code === 200) {
+    moduleTreeData.value = res.data || []
+    defaultCheckedModules.value = (res.data || [])
+      .filter(item => item.isChecked)
+      .map(item => item.moduleId)
+  } else {
+    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleListFail'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
@@ -489,40 +462,19 @@ const handleConfigModule = async (row) => {
   moduleDialogVisible.value = true
 }
 
-const fetchRoleModuleList = async (roleId) => {
-  const params = { roleId }
-  const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, params)
-  if (res && res.code === 200) {
-    moduleTreeData.value = res.data || []
-    defaultCheckedModules.value = (res.data || [])
-      .filter(item => item.isChecked)
-      .map(item => item.moduleId)
-  } else {
-    showMessage(res?.message || t('systembasicmgmt.role.fetchModuleListFail'), Number(res?.code) === 400 ? 'warning' : 'error')
-  }
-}
-
 const saveModuleConfig = async () => {
-  const checkedNodes = moduleTreeRef.value?.getCheckedKeys() || []
-  const getAllModuleIds = (nodes) => {
-    let ids = []
-    nodes.forEach(node => {
-      ids.push(node.moduleId)
-      if (node.children && node.children.length > 0) {
-        ids = ids.concat(getAllModuleIds(node.children))
-      }
-    })
-    return ids
-  }
-  const allModuleIds = getAllModuleIds(moduleTreeData.value)
-  const unCheckedNodes = allModuleIds.filter(id => !checkedNodes.includes(id))
-  const params = {
+  const checkedIds = moduleTreeRef.value?.getCheckedKeys() || []
+  const collectModuleIds = (nodes) => nodes.flatMap(node => [
+    node.moduleId,
+    ...(node.children?.length ? collectModuleIds(node.children) : [])
+  ])
+  const allModuleIds = collectModuleIds(moduleTreeData.value)
+  const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, {
     roleId: currentRoleId.value,
-    SelectedModuleIds: checkedNodes,
-    UnSelectedModuleIds: unCheckedNodes
-  }
-  const res = await post(UPDATE_ROLE_MODULE_CONFIG_API.UPDATE_ROLE_MODULE_CONFIG, params)
-  if (res && res.code === 200) {
+    SelectedModuleIds: checkedIds,
+    UnSelectedModuleIds: allModuleIds.filter(id => !checkedIds.includes(id))
+  })
+  if (res?.code === 200) {
     moduleDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.moduleConfigSuccess'), 'success')
   } else {
@@ -530,11 +482,41 @@ const saveModuleConfig = async () => {
   }
 }
 
-const handleConfigMenu = async (row) => {
-  currentRoleId.value = row.roleId
-  currentRoleName.value = row.roleNameCn || row.roleName
-  await fetchRoleModuleDropdown()
-  menuDialogVisible.value = true
+const handleModuleDialogClose = () => {
+  moduleTreeData.value = []
+  defaultCheckedModules.value = []
+  currentRoleId.value = ''
+  currentRoleName.value = ''
+  nextTick(() => moduleTreeRef.value?.setCheckedKeys([]))
+}
+
+/* ---------------- 菜单权限配置 ---------------- */
+
+/** 只返回叶子节点的 ID，确保 el-tree 正确显示半选中状态 */
+const collectCheckedLeafMenuIds = (menuList) => {
+  let checkedIds = []
+  menuList.forEach(menu => {
+    const hasChildren = menu.menuChildren && menu.menuChildren.length > 0
+    if (menu.isChecked && !hasChildren) {
+      checkedIds.push(menu.menuId)
+    }
+    if (hasChildren) {
+      checkedIds = checkedIds.concat(collectCheckedLeafMenuIds(menu.menuChildren))
+    }
+  })
+  return checkedIds
+}
+
+const fetchRoleMenuTree = async (roleId, moduleId) => {
+  const res = await post(GET_ROLE_MENU_TREE_API.GET_ROLE_MENU_TREE, { roleId, moduleId })
+  if (res?.code === 200) {
+    menuTreeData.value = res.data || []
+    const checkedIds = collectCheckedLeafMenuIds(res.data || [])
+    defaultCheckedMenus.value = checkedIds
+    nextTick(() => menuTreeRef.value?.setCheckedKeys(checkedIds))
+  } else {
+    showMessage(res?.message || t('systembasicmgmt.role.fetchMenuTreeFail'), Number(res?.code) === 400 ? 'warning' : 'error')
+  }
 }
 
 const fetchRoleModuleDropdown = async () => {
@@ -544,7 +526,7 @@ const fetchRoleModuleDropdown = async () => {
     headers: { 'Content-Type': 'multipart/form-data' },
     skipDedupe: true
   })
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     moduleOptions.value = res.data || []
     const firstValidModule = moduleOptions.value.find(item => !item.disabled)
     if (firstValidModule) {
@@ -556,63 +538,51 @@ const fetchRoleModuleDropdown = async () => {
   }
 }
 
+const handleConfigMenu = async (row) => {
+  currentRoleId.value = row.roleId
+  currentRoleName.value = row.roleNameCn || row.roleName || ''
+  await fetchRoleModuleDropdown()
+  menuDialogVisible.value = true
+}
+
 const handleModuleChange = async (moduleId) => {
-  if (moduleId) {
-    await fetchRoleMenuTree(currentRoleId.value, moduleId)
-  }
-}
-
-const fetchRoleMenuTree = async (roleId, moduleId) => {
-  const params = { roleId, moduleId }
-  const res = await post(GET_ROLE_MENU_TREE_API.GET_ROLE_MENU_TREE, params)
-  if (res && res.code === 200) {
-    menuTreeData.value = res.data || []
-    const checkedIds = getCheckedMenuIds(res.data || [])
-    defaultCheckedMenus.value = checkedIds
-    nextTick(() => {
-      if (menuTreeRef.value) {
-        menuTreeRef.value.setCheckedKeys(checkedIds)
-      }
-    })
-  } else {
-    showMessage(res?.message || t('systembasicmgmt.role.fetchMenuTreeFail'), Number(res?.code) === 400 ? 'warning' : 'error')
-  }
-}
-
-/**
- * 只返回叶子节点的 ID，确保 el-tree 正确显示半选中状态
- */
-const getCheckedMenuIds = (menuList) => {
-  let checkedIds = []
-  menuList.forEach(menu => {
-    const isLeafNode = !menu.menuChildren || menu.menuChildren.length === 0
-    if (menu.isChecked && isLeafNode) {
-      checkedIds.push(menu.menuId)
-    }
-    if (menu.menuChildren && menu.menuChildren.length > 0) {
-      checkedIds = checkedIds.concat(getCheckedMenuIds(menu.menuChildren))
-    }
-  })
-  return checkedIds
+  if (!moduleId) return
+  await fetchRoleMenuTree(currentRoleId.value, moduleId)
 }
 
 const saveMenuConfig = async () => {
-  const checkedNodes = menuTreeRef.value?.getCheckedKeys() || []
-  const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedKeys() || []
-  const allMenuIds = [...checkedNodes, ...halfCheckedNodes]
-  const params = {
+  const checkedIds = menuTreeRef.value?.getCheckedKeys() || []
+  const halfCheckedIds = menuTreeRef.value?.getHalfCheckedKeys() || []
+  const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, {
     roleId: currentRoleId.value,
     moduleId: selectedModuleId.value,
-    SelectedMenuIds: allMenuIds
-  }
-  const res = await post(UPDATE_ROLE_MENU_CONFIG_API.UPDATE_ROLE_MENU_CONFIG, params)
-  if (res && res.code === 200) {
+    SelectedMenuIds: [...checkedIds, ...halfCheckedIds]
+  })
+  if (res?.code === 200) {
     menuDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.menuConfigSuccess'), 'success')
   } else {
     showMessage(res?.message || t('systembasicmgmt.role.menuConfigFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
+
+const handleMenuDialogClose = () => {
+  menuTreeData.value = []
+  defaultCheckedMenus.value = []
+  moduleOptions.value = []
+  selectedModuleId.value = ''
+  currentRoleId.value = ''
+  currentRoleName.value = ''
+  nextTick(() => menuTreeRef.value?.setCheckedKeys([]))
+}
+
+onMounted(() => {
+  fetchRolePages()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+})
 </script>
 
 <style scoped>
@@ -657,13 +627,13 @@ const saveMenuConfig = async () => {
   flex-direction: column;
 }
 
-.menu-tree-section .el-tree {
+.menu-tree-section :deep(.el-tree) {
   flex: 1;
   overflow-y: auto;
   background-color: transparent;
 }
 
-.menu-tree-section .el-tree-node__content {
+.menu-tree-section :deep(.el-tree-node__content) {
   height: 32px;
   line-height: 32px;
 }
@@ -687,11 +657,11 @@ const saveMenuConfig = async () => {
   overflow-y: auto;
 }
 
-.module-tree-container .el-tree {
+.module-tree-container :deep(.el-tree) {
   background-color: transparent;
 }
 
-.module-tree-container .el-tree-node__content {
+.module-tree-container :deep(.el-tree-node__content) {
   height: 32px;
   line-height: 32px;
 }

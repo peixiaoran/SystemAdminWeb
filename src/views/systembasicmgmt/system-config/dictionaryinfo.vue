@@ -1,41 +1,38 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-
       <!-- 过滤条件 -->
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="字典搜索表单">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.dictionaryInfo.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.module')">
           <el-select v-model="filters.moduleId"
-                    style="width: 220px;"
-                    :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
-                    @change="handleModuleChange"
-                    :clearable="false">
-            <el-option
-                v-for="module in moduleList"
-                :key="module.moduleId"
-                :label="module.moduleName"
-                :value="module.moduleId"
-                :disabled="module.disabled" />
+                     style="width: 220px"
+                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
+                     :clearable="false"
+                     @change="handleModuleChange">
+            <el-option v-for="item in moduleOptions"
+                       :key="item.moduleId"
+                       :label="item.moduleName"
+                       :value="item.moduleId"
+                       :disabled="item.disabled" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicType')">
           <el-select v-model="filters.dicType"
-                    style="width: 220px;"
-                    :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
-                    :clearable="false"
-                    @change="handleDicTypeChange">
-            <el-option
-                v-for="dicType in dicTypeList"
-                :key="dicType.dicTypeCode"
-                :label="dicType.dicTypeName"
-                :value="dicType.dicTypeCode" />
+                     style="width: 220px"
+                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectDicType')"
+                     :clearable="false"
+                     @change="handleDicTypeChange">
+            <el-option v-for="item in dicTypeOptions"
+                       :key="item.dicTypeCode"
+                       :label="item.dicTypeName"
+                       :value="item.dicTypeCode" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.dicNameCn')">
           <el-input v-model="filters.dicName"
-                   style="width: 220px;"
-                   :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')"
-                   clearable />
+                    style="width: 220px"
+                    :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')"
+                    clearable />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -70,10 +67,8 @@
           <el-table-column prop="sortOrder" :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" align="center" min-width="120" />
           <el-table-column :label="$t('systembasicmgmt.dictionaryInfo.operation')" min-width="130" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-              <el-button size="small"
-                         type="danger"
-                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -91,7 +86,7 @@
       </div>
     </el-card>
 
-    <!-- 编辑状态对话框 -->
+    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"
@@ -99,54 +94,60 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="100px" class="dialog-form" role="form" aria-label="字典编辑表单">
+      <el-form :inline="true"
+               :model="editForm"
+               :rules="formRules"
+               ref="editFormRef"
+               label-width="100px"
+               class="dialog-form"
+               role="form"
+               :aria-label="$t('systembasicmgmt.dictionaryInfo.editFormLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.module')" prop="moduleId">
             <el-select v-model="editForm.moduleId"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
-                      :clearable="false">
-              <el-option
-                  v-for="module in moduleList"
-                  :key="module.moduleId"
-                  :label="module.moduleName"
-                  :value="module.moduleId" />
+                       style="width:100%"
+                       :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
+                       :clearable="false">
+              <el-option v-for="item in moduleOptions"
+                         :key="item.moduleId"
+                         :label="item.moduleName"
+                         :value="item.moduleId" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicType')" prop="dicType">
             <el-input v-model="editForm.dicType"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
             <el-input v-model="editForm.dicCode"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
             <el-input v-model="editForm.dicNameCn"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')" />
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')" />
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
             <el-input v-model="editForm.dicNameEn"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn')" />
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" prop="sortOrder">
             <el-input-number v-model="editForm.sortOrder"
-                           :step="1"
-                           style="width:100%"
-                           :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
+                             :step="1"
+                             style="width:100%"
+                             :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
           </el-form-item>
         </div>
       </el-form>
       <template #footer>
-        <el-button @click="handleCancel">{{ $t('common.cancel') }}</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
       </template>
     </el-dialog>
@@ -154,7 +155,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import {
   GET_DICTIONARY_PAGES_API,
@@ -165,8 +168,6 @@ import {
   GET_MODULE_DROP_DOWN_API,
   GET_DIC_TYPE_DROP_DOWN_API
 } from '@/config/api/systembasicmgmt/system-config/dictionary'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
@@ -176,8 +177,8 @@ let searchTimer = null
 const dictionaryList = ref([])
 const loading = ref(false)
 const submitLoading = ref(false)
-const moduleList = ref([])
-const dicTypeList = ref([])
+const moduleOptions = ref([])
+const dicTypeOptions = ref([])
 const editFormRef = ref(null)
 
 const pagination = reactive({
@@ -207,23 +208,23 @@ const editForm = reactive({
 
 const formRules = {
   moduleId: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseSelectModule'), trigger: 'change' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseSelectModule'), trigger: 'change' }
   ],
   dicType: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicType'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicType'), trigger: 'blur' }
   ],
   dicCode: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode'), trigger: 'blur' }
   ],
   dicNameCn: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn'), trigger: 'blur' }
   ],
   dicNameEn: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn'), trigger: 'blur' }
   ],
   sortOrder: [
-    { required: true, message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' },
-    { type: 'number', message: t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' },
+    { type: 'number', message: () => t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder'), trigger: 'blur' }
   ]
 }
 
@@ -231,38 +232,23 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchDictionaryPages()
-  }, DEBOUNCE_MS)
-}
-
-onMounted(async () => {
-  await fetchModuleDropDown()
-  await fetchDicTypeDropDown()
-  fetchDictionaryPages()
-})
-
-const fetchModuleDropDown = async () => {
+const fetchModuleDropdown = async () => {
   try {
     const res = await post(GET_MODULE_DROP_DOWN_API.GET_MODULE_DROP_DOWN)
-    if (res && res.code === 200) {
-      moduleList.value = res.data || []
-      if (moduleList.value.length > 0 && !filters.moduleId) {
-        filters.moduleId = moduleList.value[0].moduleId
+    if (res?.code === 200) {
+      moduleOptions.value = res.data || []
+      if (moduleOptions.value.length > 0 && !filters.moduleId) {
+        filters.moduleId = moduleOptions.value[0].moduleId
       }
     } else {
-      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
+      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getModuleDropdownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
-    showMessage(t('systembasicmgmt.dictionaryInfo.getModuleDropDownFailed'))
+    showMessage(t('systembasicmgmt.dictionaryInfo.getModuleDropdownFailed'))
   }
 }
 
-const fetchDicTypeDropDown = async () => {
+const fetchDicTypeDropdown = async () => {
   try {
     const formData = new FormData()
     formData.append('moduleId', String(filters.moduleId || ''))
@@ -270,45 +256,30 @@ const fetchDicTypeDropDown = async () => {
       headers: { 'Content-Type': 'multipart/form-data' },
       skipDedupe: true
     })
-    if (res && res.code === 200) {
-      dicTypeList.value = res.data || []
-      if (dicTypeList.value.length > 0 && !filters.dicType) {
-        filters.dicType = dicTypeList.value[0].dicTypeCode
+    if (res?.code === 200) {
+      dicTypeOptions.value = res.data || []
+      if (dicTypeOptions.value.length > 0 && !filters.dicType) {
+        filters.dicType = dicTypeOptions.value[0].dicTypeCode
       }
     } else {
-      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
+      showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDicTypeDropdownFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
   } catch {
-    showMessage(t('systembasicmgmt.dictionaryInfo.getDicTypeDropDownFailed'))
-  }
-}
-
-const fetchDictionaryEntity = async (dicId) => {
-  try {
-    const res = await post(GET_DICTIONARY_ENTITY_API.GET_DICTIONARY_ENTITY, { dicId })
-    if (res && res.code === 200) {
-      return res.data
-    }
-    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
-    return null
-  } catch {
-    showMessage(t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
-    return null
+    showMessage(t('systembasicmgmt.dictionaryInfo.getDicTypeDropdownFailed'))
   }
 }
 
 const fetchDictionaryPages = async () => {
+  loading.value = true
   try {
-    loading.value = true
-    const params = {
+    const res = await post(GET_DICTIONARY_PAGES_API.GET_DICTIONARY_PAGES, {
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       moduleId: filters.moduleId || '',
       dicType: filters.dicType || '',
       dicName: filters.dicName || ''
-    }
-    const res = await post(GET_DICTIONARY_PAGES_API.GET_DICTIONARY_PAGES, params)
-    if (res && res.code === 200) {
+    })
+    if (res?.code === 200) {
       dictionaryList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
@@ -321,63 +292,33 @@ const fetchDictionaryPages = async () => {
   }
 }
 
-const handleSearch = () => {
-  scheduleSearch()
+const fetchDictionaryEntity = async (dicId) => {
+  try {
+    const res = await post(GET_DICTIONARY_ENTITY_API.GET_DICTIONARY_ENTITY, { dicId })
+    if (res?.code === 200) {
+      return res.data
+    }
+    showMessage(res?.message || t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
+    return null
+  } catch {
+    showMessage(t('systembasicmgmt.dictionaryInfo.getDictionaryEntityFailed'))
+    return null
+  }
 }
 
-const handleReset = async () => {
-  loading.value = true
-  filters.dicName = ''
-  filters.moduleId = moduleList.value.length > 0 ? moduleList.value[0].moduleId : ''
-  filters.dicType = ''
-  await fetchDicTypeDropDown()
-  scheduleSearch()
-}
-
-const handleModuleChange = async () => {
-  loading.value = true
-  filters.dicType = ''
-  await fetchDicTypeDropDown()
-  scheduleSearch()
-}
-
-const handleDicTypeChange = () => {
-  scheduleSearch()
-}
-
-const handlePageChange = () => {
-  fetchDictionaryPages()
-}
-
-const handleSizeChange = () => {
-  pagination.pageIndex = 1
-  fetchDictionaryPages()
-}
-
-const resetForm = () => {
-  Object.assign(editForm, {
-    dicId: '',
-    moduleId: '',
-    dicType: '',
-    dicCode: '',
-    dicNameCn: '',
-    dicNameEn: '',
-    sortOrder: 0
-  })
-}
+const buildSubmitParams = () => ({
+  moduleId: editForm.moduleId,
+  dicType: (editForm.dicType || '').trim(),
+  dicCode: String(editForm.dicCode ?? '').trim(),
+  dicNameCn: (editForm.dicNameCn || '').trim(),
+  dicNameEn: (editForm.dicNameEn || '').trim(),
+  sortOrder: Number(editForm.sortOrder)
+})
 
 const insertDictionary = async () => {
   submitLoading.value = true
-  const params = {
-    moduleId: editForm.moduleId,
-    dicType: (editForm.dicType || '').trim(),
-    dicCode: String(editForm.dicCode ?? '').trim(),
-    dicNameCn: (editForm.dicNameCn || '').trim(),
-    dicNameEn: (editForm.dicNameEn || '').trim(),
-    sortOrder: Number(editForm.sortOrder)
-  }
-  const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, params)
-  if (res && res.code === 200) {
+  const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, buildSubmitParams())
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchDictionaryPages()
@@ -389,17 +330,8 @@ const insertDictionary = async () => {
 
 const updateDictionary = async () => {
   submitLoading.value = true
-  const params = {
-    dicId: editForm.dicId,
-    moduleId: editForm.moduleId,
-    dicType: (editForm.dicType || '').trim(),
-    dicCode: String(editForm.dicCode ?? '').trim(),
-    dicNameCn: (editForm.dicNameCn || '').trim(),
-    dicNameEn: (editForm.dicNameEn || '').trim(),
-    sortOrder: Number(editForm.sortOrder)
-  }
-  const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, params)
-  if (res && res.code === 200) {
+  const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, { dicId: editForm.dicId, ...buildSubmitParams() })
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchDictionaryPages()
@@ -411,8 +343,9 @@ const updateDictionary = async () => {
 
 const deleteDictionary = async (dicId) => {
   const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, { dicId })
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
+    // 删除的是当前页最后一条时回到上一页，避免停留在空页
     if (dictionaryList.value.length === 1 && pagination.pageIndex > 1) {
       pagination.pageIndex--
     }
@@ -422,43 +355,83 @@ const deleteDictionary = async (dicId) => {
   }
 }
 
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchDictionaryPages()
+  }, DEBOUNCE_MS)
+}
+
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    dicId: '',
+    moduleId: '',
+    dicType: '',
+    dicCode: '',
+    dicNameCn: '',
+    dicNameEn: '',
+    sortOrder: 0
+  })
+}
+
+const handleSearch = () => scheduleSearch()
+
+const handleReset = async () => {
+  loading.value = true
+  filters.dicName = ''
+  filters.moduleId = moduleOptions.value.length > 0 ? moduleOptions.value[0].moduleId : ''
+  filters.dicType = ''
+  await fetchDicTypeDropdown()
+  scheduleSearch()
+}
+
+const handleModuleChange = async () => {
+  loading.value = true
+  filters.dicType = ''
+  await fetchDicTypeDropdown()
+  scheduleSearch()
+}
+
+const handleDicTypeChange = () => scheduleSearch()
+
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchDictionaryPages()
+}
+
+const handlePageChange = () => {
+  fetchDictionaryPages()
+}
+
 const handleAdd = () => {
-  resetForm()
+  resetEditForm()
   dialogTitle.value = t('systembasicmgmt.dictionaryInfo.addDictionary')
   dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleEdit = async (index, row) => {
-  resetForm()
+const handleEdit = async (row) => {
+  resetEditForm()
   const dictionaryData = await fetchDictionaryEntity(row.dicId)
-  if (dictionaryData) {
-    Object.assign(editForm, {
-      ...dictionaryData,
-      moduleId: String(dictionaryData.moduleId || ''),
-      dicCode: String(dictionaryData.dicCode ?? '')
-    })
-    dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
-    dialogVisible.value = true
-    nextTick(() => {
-      editFormRef.value?.clearValidate()
-    })
-  }
+  if (!dictionaryData) return
+  Object.assign(editForm, {
+    ...dictionaryData,
+    moduleId: String(dictionaryData.moduleId || ''),
+    dicCode: String(dictionaryData.dicCode ?? '')
+  })
+  dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleCancel = () => {
-  dialogVisible.value = false
-}
-
-const handleDelete = async (index, row) => {
+const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.dictionaryInfo.deleteConfirm', { dicCode: row.dicCode }),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
@@ -477,9 +450,19 @@ const handleSave = async () => {
 }
 
 const handleDialogClose = () => {
-  resetForm()
+  resetEditForm()
   editFormRef.value?.clearValidate()
 }
+
+onMounted(async () => {
+  await fetchModuleDropdown()
+  await fetchDicTypeDropdown()
+  fetchDictionaryPages()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+})
 </script>
 
 <style scoped>

@@ -1,31 +1,30 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-
       <!-- 过滤条件 -->
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="汇率搜索表单">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.exchangeRate.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.currencyCode')">
           <el-select v-model="filters.currencyCode"
-                    style="width: 220px;"
-                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
-                    :clearable="false"
-                    @change="handleCurrencyChange">
+                     style="width: 220px"
+                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')"
+                     :clearable="false"
+                     @change="handleCurrencyChange">
             <el-option v-for="item in currencyOptions"
-                      :key="item.currencyCode"
-                      :label="item.currencyName"
-                      :value="item.currencyCode"
-                      :disabled="item.disabled" />
+                       :key="item.currencyCode"
+                       :label="item.currencyName"
+                       :value="item.currencyCode"
+                       :disabled="item.disabled" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.exchangeRate.filter.yearMonth')">
           <el-date-picker v-model="filters.yearMonth"
-                         type="month"
-                         style="width: 220px;"
-                         :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
-                         format="YYYY-MM"
-                         value-format="YYYY-MM"
-                         :clearable="false"
-                         @change="handleYearMonthChange" />
+                          type="month"
+                          style="width: 220px"
+                          :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
+                          format="YYYY-MM"
+                          value-format="YYYY-MM"
+                          :clearable="false"
+                          @change="handleYearMonthChange" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -61,10 +60,8 @@
           <el-table-column prop="remark" :label="$t('systembasicmgmt.exchangeRate.remark')" align="left" min-width="200" />
           <el-table-column :label="$t('systembasicmgmt.exchangeRate.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-              <el-button size="small"
-                         type="danger"
-                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -90,12 +87,19 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="110px" class="dialog-form" role="form" aria-label="汇率编辑表单">
+      <el-form :inline="true"
+               :model="editForm"
+               :rules="formRules"
+               ref="editFormRef"
+               label-width="110px"
+               class="dialog-form"
+               role="form"
+               :aria-label="$t('systembasicmgmt.exchangeRate.editFormLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.currencyCode')" prop="currencyCode">
             <el-select v-model="editForm.currencyCode"
-                    style="width:100%"
-                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')">
+                       style="width:100%"
+                       :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode')">
               <el-option v-for="item in currencyOptions"
                          :key="item.currencyCode"
                          :label="item.currencyName"
@@ -105,8 +109,8 @@
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeCurrencyCode')" prop="exchangeCurrencyCode">
             <el-select v-model="editForm.exchangeCurrencyCode"
-                    style="width:100%"
-                    :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')">
+                       style="width:100%"
+                       :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode')">
               <el-option v-for="item in currencyOptions"
                          :key="item.currencyCode"
                          :label="item.currencyName"
@@ -118,26 +122,26 @@
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.exchangeRate')" prop="exchangeRate">
             <el-input v-model.number="editForm.exchangeRate"
-                     type="number"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate')" />
+                      type="number"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.yearMonth')" prop="yearMonth">
             <el-date-picker v-model="editForm.yearMonth"
-                           type="month"
-                           style="width:100%"
-                           :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
-                           format="YYYY-MM"
-                           value-format="YYYY-MM" />
+                            type="month"
+                            style="width:100%"
+                            :placeholder="$t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth')"
+                            format="YYYY-MM"
+                            value-format="YYYY-MM" />
           </el-form-item>
         </div>
-        <div class="form-row">
+        <div class="form-row full-width">
           <el-form-item :label="$t('systembasicmgmt.exchangeRate.remark')" prop="remark">
             <el-input v-model="editForm.remark"
-                     type="textarea"
-                     :rows="3"
-                     style="width:100%"
-                     :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputRemark')" />
+                      type="textarea"
+                      :rows="3"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.exchangeRate.pleaseInputRemark')" />
           </el-form-item>
         </div>
       </el-form>
@@ -150,43 +154,39 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import {
   GET_EXCHANGE_RATE_PAGES_API,
   GET_CURRENCY_DROPDOWN_API,
-  GET_EXCHANGE_RATE_ENTITY_API,
   INSERT_EXCHANGE_RATE_API,
   UPDATE_EXCHANGE_RATE_API,
   DELETE_EXCHANGE_RATE_API
 } from '@/config/api/systembasicmgmt/system-config/exchangerate'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const DEBOUNCE_MS = 300
 let searchTimer = null
 
+const getCurrentYearMonth = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
 const exchangeRateList = ref([])
 const loading = ref(false)
 const submitLoading = ref(false)
 const currencyOptions = ref([])
 const editFormRef = ref(null)
-const isEdit = ref(false)
 
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 10,
   totalCount: 0
 })
-
-const getCurrentYearMonth = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  return `${year}-${month}`
-}
 
 const filters = reactive({
   currencyCode: '',
@@ -195,6 +195,7 @@ const filters = reactive({
 
 const dialogVisible = ref(false)
 const dialogTitle = ref(t('systembasicmgmt.exchangeRate.editExchangeRate'))
+const isEdit = ref(false)
 
 const editForm = reactive({
   exchangeRateId: '',
@@ -207,17 +208,17 @@ const editForm = reactive({
 
 const formRules = {
   currencyCode: [
-    { required: true, message: t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode'), trigger: 'change' }
+    { required: true, message: () => t('systembasicmgmt.exchangeRate.pleaseSelectCurrencyCode'), trigger: 'change' }
   ],
   exchangeCurrencyCode: [
-    { required: true, message: t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode'), trigger: 'change' }
+    { required: true, message: () => t('systembasicmgmt.exchangeRate.pleaseSelectExchangeCurrencyCode'), trigger: 'change' }
   ],
   exchangeRate: [
-    { required: true, message: t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate'), trigger: 'blur' },
-    { type: 'number', message: t('systembasicmgmt.exchangeRate.exchangeRateMustBeNumber'), trigger: 'blur' }
+    { required: true, message: () => t('systembasicmgmt.exchangeRate.pleaseInputExchangeRate'), trigger: 'blur' },
+    { type: 'number', message: () => t('systembasicmgmt.exchangeRate.exchangeRateMustBeNumber'), trigger: 'blur' }
   ],
   yearMonth: [
-    { required: true, message: t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth'), trigger: 'change' }
+    { required: true, message: () => t('systembasicmgmt.exchangeRate.pleaseSelectYearMonth'), trigger: 'change' }
   ]
 }
 
@@ -225,29 +226,17 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchExchangeRatePages()
-  }, DEBOUNCE_MS)
+const getFirstEnabledCurrencyCode = () => {
+  return currencyOptions.value.find(item => !item.disabled)?.currencyCode ?? ''
 }
 
-onMounted(async () => {
-  await fetchCurrencyDropDown()
-  fetchExchangeRatePages()
-})
-
-const fetchCurrencyDropDown = async () => {
+const fetchCurrencyDropdown = async () => {
   const res = await post(GET_CURRENCY_DROPDOWN_API.GET_CURRENCY_DROPDOWN)
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     currencyOptions.value = res.data || []
-    if (currencyOptions.value.length > 0) {
-      const firstValidOption = currencyOptions.value.find(option => !option.disabled)
-      if (firstValidOption) {
-        filters.currencyCode = firstValidOption.currencyCode
-      }
+    const firstCurrencyCode = getFirstEnabledCurrencyCode()
+    if (firstCurrencyCode) {
+      filters.currencyCode = firstCurrencyCode
     }
   } else {
     showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
@@ -255,18 +244,17 @@ const fetchCurrencyDropDown = async () => {
 }
 
 const fetchExchangeRatePages = async () => {
+  loading.value = true
   try {
-    loading.value = true
-    const params = {
+    const res = await post(GET_EXCHANGE_RATE_PAGES_API.GET_EXCHANGE_RATE_PAGES, {
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       currencyCode: filters.currencyCode || '',
       yearMonth: filters.yearMonth || ''
-    }
-    const res = await post(GET_EXCHANGE_RATE_PAGES_API.GET_EXCHANGE_RATE_PAGES, params)
-    if (res && res.code === 200) {
+    })
+    if (res?.code === 200) {
       exchangeRateList.value = res.data || []
-      pagination.totalCount = res.data?.totalCount || 0
+      pagination.totalCount = res.totalCount || 0
     } else {
       showMessage(res?.message || t('systembasicmgmt.exchangeRate.getExchangeRatePagesFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
     }
@@ -277,45 +265,18 @@ const fetchExchangeRatePages = async () => {
   }
 }
 
-const handleSearch = () => {
-  scheduleSearch()
-}
-
-const handlePageChange = () => {
-  fetchExchangeRatePages()
-}
-
-const handleSizeChange = () => {
-  pagination.pageIndex = 1
-  fetchExchangeRatePages()
-}
-
-const resetForm = () => {
-  editForm.exchangeRateId = ''
-  editForm.currencyCode = ''
-  editForm.exchangeCurrencyCode = ''
-  editForm.exchangeRate = ''
-  editForm.yearMonth = ''
-  editForm.remark = ''
-  if (currencyOptions.value.length > 0) {
-    const firstValidOption = currencyOptions.value.find(option => !option.disabled)
-    if (firstValidOption) {
-      editForm.currencyCode = firstValidOption.currencyCode
-    }
-  }
-}
+const buildSubmitParams = () => ({
+  currencyCode: editForm.currencyCode,
+  exchangeCurrencyCode: editForm.exchangeCurrencyCode,
+  exchangeRate: parseFloat(editForm.exchangeRate),
+  yearMonth: editForm.yearMonth,
+  remark: editForm.remark || ''
+})
 
 const insertExchangeRate = async () => {
   submitLoading.value = true
-  const params = {
-    currencyCode: editForm.currencyCode,
-    exchangeCurrencyCode: editForm.exchangeCurrencyCode,
-    exchangeRate: parseFloat(editForm.exchangeRate),
-    yearMonth: editForm.yearMonth,
-    remark: editForm.remark || ''
-  }
-  const res = await post(INSERT_EXCHANGE_RATE_API.INSERT_EXCHANGE_RATE, params)
-  if (res && res.code === 200) {
+  const res = await post(INSERT_EXCHANGE_RATE_API.INSERT_EXCHANGE_RATE, buildSubmitParams())
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchExchangeRatePages()
@@ -327,15 +288,8 @@ const insertExchangeRate = async () => {
 
 const updateExchangeRate = async () => {
   submitLoading.value = true
-  const params = {
-    currencyCode: editForm.currencyCode,
-    exchangeCurrencyCode: editForm.exchangeCurrencyCode,
-    exchangeRate: parseFloat(editForm.exchangeRate),
-    yearMonth: editForm.yearMonth,
-    remark: editForm.remark || ''
-  }
-  const res = await post(UPDATE_EXCHANGE_RATE_API.UPDATE_EXCHANGE_RATE, params)
-  if (res && res.code === 200) {
+  const res = await post(UPDATE_EXCHANGE_RATE_API.UPDATE_EXCHANGE_RATE, buildSubmitParams())
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchExchangeRatePages()
@@ -347,8 +301,9 @@ const updateExchangeRate = async () => {
 
 const deleteExchangeRate = async (exchangeRateId) => {
   const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, { exchangeRateId })
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
+    // 删除的是当前页最后一条时回到上一页，避免停留在空页
     if (exchangeRateList.value.length === 1 && pagination.pageIndex > 1) {
       pagination.pageIndex--
     }
@@ -358,35 +313,70 @@ const deleteExchangeRate = async (exchangeRateId) => {
   }
 }
 
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchExchangeRatePages()
+  }, DEBOUNCE_MS)
+}
+
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    exchangeRateId: '',
+    currencyCode: getFirstEnabledCurrencyCode(),
+    exchangeCurrencyCode: '',
+    exchangeRate: '',
+    yearMonth: '',
+    remark: ''
+  })
+}
+
+const handleSearch = () => scheduleSearch()
+
+const handleCurrencyChange = () => scheduleSearch()
+
+const handleYearMonthChange = () => scheduleSearch()
+
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchExchangeRatePages()
+}
+
+const handlePageChange = () => {
+  fetchExchangeRatePages()
+}
+
 const handleAdd = () => {
   isEdit.value = false
-  resetForm()
+  resetEditForm()
   dialogTitle.value = t('systembasicmgmt.exchangeRate.addExchangeRate')
   dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleEdit = async (index, row) => {
+const handleEdit = (row) => {
   isEdit.value = true
-  resetForm()
-  editForm.currencyCode = row.currencyCode
-  editForm.exchangeCurrencyCode = row.exchangeCurrencyCode
-  editForm.exchangeRate = row.exchangeRate
-  editForm.yearMonth = row.yearMonth
-  editForm.remark = row.remark || ''
+  resetEditForm()
+  Object.assign(editForm, {
+    currencyCode: row.currencyCode,
+    exchangeCurrencyCode: row.exchangeCurrencyCode,
+    exchangeRate: row.exchangeRate,
+    yearMonth: row.yearMonth,
+    remark: row.remark || ''
+  })
   dialogTitle.value = t('systembasicmgmt.exchangeRate.editExchangeRate')
   dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleDelete = async (index, row) => {
+const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.exchangeRate.confirmDeleteExchangeRate'),
       t('common.warning'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
@@ -405,17 +395,18 @@ const handleSave = async () => {
 }
 
 const handleDialogClose = () => {
-  resetForm()
+  resetEditForm()
   editFormRef.value?.clearValidate()
 }
 
-const handleCurrencyChange = () => {
-  scheduleSearch()
-}
+onMounted(async () => {
+  await fetchCurrencyDropdown()
+  fetchExchangeRatePages()
+})
 
-const handleYearMonthChange = () => {
-  scheduleSearch()
-}
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+})
 </script>
 
 <style scoped>

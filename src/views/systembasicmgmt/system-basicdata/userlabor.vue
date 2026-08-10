@@ -1,13 +1,11 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="用户职业筛选">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userLabor.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.userLabor.laborName')">
-          <el-input
-            v-model="searchForm.laborName"
-            :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')"
-            style="width: 220px"
-          />
+          <el-input v-model="filters.laborName"
+                    style="width: 220px"
+                    :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborName')" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -25,27 +23,24 @@
       </el-form>
 
       <div class="table-container">
-        <el-table
-          :data="laborList"
-          border
-          stripe
-          :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
-          class="conventional-table"
-        :empty-text="$t('common.noData')"
-        >
+        <el-table :data="laborList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('systembasicmgmt.userLabor.index')" width="70" align="center" fixed />
           <el-table-column prop="laborNameCn" :label="$t('systembasicmgmt.userLabor.laborNameCn')" align="left" min-width="100" />
           <el-table-column prop="laborNameEn" :label="$t('systembasicmgmt.userLabor.laborNameEn')" align="left" min-width="200" />
           <el-table-column prop="description" :label="$t('systembasicmgmt.userLabor.description')" align="left" min-width="300">
             <template #default="scope">
-              <el-tooltip
-                v-if="scope.row.description"
-                :content="scope.row.description"
-                placement="top"
-                effect="dark"
-                popper-class="fixed-width-tooltip"
-              >
+              <el-tooltip v-if="scope.row.description"
+                          :content="scope.row.description"
+                          placement="top"
+                          effect="dark"
+                          popper-class="fixed-width-tooltip">
                 <span class="ellipsis-cell">{{ scope.row.description }}</span>
               </el-tooltip>
               <span v-else class="ellipsis-cell">-</span>
@@ -61,78 +56,67 @@
       </div>
 
       <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pagination.pageIndex"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.totalCount"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? $t('systembasicmgmt.userLabor.editLabor') : $t('systembasicmgmt.userLabor.addLabor')"
-      width="50%"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      :lock-scroll="true"
-      @close="handleDialogClose"
-    >
+    <el-dialog v-model="dialogVisible"
+               :title="isEdit ? $t('systembasicmgmt.userLabor.editLabor') : $t('systembasicmgmt.userLabor.addLabor')"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
       <div v-loading="dialogLoading">
-        <el-form
-          :inline="true"
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          label-width="100px"
-          class="dialog-form"
-          role="form"
-          aria-label="用户职业编辑"
-        >
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="100px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.userLabor.editFormLabel')">
           <div class="form-row">
             <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameCn')" prop="laborNameCn">
-              <el-input
-                v-model="form.laborNameCn"
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameCn')"
-                style="width:100%"
-              />
+              <el-input v-model="editForm.laborNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameCn')" />
             </el-form-item>
             <el-form-item :label="$t('systembasicmgmt.userLabor.laborNameEn')" prop="laborNameEn">
-              <el-input
-                v-model="form.laborNameEn"
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameEn')"
-                style="width:100%"
-              />
+              <el-input v-model="editForm.laborNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.userLabor.pleaseInputLaborNameEn')" />
             </el-form-item>
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('systembasicmgmt.userLabor.description')" prop="description">
-              <el-input
-                v-model="form.description"
-                :placeholder="$t('systembasicmgmt.userLabor.pleaseInputDescription')"
-                style="width:100%"
-                type="textarea"
-                :rows="3"
-              />
+              <el-input v-model="editForm.description"
+                        style="width:100%"
+                        type="textarea"
+                        :rows="3"
+                        :placeholder="$t('systembasicmgmt.userLabor.pleaseInputDescription')" />
             </el-form-item>
           </div>
         </el-form>
       </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import {
   GET_USERLABOR_LIST_API,
@@ -140,24 +124,18 @@ import {
   INSERT_USER_LABOR_API,
   UPDATE_USER_LABOR_API,
   DELETE_USER_LABOR_API
-} from '@/config/api/systembasicmgmt/system-basicdata/userlabor.js'
-import { useI18n } from 'vue-i18n'
-
-const DEBOUNCE_MS = 300
+} from '@/config/api/systembasicmgmt/system-basicdata/userlabor'
 
 const { t } = useI18n()
 
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
+const laborList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const laborList = ref([])
-const dialogVisible = ref(false)
-const isEdit = ref(false)
-const formRef = ref(null)
-
-const searchForm = reactive({
-  laborName: ''
-})
+const editFormRef = ref(null)
 
 const pagination = reactive({
   pageIndex: 1,
@@ -165,14 +143,21 @@ const pagination = reactive({
   totalCount: 0
 })
 
-const form = reactive({
+const filters = reactive({
+  laborName: ''
+})
+
+const dialogVisible = ref(false)
+const isEdit = ref(false)
+
+const editForm = reactive({
   laborId: '',
   laborNameCn: '',
   laborNameEn: '',
   description: ''
 })
 
-const rules = {
+const formRules = {
   laborNameCn: [
     { required: true, message: () => t('systembasicmgmt.userLabor.pleaseInputLaborNameCn'), trigger: 'blur' }
   ],
@@ -185,60 +170,63 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const getLaborList = async () => {
+/** 401/403 由全局拦截器统一处理，这里不再重复提示 */
+const showApiError = (res, fallbackKey = 'systembasicmgmt.userLabor.getFailed') => {
+  if (res?.code === 401 || res?.code === 403) return
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
+const fetchLaborList = async () => {
   loading.value = true
-  const response = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, {
-    laborName: searchForm.laborName,
+  const res = await post(GET_USERLABOR_LIST_API.GET_USERLABOR_LIST, {
+    laborName: filters.laborName,
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize
   })
-  if (response?.code === 200) {
-    laborList.value = response.data || []
-    pagination.totalCount = response.totalCount || 0
+  if (res?.code === 200) {
+    laborList.value = res.data || []
+    pagination.totalCount = res.totalCount || 0
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     laborList.value = []
   }
   loading.value = false
 }
 
-let searchTimer = null
 const scheduleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
   searchTimer = setTimeout(() => {
     pagination.pageIndex = 1
-    getLaborList()
+    fetchLaborList()
   }, DEBOUNCE_MS)
+}
+
+const resetEditForm = () => {
+  Object.assign(editForm, { laborId: '', laborNameCn: '', laborNameEn: '', description: '' })
 }
 
 const handleSearch = () => scheduleSearch()
 
 const handleReset = () => {
-  searchForm.laborName = ''
+  filters.laborName = ''
   scheduleSearch()
 }
 
 const handleSizeChange = () => {
   pagination.pageIndex = 1
-  getLaborList()
+  fetchLaborList()
 }
 
-const handleCurrentChange = () => {
-  getLaborList()
-}
-
-const resetForm = () => {
-  Object.assign(form, { laborId: '', laborNameCn: '', laborNameEn: '', description: '' })
+const handlePageChange = () => {
+  fetchLaborList()
 }
 
 const handleAdd = () => {
-  resetForm()
+  resetEditForm()
   isEdit.value = false
   dialogVisible.value = true
-  nextTick(() => formRef.value?.clearValidate())
+  nextTick(() => editFormRef.value?.clearValidate())
 }
 
 const handleEdit = async (row) => {
@@ -247,13 +235,11 @@ const handleEdit = async (row) => {
   isEdit.value = true
   const formData = new FormData()
   formData.append('laborId', row.laborId)
-  const response = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, formData)
-  if (response?.code === 200) {
-    Object.assign(form, response.data)
+  const res = await post(GET_USER_LABOR_ENTITY_API.GET_USER_LABOR_ENTITY, formData)
+  if (res?.code === 200) {
+    Object.assign(editForm, res.data)
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     dialogVisible.value = false
   }
   dialogLoading.value = false
@@ -271,44 +257,43 @@ const handleDelete = async (row) => {
   }
   const formData = new FormData()
   formData.append('laborId', row.laborId)
-  const response = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
-  if (response?.code === 200) {
-    showMessage(response.message, 'success')
-    getLaborList()
+  const res = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
+  if (res?.code === 200) {
+    showMessage(res.message, 'success')
+    fetchLaborList()
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
   }
 }
 
-const handleSubmit = async () => {
-  if (!formRef.value) return
-  const valid = await formRef.value.validate().catch(() => false)
+const handleSave = async () => {
+  const valid = await editFormRef.value?.validate().catch(() => false)
   if (!valid) return
 
   submitLoading.value = true
   const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
-  const response = await post(api, { ...form })
-  if (response?.code === 200) {
-    showMessage(response.message, 'success')
+  const res = await post(api, { ...editForm })
+  if (res?.code === 200) {
+    showMessage(res.message, 'success')
     dialogVisible.value = false
-    getLaborList()
+    fetchLaborList()
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.userLabor.operationFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res, 'systembasicmgmt.userLabor.operationFailed')
   }
   submitLoading.value = false
 }
 
 const handleDialogClose = () => {
-  resetForm()
-  formRef.value?.clearValidate()
+  resetEditForm()
+  editFormRef.value?.clearValidate()
 }
 
 onMounted(() => {
-  getLaborList()
+  fetchLaborList()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
 
