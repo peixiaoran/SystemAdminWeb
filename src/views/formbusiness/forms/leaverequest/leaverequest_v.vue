@@ -980,7 +980,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         if (isBadRequestResponse(res)) {
           showBadRequestResult(res?.message)
         } else if (res?.message) {
-          ElMessage.error(res.message)
+          if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
         }
         return
       }
@@ -1263,7 +1263,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         if (isBadRequestResponse(res)) {
           showBadRequestResult(res?.message)
         } else {
-          ElMessage.error(res.message)
+          if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
         }
         return
       }
@@ -1282,7 +1282,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         if (isBadRequestResponse(res)) {
           showBadRequestResult(res?.message)
         } else {
-          ElMessage.error(res.message)
+          if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
         }
         return
       }
@@ -1326,7 +1326,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         if (isBadRequestResponse(res)) {
           showBadRequestResult(res?.message)
         } else {
-          ElMessage.error(res?.message || t('formbusiness.leaverequest.workflowLoadFailed'))
+          if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leaverequest.workflowLoadFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leaverequest.workflowLoadFailed')) }
         }
         return
       }
@@ -1427,7 +1427,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         if (isBadRequestResponse(res)) {
           showBadRequestResult(res?.message)
         } else {
-          ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+          if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.messages.loadError')) } else { ElMessage.error(res?.message || t('formbusiness.messages.loadError')) }
         }
         return null
       }

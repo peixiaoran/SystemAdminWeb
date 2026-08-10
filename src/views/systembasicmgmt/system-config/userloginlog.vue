@@ -1,46 +1,70 @@
 ﻿<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="用户操作日志搜索表单">
-        <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.userNo')">
-          <el-input v-model="filters.userNo"
-                   style="width: 220px;"
-                   :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputUserNo')"
-                   clearable />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.ip')">
-          <el-input v-model="filters.ip"
-                   style="width: 220px;"
-                   :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputIp')"
-                   clearable />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.startTime')">
-          <el-date-picker
-            v-model="filters.startTime"
-            type="datetime"
-            style="width: 220px;"
-            :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectStartTime')"
-            format="YYYY/MM/DD HH:mm:ss"
-            value-format="YYYY/MM/DD HH:mm:ss" />
-        </el-form-item>
-        <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.endTime')">
-          <el-date-picker
-            v-model="filters.endTime"
-            type="datetime"
-            style="width: 220px;"
-            :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectEndTime')"
-            format="YYYY/MM/DD HH:mm:ss"
-            value-format="YYYY/MM/DD HH:mm:ss" />
-        </el-form-item>
-        <el-form-item class="form-button-group">
-          <el-button type="primary" @click="handleSearch" plain>
-            {{ $t('common.search') }}
+      <el-form :inline="true" class="conventional-filter-form" role="search" aria-label="用户操作日志筛选">
+        <el-form-item>
+          <el-button :icon="Filter" @click="filterDialogVisible = true">
+            {{ $t('systembasicmgmt.userloginlog.filterQuery') }}
           </el-button>
-          <el-button @click="handleReset">
-            {{ $t('common.reset') }}
-          </el-button>
+          <el-button :icon="RefreshLeft" :title="$t('systembasicmgmt.userloginlog.clearAll')" @click="handleClearFiltersAndSearch" />
         </el-form-item>
       </el-form>
+
+      <el-dialog
+        v-model="filterDialogVisible"
+        :title="$t('systembasicmgmt.userloginlog.filterQuery')"
+        width="700px"
+        destroy-on-close
+        append-to-body
+      >
+        <el-form :model="filters" :inline="true" label-width="90px" class="dialog-form filter-dialog">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.userNo')">
+              <el-input v-model="filters.userNo"
+                       style="width: 100%;"
+                       :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputUserNo')"
+                       clearable />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.ip')">
+              <el-input v-model="filters.ip"
+                       style="width: 100%;"
+                       :placeholder="$t('systembasicmgmt.userloginlog.pleaseInputIp')"
+                       clearable />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.startTime')">
+              <el-date-picker
+                v-model="filters.startTime"
+                type="datetime"
+                style="width: 100%;"
+                :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectStartTime')"
+                format="YYYY/MM/DD HH:mm:ss"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.userloginlog.filter.endTime')">
+              <el-date-picker
+                v-model="filters.endTime"
+                type="datetime"
+                style="width: 100%;"
+                :placeholder="$t('systembasicmgmt.userloginlog.pleaseSelectEndTime')"
+                format="YYYY/MM/DD HH:mm:ss"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            </el-form-item>
+          </div>
+        </el-form>
+
+        <template #footer>
+          <div class="filter-dialog-footer">
+            <el-button @click="handleClearFilters">
+              {{ $t('systembasicmgmt.userloginlog.clearAll') }}
+            </el-button>
+            <el-button type="primary" @click="handleSearch">
+              {{ $t('common.confirm') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
 
       <div class="table-container">
         <el-table :data="userloginlogList"
@@ -85,8 +109,7 @@ import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import { GET_USER_LOGIN_LOG_PAGES_API } from '@/config/api/systembasicmgmt/system-config/userloginlog'
 import { ElMessage } from 'element-plus'
-
-const DEBOUNCE_MS = 300
+import { Filter, RefreshLeft } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 
@@ -99,12 +122,16 @@ const pagination = reactive({
   totalCount: 0
 })
 
-const filters = reactive({
+const filterDialogVisible = ref(false)
+
+const defaultFilters = () => ({
   userNo: '',
   ip: '',
   startTime: '',
   endTime: ''
 })
+
+const filters = reactive(defaultFilters())
 
 const formatDateTime = (val) => {
   if (!val) return ''
@@ -128,29 +155,25 @@ const fetchUserLoginLogPages = async () => {
     userloginlogList.value = res.data || []
     pagination.totalCount = res.totalCount || 0
   } else if (res) {
-    ElMessage({ message: res.message, type: 'error', plain: true, showClose: true })
+    ElMessage({ message: res.message, type: Number(res?.code) === 400 ? 'warning' : 'error', plain: true, showClose: true })
   }
   loading.value = false
 }
 
-let searchTimer = null
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchUserLoginLogPages()
-  }, DEBOUNCE_MS)
+const handleSearch = () => {
+  filterDialogVisible.value = false
+  pagination.pageIndex = 1
+  fetchUserLoginLogPages()
 }
 
-const handleSearch = () => scheduleSearch()
+const handleClearFilters = () => {
+  Object.assign(filters, defaultFilters())
+}
 
-const handleReset = () => {
-  filters.userNo = ''
-  filters.ip = ''
-  filters.startTime = ''
-  filters.endTime = ''
-  scheduleSearch()
+const handleClearFiltersAndSearch = () => {
+  handleClearFilters()
+  pagination.pageIndex = 1
+  fetchUserLoginLogPages()
 }
 
 const handlePageChange = () => fetchUserLoginLogPages()
@@ -179,4 +202,18 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.filter-dialog .form-row .el-form-item {
+  flex: 0 0 calc(50% - 10px);
+}
+
+.filter-dialog .form-row .el-form-item:last-child {
+  margin-right: 0;
+}
+
+.filter-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 </style>

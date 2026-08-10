@@ -7,28 +7,28 @@
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
 // 料号实体API
-export const GET_PRO_PART_NUMBER_ENTITY_API = {
-    GET_PRO_PART_NUMBER_ENTITY: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberEntity'
+export const GET_PART_NUMBER_ENTITY_API = {
+    GET_PART_NUMBER_ENTITY: 'CustMat/CustMatBasicInfo/PartNumber/GetPartNumberEntity'
 }
 
 // 料号列表API
-export const GET_PRO_PART_NUMBER_LIST_API = {
-    GET_PRO_PART_NUMBER_LIST: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberPage'
+export const GET_PART_NUMBER_LIST_API = {
+    GET_PART_NUMBER_LIST: 'CustMat/CustMatBasicInfo/PartNumber/GetPartNumberPage'
 }
 
 // 料号新增API
-export const INSERT_PRO_PART_NUMBER_API = {
-    INSERT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/InsertProPartNumber'
+export const INSERT_PART_NUMBER_API = {
+    INSERT_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/InsertPartNumber'
 }
 
 // 料号更新API
-export const UPDATE_PRO_PART_NUMBER_API = {
-    UPDATE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/UpdateProPartNumber'
+export const UPDATE_PART_NUMBER_API = {
+    UPDATE_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/UpdatePartNumber'
 }
 
 // 料号删除API
-export const DELETE_PRO_PART_NUMBER_API = {
-    DELETE_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/DeleteProPartNumber'
+export const DELETE_PART_NUMBER_API = {
+    DELETE_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/DeletePartNumber'
 }
 
 // 料号类型下拉API
@@ -47,16 +47,16 @@ export const GET_SOURCE_TYPE_DROP_API = {
 }
 
 // 料号导入模板下载API
-export const GET_PRO_PART_NUMBER_TEMPLATE_API = {
-    GET_PRO_PART_NUMBER_TEMPLATE: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberTemplate'
+export const GET_PART_NUMBER_TEMPLATE_API = {
+    GET_PART_NUMBER_TEMPLATE: 'CustMat/CustMatBasicInfo/PartNumber/GetPartNumberTemplate'
 }
 
 // 料号导入API
-export const IMPORT_PRO_PART_NUMBER_API = {
-    IMPORT_PRO_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/ImportProPartNumber'
+export const IMPORT_PART_NUMBER_API = {
+    IMPORT_PART_NUMBER: 'CustMat/CustMatBasicInfo/PartNumber/ImportPartNumber'
 }
 
 // 料号导出API
-export const GET_PRO_PART_NUMBER_EXCEL_API = {
-    GET_PRO_PART_NUMBER_EXCEL: 'CustMat/CustMatBasicInfo/PartNumber/GetProPartNumberExcel'
+export const GET_PART_NUMBER_EXCEL_API = {
+    GET_PART_NUMBER_EXCEL: 'CustMat/CustMatBasicInfo/PartNumber/GetPartNumberExcel'
 }

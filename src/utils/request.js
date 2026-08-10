@@ -376,7 +376,8 @@ export const post = async (url, data, options = {}) => {
       const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
       if (ts) {
         lastNetworkErrorTime = ts
-        showErrorMessageToast(message)
+        // 400 属于请求参数/校验类错误，用 warning 提示；其余（如 500）仍用 error
+        status === 400 ? showWarningMessage(message) : showErrorMessageToast(message)
       }
       return createHandledResponse({ success: false, handled: true })
     }

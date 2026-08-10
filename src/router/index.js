@@ -671,11 +671,11 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'propartnumber',
-              name: 'ProPartNumber',
-              component: () => import('../views/custmat/custmat-basicinfo/propartnumber.vue'),
+              path: 'partnumber',
+              name: 'PartNumber',
+              component: () => import('../views/custmat/custmat-basicinfo/partnumber.vue'),
               meta: {
-                title: 'route.custmatProPartNumber',
+                title: 'route.custmatPartNumber',
                 icon: 'Cpu',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false

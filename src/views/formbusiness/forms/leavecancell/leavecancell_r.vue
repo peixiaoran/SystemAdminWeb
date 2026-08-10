@@ -645,7 +645,7 @@ async function fetchFullReviewFlow () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leavecancell.workflowLoadFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leavecancell.workflowLoadFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leavecancell.workflowLoadFailed')) }
       }
       return
     }
@@ -818,7 +818,7 @@ async function getLeaveCancellDetail (formId) {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -850,7 +850,7 @@ async function initLeaveCancell () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else if (res?.message) {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1085,7 +1085,7 @@ async function fetchLeaveRequestList () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leavecancell.getLeaveRequestListFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leavecancell.getLeaveRequestListFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leavecancell.getLeaveRequestListFailed')) }
       }
       leaveRequestList.value = []
       leaveRequestPagination.totalCount = 0
@@ -1536,7 +1536,7 @@ async function fetchRejectStepDrop () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.messages.loadError')) } else { ElMessage.error(res?.message || t('formbusiness.messages.loadError')) }
       }
       rejectStepDropOptions.value = []
       return false

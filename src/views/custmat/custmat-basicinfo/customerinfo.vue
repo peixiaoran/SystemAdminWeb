@@ -146,7 +146,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import {
   GET_CUSTOMER_LIST_API,
   GET_CUSTOMER_ENTITY_API,
@@ -219,13 +219,19 @@ const getCustomerList = async () => {
     }
 
     const response = await post(GET_CUSTOMER_LIST_API.GET_CUSTOMER_LIST, params)
+
+    if (isHandled(response)) {
+      customerList.value = []
+      return
+    }
+
     if (response.code === 200) {
       customerList.value = response.data || []
       pagination.totalCount = response.totalCount || 0
     } else {
       ElMessage({
         message: response.message,
-        type: 'error',
+        type: Number(response.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -313,6 +319,11 @@ const handleEdit = async (row) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
 
+    if (isHandled(response)) {
+      dialogVisible.value = false
+      return
+    }
+
     if (response.code === 200) {
       const data = response.data
       form.customerId = data.customerId
@@ -323,7 +334,7 @@ const handleEdit = async (row) => {
     } else {
       ElMessage({
         message: response.message,
-        type: 'error',
+        type: Number(response.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -364,6 +375,8 @@ const handleDelete = async (row) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
 
+    if (isHandled(response)) return
+
     if (response.code === 200) {
       ElMessage({
         message: response.message,
@@ -375,7 +388,7 @@ const handleDelete = async (row) => {
     } else {
       ElMessage({
         message: response.message,
-        type: 'error',
+        type: Number(response.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -414,6 +427,8 @@ const handleSubmit = async () => {
     const api = isEdit.value ? UPDATE_CUSTOMER_API.UPDATE_CUSTOMER : INSERT_CUSTOMER_API.INSERT_CUSTOMER
     const response = await post(api, params)
 
+    if (isHandled(response)) return
+
     if (response.code === 200) {
       ElMessage({
         message: response.message,
@@ -426,7 +441,7 @@ const handleSubmit = async () => {
     } else {
       ElMessage({
         message: response.message,
-        type: 'error',
+        type: Number(response.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })

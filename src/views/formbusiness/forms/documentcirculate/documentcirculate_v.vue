@@ -526,7 +526,7 @@ async function fetchFullReviewFlow () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed')) } else { ElMessage.error(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed')) }
       }
       return
     }
@@ -740,7 +740,7 @@ async function getDocumentCirculateDetail (formId) {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }

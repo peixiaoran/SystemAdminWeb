@@ -436,7 +436,7 @@
                 departmentList.value = []
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })
@@ -474,7 +474,7 @@
                 positionList.value = []
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })
@@ -517,7 +517,7 @@
                 userPartTimeList.value = []
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })
@@ -722,7 +722,7 @@
                 dialogUserList.value = []
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })
@@ -815,7 +815,7 @@
         } else {
             ElMessage({
                 message: res.message,
-                type: 'error',
+                type: Number(res?.code) === 400 ? 'warning' : 'error',
                 plain: true,
                 showClose: true
             })
@@ -894,7 +894,7 @@
             } else {
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })
@@ -949,7 +949,7 @@
             } else {
                 ElMessage({
                     message: res.message,
-                    type: 'error',
+                    type: Number(res?.code) === 400 ? 'warning' : 'error',
                     plain: true,
                     showClose: true
                 })

@@ -296,7 +296,7 @@ export default {
     const initGenderOptions = () => {
       genderOptions.value = [
         { genderCode: '1', genderName: t('systembasicmgmt.personalInfo.genderOptions.male') },
-        { genderCode: '0', genderName: t('systembasicmgmt.personalInfo.genderOptions.female') }
+        { genderCode: '2', genderName: t('systembasicmgmt.personalInfo.genderOptions.female') }
       ]
     }
     

@@ -1227,7 +1227,7 @@ export default {
     custmat: '客户生产计划',
     custmatbasicinfo: '生产基础信息',
     custmatCustomer: '客户信息维护',
-    custmatProPartNumber: '生产料号维护'
+    custmatPartNumber: '生产料号维护'
   },
   
   // 系统基础管理
@@ -1938,6 +1938,8 @@ export default {
       pleaseSelectStartTime: '请选择开始时间',
       pleaseSelectEndTime: '请选择结束时间',
       getFailed: '获取数据失败',
+      filterQuery: '筛选查询',
+      clearAll: '清除全部条件',
       filter: {
         userNo: '用户工号',
         ip: 'IP地址',
@@ -2055,7 +2057,7 @@ export default {
       getFailed: '获取数据失败',
       operationFailed: '操作失败'
     },
-    propartnumber: {
+    partnumber: {
       index: '序号',
       partNumber: '料号',
       partNameCn: '中文名称',
@@ -2076,8 +2078,8 @@ export default {
       statusEnabled: '启用',
       statusDisabled: '停用',
       remark: '备注',
-      addProPartNumber: '新增料号',
-      editProPartNumber: '编辑料号',
+      addPartNumber: '新增料号',
+      editPartNumber: '编辑料号',
       deleteConfirm: '确定要删除该料号吗？',
       pleaseInputPartNumber: '请输入料号',
       pleaseInputPartNameCn: '请输入中文名称',

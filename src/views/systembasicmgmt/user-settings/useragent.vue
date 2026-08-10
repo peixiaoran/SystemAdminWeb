@@ -498,7 +498,7 @@ const fetchDepartmentDropdown = async (setDefaultFilter = false) => {
       departmentOptions.value = []
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -527,7 +527,7 @@ const fetchUserAgentList = async (substituteUserId) => {
       agentList.value = []
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -569,7 +569,7 @@ const fetchUserPages = async () => {
   } else {
     ElMessage({
       message: res.message,
-      type: 'error',
+      type: Number(res?.code) === 400 ? 'warning' : 'error',
       plain: true,
       showClose: true
     })
@@ -711,7 +711,7 @@ const handleDeleteAgent = async (index) => {
     } else {
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -743,7 +743,7 @@ const fetchUserSelectList = async () => {
       userSelectPagination.totalCount = 0
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -871,7 +871,7 @@ const handleConfirmUserSelect = async () => {
     } else {
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
@@ -921,7 +921,7 @@ const fetchProactiveAgentList = async (userId) => {
       proactiveAgentList.value = []
       ElMessage({
         message: res.message,
-        type: 'error',
+        type: Number(res?.code) === 400 ? 'warning' : 'error',
         plain: true,
         showClose: true
       })

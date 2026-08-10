@@ -1198,7 +1198,7 @@ async function fetchFullReviewFlow () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed')) } else { ElMessage.error(res?.message || t('formbusiness.documentcirculate.workflowLoadFailed')) }
       }
       return
     }
@@ -1407,7 +1407,7 @@ async function getDocumentCirculateDetail (formId) {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1437,7 +1437,7 @@ async function initDocumentCirculate () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else if (res?.message) {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1598,7 +1598,7 @@ async function fetchRejectStepDrop () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.messages.loadError')) } else { ElMessage.error(res?.message || t('formbusiness.messages.loadError')) }
       }
       rejectStepDropOptions.value = []
       return false

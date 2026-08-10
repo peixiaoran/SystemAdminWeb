@@ -1081,7 +1081,7 @@ async function fetchLeaveBalances () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else if (res?.message) {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1488,7 +1488,7 @@ async function getLeaveRequestDetail (id) {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1510,7 +1510,7 @@ async function getLeaveTypeOptions () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res.message)
+        if (Number(res?.code) === 400) { ElMessage.warning(res.message) } else { ElMessage.error(res.message) }
       }
       return
     }
@@ -1662,7 +1662,7 @@ async function fetchFullReviewFlow () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leaverequest.workflowLoadFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leaverequest.workflowLoadFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leaverequest.workflowLoadFailed')) }
       }
       return
     }
@@ -1775,7 +1775,7 @@ async function fetchAgentDepartmentOptions () {
       return
     }
     agentDepartmentOptions.value = []
-    ElMessage.error(res?.message || t('formbusiness.leaverequest.getDepartmentFailed'))
+    if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leaverequest.getDepartmentFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leaverequest.getDepartmentFailed')) }
   } catch {
     agentDepartmentOptions.value = []
     ElMessage.error(t('formbusiness.leaverequest.getDepartmentFailed'))
@@ -1811,7 +1811,7 @@ async function fetchAgentUserList () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.leaverequest.getAgentListFailed'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.leaverequest.getAgentListFailed')) } else { ElMessage.error(res?.message || t('formbusiness.leaverequest.getAgentListFailed')) }
       }
       agentList.value = []
       agentPagination.totalCount = 0
@@ -1955,7 +1955,7 @@ async function fetchRejectStepDrop () {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.messages.loadError')) } else { ElMessage.error(res?.message || t('formbusiness.messages.loadError')) }
       }
       rejectStepDropOptions.value = []
       return false
@@ -2271,7 +2271,7 @@ async function resolveTokenFormId (tokenValue) {
       if (isBadRequestResponse(res)) {
         showBadRequestResult(res?.message)
       } else {
-        ElMessage.error(res?.message || t('formbusiness.messages.loadError'))
+        if (Number(res?.code) === 400) { ElMessage.warning(res?.message || t('formbusiness.messages.loadError')) } else { ElMessage.error(res?.message || t('formbusiness.messages.loadError')) }
       }
       return null
     }
