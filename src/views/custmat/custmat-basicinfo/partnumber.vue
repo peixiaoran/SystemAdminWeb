@@ -244,6 +244,7 @@
           :limit="1"
           :on-change="handleImportFileChange"
           :on-exceed="handleImportFileExceed"
+          :on-remove="handleImportFileRemove"
           :file-list="importFileList"
         >
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -729,6 +730,12 @@ const handleImportFileExceed = (files) => {
   const file = files[0]
   importFile.value = file
   importFileList.value = [{ name: file.name, raw: file }]
+}
+
+// 移除已选文件
+const handleImportFileRemove = () => {
+  importFile.value = null
+  importFileList.value = []
 }
 
 // 下载导入模板（文件名由前端拼接，中英文用空格分隔）
