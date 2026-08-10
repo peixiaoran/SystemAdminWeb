@@ -1315,6 +1315,12 @@ export default {
   // System Basic Management
   systembasicmgmt: {
     currencyInfo: {
+      insertCurrencySuccess: 'Currency added successfully',
+      confirmDeleteCurrency: 'Are you sure you want to delete this currency?',
+      getCurrencyPagesFailed: 'Failed to load currency list',
+      getCurrencyEntityFailed: 'Failed to load currency details',
+      searchFormLabel: 'Currency search form',
+      editFormLabel: 'Currency edit form',
       title: 'Currency Information Management',
       index: 'Index',
       currencyCode: 'Code',
@@ -1336,6 +1342,10 @@ export default {
     
     // Exchange Rate Information Management
     exchangeRate: {
+      confirmDeleteExchangeRate: 'Are you sure you want to delete this exchange rate?',
+      getExchangeRatePagesFailed: 'Failed to load exchange rate list',
+      searchFormLabel: 'Exchange rate search form',
+      editFormLabel: 'Exchange rate edit form',
       title: 'Exchange Rate Information Management',
       index: 'Index',
       currencyCode: 'Base Currency',
@@ -1362,6 +1372,8 @@ export default {
     
     // User Information Management
     userInfo: {
+      searchFormLabel: 'User search form',
+      editFormLabel: 'User edit form',
       title: 'User Information Management',
       userNo: 'No.',
       userName: 'User Name',
@@ -1462,6 +1474,9 @@ export default {
     
     // User Agent Management
     userAgent: {
+      searchFormLabel: 'User agent search form',
+      agentTimeFormLabel: 'Agent period form',
+      userSelectFormLabel: 'Agent selection search form',
       title: 'User Agent Management',
       configureAgent: 'Configure Agent',
       viewAgentList: 'Agent',
@@ -1512,6 +1527,8 @@ export default {
     },
 
     departmentInfo: {
+      searchFormLabel: 'Department search form',
+      editFormLabel: 'Department edit form',
       title: 'Department Information Management',
       index: 'Index',
       departmentCode: 'Dept Code',
@@ -1562,6 +1579,12 @@ export default {
       topLevel: 'Top Level'
     },
     departmentLevel: {
+      saveSuccess: 'Saved successfully',
+      saveFailed: 'Save failed',
+      deleteSuccess: 'Deleted successfully',
+      deleteFailed: 'Delete failed',
+      searchFormLabel: 'Department level search form',
+      editFormLabel: 'Department level edit form',
       index: 'Index',
       departmentLevelCode: 'Level Code',
       departmentLevelName: 'Level Name',
@@ -1580,6 +1603,7 @@ export default {
       pleaseInputSortOrder: 'Please enter sort order'
     },
     positionInfo: {
+      editFormLabel: 'Position information form',
       index: 'Index',
       positionNo: 'Level No.',
       positionNameCn: 'Chinese Name',
@@ -1597,6 +1621,14 @@ export default {
       getFailed: 'Failed to get data'
     },
     dictionaryInfo: {
+      updateDictionaryFailed: 'Failed to update dictionary entry',
+      deleteDictionaryFailed: 'Failed to delete dictionary entry',
+      getDictionaryPagesFailed: 'Failed to load dictionary list',
+      getDictionaryEntityFailed: 'Failed to load dictionary details',
+      getModuleDropdownFailed: 'Failed to load module list',
+      getDicTypeDropdownFailed: 'Failed to load dictionary types',
+      searchFormLabel: 'Dictionary search form',
+      editFormLabel: 'Dictionary edit form',
       title: 'Dictionary Information Management',
       index: 'Index',
       dicType: 'Dic Type',
@@ -1636,11 +1668,21 @@ export default {
     selectPlaceholder: 'Please select ',
     inputPlaceholder: 'Please input ',
     invalidId: 'Invalid ID',
+    initDataFailed: 'Failed to initialize page data, please refresh and try again',
+    getDataFailed: 'Failed to load data, please try again',
+    getEntityFailed: 'Failed to load details, please try again',
+    getModuleDataFailed: 'Failed to load module data, please refresh and try again',
+    getParentMenuDataFailed: 'Failed to load parent menu data, please refresh and try again',
     systembasicmgmt: {
       remark: 'Remark'
     },
     // Role
     role: {
+      fetchModuleListFail: 'Failed to load module list',
+      fetchModuleDropdownFail: 'Failed to load module dropdown',
+      fetchMenuTreeFail: 'Failed to load menu tree',
+      searchFormLabel: 'Role search form',
+      editFormLabel: 'Role edit form',
       roleCode: 'Role Code',
       roleName: 'Role Name',
       roleNameCn: 'Name (Ch)',
@@ -1669,6 +1711,8 @@ export default {
     },
     // Module
     module: {
+      searchFormLabel: 'Module search form',
+      editFormLabel: 'Module edit form',
       title: 'Module Management',
       moduleCode: 'Module Code',
       moduleName: 'Module Name',
@@ -1708,6 +1752,8 @@ export default {
     },
     // Primary Menu
     pmenu: {
+      searchFormLabel: 'Primary menu search form',
+      editFormLabel: 'Primary menu edit form',
       module: 'Module',
       menuCode: 'Menu Code',
       menuName: 'Menu Name',
@@ -1740,6 +1786,8 @@ export default {
     },
     // Secondary Menu
     smenu: {
+      searchFormLabel: 'Secondary menu search form',
+      editFormLabel: 'Secondary menu edit form',
       title: 'Secondary Menu Management',
       smenuCode: 'Menu Code',
       smenuName: 'Menu Name',
@@ -1781,6 +1829,7 @@ export default {
     },
     // Personal
     personalInfo: {
+      editFormLabel: 'Personal profile form',
       title: 'Personal Profile',
       userNo: 'No.',
       loginNo: 'Login Account',
@@ -1930,6 +1979,7 @@ export default {
     },
 
     userloginlog: {
+      searchFormLabel: 'User login log search form',
       title: 'User Operation Log',
       index: 'Index',
       userNo: 'No.',
@@ -1958,6 +2008,8 @@ export default {
     },
 
     userLabor: {
+      searchFormLabel: 'Labor type search form',
+      editFormLabel: 'Labor type edit form',
       title: 'Career Management',
       index: 'Index',
       laborName: 'Career Name',
@@ -1990,6 +2042,8 @@ export default {
       }
     },
     nationalityInfo: {
+      searchFormLabel: 'Nationality search form',
+      editFormLabel: 'Nationality edit form',
       title: 'Nationality Information',
       index: 'Index',
       nationNameCn: 'Chinese Name',
@@ -2008,6 +2062,9 @@ export default {
       }
     },
     userPartTime: {
+      searchFormLabel: 'Part-time search form',
+      editFormLabel: 'Part-time edit form',
+      userSelectFormLabel: 'Part-time user selection search form',
       title: 'User Part-time Management',
       mergedDialogTitle: 'User Part-time Management',
       department: 'Department',

@@ -1234,6 +1234,11 @@ export default {
   systembasicmgmt: {
     // 通用
     invalidId: '无效的ID',
+    initDataFailed: '初始化页面数据失败，请刷新页面重试',
+    getDataFailed: '获取数据失败，请重试',
+    getEntityFailed: '获取详情数据失败，请重试',
+    getModuleDataFailed: '获取模块数据失败，请刷新页面重试',
+    getParentMenuDataFailed: '获取父菜单数据失败，请刷新页面重试',
     tip: '提示',
     confirm: '确定',
     cancel: '取消',
@@ -1351,6 +1356,8 @@ export default {
 
      // 部门信息
      departmentInfo: {
+       searchFormLabel: '部门搜索表单',
+       editFormLabel: '部门编辑表单',
       title: '部门信息',
       departmentCode: '部门编码',
       departmentName: '部门名称',
@@ -1399,6 +1406,8 @@ export default {
     },
     // 用户信息
     userInfo: {
+      searchFormLabel: '用户搜索表单',
+      editFormLabel: '用户编辑表单',
       title: '用户信息',
       userNo: '用户工号',
       userName: '用户姓名',
@@ -1499,6 +1508,8 @@ export default {
       }
     },
     nationalityInfo: {
+      searchFormLabel: '国籍搜索表单',
+      editFormLabel: '国籍编辑表单',
       title: '国籍信息维护',
       index: '序号',
       nationNameCn: '中文名称',
@@ -1518,6 +1529,9 @@ export default {
     },
     // 用户代理
     userAgent: {
+      searchFormLabel: '用户代理搜索表单',
+      agentTimeFormLabel: '代理时间设置表单',
+      userSelectFormLabel: '代理人选择搜索表单',
       title: '用户代理管理',
       configureAgent: '配置代理人',
       viewAgentList: '代理了谁',
@@ -1570,6 +1584,7 @@ export default {
     },
     // 职级信息
     positionInfo: {
+      editFormLabel: '职级信息表单',
       title: '职级信息维护',
       positionNo: '职级编号',
       positionName: '职级名称',
@@ -1588,6 +1603,7 @@ export default {
     },
     // 个人信息
     personalInfo: {
+      editFormLabel: '个人信息编辑表单',
       title: '个人信息管理',
       userNo: '用户工号',
       loginNo: '登录账号',
@@ -1660,6 +1676,8 @@ export default {
 
     // 模块管理
     module: {
+      searchFormLabel: '模块搜索表单',
+      editFormLabel: '模块编辑表单',
       title: '模块信息维护',
       moduleCode: '模块编码',
       moduleName: '模块名称',
@@ -1696,6 +1714,8 @@ export default {
     
     // 一级菜单维护
     pmenu: {
+      searchFormLabel: '一级菜单搜索表单',
+      editFormLabel: '一级菜单编辑表单',
       title: '一级菜单维护',
       module: '所属模块',
       menuCode: '菜单编码',
@@ -1731,6 +1751,8 @@ export default {
     
     // 二级菜单管理
     smenu: {
+      searchFormLabel: '二级菜单搜索表单',
+      editFormLabel: '二级菜单编辑表单',
       title: '二级菜单管理',
       smenuCode: '菜单编码',
       smenuName: '菜单名称',
@@ -1785,6 +1807,8 @@ export default {
     
     // 角色信息维护
     role: {
+      searchFormLabel: '角色搜索表单',
+      editFormLabel: '角色编辑表单',
       title: '角色信息维护',
       roleCode: '角色编码',
       roleName: '角色名称',
@@ -1821,6 +1845,14 @@ export default {
     
     // 字典信息管理
     dictionaryInfo: {
+      updateDictionaryFailed: '更新字典失败',
+      deleteDictionaryFailed: '删除字典失败',
+      getDictionaryPagesFailed: '获取字典列表失败',
+      getDictionaryEntityFailed: '获取字典信息失败',
+      getModuleDropdownFailed: '获取模块下拉列表失败',
+      getDicTypeDropdownFailed: '获取字典类型下拉列表失败',
+      searchFormLabel: '字典搜索表单',
+      editFormLabel: '字典编辑表单',
       title: '字典信息维护',
       index: '序号',
       dicType: '字典类型',
@@ -1850,6 +1882,12 @@ export default {
     
     // 币别信息管理
      currencyInfo: {
+       insertCurrencySuccess: '新增币别成功',
+       confirmDeleteCurrency: '确定要删除该币别吗？',
+       getCurrencyPagesFailed: '获取币别列表失败',
+       getCurrencyEntityFailed: '获取币别信息失败',
+       searchFormLabel: '币别搜索表单',
+       editFormLabel: '币别编辑表单',
        title: '币别信息维护',
        index: '序号',
        currencyCode: '币别编码',
@@ -1871,6 +1909,12 @@ export default {
     
     // 部门级别管理
     departmentLevel: {
+      saveSuccess: '保存成功',
+      saveFailed: '保存失败',
+      deleteSuccess: '删除成功',
+      deleteFailed: '删除失败',
+      searchFormLabel: '部门级别搜索表单',
+      editFormLabel: '部门级别编辑表单',
       title: '部门级别管理',
       index: '序号',
       departmentLevelCode: '级别编号',
@@ -1894,6 +1938,10 @@ export default {
     
     // 汇率信息管理
     exchangeRate: {
+      confirmDeleteExchangeRate: '确定要删除该汇率吗？',
+      getExchangeRatePagesFailed: '获取汇率列表失败',
+      searchFormLabel: '汇率搜索表单',
+      editFormLabel: '汇率编辑表单',
       title: '汇率信息维护',
       index: '序号',
       currencyCode: '本位币别',
@@ -1919,6 +1967,7 @@ export default {
     },
 
     userloginlog: {
+      searchFormLabel: '用户操作日志搜索表单',
       title: '用户操作日志',
       index: '序号',
       userNo: '用户工号',
@@ -1947,6 +1996,8 @@ export default {
     },
 
     userLabor: {
+      searchFormLabel: '用户职业搜索表单',
+      editFormLabel: '用户职业编辑表单',
       title: '用户职业管理',
       index: '序号',
       laborName: '职业名称',
@@ -1980,6 +2031,9 @@ export default {
     },
 
     userPartTime: {
+      searchFormLabel: '用户兼任搜索表单',
+      editFormLabel: '兼任信息编辑表单',
+      userSelectFormLabel: '兼任人员选择搜索表单',
       title: '用户兼任维护',
       mergedDialogTitle: '用户兼任维护',
       department: '部门',

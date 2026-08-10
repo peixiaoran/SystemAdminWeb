@@ -1,12 +1,16 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="搜索">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.module.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleCode')">
-          <el-input v-model="filters.moduleCode" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleCode')" style="width:220px" />
+          <el-input v-model="filters.moduleCode"
+                    style="width: 220px"
+                    :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleCode')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleNameCh')">
-          <el-input v-model="filters.moduleName" :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleNameCh')" style="width:220px" />
+          <el-input v-model="filters.moduleName"
+                    style="width: 220px"
+                    :placeholder="$t('systembasicmgmt.module.filter.pleaseInputModuleNameCh')" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -40,10 +44,8 @@
           <el-table-column prop="moduleIcon" :label="$t('systembasicmgmt.module.moduleIcon')" align="center" min-width="150" />
           <el-table-column :label="$t('systembasicmgmt.operation')" min-width="150" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-              <el-button size="small"
-                         type="danger"
-                         @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -56,7 +58,7 @@
                        layout="total, sizes, prev, pager, next, jumper"
                        :total="pagination.totalCount"
                        @size-change="handleSizeChange"
-                       @current-change="handlePageChange"/>
+                       @current-change="handlePageChange" />
       </div>
     </el-card>
 
@@ -67,21 +69,36 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true" :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="编辑表单">
+      <el-form :inline="true"
+               :model="editForm"
+               :rules="formRules"
+               ref="editFormRef"
+               label-width="120px"
+               class="dialog-form"
+               role="form"
+               :aria-label="$t('systembasicmgmt.module.editFormLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
-            <el-input v-model="editForm.moduleCode" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleCode')" />
+            <el-input v-model="editForm.moduleCode"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleCode')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.moduleNameCn')" prop="moduleNameCn">
-            <el-input v-model="editForm.moduleNameCn" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameCn')" />
+            <el-input v-model="editForm.moduleNameCn"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameCn')" />
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.module.moduleNameEn')" prop="moduleNameEn">
-            <el-input v-model="editForm.moduleNameEn" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameEn')" />
+            <el-input v-model="editForm.moduleNameEn"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameEn')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.moduleIcon')" prop="moduleIcon">
-            <el-input v-model="editForm.moduleIcon" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputModuleIcon')" />
+            <el-input v-model="editForm.moduleIcon"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleIcon')" />
           </el-form-item>
         </div>
         <div class="form-row">
@@ -89,7 +106,9 @@
             <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.module.pagePath')" prop="path">
-            <el-input v-model="editForm.path" style="width:100%" :placeholder="$t('systembasicmgmt.module.pleaseInputPagePath')" />
+            <el-input v-model="editForm.path"
+                      style="width:100%"
+                      :placeholder="$t('systembasicmgmt.module.pleaseInputPagePath')" />
           </el-form-item>
         </div>
         <div class="form-row full-width">
@@ -112,20 +131,29 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
-import { post } from '@/utils/request'
-import { GET_MODULE_PAGES_API, INSERT_MODULE_API, DELETE_MODULE_API, GET_MODULE_ENTITY_API, UPDATE_MODULE_API } from '@/config/api/systembasicmgmt/system-mgmt/module'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import { post } from '@/utils/request'
+import {
+  GET_MODULE_PAGES_API,
+  GET_MODULE_ENTITY_API,
+  INSERT_MODULE_API,
+  UPDATE_MODULE_API,
+  DELETE_MODULE_API
+} from '@/config/api/systembasicmgmt/system-mgmt/module'
 
 const { t } = useI18n()
 
 const DEBOUNCE_MS = 300
 let searchTimer = null
 
+/** 新增时的 moduleId 占位值，提交前据此区分新增/编辑 */
+const NEW_MODULE_ID = '0'
+
 const moduleList = ref([])
 const loading = ref(false)
-
+const submitLoading = ref(false)
 const editFormRef = ref(null)
 
 const pagination = reactive({
@@ -140,10 +168,10 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
-const submitLoading = ref(false)
+const dialogTitle = ref(t('systembasicmgmt.module.editModule'))
 
 const editForm = reactive({
-  moduleId: '0',
+  moduleId: NEW_MODULE_ID,
   moduleCode: '',
   moduleNameCn: '',
   moduleNameEn: '',
@@ -155,8 +183,6 @@ const editForm = reactive({
   remarkCh: '',
   remarkEn: ''
 })
-
-const dialogTitle = ref(t('systembasicmgmt.module.editModule'))
 
 const formRules = {
   moduleCode: [
@@ -179,99 +205,57 @@ const formRules = {
   ]
 }
 
-const showMessage = (message, type = 'error') => ElMessage({ message, type, plain: true, showClose: true })
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
 
-onMounted(() => {
-  fetchModulePages()
-})
-
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
+const fetchModulePages = async () => {
   loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchModulePages()
-  }, DEBOUNCE_MS)
+  const res = await post(GET_MODULE_PAGES_API.GET_MODULE_PAGES, {
+    ...filters,
+    pageIndex: pagination.pageIndex,
+    pageSize: pagination.pageSize
+  })
+  if (res?.code === 200) {
+    moduleList.value = res.data || []
+    pagination.totalCount = res.totalCount || 0
+  } else {
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
+  }
+  loading.value = false
 }
 
 const fetchModuleEntity = async (moduleId) => {
   const formData = new FormData()
   formData.append('moduleId', moduleId)
   const res = await post(GET_MODULE_ENTITY_API.GET_MODULE_ENTITY, formData)
-  if (res && res.code === 200) {
-    editForm.moduleId = res.data.moduleId
-    editForm.moduleCode = res.data.moduleCode
-    editForm.moduleNameCn = res.data.moduleNameCn
-    editForm.moduleNameEn = res.data.moduleNameEn
-    editForm.moduleIcon = res.data.moduleIcon
-    editForm.sortOrder = res.data.sortOrder
-    editForm.path = res.data.path
-    editForm.redirect = res.data.redirect
-    editForm.remarkCh = res.data.remarkCh ?? res.data.remarksCh ?? ''
-    editForm.remarkEn = res.data.remarkEn ?? res.data.remarksEn ?? ''
-    editForm.level = res.data.level
-  }
-}
-
-const fetchModulePages = async () => {
-  loading.value = true
-  const params = {
-    ...filters,
-    pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize
-  }
-  const res = await post(GET_MODULE_PAGES_API.GET_MODULE_PAGES, params)
-  if (res && res.code === 200) {
-    moduleList.value = res.data || []
-    pagination.totalCount = res.totalCount || 0
-  } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
-  }
-  loading.value = false
-}
-
-const handleSearch = () => {
-  scheduleSearch()
-}
-
-const handleReset = () => {
-  filters.moduleCode = ''
-  filters.moduleName = ''
-  scheduleSearch()
-}
-
-const handlePageChange = () => {
-  fetchModulePages()
-}
-
-const handleSizeChange = () => {
-  pagination.pageIndex = 1
-  fetchModulePages()
-}
-
-const resetForm = () => {
-  editForm.moduleId = '0'
-  editForm.moduleCode = ''
-  editForm.moduleNameCn = ''
-  editForm.moduleNameEn = ''
-  editForm.moduleIcon = ''
-  editForm.sortOrder = 1
-  editForm.path = ''
-  editForm.redirect = ''
-  editForm.remarkCh = ''
-  editForm.remarkEn = ''
+  if (res?.code !== 200) return
+  const data = res.data
+  Object.assign(editForm, {
+    moduleId: data.moduleId,
+    moduleCode: data.moduleCode,
+    moduleNameCn: data.moduleNameCn,
+    moduleNameEn: data.moduleNameEn,
+    moduleIcon: data.moduleIcon,
+    sortOrder: data.sortOrder,
+    level: data.level,
+    path: data.path,
+    redirect: data.redirect,
+    remarkCh: data.remarkCh ?? data.remarksCh ?? '',
+    remarkEn: data.remarkEn ?? data.remarksEn ?? ''
+  })
 }
 
 const insertModule = async () => {
   submitLoading.value = true
   const res = await post(INSERT_MODULE_API.INSERT_MODULE, { ...editForm })
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
-    resetForm()
+    resetEditForm()
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -279,13 +263,13 @@ const insertModule = async () => {
 const updateModule = async () => {
   submitLoading.value = true
   const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, { ...editForm })
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
-    resetForm()
+    resetEditForm()
     dialogVisible.value = false
     fetchModulePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
   submitLoading.value = false
 }
@@ -298,47 +282,76 @@ const deleteModule = async (moduleId) => {
   const formData = new FormData()
   formData.append('moduleId', moduleId)
   const res = await post(DELETE_MODULE_API.DELETE_MODULE, formData)
-  if (res && res.code === 200) {
+  if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchModulePages()
   } else {
-    showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
+    showMessage(res?.message, Number(res?.code) === 400 ? 'warning' : 'error')
   }
 }
 
-const handleAdd = () => {
-  resetForm()
-  dialogTitle.value = t('systembasicmgmt.module.addModule')
-  dialogVisible.value = true
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  loading.value = true
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchModulePages()
+  }, DEBOUNCE_MS)
 }
 
-const handleEdit = async (index, row) => {
-  resetForm()
-  await fetchModuleEntity(row.moduleId)
-  dialogTitle.value = t('systembasicmgmt.module.editModule')
-  dialogVisible.value = true
-  nextTick(() => {
-    if (editFormRef.value) {
-      editFormRef.value.clearValidate()
-    }
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    moduleId: NEW_MODULE_ID,
+    moduleCode: '',
+    moduleNameCn: '',
+    moduleNameEn: '',
+    moduleIcon: '',
+    sortOrder: 1,
+    path: '',
+    redirect: '',
+    remarkCh: '',
+    remarkEn: ''
   })
 }
 
-const handleDialogClose = () => {
-  resetForm()
-  editFormRef.value?.clearValidate()
+const handleSearch = () => scheduleSearch()
+
+const handleReset = () => {
+  filters.moduleCode = ''
+  filters.moduleName = ''
+  scheduleSearch()
 }
 
-const handleDelete = async (index, row) => {
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchModulePages()
+}
+
+const handlePageChange = () => {
+  fetchModulePages()
+}
+
+const handleAdd = () => {
+  resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.module.addModule')
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
+const handleEdit = async (row) => {
+  resetEditForm()
+  await fetchModuleEntity(row.moduleId)
+  dialogTitle.value = t('systembasicmgmt.module.editModule')
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
+const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.module.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
   } catch {
     return
@@ -347,17 +360,27 @@ const handleDelete = async (index, row) => {
 }
 
 const handleSave = async () => {
-  try {
-    await editFormRef.value.validate()
-  } catch {
-    return
-  }
-  if (editForm.moduleId === '0') {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  if (!valid) return
+  if (editForm.moduleId === NEW_MODULE_ID) {
     await insertModule()
   } else {
     await updateModule()
   }
 }
+
+const handleDialogClose = () => {
+  resetEditForm()
+  editFormRef.value?.clearValidate()
+}
+
+onMounted(() => {
+  fetchModulePages()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+})
 </script>
 
 <style scoped>

@@ -28,11 +28,11 @@
           <template #header>
             <div class="card-header">
               <h3>{{ $t('dashboard.charts.areaChart') }}</h3>
-              <div style="display: flex; gap: 10px; align-items: center;">
+              <div class="card-header-actions">
                 <el-select v-model="kLineChartPeriod" size="small" style="width: 120px" @change="onPeriodChange">
-                <el-option :label="$t('dashboard.period.day')" value="day" />
-                <el-option :label="$t('dashboard.period.week')" value="week" />
-                <el-option :label="$t('dashboard.period.year')" value="year" />
+                  <el-option :label="$t('dashboard.period.day')" value="day" />
+                  <el-option :label="$t('dashboard.period.week')" value="week" />
+                  <el-option :label="$t('dashboard.period.year')" value="year" />
                 </el-select>
                 <el-button size="small" @click="refreshKLineChart">
                   <el-icon><Refresh /></el-icon>
@@ -66,11 +66,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import echarts from '@/utils/echarts'
-import {
-  ArrowUp,
-  ArrowDown,
-  Refresh,
-} from '@element-plus/icons-vue'
+import { ArrowUp, ArrowDown, Refresh } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 
@@ -79,6 +75,7 @@ const kLineChart = ref(null)
 let kLineChartInstance = null
 let pieChartInstances = []
 let resizeHandlers = []
+let retryTimer = null
 
 // 响应式数据
 const kLineChartPeriod = ref('day')
@@ -131,71 +128,23 @@ const statsCards = ref([
   }
 ])
 
-// 最近活动数据
-const recentActivities = ref([
-  {
-    time: '2024-01-15 14:30:25',
-    user: 'Zhang San',
-    action: t('dashboard.activities.login'),
-    status: 'success'
-  },
-  {
-    time: '2024-01-15 14:25:18',
-    user: 'Li Si',
-    action: t('dashboard.activities.updateUser'),
-    status: 'success'
-  },
-  {
-    time: '2024-01-15 14:20:12',
-    user: 'Wang Wu',
-    action: t('dashboard.activities.deleteDept'),
-    status: 'warning'
-  },
-  {
-    time: '2024-01-15 14:15:08',
-    user: 'Zhao Liu',
-    action: t('dashboard.activities.backup'),
-    status: 'error'
-  },
-  {
-    time: '2024-01-15 14:10:03',
-    user: 'Qian Qi',
-    action: t('dashboard.activities.exportReport'),
-    status: 'success'
-  }
-])
-
-// 快捷操作数据
-const quickActions = ref([
-  {
-    key: 'addUser',
-    icon: 'Plus',
-    title: 'dashboard.actions.addUser',
-    description: 'dashboard.actions.addUserDesc',
-    color: '#409EFF'
-  },
-  {
-    key: 'SystemConfig',
-    icon: 'Setting',
-    title: 'dashboard.actions.SystemConfig',
-    description: 'dashboard.actions.SystemConfigDesc',
-    color: '#67C23A'
-  },
-  {
-    key: 'generateReport',
-    icon: 'Document',
-    title: 'dashboard.actions.generateReport',
-    description: 'dashboard.actions.generateReportDesc',
-    color: '#E6A23C'
-  },
-  {
-    key: 'notifications',
-    icon: 'Bell',
-    title: 'dashboard.actions.notifications',
-    description: 'dashboard.actions.notificationsDesc',
-    color: '#F56C6C'
-  }
-])
+/** 轮询等待条件成立；超过最大次数后抛错，避免无限轮询 */
+const waitFor = (predicate, maxAttempts = 20, interval = 200) => {
+  return new Promise((resolve, reject) => {
+    let attempts = 0
+    const check = () => {
+      attempts++
+      if (predicate()) {
+        resolve()
+      } else if (attempts >= maxAttempts) {
+        reject(new Error(`Element not found after ${maxAttempts} attempts`))
+      } else {
+        setTimeout(check, interval)
+      }
+    }
+    check()
+  })
+}
 
 const initKLineChart = () => {
   if (!kLineChart.value) return
@@ -355,6 +304,74 @@ const initKLineChart = () => {
   resizeHandlers.push(resizeHandler)
 }
 
+/** 三个饼图的 series 配置；tooltip / legend 部分统一由 buildPieOption 补齐 */
+const buildPieSeries = () => [
+  // 部门分布：环形图
+  {
+    name: t('dashboard.charts.departmentDistribution'),
+    type: 'pie',
+    radius: ['40%', '70%'],
+    center: ['50%', '35%'],
+    avoidLabelOverlap: false,
+    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+    label: { show: false, position: 'center' },
+    emphasis: { label: { show: true, fontSize: 20, fontWeight: 'bold' } },
+    labelLine: { show: false },
+    data: [
+      { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
+      { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
+      { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
+      { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
+      { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
+      { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
+    ]
+  },
+  // 项目状态：实心饼图
+  {
+    name: t('dashboard.charts.projectStatus'),
+    type: 'pie',
+    radius: '65%',
+    center: ['50%', '35%'],
+    emphasis: {
+      itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' }
+    },
+    data: [
+      { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
+      { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
+      { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
+      { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
+    ]
+  },
+  // 资源使用：南丁格尔玫瑰图，tooltip 的数值本身就是百分比
+  {
+    name: t('dashboard.charts.resourceUsage'),
+    type: 'pie',
+    radius: ['30%', '70%'],
+    center: ['50%', '35%'],
+    roseType: 'area',
+    itemStyle: { borderRadius: 8 },
+    tooltipFormatter: '{a} <br/>{b}: {c}% ({d}%)',
+    data: [
+      { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
+      { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
+      { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
+      { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
+    ]
+  }
+]
+
+const buildPieOption = ({ tooltipFormatter, ...series }) => ({
+  tooltip: {
+    trigger: 'item',
+    formatter: tooltipFormatter || '{a} <br/>{b}: {c} ({d}%)'
+  },
+  legend: {
+    bottom: '0%',
+    left: 'center'
+  },
+  series: [series]
+})
+
 // 初始化饼图
 const initPieCharts = async () => {
   try {
@@ -365,226 +382,49 @@ const initPieCharts = async () => {
       }
     })
     pieChartInstances = []
-    
-    // 清理之前的resize处理器（只清理饼图相关的）
-    // 注意：这里不清理面积图的resize处理器，因为它在initKLineChart中管理
-    
-    // 等待所有饼图DOM元素准备好
-    const pieChartPromises = pieCharts.value.map((chart, index) => {
-      return new Promise((resolve) => {
-        const checkElement = () => {
-          if (chart.ref) {
-            resolve(index)
-          } else {
-            setTimeout(checkElement, 100)
-          }
-        }
-        checkElement()
-      })
+
+    // 注意：这里不清理面积图的 resize 处理器，它由 initKLineChart 自行管理
+
+    // 等待所有饼图 DOM 元素挂载完成
+    await Promise.all(
+      pieCharts.value.map((chart) => waitFor(() => !!chart.ref))
+    )
+
+    buildPieSeries().forEach((seriesConfig, i) => {
+      const el = pieCharts.value[i]?.ref
+      if (!el) return
+
+      const chart = echarts.init(el)
+      pieChartInstances.push(chart)
+      chart.setOption(buildPieOption(seriesConfig))
+
+      const resizeHandler = () => {
+        if (!chart.isDisposed()) chart.resize()
+      }
+      window.addEventListener('resize', resizeHandler)
+      resizeHandlers.push(resizeHandler)
     })
-    
-    await Promise.all(pieChartPromises)
-    
-    // 部门分布饼图
-    if (pieCharts.value[0].ref) {
-      const chart1 = echarts.init(pieCharts.value[0].ref)
-      pieChartInstances.push(chart1)
-      const option1 = {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        legend: {
-          bottom: '0%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: t('dashboard.charts.departmentDistribution'),
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: ['50%', '35%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: 20,
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              { value: 45, name: t('dashboard.departments.tech'), itemStyle: { color: '#409EFF' } },
-              { value: 38, name: t('dashboard.departments.sales'), itemStyle: { color: '#67C23A' } },
-              { value: 25, name: t('dashboard.departments.marketing'), itemStyle: { color: '#E6A23C' } },
-              { value: 18, name: t('dashboard.departments.hr'), itemStyle: { color: '#F56C6C' } },
-              { value: 22, name: t('dashboard.departments.finance'), itemStyle: { color: '#909399' } },
-              { value: 31, name: t('dashboard.departments.operations'), itemStyle: { color: '#C0C4CC' } }
-            ]
-          }
-        ]
-      }
-      chart1.setOption(option1)
-      
-      // 创建resize处理函数并保存引用
-      const resizeHandler1 = () => {
-        if (chart1 && !chart1.isDisposed()) {
-          chart1.resize()
-        }
-      }
-      window.addEventListener('resize', resizeHandler1)
-      resizeHandlers.push(resizeHandler1)
-    }
-
-    // 项目状态饼图
-    if (pieCharts.value[1].ref) {
-      const chart2 = echarts.init(pieCharts.value[1].ref)
-      pieChartInstances.push(chart2)
-      const option2 = {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        legend: {
-          bottom: '0%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: t('dashboard.charts.projectStatus'),
-            type: 'pie',
-            radius: '65%',
-            center: ['50%', '35%'],
-            data: [
-              { value: 35, name: t('dashboard.status.completed'), itemStyle: { color: '#67C23A' } },
-              { value: 28, name: t('dashboard.status.processing'), itemStyle: { color: '#409EFF' } },
-              { value: 15, name: t('dashboard.status.pending'), itemStyle: { color: '#E6A23C' } },
-              { value: 8, name: t('dashboard.status.failed'), itemStyle: { color: '#F56C6C' } }
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      }
-      chart2.setOption(option2)
-      
-      // 创建resize处理函数并保存引用
-      const resizeHandler2 = () => {
-        if (chart2 && !chart2.isDisposed()) {
-          chart2.resize()
-        }
-      }
-      window.addEventListener('resize', resizeHandler2)
-      resizeHandlers.push(resizeHandler2)
-    }
-
-    // 资源使用饼图
-    if (pieCharts.value[2].ref) {
-      const chart3 = echarts.init(pieCharts.value[2].ref)
-      pieChartInstances.push(chart3)
-      const option3 = {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c}% ({d}%)'
-        },
-        legend: {
-          bottom: '0%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: t('dashboard.charts.resourceUsage'),
-            type: 'pie',
-            radius: ['30%', '70%'],
-            center: ['50%', '35%'],
-            roseType: 'area',
-            itemStyle: {
-              borderRadius: 8
-            },
-            data: [
-              { value: 68, name: t('dashboard.stats.cpuUsage'), itemStyle: { color: '#409EFF' } },
-              { value: 75, name: t('dashboard.stats.memoryUsage'), itemStyle: { color: '#67C23A' } },
-              { value: 45, name: t('dashboard.stats.diskUsage'), itemStyle: { color: '#E6A23C' } },
-              { value: 32, name: t('dashboard.stats.networkTraffic'), itemStyle: { color: '#F56C6C' } }
-            ]
-          }
-        ]
-      }
-      chart3.setOption(option3)
-      
-      // 创建resize处理函数并保存引用
-      const resizeHandler3 = () => {
-        if (chart3 && !chart3.isDisposed()) {
-          chart3.resize()
-        }
-      }
-      window.addEventListener('resize', resizeHandler3)
-      resizeHandlers.push(resizeHandler3)
-    }
   } catch (error) {
     console.error('饼图初始化失败:', error)
   }
 }
 
-const refreshKLineChart = () => {
-  initKLineChart()
-}
+const refreshKLineChart = () => initKLineChart()
 
 // 周期变化处理
-const onPeriodChange = () => {
-  initKLineChart()
-}
-
-// 等待DOM元素准备好的辅助函数
-const waitForElement = (elementRef, maxAttempts = 20, interval = 200) => {
-  return new Promise((resolve, reject) => {
-    let attempts = 0
-    
-    const checkElement = () => {
-      attempts++
-      
-      if (elementRef.value) {
-        resolve(elementRef.value)
-      } else if (attempts >= maxAttempts) {
-        reject(new Error(`Element not found after ${maxAttempts} attempts`))
-      } else {
-        setTimeout(checkElement, interval)
-      }
-    }
-    
-    checkElement()
-  })
-}
+const onPeriodChange = () => initKLineChart()
 
 // 组件挂载后初始化图表
 onMounted(() => {
   nextTick(async () => {
     try {
-      await waitForElement(kLineChart)
+      await waitFor(() => !!kLineChart.value)
       initKLineChart()
-      
-      // 初始化饼图
       await initPieCharts()
     } catch (error) {
       console.error('图表初始化失败:', error)
-      // 如果等待超时，尝试最后一次初始化
-      setTimeout(async () => {
+      // 等待超时，延迟后再尝试最后一次初始化
+      retryTimer = setTimeout(async () => {
         try {
           if (kLineChart.value) {
             initKLineChart()
@@ -598,22 +438,25 @@ onMounted(() => {
   })
 })
 
-// 组件卸载时清理图表实例
+// 组件卸载时清理图表实例与事件监听
 onUnmounted(() => {
+  if (retryTimer) {
+    clearTimeout(retryTimer)
+    retryTimer = null
+  }
+
   if (kLineChartInstance && !kLineChartInstance.isDisposed()) {
     kLineChartInstance.dispose()
     kLineChartInstance = null
   }
-  
-  // 清理饼图实例
+
   pieChartInstances.forEach(chart => {
     if (chart && !chart.isDisposed()) {
       chart.dispose()
     }
   })
   pieChartInstances = []
-  
-  // 移除所有窗口resize事件监听器
+
   resizeHandlers.forEach(handler => {
     window.removeEventListener('resize', handler)
   })
@@ -700,10 +543,6 @@ onUnmounted(() => {
   width: 100%;
 }
 
-.pie-charts-section {
-  margin-top: 20px;
-}
-
 .pie-charts-row {
   align-items: flex-start;
 }
@@ -729,78 +568,24 @@ onUnmounted(() => {
   color: #303133;
 }
 
-.table-section {
-  margin-bottom: 0px;
-}
-
-.table-card {
-  border-radius: 12px;
-  border: none;
-}
-
-.quick-actions-card {
-  border-radius: 12px;
-  border: none;
-}
-
-.quick-actions {
+.card-header-actions {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.action-item {
-  display: flex;
+  gap: 10px;
   align-items: center;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.action-item:hover {
-  background-color: #e9ecef;
-  transform: translateX(5px);
-}
-
-.action-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  color: white;
-}
-
-.action-info h4 {
-  margin: 0 0 5px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.action-info p {
-  margin: 0;
-  font-size: 12px;
-  color: #909399;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  
   .stat-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .stat-icon {
     margin-right: 0;
     margin-bottom: 10px;
   }
-  
+
   .chart-container {
     height: 250px;
   }

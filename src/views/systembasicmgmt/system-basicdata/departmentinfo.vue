@@ -1,15 +1,15 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" aria-label="部门搜索表单">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.departmentInfo.searchFormLabel')">
         <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentCode')">
-          <el-input style="width: 220px"
-                    v-model="filters.departmentCode"
+          <el-input v-model="filters.departmentCode"
+                    style="width: 220px"
                     :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
         </el-form-item>
         <el-form-item :label="$t('systembasicmgmt.departmentInfo.filter.departmentName')">
-          <el-input style="width: 220px"
-                    v-model="filters.departmentName"
+          <el-input v-model="filters.departmentName"
+                    style="width: 220px"
                     :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputName')" />
         </el-form-item>
         <el-form-item class="form-button-group">
@@ -49,9 +49,9 @@
           <el-table-column prop="description" :label="$t('systembasicmgmt.departmentInfo.description')" align="left" min-width="230" />
           <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="270" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">{{ $t('common.edit') }}</el-button>
-              <el-button size="small" type="success" @click="handleAddChild(scope.$index, scope.row)">{{ $t('systembasicmgmt.departmentInfo.addChild') }}</el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
+              <el-button size="small" type="success" @click="handleAddChild(scope.row)">{{ $t('systembasicmgmt.departmentInfo.addChild') }}</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -65,10 +65,18 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :model="editForm" :rules="formRules" ref="editFormRef" label-width="120px" class="dialog-form" role="form" aria-label="部门编辑表单">
+      <el-form :model="editForm"
+               :rules="formRules"
+               ref="editFormRef"
+               label-width="120px"
+               class="dialog-form"
+               role="form"
+               :aria-label="$t('systembasicmgmt.departmentInfo.editFormLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
-            <el-input v-model="editForm.departmentCode" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" style="width: 100%" />
+            <el-input v-model="editForm.departmentCode"
+                      style="width: 100%"
+                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
             <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 60%" />
@@ -76,10 +84,14 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
-            <el-input v-model="editForm.departmentNameCn" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameCn')" style="width: 100%" />
+            <el-input v-model="editForm.departmentNameCn"
+                      style="width: 100%"
+                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameCn')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
-            <el-input v-model="editForm.departmentNameEn" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameEn')" style="width: 100%" />
+            <el-input v-model="editForm.departmentNameEn"
+                      style="width: 100%"
+                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameEn')" />
           </el-form-item>
         </div>
         <div class="form-row">
@@ -92,37 +104,40 @@
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentId">
-            <el-tree-select
-              v-model="editForm.parentId"
-              :data="departmentOptionsWithNone || []"
-              :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-              check-strictly
-              filterable
-              :filter-node-method="filterNodeMethod"
-              popper-class="main-dept-filter-popper"
-              :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
+            <el-tree-select v-model="editForm.parentId"
+                            :data="departmentOptionsWithNone"
+                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                            check-strictly
+                            filterable
+                            :filter-node-method="filterNodeMethod"
+                            style="width: 100%"
+                            popper-class="main-dept-filter-popper"
+                            :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevel')" prop="departmentLevelId">
-            <el-select v-model="editForm.departmentLevelId" style="width: 100%" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
-              <el-option
-                v-for="item in departmentLevelOptions"
-                :key="item.departmentLevelId"
-                :label="item.departmentLevelName"
-                :value="item.departmentLevelId" />
+            <el-select v-model="editForm.departmentLevelId"
+                       style="width: 100%"
+                       :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
+              <el-option v-for="item in departmentLevelOptions"
+                         :key="item.departmentLevelId"
+                         :label="item.departmentLevelName"
+                         :value="item.departmentLevelId" />
             </el-select>
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.factory')" prop="factory">
-            <el-select v-model="editForm.factory" style="width: 100%" :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
-              <el-option
-                v-for="item in factoryOptions"
-                :key="item.factory"
-                :label="item.factoryName"
-                :value="item.factory" />
+            <el-select v-model="editForm.factory"
+                       style="width: 100%"
+                       :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
+              <el-option v-for="item in factoryOptions"
+                         :key="item.factory"
+                         :label="item.factoryName"
+                         :value="item.factory" />
             </el-select>
           </el-form-item>
-          <div class="form-row-spacer" style="flex: 1"></div>
+          <!-- 占位项：保持与上方两列布局对齐 -->
+          <el-form-item />
         </div>
         <div class="form-row full-width">
           <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
@@ -132,14 +147,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
 import {
   GET_DEPARTMENT_TREE_API,
@@ -151,25 +168,34 @@ import {
   GET_DEPARTMENT_TREE_DROPDOWN_API,
   GET_FACTORY_DROP_API
 } from '@/config/api/systembasicmgmt/system-basicdata/department'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
-
-const DEBOUNCE_MS = 300
 
 const { t } = useI18n()
+
+const DEBOUNCE_MS = 300
+let searchTimer = null
 
 const departmentList = ref([])
 const loading = ref(false)
 const submitLoading = ref(false)
 const editFormRef = ref(null)
-const dialogVisible = ref(false)
-const dialogTitle = ref('')
-const isEdit = ref(false)
+
+const departmentOptions = ref([])
+const departmentLevelOptions = ref([])
+const factoryOptions = ref([])
+
+const departmentOptionsWithNone = computed(() => [
+  { departmentId: '0', departmentName: t('systembasicmgmt.departmentInfo.topLevel'), departmentChildList: [] },
+  ...departmentOptions.value
+])
 
 const filters = reactive({
   departmentCode: '',
   departmentName: ''
 })
+
+const dialogVisible = ref(false)
+const dialogTitle = ref('')
+const isEdit = ref(false)
 
 const editForm = reactive({
   departmentId: '',
@@ -205,95 +231,72 @@ const formRules = {
   ]
 }
 
-const departmentOptions = ref([])
-const departmentOptionsWithNone = computed(() => {
-  return [
-    { departmentId: '0', departmentName: t('systembasicmgmt.departmentInfo.topLevel'), departmentChildList: [] },
-    ...departmentOptions.value
-  ]
-})
-
-const departmentLevelOptions = ref([])
-
-const factoryOptions = ref([])
-
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
+}
+
+/** 401/403 由全局拦截器统一处理，这里不再重复提示 */
+const showApiError = (res, fallbackKey = 'systembasicmgmt.departmentInfo.getFailed') => {
+  if (res?.code === 401 || res?.code === 403) return
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
 }
 
 const getFirstEnabledDepartmentLevelId = () => {
   return departmentLevelOptions.value.find(item => !item.disabled)?.departmentLevelId ?? ''
 }
 
-const getDepartmentTree = async () => {
+const fetchDepartmentTree = async () => {
   loading.value = true
-  const response = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, {
+  const res = await post(GET_DEPARTMENT_TREE_API.GET_DEPARTMENT_TREE, {
     departmentCode: filters.departmentCode,
     departmentName: filters.departmentName
   })
-  if (response?.code === 200) {
-    departmentList.value = response.data || []
+  if (res?.code === 200) {
+    departmentList.value = res.data || []
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     departmentList.value = []
   }
   loading.value = false
 }
 
-const getDepartmentLevelDropdown = async () => {
-  const response = await post(GET_DEPARTMENTLEVEL_DROPDOWN_API.GET_DEPARTMENTLEVEL_DROPDOWN, {})
-  if (response?.code === 200) {
-    departmentLevelOptions.value = response.data || []
+const fetchDepartmentLevelDropdown = async () => {
+  const res = await post(GET_DEPARTMENTLEVEL_DROPDOWN_API.GET_DEPARTMENTLEVEL_DROPDOWN, {})
+  if (res?.code === 200) {
+    departmentLevelOptions.value = res.data || []
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     departmentLevelOptions.value = []
   }
 }
 
-const getDepartmentDropdown = async () => {
-  const response = await post(GET_DEPARTMENT_TREE_DROPDOWN_API.GET_DEPARTMENT_TREE_DROPDOWN, {})
-  if (response?.code === 200) {
-    departmentOptions.value = response.data || []
+const fetchDepartmentDropdown = async () => {
+  const res = await post(GET_DEPARTMENT_TREE_DROPDOWN_API.GET_DEPARTMENT_TREE_DROPDOWN, {})
+  if (res?.code === 200) {
+    departmentOptions.value = res.data || []
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     departmentOptions.value = []
   }
 }
 
-const getFactoryDropdown = async () => {
-  const response = await post(GET_FACTORY_DROP_API.GET_FACTORY_DROP, {})
-  if (response?.code === 200) {
-    factoryOptions.value = response.data || []
+const fetchFactoryDropdown = async () => {
+  const res = await post(GET_FACTORY_DROP_API.GET_FACTORY_DROP, {})
+  if (res?.code === 200) {
+    factoryOptions.value = res.data || []
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
     factoryOptions.value = []
   }
 }
 
-let searchTimer = null
 const scheduleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
-  searchTimer = setTimeout(() => getDepartmentTree(), DEBOUNCE_MS)
+  searchTimer = setTimeout(() => fetchDepartmentTree(), DEBOUNCE_MS)
 }
 
-const handleSearch = () => scheduleSearch()
-
-const handleReset = () => {
-  filters.departmentCode = ''
-  filters.departmentName = ''
-  scheduleSearch()
-}
-
-const resetForm = () => {
+const resetEditForm = () => {
   Object.assign(editForm, {
     departmentId: '',
     departmentCode: '',
@@ -311,16 +314,29 @@ const resetForm = () => {
   })
 }
 
+const filterNodeMethod = (value, data) => {
+  if (!value) return true
+  return data.departmentName.includes(value)
+}
+
+const handleSearch = () => scheduleSearch()
+
+const handleReset = () => {
+  filters.departmentCode = ''
+  filters.departmentName = ''
+  scheduleSearch()
+}
+
 const handleAdd = () => {
-  resetForm()
+  resetEditForm()
   dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
   isEdit.value = false
   dialogVisible.value = true
   nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleAddChild = (index, row) => {
-  resetForm()
+const handleAddChild = (row) => {
+  resetEditForm()
   editForm.parentId = row.departmentId
   dialogTitle.value = t('systembasicmgmt.departmentInfo.addChild')
   isEdit.value = false
@@ -328,13 +344,13 @@ const handleAddChild = (index, row) => {
   nextTick(() => editFormRef.value?.clearValidate())
 }
 
-const handleEdit = async (index, row) => {
-  resetForm()
+const handleEdit = async (row) => {
+  resetEditForm()
   const formData = new FormData()
   formData.append('deptId', row.departmentId)
-  const response = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
-  if (response?.code === 200) {
-    const data = response.data
+  const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
+  if (res?.code === 200) {
+    const data = res.data
     Object.assign(editForm, {
       departmentId: data.departmentId,
       departmentCode: data.departmentCode,
@@ -355,13 +371,11 @@ const handleEdit = async (index, row) => {
     dialogVisible.value = true
     nextTick(() => editFormRef.value?.clearValidate())
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message || t('systembasicmgmt.departmentInfo.getFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
   }
 }
 
-const handleDelete = async (index, row) => {
+const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('systembasicmgmt.departmentInfo.deleteConfirm'),
@@ -373,20 +387,18 @@ const handleDelete = async (index, row) => {
   }
   const formData = new FormData()
   formData.append('deptId', row.departmentId)
-  const response = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
-  if (response?.code === 200) {
-    showMessage(response.message, 'success')
-    getDepartmentTree()
+  const res = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
+  if (res?.code === 200) {
+    showMessage(res.message, 'success')
+    fetchDepartmentTree()
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
   }
 }
 
-const handleSubmit = async () => {
-  const isValid = await editFormRef.value?.validate().catch(() => false)
-  if (!isValid) return
+const handleSave = async () => {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  if (!valid) return
 
   submitLoading.value = true
   const params = {
@@ -410,57 +422,57 @@ const handleSubmit = async () => {
   }
 
   const api = isEdit.value ? UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT : INSERT_DEPARTMENT_API.INSERT_DEPARTMENT
-  const response = await post(api, params)
-  if (response?.code === 200) {
-    showMessage(response.message, 'success')
+  const res = await post(api, params)
+  if (res?.code === 200) {
+    showMessage(res.message, 'success')
     dialogVisible.value = false
-    getDepartmentTree()
+    fetchDepartmentTree()
   } else {
-    if (response?.code !== 401 && response?.code !== 403) {
-      showMessage(response?.message, Number(response?.code) === 400 ? 'warning' : 'error')
-    }
+    showApiError(res)
   }
   submitLoading.value = false
 }
 
 const handleDialogClose = () => {
-  resetForm()
+  resetEditForm()
   editFormRef.value?.clearValidate()
 }
 
-const filterNodeMethod = (value, data) => {
-  if (!value) return true
-  return data.departmentName.includes(value)
-}
-
 onMounted(() => {
-  getDepartmentTree()
-  getDepartmentLevelDropdown()
-  getDepartmentDropdown()
-  getFactoryDropdown()
+  fetchDepartmentTree()
+  fetchDepartmentLevelDropdown()
+  fetchDepartmentDropdown()
+  fetchFactoryDropdown()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
 
 <style scoped>
-  @import '@/assets/styles/conventionalTablePage.css';
+@import '@/assets/styles/conventionalTablePage.css';
 </style>
 
+<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
 <style>
-  .main-dept-filter-popper {
-    width: auto !important;
-    min-width: 320px !important;
-  }
-  .main-dept-filter-popper .el-select-dropdown__wrap,
-  .main-dept-filter-popper .el-scrollbar__view,
-  .main-dept-filter-popper .el-tree {
-    width: 100% !important;
-    min-width: 100% !important;
-  }
-  .main-dept-filter-popper .el-tree-node__content {
-    height: 36px;
-    line-height: 36px;
-    padding-left: 12px;
-    width: 100% !important;
-    min-width: 100% !important;
-  }
+.main-dept-filter-popper {
+  width: auto !important;
+  min-width: 320px !important;
+}
+
+.main-dept-filter-popper .el-select-dropdown__wrap,
+.main-dept-filter-popper .el-scrollbar__view,
+.main-dept-filter-popper .el-tree {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+.main-dept-filter-popper .el-tree-node__content {
+  height: 36px;
+  line-height: 36px;
+  padding-left: 12px;
+  width: 100% !important;
+  min-width: 100% !important;
+}
 </style>
