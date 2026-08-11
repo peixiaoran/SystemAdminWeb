@@ -1,6 +1,9 @@
 <template>
-  <!-- 模块首页：暂无内容 -->
-  <div class="conventional-table-container"></div>
+  <div class="conventional-table-container">
+    <el-card class="conventional-card">
+      <!-- 模块首页：暂无内容 -->
+    </el-card>
+  </div>
 </template>
 
 <style scoped>

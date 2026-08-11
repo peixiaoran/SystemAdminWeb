@@ -2158,6 +2158,7 @@ export default {
       downloadTemplate: '下载模板',
       downloadTemplateFailed: '下载模板失败',
       templateFileName: '公司料号导入模板',
+      exportFileName: '公司料号信息',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
@@ -2190,6 +2191,7 @@ export default {
       downloadTemplate: '下载模板',
       downloadTemplateFailed: '下载模板失败',
       templateFileName: '客户料号导入模板',
+      exportFileName: '客户料号信息',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'

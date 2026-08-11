@@ -14,7 +14,16 @@ export default defineConfig(({ mode }) => {
     // 生产部署在 /systemadminweb/ 子路径；createWebHashHistory 会自动读取 import.meta.env.BASE_URL
     base: isProd ? '/systemadminweb/' : '/',
     plugins: [
-      vue(),
+      vue({
+        template: {
+          compilerOptions: {
+            // 生产构建默认剥离模板注释，开发环境默认保留。保留会让「注释在根节点」的组件
+            // 变成多根 Fragment，被 <transition mode="out-in"> 包裹时离开动画无元素可挂载，
+            // afterLeave 永不触发导致内容区永久空白（且只在 dev 复现）。统一关闭以消除该差异。
+            comments: false
+          }
+        }
+      }),
       isProd && imagetools(),
       isProd && viteCompression({
         algorithm: 'brotliCompress',

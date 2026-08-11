@@ -531,13 +531,13 @@ const handleImportFileRemove = () => {
   importFileList.value = []
 }
 
-// 下载导入模板（文件名由前端拼接，中英文用空格分隔）
+// 下载导入模板（文件名根据当前语言取自 i18n）
 const handleDownloadTemplate = async () => {
   templateLoading.value = true
   try {
     const res = await postBlob(GET_CUSTOMER_NUMBER_TEMPLATE_API.GET_CUSTOMER_NUMBER_TEMPLATE)
     await assertDownloadableBlob(res?.data, 'custmat.customernumber.downloadTemplateFailed')
-    downloadBlob(res.data, '客户料号导入模板 Customer Number Import Template.xlsx')
+    downloadBlob(res.data, `${t('custmat.customernumber.templateFileName')}.xlsx`)
   } catch (error) {
     showMessage(error?.message || t('custmat.customernumber.downloadTemplateFailed'))
   } finally {
@@ -545,13 +545,13 @@ const handleDownloadTemplate = async () => {
   }
 }
 
-// 导出客户料号 Excel（查询条件与分页列表一致，文件名由前端拼接）
+// 导出客户料号 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
 const handleExport = async () => {
   exportLoading.value = true
   try {
     const res = await postBlob(GET_CUSTOMER_NUMBER_EXCEL_API.GET_CUSTOMER_NUMBER_EXCEL, buildQueryParams())
     await assertDownloadableBlob(res?.data, 'custmat.customernumber.exportFailed')
-    downloadBlob(res.data, '客户料号信息 CustomerNumber.xlsx')
+    downloadBlob(res.data, `${t('custmat.customernumber.exportFileName')}.xlsx`)
   } catch (error) {
     showMessage(error?.message || t('custmat.customernumber.exportFailed'))
   } finally {

@@ -2191,6 +2191,8 @@ export default {
       exportFailed: 'Export failed',
       downloadTemplate: 'Download Template',
       downloadTemplateFailed: 'Failed to download template',
+      templateFileName: 'Company Number Import Template',
+      exportFileName: 'CompanyNumber',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.'
@@ -2222,6 +2224,8 @@ export default {
       exportFailed: 'Export failed',
       downloadTemplate: 'Download Template',
       downloadTemplateFailed: 'Failed to download template',
+      templateFileName: 'Customer Number Import Template',
+      exportFileName: 'CustomerNumber',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.'

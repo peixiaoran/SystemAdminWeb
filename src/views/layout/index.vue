@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, watch, computed, h } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request'
@@ -235,31 +235,19 @@ const keepAliveIncludes = computed(() => {
   })
 })
 
-// 组件包装缓存（按路径缓存一个稳定名称的包装组件）
-const componentWrapperMap = new Map()
-
-// 获取或创建用于 keep-alive 的稳定包装组件（基于路径命名）
+// 直接给路由解析出的组件打上基于路径的稳定 name，供 keep-alive 匹配，
+// 避免额外包一层组件（曾因包装组件缓存与真实组件不同步导致内容区空白）
 const getComponentName = (Component, path) => {
   if (!Component) return null
 
   // 基于路径生成稳定且唯一的组件名（只包含字母数字和下划线）
   const normalizedPath = path.replace(/[^a-zA-Z0-9]/g, '_')
 
-  // 如已存在包装，直接复用，保证同一路径始终是同一个组件类型，从而被 keep-alive 缓存
-  if (componentWrapperMap.has(path)) {
-    return componentWrapperMap.get(path)
+  if (Component.name !== normalizedPath) {
+    Component.name = normalizedPath
   }
 
-  // 创建一个轻量包装组件：只负责提供稳定的 name，并渲染真实组件
-  const wrapper = {
-    name: normalizedPath,
-    setup() {
-      return () => h(Component)
-    }
-  }
-
-  componentWrapperMap.set(path, wrapper)
-  return wrapper
+  return Component
 }
 
 // 监听语言变化，更新标签标题 - 使用防抖优化性能
@@ -396,7 +384,6 @@ const purgeTabByPath = (path) => {
   if (beforeLen !== visitedTabs.value.length) {
     const tabName = path.replace(/\//g, '-')
     cachedTabs.value = cachedTabs.value.filter(n => n !== tabName)
-    if (componentWrapperMap.has(path)) componentWrapperMap.delete(path)
     // 如果正好清掉的是当前活动标签，避免残留一个无效的 active 值
     if (activeTabName.value === path) {
       activeTabName.value = visitedTabs.value[visitedTabs.value.length - 1]?.path || ''
@@ -839,11 +826,6 @@ const removeTab = (targetPath) => {
   const index = cachedTabs.value.indexOf(targetPath.replace(/\//g, '-'))
   if (index > -1) {
     cachedTabs.value.splice(index, 1)
-  }
-  
-  // 强制清除keep-alive缓存：从组件包装映射中删除
-  if (componentWrapperMap.has(targetPath)) {
-    componentWrapperMap.delete(targetPath)
   }
   
   // 保存标签状态到本地存储
