@@ -37,7 +37,7 @@
                  label-width="120px"
                  class="dialog-form"
                  role="form"
-                 :aria-label="$t('systembasicmgmt.positionInfo.editFormLabel')">
+                 :aria-label="$t('systembasicmgmt.positionInfo.ariaEditLabel')">
           <div class="form-row">
             <el-form-item :label="$t('systembasicmgmt.positionInfo.positionNo')">
               <el-input v-model="editForm.positionNo"

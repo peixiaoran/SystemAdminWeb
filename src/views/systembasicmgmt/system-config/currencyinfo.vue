@@ -2,7 +2,7 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <!-- 过滤条件 -->
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.currencyInfo.searchFormLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.currencyInfo.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
           <el-input v-model="filters.currencyCode"
                     style="width: 220px"
@@ -74,7 +74,7 @@
                label-width="130px"
                class="dialog-form"
                role="form"
-               :aria-label="$t('systembasicmgmt.currencyInfo.editFormLabel')">
+               :aria-label="$t('systembasicmgmt.currencyInfo.ariaEditLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
             <el-input v-model="editForm.currencyCode"

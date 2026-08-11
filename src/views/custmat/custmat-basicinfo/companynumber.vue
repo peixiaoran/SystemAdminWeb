@@ -1,21 +1,17 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" :aria-label="$t('custmat.companynumber.ariaFilterLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.companynumber.ariaFilterLabel')">
         <el-form-item :label="$t('custmat.companynumber.partNumber')">
-          <el-input
-            v-model="searchForm.partNumber"
-            :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')"
-            style="width: 200px"
-          />
+          <el-input v-model="filters.partNumber"
+                    style="width: 200px"
+                    :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" />
         </el-form-item>
         <el-form-item :label="$t('custmat.companynumber.status')">
-          <el-select
-            v-model="searchForm.status"
-            :placeholder="$t('common.pleaseSelect')"
-            style="width: 140px"
-            @change="handleSearch"
-          >
+          <el-select v-model="filters.status"
+                     style="width: 140px"
+                     :placeholder="$t('common.pleaseSelect')"
+                     @change="handleSearch">
             <el-option :label="$t('custmat.companynumber.statusEnabled')" :value="1" />
             <el-option :label="$t('custmat.companynumber.statusDisabled')" :value="0" />
           </el-select>
@@ -43,14 +39,14 @@
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table
-          :data="companyNumberList"
-          border
-          stripe
-          :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
-          class="conventional-table"
-        >
+        <el-table :data="companyNumberList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('custmat.companynumber.index')" width="70" align="center" fixed />
           <el-table-column prop="partNumber" :label="$t('custmat.companynumber.partNumber')" align="left" min-width="160" />
           <el-table-column prop="productNameCn" :label="$t('custmat.companynumber.productNameCn')" align="left" min-width="180" />
@@ -78,153 +74,159 @@
         </el-table>
       </div>
 
+      <!-- 分页 -->
       <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pagination.pageIndex"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.totalCount"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? $t('custmat.companynumber.editCompanyNumber') : $t('custmat.companynumber.addCompanyNumber')"
-      width="60%"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      :modal-append-to-body="true"
-      :lock-scroll="true"
-      @close="handleDialogClose"
-    >
+    <!-- 新增/编辑对话框 -->
+    <el-dialog v-model="dialogVisible"
+               :title="isEdit ? $t('custmat.companynumber.editCompanyNumber') : $t('custmat.companynumber.addCompanyNumber')"
+               width="60%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
       <div v-loading="dialogLoading">
-        <el-form
-          :inline="true"
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          label-width="110px"
-          class="dialog-form"
-          role="form"
-          :aria-label="$t('custmat.companynumber.ariaEditLabel')"
-        >
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="110px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('custmat.companynumber.ariaEditLabel')">
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.partNumber')" prop="partNumber">
-              <el-input v-model="form.partNumber" :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" style="width:100%" />
+              <el-input v-model="editForm.partNumber"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.productNameCn')" prop="productNameCn">
-              <el-input v-model="form.productNameCn" :placeholder="$t('custmat.companynumber.pleaseInputProductNameCn')" style="width:100%" />
+              <el-input v-model="editForm.productNameCn"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputProductNameCn')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.productNameEn')" prop="productNameEn">
-              <el-input v-model="form.productNameEn" :placeholder="$t('custmat.companynumber.pleaseInputProductNameEn')" style="width:100%" />
+              <el-input v-model="editForm.productNameEn"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputProductNameEn')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.specifications')" prop="specifications">
-              <el-input v-model="form.specifications" :placeholder="$t('custmat.companynumber.pleaseInputSpecifications')" style="width:100%" />
+              <el-input v-model="editForm.specifications"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputSpecifications')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.partType')" prop="partType">
-              <el-select v-model="form.partType" :placeholder="$t('common.pleaseSelect')" style="width:100%">
-                <el-option
-                  v-for="item in partTypeOptions"
-                  :key="item.partType"
-                  :label="item.partTypeName"
-                  :value="item.partType"
-                />
+              <el-select v-model="editForm.partType" style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in partTypeOptions"
+                           :key="item.partType"
+                           :label="item.partTypeName"
+                           :value="item.partType" />
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.category')" prop="category">
-              <el-select v-model="form.category" :placeholder="$t('common.pleaseSelect')" style="width:100%">
-                <el-option
-                  v-for="item in categoryOptions"
-                  :key="item.category"
-                  :label="item.categoryName"
-                  :value="item.category"
-                />
+              <el-select v-model="editForm.category" style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in categoryOptions"
+                           :key="item.category"
+                           :label="item.categoryName"
+                           :value="item.category" />
               </el-select>
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.model')" prop="model">
-              <el-input v-model="form.model" :placeholder="$t('custmat.companynumber.pleaseInputModel')" style="width:100%" />
+              <el-input v-model="editForm.model"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputModel')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.drawingNumber')" prop="drawingNumber">
-              <el-input v-model="form.drawingNumber" :placeholder="$t('custmat.companynumber.pleaseInputDrawingNumber')" style="width:100%" />
+              <el-input v-model="editForm.drawingNumber"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputDrawingNumber')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.version')" prop="version">
-              <el-input v-model="form.version" :placeholder="$t('custmat.companynumber.pleaseInputVersion')" style="width:100%" />
+              <el-input v-model="editForm.version"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputVersion')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.unit')" prop="unit">
-              <el-input v-model="form.unit" :placeholder="$t('custmat.companynumber.pleaseInputUnit')" style="width:100%" />
+              <el-input v-model="editForm.unit"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputUnit')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.sourceType')" prop="sourceType">
-              <el-select v-model="form.sourceType" :placeholder="$t('common.pleaseSelect')" style="width:100%">
-                <el-option
-                  v-for="item in sourceTypeOptions"
-                  :key="item.sourceType"
-                  :label="item.sourceTypeName"
-                  :value="item.sourceType"
-                />
+              <el-select v-model="editForm.sourceType" style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in sourceTypeOptions"
+                           :key="item.sourceType"
+                           :label="item.sourceTypeName"
+                           :value="item.sourceType" />
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.manufacturer')" prop="manufacturer">
-              <el-input v-model="form.manufacturer" :placeholder="$t('custmat.companynumber.pleaseInputManufacturer')" style="width:100%" />
+              <el-input v-model="editForm.manufacturer"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputManufacturer')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.manufacturerNumber')" prop="manufacturerNumber">
-              <el-input v-model="form.manufacturerNumber" :placeholder="$t('custmat.companynumber.pleaseInputManufacturerNumber')" style="width:100%" />
+              <el-input v-model="editForm.manufacturerNumber"
+                        style="width:100%"
+                        :placeholder="$t('custmat.companynumber.pleaseInputManufacturerNumber')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.lotControl')" prop="lotControl">
-              <el-switch v-model="form.lotControl" />
+              <el-switch v-model="editForm.lotControl" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.companynumber.status')" prop="status">
-              <el-switch v-model="form.status" />
+              <el-switch v-model="editForm.status" />
             </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('custmat.companynumber.remark')" prop="remark">
-              <el-input
-                v-model="form.remark"
-                :placeholder="$t('custmat.companynumber.pleaseInputRemark')"
-                style="width:100%"
-                type="textarea"
-                :rows="3"
-              />
+              <el-input v-model="editForm.remark"
+                        style="width:100%"
+                        type="textarea"
+                        :rows="3"
+                        :placeholder="$t('custmat.companynumber.pleaseInputRemark')" />
             </el-form-item>
           </div>
         </el-form>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
-    <el-dialog
-      v-model="importDialogVisible"
-      :title="$t('custmat.companynumber.import')"
-      width="520px"
-      draggable
-      :modal="false"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      @close="handleImportDialogClose"
-    >
+    <!-- 导入对话框 -->
+    <el-dialog v-model="importDialogVisible"
+               :title="$t('custmat.companynumber.import')"
+               width="520px"
+               draggable
+               :modal="false"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               @close="handleImportDialogClose">
       <div class="import-dialog-body">
         <div class="import-template-row">
           <el-button :loading="templateLoading" @click="handleDownloadTemplate">
@@ -232,18 +234,16 @@
           </el-button>
         </div>
 
-        <el-upload
-          drag
-          action="#"
-          accept=".xls,.xlsx"
-          :auto-upload="false"
-          :show-file-list="true"
-          :limit="1"
-          :on-change="handleImportFileChange"
-          :on-exceed="handleImportFileExceed"
-          :on-remove="handleImportFileRemove"
-          :file-list="importFileList"
-        >
+        <el-upload drag
+                   action="#"
+                   accept=".xls,.xlsx"
+                   :auto-upload="false"
+                   :show-file-list="true"
+                   :limit="1"
+                   :on-change="handleImportFileChange"
+                   :on-exceed="handleImportFileExceed"
+                   :on-remove="handleImportFileRemove"
+                   :file-list="importFileList">
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
           <div class="el-upload__text">
             {{ $t('custmat.companynumber.dragFileHint') }}
@@ -251,21 +251,20 @@
         </el-upload>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="importDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" :loading="importLoading" :disabled="!importFile" @click="handleImportSubmit">
-            {{ $t('custmat.companynumber.startImport') }}
-          </el-button>
-        </span>
+        <el-button @click="importDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="importLoading" :disabled="!importFile" @click="handleImportSubmit">
+          {{ $t('custmat.companynumber.startImport') }}
+        </el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
 import {
   GET_COMPANY_NUMBER_LIST_API,
@@ -279,23 +278,28 @@ import {
   GET_COMPANY_NUMBER_TEMPLATE_API,
   IMPORT_COMPANY_NUMBER_API,
   GET_COMPANY_NUMBER_EXCEL_API
-} from '@/config/api/custmat/custmat-basicinfo/companynumber.js'
-import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
+} from '@/config/api/custmat/custmat-basicinfo/companynumber'
 
-// 使用i18n
 const { t } = useI18n()
 
-// 响应式数据
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
+/** 实体查询/删除接口按 form-urlencoded 提交 */
+const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+
+const companyNumberList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editingId = ref(null)
 const deletingId = ref(null)
-const companyNumberList = ref([])
-const dialogVisible = ref(false)
-const isEdit = ref(false)
-const formRef = ref(null)
+const editFormRef = ref(null)
+
+// 下拉选项
+const partTypeOptions = ref([])
+const categoryOptions = ref([])
+const sourceTypeOptions = ref([])
 
 // 导入相关
 const importDialogVisible = ref(false)
@@ -307,26 +311,21 @@ const importFileList = ref([])
 // 导出相关
 const exportLoading = ref(false)
 
-// 下拉选项
-const partTypeOptions = ref([])
-const categoryOptions = ref([])
-const sourceTypeOptions = ref([])
-
-// 搜索表单
-const searchForm = reactive({
-  partNumber: '',
-  status: ''
-})
-
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 50,
   totalCount: 0
 })
 
-// 表单数据
-const form = reactive({
+const filters = reactive({
+  partNumber: '',
+  status: ''
+})
+
+const dialogVisible = ref(false)
+const isEdit = ref(false)
+
+const editForm = reactive({
   partNumberId: '',
   partNumber: '',
   productNameCn: '',
@@ -346,8 +345,7 @@ const form = reactive({
   remark: null
 })
 
-// 表单验证规则
-const rules = {
+const formRules = {
   partNumber: [
     { required: true, message: () => t('custmat.companynumber.pleaseInputPartNumber'), trigger: 'blur' }
   ],
@@ -368,345 +366,309 @@ const rules = {
   ]
 }
 
-// 获取料号类型下拉
-const getPartTypeDrop = async () => {
-  const response = await post(GET_PART_TYPE_DROP_API.GET_PART_TYPE_DROP)
-  if (response.code === 200) {
-    partTypeOptions.value = response.data || []
-  }
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
 }
 
-// 获取物料分类下拉
-const getCategoryDrop = async () => {
-  const response = await post(GET_CATEGORY_DROP_API.GET_CATEGORY_DROP)
-  if (response.code === 200) {
-    categoryOptions.value = response.data || []
-  }
+/** 业务码失败提示：400 视为告警，其余视为错误 */
+const showApiError = (res, fallbackKey) => {
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
 }
 
-// 获取来源类型下拉
-const getSourceTypeDrop = async () => {
-  const response = await post(GET_SOURCE_TYPE_DROP_API.GET_SOURCE_TYPE_DROP)
-  if (response.code === 200) {
-    sourceTypeOptions.value = response.data || []
-  }
-}
-
-// 构建分页/导出共用的查询参数
+/** 分页列表与导出共用的查询参数 */
 const buildQueryParams = () => ({
-  partNumber: searchForm.partNumber,
-  status: searchForm.status === '' ? null : Number(searchForm.status),
+  partNumber: filters.partNumber,
+  status: filters.status === '' ? null : Number(filters.status),
   pageIndex: pagination.pageIndex,
   pageSize: pagination.pageSize,
   totalCount: pagination.totalCount
 })
 
-// 获取公司料号列表
-const getCompanyNumberList = async () => {
+/**
+ * 后端出错时会返回 JSON 而非 Excel，需要读出里面的错误信息
+ * @param {Blob} blob 接口返回的二进制内容
+ * @param {string} fallbackKey 无法解析出错误信息时使用的兜底文案 key
+ */
+const assertDownloadableBlob = async (blob, fallbackKey) => {
+  if (!(blob instanceof Blob) || blob.size === 0) {
+    throw new Error(t(fallbackKey))
+  }
+  if (blob.type && blob.type.includes('application/json')) {
+    const text = await blob.text()
+    let message = t(fallbackKey)
+    try {
+      message = JSON.parse(text)?.message || message
+    } catch {
+      // 非 JSON 内容时沿用默认文案
+    }
+    throw new Error(message)
+  }
+}
+
+const downloadBlob = (blob, fileName) => {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+const fetchPartTypeDropdown = async () => {
+  const res = await post(GET_PART_TYPE_DROP_API.GET_PART_TYPE_DROP)
+  if (res?.code === 200) {
+    partTypeOptions.value = res.data || []
+  }
+}
+
+const fetchCategoryDropdown = async () => {
+  const res = await post(GET_CATEGORY_DROP_API.GET_CATEGORY_DROP)
+  if (res?.code === 200) {
+    categoryOptions.value = res.data || []
+  }
+}
+
+const fetchSourceTypeDropdown = async () => {
+  const res = await post(GET_SOURCE_TYPE_DROP_API.GET_SOURCE_TYPE_DROP)
+  if (res?.code === 200) {
+    sourceTypeOptions.value = res.data || []
+  }
+}
+
+const fetchDialogDropdowns = () => {
+  fetchPartTypeDropdown()
+  fetchCategoryDropdown()
+  fetchSourceTypeDropdown()
+}
+
+const fetchCompanyNumberList = async () => {
   loading.value = true
   try {
-    const params = buildQueryParams()
+    const res = await post(GET_COMPANY_NUMBER_LIST_API.GET_COMPANY_NUMBER_LIST, buildQueryParams())
 
-    const response = await post(GET_COMPANY_NUMBER_LIST_API.GET_COMPANY_NUMBER_LIST, params)
-
-    if (isHandled(response)) {
+    if (isHandled(res)) {
       companyNumberList.value = []
       return
     }
 
-    if (response.code === 200) {
-      companyNumberList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
+    if (res?.code === 200) {
+      companyNumberList.value = res.data || []
+      pagination.totalCount = res.totalCount || 0
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.companynumber.getFailed')
       companyNumberList.value = []
     }
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.companynumber.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.companynumber.getFailed'))
     companyNumberList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 使用通用防抖工具
-const debouncedGetCompanyNumberList = debounce(() => {
-  getCompanyNumberList()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
-const handleSearch = () => {
-  pagination.pageIndex = 1
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
-  debouncedGetCompanyNumberList()
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchCompanyNumberList()
+  }, DEBOUNCE_MS)
 }
 
-// 重置搜索
-const handleReset = () => {
-  searchForm.partNumber = ''
-  searchForm.status = ''
-  loading.value = true
-  pagination.pageIndex = 1
-  getCompanyNumberList()
-}
-
-// 分页大小改变
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
-  pagination.pageIndex = 1
-  getCompanyNumberList()
-}
-
-// 当前页改变
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
-  getCompanyNumberList()
-}
-
-// 重置表单
-const resetForm = () => {
-  form.partNumberId = ''
-  form.partNumber = ''
-  form.productNameCn = ''
-  form.productNameEn = null
-  form.specifications = null
-  form.partType = ''
-  form.category = ''
-  form.model = null
-  form.drawingNumber = null
-  form.version = null
-  form.unit = ''
-  form.sourceType = null
-  form.manufacturer = null
-  form.manufacturerNumber = null
-  form.lotControl = true
-  form.status = true
-  form.remark = null
-}
-
-// 新增
-const handleAdd = () => {
-  resetForm()
-  isEdit.value = false
-  dialogVisible.value = true
-  getPartTypeDrop()
-  getCategoryDrop()
-  getSourceTypeDrop()
-  nextTick(() => {
-    if (formRef.value) {
-      formRef.value.clearValidate()
-    }
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    partNumberId: '',
+    partNumber: '',
+    productNameCn: '',
+    productNameEn: null,
+    specifications: null,
+    partType: '',
+    category: '',
+    model: null,
+    drawingNumber: null,
+    version: null,
+    unit: '',
+    sourceType: null,
+    manufacturer: null,
+    manufacturerNumber: null,
+    lotControl: true,
+    status: true,
+    remark: null
   })
 }
 
-// 编辑
+const handleSearch = () => scheduleSearch()
+
+const handleReset = () => {
+  filters.partNumber = ''
+  filters.status = ''
+  scheduleSearch()
+}
+
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchCompanyNumberList()
+}
+
+const handlePageChange = () => {
+  fetchCompanyNumberList()
+}
+
+const handleAdd = () => {
+  resetEditForm()
+  isEdit.value = false
+  dialogVisible.value = true
+  fetchDialogDropdowns()
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
 const handleEdit = async (row) => {
   editingId.value = row.partNumberId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
-  getPartTypeDrop()
-  getCategoryDrop()
-  getSourceTypeDrop()
+  fetchDialogDropdowns()
 
   try {
-    const response = await post(
+    const res = await post(
       GET_COMPANY_NUMBER_ENTITY_API.GET_COMPANY_NUMBER_ENTITY,
       new URLSearchParams({ partNumberId: String(row.partNumberId) }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      FORM_URLENCODED
     )
 
-    if (isHandled(response)) {
+    if (isHandled(res)) {
       dialogVisible.value = false
       return
     }
 
-    if (response.code === 200) {
-      const data = response.data
-      form.partNumberId = data.partNumberId
-      form.partNumber = data.partNumber
-      form.productNameCn = data.productNameCn
-      form.productNameEn = data.productNameEn
-      form.specifications = data.specifications
-      form.partType = data.partType
-      form.category = data.category
-      form.model = data.model
-      form.drawingNumber = data.drawingNumber
-      form.version = data.version
-      form.unit = data.unit
-      form.sourceType = data.sourceType
-      form.manufacturer = data.manufacturer
-      form.manufacturerNumber = data.manufacturerNumber
-      form.lotControl = data.lotControl
-      form.status = data.status
-      form.remark = data.remark
-    } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
+    if (res?.code === 200) {
+      const data = res.data
+      Object.assign(editForm, {
+        partNumberId: data.partNumberId,
+        partNumber: data.partNumber,
+        productNameCn: data.productNameCn,
+        productNameEn: data.productNameEn,
+        specifications: data.specifications,
+        partType: data.partType,
+        category: data.category,
+        model: data.model,
+        drawingNumber: data.drawingNumber,
+        version: data.version,
+        unit: data.unit,
+        sourceType: data.sourceType,
+        manufacturer: data.manufacturer,
+        manufacturerNumber: data.manufacturerNumber,
+        lotControl: data.lotControl,
+        status: data.status,
+        remark: data.remark
       })
+    } else {
+      showApiError(res, 'custmat.companynumber.getFailed')
       dialogVisible.value = false
     }
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.companynumber.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.companynumber.getFailed'))
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
     editingId.value = null
+    nextTick(() => editFormRef.value?.clearValidate())
   }
 }
 
-// 删除
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('custmat.companynumber.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
+  } catch {
+    return
+  }
 
-    deletingId.value = row.partNumberId
-
-    const response = await post(
+  deletingId.value = row.partNumberId
+  try {
+    const res = await post(
       DELETE_COMPANY_NUMBER_API.DELETE_COMPANY_NUMBER,
       new URLSearchParams({ partNumberId: String(row.partNumberId) }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      FORM_URLENCODED
     )
 
-    if (isHandled(response)) return
+    if (isHandled(res)) return
 
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      getCompanyNumberList()
+    if (res?.code === 200) {
+      showMessage(res.message, 'success')
+      fetchCompanyNumberList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.companynumber.operationFailed')
     }
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage({
-        message: t('custmat.companynumber.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
+  } catch {
+    showMessage(t('custmat.companynumber.operationFailed'))
   } finally {
     deletingId.value = null
   }
 }
 
-// 提交表单
-const handleSubmit = async () => {
-  if (!formRef.value) return
+const handleSave = async () => {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  // 校验失败时 el-form 已在界面上标红，无需额外提示
+  if (!valid) return
 
+  submitLoading.value = true
   try {
-    await formRef.value.validate()
+    const api = isEdit.value
+      ? UPDATE_COMPANY_NUMBER_API.UPDATE_COMPANY_NUMBER
+      : INSERT_COMPANY_NUMBER_API.INSERT_COMPANY_NUMBER
+    const res = await post(api, {
+      partNumberId: editForm.partNumberId,
+      partNumber: editForm.partNumber,
+      productNameCn: editForm.productNameCn,
+      productNameEn: editForm.productNameEn,
+      specifications: editForm.specifications,
+      partType: editForm.partType,
+      category: editForm.category,
+      model: editForm.model,
+      drawingNumber: editForm.drawingNumber,
+      version: editForm.version,
+      unit: editForm.unit,
+      sourceType: editForm.sourceType,
+      manufacturer: editForm.manufacturer,
+      manufacturerNumber: editForm.manufacturerNumber,
+      lotControl: editForm.lotControl,
+      status: editForm.status,
+      remark: editForm.remark
+    })
 
-    submitLoading.value = true
+    if (isHandled(res)) return
 
-    const params = {
-      partNumberId: form.partNumberId,
-      partNumber: form.partNumber,
-      productNameCn: form.productNameCn,
-      productNameEn: form.productNameEn,
-      specifications: form.specifications,
-      partType: form.partType,
-      category: form.category,
-      model: form.model,
-      drawingNumber: form.drawingNumber,
-      version: form.version,
-      unit: form.unit,
-      sourceType: form.sourceType,
-      manufacturer: form.manufacturer,
-      manufacturerNumber: form.manufacturerNumber,
-      lotControl: form.lotControl,
-      status: form.status,
-      remark: form.remark
-    }
-
-    const api = isEdit.value ? UPDATE_COMPANY_NUMBER_API.UPDATE_COMPANY_NUMBER : INSERT_COMPANY_NUMBER_API.INSERT_COMPANY_NUMBER
-    const response = await post(api, params)
-
-    if (isHandled(response)) return
-
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
+    if (res?.code === 200) {
+      showMessage(res.message, 'success')
       dialogVisible.value = false
-      getCompanyNumberList()
+      fetchCompanyNumberList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.companynumber.operationFailed')
     }
-  } catch (error) {
-     if (error !== false) {
-       ElMessage({
-         message: t('custmat.companynumber.operationFailed'),
-         type: 'error',
-         plain: true,
-         showClose: true
-       })
-     }
-   } finally {
-     submitLoading.value = false
-   }
-}
-
-// 对话框关闭
-const handleDialogClose = () => {
-  resetForm()
-  if (formRef.value) {
-    formRef.value.clearValidate()
+  } catch {
+    showMessage(t('custmat.companynumber.operationFailed'))
+  } finally {
+    submitLoading.value = false
   }
 }
 
-// 打开导入弹窗
+const handleDialogClose = () => {
+  resetEditForm()
+  editFormRef.value?.clearValidate()
+}
+
 const handleOpenImport = () => {
   importFile.value = null
   importFileList.value = []
   importDialogVisible.value = true
 }
 
-// 导入弹窗关闭
 const handleImportDialogClose = () => {
   importFile.value = null
   importFileList.value = []
@@ -725,7 +687,6 @@ const handleImportFileExceed = (files) => {
   importFileList.value = [{ name: file.name, raw: file }]
 }
 
-// 移除已选文件
 const handleImportFileRemove = () => {
   importFile.value = null
   importFileList.value = []
@@ -735,89 +696,30 @@ const handleImportFileRemove = () => {
 const handleDownloadTemplate = async () => {
   templateLoading.value = true
   try {
-    const response = await postBlob(GET_COMPANY_NUMBER_TEMPLATE_API.GET_COMPANY_NUMBER_TEMPLATE)
-    const blob = response.data
-
-    if (!(blob instanceof Blob) || blob.size === 0) {
-      throw new Error(t('custmat.companynumber.downloadTemplateFailed'))
-    }
-
-    if (blob.type && blob.type.includes('application/json')) {
-      const text = await blob.text()
-      let message = t('custmat.companynumber.downloadTemplateFailed')
-      try {
-        const json = JSON.parse(text)
-        message = json?.message || message
-      } catch {
-        // ignore
-      }
-      throw new Error(message)
-    }
-
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '公司料号导入模板 CompanyNumberTemplate.xlsx'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const res = await postBlob(GET_COMPANY_NUMBER_TEMPLATE_API.GET_COMPANY_NUMBER_TEMPLATE)
+    await assertDownloadableBlob(res?.data, 'custmat.companynumber.downloadTemplateFailed')
+    downloadBlob(res.data, '公司料号导入模板 Company Number Import Template.xlsx')
   } catch (error) {
-    ElMessage({
-      message: error?.message || t('custmat.companynumber.downloadTemplateFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(error?.message || t('custmat.companynumber.downloadTemplateFailed'))
   } finally {
     templateLoading.value = false
   }
 }
 
-// 导出公司料号Excel（查询条件与分页列表一致，文件名由前端拼接）
+// 导出公司料号 Excel（查询条件与分页列表一致，文件名由前端拼接）
 const handleExport = async () => {
   exportLoading.value = true
   try {
-    const response = await postBlob(GET_COMPANY_NUMBER_EXCEL_API.GET_COMPANY_NUMBER_EXCEL, buildQueryParams())
-    const blob = response.data
-
-    if (!(blob instanceof Blob) || blob.size === 0) {
-      throw new Error(t('custmat.companynumber.exportFailed'))
-    }
-
-    if (blob.type && blob.type.includes('application/json')) {
-      const text = await blob.text()
-      let message = t('custmat.companynumber.exportFailed')
-      try {
-        const json = JSON.parse(text)
-        message = json?.message || message
-      } catch {
-        // ignore
-      }
-      throw new Error(message)
-    }
-
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '公司料号信息 CompanyNumber.xlsx'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const res = await postBlob(GET_COMPANY_NUMBER_EXCEL_API.GET_COMPANY_NUMBER_EXCEL, buildQueryParams())
+    await assertDownloadableBlob(res?.data, 'custmat.companynumber.exportFailed')
+    downloadBlob(res.data, '公司料号信息 CompanyNumber.xlsx')
   } catch (error) {
-    ElMessage({
-      message: error?.message || t('custmat.companynumber.exportFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+    showMessage(error?.message || t('custmat.companynumber.exportFailed'))
   } finally {
     exportLoading.value = false
   }
 }
 
-// 提交导入
 const handleImportSubmit = async () => {
   if (!importFile.value) return
 
@@ -825,13 +727,8 @@ const handleImportSubmit = async () => {
   // （表现为上传时 net::ERR_UPLOAD_FILE_CHANGED），这里提前尝试读取以给出明确提示
   try {
     await importFile.value.slice(0, 1).arrayBuffer()
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.companynumber.fileChangedError'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.companynumber.fileChangedError'))
     importFile.value = null
     importFileList.value = []
     return
@@ -842,42 +739,30 @@ const handleImportSubmit = async () => {
     const formData = new FormData()
     formData.append('file', importFile.value)
 
-    const response = await post(IMPORT_COMPANY_NUMBER_API.IMPORT_COMPANY_NUMBER, formData)
+    const res = await post(IMPORT_COMPANY_NUMBER_API.IMPORT_COMPANY_NUMBER, formData)
 
-    if (isHandled(response)) return
+    if (isHandled(res)) return
 
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message || t('common.success'),
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
+    if (res?.code === 200) {
+      showMessage(res.message || t('common.success'), 'success')
       importDialogVisible.value = false
-      getCompanyNumberList()
+      fetchCompanyNumberList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.companynumber.operationFailed')
     }
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.companynumber.operationFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.companynumber.operationFailed'))
   } finally {
     importLoading.value = false
   }
 }
 
-// 组件挂载时获取数据
 onMounted(() => {
-  getCompanyNumberList()
+  fetchCompanyNumberList()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
 

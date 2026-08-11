@@ -1320,8 +1320,8 @@ export default {
       confirmDeleteCurrency: 'Are you sure you want to delete this currency?',
       getCurrencyPagesFailed: 'Failed to load currency list',
       getCurrencyEntityFailed: 'Failed to load currency details',
-      searchFormLabel: 'Currency search form',
-      editFormLabel: 'Currency edit form',
+      ariaFilterLabel: 'Currency search form',
+      ariaEditLabel: 'Currency edit form',
       title: 'Currency Information Management',
       index: 'Index',
       currencyCode: 'Code',
@@ -1345,8 +1345,8 @@ export default {
     exchangeRate: {
       confirmDeleteExchangeRate: 'Are you sure you want to delete this exchange rate?',
       getExchangeRatePagesFailed: 'Failed to load exchange rate list',
-      searchFormLabel: 'Exchange rate search form',
-      editFormLabel: 'Exchange rate edit form',
+      ariaFilterLabel: 'Exchange rate search form',
+      ariaEditLabel: 'Exchange rate edit form',
       title: 'Exchange Rate Information Management',
       index: 'Index',
       currencyCode: 'Base Currency',
@@ -1373,8 +1373,8 @@ export default {
     
     // User Information Management
     userInfo: {
-      searchFormLabel: 'User search form',
-      editFormLabel: 'User edit form',
+      ariaFilterLabel: 'User search form',
+      ariaEditLabel: 'User edit form',
       title: 'User Information Management',
       userNo: 'No.',
       userName: 'User Name',
@@ -1475,9 +1475,9 @@ export default {
     
     // User Agent Management
     userAgent: {
-      searchFormLabel: 'User agent search form',
-      agentTimeFormLabel: 'Agent period form',
-      userSelectFormLabel: 'Agent selection search form',
+      ariaFilterLabel: 'User agent search form',
+      ariaAgentTimeLabel: 'Agent period form',
+      ariaUserSelectLabel: 'Agent selection search form',
       title: 'User Agent Management',
       configureAgent: 'Configure Agent',
       viewAgentList: 'Agent',
@@ -1528,8 +1528,8 @@ export default {
     },
 
     departmentInfo: {
-      searchFormLabel: 'Department search form',
-      editFormLabel: 'Department edit form',
+      ariaFilterLabel: 'Department search form',
+      ariaEditLabel: 'Department edit form',
       title: 'Department Information Management',
       index: 'Index',
       departmentCode: 'Dept Code',
@@ -1584,8 +1584,8 @@ export default {
       saveFailed: 'Save failed',
       deleteSuccess: 'Deleted successfully',
       deleteFailed: 'Delete failed',
-      searchFormLabel: 'Department level search form',
-      editFormLabel: 'Department level edit form',
+      ariaFilterLabel: 'Department level search form',
+      ariaEditLabel: 'Department level edit form',
       index: 'Index',
       departmentLevelCode: 'Level Code',
       departmentLevelName: 'Level Name',
@@ -1604,7 +1604,7 @@ export default {
       pleaseInputSortOrder: 'Please enter sort order'
     },
     positionInfo: {
-      editFormLabel: 'Position information form',
+      ariaEditLabel: 'Position information form',
       index: 'Index',
       positionNo: 'Level No.',
       positionNameCn: 'Name（Cn）',
@@ -1628,8 +1628,8 @@ export default {
       getDictionaryEntityFailed: 'Failed to load dictionary details',
       getModuleDropdownFailed: 'Failed to load module list',
       getDicTypeDropdownFailed: 'Failed to load dictionary types',
-      searchFormLabel: 'Dictionary search form',
-      editFormLabel: 'Dictionary edit form',
+      ariaFilterLabel: 'Dictionary search form',
+      ariaEditLabel: 'Dictionary edit form',
       title: 'Dictionary Information Management',
       index: 'Index',
       dicType: 'Dic Type',
@@ -1682,8 +1682,8 @@ export default {
       fetchModuleListFail: 'Failed to load module list',
       fetchModuleDropdownFail: 'Failed to load module dropdown',
       fetchMenuTreeFail: 'Failed to load menu tree',
-      searchFormLabel: 'Role search form',
-      editFormLabel: 'Role edit form',
+      ariaFilterLabel: 'Role search form',
+      ariaEditLabel: 'Role edit form',
       roleCode: 'Role Code',
       roleName: 'Role Name',
       roleNameCn: 'Name (Ch)',
@@ -1712,8 +1712,8 @@ export default {
     },
     // Module
     module: {
-      searchFormLabel: 'Module search form',
-      editFormLabel: 'Module edit form',
+      ariaFilterLabel: 'Module search form',
+      ariaEditLabel: 'Module edit form',
       title: 'Module Management',
       moduleCode: 'Module Code',
       moduleName: 'Module Name',
@@ -1753,8 +1753,8 @@ export default {
     },
     // Primary Menu
     pmenu: {
-      searchFormLabel: 'Primary menu search form',
-      editFormLabel: 'Primary menu edit form',
+      ariaFilterLabel: 'Primary menu search form',
+      ariaEditLabel: 'Primary menu edit form',
       module: 'Module',
       menuCode: 'Menu Code',
       menuName: 'Menu Name',
@@ -1787,8 +1787,8 @@ export default {
     },
     // Secondary Menu
     smenu: {
-      searchFormLabel: 'Secondary menu search form',
-      editFormLabel: 'Secondary menu edit form',
+      ariaFilterLabel: 'Secondary menu search form',
+      ariaEditLabel: 'Secondary menu edit form',
       title: 'Secondary Menu Management',
       smenuCode: 'Menu Code',
       smenuName: 'Menu Name',
@@ -1830,7 +1830,7 @@ export default {
     },
     // Personal
     personalInfo: {
-      editFormLabel: 'Personal profile form',
+      ariaEditLabel: 'Personal profile form',
       title: 'Personal Profile',
       userNo: 'No.',
       loginNo: 'Login Account',
@@ -1980,7 +1980,7 @@ export default {
     },
 
     userloginlog: {
-      searchFormLabel: 'User login log search form',
+      ariaFilterLabel: 'User login log search form',
       title: 'User Operation Log',
       index: 'Index',
       userNo: 'No.',
@@ -2011,8 +2011,8 @@ export default {
     },
 
     userLabor: {
-      searchFormLabel: 'Labor type search form',
-      editFormLabel: 'Labor type edit form',
+      ariaFilterLabel: 'Labor type search form',
+      ariaEditLabel: 'Labor type edit form',
       title: 'Career Management',
       index: 'Index',
       laborName: 'Career Name',
@@ -2045,8 +2045,8 @@ export default {
       }
     },
     nationalityInfo: {
-      searchFormLabel: 'Nationality search form',
-      editFormLabel: 'Nationality edit form',
+      ariaFilterLabel: 'Nationality search form',
+      ariaEditLabel: 'Nationality edit form',
       title: 'Nationality Information',
       index: 'Index',
       nationNameCn: 'Name（Cn）',
@@ -2065,9 +2065,9 @@ export default {
       }
     },
     userPartTime: {
-      searchFormLabel: 'Part-time search form',
-      editFormLabel: 'Part-time edit form',
-      userSelectFormLabel: 'Part-time user selection search form',
+      ariaFilterLabel: 'Part-time search form',
+      ariaEditLabel: 'Part-time edit form',
+      ariaUserSelectLabel: 'Part-time user selection search form',
       title: 'User Part-time Management',
       mergedDialogTitle: 'User Part-time Management',
       department: 'Department',
@@ -2129,6 +2129,8 @@ export default {
   // Customer Info Management
   custmat: {
     customer: {
+      ariaFilterLabel: 'Customer Info Filter',
+      ariaEditLabel: 'Customer Info Edit',
       index: 'Index',
       customerCode: 'Customer Code',
       customerName: 'Customer Name',

@@ -3,7 +3,7 @@
     <div class="conventional-table-container">
       <el-card class="conventional-card">
         <!-- 过滤条件 -->
-        <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userPartTime.searchFormLabel')">
+        <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userPartTime.ariaFilterLabel')">
           <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
             <el-tree-select v-model="filters.departmentId"
                             :data="departmentOptions"
@@ -117,7 +117,7 @@
                    label-width="auto"
                    class="parttime-form"
                    role="form"
-                   :aria-label="$t('systembasicmgmt.userPartTime.editFormLabel')">
+                   :aria-label="$t('systembasicmgmt.userPartTime.ariaEditLabel')">
             <div class="parttime-form-row">
               <el-form-item :label="$t('systembasicmgmt.userPartTime.partTimeDepartment')" prop="partTimeDeptId">
                 <el-tree-select v-model="editForm.partTimeDeptId"
@@ -174,7 +174,7 @@
                    class="conventional-filter-form"
                    style="margin-top: 10px"
                    role="search"
-                   :aria-label="$t('systembasicmgmt.userPartTime.userSelectFormLabel')">
+                   :aria-label="$t('systembasicmgmt.userPartTime.ariaUserSelectLabel')">
             <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
               <el-tree-select v-model="userSelectFilters.departmentId"
                               :data="departmentOptions"

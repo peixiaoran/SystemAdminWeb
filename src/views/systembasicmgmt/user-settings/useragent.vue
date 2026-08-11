@@ -2,7 +2,7 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <!-- 过滤条件 -->
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userAgent.searchFormLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userAgent.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
           <el-tree-select v-model="filters.departmentId"
                           :data="departmentOptions"
@@ -156,7 +156,7 @@
                  :inline="true"
                  class="conventional-filter-form"
                  role="form"
-                 :aria-label="$t('systembasicmgmt.userAgent.agentTimeFormLabel')">
+                 :aria-label="$t('systembasicmgmt.userAgent.ariaAgentTimeLabel')">
           <el-form-item :label="$t('systembasicmgmt.userAgent.startTime')" prop="startTime">
             <el-date-picker v-model="agentTimeRange.startTime"
                             type="datetime"
@@ -187,7 +187,7 @@
                  class="conventional-filter-form"
                  style="margin-top: 10px"
                  role="search"
-                 :aria-label="$t('systembasicmgmt.userAgent.userSelectFormLabel')">
+                 :aria-label="$t('systembasicmgmt.userAgent.ariaUserSelectLabel')">
           <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
             <el-tree-select v-model="userSelectFilters.departmentId"
                             :data="departmentOptions"

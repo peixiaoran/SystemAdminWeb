@@ -1357,8 +1357,8 @@ export default {
 
      // 部门信息
      departmentInfo: {
-       searchFormLabel: '部门搜索表单',
-       editFormLabel: '部门编辑表单',
+       ariaFilterLabel: '部门搜索表单',
+       ariaEditLabel: '部门编辑表单',
       title: '部门信息',
       departmentCode: '部门编码',
       departmentName: '部门名称',
@@ -1407,8 +1407,8 @@ export default {
     },
     // 用户信息
     userInfo: {
-      searchFormLabel: '用户搜索表单',
-      editFormLabel: '用户编辑表单',
+      ariaFilterLabel: '用户搜索表单',
+      ariaEditLabel: '用户编辑表单',
       title: '用户信息',
       userNo: '用户工号',
       userName: '用户姓名',
@@ -1509,8 +1509,8 @@ export default {
       }
     },
     nationalityInfo: {
-      searchFormLabel: '国籍搜索表单',
-      editFormLabel: '国籍编辑表单',
+      ariaFilterLabel: '国籍搜索表单',
+      ariaEditLabel: '国籍编辑表单',
       title: '国籍信息维护',
       index: '序号',
       nationNameCn: '中文名称',
@@ -1530,9 +1530,9 @@ export default {
     },
     // 用户代理
     userAgent: {
-      searchFormLabel: '用户代理搜索表单',
-      agentTimeFormLabel: '代理时间设置表单',
-      userSelectFormLabel: '代理人选择搜索表单',
+      ariaFilterLabel: '用户代理搜索表单',
+      ariaAgentTimeLabel: '代理时间设置表单',
+      ariaUserSelectLabel: '代理人选择搜索表单',
       title: '用户代理管理',
       configureAgent: '配置代理人',
       viewAgentList: '代理了谁',
@@ -1585,7 +1585,7 @@ export default {
     },
     // 职级信息
     positionInfo: {
-      editFormLabel: '职级信息表单',
+      ariaEditLabel: '职级信息表单',
       title: '职级信息维护',
       positionNo: '职级编号',
       positionName: '职级名称',
@@ -1604,7 +1604,7 @@ export default {
     },
     // 个人信息
     personalInfo: {
-      editFormLabel: '个人信息编辑表单',
+      ariaEditLabel: '个人信息编辑表单',
       title: '个人信息管理',
       userNo: '用户工号',
       loginNo: '登录账号',
@@ -1677,8 +1677,8 @@ export default {
 
     // 模块管理
     module: {
-      searchFormLabel: '模块搜索表单',
-      editFormLabel: '模块编辑表单',
+      ariaFilterLabel: '模块搜索表单',
+      ariaEditLabel: '模块编辑表单',
       title: '模块信息维护',
       moduleCode: '模块编码',
       moduleName: '模块名称',
@@ -1715,8 +1715,8 @@ export default {
     
     // 一级菜单维护
     pmenu: {
-      searchFormLabel: '一级菜单搜索表单',
-      editFormLabel: '一级菜单编辑表单',
+      ariaFilterLabel: '一级菜单搜索表单',
+      ariaEditLabel: '一级菜单编辑表单',
       title: '一级菜单维护',
       module: '所属模块',
       menuCode: '菜单编码',
@@ -1752,8 +1752,8 @@ export default {
     
     // 二级菜单管理
     smenu: {
-      searchFormLabel: '二级菜单搜索表单',
-      editFormLabel: '二级菜单编辑表单',
+      ariaFilterLabel: '二级菜单搜索表单',
+      ariaEditLabel: '二级菜单编辑表单',
       title: '二级菜单管理',
       smenuCode: '菜单编码',
       smenuName: '菜单名称',
@@ -1808,8 +1808,8 @@ export default {
     
     // 角色信息维护
     role: {
-      searchFormLabel: '角色搜索表单',
-      editFormLabel: '角色编辑表单',
+      ariaFilterLabel: '角色搜索表单',
+      ariaEditLabel: '角色编辑表单',
       title: '角色信息维护',
       roleCode: '角色编码',
       roleName: '角色名称',
@@ -1852,8 +1852,8 @@ export default {
       getDictionaryEntityFailed: '获取字典信息失败',
       getModuleDropdownFailed: '获取模块下拉列表失败',
       getDicTypeDropdownFailed: '获取字典类型下拉列表失败',
-      searchFormLabel: '字典搜索表单',
-      editFormLabel: '字典编辑表单',
+      ariaFilterLabel: '字典搜索表单',
+      ariaEditLabel: '字典编辑表单',
       title: '字典信息维护',
       index: '序号',
       dicType: '字典类型',
@@ -1887,8 +1887,8 @@ export default {
        confirmDeleteCurrency: '确定要删除该币别吗？',
        getCurrencyPagesFailed: '获取币别列表失败',
        getCurrencyEntityFailed: '获取币别信息失败',
-       searchFormLabel: '币别搜索表单',
-       editFormLabel: '币别编辑表单',
+       ariaFilterLabel: '币别搜索表单',
+       ariaEditLabel: '币别编辑表单',
        title: '币别信息维护',
        index: '序号',
        currencyCode: '币别编码',
@@ -1914,8 +1914,8 @@ export default {
       saveFailed: '保存失败',
       deleteSuccess: '删除成功',
       deleteFailed: '删除失败',
-      searchFormLabel: '部门级别搜索表单',
-      editFormLabel: '部门级别编辑表单',
+      ariaFilterLabel: '部门级别搜索表单',
+      ariaEditLabel: '部门级别编辑表单',
       title: '部门级别管理',
       index: '序号',
       departmentLevelCode: '级别编号',
@@ -1941,8 +1941,8 @@ export default {
     exchangeRate: {
       confirmDeleteExchangeRate: '确定要删除该汇率吗？',
       getExchangeRatePagesFailed: '获取汇率列表失败',
-      searchFormLabel: '汇率搜索表单',
-      editFormLabel: '汇率编辑表单',
+      ariaFilterLabel: '汇率搜索表单',
+      ariaEditLabel: '汇率编辑表单',
       title: '汇率信息维护',
       index: '序号',
       currencyCode: '本位币别',
@@ -1968,7 +1968,7 @@ export default {
     },
 
     userloginlog: {
-      searchFormLabel: '用户操作日志搜索表单',
+      ariaFilterLabel: '用户操作日志搜索表单',
       title: '用户操作日志',
       index: '序号',
       userNo: '用户工号',
@@ -1999,8 +1999,8 @@ export default {
     },
 
     userLabor: {
-      searchFormLabel: '用户职业搜索表单',
-      editFormLabel: '用户职业编辑表单',
+      ariaFilterLabel: '用户职业搜索表单',
+      ariaEditLabel: '用户职业编辑表单',
       title: '用户职业管理',
       index: '序号',
       laborName: '职业名称',
@@ -2034,9 +2034,9 @@ export default {
     },
 
     userPartTime: {
-      searchFormLabel: '用户兼任搜索表单',
-      editFormLabel: '兼任信息编辑表单',
-      userSelectFormLabel: '兼任人员选择搜索表单',
+      ariaFilterLabel: '用户兼任搜索表单',
+      ariaEditLabel: '兼任信息编辑表单',
+      ariaUserSelectLabel: '兼任人员选择搜索表单',
       title: '用户兼任维护',
       mergedDialogTitle: '用户兼任维护',
       department: '部门',
@@ -2095,6 +2095,8 @@ export default {
   // 客户信息管理
   custmat: {
     customer: {
+      ariaFilterLabel: '客户信息筛选',
+      ariaEditLabel: '客户信息编辑',
       index: '序号',
       customerCode: '客户编码',
       customerName: '客户名称',
@@ -2155,6 +2157,7 @@ export default {
       exportFailed: '导出失败',
       downloadTemplate: '下载模板',
       downloadTemplateFailed: '下载模板失败',
+      templateFileName: '公司料号导入模板',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
@@ -2186,6 +2189,7 @@ export default {
       exportFailed: '导出失败',
       downloadTemplate: '下载模板',
       downloadTemplateFailed: '下载模板失败',
+      templateFileName: '客户料号导入模板',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'

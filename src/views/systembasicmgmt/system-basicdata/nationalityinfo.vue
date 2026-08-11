@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.nationalityInfo.searchFormLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.nationalityInfo.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.nationalityInfo.filter.nationalityName')">
           <el-input v-model="filters.nationalityName"
                     style="width: 220px"
@@ -69,7 +69,7 @@
                label-width="120px"
                class="dialog-form"
                role="form"
-               :aria-label="$t('systembasicmgmt.nationalityInfo.editFormLabel')">
+               :aria-label="$t('systembasicmgmt.nationalityInfo.ariaEditLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.nationalityInfo.nationNameCn')" prop="nationNameCn">
             <el-input v-model="editForm.nationNameCn"

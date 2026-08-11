@@ -8,7 +8,7 @@
                class="personal-info-form"
                v-loading="loading"
                role="form"
-               :aria-label="$t('systembasicmgmt.personalInfo.editFormLabel')">
+               :aria-label="$t('systembasicmgmt.personalInfo.ariaEditLabel')">
         <!-- 第一行：基本信息 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.userNo')" prop="userNo">

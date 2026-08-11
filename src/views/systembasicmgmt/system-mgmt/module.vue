@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.module.searchFormLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.module.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.module.filter.moduleCode')">
           <el-input v-model="filters.moduleCode"
                     style="width: 220px"
@@ -76,7 +76,7 @@
                label-width="120px"
                class="dialog-form"
                role="form"
-               :aria-label="$t('systembasicmgmt.module.editFormLabel')">
+               :aria-label="$t('systembasicmgmt.module.ariaEditLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
             <el-input v-model="editForm.moduleCode"

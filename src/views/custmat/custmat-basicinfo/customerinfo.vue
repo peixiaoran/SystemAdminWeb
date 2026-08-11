@@ -1,22 +1,18 @@
-﻿<template>
+<template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="客户信息筛选">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.customer.ariaFilterLabel')">
         <el-form-item :label="$t('custmat.customer.customerCode')">
-          <el-input
-            v-model="searchForm.customerCode"
-            :placeholder="$t('custmat.customer.pleaseInputCustomerCode')"
-            clearable
-            style="width: 200px"
-          />
+          <el-input v-model="filters.customerCode"
+                    style="width: 200px"
+                    :placeholder="$t('custmat.customer.pleaseInputCustomerCode')"
+                    clearable />
         </el-form-item>
         <el-form-item :label="$t('custmat.customer.customerName')">
-          <el-input
-            v-model="searchForm.customerName"
-            :placeholder="$t('custmat.customer.pleaseInputCustomerName')"
-            clearable
-            style="width: 200px"
-          />
+          <el-input v-model="filters.customerName"
+                    style="width: 200px"
+                    :placeholder="$t('custmat.customer.pleaseInputCustomerName')"
+                    clearable />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -35,14 +31,14 @@
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table
-          :data="customerList"
-          border
-          stripe
-          :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading"
-          class="conventional-table"
-        >
+        <el-table :data="customerList"
+                  border
+                  stripe
+                  :header-cell-style="{ background: '#f5f7fa' }"
+                  v-loading="loading"
+                  class="conventional-table"
+                  :empty-text="$t('common.noData')"
+                  >
           <el-table-column type="index" :label="$t('custmat.customer.index')" width="70" align="center" fixed />
           <el-table-column prop="customerCode" :label="$t('custmat.customer.customerCode')" align="left" min-width="160" />
           <el-table-column prop="customerNameCn" :label="$t('custmat.customer.customerNameCn')" align="left" min-width="200" />
@@ -61,91 +57,78 @@
         </el-table>
       </div>
 
+      <!-- 分页 -->
       <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pagination.pageIndex"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.totalCount"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <el-pagination v-model:current-page="pagination.pageIndex"
+                       v-model:page-size="pagination.pageSize"
+                       :page-sizes="[10, 20, 50, 100]"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pagination.totalCount"
+                       @size-change="handleSizeChange"
+                       @current-change="handlePageChange" />
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? $t('custmat.customer.editCustomer') : $t('custmat.customer.addCustomer')"
-      width="50%"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      :modal-append-to-body="true"
-      :lock-scroll="true"
-      @close="handleDialogClose"
-    >
+    <el-dialog v-model="dialogVisible"
+               :title="isEdit ? $t('custmat.customer.editCustomer') : $t('custmat.customer.addCustomer')"
+               width="50%"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="handleDialogClose">
       <div v-loading="dialogLoading">
-        <el-form
-          :inline="true"
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          label-width="100px"
-          class="dialog-form"
-          role="form"
-          aria-label="客户信息编辑"
-        >
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="100px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('custmat.customer.ariaEditLabel')">
           <div class="form-row">
             <el-form-item :label="$t('custmat.customer.customerCode')" prop="customerCode">
-              <el-input
-                v-model="form.customerCode"
-                :placeholder="$t('custmat.customer.pleaseInputCustomerCode')"
-                style="width:100%"
-              />
+              <el-input v-model="editForm.customerCode"
+                        style="width:100%"
+                        :placeholder="$t('custmat.customer.pleaseInputCustomerCode')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.customer.customerNameCn')" prop="customerNameCn">
-              <el-input
-                v-model="form.customerNameCn"
-                :placeholder="$t('custmat.customer.pleaseInputCustomerNameCn')"
-                style="width:100%"
-              />
+              <el-input v-model="editForm.customerNameCn"
+                        style="width:100%"
+                        :placeholder="$t('custmat.customer.pleaseInputCustomerNameCn')" />
             </el-form-item>
           </div>
           <div class="form-row">
             <el-form-item :label="$t('custmat.customer.customerNameEn')" prop="customerNameEn">
-              <el-input
-                v-model="form.customerNameEn"
-                :placeholder="$t('custmat.customer.pleaseInputCustomerNameEn')"
-                style="width:100%"
-              />
+              <el-input v-model="editForm.customerNameEn"
+                        style="width:100%"
+                        :placeholder="$t('custmat.customer.pleaseInputCustomerNameEn')" />
             </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('custmat.customer.customerDescription')" prop="description">
-              <el-input
-                v-model="form.description"
-                :placeholder="$t('custmat.customer.pleaseInputCustomerDescription')"
-                style="width:100%"
-                type="textarea"
-                :rows="3"
-              />
+              <el-input v-model="editForm.description"
+                        style="width:100%"
+                        type="textarea"
+                        :rows="3"
+                        :placeholder="$t('custmat.customer.pleaseInputCustomerDescription')" />
             </el-form-item>
           </div>
         </el-form>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { post, isHandled } from '@/utils/request'
 import {
   GET_CUSTOMER_LIST_API,
@@ -153,39 +136,39 @@ import {
   INSERT_CUSTOMER_API,
   UPDATE_CUSTOMER_API,
   DELETE_CUSTOMER_API
-} from '@/config/api/custmat/custmat-basicinfo/customerinfo.js'
-import { useI18n } from 'vue-i18n'
-import { debounce, PERFORMANCE_CONFIG } from '@/utils/performance'
+} from '@/config/api/custmat/custmat-basicinfo/customerinfo'
 
-// 使用i18n
 const { t } = useI18n()
 
-// 响应式数据
+const DEBOUNCE_MS = 300
+let searchTimer = null
+
+/** 实体查询/删除接口按 form-urlencoded 提交 */
+const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+
+const customerList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editingId = ref(null)
 const deletingId = ref(null)
-const customerList = ref([])
-const dialogVisible = ref(false)
-const isEdit = ref(false)
-const formRef = ref(null)
+const editFormRef = ref(null)
 
-// 搜索表单
-const searchForm = reactive({
-  customerCode: '',
-  customerName: ''
-})
-
-// 分页信息
 const pagination = reactive({
   pageIndex: 1,
   pageSize: 20,
   totalCount: 0
 })
 
-// 表单数据
-const form = reactive({
+const filters = reactive({
+  customerCode: '',
+  customerName: ''
+})
+
+const dialogVisible = ref(false)
+const isEdit = ref(false)
+
+const editForm = reactive({
   customerId: '',
   customerCode: '',
   customerNameCn: '',
@@ -193,8 +176,7 @@ const form = reactive({
   description: ''
 })
 
-// 表单验证规则
-const rules = {
+const formRules = {
   customerCode: [
     { required: true, message: () => t('custmat.customer.pleaseInputCustomerCode'), trigger: 'blur' }
   ],
@@ -206,106 +188,89 @@ const rules = {
   ]
 }
 
-// 获取客户列表
-const getCustomerList = async () => {
+const showMessage = (message, type = 'error') => {
+  ElMessage({ message, type, plain: true, showClose: true })
+}
+
+/** 业务码失败提示：400 视为告警，其余视为错误 */
+const showApiError = (res, fallbackKey) => {
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
+const fetchCustomerList = async () => {
   loading.value = true
   try {
-    const params = {
-      customerCode: searchForm.customerCode,
-      customerName: searchForm.customerName,
+    const res = await post(GET_CUSTOMER_LIST_API.GET_CUSTOMER_LIST, {
+      customerCode: filters.customerCode,
+      customerName: filters.customerName,
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
       totalCount: pagination.totalCount
-    }
+    })
 
-    const response = await post(GET_CUSTOMER_LIST_API.GET_CUSTOMER_LIST, params)
-
-    if (isHandled(response)) {
+    if (isHandled(res)) {
       customerList.value = []
       return
     }
 
-    if (response.code === 200) {
-      customerList.value = response.data || []
-      pagination.totalCount = response.totalCount || 0
+    if (res?.code === 200) {
+      customerList.value = res.data || []
+      pagination.totalCount = res.totalCount || 0
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.customer.getFailed')
       customerList.value = []
     }
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.customer.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.customer.getFailed'))
     customerList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 使用通用防抖工具
-const debouncedGetCustomerList = debounce(() => {
-  getCustomerList()
-}, PERFORMANCE_CONFIG.DEBOUNCE_DELAY)
-
-// 处理搜索操作（带防抖）
-const handleSearch = () => {
-  pagination.pageIndex = 1
+const scheduleSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
-  debouncedGetCustomerList()
+  searchTimer = setTimeout(() => {
+    pagination.pageIndex = 1
+    fetchCustomerList()
+  }, DEBOUNCE_MS)
 }
 
-// 重置搜索
-const handleReset = () => {
-  searchForm.customerCode = ''
-  searchForm.customerName = ''
-  loading.value = true // 立即显示加载状态
-  pagination.pageIndex = 1
-  getCustomerList()
-}
-
-// 分页大小改变
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
-  pagination.pageIndex = 1
-  getCustomerList()
-}
-
-// 当前页改变
-const handleCurrentChange = (val) => {
-  pagination.pageIndex = val
-  getCustomerList()
-}
-
-// 重置表单
-const resetForm = () => {
-  form.customerId = ''
-  form.customerCode = ''
-  form.customerNameCn = ''
-  form.customerNameEn = ''
-  form.description = ''
-}
-
-// 新增
-const handleAdd = () => {
-  resetForm()
-  isEdit.value = false
-  dialogVisible.value = true
-  nextTick(() => {
-    if (formRef.value) {
-      formRef.value.clearValidate()
-    }
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    customerId: '',
+    customerCode: '',
+    customerNameCn: '',
+    customerNameEn: '',
+    description: ''
   })
 }
 
-// 编辑
+const handleSearch = () => scheduleSearch()
+
+const handleReset = () => {
+  filters.customerCode = ''
+  filters.customerName = ''
+  scheduleSearch()
+}
+
+const handleSizeChange = () => {
+  pagination.pageIndex = 1
+  fetchCustomerList()
+}
+
+const handlePageChange = () => {
+  fetchCustomerList()
+}
+
+const handleAdd = () => {
+  resetEditForm()
+  isEdit.value = false
+  dialogVisible.value = true
+  nextTick(() => editFormRef.value?.clearValidate())
+}
+
 const handleEdit = async (row) => {
   editingId.value = row.customerId
   dialogLoading.value = true
@@ -313,164 +278,116 @@ const handleEdit = async (row) => {
   isEdit.value = true
 
   try {
-    const response = await post(
+    const res = await post(
       GET_CUSTOMER_ENTITY_API.GET_CUSTOMER_ENTITY,
       new URLSearchParams({ customerId: String(row.customerId) }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      FORM_URLENCODED
     )
 
-    if (isHandled(response)) {
+    if (isHandled(res)) {
       dialogVisible.value = false
       return
     }
 
-    if (response.code === 200) {
-      const data = response.data
-      form.customerId = data.customerId
-      form.customerCode = data.customerCode
-      form.customerNameCn = data.customerNameCn
-      form.customerNameEn = data.customerNameEn
-      form.description = data.description
-    } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
+    if (res?.code === 200) {
+      Object.assign(editForm, {
+        customerId: res.data.customerId,
+        customerCode: res.data.customerCode,
+        customerNameCn: res.data.customerNameCn,
+        customerNameEn: res.data.customerNameEn,
+        description: res.data.description
       })
+    } else {
+      showApiError(res, 'custmat.customer.getFailed')
       dialogVisible.value = false
     }
-  } catch (error) {
-    ElMessage({
-      message: t('custmat.customer.getFailed'),
-      type: 'error',
-      plain: true,
-      showClose: true
-    })
+  } catch {
+    showMessage(t('custmat.customer.getFailed'))
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
     editingId.value = null
+    nextTick(() => editFormRef.value?.clearValidate())
   }
 }
 
-// 删除
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
       t('custmat.customer.deleteConfirm'),
       t('common.tip'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
+  } catch {
+    return
+  }
 
-    deletingId.value = row.customerId
-
-    const response = await post(
+  deletingId.value = row.customerId
+  try {
+    const res = await post(
       DELETE_CUSTOMER_API.DELETE_CUSTOMER,
       new URLSearchParams({ customerId: String(row.customerId) }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      FORM_URLENCODED
     )
 
-    if (isHandled(response)) return
+    if (isHandled(res)) return
 
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
-      getCustomerList()
+    if (res?.code === 200) {
+      showMessage(res.message, 'success')
+      fetchCustomerList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.customer.operationFailed')
     }
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage({
-        message: t('custmat.customer.operationFailed'),
-        type: 'error',
-        plain: true,
-        showClose: true
-      })
-    }
+  } catch {
+    showMessage(t('custmat.customer.operationFailed'))
   } finally {
     deletingId.value = null
   }
 }
 
-// 提交表单
-const handleSubmit = async () => {
-  if (!formRef.value) return
+const handleSave = async () => {
+  const valid = await editFormRef.value?.validate().catch(() => false)
+  // 校验失败时 el-form 已在界面上标红，无需额外提示
+  if (!valid) return
 
+  submitLoading.value = true
   try {
-    await formRef.value.validate()
-
-    submitLoading.value = true
-
-    const params = {
-      customerId: form.customerId,
-      customerCode: form.customerCode,
-      customerNameCn: form.customerNameCn,
-      customerNameEn: form.customerNameEn,
-      description: form.description
-    }
-
     const api = isEdit.value ? UPDATE_CUSTOMER_API.UPDATE_CUSTOMER : INSERT_CUSTOMER_API.INSERT_CUSTOMER
-    const response = await post(api, params)
+    const res = await post(api, {
+      customerId: editForm.customerId,
+      customerCode: editForm.customerCode,
+      customerNameCn: editForm.customerNameCn,
+      customerNameEn: editForm.customerNameEn,
+      description: editForm.description
+    })
 
-    if (isHandled(response)) return
+    if (isHandled(res)) return
 
-    if (response.code === 200) {
-      ElMessage({
-        message: response.message,
-        type: 'success',
-        plain: true,
-        showClose: true
-      })
+    if (res?.code === 200) {
+      showMessage(res.message, 'success')
       dialogVisible.value = false
-      getCustomerList()
+      fetchCustomerList()
     } else {
-      ElMessage({
-        message: response.message,
-        type: Number(response.code) === 400 ? 'warning' : 'error',
-        plain: true,
-        showClose: true
-      })
+      showApiError(res, 'custmat.customer.operationFailed')
     }
-  } catch (error) {
-     if (error !== false) {
-       ElMessage({
-         message: t('custmat.customer.operationFailed'),
-         type: 'error',
-         plain: true,
-         showClose: true
-       })
-     }
-   } finally {
-     submitLoading.value = false
-   }
-}
-
-// 对话框关闭
-const handleDialogClose = () => {
-  resetForm()
-  if (formRef.value) {
-    formRef.value.clearValidate()
+  } catch {
+    showMessage(t('custmat.customer.operationFailed'))
+  } finally {
+    submitLoading.value = false
   }
 }
 
-// 组件挂载时获取数据
+const handleDialogClose = () => {
+  resetEditForm()
+  editFormRef.value?.clearValidate()
+}
+
 onMounted(() => {
-  getCustomerList()
+  fetchCustomerList()
+})
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
 

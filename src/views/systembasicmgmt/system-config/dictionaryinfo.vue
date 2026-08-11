@@ -2,7 +2,7 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <!-- 过滤条件 -->
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.dictionaryInfo.searchFormLabel')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.dictionaryInfo.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.module')">
           <el-select v-model="filters.moduleId"
                      style="width: 220px"
@@ -101,7 +101,7 @@
                label-width="100px"
                class="dialog-form"
                role="form"
-               :aria-label="$t('systembasicmgmt.dictionaryInfo.editFormLabel')">
+               :aria-label="$t('systembasicmgmt.dictionaryInfo.ariaEditLabel')">
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.module')" prop="moduleId">
             <el-select v-model="editForm.moduleId"
