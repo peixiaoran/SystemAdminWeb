@@ -671,12 +671,23 @@ const pmenuRoutes = [
               }
             },
             {
-              path: 'partnumber',
-              name: 'PartNumber',
-              component: () => import('../views/custmat/custmat-basicinfo/partnumber.vue'),
+              path: 'companynumber',
+              name: 'CompanyNumber',
+              component: () => import('../views/custmat/custmat-basicinfo/companynumber.vue'),
               meta: {
-                title: 'route.custmatPartNumber',
+                title: 'route.custmatCompanyNumber',
                 icon: 'Cpu',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'customernumber',
+              name: 'CustomerNumber',
+              component: () => import('../views/custmat/custmat-basicinfo/customernumber.vue'),
+              meta: {
+                title: 'route.custmatCustomerNumber',
+                icon: 'Files',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

@@ -146,9 +146,32 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+
+// 与 request.js 保持一致：403 硬跳转后在本页补弹一次提示，保证用户看得到
+const FORBIDDEN_MESSAGE_KEY = '__forbidden_message__'
+
+onMounted(() => {
+  try {
+    const msg = sessionStorage.getItem(FORBIDDEN_MESSAGE_KEY)
+    if (msg) {
+      sessionStorage.removeItem(FORBIDDEN_MESSAGE_KEY)
+      ElMessage({
+        type: 'warning',
+        message: msg,
+        duration: 3000,
+        plain: true,
+        showClose: true
+      })
+    }
+  } catch {
+    // ignore
+  }
+})
 
 const goHome = () => {
   router.replace('/module-select')

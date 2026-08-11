@@ -135,6 +135,10 @@ export const handleNetworkError = (error, options = {}) => {
     normalized = { code: 'HTTP_403', message: i18n.global.t('systembasicmgmt.errorHandler.forbidden'), details: error.response?.data }
   } else if (error?.response?.status >= 500) {
     normalized = { code: `HTTP_${error.response.status}`, message: i18n.global.t('systembasicmgmt.errorHandler.serverError'), details: error.response?.data }
+  } else if (error?.response) {
+    // 有响应但状态码非 401/403/5xx（如 400/404），说明请求已到达服务器，不是网络连接问题
+    const status = error.response.status
+    normalized = { code: `HTTP_${status}`, message: i18n.global.t('systembasicmgmt.errorHandler.httpError', { status }), details: error.response?.data }
   } else {
     normalized = { code: error?.code || 'NETWORK_ERROR', message: i18n.global.t('systembasicmgmt.errorHandler.networkError'), details: error.response?.data }
   }
@@ -151,14 +155,14 @@ const service = axios.create({
 const pendingRequests = new Map()
 const DEBOUNCE_DELAY = 100
 const NETWORK_ERROR_COOLDOWN_MS = 5000
-const TIMEOUT_COOLDOWN_MS = 5000
 
 let has401ErrorOccurred = false
 let lastNetworkErrorTime = 0
-let lastTimeoutShownTime = 0
 
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
+const FORBIDDEN_MESSAGE_KEY = '__forbidden_message__'
 const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
+const NOT_FOUND_SOURCE_PATH_KEY = '__not_found_source_path__'
 const SKIP_TRACK_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
 const SKIP_REDIRECT_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration'])
 
@@ -242,6 +246,29 @@ const markThrottledWarning = (cooldownMs, lastShownAt) => {
   return now
 }
 
+/**
+ * 从错误响应体中提取展示给用户的文案：
+ * 1. 自定义业务错误体的 message 字段
+ * 2. ASP.NET Core 模型校验失败的 ProblemDetails 格式（errors 里第一条校验消息，其次 title）
+ * 3. 都没有则用 status 兜底
+ */
+const extractHttpErrorMessage = (responseData, status) => {
+  if (responseData && typeof responseData === 'object') {
+    if (responseData.message) return responseData.message
+
+    const errors = responseData.errors
+    if (errors && typeof errors === 'object') {
+      const firstFieldErrors = Object.values(errors)[0]
+      const firstMessage = Array.isArray(firstFieldErrors) ? firstFieldErrors[0] : firstFieldErrors
+      if (firstMessage) return firstMessage
+    }
+
+    if (responseData.title) return responseData.title
+  }
+
+  return i18n.global.t('systembasicmgmt.errorHandler.httpError', { status })
+}
+
 const handleUnauthorized = (options = {}) => {
   const { silentAuthError = true, disableAutoLogout = false } = options
   const unauthorizedMessage = i18n.global.t('systembasicmgmt.errorHandler.unauthorized')
@@ -273,10 +300,20 @@ const handleForbidden = (error = null, options = {}) => {
 
   const currentPath = getCurrentRoutePath()
   if (currentPath) safeSessionSet(FORBIDDEN_SOURCE_PATH_KEY, currentPath)
+  // 即将硬跳转到 403 页面，这里弹的 toast 会被跳转打断，改由 403 页面 onMounted 统一弹出
+  safeSessionSet(FORBIDDEN_MESSAGE_KEY, forbiddenMessage)
 
   window.location.replace(buildAppUrl('403'))
 
-  if (error) handleNetworkError(error, { showMessage: false })
+  return createHandledResponse({ success: true })
+}
+
+const handleNotFound = () => {
+  const currentPath = getCurrentRoutePath()
+  if (currentPath) safeSessionSet(NOT_FOUND_SOURCE_PATH_KEY, currentPath)
+
+  window.location.replace(buildAppUrl('404'))
+
   return createHandledResponse({ success: true })
 }
 
@@ -354,11 +391,10 @@ export const post = async (url, data, options = {}) => {
     if (axios.isCancel(error)) return Promise.reject(error)
 
     if (isTimeoutError(error)) {
-      const ts = markThrottledWarning(TIMEOUT_COOLDOWN_MS, lastTimeoutShownTime)
+      const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
       if (ts) {
-        lastTimeoutShownTime = ts
         lastNetworkErrorTime = ts
-        showWarningMessage(i18n.global.t('systembasicmgmt.errorHandler.timeout'))
+        showErrorMessageToast(i18n.global.t('systembasicmgmt.errorHandler.timeout'))
       }
       return createHandledResponse({ success: false, handled: true })
     }
@@ -366,27 +402,27 @@ export const post = async (url, data, options = {}) => {
     if (error?.response) {
       const { status, data: responseData } = error.response
 
+      // 200 之外的状态码统一在这里提示并处理，页面只需处理 200 内的业务 code
       if (status === 401) return handleUnauthorized(options)
       if (status === 403) return handleForbidden(error, options)
+      if (status === 404) return handleNotFound()
 
-      // 非 200 的 HTTP 状态码属于传输层错误，统一在这里提示，不再把状态码/message 透传给页面当业务结果处理，
-      // 避免页面把"请求根本没成功"误判成某个具体的业务校验失败
-      const info = handleNetworkError(error, { showMessage: false })
-      const message = (responseData && typeof responseData === 'object' && responseData.message) || info.message
+      const message = extractHttpErrorMessage(responseData, status)
+
       const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
       if (ts) {
         lastNetworkErrorTime = ts
-        // 400 属于请求参数/校验类错误，用 warning 提示；其余（如 500）仍用 error
+        // 400 属于请求参数/校验类错误，用 warning 提示；其余（如 500/502）用 error
         status === 400 ? showWarningMessage(message) : showErrorMessageToast(message)
       }
       return createHandledResponse({ success: false, handled: true })
     }
 
-    const info = handleNetworkError(error, { showMessage: false })
+    // 无响应（真正的断网等网络故障）
     const ts = markThrottledWarning(NETWORK_ERROR_COOLDOWN_MS, lastNetworkErrorTime)
     if (ts) {
       lastNetworkErrorTime = ts
-      showErrorMessageToast(info.message)
+      showErrorMessageToast(i18n.global.t('systembasicmgmt.errorHandler.networkError'))
     }
 
     return createHandledResponse({ success: false, handled: true })
@@ -420,7 +456,6 @@ export const cancelAllRequests = () => {
 
 export const resetAuthErrorState = () => {
   has401ErrorOccurred = false
-  lastTimeoutShownTime = 0
   lastNetworkErrorTime = 0
 }
 
