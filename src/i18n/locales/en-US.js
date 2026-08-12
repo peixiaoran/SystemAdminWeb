@@ -2250,7 +2250,7 @@ export default {
       status: 'Status',
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled',
-      addNumberMapping: 'Add Number Mapping',
+      addNumberMapping: 'Add Mapping',
       editNumberMapping: 'Edit Number Mapping',
       deleteConfirm: 'Are you sure you want to delete this number mapping?',
       pleaseInputCustomerPartNumber: 'Please enter customer part number',
