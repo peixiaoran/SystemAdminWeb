@@ -1,28 +1,12 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.companynumber.ariaFilterLabel')">
-        <el-form-item :label="$t('custmat.companynumber.partNumber')">
-          <el-input v-model="filters.partNumber"
-                    style="width: 200px"
-                    :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" />
-        </el-form-item>
-        <el-form-item :label="$t('custmat.companynumber.status')">
-          <el-select v-model="filters.status"
-                     style="width: 140px"
-                     :placeholder="$t('common.pleaseSelect')"
-                     @change="handleSearch">
-            <el-option :label="$t('custmat.companynumber.statusEnabled')" :value="1" />
-            <el-option :label="$t('custmat.companynumber.statusDisabled')" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="form-button-group">
-          <el-button type="primary" @click="handleSearch" plain>
-            {{ $t('common.search') }}
+      <el-form :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('custmat.companynumber.ariaFilterLabel')">
+        <el-form-item>
+          <el-button :icon="Filter" @click="filterDialogVisible = true">
+            {{ $t('custmat.companynumber.filterQuery') }}
           </el-button>
-          <el-button @click="handleReset">
-            {{ $t('common.reset') }}
-          </el-button>
+          <el-button :icon="RefreshLeft" :title="$t('custmat.companynumber.clearAll')" @click="handleClearFiltersAndSearch" />
         </el-form-item>
         <el-form-item class="form-right-button">
           <el-button type="warning" @click="handleOpenImport">
@@ -37,6 +21,84 @@
         </el-form-item>
       </el-form>
 
+      <!-- 筛选查询对话框 -->
+      <el-dialog v-model="filterDialogVisible"
+                 :title="$t('custmat.companynumber.filterQuery')"
+                 width="900px"
+                 destroy-on-close
+                 append-to-body>
+        <el-form :model="filters" :inline="true" label-width="110px" class="dialog-form filter-dialog">
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.companynumber.partNumber')">
+              <el-input v-model="filters.partNumber" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" />
+            </el-form-item>
+            <el-form-item :label="$t('custmat.companynumber.partName')">
+              <el-input v-model="filters.partName" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputPartName')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.companynumber.specifications')">
+              <el-input v-model="filters.specifications" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputSpecifications')" />
+            </el-form-item>
+            <el-form-item :label="$t('custmat.companynumber.partType')">
+              <el-select v-model="filters.partType" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in partTypeOptions"
+                           :key="item.partType"
+                           :label="item.partTypeName"
+                           :value="item.partType" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.companynumber.category')">
+              <el-select v-model="filters.category" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in categoryOptions"
+                           :key="item.category"
+                           :label="item.categoryName"
+                           :value="item.category" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('custmat.companynumber.sourceType')">
+              <el-select v-model="filters.sourceType" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option v-for="item in sourceTypeOptions"
+                           :key="item.sourceType"
+                           :label="item.sourceTypeName"
+                           :value="item.sourceType" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.companynumber.model')">
+              <el-input v-model="filters.model" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputModel')" />
+            </el-form-item>
+            <el-form-item :label="$t('custmat.companynumber.drawingNumber')">
+              <el-input v-model="filters.drawingNumber" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputDrawingNumber')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.companynumber.version')">
+              <el-input v-model="filters.version" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputVersion')" />
+            </el-form-item>
+            <el-form-item :label="$t('custmat.companynumber.status')">
+              <el-select v-model="filters.status" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+                <el-option :label="$t('custmat.companynumber.statusEnabled')" :value="1" />
+                <el-option :label="$t('custmat.companynumber.statusDisabled')" :value="0" />
+              </el-select>
+            </el-form-item>
+          </div>
+        </el-form>
+        <template #footer>
+          <div class="filter-dialog-footer">
+            <el-button @click="handleClearFilters">
+              {{ $t('custmat.companynumber.clearAll') }}
+            </el-button>
+            <el-button type="primary" @click="handleSearch">
+              {{ $t('common.confirm') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+
       <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="companyNumberList"
@@ -49,7 +111,8 @@
                   >
           <el-table-column type="index" :label="$t('custmat.companynumber.index')" width="70" align="center" fixed />
           <el-table-column prop="partNumber" :label="$t('custmat.companynumber.partNumber')" align="left" min-width="160" />
-          <el-table-column prop="productNameCn" :label="$t('custmat.companynumber.productNameCn')" align="left" min-width="180" />
+          <el-table-column prop="partNameCn" :label="$t('custmat.companynumber.partNameCn')" align="left" min-width="140" />
+          <el-table-column prop="partNameEn" :label="$t('custmat.companynumber.partNameEn')" align="left" min-width="200" />
           <el-table-column prop="partTypeName" :label="$t('custmat.companynumber.partType')" align="left" min-width="140" />
           <el-table-column prop="categoryName" :label="$t('custmat.companynumber.category')" align="left" min-width="140" />
           <el-table-column prop="sourceTypeName" :label="$t('custmat.companynumber.sourceType')" align="left" min-width="140" />
@@ -109,17 +172,17 @@
                         style="width:100%"
                         :placeholder="$t('custmat.companynumber.pleaseInputPartNumber')" />
             </el-form-item>
-            <el-form-item :label="$t('custmat.companynumber.productNameCn')" prop="productNameCn">
-              <el-input v-model="editForm.productNameCn"
+            <el-form-item :label="$t('custmat.companynumber.partNameCn')" prop="partNameCn">
+              <el-input v-model="editForm.partNameCn"
                         style="width:100%"
-                        :placeholder="$t('custmat.companynumber.pleaseInputProductNameCn')" />
+                        :placeholder="$t('custmat.companynumber.pleaseInputPartNameCn')" />
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('custmat.companynumber.productNameEn')" prop="productNameEn">
-              <el-input v-model="editForm.productNameEn"
+            <el-form-item :label="$t('custmat.companynumber.partNameEn')" prop="partNameEn">
+              <el-input v-model="editForm.partNameEn"
                         style="width:100%"
-                        :placeholder="$t('custmat.companynumber.pleaseInputProductNameEn')" />
+                        :placeholder="$t('custmat.companynumber.pleaseInputPartNameEn')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.specifications')" prop="specifications">
               <el-input v-model="editForm.specifications"
@@ -261,9 +324,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UploadFilled } from '@element-plus/icons-vue'
+import { UploadFilled, Filter, RefreshLeft } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
 import {
@@ -281,9 +344,6 @@ import {
 } from '@/config/api/custmat/custmat-basicinfo/companynumber'
 
 const { t } = useI18n()
-
-const DEBOUNCE_MS = 300
-let searchTimer = null
 
 /** 实体查询/删除接口按 form-urlencoded 提交 */
 const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -317,10 +377,21 @@ const pagination = reactive({
   totalCount: 0
 })
 
-const filters = reactive({
+const defaultFilters = () => ({
   partNumber: '',
+  partName: '',
+  specifications: '',
+  partType: '',
+  category: '',
+  sourceType: '',
+  model: '',
+  drawingNumber: '',
+  version: '',
   status: ''
 })
+
+const filters = reactive(defaultFilters())
+const filterDialogVisible = ref(false)
 
 const dialogVisible = ref(false)
 const isEdit = ref(false)
@@ -328,8 +399,8 @@ const isEdit = ref(false)
 const editForm = reactive({
   partNumberId: '',
   partNumber: '',
-  productNameCn: '',
-  productNameEn: null,
+  partNameCn: '',
+  partNameEn: null,
   specifications: null,
   partType: '',
   category: '',
@@ -349,8 +420,8 @@ const formRules = {
   partNumber: [
     { required: true, message: () => t('custmat.companynumber.pleaseInputPartNumber'), trigger: 'blur' }
   ],
-  productNameCn: [
-    { required: true, message: () => t('custmat.companynumber.pleaseInputProductNameCn'), trigger: 'blur' }
+  partNameCn: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputPartNameCn'), trigger: 'blur' }
   ],
   partType: [
     { required: true, message: () => t('common.pleaseSelect'), trigger: 'change' }
@@ -378,6 +449,14 @@ const showApiError = (res, fallbackKey) => {
 /** 分页列表与导出共用的查询参数 */
 const buildQueryParams = () => ({
   partNumber: filters.partNumber,
+  partName: filters.partName,
+  specifications: filters.specifications,
+  partType: filters.partType,
+  category: filters.category,
+  sourceType: filters.sourceType,
+  model: filters.model,
+  drawingNumber: filters.drawingNumber,
+  version: filters.version,
   status: filters.status === '' ? null : Number(filters.status),
   pageIndex: pagination.pageIndex,
   pageSize: pagination.pageSize,
@@ -468,21 +547,12 @@ const fetchCompanyNumberList = async () => {
   }
 }
 
-const scheduleSearch = () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  loading.value = true
-  searchTimer = setTimeout(() => {
-    pagination.pageIndex = 1
-    fetchCompanyNumberList()
-  }, DEBOUNCE_MS)
-}
-
 const resetEditForm = () => {
   Object.assign(editForm, {
     partNumberId: '',
     partNumber: '',
-    productNameCn: '',
-    productNameEn: null,
+    partNameCn: '',
+    partNameEn: null,
     specifications: null,
     partType: '',
     category: '',
@@ -499,12 +569,20 @@ const resetEditForm = () => {
   })
 }
 
-const handleSearch = () => scheduleSearch()
+const handleSearch = () => {
+  filterDialogVisible.value = false
+  pagination.pageIndex = 1
+  fetchCompanyNumberList()
+}
 
-const handleReset = () => {
-  filters.partNumber = ''
-  filters.status = ''
-  scheduleSearch()
+const handleClearFilters = () => {
+  Object.assign(filters, defaultFilters())
+}
+
+const handleClearFiltersAndSearch = () => {
+  handleClearFilters()
+  pagination.pageIndex = 1
+  fetchCompanyNumberList()
 }
 
 const handleSizeChange = () => {
@@ -548,8 +626,8 @@ const handleEdit = async (row) => {
       Object.assign(editForm, {
         partNumberId: data.partNumberId,
         partNumber: data.partNumber,
-        productNameCn: data.productNameCn,
-        productNameEn: data.productNameEn,
+        partNameCn: data.partNameCn,
+        partNameEn: data.partNameEn,
         specifications: data.specifications,
         partType: data.partType,
         category: data.category,
@@ -625,8 +703,8 @@ const handleSave = async () => {
     const res = await post(api, {
       partNumberId: editForm.partNumberId,
       partNumber: editForm.partNumber,
-      productNameCn: editForm.productNameCn,
-      productNameEn: editForm.productNameEn,
+      partNameCn: editForm.partNameCn,
+      partNameEn: editForm.partNameEn,
       specifications: editForm.specifications,
       partType: editForm.partType,
       category: editForm.category,
@@ -758,11 +836,8 @@ const handleImportSubmit = async () => {
 }
 
 onMounted(() => {
+  fetchDialogDropdowns()
   fetchCompanyNumberList()
-})
-
-onUnmounted(() => {
-  if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
 
@@ -778,5 +853,19 @@ onUnmounted(() => {
 .import-template-row {
   display: flex;
   justify-content: flex-end;
+}
+
+.filter-dialog .form-row .el-form-item {
+  flex: 0 0 calc(50% - 10px);
+}
+
+.filter-dialog .form-row .el-form-item:last-child {
+  margin-right: 0;
+}
+
+.filter-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 </style>

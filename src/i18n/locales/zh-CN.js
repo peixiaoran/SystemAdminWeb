@@ -1228,7 +1228,8 @@ export default {
     custmatbasicinfo: '生产基础信息',
     custmatCustomer: '客户信息维护',
     custmatCompanyNumber: '公司料号维护',
-    custmatCustomerNumber: '客户料号维护'
+    custmatCustomerNumber: '客户料号维护',
+    custmatNumberMapping: '料号对照维护'
   },
   
   // 系统基础管理
@@ -2119,8 +2120,9 @@ export default {
       ariaEditLabel: '公司料号编辑',
       index: '序号',
       partNumber: '公司料号',
-      productNameCn: '中文名称',
-      productNameEn: '英文名称',
+      partName: '中英文名称',
+      partNameCn: '中文名称',
+      partNameEn: '英文名称',
       specifications: '规格',
       partType: '料号类型',
       category: '物料分类',
@@ -2140,8 +2142,9 @@ export default {
       editCompanyNumber: '编辑公司料号',
       deleteConfirm: '确定要删除该公司料号吗？',
       pleaseInputPartNumber: '请输入公司料号',
-      pleaseInputProductNameCn: '请输入中文名称',
-      pleaseInputProductNameEn: '请输入英文名称',
+      pleaseInputPartName: '请输入中英文名称',
+      pleaseInputPartNameCn: '请输入中文名称',
+      pleaseInputPartNameEn: '请输入英文名称',
       pleaseInputSpecifications: '请输入规格',
       pleaseInputModel: '请输入型号',
       pleaseInputDrawingNumber: '请输入图号',
@@ -2161,15 +2164,18 @@ export default {
       exportFileName: '公司料号信息',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
-      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
+      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传',
+      filterQuery: '筛选查询',
+      clearAll: '清空'
     },
     customernumber: {
       ariaFilterLabel: '客户料号筛选',
       ariaEditLabel: '客户料号编辑',
       index: '序号',
       partNumber: '客户料号',
-      productNameCn: '品名（中文）',
-      productNameEn: '品名（英文）',
+      partName: '品名（中英文）',
+      partNameCn: '品名（中文）',
+      partNameEn: '品名（英文）',
       specification: '规格型号',
       unit: '单位',
       status: '状态',
@@ -2179,8 +2185,9 @@ export default {
       editCustomerNumber: '编辑客户料号',
       deleteConfirm: '确定要删除该客户料号吗？',
       pleaseInputPartNumber: '请输入客户料号',
-      pleaseInputProductNameCn: '请输入品名（中文）',
-      pleaseInputProductNameEn: '请输入品名（英文）',
+      pleaseInputPartName: '请输入品名（中英文）',
+      pleaseInputPartNameCn: '请输入品名（中文）',
+      pleaseInputPartNameEn: '请输入品名（英文）',
       pleaseInputSpecification: '请输入规格型号',
       pleaseInputUnit: '请输入单位',
       getFailed: '获取数据失败',
@@ -2194,7 +2201,32 @@ export default {
       exportFileName: '客户料号信息',
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
-      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
+      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传',
+      filterQuery: '筛选查询',
+      clearAll: '清空'
+    },
+    numbermapping: {
+      ariaFilterLabel: '料号对照筛选',
+      ariaEditLabel: '料号对照编辑',
+      index: '序号',
+      customerPartNumber: '客户料号',
+      companyPartNumber: '公司料号',
+      effectiveFrom: '生效日期',
+      effectiveTo: '失效日期',
+      status: '状态',
+      statusEnabled: '启用',
+      statusDisabled: '停用',
+      addNumberMapping: '新增料号对照',
+      editNumberMapping: '编辑料号对照',
+      deleteConfirm: '确定要删除该料号对照吗？',
+      pleaseInputCustomerPartNumber: '请输入客户料号',
+      pleaseInputCompanyPartNumber: '请输入公司料号',
+      pleaseSelectCustomerPartNumber: '请输入关键字搜索客户料号',
+      pleaseSelectCompanyPartNumber: '请输入关键字搜索公司料号',
+      pleaseSelectEffectiveFrom: '请选择生效日期',
+      pleaseSelectEffectiveTo: '请选择失效日期',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败'
     }
   }
 }

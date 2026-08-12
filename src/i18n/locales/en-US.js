@@ -1310,7 +1310,8 @@ export default {
     custmatbasicinfo: 'Production Basic',
     custmatCustomer: 'Customer Info',
     custmatCompanyNumber: 'Company Number',
-    custmatCustomerNumber: 'Customer Number'
+    custmatCustomerNumber: 'Customer Number',
+    custmatNumberMapping: 'Number Mapping'
   },
   
   // System Basic Management
@@ -2149,12 +2150,13 @@ export default {
       operationFailed: 'Operation Failed'
     },
     companynumber: {
-      ariaFilterLabel: 'Company Number Filter',
-      ariaEditLabel: 'Company Number Edit',
+      ariaFilterLabel: 'Part Number Filter',
+      ariaEditLabel: 'Part Number Edit',
       index: 'Index',
-      partNumber: 'Company Number',
-      productNameCn: 'Name（Cn）',
-      productNameEn: 'Name（En）',
+      partNumber: 'Part Number',
+      partName: 'Name',
+      partNameCn: 'Name（Cn）',
+      partNameEn: 'Name（En）',
       specifications: 'Specifications',
       partType: 'Part Type',
       category: 'Category',
@@ -2174,8 +2176,9 @@ export default {
       editCompanyNumber: 'Edit Company Number',
       deleteConfirm: 'Are you sure you want to delete this company number?',
       pleaseInputPartNumber: 'Please enter company number',
-      pleaseInputProductNameCn: 'Please enter Name（Cn）',
-      pleaseInputProductNameEn: 'Please enter Name（En）',
+      pleaseInputPartName: 'Please enter Name（Cn/En）',
+      pleaseInputPartNameCn: 'Please enter Name（Cn）',
+      pleaseInputPartNameEn: 'Please enter Name（En）',
       pleaseInputSpecifications: 'Please enter specifications',
       pleaseInputModel: 'Please enter model',
       pleaseInputDrawingNumber: 'Please enter drawing number',
@@ -2195,15 +2198,18 @@ export default {
       exportFileName: 'CompanyNumber',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
-      fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.'
+      fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
+      filterQuery: 'Filter',
+      clearAll: 'Clear All'
     },
     customernumber: {
-      ariaFilterLabel: 'Customer Number Filter',
-      ariaEditLabel: 'Customer Number Edit',
+      ariaFilterLabel: 'Part Number Filter',
+      ariaEditLabel: 'Part Number Edit',
       index: 'Index',
-      partNumber: 'Customer Number',
-      productNameCn: 'Name（Cn）',
-      productNameEn: 'Name（En）',
+      partNumber: 'Part Number',
+      partName: 'Name',
+      partNameCn: 'Name（Cn）',
+      partNameEn: 'Name（En）',
       specification: 'Specification',
       unit: 'Unit',
       status: 'Status',
@@ -2213,8 +2219,9 @@ export default {
       editCustomerNumber: 'Edit Customer Number',
       deleteConfirm: 'Are you sure you want to delete this customer number?',
       pleaseInputPartNumber: 'Please enter customer number',
-      pleaseInputProductNameCn: 'Please enter Name（Cn）',
-      pleaseInputProductNameEn: 'Please enter Name（En）',
+      pleaseInputPartName: 'Please enter Name（Cn/En）',
+      pleaseInputPartNameCn: 'Please enter Name（Cn）',
+      pleaseInputPartNameEn: 'Please enter Name（En）',
       pleaseInputSpecification: 'Please enter specification',
       pleaseInputUnit: 'Please enter unit',
       getFailed: 'Failed to get data',
@@ -2228,7 +2235,32 @@ export default {
       exportFileName: 'CustomerNumber',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
-      fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.'
+      fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
+      filterQuery: 'Filter',
+      clearAll: 'Clear All'
+    },
+    numbermapping: {
+      ariaFilterLabel: 'Number Mapping Filter',
+      ariaEditLabel: 'Number Mapping Edit',
+      index: 'Index',
+      customerPartNumber: 'CustomerNumber',
+      companyPartNumber: 'CompanyNumber',
+      effectiveFrom: 'Effective From',
+      effectiveTo: 'Effective To',
+      status: 'Status',
+      statusEnabled: 'Enabled',
+      statusDisabled: 'Disabled',
+      addNumberMapping: 'Add Number Mapping',
+      editNumberMapping: 'Edit Number Mapping',
+      deleteConfirm: 'Are you sure you want to delete this number mapping?',
+      pleaseInputCustomerPartNumber: 'Please enter customer part number',
+      pleaseInputCompanyPartNumber: 'Please enter company part number',
+      pleaseSelectCustomerPartNumber: 'Search customer number',
+      pleaseSelectCompanyPartNumber: 'Search company number',
+      pleaseSelectEffectiveFrom: 'Select date',
+      pleaseSelectEffectiveTo: 'Select date',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed'
     }
   }
 }

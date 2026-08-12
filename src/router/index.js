@@ -692,6 +692,17 @@ const pmenuRoutes = [
                 noTag: false
               }
             },
+            {
+              path: 'numbermapping',
+              name: 'NumberMapping',
+              component: () => import('../views/custmat/custmat-basicinfo/numbermapping.vue'),
+              meta: {
+                title: 'route.custmatNumberMapping',
+                icon: 'Connection',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
           ]
         }
       ]
