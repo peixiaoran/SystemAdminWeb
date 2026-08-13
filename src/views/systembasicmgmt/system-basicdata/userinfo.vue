@@ -211,12 +211,14 @@
           <el-form-item :label="$t('systembasicmgmt.userInfo.loginNo')" prop="loginNo">
             <el-input v-model="editForm.loginNo"
                       style="width:100%"
+                      autocomplete="off"
                       :placeholder="$t('systembasicmgmt.userInfo.pleaseInputLoginNo')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.password')" prop="passWord">
             <el-input v-model="editForm.passWord"
                       type="password"
                       style="width:100%"
+                      autocomplete="new-password"
                       :placeholder="$t('systembasicmgmt.userInfo.pleaseInputPassword')"
                       show-password />
           </el-form-item>
