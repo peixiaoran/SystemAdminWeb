@@ -112,31 +112,19 @@
             <el-switch v-model="editForm.isFreeze"
                        :disabled="true"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isEmployed')" prop="isEmployed">
             <el-switch v-model="editForm.isEmployed"
                        :disabled="true"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isAgent')" prop="isAgent">
             <el-switch v-model="editForm.isAgent"
                        :disabled="true"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
         </div>
 
@@ -146,41 +134,25 @@
             <el-switch v-model="editForm.isPartTime"
                        :disabled="true"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isReview')" prop="isReview">
             <el-switch v-model="editForm.isReview"
                        :disabled="true"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isRealtimeNotification')" prop="isRealtimeNotification">
             <el-switch v-model="editForm.isRealtimeNotification"
                        :disabled="loading"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isScheduledNotification')" prop="isScheduledNotification">
             <el-switch v-model="editForm.isScheduledNotification"
                        :disabled="loading"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
         </div>
 

@@ -464,6 +464,7 @@ const handleSubmit = async () => {
 
 const handleDialogClose = () => {
   resetForm()
+  dialogLoading.value = false
   formRef.value?.clearValidate()
 }
 

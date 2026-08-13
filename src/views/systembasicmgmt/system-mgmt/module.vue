@@ -69,59 +69,61 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true"
-               :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="120px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.module.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
-            <el-input v-model="editForm.moduleCode"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.module.moduleNameCn')" prop="moduleNameCn">
-            <el-input v-model="editForm.moduleNameCn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameCn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.module.moduleNameEn')" prop="moduleNameEn">
-            <el-input v-model="editForm.moduleNameEn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameEn')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.module.moduleIcon')" prop="moduleIcon">
-            <el-input v-model="editForm.moduleIcon"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.module.pleaseInputModuleIcon')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.module.sortOrder')" prop="sortOrder">
-            <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.module.pagePath')" prop="path">
-            <el-input v-model="editForm.path"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.module.pleaseInputPagePath')" />
-          </el-form-item>
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.module.remarksCh')" prop="remarkCh">
-            <el-input v-model="editForm.remarkCh" style="width:100%" type="textarea" :rows="2" />
-          </el-form-item>
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.module.remarksEn')" prop="remarkEn">
-            <el-input v-model="editForm.remarkEn" style="width:100%" type="textarea" :rows="2" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="120px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.module.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.module.moduleCode')" prop="moduleCode">
+              <el-input v-model="editForm.moduleCode"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.module.pleaseInputModuleCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.module.moduleNameCn')" prop="moduleNameCn">
+              <el-input v-model="editForm.moduleNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameCn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.module.moduleNameEn')" prop="moduleNameEn">
+              <el-input v-model="editForm.moduleNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.module.pleaseInputModuleNameEn')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.module.moduleIcon')" prop="moduleIcon">
+              <el-input v-model="editForm.moduleIcon"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.module.pleaseInputModuleIcon')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.module.sortOrder')" prop="sortOrder">
+              <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.module.pagePath')" prop="path">
+              <el-input v-model="editForm.path"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.module.pleaseInputPagePath')" />
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.module.remarksCh')" prop="remarkCh">
+              <el-input v-model="editForm.remarkCh" style="width:100%" type="textarea" :rows="2" />
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.module.remarksEn')" prop="remarkEn">
+              <el-input v-model="editForm.remarkEn" style="width:100%" type="textarea" :rows="2" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -168,6 +170,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref(t('systembasicmgmt.module.editModule'))
 
 const editForm = reactive({
@@ -340,10 +343,15 @@ const handleAdd = () => {
 
 const handleEdit = async (row) => {
   resetEditForm()
-  await fetchModuleEntity(row.moduleId)
   dialogTitle.value = t('systembasicmgmt.module.editModule')
   dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  dialogLoading.value = true
+  await fetchModuleEntity(row.moduleId)
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -371,6 +379,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

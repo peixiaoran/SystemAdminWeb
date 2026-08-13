@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="待审批筛选">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.formpending.ariaFilterLabel')">
         <el-form-item>
           <el-radio-group v-model="listMode" @change="handleListModeChange">
             <el-radio-button value="pendingSubmit">

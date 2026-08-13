@@ -94,58 +94,60 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true"
-               :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="100px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.dictionaryInfo.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.module')" prop="moduleId">
-            <el-select v-model="editForm.moduleId"
-                       style="width:100%"
-                       :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
-                       :clearable="false">
-              <el-option v-for="item in moduleOptions"
-                         :key="item.moduleId"
-                         :label="item.moduleName"
-                         :value="item.moduleId" />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicType')" prop="dicType">
-            <el-input v-model="editForm.dicType"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
-            <el-input v-model="editForm.dicCode"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
-            <el-input v-model="editForm.dicNameCn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
-            <el-input v-model="editForm.dicNameEn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" prop="sortOrder">
-            <el-input-number v-model="editForm.sortOrder"
-                             :step="1"
-                             style="width:100%"
-                             :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="100px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.dictionaryInfo.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.module')" prop="moduleId">
+              <el-select v-model="editForm.moduleId"
+                         style="width:100%"
+                         :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseSelectModule')"
+                         :clearable="false">
+                <el-option v-for="item in moduleOptions"
+                           :key="item.moduleId"
+                           :label="item.moduleName"
+                           :value="item.moduleId" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicType')" prop="dicType">
+              <el-input v-model="editForm.dicType"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicType')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicCode')" prop="dicCode">
+              <el-input v-model="editForm.dicCode"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameCn')" prop="dicNameCn">
+              <el-input v-model="editForm.dicNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameCn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.dicNameEn')" prop="dicNameEn">
+              <el-input v-model="editForm.dicNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputDicNameEn')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.sortOrder')" prop="sortOrder">
+              <el-input-number v-model="editForm.sortOrder"
+                               :step="1"
+                               style="width:100%"
+                               :placeholder="$t('systembasicmgmt.dictionaryInfo.pleaseInputSortOrder')" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
@@ -194,6 +196,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref(t('systembasicmgmt.dictionaryInfo.editDictionary'))
 
 const editForm = reactive({
@@ -414,16 +417,25 @@ const handleAdd = () => {
 
 const handleEdit = async (row) => {
   resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
+  dialogVisible.value = true
+  dialogLoading.value = true
   const dictionaryData = await fetchDictionaryEntity(row.dicId)
-  if (!dictionaryData) return
+  if (!dictionaryData) {
+    dialogVisible.value = false
+    dialogLoading.value = false
+    return
+  }
   Object.assign(editForm, {
     ...dictionaryData,
     moduleId: String(dictionaryData.moduleId || ''),
     dicCode: String(dictionaryData.dicCode ?? '')
   })
-  dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
-  dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -451,6 +463,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

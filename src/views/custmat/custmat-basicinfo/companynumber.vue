@@ -110,9 +110,9 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('custmat.companynumber.index')" width="70" align="center" fixed />
-          <el-table-column prop="partNumber" :label="$t('custmat.companynumber.partNumber')" align="left" min-width="160" />
+          <el-table-column prop="partNumber" :label="$t('custmat.companynumber.partNumber')" align="center" min-width="130" />
           <el-table-column prop="partNameCn" :label="$t('custmat.companynumber.partNameCn')" align="left" min-width="140" />
-          <el-table-column prop="partNameEn" :label="$t('custmat.companynumber.partNameEn')" align="left" min-width="200" />
+          <el-table-column prop="partNameEn" :label="$t('custmat.companynumber.partNameEn')" align="left" min-width="230" />
           <el-table-column prop="partTypeName" :label="$t('custmat.companynumber.partType')" align="left" min-width="140" />
           <el-table-column prop="categoryName" :label="$t('custmat.companynumber.category')" align="left" min-width="140" />
           <el-table-column prop="sourceTypeName" :label="$t('custmat.companynumber.sourceType')" align="left" min-width="140" />
@@ -124,12 +124,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('common.operation')" min-width="180" fixed="right" align="center">
+          <el-table-column :label="$t('common.operation')" width="220" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.partNumberId">
+              <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.partNumberId">
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -152,7 +152,7 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.companynumber.editCompanyNumber') : $t('custmat.companynumber.addCompanyNumber')"
-               width="60%"
+               width="50%"
                :close-on-click-modal="false"
                :append-to-body="true"
                :lock-scroll="true"
@@ -162,7 +162,7 @@
                  :model="editForm"
                  :rules="formRules"
                  ref="editFormRef"
-                 label-width="110px"
+                 label-width="140px"
                  class="dialog-form"
                  role="form"
                  :aria-label="$t('custmat.companynumber.ariaEditLabel')">
@@ -352,8 +352,6 @@ const companyNumberList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
-const deletingId = ref(null)
 const editFormRef = ref(null)
 
 // 下拉选项
@@ -603,7 +601,6 @@ const handleAdd = () => {
 }
 
 const handleEdit = async (row) => {
-  editingId.value = row.partNumberId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
@@ -638,8 +635,8 @@ const handleEdit = async (row) => {
         sourceType: data.sourceType,
         manufacturer: data.manufacturer,
         manufacturerNumber: data.manufacturerNumber,
-        lotControl: data.lotControl,
-        status: data.status,
+        lotControl: Number(data.lotControl) === 1,
+        status: Number(data.status) === 1,
         remark: data.remark
       })
     } else {
@@ -651,7 +648,6 @@ const handleEdit = async (row) => {
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
     nextTick(() => editFormRef.value?.clearValidate())
   }
 }
@@ -667,7 +663,6 @@ const handleDelete = async (row) => {
     return
   }
 
-  deletingId.value = row.partNumberId
   try {
     const res = await post(
       DELETE_COMPANY_NUMBER_API.DELETE_COMPANY_NUMBER,
@@ -685,8 +680,6 @@ const handleDelete = async (row) => {
     }
   } catch {
     showMessage(t('custmat.companynumber.operationFailed'))
-  } finally {
-    deletingId.value = null
   }
 }
 
@@ -716,7 +709,7 @@ const handleSave = async () => {
       manufacturer: editForm.manufacturer,
       manufacturerNumber: editForm.manufacturerNumber,
       lotControl: editForm.lotControl,
-      status: editForm.status,
+      status: editForm.status ? 1 : 0,
       remark: editForm.remark
     })
 
@@ -738,6 +731,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

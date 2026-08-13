@@ -69,42 +69,44 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true"
-               :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="120px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.departmentLevel.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
-            <el-input v-model="editForm.departmentLevelCode"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
-            <el-input v-model="editForm.departmentLevelNameCn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
-            <el-input v-model="editForm.departmentLevelNameEn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameEn')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentLevel.sortOrder')" prop="sortOrder">
-            <el-input-number v-model="editForm.sortOrder" :min="1" style="width:100%" />
-          </el-form-item>
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.departmentLevel.description')">
-            <el-input v-model="editForm.description" style="width:100%" type="textarea" :rows="3" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="120px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.departmentLevel.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelCode')" prop="departmentLevelCode">
+              <el-input v-model="editForm.departmentLevelCode"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameCn')" prop="departmentLevelNameCn">
+              <el-input v-model="editForm.departmentLevelNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameCn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentLevel.departmentLevelNameEn')" prop="departmentLevelNameEn">
+              <el-input v-model="editForm.departmentLevelNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.departmentLevel.pleaseInputDepartmentLevelNameEn')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentLevel.sortOrder')" prop="sortOrder">
+              <el-input-number v-model="editForm.sortOrder" :min="1" style="width:100%" />
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.departmentLevel.description')">
+              <el-input v-model="editForm.description" style="width:100%" type="textarea" :rows="3" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -148,6 +150,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref('')
 
 const editForm = reactive({
@@ -251,10 +254,15 @@ const handleAdd = () => {
 
 const handleEdit = async (row) => {
   resetEditForm()
-  await fetchDepartmentLevelEntity(row.departmentLevelId)
   dialogTitle.value = t('systembasicmgmt.departmentLevel.editDepartmentLevel')
   dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  dialogLoading.value = true
+  await fetchDepartmentLevelEntity(row.departmentLevelId)
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -304,6 +312,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

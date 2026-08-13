@@ -32,7 +32,13 @@
           </el-button>
         </el-form-item>
         <el-form-item class="form-right-button">
-          <el-button type="primary" @click="handleAdd">
+          <el-button type="warning" @click="handleOpenImport">
+            {{ $t('custmat.numbermapping.import') }}
+          </el-button>
+          <el-button type="success" :loading="exportLoading" @click="handleExport">
+            {{ $t('custmat.numbermapping.export') }}
+          </el-button>
+          <el-button type="primary" style="margin-left: 24px" @click="handleAdd">
             {{ $t('custmat.numbermapping.addNumberMapping') }}
           </el-button>
         </el-form-item>
@@ -60,12 +66,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('common.operation')" min-width="180" fixed="right" align="center">
+          <el-table-column :label="$t('common.operation')" width="220" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.mappingId">
+              <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.mappingId">
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -158,14 +164,55 @@
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
+
+    <!-- 导入对话框 -->
+    <el-dialog v-model="importDialogVisible"
+               :title="$t('custmat.numbermapping.import')"
+               width="520px"
+               draggable
+               :modal="false"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               @close="handleImportDialogClose">
+      <div class="import-dialog-body">
+        <div class="import-template-row">
+          <el-button :loading="templateLoading" @click="handleDownloadTemplate">
+            {{ $t('custmat.numbermapping.downloadTemplate') }}
+          </el-button>
+        </div>
+
+        <el-upload drag
+                   action="#"
+                   accept=".xls,.xlsx"
+                   :auto-upload="false"
+                   :show-file-list="true"
+                   :limit="1"
+                   :on-change="handleImportFileChange"
+                   :on-exceed="handleImportFileExceed"
+                   :on-remove="handleImportFileRemove"
+                   :file-list="importFileList">
+          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+          <div class="el-upload__text">
+            {{ $t('custmat.numbermapping.dragFileHint') }}
+          </div>
+        </el-upload>
+      </div>
+      <template #footer>
+        <el-button @click="importDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="importLoading" :disabled="!importFile" @click="handleImportSubmit">
+          {{ $t('custmat.numbermapping.startImport') }}
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { UploadFilled } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
-import { post, isHandled } from '@/utils/request'
+import { post, postBlob, isHandled } from '@/utils/request'
 import {
   GET_NUMBER_MAPPING_LIST_API,
   GET_NUMBER_MAPPING_ENTITY_API,
@@ -173,7 +220,10 @@ import {
   UPDATE_NUMBER_MAPPING_API,
   DELETE_NUMBER_MAPPING_API,
   GET_CUSTOMER_PART_NUMBER_DROP_API,
-  GET_COMPANY_PART_NUMBER_DROP_API
+  GET_COMPANY_PART_NUMBER_DROP_API,
+  GET_NUMBER_MAPPING_TEMPLATE_API,
+  IMPORT_NUMBER_MAPPING_API,
+  GET_NUMBER_MAPPING_EXCEL_API
 } from '@/config/api/custmat/custmat-basicinfo/numbermapping'
 
 const { t } = useI18n()
@@ -187,8 +237,6 @@ const numberMappingList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
-const deletingId = ref(null)
 const editFormRef = ref(null)
 
 // 客户料号/公司料号远程搜索下拉
@@ -214,6 +262,16 @@ const filters = reactive({
 
 const dialogVisible = ref(false)
 const isEdit = ref(false)
+
+// 导入相关
+const importDialogVisible = ref(false)
+const templateLoading = ref(false)
+const importLoading = ref(false)
+const importFile = ref(null)
+const importFileList = ref([])
+
+// 导出相关
+const exportLoading = ref(false)
 
 const editForm = reactive({
   mappingId: '',
@@ -246,6 +304,38 @@ const showMessage = (message, type = 'error') => {
 /** 业务码失败提示：400 视为告警，其余视为错误 */
 const showApiError = (res, fallbackKey) => {
   showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
+/**
+ * 后端出错时会返回 JSON 而非 Excel，需要读出里面的错误信息
+ * @param {Blob} blob 接口返回的二进制内容
+ * @param {string} fallbackKey 无法解析出错误信息时使用的兜底文案 key
+ */
+const assertDownloadableBlob = async (blob, fallbackKey) => {
+  if (!(blob instanceof Blob) || blob.size === 0) {
+    throw new Error(t(fallbackKey))
+  }
+  if (blob.type && blob.type.includes('application/json')) {
+    const text = await blob.text()
+    let message = t(fallbackKey)
+    try {
+      message = JSON.parse(text)?.message || message
+    } catch {
+      // 非 JSON 内容时沿用默认文案
+    }
+    throw new Error(message)
+  }
+}
+
+const downloadBlob = (blob, fileName) => {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
 }
 
 /** 分页列表查询参数 */
@@ -373,7 +463,6 @@ const handleAdd = () => {
 }
 
 const handleEdit = async (row) => {
-  editingId.value = row.mappingId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
@@ -412,7 +501,6 @@ const handleEdit = async (row) => {
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
     nextTick(() => editFormRef.value?.clearValidate())
   }
 }
@@ -428,7 +516,6 @@ const handleDelete = async (row) => {
     return
   }
 
-  deletingId.value = row.mappingId
   try {
     const res = await post(
       DELETE_NUMBER_MAPPING_API.DELETE_NUMBER_MAPPING,
@@ -446,8 +533,6 @@ const handleDelete = async (row) => {
     }
   } catch {
     showMessage(t('custmat.numbermapping.operationFailed'))
-  } finally {
-    deletingId.value = null
   }
 }
 
@@ -488,7 +573,102 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
+}
+
+const handleOpenImport = () => {
+  importFile.value = null
+  importFileList.value = []
+  importDialogVisible.value = true
+}
+
+const handleImportDialogClose = () => {
+  importFile.value = null
+  importFileList.value = []
+}
+
+// 选择/替换导入文件
+const handleImportFileChange = (uploadFile) => {
+  importFile.value = uploadFile.raw
+  importFileList.value = [uploadFile]
+}
+
+// 超出单文件限制时替换为最新选择的文件
+const handleImportFileExceed = (files) => {
+  const file = files[0]
+  importFile.value = file
+  importFileList.value = [{ name: file.name, raw: file }]
+}
+
+const handleImportFileRemove = () => {
+  importFile.value = null
+  importFileList.value = []
+}
+
+// 下载导入模板（文件名根据当前语言取自 i18n）
+const handleDownloadTemplate = async () => {
+  templateLoading.value = true
+  try {
+    const res = await postBlob(GET_NUMBER_MAPPING_TEMPLATE_API.GET_NUMBER_MAPPING_TEMPLATE)
+    await assertDownloadableBlob(res?.data, 'custmat.numbermapping.downloadTemplateFailed')
+    downloadBlob(res.data, `${t('custmat.numbermapping.templateFileName')}.xlsx`)
+  } catch (error) {
+    showMessage(error?.message || t('custmat.numbermapping.downloadTemplateFailed'))
+  } finally {
+    templateLoading.value = false
+  }
+}
+
+// 导出料号对照 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
+const handleExport = async () => {
+  exportLoading.value = true
+  try {
+    const res = await postBlob(GET_NUMBER_MAPPING_EXCEL_API.GET_NUMBER_MAPPING_EXCEL, buildQueryParams())
+    await assertDownloadableBlob(res?.data, 'custmat.numbermapping.exportFailed')
+    downloadBlob(res.data, `${t('custmat.numbermapping.exportFileName')}.xlsx`)
+  } catch (error) {
+    showMessage(error?.message || t('custmat.numbermapping.exportFailed'))
+  } finally {
+    exportLoading.value = false
+  }
+}
+
+const handleImportSubmit = async () => {
+  if (!importFile.value) return
+
+  // 选择文件后若磁盘上的文件被修改/替换，浏览器会拒绝再次读取该文件句柄
+  // （表现为上传时 net::ERR_UPLOAD_FILE_CHANGED），这里提前尝试读取以给出明确提示
+  try {
+    await importFile.value.slice(0, 1).arrayBuffer()
+  } catch {
+    showMessage(t('custmat.numbermapping.fileChangedError'))
+    importFile.value = null
+    importFileList.value = []
+    return
+  }
+
+  importLoading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', importFile.value)
+
+    const res = await post(IMPORT_NUMBER_MAPPING_API.IMPORT_NUMBER_MAPPING, formData)
+
+    if (isHandled(res)) return
+
+    if (res?.code === 200) {
+      showMessage(res.message || t('common.success'), 'success')
+      importDialogVisible.value = false
+      fetchNumberMappingList()
+    } else {
+      showApiError(res, 'custmat.numbermapping.operationFailed')
+    }
+  } catch {
+    showMessage(t('custmat.numbermapping.operationFailed'))
+  } finally {
+    importLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -498,4 +678,15 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
+
+.import-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.import-template-row {
+  display: flex;
+  justify-content: flex-end;
+}
 </style>

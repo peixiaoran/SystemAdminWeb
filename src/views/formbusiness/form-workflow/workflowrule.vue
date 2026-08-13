@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程规则筛选">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.workflowrule.ariaFilterLabel')">
         <el-form-item :label="$t('formbusiness.workflowrule.formGroupName')">
           <el-select v-model="searchForm.formGroupId" filterable style="width: 220px" @change="getFormTypeOptions">
             <el-option

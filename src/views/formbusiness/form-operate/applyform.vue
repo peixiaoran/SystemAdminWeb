@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.applyform.ariaFilterLabel')">
         <el-form-item :label="$t('formbusiness.applyform.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"

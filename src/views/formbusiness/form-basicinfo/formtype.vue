@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单类型筛选">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.formtype.ariaFilterLabel')">
         <el-form-item :label="$t('formbusiness.formtype.formGroupName')">
           <el-select
             v-model="searchForm.formGroupId"
@@ -103,7 +103,7 @@
           label-width="140px"
           class="dialog-form"
           role="form"
-          aria-label="表单类型编辑"
+          :aria-label="$t('formbusiness.formtype.ariaEditLabel')"
         >
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formtype.formGroupName')" prop="formGroupId">
@@ -396,6 +396,7 @@ const handleSubmit = async () => {
 }
 
 const handleDialogClose = () => {
+  dialogLoading.value = false
   formRef.value?.clearValidate()
 }
 

@@ -200,6 +200,8 @@ export default {
 
     // 表单组别页面专用
     formgroup: {
+        ariaFilterLabel: '表单组别筛选',
+        ariaEditLabel: '表单组别编辑',
         formGroupName: '组别名称',
         formGroupNameCn: '中文名称',
         formGroupNameEn: '英文名称',
@@ -250,6 +252,8 @@ export default {
 
     // 表单类别页面专用
     formtype: {
+        ariaFilterLabel: '表单类型筛选',
+        ariaEditLabel: '表单类型编辑',
         formTypeName: '类型名称',
         formName: '表单名称',
         apply: '申请',
@@ -310,6 +314,7 @@ export default {
 
     // 流程步骤配置
     workflowstep: {
+      ariaFilterLabel: '流程步骤筛选',
       formGroupName: '表单组别',
       formTypeName: '表单类别',
       index: '序号',
@@ -379,6 +384,10 @@ export default {
       getFieldPermissionFailed: '获取栏位权限失败',
       updateFieldPermissionSuccess: '栏位权限保存成功',
       updateFieldPermissionFailed: '栏位权限保存失败',
+      overwriteAllStepFieldPermission: '覆盖全部步骤',
+      overwriteAllFieldPermissionConfirm: '确定要用当前设置覆盖该表单类别下所有步骤的栏位权限吗？此操作不可撤销。',
+      overwriteAllFieldPermissionSuccess: '已覆盖全部步骤的栏位权限',
+      overwriteAllFieldPermissionFailed: '覆盖全部步骤栏位权限失败',
     },
 
     // 流程分支配置页面专用
@@ -412,6 +421,7 @@ export default {
 
     // 流程规则配置页面专用
     workflowrule: {
+      ariaFilterLabel: '流程规则筛选',
       formGroupName: '表单组别',
       formTypeName: '表单类别',
       positionName: '职级',
@@ -493,6 +503,7 @@ export default {
 
     // 申请表单作业页面专用
     applyform: {
+      ariaFilterLabel: '表单类型筛选',
       formGroupName: '表单组别',
       formTypeName: '类型名称',
       pleaseSelectFormGroup: '请选择表单组别',
@@ -509,6 +520,7 @@ export default {
     },
 
     formpending: {
+      ariaFilterLabel: '待审批筛选',
       pleaseSelect: '请选择',
       all: '全部',
       pendingSubmit: '待送审',
@@ -547,6 +559,7 @@ export default {
     },
 
     voidedform: {
+      ariaFilterLabel: '已作废表单筛选',
       pleaseSelect: '请选择',
       formGroupName: '表单组别',
       formTypeName: '表单类型',
@@ -1468,7 +1481,7 @@ export default {
       exportPdfConfirm: '确定要导出用户PDF数据吗？',
       exportSuccess: '导出成功',
       exportFailed: '导出失败',
-      exportFileName: '用户信息导出',
+      exportFileName: '用户信息',
       exportPdfFileName: '用户信息导出',
       pleaseInputUserNo: '请输入用户工号',
       pleaseInputUserName: '请输入用户姓名',
@@ -2173,6 +2186,8 @@ export default {
       ariaEditLabel: '客户料号编辑',
       index: '序号',
       partNumber: '客户料号',
+      customerCode: '客户编号',
+      customerName: '客户名称',
       partName: '品名（中英文）',
       partNameCn: '品名（中文）',
       partNameEn: '品名（英文）',
@@ -2185,6 +2200,7 @@ export default {
       editCustomerNumber: '编辑客户料号',
       deleteConfirm: '确定要删除该客户料号吗？',
       pleaseInputPartNumber: '请输入客户料号',
+      pleaseSelectCustomer: '请选择客户',
       pleaseInputPartName: '请输入品名（中英文）',
       pleaseInputPartNameCn: '请输入品名（中文）',
       pleaseInputPartNameEn: '请输入品名（英文）',
@@ -2226,7 +2242,17 @@ export default {
       pleaseSelectEffectiveFrom: '请选择生效日期',
       pleaseSelectEffectiveTo: '请选择失效日期',
       getFailed: '获取数据失败',
-      operationFailed: '操作失败'
+      operationFailed: '操作失败',
+      import: '导入',
+      export: '导出',
+      exportFailed: '导出失败',
+      downloadTemplate: '下载模板',
+      downloadTemplateFailed: '下载模板失败',
+      templateFileName: '客户料号对照导入模板',
+      exportFileName: '客户料号对照信息',
+      dragFileHint: '将文件拖到此处，或点击上传',
+      startImport: '开始导入',
+      fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
     }
   }
 }

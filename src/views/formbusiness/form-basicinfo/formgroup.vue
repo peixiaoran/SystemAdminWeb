@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" aria-label="表单组别筛选">
+      <el-form :inline="true" :model="searchForm" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.formgroup.ariaFilterLabel')">
         <el-form-item :label="$t('formbusiness.formgroup.formGroupName')">
           <el-input
             v-model="searchForm.formGroupName"
@@ -83,7 +83,7 @@
           label-width="120px"
           class="dialog-form"
           role="form"
-          aria-label="表单组别编辑"
+          :aria-label="$t('formbusiness.formgroup.ariaEditLabel')"
         >
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.formgroup.formGroupNameCn')" prop="formGroupNameCn">
@@ -260,6 +260,8 @@ const handleEdit = async (row) => {
     showMessage(t('formbusiness.formgroup.getFailed'))
     dialogVisible.value = false
   } finally {
+    // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+    nextTick(() => formRef.value?.clearValidate())
     dialogLoading.value = false
   }
 }
@@ -320,6 +322,7 @@ const handleSubmit = async () => {
 
 const handleDialogClose = () => {
   resetForm()
+  dialogLoading.value = false
   formRef.value?.clearValidate()
 }
 

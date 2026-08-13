@@ -64,54 +64,51 @@
 
     <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? $t('formbusiness.controlinfo.editControl') : $t('formbusiness.controlinfo.addControl')"
+      :title="$t('formbusiness.controlinfo.addControl')"
       width="50%"
       :close-on-click-modal="false"
       :append-to-body="true"
       :lock-scroll="true"
       @close="handleDialogClose"
     >
-      <div v-loading="dialogLoading">
-        <el-form
-          :inline="true"
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          label-width="120px"
-          class="dialog-form"
-          role="form"
-          :aria-label="$t('formbusiness.controlinfo.ariaEditLabel')"
-        >
-          <div class="form-row">
-            <el-form-item :label="$t('formbusiness.controlinfo.controlCode')" prop="controlCode">
-              <el-input
-                v-model="form.controlCode"
-                :placeholder="$t('formbusiness.controlinfo.pleaseInputControlCode')"
-                style="width:100%"
-                :disabled="isEdit"
-              />
-            </el-form-item>
-            <el-form-item :label="$t('formbusiness.controlinfo.controlName')" prop="controlName">
-              <el-input
-                v-model="form.controlName"
-                :placeholder="$t('formbusiness.controlinfo.pleaseInputControlName')"
-                style="width:100%"
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.controlinfo.description')" prop="description">
-              <el-input
-                v-model="form.description"
-                :placeholder="$t('formbusiness.controlinfo.pleaseInputDescription')"
-                style="width:100%"
-                type="textarea"
-                :rows="3"
-              />
-            </el-form-item>
-          </div>
-        </el-form>
-      </div>
+      <el-form
+        :inline="true"
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="120px"
+        class="dialog-form"
+        role="form"
+        :aria-label="$t('formbusiness.controlinfo.ariaEditLabel')"
+      >
+        <div class="form-row">
+          <el-form-item :label="$t('formbusiness.controlinfo.controlCode')" prop="controlCode">
+            <el-input
+              v-model="form.controlCode"
+              :placeholder="$t('formbusiness.controlinfo.pleaseInputControlCode')"
+              style="width:100%"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('formbusiness.controlinfo.controlName')" prop="controlName">
+            <el-input
+              v-model="form.controlName"
+              :placeholder="$t('formbusiness.controlinfo.pleaseInputControlName')"
+              style="width:100%"
+            />
+          </el-form-item>
+        </div>
+        <div class="form-row full-width">
+          <el-form-item :label="$t('formbusiness.controlinfo.description')" prop="description">
+            <el-input
+              v-model="form.description"
+              :placeholder="$t('formbusiness.controlinfo.pleaseInputDescription')"
+              style="width:100%"
+              type="textarea"
+              :rows="3"
+            />
+          </el-form-item>
+        </div>
+      </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSubmit" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -146,12 +143,10 @@ const showMessage = (message, type = 'error') => {
 }
 
 const loading = ref(false)
-const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const controlList = ref([])
 const dialogVisible = ref(false)
 const formRef = ref(null)
-const isEdit = ref(false)
 
 const searchForm = reactive({ controlCode: '' })
 

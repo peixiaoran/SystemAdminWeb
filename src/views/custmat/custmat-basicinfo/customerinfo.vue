@@ -43,13 +43,13 @@
           <el-table-column prop="customerCode" :label="$t('custmat.customer.customerCode')" align="left" min-width="160" />
           <el-table-column prop="customerNameCn" :label="$t('custmat.customer.customerNameCn')" align="left" min-width="200" />
           <el-table-column prop="customerNameEn" :label="$t('custmat.customer.customerNameEn')" align="left" min-width="200" />
-          <el-table-column prop="description" :label="$t('custmat.customer.customerDescription')" align="left" min-width="250" />
+          <el-table-column prop="description" :label="$t('custmat.customer.customerDescription')" align="left" min-width="250" show-overflow-tooltip />
           <el-table-column :label="$t('common.operation')" min-width="120" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.customerId">
+              <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.customerId">
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -81,7 +81,7 @@
                  :model="editForm"
                  :rules="formRules"
                  ref="editFormRef"
-                 label-width="100px"
+                 label-width="130px"
                  class="dialog-form"
                  role="form"
                  :aria-label="$t('custmat.customer.ariaEditLabel')">
@@ -150,8 +150,6 @@ const customerList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
-const deletingId = ref(null)
 const editFormRef = ref(null)
 
 const pagination = reactive({
@@ -272,7 +270,6 @@ const handleAdd = () => {
 }
 
 const handleEdit = async (row) => {
-  editingId.value = row.customerId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
@@ -306,7 +303,6 @@ const handleEdit = async (row) => {
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
     nextTick(() => editFormRef.value?.clearValidate())
   }
 }
@@ -322,7 +318,6 @@ const handleDelete = async (row) => {
     return
   }
 
-  deletingId.value = row.customerId
   try {
     const res = await post(
       DELETE_CUSTOMER_API.DELETE_CUSTOMER,
@@ -340,8 +335,6 @@ const handleDelete = async (row) => {
     }
   } catch {
     showMessage(t('custmat.customer.operationFailed'))
-  } finally {
-    deletingId.value = null
   }
 }
 
@@ -379,6 +372,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

@@ -53,3 +53,6 @@ export const GET_STEP_FIELD_PERMISSION_LIST_API = 'FormBusiness/FormWorkFlow/Wor
 
 // 更新流程步骤栏位权限API
 export const UPDATE_STEP_FIELD_PERMISSION_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateStepFieldPermission'
+
+// 用当前栏位权限覆盖该表单类别下全部步骤API
+export const UPDATE_ALL_STEP_FIELD_PERMISSION_API = 'FormBusiness/FormWorkFlow/WorkflowStep/UpdateAllStepFieldPermission'

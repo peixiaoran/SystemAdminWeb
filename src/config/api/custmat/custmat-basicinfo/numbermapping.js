@@ -40,3 +40,18 @@ export const GET_CUSTOMER_PART_NUMBER_DROP_API = {
 export const GET_COMPANY_PART_NUMBER_DROP_API = {
     GET_COMPANY_PART_NUMBER_DROP: 'CustMat/CustMatBasicInfo/NumberMapping/GetCompanyPartNumberDrop'
 }
+
+// 料号对照导入模板下载API
+export const GET_NUMBER_MAPPING_TEMPLATE_API = {
+    GET_NUMBER_MAPPING_TEMPLATE: 'CustMat/CustMatBasicInfo/NumberMapping/GetNumberMappingTemplate'
+}
+
+// 料号对照导入API
+export const IMPORT_NUMBER_MAPPING_API = {
+    IMPORT_NUMBER_MAPPING: 'CustMat/CustMatBasicInfo/NumberMapping/ImportNumberMapping'
+}
+
+// 料号对照导出API
+export const GET_NUMBER_MAPPING_EXCEL_API = {
+    GET_NUMBER_MAPPING_EXCEL: 'CustMat/CustMatBasicInfo/NumberMapping/GetNumberMappingExcel'
+}

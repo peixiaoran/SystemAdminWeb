@@ -111,6 +111,7 @@
                  @close="handleDialogClose">
         <div class="parttime-dialog-body">
           <!-- 兼任信息区域 -->
+          <div v-loading="dialogLoading">
           <el-form ref="editFormRef"
                    :model="editForm"
                    :rules="formRules"
@@ -165,6 +166,7 @@
               </el-form-item>
             </div>
           </el-form>
+          </div>
 
           <el-divider style="margin: 25px 0 8px" />
 
@@ -313,6 +315,7 @@ const filters = reactive({
 
 // 新增/编辑对话框
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const isEdit = ref(false)
 const submitLoading = ref(false)
 const editFormRef = ref(null)
@@ -651,6 +654,10 @@ const handleAdd = async () => {
   Object.assign(userSelectPagination, { pageIndex: 1, pageSize: 10, totalCount: 0 })
   userSelectList.value = []
 
+  isEdit.value = false
+  dialogVisible.value = true
+  dialogLoading.value = true
+
   await fetchDepartmentDropdown()
   await fetchPositionDropdown()
 
@@ -661,16 +668,17 @@ const handleAdd = async () => {
   }
   editForm.partTimePositionId = getFirstEnabledPositionId()
 
-  isEdit.value = false
-  dialogVisible.value = true
-
   await nextTick()
-  // 打开对话框后清除一次校验状态，避免保留上次必填错误提示
+  // 下拉数据与默认值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
   clearFormValidate()
+  dialogLoading.value = false
   await fetchUserSelectList()
 }
 
 const handleEdit = async (row) => {
+  isEdit.value = true
+  dialogVisible.value = true
+  dialogLoading.value = true
   try {
     await fetchDepartmentDropdown()
     await fetchPositionDropdown()
@@ -682,6 +690,7 @@ const handleEdit = async (row) => {
     })
     if (!(res?.code === 200 && res.data)) {
       showMessage(res?.message)
+      dialogVisible.value = false
       return
     }
 
@@ -714,15 +723,15 @@ const handleEdit = async (row) => {
     Object.assign(userSelectFilters, { userNo: row.userNo, userName: row.userName })
     Object.assign(userSelectPagination, { pageIndex: 1, pageSize: 10, totalCount: 0 })
 
-    isEdit.value = true
-    dialogVisible.value = true
-
     await nextTick()
-    // 编辑模式下同样清理一次校验状态，防止上次的必填/格式错误残留
+    // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
     clearFormValidate()
+    dialogLoading.value = false
     await fetchUserSelectList()
   } catch {
     showMessage(t('systembasicmgmt.userPartTime.getPartTimeDetailFailed'))
+    dialogVisible.value = false
+    dialogLoading.value = false
   }
 }
 
@@ -790,6 +799,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

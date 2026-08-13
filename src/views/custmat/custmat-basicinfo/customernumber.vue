@@ -71,7 +71,8 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('custmat.customernumber.index')" width="70" align="center" fixed />
-          <el-table-column prop="partNumber" :label="$t('custmat.customernumber.partNumber')" align="left" min-width="140" />
+          <el-table-column prop="partNumber" :label="$t('custmat.customernumber.partNumber')" align="center" min-width="110" />
+          <el-table-column prop="customerCode" :label="$t('custmat.customernumber.customerCode')" align="center" min-width="120" />
           <el-table-column prop="partNameCn" :label="$t('custmat.customernumber.partNameCn')" align="left" min-width="120" />
           <el-table-column prop="partNameEn" :label="$t('custmat.customernumber.partNameEn')" align="left" min-width="180" />
           <el-table-column prop="specification" :label="$t('custmat.customernumber.specification')" align="left" min-width="160" />
@@ -83,12 +84,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('common.operation')" min-width="180" fixed="right" align="center">
+          <el-table-column :label="$t('common.operation')" width="220" fixed="right" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)" :loading="editingId === scope.row.customerNumberId">
+              <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)" :loading="deletingId === scope.row.customerNumberId">
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
             </template>
@@ -111,7 +112,7 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.customernumber.editCustomerNumber') : $t('custmat.customernumber.addCustomerNumber')"
-               width="60%"
+               width="50%"
                :close-on-click-modal="false"
                :append-to-body="true"
                :lock-scroll="true"
@@ -121,7 +122,7 @@
                  :model="editForm"
                  :rules="formRules"
                  ref="editFormRef"
-                 label-width="110px"
+                 label-width="140px"
                  class="dialog-form"
                  role="form"
                  :aria-label="$t('custmat.customernumber.ariaEditLabel')">
@@ -131,33 +132,45 @@
                         style="width:100%"
                         :placeholder="$t('custmat.customernumber.pleaseInputPartNumber')" />
             </el-form-item>
+            <el-form-item :label="$t('custmat.customernumber.customerCode')" prop="customerCode">
+              <el-select v-model="editForm.customerCode" filterable style="width:100%" :placeholder="$t('custmat.customernumber.pleaseSelectCustomer')">
+                <el-option v-for="item in customerOptions"
+                           :key="item.customerCode"
+                           :label="item.customerName"
+                           :value="item.customerCode" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
             <el-form-item :label="$t('custmat.customernumber.partNameCn')" prop="partNameCn">
               <el-input v-model="editForm.partNameCn"
                         style="width:100%"
                         :placeholder="$t('custmat.customernumber.pleaseInputPartNameCn')" />
             </el-form-item>
-          </div>
-          <div class="form-row">
             <el-form-item :label="$t('custmat.customernumber.partNameEn')" prop="partNameEn">
               <el-input v-model="editForm.partNameEn"
                         style="width:100%"
                         :placeholder="$t('custmat.customernumber.pleaseInputPartNameEn')" />
             </el-form-item>
+          </div>
+          <div class="form-row">
             <el-form-item :label="$t('custmat.customernumber.specification')" prop="specification">
               <el-input v-model="editForm.specification"
                         style="width:100%"
                         :placeholder="$t('custmat.customernumber.pleaseInputSpecification')" />
             </el-form-item>
-          </div>
-          <div class="form-row">
             <el-form-item :label="$t('custmat.customernumber.unit')" prop="unit">
               <el-input v-model="editForm.unit"
                         style="width:100%"
                         :placeholder="$t('custmat.customernumber.pleaseInputUnit')" />
             </el-form-item>
+          </div>
+          <div class="form-row">
             <el-form-item :label="$t('custmat.customernumber.status')" prop="status">
               <el-switch v-model="editForm.status" />
             </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
           </div>
         </el-form>
       </div>
@@ -223,7 +236,8 @@ import {
   DELETE_CUSTOMER_NUMBER_API,
   GET_CUSTOMER_NUMBER_TEMPLATE_API,
   IMPORT_CUSTOMER_NUMBER_API,
-  GET_CUSTOMER_NUMBER_EXCEL_API
+  GET_CUSTOMER_NUMBER_EXCEL_API,
+  GET_CUSTOMER_DROP_API
 } from '@/config/api/custmat/custmat-basicinfo/customernumber'
 
 const { t } = useI18n()
@@ -235,9 +249,10 @@ const customerNumberList = ref([])
 const loading = ref(false)
 const dialogLoading = ref(false)
 const submitLoading = ref(false)
-const editingId = ref(null)
-const deletingId = ref(null)
 const editFormRef = ref(null)
+
+// 客户下拉选项
+const customerOptions = ref([])
 
 // 导入相关
 const importDialogVisible = ref(false)
@@ -269,11 +284,12 @@ const dialogVisible = ref(false)
 const isEdit = ref(false)
 
 const editForm = reactive({
-  customerNumberId: '',
+  partNumberId: '',
   partNumber: '',
+  customerCode: '',
   partNameCn: '',
-  partNameEn: null,
-  specification: null,
+  partNameEn: '',
+  specification: '',
   unit: '',
   status: true
 })
@@ -282,8 +298,14 @@ const formRules = {
   partNumber: [
     { required: true, message: () => t('custmat.customernumber.pleaseInputPartNumber'), trigger: 'blur' }
   ],
+  customerCode: [
+    { required: true, message: () => t('custmat.customernumber.pleaseSelectCustomer'), trigger: 'change' }
+  ],
   partNameCn: [
     { required: true, message: () => t('custmat.customernumber.pleaseInputPartNameCn'), trigger: 'blur' }
+  ],
+  partNameEn: [
+    { required: true, message: () => t('custmat.customernumber.pleaseInputPartNameEn'), trigger: 'blur' }
   ],
   unit: [
     { required: true, message: () => t('custmat.customernumber.pleaseInputUnit'), trigger: 'blur' }
@@ -342,6 +364,13 @@ const downloadBlob = (blob, fileName) => {
   window.URL.revokeObjectURL(url)
 }
 
+const fetchCustomerDropdown = async () => {
+  const res = await post(GET_CUSTOMER_DROP_API.GET_CUSTOMER_DROP)
+  if (res?.code === 200) {
+    customerOptions.value = res.data || []
+  }
+}
+
 const fetchCustomerNumberList = async () => {
   loading.value = true
   try {
@@ -369,11 +398,12 @@ const fetchCustomerNumberList = async () => {
 
 const resetEditForm = () => {
   Object.assign(editForm, {
-    customerNumberId: '',
+    partNumberId: '',
     partNumber: '',
+    customerCode: '',
     partNameCn: '',
-    partNameEn: null,
-    specification: null,
+    partNameEn: '',
+    specification: '',
     unit: '',
     status: true
   })
@@ -408,19 +438,20 @@ const handleAdd = () => {
   resetEditForm()
   isEdit.value = false
   dialogVisible.value = true
+  fetchCustomerDropdown()
   nextTick(() => editFormRef.value?.clearValidate())
 }
 
 const handleEdit = async (row) => {
-  editingId.value = row.customerNumberId
   dialogLoading.value = true
   dialogVisible.value = true
   isEdit.value = true
+  fetchCustomerDropdown()
 
   try {
     const res = await post(
       GET_CUSTOMER_NUMBER_ENTITY_API.GET_CUSTOMER_NUMBER_ENTITY,
-      new URLSearchParams({ customerNumberId: String(row.customerNumberId) }),
+      new URLSearchParams({ partNumberId: String(row.partNumberId) }),
       FORM_URLENCODED
     )
 
@@ -431,13 +462,14 @@ const handleEdit = async (row) => {
 
     if (res?.code === 200) {
       Object.assign(editForm, {
-        customerNumberId: res.data.customerNumberId,
+        partNumberId: res.data.partNumberId,
         partNumber: res.data.partNumber,
+        customerCode: res.data.customerCode,
         partNameCn: res.data.partNameCn,
         partNameEn: res.data.partNameEn,
         specification: res.data.specification,
         unit: res.data.unit,
-        status: res.data.status
+        status: Number(res.data.status) === 1
       })
     } else {
       showApiError(res, 'custmat.customernumber.getFailed')
@@ -448,7 +480,6 @@ const handleEdit = async (row) => {
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
-    editingId.value = null
     nextTick(() => editFormRef.value?.clearValidate())
   }
 }
@@ -464,11 +495,10 @@ const handleDelete = async (row) => {
     return
   }
 
-  deletingId.value = row.customerNumberId
   try {
     const res = await post(
       DELETE_CUSTOMER_NUMBER_API.DELETE_CUSTOMER_NUMBER,
-      new URLSearchParams({ customerNumberId: String(row.customerNumberId) }),
+      new URLSearchParams({ partNumberId: String(row.partNumberId) }),
       FORM_URLENCODED
     )
 
@@ -482,8 +512,6 @@ const handleDelete = async (row) => {
     }
   } catch {
     showMessage(t('custmat.customernumber.operationFailed'))
-  } finally {
-    deletingId.value = null
   }
 }
 
@@ -498,13 +526,14 @@ const handleSave = async () => {
       ? UPDATE_CUSTOMER_NUMBER_API.UPDATE_CUSTOMER_NUMBER
       : INSERT_CUSTOMER_NUMBER_API.INSERT_CUSTOMER_NUMBER
     const res = await post(api, {
-      customerNumberId: editForm.customerNumberId,
+      partNumberId: editForm.partNumberId,
       partNumber: editForm.partNumber,
+      customerCode: editForm.customerCode,
       partNameCn: editForm.partNameCn,
       partNameEn: editForm.partNameEn,
       specification: editForm.specification,
       unit: editForm.unit,
-      status: editForm.status
+      status: editForm.status ? 1 : 0
     })
 
     if (isHandled(res)) return
@@ -525,6 +554,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 
@@ -623,6 +653,7 @@ const handleImportSubmit = async () => {
 }
 
 onMounted(() => {
+  fetchCustomerDropdown()
   fetchCustomerNumberList()
 })
 </script>

@@ -269,6 +269,8 @@ export default {
 
     // Form Group Page Specific
     formgroup: {
+      ariaFilterLabel: 'Form Group Filter',
+      ariaEditLabel: 'Form Group Edit',
       index: 'Index',
       formGroupName: 'Group Name',
       formGroupNameCn: 'Name（Cn）',
@@ -319,6 +321,8 @@ export default {
     
     // Form category page specific
     formtype: {
+      ariaFilterLabel: 'Form Type Filter',
+      ariaEditLabel: 'Form Type Edit',
       formName: 'Form Name',
       apply: 'Apply',
       formTypeName: 'Form Type Name',
@@ -378,6 +382,7 @@ export default {
 
     // Workflow Step Page Specific
     workflowstep: {
+      ariaFilterLabel: 'Workflow Step Filter',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
       index: 'Index',
@@ -447,6 +452,10 @@ export default {
       getFieldPermissionFailed: 'Failed to get field permissions',
       updateFieldPermissionSuccess: 'Field permissions saved successfully',
       updateFieldPermissionFailed: 'Failed to save field permissions',
+      overwriteAllStepFieldPermission: 'Overwrite All Steps',
+      overwriteAllFieldPermissionConfirm: 'Overwrite the field permissions of all steps under this form type with the current settings? This cannot be undone.',
+      overwriteAllFieldPermissionSuccess: 'Field permissions overwritten for all steps',
+      overwriteAllFieldPermissionFailed: 'Failed to overwrite field permissions for all steps',
     },
 
     // Workflow Branch Page Specific
@@ -480,6 +489,7 @@ export default {
 
     // Workflow Rule Page Specific
     workflowrule: {
+      ariaFilterLabel: 'Workflow Rule Filter',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
       positionName: 'Position',
@@ -561,6 +571,7 @@ export default {
 
     // Apply Form Page Specific
     applyform: {
+      ariaFilterLabel: 'Form Type Filter',
       formGroupName: 'Form Group',
       formTypeName: 'Type Name',
       pleaseSelectFormGroup: 'Please select form group',
@@ -577,6 +588,7 @@ export default {
     },
 
     formpending: {
+      ariaFilterLabel: 'Form Pending Filter',
       pleaseSelect: 'Please select',
       all: 'All',
       pendingSubmit: 'Submit',
@@ -615,6 +627,7 @@ export default {
     },
 
     voidedform: {
+      ariaFilterLabel: 'Voided Form Filter',
       pleaseSelect: 'Please select',
       formGroupName: 'Form Group',
       formTypeName: 'Form Type',
@@ -1309,9 +1322,9 @@ export default {
     custmat: 'Customer Production',
     custmatbasicinfo: 'Production Basic',
     custmatCustomer: 'Customer Info',
-    custmatCompanyNumber: 'Company Number',
-    custmatCustomerNumber: 'Customer Number',
-    custmatNumberMapping: 'Number Mapping'
+    custmatCompanyNumber: 'Co. No.',
+    custmatCustomerNumber: 'Cust. No.',
+    custmatNumberMapping: 'No. Mapping'
   },
   
   // System Basic Management
@@ -1434,7 +1447,7 @@ export default {
       exportPdfConfirm: 'Are you sure you want to export user PDF data?',
       exportSuccess: 'Export Successfully',
       exportFailed: 'Export Failed',
-      exportFileName: 'User Information Export',
+      exportFileName: 'UserInfo',
       exportPdfFileName: 'User Information Export',
       pleaseInputUserNo: 'Please enter user number',
       pleaseInputUserName: 'Please enter user name',
@@ -2172,8 +2185,8 @@ export default {
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled',
       remark: 'Remark',
-      addCompanyNumber: 'Add Company Number',
-      editCompanyNumber: 'Edit Company Number',
+      addCompanyNumber: 'Add Co. No.',
+      editCompanyNumber: 'Edit Co. No.',
       deleteConfirm: 'Are you sure you want to delete this company number?',
       pleaseInputPartNumber: 'Please enter company number',
       pleaseInputPartName: 'Please enter Name（Cn/En）',
@@ -2195,7 +2208,7 @@ export default {
       downloadTemplate: 'Download Template',
       downloadTemplateFailed: 'Failed to download template',
       templateFileName: 'Company Number Import Template',
-      exportFileName: 'CompanyNumber',
+      exportFileName: 'Company Number Info',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
@@ -2207,6 +2220,8 @@ export default {
       ariaEditLabel: 'Part Number Edit',
       index: 'Index',
       partNumber: 'Part Number',
+      customerCode: 'Customer Code',
+      customerName: 'Customer Name',
       partName: 'Name',
       partNameCn: 'Name（Cn）',
       partNameEn: 'Name（En）',
@@ -2215,10 +2230,11 @@ export default {
       status: 'Status',
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled',
-      addCustomerNumber: 'Add Customer Number',
-      editCustomerNumber: 'Edit Customer Number',
+      addCustomerNumber: 'Add Cust. No.',
+      editCustomerNumber: 'Edit Cust. No.',
       deleteConfirm: 'Are you sure you want to delete this customer number?',
       pleaseInputPartNumber: 'Please enter customer number',
+      pleaseSelectCustomer: 'Please select customer',
       pleaseInputPartName: 'Please enter Name（Cn/En）',
       pleaseInputPartNameCn: 'Please enter Name（Cn）',
       pleaseInputPartNameEn: 'Please enter Name（En）',
@@ -2232,7 +2248,7 @@ export default {
       downloadTemplate: 'Download Template',
       downloadTemplateFailed: 'Failed to download template',
       templateFileName: 'Customer Number Import Template',
-      exportFileName: 'CustomerNumber',
+      exportFileName: 'Customer Number Info',
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
@@ -2240,18 +2256,18 @@ export default {
       clearAll: 'Clear All'
     },
     numbermapping: {
-      ariaFilterLabel: 'Number Mapping Filter',
-      ariaEditLabel: 'Number Mapping Edit',
+      ariaFilterLabel: 'No Mapping Filter',
+      ariaEditLabel: 'No Mapping Edit',
       index: 'Index',
-      customerPartNumber: 'CustomerNumber',
-      companyPartNumber: 'CompanyNumber',
+      customerPartNumber: 'Cust. No.',
+      companyPartNumber: 'Co. No.',
       effectiveFrom: 'Effective From',
       effectiveTo: 'Effective To',
       status: 'Status',
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled',
-      addNumberMapping: 'Add Number Mapping',
-      editNumberMapping: 'Edit Number Mapping',
+      addNumberMapping: 'Add No Mapping',
+      editNumberMapping: 'Edit No Mapping',
       deleteConfirm: 'Are you sure you want to delete this number mapping?',
       pleaseInputCustomerPartNumber: 'Please enter customer part number',
       pleaseInputCompanyPartNumber: 'Please enter company part number',
@@ -2260,7 +2276,17 @@ export default {
       pleaseSelectEffectiveFrom: 'Select date',
       pleaseSelectEffectiveTo: 'Select date',
       getFailed: 'Failed to get data',
-      operationFailed: 'Operation Failed'
+      operationFailed: 'Operation Failed',
+      import: 'Import',
+      export: 'Export',
+      exportFailed: 'Failed to export',
+      downloadTemplate: 'Download Template',
+      downloadTemplateFailed: 'Failed to download template',
+      templateFileName: 'No. Mapping Import Template',
+      exportFileName: 'No. Mapping Info',
+      dragFileHint: 'Drag file here, or click to upload',
+      startImport: 'Start Import',
+      fileChangedError: 'The selected file has been modified or is unreadable. Please reselect the file and upload again.'
     }
   }
 }

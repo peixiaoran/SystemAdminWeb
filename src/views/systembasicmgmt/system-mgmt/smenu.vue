@@ -90,88 +90,90 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true"
-               :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="110px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.smenu.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.smenu.smenuCode')" prop="menuCode">
-            <el-input v-model="editForm.menuCode"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameCn')" prop="menuNameCn">
-            <el-input v-model="editForm.menuNameCn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuNameCn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameEn')" prop="menuNameEn">
-            <el-input v-model="editForm.menuNameEn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuNameEn')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
-            <el-input v-model="editForm.menuIcon"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuIcon')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
-            <el-select v-model="editForm.moduleId"
-                       style="width:100%"
-                       :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')"
-                       @change="handleFormModuleChange">
-              <el-option v-for="item in moduleOptions"
-                         :key="item.moduleId"
-                         :label="item.moduleName"
-                         :value="item.moduleId"
-                         :disabled="item.disabled" />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')" prop="parentMenuId">
-            <el-select v-model="editForm.parentMenuId"
-                       style="width:100%"
-                       :placeholder="$t('systembasicmgmt.smenu.pleaseSelectPMenu')">
-              <el-option v-for="item in pmenuOptions"
-                         :key="item.menuId"
-                         :label="item.menuName"
-                         :value="item.menuId"
-                         :disabled="item.disabled" />
-            </el-select>
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.smenu.sortOrder')" prop="sortOrder">
-            <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.smenu.pagePath')" prop="path">
-            <el-input v-model="editForm.path"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputPagePath')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.smenu.apiRoute')" prop="routePath">
-            <el-input v-model="editForm.routePath"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.smenu.pleaseInputApiRoute')" />
-          </el-form-item>
-          <!-- 占位项：保持与上方两列布局对齐 -->
-          <el-form-item />
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.remark')">
-            <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="110px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.smenu.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.smenu.smenuCode')" prop="menuCode">
+              <el-input v-model="editForm.menuCode"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameCn')" prop="menuNameCn">
+              <el-input v-model="editForm.menuNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuNameCn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.smenu.smenuNameEn')" prop="menuNameEn">
+              <el-input v-model="editForm.menuNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuNameEn')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.smenu.smenuIcon')" prop="menuIcon">
+              <el-input v-model="editForm.menuIcon"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputSMenuIcon')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.smenu.module')" prop="moduleId">
+              <el-select v-model="editForm.moduleId"
+                         style="width:100%"
+                         :placeholder="$t('systembasicmgmt.smenu.pleaseSelectModule')"
+                         @change="handleFormModuleChange">
+                <el-option v-for="item in moduleOptions"
+                           :key="item.moduleId"
+                           :label="item.moduleName"
+                           :value="item.moduleId"
+                           :disabled="item.disabled" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.smenu.pmenu')" prop="parentMenuId">
+              <el-select v-model="editForm.parentMenuId"
+                         style="width:100%"
+                         :placeholder="$t('systembasicmgmt.smenu.pleaseSelectPMenu')">
+                <el-option v-for="item in pmenuOptions"
+                           :key="item.menuId"
+                           :label="item.menuName"
+                           :value="item.menuId"
+                           :disabled="item.disabled" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.smenu.sortOrder')" prop="sortOrder">
+              <el-input-number v-model="editForm.sortOrder" style="width:100%" :min="1" :precision="0" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.smenu.pagePath')" prop="path">
+              <el-input v-model="editForm.path"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputPagePath')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.smenu.apiRoute')" prop="routePath">
+              <el-input v-model="editForm.routePath"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.smenu.pleaseInputApiRoute')" />
+            </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.remark')">
+              <el-input v-model="editForm.remark" style="width:100%" type="textarea" :rows="3" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -228,6 +230,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref('')
 
 const editForm = reactive({
@@ -489,6 +492,7 @@ const handleAdd = async () => {
   editForm.menuId = NEW_MENU_ID
   dialogTitle.value = t('systembasicmgmt.smenu.addSMenu')
   dialogVisible.value = true
+  dialogLoading.value = true
   try {
     const firstEnabledModule = await fetchModuleDropdown()
     if (firstEnabledModule) {
@@ -498,20 +502,29 @@ const handleAdd = async () => {
   } catch {
     showMessage(t('systembasicmgmt.getModuleDataFailed'))
   }
-  nextTick(() => editFormRef.value?.clearValidate())
+  // 下拉数据与回填值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleEdit = async (row) => {
   resetEditForm()
   dialogTitle.value = t('systembasicmgmt.smenu.editSMenu')
   dialogVisible.value = true
+  dialogLoading.value = true
   try {
     await fetchModuleDropdown()
   } catch {
     showMessage(t('systembasicmgmt.getModuleDataFailed'))
   }
   await fetchSMenuEntity(row.menuId)
-  nextTick(() => editFormRef.value?.clearValidate())
+  // 下拉数据与回填值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -540,6 +553,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

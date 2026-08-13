@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" aria-label="流程步骤筛选">
+      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.workflowstep.ariaFilterLabel')">
         <el-form-item :label="$t('formbusiness.workflowstep.formGroupName')">
           <el-select 
             v-model="searchForm.formGroupId" 
@@ -406,7 +406,7 @@
     <el-dialog
       v-model="fieldPermissionDialogVisible"
       :title="$t('formbusiness.workflowstep.fieldPermissionTitle')"
-      width="600px"
+      width="640px"
       :close-on-click-modal="false"
       :append-to-body="true"
       @close="handleFieldPermissionDialogClose"
@@ -414,13 +414,20 @@
     >
       <div v-loading="stepFieldPermissionLoading">
         <div class="field-permission-toolbar">
-          <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsVisible') }}：</span>
-          <el-button size="small" @click="toggleAllPermission('isVisible', 1)">{{ $t('common.selectAll') }}</el-button>
-          <el-button size="small" @click="toggleAllPermission('isVisible', 0)">{{ $t('common.deselectAll') }}</el-button>
-          <el-divider direction="vertical" />
-          <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsDisabled') }}：</span>
-          <el-button size="small" @click="toggleAllPermission('isDisabled', 1)">{{ $t('common.selectAll') }}</el-button>
-          <el-button size="small" @click="toggleAllPermission('isDisabled', 0)">{{ $t('common.deselectAll') }}</el-button>
+          <div class="field-permission-toolbar-row">
+            <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsVisible') }}</span>
+            <el-button-group>
+              <el-button size="small" @click="toggleAllPermission('isVisible', 1)">{{ $t('common.selectAll') }}</el-button>
+              <el-button size="small" @click="toggleAllPermission('isVisible', 0)">{{ $t('common.deselectAll') }}</el-button>
+            </el-button-group>
+          </div>
+          <div class="field-permission-toolbar-row">
+            <span class="field-permission-toolbar-label">{{ $t('formbusiness.workflowstep.fieldPermissionIsDisabled') }}</span>
+            <el-button-group>
+              <el-button size="small" @click="toggleAllPermission('isDisabled', 1)">{{ $t('common.selectAll') }}</el-button>
+              <el-button size="small" @click="toggleAllPermission('isDisabled', 0)">{{ $t('common.deselectAll') }}</el-button>
+            </el-button-group>
+          </div>
         </div>
         <el-table
           :data="stepFieldPermissionList"
@@ -447,7 +454,6 @@
                 v-model="row.isVisible"
                 :active-value="1"
                 :inactive-value="0"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
                 @change="onFieldVisibleChange(row)"
               />
             </template>
@@ -463,19 +469,29 @@
                 :active-value="1"
                 :inactive-value="0"
                 :disabled="row.isVisible === 0"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399;"
               />
             </template>
           </el-table-column>
         </el-table>
       </div>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="fieldPermissionDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" :loading="fieldPermissionSubmitting" @click="submitFieldPermission">
-            {{ $t('common.confirm') }}
+        <div class="field-permission-footer">
+          <el-button
+            type="warning"
+            plain
+            :loading="overwriteAllSubmitting"
+            :disabled="!stepFieldPermissionList.length"
+            @click="handleOverwriteAllStepFieldPermission"
+          >
+            {{ $t('formbusiness.workflowstep.overwriteAllStepFieldPermission') }}
           </el-button>
-        </span>
+          <span class="dialog-footer">
+            <el-button @click="fieldPermissionDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+            <el-button type="primary" :loading="fieldPermissionSubmitting" @click="submitFieldPermission">
+              {{ $t('common.confirm') }}
+            </el-button>
+          </span>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -502,7 +518,8 @@ import {
   GET_WORKFLOWSTEP_ENTITY_API,
   UPDATE_WORKFLOWSTEP_API,
   GET_STEP_FIELD_PERMISSION_LIST_API,
-  UPDATE_STEP_FIELD_PERMISSION_API
+  UPDATE_STEP_FIELD_PERMISSION_API,
+  UPDATE_ALL_STEP_FIELD_PERMISSION_API
 } from '@/config/api/formbusiness/form-workflow/workflowstep.js'
 import { useI18n } from 'vue-i18n'
 
@@ -569,6 +586,7 @@ const fieldPermissionDialogVisible = ref(false)
 const stepFieldPermissionList = ref([])
 const stepFieldPermissionLoading = ref(false)
 const fieldPermissionSubmitting = ref(false)
+const overwriteAllSubmitting = ref(false)
 const fieldPermissionStepId = ref('')
 const fieldPermissionFormTypeId = ref('')
 const addStepForm = reactive({
@@ -836,10 +854,50 @@ const submitFieldPermission = async () => {
   }
 }
 
+// 用当前弹窗内的栏位权限设置覆盖该表单类别下所有步骤（不区分 stepId）
+const handleOverwriteAllStepFieldPermission = async () => {
+  if (!stepFieldPermissionList.value.length || !fieldPermissionFormTypeId.value) return
+
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.workflowstep.overwriteAllFieldPermissionConfirm'),
+      t('common.tip'),
+      { type: 'warning' }
+    )
+  } catch {
+    return
+  }
+
+  overwriteAllSubmitting.value = true
+  try {
+    const payload = stepFieldPermissionList.value.map((row) => ({
+      fieldId: row.fieldId,
+      isVisible: row.isVisible,
+      isDisabled: row.isDisabled
+    }))
+    const response = await post(
+      UPDATE_ALL_STEP_FIELD_PERMISSION_API,
+      payload,
+      { params: { formTypeId: fieldPermissionFormTypeId.value } }
+    )
+    if (response.code === 200) {
+      showMessage(response.message || t('formbusiness.workflowstep.overwriteAllFieldPermissionSuccess'), 'success')
+      fieldPermissionDialogVisible.value = false
+    } else {
+      showMessage(response.message || t('formbusiness.workflowstep.overwriteAllFieldPermissionFailed'), Number(response?.code) === 400 ? 'warning' : 'error')
+    }
+  } catch {
+    showMessage(t('formbusiness.workflowstep.overwriteAllFieldPermissionFailed'))
+  } finally {
+    overwriteAllSubmitting.value = false
+  }
+}
+
 const handleFieldPermissionDialogClose = () => {
   stepFieldPermissionList.value = []
   fieldPermissionStepId.value = ''
   fieldPermissionFormTypeId.value = ''
+  stepFieldPermissionLoading.value = false
 }
 
 const handleEditStep = async (step) => {
@@ -918,6 +976,8 @@ const handleEditStep = async (step) => {
   } catch {
     showMessage(t('formbusiness.workflowstep.getFailed'))
   } finally {
+    // 下拉数据与回填值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+    nextTick(() => addStepFormRef.value?.clearValidate())
     addStepDialogLoading.value = false
   }
 }
@@ -1168,6 +1228,8 @@ const openAddStepDialog = async () => {
     }
     addStepForm.sortOrder = 1
   } finally {
+    // 下拉数据与默认值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+    nextTick(() => addStepFormRef.value?.clearValidate())
     addStepDialogLoading.value = false
   }
 }
@@ -1227,6 +1289,7 @@ const onAddStepFormGroupChange = async (formGroupId) => {
 const handleAddStepDialogClose = () => {
   addStepFormRef.value?.resetFields()
   dialogFormTypeOptions.value = []
+  addStepDialogLoading.value = false
 }
 
 const submitAddStep = async () => {
@@ -1302,17 +1365,32 @@ onMounted(async () => {
 /* 栏位权限弹窗：全选/全不选工具栏 */
 .field-permission-toolbar {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+.field-permission-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .field-permission-toolbar-label {
   font-size: 13px;
+  font-weight: 500;
   color: var(--el-text-color-regular);
 }
 .step-field-permission-table {
   width: 100%;
+}
+
+/* 栏位权限弹窗底部：覆盖全部步骤（危险操作）与取消/确认分居两侧 */
+.field-permission-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* User 筛选：靠左、文本与控件间距正常、宽度稍宽，与左右留距 */

@@ -106,6 +106,7 @@
                destroy-on-close
                draggable
                @closed="handleDialogClose">
+      <div v-loading="dialogLoading">
       <el-form :inline="true"
                :model="editForm"
                :rules="formRules"
@@ -252,40 +253,24 @@
           <el-form-item :label="$t('systembasicmgmt.userInfo.isEmployed')">
             <el-switch v-model="editForm.isEmployed"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.isReview')">
             <el-switch v-model="editForm.isReview"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.isRealtimeNotification')">
             <el-switch v-model="editForm.isRealtimeNotification"
                        :active-value="1"
                        :inactive-value="0"
-                       :disabled="editForm.isReview === 0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :disabled="editForm.isReview === 0" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.isScheduledNotification')">
             <el-switch v-model="editForm.isScheduledNotification"
                        :active-value="1"
                        :inactive-value="0"
-                       :disabled="editForm.isReview === 0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :disabled="editForm.isReview === 0" />
           </el-form-item>
         </div>
 
@@ -294,30 +279,18 @@
             <el-switch v-model="editForm.isAgent"
                        :active-value="1"
                        :inactive-value="0"
-                       :disabled="true"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :disabled="true" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.isPartTime')">
             <el-switch v-model="editForm.isPartTime"
                        :active-value="1"
                        :inactive-value="0"
-                       :disabled="true"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :disabled="true" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.isFreeze')">
             <el-switch v-model="editForm.isFreeze"
                        :active-value="1"
-                       :inactive-value="0"
-                       :active-text="$t('common.yes')"
-                       :inactive-text="$t('common.no')"
-                       inline-prompt
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #909399" />
+                       :inactive-value="0" />
           </el-form-item>
         </div>
 
@@ -337,6 +310,7 @@
           </el-form-item>
         </div>
       </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -401,6 +375,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref(t('systembasicmgmt.userInfo.editUser'))
 
 const editForm = reactive({
@@ -998,7 +973,7 @@ const handleExport = async () => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `users_${new Date().getTime()}.xlsx`
+    link.download = `${t('systembasicmgmt.userInfo.exportFileName')}.xlsx`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -1015,19 +990,25 @@ const handleExport = async () => {
 const handleAdd = async () => {
   // 重置表单（内部已经初始化了 previousNotificationState）
   resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.userInfo.addUser')
+  dialogVisible.value = true
+  dialogLoading.value = true
   // 重新获取下拉数据并设置编辑表单默认值
   await fetchDepartmentDropdown(false, true)
   await fetchPositionDropdown(true)
   await fetchRoleDropdown(true)
   initGenderOptions()
   await fetchLaborTypeDropdown(true)
-  dialogTitle.value = t('systembasicmgmt.userInfo.addUser')
-  dialogVisible.value = true
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
   clearFormValidate()
+  dialogLoading.value = false
 }
 
 const handleEdit = async (row) => {
   resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.userInfo.editUser')
+  dialogVisible.value = true
+  dialogLoading.value = true
   // 重新获取下拉数据，编辑时不设置默认值
   await fetchDepartmentDropdown(false, false)
   await fetchPositionDropdown()
@@ -1036,9 +1017,9 @@ const handleEdit = async (row) => {
   await fetchLaborTypeDropdown()
   // 获取用户实体（内部已经初始化了 previousNotificationState）
   await fetchUserEntity(row.userId)
-  dialogTitle.value = t('systembasicmgmt.userInfo.editUser')
-  dialogVisible.value = true
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
   clearFormValidate()
+  dialogLoading.value = false
 }
 
 const handleDelete = async (row) => {
@@ -1117,6 +1098,7 @@ const handleAvatarSuccess = (res) => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

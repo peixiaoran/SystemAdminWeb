@@ -65,86 +65,88 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="120px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.departmentInfo.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
-            <el-input v-model="editForm.departmentCode"
-                      style="width: 100%"
-                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
-            <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 60%" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
-            <el-input v-model="editForm.departmentNameCn"
-                      style="width: 100%"
-                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameCn')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
-            <el-input v-model="editForm.departmentNameEn"
-                      style="width: 100%"
-                      :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameEn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.landline')" prop="landline">
-            <el-input v-model="editForm.landline" style="width: 100%" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.email')" prop="email">
-            <el-input v-model="editForm.email" style="width: 100%" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentId">
-            <el-tree-select v-model="editForm.parentId"
-                            :data="departmentOptionsWithNone"
-                            :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
-                            check-strictly
-                            filterable
-                            :filter-node-method="filterNodeMethod"
-                            style="width: 100%"
-                            popper-class="main-dept-filter-popper"
-                            :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevel')" prop="departmentLevelId">
-            <el-select v-model="editForm.departmentLevelId"
-                       style="width: 100%"
-                       :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
-              <el-option v-for="item in departmentLevelOptions"
-                         :key="item.departmentLevelId"
-                         :label="item.departmentLevelName"
-                         :value="item.departmentLevelId" />
-            </el-select>
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.factory')" prop="factory">
-            <el-select v-model="editForm.factory"
-                       style="width: 100%"
-                       :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
-              <el-option v-for="item in factoryOptions"
-                         :key="item.factory"
-                         :label="item.factoryName"
-                         :value="item.factory" />
-            </el-select>
-          </el-form-item>
-          <!-- 占位项：保持与上方两列布局对齐 -->
-          <el-form-item />
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
-            <el-input v-model="editForm.description" type="textarea" :rows="3" style="width: 100%" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="120px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.departmentInfo.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentCode')" prop="departmentCode">
+              <el-input v-model="editForm.departmentCode"
+                        style="width: 100%"
+                        :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
+              <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 60%" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" prop="departmentNameCn">
+              <el-input v-model="editForm.departmentNameCn"
+                        style="width: 100%"
+                        :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameCn')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" prop="departmentNameEn">
+              <el-input v-model="editForm.departmentNameEn"
+                        style="width: 100%"
+                        :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputNameEn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.landline')" prop="landline">
+              <el-input v-model="editForm.landline" style="width: 100%" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.email')" prop="email">
+              <el-input v-model="editForm.email" style="width: 100%" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.parentDepartment')" prop="parentId">
+              <el-tree-select v-model="editForm.parentId"
+                              :data="departmentOptionsWithNone"
+                              :props="{ value: 'departmentId', label: 'departmentName', children: 'departmentChildList', disabled: 'disabled' }"
+                              check-strictly
+                              filterable
+                              :filter-node-method="filterNodeMethod"
+                              style="width: 100%"
+                              popper-class="main-dept-filter-popper"
+                              :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectParentDepartment')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentLevel')" prop="departmentLevelId">
+              <el-select v-model="editForm.departmentLevelId"
+                         style="width: 100%"
+                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentLevel')">
+                <el-option v-for="item in departmentLevelOptions"
+                           :key="item.departmentLevelId"
+                           :label="item.departmentLevelName"
+                           :value="item.departmentLevelId" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.factory')" prop="factory">
+              <el-select v-model="editForm.factory"
+                         style="width: 100%"
+                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
+                <el-option v-for="item in factoryOptions"
+                           :key="item.factory"
+                           :label="item.factoryName"
+                           :value="item.factory" />
+              </el-select>
+            </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
+              <el-input v-model="editForm.description" type="textarea" :rows="3" style="width: 100%" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
@@ -194,6 +196,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref('')
 const isEdit = ref(false)
 
@@ -346,6 +349,10 @@ const handleAddChild = (row) => {
 
 const handleEdit = async (row) => {
   resetEditForm()
+  dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
+  isEdit.value = true
+  dialogVisible.value = true
+  dialogLoading.value = true
   const formData = new FormData()
   formData.append('deptId', row.departmentId)
   const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
@@ -366,13 +373,15 @@ const handleEdit = async (row) => {
       address: data.address,
       isEnabled: data.isEnabled
     })
-    dialogTitle.value = t('systembasicmgmt.departmentInfo.editDepartment')
-    isEdit.value = true
-    dialogVisible.value = true
-    nextTick(() => editFormRef.value?.clearValidate())
   } else {
     showApiError(res)
+    dialogVisible.value = false
   }
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -435,6 +444,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 

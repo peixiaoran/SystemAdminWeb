@@ -45,3 +45,8 @@ export const IMPORT_CUSTOMER_NUMBER_API = {
 export const GET_CUSTOMER_NUMBER_EXCEL_API = {
     GET_CUSTOMER_NUMBER_EXCEL: 'CustMat/CustMatBasicInfo/CustomerNumber/GetCustomerNumberExcel'
 }
+
+// 客户下拉API
+export const GET_CUSTOMER_DROP_API = {
+    GET_CUSTOMER_DROP: 'CustMat/CustMatBasicInfo/CustomerNumber/GetCustomerDrop'
+}

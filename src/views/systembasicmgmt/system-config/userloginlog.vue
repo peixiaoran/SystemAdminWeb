@@ -1,7 +1,7 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" class="conventional-filter-form" role="search" aria-label="用户操作日志筛选">
+      <el-form :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userloginlog.ariaFilterLabel')">
         <el-form-item>
           <el-button :icon="Filter" @click="filterDialogVisible = true">
             {{ $t('systembasicmgmt.userloginlog.filterQuery') }}

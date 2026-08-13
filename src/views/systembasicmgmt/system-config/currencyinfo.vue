@@ -67,41 +67,43 @@
                :append-to-body="true"
                :lock-scroll="true"
                @close="handleDialogClose">
-      <el-form :inline="true"
-               :model="editForm"
-               :rules="formRules"
-               ref="editFormRef"
-               label-width="130px"
-               class="dialog-form"
-               role="form"
-               :aria-label="$t('systembasicmgmt.currencyInfo.ariaEditLabel')">
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
-            <el-input v-model="editForm.currencyCode"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
-            <el-input v-model="editForm.currencyNameCn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn')" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
-            <el-input v-model="editForm.currencyNameEn"
-                      style="width:100%"
-                      :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameEn')" />
-          </el-form-item>
-          <!-- 占位项：保持与上方两列布局对齐 -->
-          <el-form-item />
-        </div>
-        <div class="form-row full-width">
-          <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
-            <el-input v-model="editForm.remark" type="textarea" :rows="4" style="width:100%" />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
+                 :model="editForm"
+                 :rules="formRules"
+                 ref="editFormRef"
+                 label-width="130px"
+                 class="dialog-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.currencyInfo.ariaEditLabel')">
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyCode')" prop="currencyCode">
+              <el-input v-model="editForm.currencyCode"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyCode')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" prop="currencyNameCn">
+              <el-input v-model="editForm.currencyNameCn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameCn')" />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" prop="currencyNameEn">
+              <el-input v-model="editForm.currencyNameEn"
+                        style="width:100%"
+                        :placeholder="$t('systembasicmgmt.currencyInfo.pleaseInputCurrencyNameEn')" />
+            </el-form-item>
+            <!-- 占位项：保持与上方两列布局对齐 -->
+            <el-form-item />
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
+              <el-input v-model="editForm.remark" type="textarea" :rows="4" style="width:100%" />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.save') }}</el-button>
@@ -144,6 +146,7 @@ const filters = reactive({
 })
 
 const dialogVisible = ref(false)
+const dialogLoading = ref(false)
 const dialogTitle = ref(t('systembasicmgmt.currencyInfo.editCurrency'))
 
 const editForm = reactive({
@@ -296,12 +299,21 @@ const handleAdd = () => {
 }
 
 const handleEdit = async (row) => {
-  const entity = await fetchCurrencyEntity(row.currencyId)
-  if (!entity) return
-  Object.assign(editForm, entity)
   dialogTitle.value = t('systembasicmgmt.currencyInfo.editCurrency')
   dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  dialogLoading.value = true
+  const entity = await fetchCurrencyEntity(row.currencyId)
+  if (!entity) {
+    dialogVisible.value = false
+    dialogLoading.value = false
+    return
+  }
+  Object.assign(editForm, entity)
+  // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleDelete = async (row) => {
@@ -329,6 +341,7 @@ const handleSave = async () => {
 
 const handleDialogClose = () => {
   resetEditForm()
+  dialogLoading.value = false
   editFormRef.value?.clearValidate()
 }
 
