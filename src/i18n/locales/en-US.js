@@ -1324,7 +1324,9 @@ export default {
     custmatCustomer: 'Customer Info',
     custmatCompanyNumber: 'Co. No.',
     custmatCustomerNumber: 'Cust. No.',
-    custmatNumberMapping: 'No. Mapping'
+    custmatNumberMapping: 'No. Mapping',
+    custmatsalesmgmt: 'Sales',
+    custmatSalesUser: 'Sales User'
   },
   
   // System Basic Management
@@ -2287,6 +2289,42 @@ export default {
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is unreadable. Please reselect the file and upload again.'
+    },
+    salesuser: {
+      ariaFilterLabel: 'Sales User Filter Form',
+      ariaEditLabel: 'Sales User Edit Form',
+      ariaUserSelectLabel: 'User Select Search Form',
+      mergedDialogTitle: 'Sales User Maintenance',
+      index: 'Index',
+      department: 'Department',
+      salesType: 'Sales Type',
+      userNo: 'User No.',
+      userName: 'Name',
+      description: 'Description',
+      operation: 'Operation',
+      pleaseSelectDepartment: 'Please select department',
+      pleaseSelectSalesType: 'Please select sales type',
+      pleaseInputUserNo: 'Please enter user no.',
+      pleaseInputUserName: 'Please enter name',
+      pleaseInputDescription: 'Please enter description',
+      addSalesUser: 'Add Sales User',
+      editSalesUser: 'Edit Sales User',
+      addSalesUserTitle: 'Add Sales User',
+      editSalesUserTitle: 'Edit Sales User',
+      deleteConfirm: 'Are you sure you want to delete this sales user?',
+      pleaseSelectUser: 'Please select a user',
+      salesTypeRequired: 'Please select sales type',
+      selectedUser: 'Selected User',
+      noUserSelected: 'No user selected',
+      addSalesUserSuccess: 'Sales user added successfully',
+      editSalesUserSuccess: 'Sales user updated successfully',
+      deleteSalesUserSuccess: 'Sales user deleted successfully',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed',
+      getDepartmentFailed: 'Failed to get department list',
+      getSalesTypeFailed: 'Failed to get sales type list',
+      getUserFailed: 'Failed to get user list',
+      getSalesUserDetailFailed: 'Failed to get sales user details'
     }
   }
 }

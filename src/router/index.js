@@ -704,6 +704,31 @@ const pmenuRoutes = [
               }
             },
           ]
+        },
+        // 销售管理子模块 - 使用嵌套结构
+        {
+          path: 'salesmgmt',
+          name: 'CustMatSalesMgmt',
+          redirect: '/custmat/salesmgmt',
+          meta: {
+            title: 'route.custmatsalesmgmt',
+            icon: 'Suitcase',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'salesuser',
+              name: 'SalesUser',
+              component: () => import('../views/custmat/salesmgmt/salesuser.vue'),
+              meta: {
+                title: 'route.custmatSalesUser',
+                icon: 'UserFilled',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
         }
       ]
   }

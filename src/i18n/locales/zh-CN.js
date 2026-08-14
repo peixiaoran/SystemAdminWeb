@@ -1242,7 +1242,9 @@ export default {
     custmatCustomer: '客户信息维护',
     custmatCompanyNumber: '公司料号维护',
     custmatCustomerNumber: '客户料号维护',
-    custmatNumberMapping: '料号对照维护'
+    custmatNumberMapping: '料号对照维护',
+    custmatsalesmgmt: '销售管理',
+    custmatSalesUser: '业务人员维护'
   },
   
   // 系统基础管理
@@ -2253,6 +2255,42 @@ export default {
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       fileChangedError: '所选文件已被修改或不可读，请重新选择文件后再上传'
+    },
+    salesuser: {
+      ariaFilterLabel: '业务人员筛选表单',
+      ariaEditLabel: '业务人员编辑表单',
+      ariaUserSelectLabel: '人员选择搜索表单',
+      mergedDialogTitle: '业务人员维护',
+      index: '序号',
+      department: '部门',
+      salesType: '业务类型',
+      userNo: '工号',
+      userName: '姓名',
+      description: '说明',
+      operation: '操作',
+      pleaseSelectDepartment: '请选择部门',
+      pleaseSelectSalesType: '请选择业务类型',
+      pleaseInputUserNo: '请输入工号',
+      pleaseInputUserName: '请输入姓名',
+      pleaseInputDescription: '请输入说明',
+      addSalesUser: '新增业务人员',
+      editSalesUser: '编辑业务人员',
+      addSalesUserTitle: '新增业务人员',
+      editSalesUserTitle: '编辑业务人员',
+      deleteConfirm: '确定要删除该业务人员吗？',
+      pleaseSelectUser: '请选择人员',
+      salesTypeRequired: '请选择业务类型',
+      selectedUser: '已选人员',
+      noUserSelected: '暂未选择人员',
+      addSalesUserSuccess: '新增业务人员成功',
+      editSalesUserSuccess: '编辑业务人员成功',
+      deleteSalesUserSuccess: '删除业务人员成功',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败',
+      getDepartmentFailed: '获取部门列表失败',
+      getSalesTypeFailed: '获取业务类型列表失败',
+      getUserFailed: '获取用户列表失败',
+      getSalesUserDetailFailed: '获取业务人员详情失败'
     }
   }
 }
