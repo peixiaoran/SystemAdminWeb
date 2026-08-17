@@ -707,9 +707,9 @@ const pmenuRoutes = [
         },
         // 销售管理子模块 - 使用嵌套结构
         {
-          path: 'salesmgmt',
+          path: 'sales-mgmt',
           name: 'CustMatSalesMgmt',
-          redirect: '/custmat/salesmgmt',
+          redirect: '/custmat/sales-mgmt/salesuser',
           meta: {
             title: 'route.custmatsalesmgmt',
             icon: 'Suitcase',
@@ -720,7 +720,7 @@ const pmenuRoutes = [
             {
               path: 'salesuser',
               name: 'SalesUser',
-              component: () => import('../views/custmat/salesmgmt/salesuser.vue'),
+              component: () => import('../views/custmat/sales-mgmt/salesuser.vue'),
               meta: {
                 title: 'route.custmatSalesUser',
                 icon: 'UserFilled',

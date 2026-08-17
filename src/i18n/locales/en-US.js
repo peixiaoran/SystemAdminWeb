@@ -787,6 +787,7 @@ export default {
       selectAgentTitle: 'Select Agent',
       pleaseSelectAgent: 'Please select an agent',
       agentDepartment: 'Department',
+      agentDepartmentFilter: 'Dept',
       pleaseSelectDepartment: 'Please select department',
       getDepartmentFailed: 'Failed to load department list',
       getAgentListFailed: 'Failed to load agent list',
@@ -1003,6 +1004,7 @@ export default {
       addReview: 'Add-Review',
       addReviewSortOrder: 'Order',
       addReviewDepartment: 'Department',
+      addReviewDepartmentFilter: 'Dept',
       addReviewUserNo: 'User No.',
       addReviewUserName: 'Name',
       addReviewSelect: 'Select',
@@ -1479,7 +1481,7 @@ export default {
       emailLowercaseError: 'Email must be lowercase',
       emailModuleError: 'Email suffix must be @eson.tw or @eson.vn',  
       filter: {
-        department: 'Department',
+        department: 'Dept',
         position: 'Level',
         role: 'Role',
         userNo: 'No.',
@@ -1538,7 +1540,7 @@ export default {
       pleaseInputUserNo: 'Please enter user number',
       pleaseInputUserName: 'Please enter user name',
       filter: {
-         department: 'Department'
+         department: 'Dept'
        },
        getDepartmentFailed: 'Failed to get department data'
     },
@@ -2087,6 +2089,9 @@ export default {
       title: 'User Part-time Management',
       mergedDialogTitle: 'User Part-time Management',
       department: 'Department',
+      filter: {
+        department: 'Dept'
+      },
       pleaseSelectDepartment: 'Please select department',
       userNo: 'No.',
       pleaseInputUserNo: 'Please enter user number',
@@ -2296,7 +2301,7 @@ export default {
       ariaUserSelectLabel: 'User Select Search Form',
       mergedDialogTitle: 'Sales User Maintenance',
       index: 'Index',
-      department: 'Department',
+      department: 'Dept',
       salesType: 'Sales Type',
       userNo: 'User No.',
       userName: 'Name',

@@ -149,75 +149,74 @@
                :lock-scroll="true"
                @closed="handleUserSelectDialogClosed">
       <div class="user-select-body">
-        <!-- 时间选择区域 -->
-        <el-form ref="agentTimeFormRef"
-                 :model="agentTimeRange"
-                 :rules="agentTimeFormRules"
-                 :inline="true"
-                 class="conventional-filter-form"
-                 role="form"
-                 :aria-label="$t('systembasicmgmt.userAgent.ariaAgentTimeLabel')">
-          <el-form-item :label="$t('systembasicmgmt.userAgent.startTime')" prop="startTime">
-            <el-date-picker v-model="agentTimeRange.startTime"
-                            type="datetime"
-                            style="width: 220px"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectStartTime')"
-                            :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
-                            @change="handleStartTimeChange"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.userAgent.endTime')" prop="endTime">
-            <el-date-picker v-model="agentTimeRange.endTime"
-                            type="datetime"
-                            style="width: 220px"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectEndTime')"
-                            :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
-                            @change="handleEndTimeChange"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            value-format="YYYY-MM-DD HH:mm:ss" />
-          </el-form-item>
-        </el-form>
+        <!-- 搜索与时间选择区域（合并为一行，时间字段放在最后） -->
+        <div class="agent-select-filter-row">
+          <el-form :inline="true"
+                   :model="userSelectFilters"
+                   class="conventional-filter-form inline-contents"
+                   role="search"
+                   :aria-label="$t('systembasicmgmt.userAgent.ariaUserSelectLabel')">
+            <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
+              <el-tree-select v-model="userSelectFilters.departmentId"
+                              :data="departmentOptions"
+                              :props="DEPARTMENT_TREE_PROPS"
+                              check-strictly
+                              filterable
+                              :filter-node-method="filterNodeMethod"
+                              @change="handleUserSelectSearch"
+                              style="width: 220px"
+                              popper-class="main-dept-filter-popper"
+                              :clearable="false"
+                              :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
+              <el-input v-model="userSelectFilters.userNo"
+                        style="width: 220px"
+                        :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
+                        clearable />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
+              <el-input v-model="userSelectFilters.userName"
+                        style="width: 220px"
+                        :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
+                        clearable />
+            </el-form-item>
+          </el-form>
 
-        <el-divider style="margin: 10px 0" />
+          <el-form ref="agentTimeFormRef"
+                   :model="agentTimeRange"
+                   :rules="agentTimeFormRules"
+                   :inline="true"
+                   class="conventional-filter-form inline-contents"
+                   role="form"
+                   :aria-label="$t('systembasicmgmt.userAgent.ariaAgentTimeLabel')">
+            <el-form-item :label="$t('systembasicmgmt.userAgent.startTime')" prop="startTime">
+              <el-date-picker v-model="agentTimeRange.startTime"
+                              type="datetime"
+                              style="width: 220px"
+                              :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectStartTime')"
+                              :disabled-date="(date) => agentTimeRange.endTime && date > new Date(agentTimeRange.endTime)"
+                              @change="handleStartTimeChange"
+                              format="YYYY-MM-DD HH:mm:ss"
+                              value-format="YYYY-MM-DD HH:mm:ss" />
+            </el-form-item>
+            <el-form-item :label="$t('systembasicmgmt.userAgent.endTime')" prop="endTime">
+              <el-date-picker v-model="agentTimeRange.endTime"
+                              type="datetime"
+                              style="width: 220px"
+                              :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectEndTime')"
+                              :disabled-date="(date) => agentTimeRange.startTime && date < new Date(agentTimeRange.startTime)"
+                              @change="handleEndTimeChange"
+                              format="YYYY-MM-DD HH:mm:ss"
+                              value-format="YYYY-MM-DD HH:mm:ss" />
+            </el-form-item>
+          </el-form>
 
-        <!-- 搜索区域 -->
-        <el-form :inline="true"
-                 :model="userSelectFilters"
-                 class="conventional-filter-form"
-                 style="margin-top: 10px"
-                 role="search"
-                 :aria-label="$t('systembasicmgmt.userAgent.ariaUserSelectLabel')">
-          <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
-            <el-tree-select v-model="userSelectFilters.departmentId"
-                            :data="departmentOptions"
-                            :props="DEPARTMENT_TREE_PROPS"
-                            check-strictly
-                            filterable
-                            :filter-node-method="filterNodeMethod"
-                            @change="handleUserSelectSearch"
-                            style="width: 220px"
-                            popper-class="main-dept-filter-popper"
-                            :clearable="false"
-                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
-            <el-input v-model="userSelectFilters.userNo"
-                      style="width: 220px"
-                      :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
-                      clearable />
-          </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
-            <el-input v-model="userSelectFilters.userName"
-                      style="width: 220px"
-                      :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
-                      clearable />
-          </el-form-item>
-          <el-form-item class="form-button-group">
+          <div class="form-button-group">
             <el-button type="primary" @click="handleUserSelectSearch">{{ $t('common.search') }}</el-button>
             <el-button @click="handleUserSelectReset">{{ $t('common.reset') }}</el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+        </div>
 
         <!-- 用户表格 -->
         <el-table :data="userSelectList"
@@ -784,6 +783,22 @@ onUnmounted(() => {
 
 .user-select-body {
   min-height: 500px;
+}
+
+.agent-select-filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.agent-select-filter-row .inline-contents {
+  display: contents;
+}
+
+.conventional-table :deep(.el-checkbox) {
+  height: auto;
 }
 </style>
 

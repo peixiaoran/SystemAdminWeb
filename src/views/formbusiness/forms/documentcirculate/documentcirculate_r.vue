@@ -491,7 +491,7 @@
       @closed="onAddReviewDialogClosed"
     >
       <el-form :inline="true" class="add-review-filter-form">
-        <el-form-item :label="t('formbusiness.documentcirculate.addReviewDepartment')">
+        <el-form-item :label="t('formbusiness.documentcirculate.addReviewDepartmentFilter')">
           <el-tree-select
             v-model="addReviewFilters.departmentId"
             :data="addReviewDeptOptions"
@@ -543,7 +543,6 @@
         :element-loading-text="t('common.loading')"
       >
         <el-table
-          ref="addReviewTableRef"
           :data="addReviewUserList"
           border
           stripe
@@ -552,10 +551,17 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           :row-key="(row) => row.userId"
           :empty-text="t('common.noData')"
-          @selection-change="handleAddReviewTableSelectionChange"
           @row-click="handleAddReviewRowClick"
         >
-          <el-table-column type="selection" width="48" align="center" />
+          <el-table-column width="48" align="center">
+            <template #default="scope">
+              <el-radio :model-value="selectedAddReviewUserId"
+                        :value="String(scope.row.userId)"
+                        @click.stop="handleAddReviewRowClick(scope.row)">
+                <span></span>
+              </el-radio>
+            </template>
+          </el-table-column>
           <el-table-column prop="userNo" :label="t('formbusiness.documentcirculate.applicantUserNo')" min-width="110" align="center" />
           <el-table-column prop="userName" :label="t('formbusiness.documentcirculate.applicantUserName')" min-width="120" align="left" show-overflow-tooltip />
           <el-table-column :label="t('formbusiness.documentcirculate.addReviewDepartment')" min-width="160" align="left" show-overflow-tooltip>
@@ -847,8 +853,6 @@ const addReviewTargetSortOrder = ref(0)
 const addReviewDeptOptions = ref([])
 const addReviewUserList = ref([])
 const addReviewListLoading = ref(false)
-const addReviewTableRef = ref(null)
-const isAdjustingAddReviewSelection = ref(false)
 const selectedAddReviewUser = ref(null)
 const selectedAddReviewUserId = ref('')
 const addReviewFilters = reactive({ departmentId: '', userNo: '', userName: '' })
@@ -950,7 +954,6 @@ async function fetchAddReviewUserList () {
     }
     addReviewUserList.value = Array.isArray(res.data) ? res.data : []
     addReviewPagination.totalCount = Number(res.totalCount) || 0
-    restoreAddReviewTableSelection()
   } catch {
     if (requestId !== addReviewListRequestId) return
     addReviewUserList.value = []
@@ -1014,43 +1017,8 @@ function handleAddReviewSizeChange () {
   fetchAddReviewUserListImmediate()
 }
 
-/** 翻页后回显已选中行 */
-function restoreAddReviewTableSelection () {
-  if (!selectedAddReviewUserId.value || !addReviewTableRef.value) return
-  const matchedRow = addReviewUserList.value.find((item) => String(item.userId) === selectedAddReviewUserId.value)
-  if (!matchedRow) return
-  selectedAddReviewUser.value = matchedRow
-  isAdjustingAddReviewSelection.value = true
-  nextTick(() => {
-    addReviewTableRef.value?.clearSelection()
-    addReviewTableRef.value?.toggleRowSelection(matchedRow, true)
-    isAdjustingAddReviewSelection.value = false
-  })
-}
-
-// 勾选列表现为单选：只保留最后勾选的一行
-function handleAddReviewTableSelectionChange (selection) {
-  if (isAdjustingAddReviewSelection.value) return
-  if (selection.length === 0) {
-    selectedAddReviewUserId.value = ''
-    selectedAddReviewUser.value = null
-    return
-  }
-  const lastRow = selection[selection.length - 1]
-  selectedAddReviewUserId.value = String(lastRow.userId)
-  selectedAddReviewUser.value = lastRow
-  if (selection.length > 1 && addReviewTableRef.value) {
-    isAdjustingAddReviewSelection.value = true
-    nextTick(() => {
-      addReviewTableRef.value.clearSelection()
-      addReviewTableRef.value.toggleRowSelection(lastRow, true)
-      isAdjustingAddReviewSelection.value = false
-    })
-  }
-}
-
 function handleAddReviewRowClick (row) {
-  if (isAdjustingAddReviewSelection.value || !row?.userId || !addReviewTableRef.value) return
+  if (!row?.userId) return
   const isSelected = String(selectedAddReviewUserId.value) === String(row.userId)
   if (isSelected) {
     selectedAddReviewUserId.value = ''
@@ -1059,14 +1027,6 @@ function handleAddReviewRowClick (row) {
     selectedAddReviewUserId.value = String(row.userId)
     selectedAddReviewUser.value = row
   }
-  isAdjustingAddReviewSelection.value = true
-  nextTick(() => {
-    addReviewTableRef.value.clearSelection()
-    if (!isSelected) {
-      addReviewTableRef.value.toggleRowSelection(row, true)
-    }
-    isAdjustingAddReviewSelection.value = false
-  })
 }
 
 async function openAddReviewDialog (row) {

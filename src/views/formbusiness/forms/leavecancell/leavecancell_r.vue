@@ -401,7 +401,6 @@
         :element-loading-text="t('common.loading')"
       >
         <el-table
-          ref="leaveRequestTableRef"
           :data="leaveRequestList"
           border
           stripe
@@ -410,10 +409,17 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           :row-key="(row) => row.leaveRequestId"
           :empty-text="t('common.noData')"
-          @selection-change="handleLeaveRequestTableSelectionChange"
           @row-click="handleLeaveRequestRowClick"
         >
-          <el-table-column type="selection" width="48" align="center" />
+          <el-table-column width="48" align="center">
+            <template #default="scope">
+              <el-radio :model-value="selectedLeaveRequestRowId"
+                        :value="String(scope.row.leaveRequestId)"
+                        @click.stop="handleLeaveRequestRowClick(scope.row)">
+                <span></span>
+              </el-radio>
+            </template>
+          </el-table-column>
           <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
           <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
           <el-table-column :label="t('formbusiness.leavecancell.startDateTimeColumn')" min-width="130" align="center">
@@ -591,8 +597,6 @@ const leaveRequestRemoveLoading = ref(false)
 const leaveRequestDialogVisible = ref(false)
 const leaveRequestListLoading = ref(false)
 const leaveRequestList = ref([])
-const leaveRequestTableRef = ref(null)
-const isAdjustingLeaveRequestSelection = ref(false)
 const selectedLeaveRequestRow = ref(null)
 const selectedLeaveRequestRowId = ref('')
 const selectedLeaveRequest = ref(null)
@@ -1093,7 +1097,6 @@ async function fetchLeaveRequestList () {
     }
     leaveRequestList.value = Array.isArray(res.data) ? res.data : []
     leaveRequestPagination.totalCount = Number(res.totalCount) || 0
-    restoreLeaveRequestTableSelection()
   } catch {
     if (requestId !== leaveRequestListRequestId) return
     leaveRequestList.value = []
@@ -1127,41 +1130,8 @@ function handleLeaveRequestSizeChange () {
   fetchLeaveRequestListImmediate()
 }
 
-function restoreLeaveRequestTableSelection () {
-  if (!selectedLeaveRequestRowId.value || !leaveRequestTableRef.value) return
-  const matchedRow = leaveRequestList.value.find((item) => String(item.leaveRequestId) === selectedLeaveRequestRowId.value)
-  if (!matchedRow) return
-  selectedLeaveRequestRow.value = matchedRow
-  isAdjustingLeaveRequestSelection.value = true
-  nextTick(() => {
-    leaveRequestTableRef.value?.clearSelection()
-    leaveRequestTableRef.value?.toggleRowSelection(matchedRow, true)
-    isAdjustingLeaveRequestSelection.value = false
-  })
-}
-
-function handleLeaveRequestTableSelectionChange (selection) {
-  if (isAdjustingLeaveRequestSelection.value) return
-  if (selection.length === 0) {
-    selectedLeaveRequestRowId.value = ''
-    selectedLeaveRequestRow.value = null
-    return
-  }
-  const lastRow = selection[selection.length - 1]
-  selectedLeaveRequestRowId.value = String(lastRow.leaveRequestId)
-  selectedLeaveRequestRow.value = lastRow
-  if (selection.length > 1 && leaveRequestTableRef.value) {
-    isAdjustingLeaveRequestSelection.value = true
-    nextTick(() => {
-      leaveRequestTableRef.value.clearSelection()
-      leaveRequestTableRef.value.toggleRowSelection(lastRow, true)
-      isAdjustingLeaveRequestSelection.value = false
-    })
-  }
-}
-
 function handleLeaveRequestRowClick (row) {
-  if (isAdjustingLeaveRequestSelection.value || !row?.leaveRequestId || !leaveRequestTableRef.value) return
+  if (!row?.leaveRequestId) return
   const isSelected = String(selectedLeaveRequestRowId.value) === String(row.leaveRequestId)
   if (isSelected) {
     selectedLeaveRequestRowId.value = ''
@@ -1170,14 +1140,6 @@ function handleLeaveRequestRowClick (row) {
     selectedLeaveRequestRowId.value = String(row.leaveRequestId)
     selectedLeaveRequestRow.value = row
   }
-  isAdjustingLeaveRequestSelection.value = true
-  nextTick(() => {
-    leaveRequestTableRef.value.clearSelection()
-    if (!isSelected) {
-      leaveRequestTableRef.value.toggleRowSelection(row, true)
-    }
-    isAdjustingLeaveRequestSelection.value = false
-  })
 }
 
 async function confirmLeaveRequestSelect () {

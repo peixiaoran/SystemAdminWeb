@@ -501,7 +501,7 @@
       @closed="handleAgentDialogClosed"
     >
       <el-form :inline="true" class="agent-filter-form">
-        <el-form-item :label="t('formbusiness.leaverequest.agentDepartment')">
+        <el-form-item :label="t('formbusiness.leaverequest.agentDepartmentFilter')">
           <el-tree-select
             v-model="agentFilters.departmentId"
             :data="agentDepartmentOptions"
@@ -552,7 +552,6 @@
         :element-loading-text="t('common.loading')"
       >
         <el-table
-          ref="agentTableRef"
           :data="agentList"
           border
           stripe
@@ -561,10 +560,17 @@
           :header-cell-style="{ background: '#f5f7fa' }"
           :row-key="(row) => row.userId"
           :empty-text="t('common.noData')"
-          @selection-change="handleAgentTableSelectionChange"
           @row-click="handleAgentRowClick"
         >
-          <el-table-column type="selection" width="48" align="center" />
+          <el-table-column width="48" align="center">
+            <template #default="scope">
+              <el-radio :model-value="selectedAgentUserId"
+                        :value="String(scope.row.userId)"
+                        @click.stop="handleAgentRowClick(scope.row)">
+                <span></span>
+              </el-radio>
+            </template>
+          </el-table-column>
           <el-table-column prop="userNo" :label="t('formbusiness.leaverequest.applicantUserNo')" min-width="110" align="center" />
           <el-table-column prop="userName" :label="t('formbusiness.leaverequest.agentUserName')" min-width="120" align="left" show-overflow-tooltip />
           <el-table-column prop="departmentName" :label="t('formbusiness.leaverequest.agentDepartment')" min-width="160" align="left" show-overflow-tooltip />
@@ -741,8 +747,6 @@ const agentDialogVisible = ref(false)
 const agentListLoading = ref(false)
 const agentList = ref([])
 const agentDepartmentOptions = ref([])
-const agentTableRef = ref(null)
-const isAdjustingAgentSelection = ref(false)
 const selectedAgent = ref(null)
 const selectedAgentUserId = ref('')
 const agentFilters = reactive({
@@ -1718,11 +1722,11 @@ function clearAgentSearchTimer () {
   }
 }
 
-function scheduleAgentListFetch () {
+function scheduleAgentListFetch (showLoading = true) {
   clearAgentSearchTimer()
   agentSearchTimer = setTimeout(() => {
     agentSearchTimer = null
-    fetchAgentUserList()
+    fetchAgentUserList(showLoading)
   }, AGENT_SEARCH_DEBOUNCE_MS)
 }
 
@@ -1784,12 +1788,12 @@ async function fetchAgentDepartmentOptions () {
 
 function handleAgentDepartmentChange () {
   agentPagination.pageIndex = 1
-  scheduleAgentListFetch()
+  scheduleAgentListFetch(false)
 }
 
-async function fetchAgentUserList () {
+async function fetchAgentUserList (showLoading = true) {
   const requestId = ++agentListRequestId
-  agentListLoading.value = true
+  if (showLoading) agentListLoading.value = true
   try {
     const res = await post(GET_AGENT_USER_INFO_API, {
       formId: String(form.formId || ''),
@@ -1819,7 +1823,6 @@ async function fetchAgentUserList () {
     }
     agentList.value = Array.isArray(res.data) ? res.data : []
     agentPagination.totalCount = Number(res.totalCount) || 0
-    restoreAgentTableSelection()
   } catch {
     if (requestId !== agentListRequestId) return
     agentList.value = []
@@ -1859,41 +1862,8 @@ function handleAgentSizeChange () {
   fetchAgentUserListImmediate()
 }
 
-function restoreAgentTableSelection () {
-  if (!selectedAgentUserId.value || !agentTableRef.value) return
-  const matchedRow = agentList.value.find((item) => String(item.userId) === selectedAgentUserId.value)
-  if (!matchedRow) return
-  selectedAgent.value = matchedRow
-  isAdjustingAgentSelection.value = true
-  nextTick(() => {
-    agentTableRef.value?.clearSelection()
-    agentTableRef.value?.toggleRowSelection(matchedRow, true)
-    isAdjustingAgentSelection.value = false
-  })
-}
-
-function handleAgentTableSelectionChange (selection) {
-  if (isAdjustingAgentSelection.value) return
-  if (selection.length === 0) {
-    selectedAgentUserId.value = ''
-    selectedAgent.value = null
-    return
-  }
-  const lastRow = selection[selection.length - 1]
-  selectedAgentUserId.value = String(lastRow.userId)
-  selectedAgent.value = lastRow
-  if (selection.length > 1 && agentTableRef.value) {
-    isAdjustingAgentSelection.value = true
-    nextTick(() => {
-      agentTableRef.value.clearSelection()
-      agentTableRef.value.toggleRowSelection(lastRow, true)
-      isAdjustingAgentSelection.value = false
-    })
-  }
-}
-
 function handleAgentRowClick (row) {
-  if (isAdjustingAgentSelection.value || !row?.userId || !agentTableRef.value) return
+  if (!row?.userId) return
   const isSelected = String(selectedAgentUserId.value) === String(row.userId)
   if (isSelected) {
     selectedAgentUserId.value = ''
@@ -1902,14 +1872,6 @@ function handleAgentRowClick (row) {
     selectedAgentUserId.value = String(row.userId)
     selectedAgent.value = row
   }
-  isAdjustingAgentSelection.value = true
-  nextTick(() => {
-    agentTableRef.value.clearSelection()
-    if (!isSelected) {
-      agentTableRef.value.toggleRowSelection(row, true)
-    }
-    isAdjustingAgentSelection.value = false
-  })
 }
 
 function confirmAgentSelect () {
@@ -3055,8 +3017,13 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 
+.agent-select-table :deep(.el-radio) {
+  height: auto;
+  margin-right: 0;
+}
+
 .agent-filter-form .agent-filter-dept-select {
-  width: 180px;
+  width: 240px;
 }
 
 .agent-filter-form .agent-filter-input-userno {

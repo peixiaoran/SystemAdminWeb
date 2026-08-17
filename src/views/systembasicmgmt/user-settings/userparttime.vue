@@ -1,10 +1,10 @@
 <template>
-  <el-config-provider :locale="elementPlusLocale">
-    <div class="conventional-table-container">
-      <el-card class="conventional-card">
+  <div class="conventional-table-container">
+    <el-config-provider :locale="elementPlusLocale">
+    <el-card class="conventional-card">
         <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userPartTime.ariaFilterLabel')">
-          <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
+          <el-form-item :label="$t('systembasicmgmt.userPartTime.filter.department')">
             <el-tree-select v-model="filters.departmentId"
                             :data="departmentOptions"
                             :props="DEPARTMENT_TREE_PROPS"
@@ -142,8 +142,6 @@
                              :value="item.positionId" />
                 </el-select>
               </el-form-item>
-            </div>
-            <div class="parttime-form-row">
               <el-form-item :label="$t('systembasicmgmt.userPartTime.startTime')" prop="startTime">
                 <el-date-picker v-model="editForm.startTime"
                                 type="datetime"
@@ -177,7 +175,7 @@
                    style="margin-top: 10px"
                    role="search"
                    :aria-label="$t('systembasicmgmt.userPartTime.ariaUserSelectLabel')">
-            <el-form-item :label="$t('systembasicmgmt.userPartTime.department')">
+            <el-form-item :label="$t('systembasicmgmt.userPartTime.filter.department')">
               <el-tree-select v-model="userSelectFilters.departmentId"
                               :data="departmentOptions"
                               :props="DEPARTMENT_TREE_PROPS"
@@ -216,12 +214,18 @@
                     v-loading="userSelectLoading || submitLoading"
                     class="conventional-table"
                     height="310"
-                    ref="userSelectTableRef"
-                    @selection-change="handleSelectionChange"
                     @row-click="handleUserSelectRowClick"
                     :empty-text="$t('common.noData')"
                     >
-            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column width="55" align="center">
+              <template #default="scope">
+                <el-radio :model-value="editForm.userId"
+                          :value="String(scope.row.userId)"
+                          @click.stop="handleUserSelectRowClick(scope.row)">
+                  <span></span>
+                </el-radio>
+              </template>
+            </el-table-column>
             <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
             <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
             <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
@@ -258,8 +262,8 @@
           </el-button>
         </template>
       </el-dialog>
-    </div>
-  </el-config-provider>
+    </el-config-provider>
+  </div>
 </template>
 
 <script setup>
@@ -354,7 +358,6 @@ const formRules = {
 // 对话框内的用户选择列表
 const userSelectList = ref([])
 const userSelectLoading = ref(false)
-const userSelectTableRef = ref(null)
 
 const userSelectFilters = reactive({
   departmentId: '',
@@ -624,20 +627,9 @@ const handleUserSelectPageChange = () => {
   fetchUserSelectList()
 }
 
-/** 兼任只能指定一个用户，多选时只保留最后勾选的一行 */
-const handleSelectionChange = (selection) => {
-  if (selection.length > 1 && userSelectTableRef.value) {
-    const latest = selection[selection.length - 1]
-    userSelectTableRef.value.clearSelection()
-    userSelectTableRef.value.toggleRowSelection(latest, true)
-    editForm.userId = latest.userId ? String(latest.userId) : ''
-    return
-  }
-  editForm.userId = selection.length > 0 ? String(selection[0].userId) : ''
-}
-
+/** 兼任只能指定一个用户，点击某行即选中该用户 */
 const handleUserSelectRowClick = (row) => {
-  userSelectTableRef.value?.toggleRowSelection(row)
+  editForm.userId = row?.userId ? String(row.userId) : ''
 }
 
 const handleFormDeptChange = () => {
@@ -838,18 +830,24 @@ onUnmounted(() => {
 }
 
 .parttime-form {
-  padding: 12px 16px 0;
+  padding: 12px 16px 0 0;
 }
 
 .parttime-form-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 24px;
   margin-bottom: 14px;
 }
 
 .parttime-form-row .el-form-item {
   margin-bottom: 0;
+}
+
+.conventional-table :deep(.el-radio) {
+  height: auto;
+  margin-right: 0;
 }
 </style>
 

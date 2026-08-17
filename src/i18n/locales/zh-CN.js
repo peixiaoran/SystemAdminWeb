@@ -719,6 +719,7 @@ export default {
         selectAgentTitle: '选择代理人',
         pleaseSelectAgent: '请选择代理人',
         agentDepartment: '部门',
+        agentDepartmentFilter: '部门',
         pleaseSelectDepartment: '请选择部门',
         getDepartmentFailed: '获取部门列表失败',
         getAgentListFailed: '获取代理人列表失败',
@@ -935,6 +936,7 @@ export default {
         addReview: '加审人员',
         addReviewSortOrder: '顺序',
         addReviewDepartment: '部门',
+        addReviewDepartmentFilter: '部门',
         addReviewUserNo: '工号',
         addReviewUserName: '姓名',
         addReviewSelect: '选择',
@@ -2056,6 +2058,9 @@ export default {
       title: '用户兼任维护',
       mergedDialogTitle: '用户兼任维护',
       department: '部门',
+      filter: {
+        department: '部门'
+      },
       pleaseSelectDepartment: '请选择部门',
       userNo: '用户工号',
       pleaseEnterUserNo: '请输入用户工号',

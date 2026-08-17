@@ -18,6 +18,7 @@
             v-model="searchForm.formGroupId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormGroup')"
             filterable
+            clearable
             style="width: 220px;"
             @change="handleFormGroupChange"
           >
@@ -35,6 +36,7 @@
             v-model="searchForm.formTypeId"
             :placeholder="$t('formbusiness.formpending.pleaseSelectFormType')"
             filterable
+            clearable
             style="width: 220px;"
             @change="handleFormTypeChange"
           >
@@ -267,22 +269,12 @@ const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
 const listMode = ref('pendingSubmit')
 
-const formGroupPlaceholder = () => ({
-  formGroupId: ALL_OPTION_VALUE,
-  formGroupName: t('formbusiness.formpending.pleaseSelect')
-})
-
-const formTypePlaceholder = () => ({
-  formTypeId: ALL_OPTION_VALUE,
-  formTypeName: t('formbusiness.formpending.pleaseSelect')
-})
-
-const formGroupOptions = ref([formGroupPlaceholder()])
-const formTypeOptions = ref([formTypePlaceholder()])
+const formGroupOptions = ref([])
+const formTypeOptions = ref([])
 
 const searchForm = reactive({
-  formGroupId: ALL_OPTION_VALUE,
-  formTypeId: ALL_OPTION_VALUE,
+  formGroupId: '',
+  formTypeId: '',
   formNo: ''
 })
 
@@ -313,11 +305,7 @@ const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (res?.code === 200) {
-      formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.formpending.pleaseSelect') },
-        ...(res.data || [])
-      ]
-      if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
+      formGroupOptions.value = res.data || []
       return
     }
     showMessage(res?.message || t('formbusiness.formpending.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -327,16 +315,13 @@ const getFormGroupOptions = async () => {
 }
 
 const getFormTypeOptions = async () => {
-  formTypeOptions.value = [formTypePlaceholder()]
-  searchForm.formTypeId = ALL_OPTION_VALUE
+  formTypeOptions.value = []
+  searchForm.formTypeId = ''
   if (isUnsetFilter(searchForm.formGroupId)) return
   try {
     const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
-      formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.formpending.pleaseSelect') },
-        ...(res.data || [])
-      ]
+      formTypeOptions.value = res.data || []
       return
     }
     showMessage(res?.message || t('formbusiness.formpending.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -396,7 +381,6 @@ const handleListModeChange = () => {
 }
 
 const handleFormGroupChange = () => {
-  if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()
@@ -412,7 +396,6 @@ const handleFilterChange = () => {
 }
 
 const handleFormTypeChange = () => {
-  if (isUnsetFilter(searchForm.formTypeId)) searchForm.formTypeId = ALL_OPTION_VALUE
   handleFilterChange()
 }
 
@@ -425,8 +408,8 @@ const handleSearch = () => {
 
 const handleReset = () => {
   searchForm.formNo = ''
-  searchForm.formGroupId = ALL_OPTION_VALUE
-  searchForm.formTypeId = ALL_OPTION_VALUE
+  searchForm.formGroupId = ''
+  searchForm.formTypeId = ''
   scheduleFilterRequest(async () => {
     pagination.pageIndex = 1
     await getFormTypeOptions()

@@ -329,17 +329,24 @@
           <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'User'" class="user-table-wrap">
             <div class="user-table-scroll">
               <el-table
-                ref="userTableRef"
                 :data="userTableData"
                 v-loading="userTableLoading"
                 :row-key="(row) => row.userId"
                 :empty-text="$t('common.noData')"
-                @selection-change="handleUserTableSelectionChange"
+                @row-click="handleUserRowClick"
                 height="150"
                 border
                 class="user-select-table"
               >
-                  <el-table-column type="selection" width="48" :reserve-selection="false" />
+                  <el-table-column width="48" align="center">
+                    <template #default="scope">
+                      <el-radio :model-value="addStepForm.stepUserUpsert.userId"
+                                :value="scope.row.userId"
+                                @click.stop="handleUserRowClick(scope.row)">
+                        <span></span>
+                      </el-radio>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="userNo" :label="$t('formbusiness.workflowstep.userNo')" min-width="100" />
                   <el-table-column prop="userName" :label="$t('formbusiness.workflowstep.userName')" min-width="150" />
                   <el-table-column prop="departmentName" :label="$t('formbusiness.workflowstep.userTableDepartment')" min-width="130" />
@@ -575,13 +582,11 @@ const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
 const userSearchForm = reactive({ userNo: '', userName: '' })
-const userTableRef = ref(null)
 const userTableData = ref([])
 const userTableTotal = ref(0)
 const userTableLoading = ref(false)
 const userPageIndex = ref(1)
 const userPageSize = ref(10)
-const isAdjustingUserSelection = ref(false)
 const fieldPermissionDialogVisible = ref(false)
 const stepFieldPermissionList = ref([])
 const stepFieldPermissionLoading = ref(false)
@@ -1163,21 +1168,11 @@ watch(
   }
 )
 
-// 表格单选：只保留最后勾选的一行
-function handleUserTableSelectionChange(selection) {
-  if (isAdjustingUserSelection.value) return
-  if (selection.length === 0) {
-    addStepForm.stepUserUpsert.userId = ''
-    return
-  }
-  const lastRow = selection[selection.length - 1]
-  addStepForm.stepUserUpsert.userId = lastRow.userId
-  isAdjustingUserSelection.value = true
-  nextTick(() => {
-    userTableRef.value?.clearSelection()
-    userTableRef.value?.toggleRowSelection(lastRow, true)
-    isAdjustingUserSelection.value = false
-  })
+// 表格单选：点击某行即选中/取消选中该用户
+function handleUserRowClick(row) {
+  if (!row?.userId) return
+  const isSelected = String(addStepForm.stepUserUpsert.userId) === String(row.userId)
+  addStepForm.stepUserUpsert.userId = isSelected ? '' : row.userId
 }
 
 const handleUserPageChange = (page) => {
