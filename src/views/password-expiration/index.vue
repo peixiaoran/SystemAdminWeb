@@ -313,7 +313,7 @@ const validatePassword = (rule, value, callback) => {
   }
   
   // 包含特殊字符
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
     callback(new Error(t('passwordExpiration.passwordSpecialCharError')))
     return
   }
@@ -410,7 +410,7 @@ const handleSendCode = async () => {
         showClose: true
       })
     }
-  } catch (error) {
+  } catch {
     ElMessage({
       message: t('passwordExpiration.sendCodeFailed'),
       type: 'error',
@@ -460,7 +460,7 @@ const handleSubmit = async () => {
         })
         formDisabled.value = false
       }
-    } catch (error) {
+    } catch {
       ElMessage({
         message: t('passwordExpiration.submitFailed'),
         type: 'error',

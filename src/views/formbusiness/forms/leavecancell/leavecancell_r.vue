@@ -1310,7 +1310,6 @@ function buildSaveLeaveCancellPayload () {
 }
 
 async function saveLeaveCancellRequest () {
-  console.log(buildSaveLeaveCancellPayload())
   return post(SAVE_LEAVECANCELL_API, buildSaveLeaveCancellPayload(), {
     silentForbiddenError: false
   })

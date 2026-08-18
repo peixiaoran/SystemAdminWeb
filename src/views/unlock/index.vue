@@ -293,7 +293,7 @@ const validatePassword = (rule, value, callback) => {
   }
   
   // 包含特殊字符
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
     callback(new Error(t('unlock.passwordSpecialCharError')))
     return
   }

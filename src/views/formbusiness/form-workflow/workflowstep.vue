@@ -700,7 +700,7 @@ const getFormGroupOptions = async () => {
     } else {
       showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
     }
-  } catch (error) {
+  } catch {
     showMessage(t('formbusiness.workflowstep.getFormGroupFailed'))
   }
 }
@@ -729,7 +729,7 @@ const getFormTypeOptions = async (formGroupId) => {
       formTypeOptions.value = []
       searchForm.formTypeId = ''
     }
-  } catch (error) {
+  } catch {
     showMessage(t('formbusiness.workflowstep.getFormTypeFailed'))
     formTypeOptions.value = []
     searchForm.formTypeId = ''
@@ -760,7 +760,7 @@ const getWorkflowStepList = async () => {
       showMessage(response.message, Number(response?.code) === 400 ? 'warning' : 'error')
       workflowStepList.value = []
     }
-  } catch (error) {
+  } catch {
     showMessage(t('formbusiness.workflowstep.getFailed'))
     workflowStepList.value = []
   } finally {
