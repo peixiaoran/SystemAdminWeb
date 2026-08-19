@@ -2,18 +2,6 @@
   <div class="conventional-table-container">
     <el-card class="conventional-card">
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.salesuser.ariaFilterLabel')">
-        <el-form-item :label="$t('custmat.salesuser.department')">
-          <el-tree-select v-model="filters.salesDeptId"
-                          :data="mainDepartmentOptions"
-                          :props="DEPARTMENT_TREE_PROPS"
-                          check-strictly
-                          filterable
-                          :filter-node-method="filterNodeMethod"
-                          @change="handleSearch"
-                          style="width: 220px"
-                          popper-class="main-dept-filter-popper"
-                          :placeholder="$t('custmat.salesuser.pleaseSelectDepartment')" />
-        </el-form-item>
         <el-form-item :label="$t('custmat.salesuser.salesType')">
           <el-select v-model="filters.salesType"
                      style="width: 170px"
@@ -61,7 +49,7 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('custmat.salesuser.index')" width="70" align="center" fixed />
-          <el-table-column prop="departmentName" :label="$t('custmat.salesuser.department')" align="left" min-width="220" />
+          <el-table-column prop="departmentName" :label="$t('custmat.salesuser.department')" align="left" min-width="200" />
           <el-table-column prop="userNo" :label="$t('custmat.salesuser.userNo')" align="left" min-width="120" />
           <el-table-column prop="userName" :label="$t('custmat.salesuser.userName')" align="left" min-width="140" />
           <el-table-column prop="salesTypeName" :label="$t('custmat.salesuser.salesType')" align="left" min-width="140" />
@@ -93,7 +81,7 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="`${$t('custmat.salesuser.mergedDialogTitle')} - ${isEdit ? $t('custmat.salesuser.editSalesUserTitle') : $t('custmat.salesuser.addSalesUserTitle')}`"
-               width="980px"
+               width="900px"
                :close-on-click-modal="false"
                :append-to-body="true"
                :lock-scroll="true"
@@ -109,7 +97,7 @@
           <div class="dialog-top-row">
             <el-form-item :label="$t('custmat.salesuser.salesType')" prop="salesType">
               <el-select v-model="editForm.salesType"
-                         style="width: 220px"
+                         style="width: 180px"
                          :placeholder="$t('custmat.salesuser.pleaseSelectSalesType')">
                 <el-option v-for="item in salesTypeOptions" :key="item.salesType" :label="item.salesTypeName" :value="item.salesType" />
               </el-select>
@@ -125,27 +113,15 @@
                  class="conventional-filter-form user-select-filter-form"
                  role="search"
                  :aria-label="$t('custmat.salesuser.ariaUserSelectLabel')">
-          <el-form-item :label="$t('custmat.salesuser.department')">
-            <el-tree-select v-model="userSelectFilters.departmentId"
-                            :data="departmentOptions"
-                            :props="DEPARTMENT_TREE_PROPS"
-                            check-strictly
-                            filterable
-                            :filter-node-method="filterNodeMethod"
-                            @change="handleUserSelectSearch"
-                            style="width: 200px"
-                            popper-class="main-dept-filter-popper"
-                            :placeholder="$t('custmat.salesuser.pleaseSelectDepartment')" />
-          </el-form-item>
           <el-form-item :label="$t('custmat.salesuser.userNo')">
             <el-input v-model="userSelectFilters.userNo"
-                      style="width: 150px"
+                      style="width: 180px"
                       clearable
                       :placeholder="$t('custmat.salesuser.pleaseInputUserNo')" />
           </el-form-item>
           <el-form-item :label="$t('custmat.salesuser.userName')">
             <el-input v-model="userSelectFilters.userName"
-                      style="width: 150px"
+                      style="width: 180px"
                       clearable
                       :placeholder="$t('custmat.salesuser.pleaseInputUserName')" />
           </el-form-item>
@@ -174,7 +150,7 @@
               </el-radio>
             </template>
           </el-table-column>
-          <el-table-column prop="departmentName" :label="$t('custmat.salesuser.department')" align="left" min-width="220" />
+          <el-table-column prop="departmentName" :label="$t('custmat.salesuser.department')" align="left" min-width="180" />
           <el-table-column prop="userNo" :label="$t('custmat.salesuser.userNo')" align="left" min-width="120" />
           <el-table-column prop="userName" :label="$t('custmat.salesuser.userName')" align="left" min-width="140" />
         </el-table>
@@ -214,8 +190,6 @@ import {
   UPDATE_SALES_USER_API,
   DELETE_SALES_USER_API,
   GET_SALES_TYPE_DROP_API,
-  GET_DEPARTMENT_DROP_API,
-  GET_SALES_USER_DEPARTMENT_PAGE_API,
   GET_USER_PAGE_API
 } from '@/config/api/custmat/sales-mgmt/salesuser'
 
@@ -227,17 +201,8 @@ let userSelectSearchTimer = null
 /** 实体查询/删除接口按 form-urlencoded 提交 */
 const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 
-const DEPARTMENT_TREE_PROPS = {
-  value: 'departmentId',
-  label: 'departmentName',
-  children: 'departmentChildList'
-}
-
 const salesUserList = ref([])
 const loading = ref(false)
-const departmentOptions = ref([])
-/** 主页面筛选专用部门树（弹出框仍使用 departmentOptions） */
-const mainDepartmentOptions = ref([])
 const salesTypeOptions = ref([])
 
 const pagination = reactive({
@@ -247,7 +212,6 @@ const pagination = reactive({
 })
 
 const filters = reactive({
-  salesDeptId: '',
   salesType: '',
   userNo: '',
   userName: ''
@@ -280,7 +244,6 @@ const userSelectList = ref([])
 const userSelectLoading = ref(false)
 
 const userSelectFilters = reactive({
-  departmentId: '',
   userNo: '',
   userName: ''
 })
@@ -295,11 +258,6 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
-const filterNodeMethod = (value, data) => {
-  if (!value) return true
-  return !!data.departmentName && data.departmentName.toLowerCase().includes(value.toLowerCase())
-}
-
 const resetEditForm = () => {
   Object.assign(editForm, {
     salesUserId: '',
@@ -309,56 +267,6 @@ const resetEditForm = () => {
     userNo: '',
     userNameCn: ''
   })
-}
-
-const validateDepartment = (dept) => {
-  if (!dept || dept.departmentId === undefined || dept.departmentId === null ||
-      dept.departmentName === undefined || dept.departmentName === null) {
-    return false
-  }
-  if (Array.isArray(dept.departmentChildList)) {
-    dept.departmentChildList = dept.departmentChildList.filter(validateDepartment)
-  }
-  return true
-}
-
-const fetchDepartmentOptions = async () => {
-  try {
-    const res = await post(GET_DEPARTMENT_DROP_API.GET_DEPARTMENT_DROP, {})
-    if (isHandled(res)) {
-      departmentOptions.value = []
-      return
-    }
-    if (res?.code === 200) {
-      departmentOptions.value = (Array.isArray(res.data) ? res.data : []).filter(validateDepartment)
-    } else {
-      departmentOptions.value = []
-      showMessage(res?.message || t('custmat.salesuser.getDepartmentFailed'))
-    }
-  } catch {
-    departmentOptions.value = []
-    showMessage(t('custmat.salesuser.getDepartmentFailed'))
-  }
-}
-
-/** 主页面筛选专用部门树 */
-const fetchMainDepartmentOptions = async () => {
-  try {
-    const res = await post(GET_SALES_USER_DEPARTMENT_PAGE_API.GET_SALES_USER_DEPARTMENT_PAGE, {})
-    if (isHandled(res)) {
-      mainDepartmentOptions.value = []
-      return
-    }
-    if (res?.code === 200) {
-      mainDepartmentOptions.value = (Array.isArray(res.data) ? res.data : []).filter(validateDepartment)
-    } else {
-      mainDepartmentOptions.value = []
-      showMessage(res?.message || t('custmat.salesuser.getDepartmentFailed'))
-    }
-  } catch {
-    mainDepartmentOptions.value = []
-    showMessage(t('custmat.salesuser.getDepartmentFailed'))
-  }
 }
 
 /** 业务类型下拉：按 salesType 去重取 {salesType, salesTypeName} */
@@ -391,7 +299,6 @@ const fetchSalesUserList = async () => {
   loading.value = true
   try {
     const res = await post(GET_SALES_USER_PAGE_API.GET_SALES_USER_PAGE, {
-      salesDeptId: filters.salesDeptId,
       salesType: filters.salesType,
       userNo: filters.userNo,
       userName: filters.userName,
@@ -424,7 +331,6 @@ const fetchUserSelectList = async () => {
   userSelectLoading.value = true
   try {
     const res = await post(GET_USER_PAGE_API.GET_USER_PAGE, {
-      departmentId: userSelectFilters.departmentId,
       userNo: userSelectFilters.userNo,
       userName: userSelectFilters.userName,
       pageIndex: userSelectPagination.pageIndex,
@@ -467,7 +373,6 @@ const handleSearch = () => {
 
 const handleReset = () => {
   Object.assign(filters, {
-    salesDeptId: mainDepartmentOptions.value[0]?.departmentId ?? '',
     salesType: '',
     userNo: '',
     userName: ''
@@ -488,7 +393,6 @@ const handleUserSelectSearch = () => scheduleUserSelectSearch()
 
 const handleUserSelectReset = () => {
   Object.assign(userSelectFilters, {
-    departmentId: departmentOptions.value[0]?.departmentId ?? '',
     userNo: '',
     userName: ''
   })
@@ -515,7 +419,7 @@ const handleUserSelectRowClick = (row) => {
 
 const handleAdd = async () => {
   resetEditForm()
-  Object.assign(userSelectFilters, { departmentId: '', userNo: '', userName: '' })
+  Object.assign(userSelectFilters, { userNo: '', userName: '' })
   Object.assign(userSelectPagination, { pageIndex: 1, pageSize: 10, totalCount: 0 })
   userSelectList.value = []
 
@@ -523,12 +427,7 @@ const handleAdd = async () => {
   dialogVisible.value = true
   dialogLoading.value = true
 
-  if (departmentOptions.value.length === 0) await fetchDepartmentOptions()
   if (salesTypeOptions.value.length === 0) await fetchSalesTypeOptions()
-
-  if (departmentOptions.value.length > 0) {
-    userSelectFilters.departmentId = departmentOptions.value[0].departmentId
-  }
 
   await nextTick()
   editFormRef.value?.clearValidate()
@@ -542,7 +441,6 @@ const handleEdit = async (row) => {
   dialogLoading.value = true
 
   try {
-    if (departmentOptions.value.length === 0) await fetchDepartmentOptions()
     if (salesTypeOptions.value.length === 0) await fetchSalesTypeOptions()
 
     const res = await post(
@@ -567,7 +465,6 @@ const handleEdit = async (row) => {
         userNameCn: data.userNameCn
       })
       Object.assign(userSelectFilters, {
-        departmentId: data.salesDeptId ?? (departmentOptions.value[0]?.departmentId ?? ''),
         userNo: '',
         userName: ''
       })
@@ -663,10 +560,7 @@ const handleDialogClose = () => {
 }
 
 onMounted(async () => {
-  await Promise.all([fetchMainDepartmentOptions(), fetchDepartmentOptions(), fetchSalesTypeOptions()])
-  if (mainDepartmentOptions.value.length > 0) {
-    filters.salesDeptId = mainDepartmentOptions.value[0].departmentId
-  }
+  await fetchSalesTypeOptions()
   fetchSalesUserList()
 })
 </script>
@@ -701,27 +595,4 @@ onMounted(async () => {
   margin-right: 0;
 }
 
-</style>
-
-<!-- 部门树下拉项加高、加宽（下拉挂载到 body，需单独样式） -->
-<style>
-.main-dept-filter-popper {
-  width: auto !important;
-  min-width: 280px !important;
-}
-
-.main-dept-filter-popper .el-select-dropdown__wrap,
-.main-dept-filter-popper .el-scrollbar__view,
-.main-dept-filter-popper .el-tree {
-  width: 100% !important;
-  min-width: 100% !important;
-}
-
-.main-dept-filter-popper .el-tree-node__content {
-  height: 36px;
-  line-height: 36px;
-  padding-left: 12px;
-  width: 100% !important;
-  min-width: 100% !important;
-}
 </style>
