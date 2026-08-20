@@ -1328,7 +1328,8 @@ export default {
     custmatCustomerNumber: 'Cust. No.',
     custmatNumberMapping: 'No. Mapping',
     custmatsalesmgmt: 'Sales',
-    custmatSalesUser: 'Sales User'
+    custmatSalesUser: 'Sales User',
+    custmatSalesNumber: 'Sales Number'
   },
   
   // System Basic Management
@@ -2330,6 +2331,36 @@ export default {
       getSalesTypeFailed: 'Failed to get sales type list',
       getUserFailed: 'Failed to get user list',
       getSalesUserDetailFailed: 'Failed to get sales user details'
+    },
+    salesnumber: {
+      ariaFilterLabel: 'Sales Number Filter Form',
+      ariaEditLabel: 'Sales Number Edit Form',
+      index: 'Index',
+      partNumber: 'Part No.',
+      partName: 'Part Name',
+      salesUser: 'Sales User',
+      userNo: 'User No.',
+      userName: 'Name',
+      operation: 'Operation',
+      pleaseInputPartNumber: 'Please enter part no.',
+      pleaseSelectSalesUser: 'Please select sales user',
+      pleaseInputUserName: 'Please enter name',
+      pleaseSelectPartNumber: 'Please enter keyword to search part no.',
+      addSalesNumber: 'Add Sales Number',
+      editSalesNumber: 'Edit Sales Number',
+      addSalesNumberTitle: 'Add Sales Number',
+      editSalesNumberTitle: 'Edit Sales Number',
+      deleteConfirm: 'Are you sure you want to delete this sales number?',
+      partNumberRequired: 'Please select part no.',
+      salesUserRequired: 'Please select sales user',
+      addSalesNumberSuccess: 'Sales number added successfully',
+      editSalesNumberSuccess: 'Sales number updated successfully',
+      deleteSalesNumberSuccess: 'Sales number deleted successfully',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed',
+      getSalesUserFailed: 'Failed to get sales user list',
+      getPartNumberFailed: 'Failed to get part number list',
+      getSalesNumberDetailFailed: 'Failed to get sales number details'
     }
   }
 }

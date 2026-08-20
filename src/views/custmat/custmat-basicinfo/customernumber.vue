@@ -434,11 +434,15 @@ const handlePageChange = () => {
   fetchCustomerNumberList()
 }
 
-const handleAdd = () => {
+const handleAdd = async () => {
   resetEditForm()
   isEdit.value = false
   dialogVisible.value = true
-  fetchCustomerDropdown()
+  dialogLoading.value = true
+  await fetchCustomerDropdown()
+  // 新增时下拉框默认选中第一项
+  if (customerOptions.value.length) editForm.customerCode = customerOptions.value[0].customerCode
+  dialogLoading.value = false
   nextTick(() => editFormRef.value?.clearValidate())
 }
 

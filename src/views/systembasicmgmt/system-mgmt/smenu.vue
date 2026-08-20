@@ -235,7 +235,7 @@ const dialogTitle = ref('')
 
 const editForm = reactive({
   menuId: '',
-  parentMenuId: null,
+  parentMenuId: '',
   moduleId: '',
   menuCode: '',
   menuNameCn: '',
@@ -431,7 +431,7 @@ const scheduleSearch = () => {
 const resetEditForm = () => {
   Object.assign(editForm, {
     menuId: '',
-    parentMenuId: null,
+    parentMenuId: '',
     menuCode: '',
     menuNameCn: '',
     menuNameEn: '',

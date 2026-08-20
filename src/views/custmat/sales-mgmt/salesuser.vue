@@ -428,6 +428,8 @@ const handleAdd = async () => {
   dialogLoading.value = true
 
   if (salesTypeOptions.value.length === 0) await fetchSalesTypeOptions()
+  // 新增时下拉框默认选中第一项
+  if (!editForm.salesType && salesTypeOptions.value.length) editForm.salesType = salesTypeOptions.value[0].salesType
 
   await nextTick()
   editFormRef.value?.clearValidate()

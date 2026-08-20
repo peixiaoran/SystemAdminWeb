@@ -404,7 +404,7 @@ const editForm = reactive({
   isEmployed: 1,
   isFreeze: 0,
   laborId: '',
-  expirationDays: null,
+  expirationDays: '',
   modifiedBy: '',
   modifiedDate: '',
   avatarAddress: '',
@@ -853,8 +853,8 @@ const resetEditForm = () => {
     const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
     if (firstEnabledLaborType) editForm.laborId = firstEnabledLaborType.laborId
 
-    // expirationDays 无固定默认值，重置为 null
-    editForm.expirationDays = null
+    // expirationDays 无固定默认值，重置为空字符串
+    editForm.expirationDays = ''
     editForm.noticeLanguage = 'zh-CN'
 
     // 用嵌套 nextTick 等 Vue 冲刷完所有响应式变更后再清除验证状态

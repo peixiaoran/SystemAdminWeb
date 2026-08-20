@@ -1246,7 +1246,8 @@ export default {
     custmatCustomerNumber: '客户料号维护',
     custmatNumberMapping: '料号对照维护',
     custmatsalesmgmt: '销售管理',
-    custmatSalesUser: '业务人员维护'
+    custmatSalesUser: '业务人员维护',
+    custmatSalesNumber: '业务人员料号'
   },
   
   // 系统基础管理
@@ -2296,6 +2297,36 @@ export default {
       getSalesTypeFailed: '获取业务类型列表失败',
       getUserFailed: '获取用户列表失败',
       getSalesUserDetailFailed: '获取业务人员详情失败'
+    },
+    salesnumber: {
+      ariaFilterLabel: '业务人员料号筛选表单',
+      ariaEditLabel: '业务人员料号编辑表单',
+      index: '序号',
+      partNumber: '料号',
+      partName: '品名',
+      salesUser: '业务人员',
+      userNo: '工号',
+      userName: '姓名',
+      operation: '操作',
+      pleaseInputPartNumber: '请输入料号',
+      pleaseSelectSalesUser: '请选择业务人员',
+      pleaseInputUserName: '请输入姓名',
+      pleaseSelectPartNumber: '请输入关键字搜索料号',
+      addSalesNumber: '新增业务人员料号',
+      editSalesNumber: '编辑业务人员料号',
+      addSalesNumberTitle: '新增业务人员料号',
+      editSalesNumberTitle: '编辑业务人员料号',
+      deleteConfirm: '确定要删除该业务人员料号吗？',
+      partNumberRequired: '请选择料号',
+      salesUserRequired: '请选择业务人员',
+      addSalesNumberSuccess: '新增业务人员料号成功',
+      editSalesNumberSuccess: '编辑业务人员料号成功',
+      deleteSalesNumberSuccess: '删除业务人员料号成功',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败',
+      getSalesUserFailed: '获取业务人员列表失败',
+      getPartNumberFailed: '获取料号列表失败',
+      getSalesNumberDetailFailed: '获取业务人员料号详情失败'
     }
   }
 }

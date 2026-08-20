@@ -406,7 +406,7 @@ const editForm = reactive({
   drawingNumber: null,
   version: null,
   unit: '',
-  sourceType: null,
+  sourceType: '',
   manufacturer: null,
   manufacturerNumber: null,
   lotControl: true,
@@ -514,10 +514,14 @@ const fetchSourceTypeDropdown = async () => {
   }
 }
 
-const fetchDialogDropdowns = () => {
-  fetchPartTypeDropdown()
-  fetchCategoryDropdown()
-  fetchSourceTypeDropdown()
+const fetchDialogDropdowns = async () => {
+  await Promise.all([fetchPartTypeDropdown(), fetchCategoryDropdown(), fetchSourceTypeDropdown()])
+  // 新增时下拉框默认选中第一项
+  if (!isEdit.value) {
+    if (!editForm.partType && partTypeOptions.value.length) editForm.partType = partTypeOptions.value[0].partType
+    if (!editForm.category && categoryOptions.value.length) editForm.category = categoryOptions.value[0].category
+    if (!editForm.sourceType && sourceTypeOptions.value.length) editForm.sourceType = sourceTypeOptions.value[0].sourceType
+  }
 }
 
 const fetchCompanyNumberList = async () => {
@@ -558,7 +562,7 @@ const resetEditForm = () => {
     drawingNumber: null,
     version: null,
     unit: '',
-    sourceType: null,
+    sourceType: '',
     manufacturer: null,
     manufacturerNumber: null,
     lotControl: true,
@@ -592,11 +596,13 @@ const handlePageChange = () => {
   fetchCompanyNumberList()
 }
 
-const handleAdd = () => {
+const handleAdd = async () => {
   resetEditForm()
   isEdit.value = false
   dialogVisible.value = true
-  fetchDialogDropdowns()
+  dialogLoading.value = true
+  await fetchDialogDropdowns()
+  dialogLoading.value = false
   nextTick(() => editFormRef.value?.clearValidate())
 }
 
