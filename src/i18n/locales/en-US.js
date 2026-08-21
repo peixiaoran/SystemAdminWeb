@@ -521,14 +521,12 @@ export default {
       getFormGroupFailed: 'Failed to get form group',
       getFormTypeFailed: 'Failed to get form type',
       getPositionFailed: 'Failed to get position list',
-      pleaseSelect: 'Please select',
       pleaseSelectFormGroup: 'Please select form group',
       pleaseSelectFormType: 'Please select form type',
       pleaseSelectPosition: 'Please select position',
       pleaseInputRuleNameCn: 'Please input rule name (CN)',
       pleaseInputRuleNameEn: 'Please input rule name (EN)',
       pleaseInputGuidance: 'Please input condition key',
-      other: 'Other',
       operation: 'Operation'
     },
 
@@ -2360,7 +2358,28 @@ export default {
       operationFailed: 'Operation Failed',
       getSalesUserFailed: 'Failed to get sales user list',
       getPartNumberFailed: 'Failed to get part number list',
-      getSalesNumberDetailFailed: 'Failed to get sales number details'
+      getSalesNumberDetailFailed: 'Failed to get sales number details',
+      detailTitle: 'Part Number Details',
+      detailPartNumber: 'Part Number',
+      detailPartName: 'Part Name',
+      detailSpecification: 'Specification',
+      detailPartType: 'Part Type',
+      detailCategory: 'Category',
+      detailModel: 'Model',
+      detailDrawingNumber: 'Drawing No.',
+      detailVersion: 'Version',
+      detailUnit: 'Unit',
+      detailSourceType: 'Source Type',
+      detailManufacturer: 'Manufacturer',
+      detailManufacturerPartNumber: 'Manufacturer Part No.',
+      detailLotControl: 'Lot Control',
+      detailStatus: 'Status',
+      detailRemark: 'Remark',
+      lotControlYes: 'Yes',
+      lotControlNo: 'No',
+      statusEnabled: 'Enabled',
+      statusDisabled: 'Disabled',
+      getPartNumberDetailFailed: 'Failed to get part number details'
     }
   }
 }

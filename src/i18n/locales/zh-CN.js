@@ -453,14 +453,12 @@ export default {
       getFormGroupFailed: '获取表单组别失败',
       getFormTypeFailed: '获取表单类别失败',
       getPositionFailed: '获取职级列表失败',
-      pleaseSelect: '请选择',
       pleaseSelectFormGroup: '请选择表单组别',
       pleaseSelectFormType: '请选择表单类别',
       pleaseSelectPosition: '请选择职级',
       pleaseInputRuleNameCn: '请输入规则中文名称',
       pleaseInputRuleNameEn: '请输入规则英文名称',
       pleaseInputGuidance: '请输入条件键值',
-      other: '其他',
       operation: '操作'
     },
 
@@ -2326,7 +2324,28 @@ export default {
       operationFailed: '操作失败',
       getSalesUserFailed: '获取业务人员列表失败',
       getPartNumberFailed: '获取料号列表失败',
-      getSalesNumberDetailFailed: '获取业务人员料号详情失败'
+      getSalesNumberDetailFailed: '获取业务人员料号详情失败',
+      detailTitle: '料号详情',
+      detailPartNumber: '料号',
+      detailPartName: '名称',
+      detailSpecification: '规格',
+      detailPartType: '料号类型',
+      detailCategory: '物料分类',
+      detailModel: '型号',
+      detailDrawingNumber: '图号',
+      detailVersion: '版本',
+      detailUnit: '单位',
+      detailSourceType: '来源类型',
+      detailManufacturer: '厂商',
+      detailManufacturerPartNumber: '厂商料号',
+      detailLotControl: '批次管控',
+      detailStatus: '状态',
+      detailRemark: '备注',
+      lotControlYes: '是',
+      lotControlNo: '否',
+      statusEnabled: '启用',
+      statusDisabled: '停用',
+      getPartNumberDetailFailed: '获取料号详情失败'
     }
   }
 }

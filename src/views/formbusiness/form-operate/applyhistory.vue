@@ -274,6 +274,24 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
+/**
+ * 下载类接口（responseType: 'blob'）失败时，axios 对非 2xx 状态码会直接 reject，
+ * 此时 error.response.data 仍是 Blob，不读取的话只能看到 axios 泛化的
+ * "Request failed with status code xxx"，看不到后端真实的失败原因（如具体校验信息）。
+ */
+const resolveBlobErrorMessage = async (error, fallbackKey) => {
+  const data = error?.response?.data
+  if (data instanceof Blob) {
+    try {
+      const json = JSON.parse(await data.text())
+      if (json?.message) return json.message
+    } catch {
+      // 非 JSON 内容，沿用兜底文案
+    }
+  }
+  return error?.message || t(fallbackKey)
+}
+
 const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
 
 const getFormStatusTagType = (row) => {
@@ -545,7 +563,7 @@ const handlePrintForm = async (row) => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.applyhistory.printFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.applyhistory.printFailed'))
   } finally {
     printingFormIds.value.delete(row.formId)
   }
@@ -598,7 +616,7 @@ const handleExportExcel = async () => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.applyhistory.exportFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.applyhistory.exportFailed'))
   } finally {
     exporting.value = false
   }
@@ -648,7 +666,7 @@ const handleBatchPrintForm = async () => {
     formTableRef.value?.clearSelection()
     selectedRows.value = []
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.applyhistory.batchPrintFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.applyhistory.batchPrintFailed'))
   } finally {
     batchPrinting.value = false
   }

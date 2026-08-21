@@ -37,3 +37,8 @@ export const GET_SALES_USER_DROP_API = {
 export const GET_COMPANY_PART_NUMBER_DROP_API = {
     GET_COMPANY_PART_NUMBER_DROP: 'CustMat/SalesMgmt/SalesNumber/GetCompanyNumberDrop'
 }
+
+// 料号详情查询API
+export const GET_PART_NUMBER_DETAIL_API = {
+    GET_PART_NUMBER_DETAIL: 'CustMat/SalesMgmt/SalesNumber/GetPartNumberDetail'
+}

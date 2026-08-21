@@ -23,8 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('formbusiness.workflowrule.positionName')">
-          <el-select v-model="searchForm.positionId" filterable style="width: 220px" @change="handleFilterChange">
-            <el-option :label="$t('formbusiness.workflowrule.pleaseSelect')" value="0" />
+          <el-select v-model="searchForm.positionId" filterable clearable style="width: 220px" @change="handleFilterChange">
             <el-option
               v-for="item in positionOptions"
               :key="item.positionId"
@@ -154,7 +153,6 @@
           <div class="form-row">
             <el-form-item :label="$t('formbusiness.workflowrule.positionName')" prop="positionId">
               <el-select v-model="dialogForm.positionId" filterable style="width:100%">
-                <el-option :label="$t('formbusiness.workflowrule.other')" value="0" />
                 <el-option
                   v-for="item in positionOptions"
                   :key="item.positionId"
@@ -250,7 +248,7 @@ const formTypeOptions = ref([])
 const dialogFormTypeOptions = ref([])
 const positionOptions = ref([])
 
-const searchForm = reactive({ formGroupId: '', formTypeId: '', positionId: '0' })
+const searchForm = reactive({ formGroupId: '', formTypeId: '', positionId: '' })
 const pagination = reactive({ pageIndex: 1, pageSize: 20, totalCount: 0 })
 
 const showMessage = (message, type = 'error') => {
@@ -370,7 +368,7 @@ const dialogForm = reactive({
   formTypeId: '',
   ruleNameCn: '',
   ruleNameEn: '',
-  positionId: '0',
+  positionId: '',
   guidance: '',
   sortOrder: 0,
   version: '',
@@ -392,7 +390,7 @@ const dialogFormRules = {
 const resetDialogForm = () => {
   // ruleId 不在 el-form-item prop 里，resetFields 不会重置，需手动清
   dialogForm.ruleId = ''
-  dialogForm.positionId = '0'
+  dialogForm.positionId = ''
   dialogForm.version = ''
   dialogForm.effectiveStartDate = ''
   dialogForm.effectiveEndDate = ''
@@ -438,9 +436,6 @@ const handleAdd = async () => {
         dialogForm.formTypeId = dialogFormTypeOptions.value[0]?.formTypeId ?? ''
       }
     }
-    if (!dialogForm.positionId) {
-      dialogForm.positionId = '0'
-    }
     const currentYear = new Date().getFullYear()
     dialogForm.effectiveStartDate = `${currentYear}-01-01`
     dialogForm.sortOrder = 1
@@ -463,7 +458,7 @@ const handleEdit = async (row) => {
       dialogForm.formTypeId  = d.formTypeId  || searchForm.formTypeId  || ''
       dialogForm.ruleNameCn  = d.ruleNameCn  || ''
       dialogForm.ruleNameEn  = d.ruleNameEn  || ''
-      dialogForm.positionId  = d.positionId  || '0'
+      dialogForm.positionId  = d.positionId  || ''
       dialogForm.guidance    = d.guidance    || ''
       dialogForm.sortOrder   = Number(d.sortOrder ?? 0)
       dialogForm.version     = d.version || ''
@@ -505,7 +500,7 @@ const handleSubmit = async () => {
       formTypeId:  dialogForm.formTypeId,
       ruleNameCn:  dialogForm.ruleNameCn,
       ruleNameEn:  dialogForm.ruleNameEn,
-      positionId:  dialogForm.positionId === '0' ? null : dialogForm.positionId,
+      positionId:  dialogForm.positionId || null,
       guidance:    dialogForm.guidance || null,
       sortOrder:   dialogForm.sortOrder,
       version:     dialogForm.version,

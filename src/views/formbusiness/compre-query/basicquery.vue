@@ -42,6 +42,7 @@
                 v-model="searchForm.formGroupId"
                 :placeholder="$t('formbusiness.basicquery.pleaseSelectFormGroup')"
                 filterable
+                clearable
                 style="width: 100%;"
                 @change="handleFormGroupChange"
               >
@@ -58,6 +59,7 @@
                 v-model="searchForm.formTypeId"
                 :placeholder="$t('formbusiness.basicquery.pleaseSelectFormType')"
                 filterable
+                clearable
                 style="width: 100%;"
               >
                 <el-option
@@ -76,6 +78,7 @@
                 v-model="searchForm.formStatus"
                 :placeholder="$t('formbusiness.basicquery.pleaseSelect')"
                 filterable
+                clearable
                 style="width: 100%;"
               >
                 <el-option
@@ -291,7 +294,6 @@ const { t } = useI18n()
 const router = useRouter()
 
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
-const ALL_OPTION_VALUE = 0
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const isUnsetFilter = (v) => v === '' || v === undefined || v === null
@@ -304,6 +306,24 @@ const buildFormData = (params) => {
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
+}
+
+/**
+ * 下载类接口（responseType: 'blob'）失败时，axios 对非 2xx 状态码会直接 reject，
+ * 此时 error.response.data 仍是 Blob，不读取的话只能看到 axios 泛化的
+ * "Request failed with status code xxx"，看不到后端真实的失败原因（如具体校验信息）。
+ */
+const resolveBlobErrorMessage = async (error, fallbackKey) => {
+  const data = error?.response?.data
+  if (data instanceof Blob) {
+    try {
+      const json = JSON.parse(await data.text())
+      if (json?.message) return json.message
+    } catch {
+      // 非 JSON 内容，沿用兜底文案
+    }
+  }
+  return error?.message || t(fallbackKey)
 }
 
 const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
@@ -331,29 +351,14 @@ const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
 
-const formGroupPlaceholder = () => ({
-  formGroupId: ALL_OPTION_VALUE,
-  formGroupName: t('formbusiness.basicquery.pleaseSelect')
-})
-
-const formTypePlaceholder = () => ({
-  formTypeId: ALL_OPTION_VALUE,
-  formTypeName: t('formbusiness.basicquery.pleaseSelect')
-})
-
-const formStatusPlaceholder = () => ({
-  formStatus: ALL_OPTION_VALUE,
-  formStatusName: t('formbusiness.basicquery.pleaseSelect')
-})
-
-const formGroupOptions = ref([formGroupPlaceholder()])
-const formTypeOptions = ref([formTypePlaceholder()])
-const formStatusOptions = ref([formStatusPlaceholder()])
+const formGroupOptions = ref([])
+const formTypeOptions = ref([])
+const formStatusOptions = ref([])
 
 const defaultSearchForm = () => ({
-  formGroupId: ALL_OPTION_VALUE,
-  formTypeId: ALL_OPTION_VALUE,
-  formStatus: ALL_OPTION_VALUE,
+  formGroupId: '',
+  formTypeId: '',
+  formStatus: '',
   formNo: '',
   dateRange: []
 })
@@ -366,18 +371,13 @@ const pagination = reactive({
   totalCount: 0
 })
 
-const normalizeFilterValue = (value) =>
-  (isUnsetFilter(value) || value === ALL_OPTION_VALUE) ? '' : String(value)
+const normalizeFilterValue = (value) => isUnsetFilter(value) ? '' : String(value)
 
 const getFormGroupOptions = async () => {
   try {
     const res = await post(GET_FORMGROUP_DROPDOWN_API, {})
     if (res?.code === 200) {
-      formGroupOptions.value = [
-        { formGroupId: ALL_OPTION_VALUE, formGroupName: t('formbusiness.basicquery.pleaseSelect') },
-        ...(res.data || [])
-      ]
-      if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
+      formGroupOptions.value = res.data || []
       return
     }
     showMessage(res?.message || t('formbusiness.basicquery.getFormGroupFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -387,16 +387,13 @@ const getFormGroupOptions = async () => {
 }
 
 const getFormTypeOptions = async () => {
-  formTypeOptions.value = [formTypePlaceholder()]
-  searchForm.formTypeId = ALL_OPTION_VALUE
+  formTypeOptions.value = []
+  searchForm.formTypeId = ''
   if (isUnsetFilter(searchForm.formGroupId)) return
   try {
     const res = await post(GET_FORMTYPE_DROPDOWN_API, buildFormData({ formGroupId: String(searchForm.formGroupId) }), FORM_DATA_OPTIONS)
     if (res?.code === 200) {
-      formTypeOptions.value = [
-        { formTypeId: ALL_OPTION_VALUE, formTypeName: t('formbusiness.basicquery.pleaseSelect') },
-        ...(res.data || [])
-      ]
+      formTypeOptions.value = res.data || []
       return
     }
     showMessage(res?.message || t('formbusiness.basicquery.getFormTypeFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -409,10 +406,7 @@ const getFormStatusOptions = async () => {
   try {
     const res = await post(GET_FORMSTATUS_DROPDOWN_API, {})
     if (res?.code === 200) {
-      formStatusOptions.value = [
-        { formStatus: ALL_OPTION_VALUE, formStatusName: t('formbusiness.basicquery.pleaseSelect') },
-        ...(res.data || [])
-      ]
+      formStatusOptions.value = res.data || []
       return
     }
     showMessage(res?.message || t('formbusiness.basicquery.getFormStatusFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -454,7 +448,6 @@ const getFormList = async () => {
 }
 
 const handleFormGroupChange = () => {
-  if (isUnsetFilter(searchForm.formGroupId)) searchForm.formGroupId = ALL_OPTION_VALUE
   getFormTypeOptions()
 }
 
@@ -589,7 +582,7 @@ const handlePrintForm = async (row) => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.basicquery.printFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.basicquery.printFailed'))
   } finally {
     printingFormIds.value.delete(row.formId)
   }
@@ -646,7 +639,7 @@ const handleExportExcel = async () => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.basicquery.exportFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.basicquery.exportFailed'))
   } finally {
     exporting.value = false
   }
@@ -696,7 +689,7 @@ const handleBatchPrintForm = async () => {
     formTableRef.value?.clearSelection()
     selectedRows.value = []
   } catch (error) {
-    showMessage(error?.message || t('formbusiness.basicquery.batchPrintFailed'))
+    showMessage(await resolveBlobErrorMessage(error, 'formbusiness.basicquery.batchPrintFailed'))
   } finally {
     batchPrinting.value = false
   }
