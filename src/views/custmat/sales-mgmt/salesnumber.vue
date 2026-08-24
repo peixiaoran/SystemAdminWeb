@@ -32,6 +32,12 @@
           </el-button>
         </el-form-item>
         <el-form-item class="form-right-button">
+          <el-button type="warning" @click="handleBatchUpsert">
+            {{ $t('custmat.salesnumber.batchUpsert') }}
+          </el-button>
+          <el-button type="success" :loading="exportLoading" @click="handleExport">
+            {{ $t('custmat.salesnumber.export') }}
+          </el-button>
           <el-button type="primary" @click="handleAdd">
             {{ $t('custmat.salesnumber.addSalesNumber') }}
           </el-button>
@@ -154,6 +160,52 @@
         <el-button type="primary" @click="handleSave" :loading="submitLoading">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
+
+    <!-- 按客户批量新增/覆盖对话框 -->
+    <el-dialog v-model="batchDialogVisible"
+               :title="$t('custmat.salesnumber.batchUpsertTitle')"
+               width="760px"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="handleBatchDialogClose">
+      <div v-loading="batchDialogLoading">
+        <el-form ref="batchFormRef"
+                 :model="batchForm"
+                 :rules="batchFormRules"
+                 label-width="auto"
+                 class="dialog-form">
+          <div class="form-row">
+            <el-form-item :label="$t('custmat.salesnumber.customer')" prop="customerId">
+              <el-select v-model="batchForm.customerId"
+                         filterable
+                         style="width:100%"
+                         :placeholder="$t('custmat.salesnumber.pleaseSelectCustomer')">
+                <el-option v-for="item in customerOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('custmat.salesnumber.salesUser')" prop="salesUserId">
+              <el-select v-model="batchForm.salesUserId"
+                         filterable
+                         style="width:100%"
+                         :placeholder="$t('custmat.salesnumber.pleaseSelectSalesUser')">
+                <el-option v-for="item in salesUserOptions" :key="item.salesUserId" :label="item.userName" :value="item.salesUserId" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <el-form-item :label="$t('custmat.salesnumber.updateMode')" prop="updateMode">
+            <el-radio-group v-model="batchForm.updateMode" class="update-mode-group">
+              <el-radio :value="0">{{ $t('custmat.salesnumber.updateModeFillOnly') }}</el-radio>
+              <el-radio :value="1">{{ $t('custmat.salesnumber.updateModeOverwriteAll') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <el-button @click="batchDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleBatchSave" :loading="batchSubmitLoading">{{ $t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -161,7 +213,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post, isHandled } from '@/utils/request'
+import { post, postBlob, isHandled } from '@/utils/request'
 import {
   GET_SALES_NUMBER_PAGE_API,
   GET_SALES_NUMBER_ENTITY_API,
@@ -170,7 +222,10 @@ import {
   DELETE_SALES_NUMBER_API,
   GET_SALES_USER_DROP_API,
   GET_COMPANY_PART_NUMBER_DROP_API,
-  GET_PART_NUMBER_DETAIL_API
+  GET_PART_NUMBER_DETAIL_API,
+  GET_CUSTOMER_DROP_API,
+  BATCH_UPSERT_SALES_NUMBER_API,
+  EXPORT_SALES_NUMBER_EXCEL_API
 } from '@/config/api/custmat/sales-mgmt/salesnumber'
 
 const { t } = useI18n()
@@ -182,6 +237,7 @@ const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-url
 
 const salesNumberList = ref([])
 const loading = ref(false)
+const exportLoading = ref(false)
 const salesUserOptions = ref([])
 
 const pagination = reactive({
@@ -218,6 +274,31 @@ const formRules = {
   ]
 }
 
+// 按客户批量新增/覆盖对话框
+const customerOptions = ref([])
+const batchDialogVisible = ref(false)
+const batchDialogLoading = ref(false)
+const batchSubmitLoading = ref(false)
+const batchFormRef = ref(null)
+
+const batchForm = reactive({
+  customerId: '',
+  salesUserId: '',
+  updateMode: 0
+})
+
+const batchFormRules = {
+  customerId: [
+    { required: true, message: () => t('custmat.salesnumber.customerRequired'), trigger: 'change' }
+  ],
+  salesUserId: [
+    { required: true, message: () => t('custmat.salesnumber.salesUserRequired'), trigger: 'change' }
+  ],
+  updateMode: [
+    { required: true, message: () => t('custmat.salesnumber.updateModeRequired'), trigger: 'change' }
+  ]
+}
+
 // 料号远程搜索下拉
 const partNumberOptions = ref([])
 const partNumberLoading = ref(false)
@@ -233,6 +314,11 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
+/** 业务码失败提示：400 视为告警，其余视为错误 */
+const showApiError = (res, fallbackKey) => {
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
 const resetEditForm = () => {
   Object.assign(editForm, {
     partNumberId: '',
@@ -240,6 +326,14 @@ const resetEditForm = () => {
     salesUserId: ''
   })
   partNumberOptions.value = []
+}
+
+const resetBatchForm = () => {
+  Object.assign(batchForm, {
+    customerId: '',
+    salesUserId: '',
+    updateMode: 0
+  })
 }
 
 /** 业务人员下拉 */
@@ -254,7 +348,7 @@ const fetchSalesUserOptions = async () => {
       salesUserOptions.value = res.data || []
     } else {
       salesUserOptions.value = []
-      showMessage(res?.message || t('custmat.salesnumber.getSalesUserFailed'))
+      showApiError(res, 'custmat.salesnumber.getSalesUserFailed')
     }
   } catch {
     salesUserOptions.value = []
@@ -262,17 +356,40 @@ const fetchSalesUserOptions = async () => {
   }
 }
 
+/** 客户下拉 */
+const fetchCustomerOptions = async () => {
+  try {
+    const res = await post(GET_CUSTOMER_DROP_API.GET_CUSTOMER_DROP, {})
+    if (isHandled(res)) {
+      customerOptions.value = []
+      return
+    }
+    if (res?.code === 200) {
+      customerOptions.value = res.data || []
+    } else {
+      customerOptions.value = []
+      showApiError(res, 'custmat.salesnumber.getCustomerFailed')
+    }
+  } catch {
+    customerOptions.value = []
+    showMessage(t('custmat.salesnumber.getCustomerFailed'))
+  }
+}
+
+/** 分页列表与导出共用的查询参数 */
+const buildQueryParams = () => ({
+  partNumber: filters.partNumber,
+  salesUserId: filters.salesUserId,
+  userName: filters.userName,
+  pageIndex: pagination.pageIndex,
+  pageSize: pagination.pageSize,
+  totalCount: pagination.totalCount
+})
+
 const fetchSalesNumberList = async () => {
   loading.value = true
   try {
-    const res = await post(GET_SALES_NUMBER_PAGE_API.GET_SALES_NUMBER_PAGE, {
-      partNumber: filters.partNumber,
-      salesUserId: filters.salesUserId,
-      userName: filters.userName,
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize,
-      totalCount: pagination.totalCount
-    })
+    const res = await post(GET_SALES_NUMBER_PAGE_API.GET_SALES_NUMBER_PAGE, buildQueryParams())
 
     if (isHandled(res)) {
       salesNumberList.value = []
@@ -283,7 +400,7 @@ const fetchSalesNumberList = async () => {
       salesNumberList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res?.message || t('custmat.salesnumber.getFailed'))
+      showApiError(res, 'custmat.salesnumber.getFailed')
       salesNumberList.value = []
     }
   } catch {
@@ -346,7 +463,7 @@ const handleShowPartNumberDetail = async (partNumber) => {
       partNumberDetail.value = res.data
       partNumberDetailFor.value = partNumber
     } else {
-      showMessage(res?.message || t('custmat.salesnumber.getPartNumberDetailFailed'))
+      showApiError(res, 'custmat.salesnumber.getPartNumberDetailFailed')
     }
   } catch {
     showMessage(t('custmat.salesnumber.getPartNumberDetailFailed'))
@@ -358,6 +475,47 @@ const handleShowPartNumberDetail = async (partNumber) => {
 const handleSearch = () => {
   pagination.pageIndex = 1
   fetchSalesNumberList()
+}
+
+const assertDownloadableBlob = async (blob, fallbackKey) => {
+  if (!(blob instanceof Blob) || blob.size === 0) {
+    throw new Error(t(fallbackKey))
+  }
+  if (blob.type && blob.type.includes('application/json')) {
+    const text = await blob.text()
+    let message = t(fallbackKey)
+    try {
+      message = JSON.parse(text)?.message || message
+    } catch {
+      // 非 JSON 内容时沿用默认文案
+    }
+    throw new Error(message)
+  }
+}
+
+const downloadBlob = (blob, fileName) => {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+// 导出业务人员料号 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
+const handleExport = async () => {
+  exportLoading.value = true
+  try {
+    const res = await postBlob(EXPORT_SALES_NUMBER_EXCEL_API.EXPORT_SALES_NUMBER_EXCEL, buildQueryParams())
+    await assertDownloadableBlob(res?.data, 'custmat.salesnumber.exportFailed')
+    downloadBlob(res.data, `${t('custmat.salesnumber.exportFileName')}.xlsx`)
+  } catch (error) {
+    showMessage(error?.message || t('custmat.salesnumber.exportFailed'))
+  } finally {
+    exportLoading.value = false
+  }
 }
 
 const handleReset = () => {
@@ -393,6 +551,53 @@ const handleAdd = async () => {
   dialogLoading.value = false
 }
 
+const handleBatchUpsert = async () => {
+  resetBatchForm()
+  batchDialogVisible.value = true
+  batchDialogLoading.value = true
+
+  if (customerOptions.value.length === 0) await fetchCustomerOptions()
+  if (salesUserOptions.value.length === 0) await fetchSalesUserOptions()
+
+  await nextTick()
+  batchFormRef.value?.clearValidate()
+  batchDialogLoading.value = false
+}
+
+const handleBatchSave = async () => {
+  const valid = await batchFormRef.value?.validate().catch(() => false)
+  if (!valid) return
+
+  batchSubmitLoading.value = true
+  try {
+    const res = await post(BATCH_UPSERT_SALES_NUMBER_API.BATCH_UPSERT_SALES_NUMBER, {
+      customerId: batchForm.customerId,
+      salesUserId: batchForm.salesUserId,
+      updateMode: batchForm.updateMode
+    })
+
+    if (isHandled(res)) return
+
+    if (res?.code === 200) {
+      showMessage(res.message || t('custmat.salesnumber.batchUpsertSuccess'), 'success')
+      batchDialogVisible.value = false
+      handleSearch()
+    } else {
+      showApiError(res, 'custmat.salesnumber.operationFailed')
+    }
+  } catch {
+    showMessage(t('custmat.salesnumber.operationFailed'))
+  } finally {
+    batchSubmitLoading.value = false
+  }
+}
+
+const handleBatchDialogClose = () => {
+  resetBatchForm()
+  batchDialogLoading.value = false
+  batchFormRef.value?.clearValidate()
+}
+
 const handleEdit = async (row) => {
   dialogLoading.value = true
   dialogVisible.value = true
@@ -423,7 +628,7 @@ const handleEdit = async (row) => {
       // 预置当前值，使远程搜索下拉能正常回显已选料号
       partNumberOptions.value = data.partNumber ? [{ partNumber: data.partNumber }] : []
     } else {
-      showMessage(res?.message || t('custmat.salesnumber.getSalesNumberDetailFailed'))
+      showApiError(res, 'custmat.salesnumber.getSalesNumberDetailFailed')
       dialogVisible.value = false
     }
   } catch {
@@ -459,7 +664,7 @@ const handleDelete = async (row) => {
       showMessage(res.message || t('custmat.salesnumber.deleteSalesNumberSuccess'), 'success')
       fetchSalesNumberList()
     } else {
-      showMessage(res?.message || t('custmat.salesnumber.operationFailed'))
+      showApiError(res, 'custmat.salesnumber.operationFailed')
     }
   } catch {
     showMessage(t('custmat.salesnumber.operationFailed'))
@@ -489,7 +694,7 @@ const handleSave = async () => {
       dialogVisible.value = false
       handleSearch()
     } else {
-      showMessage(res?.message || t('custmat.salesnumber.operationFailed'))
+      showApiError(res, 'custmat.salesnumber.operationFailed')
     }
   } catch {
     showMessage(t('custmat.salesnumber.operationFailed'))
@@ -526,6 +731,20 @@ onMounted(async () => {
 .dialog-form-row .el-form-item {
   flex: 1;
   margin-bottom: 0;
+}
+
+.update-mode-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.update-mode-group :deep(.el-radio) {
+  height: auto;
+  margin-right: 0;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .part-number-detail {

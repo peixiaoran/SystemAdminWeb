@@ -2185,7 +2185,7 @@ export default {
       unit: 'Unit',
       sourceType: 'Source Type',
       manufacturer: 'Manufacturer',
-      manufacturerNumber: 'Manufacturer Number',
+      manufacturerNumber: 'Manufacturer',
       lotControl: 'Lot Control',
       status: 'Status',
       statusEnabled: 'Enabled',
@@ -2379,7 +2379,21 @@ export default {
       lotControlNo: 'No',
       statusEnabled: 'Enabled',
       statusDisabled: 'Disabled',
-      getPartNumberDetailFailed: 'Failed to get part number details'
+      getPartNumberDetailFailed: 'Failed to get part number details',
+      batchUpsert: 'Batch Set by Customer',
+      batchUpsertTitle: 'Batch Set Sales User by Customer',
+      customer: 'Customer',
+      pleaseSelectCustomer: 'Please select customer',
+      customerRequired: 'Please select customer',
+      updateMode: 'Update Mode',
+      updateModeRequired: 'Please select update mode',
+      updateModeFillOnly: 'Fill unassigned only (keep existing owners)',
+      updateModeOverwriteAll: 'Overwrite all (including assigned ones)',
+      batchUpsertSuccess: 'Batch set successfully',
+      getCustomerFailed: 'Failed to get customer list',
+      export: 'Export',
+      exportFailed: 'Export failed',
+      exportFileName: 'Sales Part Number'
     }
   }
 }

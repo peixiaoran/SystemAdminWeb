@@ -258,6 +258,11 @@ const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
 }
 
+/** 业务码失败提示：400 视为告警，其余视为错误 */
+const showApiError = (res, fallbackKey) => {
+  showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
 const resetEditForm = () => {
   Object.assign(editForm, {
     salesUserId: '',
@@ -287,7 +292,7 @@ const fetchSalesTypeOptions = async () => {
       salesTypeOptions.value = Array.from(seen.values())
     } else {
       salesTypeOptions.value = []
-      showMessage(res?.message || t('custmat.salesuser.getSalesTypeFailed'))
+      showApiError(res, 'custmat.salesuser.getSalesTypeFailed')
     }
   } catch {
     salesTypeOptions.value = []
@@ -316,7 +321,7 @@ const fetchSalesUserList = async () => {
       salesUserList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showMessage(res?.message || t('custmat.salesuser.getFailed'))
+      showApiError(res, 'custmat.salesuser.getFailed')
       salesUserList.value = []
     }
   } catch {
@@ -348,7 +353,7 @@ const fetchUserSelectList = async () => {
       userSelectPagination.totalCount = res.totalCount || 0
     } else {
       userSelectList.value = []
-      showMessage(res?.message || t('custmat.salesuser.getUserFailed'))
+      showApiError(res, 'custmat.salesuser.getUserFailed')
     }
   } catch {
     userSelectList.value = []
@@ -472,7 +477,7 @@ const handleEdit = async (row) => {
       })
       Object.assign(userSelectPagination, { pageIndex: 1, pageSize: 10, totalCount: 0 })
     } else {
-      showMessage(res?.message || t('custmat.salesuser.getSalesUserDetailFailed'))
+      showApiError(res, 'custmat.salesuser.getSalesUserDetailFailed')
       dialogVisible.value = false
       return
     }
@@ -512,7 +517,7 @@ const handleDelete = async (row) => {
       showMessage(res.message || t('custmat.salesuser.deleteSalesUserSuccess'), 'success')
       fetchSalesUserList()
     } else {
-      showMessage(res?.message || t('custmat.salesuser.operationFailed'))
+      showApiError(res, 'custmat.salesuser.operationFailed')
     }
   } catch {
     showMessage(t('custmat.salesuser.operationFailed'))
@@ -546,7 +551,7 @@ const handleSave = async () => {
       dialogVisible.value = false
       handleSearch()
     } else {
-      showMessage(res?.message || t('custmat.salesuser.operationFailed'))
+      showApiError(res, 'custmat.salesuser.operationFailed')
     }
   } catch {
     showMessage(t('custmat.salesuser.operationFailed'))

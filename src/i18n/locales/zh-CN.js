@@ -2345,7 +2345,21 @@ export default {
       lotControlNo: '否',
       statusEnabled: '启用',
       statusDisabled: '停用',
-      getPartNumberDetailFailed: '获取料号详情失败'
+      getPartNumberDetailFailed: '获取料号详情失败',
+      batchUpsert: '按客户批量设置',
+      batchUpsertTitle: '按客户批量设置业务人员',
+      customer: '客户',
+      pleaseSelectCustomer: '请选择客户',
+      customerRequired: '请选择客户',
+      updateMode: '更新方式',
+      updateModeRequired: '请选择更新方式',
+      updateModeFillOnly: '仅补未配置的料号（已配置的保留原负责人）',
+      updateModeOverwriteAll: '全部覆盖（含已配置的料号）',
+      batchUpsertSuccess: '批量设置成功',
+      getCustomerFailed: '获取客户列表失败',
+      export: '导出',
+      exportFailed: '导出失败',
+      exportFileName: '人员料号'
     }
   }
 }

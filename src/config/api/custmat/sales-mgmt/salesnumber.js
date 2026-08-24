@@ -42,3 +42,18 @@ export const GET_COMPANY_PART_NUMBER_DROP_API = {
 export const GET_PART_NUMBER_DETAIL_API = {
     GET_PART_NUMBER_DETAIL: 'CustMat/SalesMgmt/SalesNumber/GetPartNumberDetail'
 }
+
+// 客户下拉框API
+export const GET_CUSTOMER_DROP_API = {
+    GET_CUSTOMER_DROP: 'CustMat/SalesMgmt/SalesNumber/GetCustomerDrop'
+}
+
+// 按客户批量新增/覆盖业务人员料号API
+export const BATCH_UPSERT_SALES_NUMBER_API = {
+    BATCH_UPSERT_SALES_NUMBER: 'CustMat/SalesMgmt/SalesNumber/BatchUpsertSalesNumber'
+}
+
+// 导出业务人员料号Excel API
+export const EXPORT_SALES_NUMBER_EXCEL_API = {
+    EXPORT_SALES_NUMBER_EXCEL: 'CustMat/SalesMgmt/SalesNumber/ExportSalesNumberExcel'
+}
