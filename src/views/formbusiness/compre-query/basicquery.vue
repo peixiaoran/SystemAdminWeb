@@ -11,7 +11,7 @@
 
         <el-form-item class="form-right-button">
           <el-button
-            class="batch-print-btn"
+            :icon="Printer"
             :disabled="selectedRows.length === 0"
             :loading="batchPrinting"
             @click="handleBatchPrintForm"
@@ -188,16 +188,14 @@
             fixed="right"
           >
             <template #default="{ row }">
-              <el-link
+              <el-button
                 v-if="canShowPrint(row)"
-                type="primary"
-                underline="never"
-                :disabled="printingFormIds.has(row.formId)"
+                link
+                :icon="Printer"
+                :loading="printingFormIds.has(row.formId)"
+                :title="printingFormIds.has(row.formId) ? $t('formbusiness.basicquery.printing') : $t('formbusiness.basicquery.printPdf')"
                 @click="handlePrintForm(row)"
-              >
-                <el-icon v-if="printingFormIds.has(row.formId)" class="is-loading" style="margin-right: 4px;"><Loading /></el-icon>
-                {{ printingFormIds.has(row.formId) ? $t('formbusiness.basicquery.printing') : $t('formbusiness.basicquery.printPdf') }}
-              </el-link>
+              />
               <span v-if="!canShowPrint(row)">—</span>
             </template>
           </el-table-column>
@@ -275,7 +273,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Loading, Filter, RefreshLeft } from '@element-plus/icons-vue'
+import { Filter, RefreshLeft, Printer } from '@element-plus/icons-vue'
 import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
@@ -712,24 +710,6 @@ onMounted(async () => {
 
 .conventional-table :deep(.el-table) {
   min-width: 1180px;
-}
-
-.batch-print-btn {
-  color: #fff;
-  background-color: var(--el-color-primary);
-  border-color: var(--el-color-primary);
-}
-
-.batch-print-btn:hover:not(.is-disabled) {
-  color: #fff;
-  background-color: var(--el-color-primary-light-3);
-  border-color: var(--el-color-primary-light-3);
-}
-
-.batch-print-btn.is-disabled {
-  color: #fff;
-  background-color: var(--el-color-primary-light-7);
-  border-color: var(--el-color-primary-light-7);
 }
 
 .filter-dialog .form-row .el-form-item {

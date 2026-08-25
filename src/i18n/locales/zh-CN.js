@@ -1245,7 +1245,10 @@ export default {
     custmatNumberMapping: '料号对照维护',
     custmatsalesmgmt: '销售管理',
     custmatSalesUser: '业务人员维护',
-    custmatSalesNumber: '业务人员料号'
+    custmatSalesNumber: '业务人员料号',
+    custmatrollingforecast: '滚动预测',
+    custmatForecastVersion: '预测版本维护',
+    custmatForeWeeklyDetail: '每周滚动预测'
   },
   
   // 系统基础管理
@@ -2360,6 +2363,58 @@ export default {
       export: '导出',
       exportFailed: '导出失败',
       exportFileName: '人员料号'
+    },
+    forecastversion: {
+      pageTitle: '预测版本维护',
+      ariaFilterLabel: '预测版本筛选表单',
+      ariaEditLabel: '预测版本编辑表单',
+      index: '序号',
+      versionCode: '版本编号',
+      weekRange: '所属周',
+      startDate: '开始日期',
+      endDate: '结束日期',
+      year: '年度',
+      month: '月份',
+      week: '周次',
+      isLatest: '是否最新',
+      latestTag: '最新',
+      statusName: '状态',
+      operation: '操作',
+      pleaseInputVersionCode: '请输入版本编号',
+      pleaseSelectWeek: '请选择所属周',
+      addForecastVersion: '新增预测版本',
+      editForecastVersion: '编辑预测版本',
+      addForecastVersionTitle: '新增预测版本',
+      editForecastVersionTitle: '编辑预测版本',
+      deleteConfirm: '确定要删除该预测版本吗？',
+      versionCodeRequired: '请输入版本编号',
+      weekRequired: '请选择所属周',
+      addForecastVersionSuccess: '新增预测版本成功',
+      editForecastVersionSuccess: '编辑预测版本成功',
+      deleteForecastVersionSuccess: '删除预测版本成功',
+      getFailed: '获取数据失败',
+      operationFailed: '操作失败',
+      getForecastVersionDetailFailed: '获取预测版本详情失败',
+      unlock: '解锁',
+      lock: '锁定',
+      unlockSuccess: '解锁成功',
+      lockSuccess: '锁定成功'
+    },
+    foweeklydetail: {
+      pageTitle: '每周滚动预测',
+      ariaFilterLabel: '每周滚动预测筛选表单',
+      index: '序号',
+      versionCode: '版本编号',
+      startDate: '开始日期',
+      endDate: '结束日期',
+      year: '年度',
+      month: '月份',
+      week: '周次',
+      isLatest: '是否最新',
+      latestTag: '最新',
+      statusName: '状态',
+      pleaseInputVersionCode: '请输入版本编号',
+      getFailed: '获取数据失败'
     }
   }
 }

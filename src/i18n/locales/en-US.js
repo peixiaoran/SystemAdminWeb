@@ -1327,7 +1327,10 @@ export default {
     custmatNumberMapping: 'No. Mapping',
     custmatsalesmgmt: 'Sales',
     custmatSalesUser: 'Sales User',
-    custmatSalesNumber: 'Sales Number'
+    custmatSalesNumber: 'Sales Number',
+    custmatrollingforecast: 'Rolling Forecast',
+    custmatForecastVersion: 'Forecast Version',
+    custmatForeWeeklyDetail: 'FoWeeklyDetail'
   },
   
   // System Basic Management
@@ -2394,6 +2397,58 @@ export default {
       export: 'Export',
       exportFailed: 'Export failed',
       exportFileName: 'Sales Part Number'
+    },
+    forecastversion: {
+      pageTitle: 'Forecast Version',
+      ariaFilterLabel: 'Forecast Version Filter Form',
+      ariaEditLabel: 'Forecast Version Edit Form',
+      index: 'Index',
+      versionCode: 'Version Code',
+      weekRange: 'Week',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      year: 'Year',
+      month: 'Month',
+      week: 'Week No.',
+      isLatest: 'Is Latest',
+      latestTag: 'Latest',
+      statusName: 'Status',
+      operation: 'Operation',
+      pleaseInputVersionCode: 'Please enter version code',
+      pleaseSelectWeek: 'Please select a week',
+      addForecastVersion: 'Add Forecast Version',
+      editForecastVersion: 'Edit Forecast Version',
+      addForecastVersionTitle: 'Add Forecast Version',
+      editForecastVersionTitle: 'Edit Forecast Version',
+      deleteConfirm: 'Are you sure you want to delete this forecast version?',
+      versionCodeRequired: 'Please enter version code',
+      weekRequired: 'Please select a week',
+      addForecastVersionSuccess: 'Forecast version added successfully',
+      editForecastVersionSuccess: 'Forecast version updated successfully',
+      deleteForecastVersionSuccess: 'Forecast version deleted successfully',
+      getFailed: 'Failed to get data',
+      operationFailed: 'Operation Failed',
+      getForecastVersionDetailFailed: 'Failed to get forecast version details',
+      unlock: 'Unlock',
+      lock: 'Lock',
+      unlockSuccess: 'Unlocked successfully',
+      lockSuccess: 'Locked successfully'
+    },
+    foweeklydetail: {
+      pageTitle: 'FoWeeklyDetail',
+      ariaFilterLabel: 'FoWeeklyDetail Filter Form',
+      index: 'Index',
+      versionCode: 'Version Code',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      year: 'Year',
+      month: 'Month',
+      week: 'Week',
+      isLatest: 'Is Latest',
+      latestTag: 'Latest',
+      statusName: 'Status',
+      pleaseInputVersionCode: 'Please enter version code',
+      getFailed: 'Failed to get data'
     }
   }
 }

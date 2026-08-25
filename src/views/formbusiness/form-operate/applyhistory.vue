@@ -49,7 +49,7 @@
 
         <el-form-item class="form-right-button">
           <el-button
-            class="batch-print-btn"
+            :icon="Printer"
             :disabled="selectedRows.length === 0"
             :loading="batchPrinting"
             @click="handleBatchPrintForm"
@@ -151,16 +151,14 @@
                   {{ $t('formbusiness.formpending.invalidate') }}
                 </el-link>
                 <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
-                <el-link
+                <el-button
                   v-if="canShowPrint(row)"
-                  class="apply-history-print-link"
-                  underline="never"
-                  :disabled="printingFormIds.has(row.formId)"
+                  link
+                  :icon="Printer"
+                  :loading="printingFormIds.has(row.formId)"
+                  :title="printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf')"
                   @click="handlePrintForm(row)"
-                >
-                  <el-icon v-if="printingFormIds.has(row.formId)" class="is-loading" style="margin-right: 4px;"><Loading /></el-icon>
-                  {{ printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf') }}
-                </el-link>
+                />
               </div>
             </template>
           </el-table-column>
@@ -238,7 +236,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
+import { Printer } from '@element-plus/icons-vue'
 import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
@@ -753,23 +751,6 @@ onMounted(async () => {
   min-width: 1280px;
 }
 
-.batch-print-btn {
-  color: #fff;
-  background-color: var(--el-color-primary);
-  border-color: var(--el-color-primary);
-}
-
-.batch-print-btn:hover:not(.is-disabled) {
-  color: #fff;
-  background-color: var(--el-color-primary-light-3);
-  border-color: var(--el-color-primary-light-3);
-}
-
-.batch-print-btn.is-disabled {
-  color: #fff;
-  background-color: var(--el-color-primary-light-7);
-  border-color: var(--el-color-primary-light-7);
-}
 
 .apply-history-operation-cell {
   display: flex;
@@ -786,16 +767,5 @@ onMounted(async () => {
   color: #f39c4a;
 }
 
-.apply-history-operation-cell :deep(.apply-history-print-link) {
-  color: var(--el-color-primary);
-}
-
-.apply-history-operation-cell :deep(.apply-history-print-link:hover) {
-  color: var(--el-color-primary-light-3);
-}
-
-.apply-history-operation-cell :deep(.apply-history-print-link.is-disabled) {
-  color: var(--el-link-disabled-text-color);
-}
 
 </style>

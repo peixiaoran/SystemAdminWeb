@@ -647,14 +647,14 @@ const pmenuRoutes = [
             noTag: true
           }
         },
-        // 表单基础信息子模块 - 使用嵌套结构
+        // 生产计划基础信息子模块 - 使用嵌套结构
         {
           path: 'custmat-basicinfo',
           name: 'CustMatBasicInfo',
           redirect: '/custmat/custmat-basicinfo',
           meta: { 
             title: 'route.custmatbasicinfo',
-            icon: 'Promotion',
+            icon: 'HomeFilled',
             [ROUTE_CONFIG.META.AUTH]: true,
             noTag: true
           },
@@ -712,7 +712,7 @@ const pmenuRoutes = [
           redirect: '/custmat/sales-mgmt/salesuser',
           meta: {
             title: 'route.custmatsalesmgmt',
-            icon: 'Suitcase',
+            icon: 'List',
             [ROUTE_CONFIG.META.AUTH]: true,
             noTag: true
           },
@@ -735,6 +735,42 @@ const pmenuRoutes = [
               meta: {
                 title: 'route.custmatSalesNumber',
                 icon: 'SetUp',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
+        },
+        // 滚动预测子模块 - 使用嵌套结构
+        {
+          path: 'rolling-forecast',
+          name: 'CustMatRollingForecast',
+          redirect: '/custmat/rolling-forecast/forecastversion',
+          meta: {
+            title: 'route.custmatrollingforecast',
+            icon: 'TrendCharts',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'forecastversion',
+              name: 'ForecastVersion',
+              component: () => import('../views/custmat/rolling-forecast/forecastversion.vue'),
+              meta: {
+                title: 'route.custmatForecastVersion',
+                icon: 'Calendar',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'foweeklydetail',
+              name: 'ForeWeeklyDetail',
+              component: () => import('../views/custmat/rolling-forecast/foweeklydetail.vue'),
+              meta: {
+                title: 'route.custmatForeWeeklyDetail',
+                icon: 'Reading',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
