@@ -5,5 +5,25 @@
 
 // 预测周明细分页查询API
 export const GET_FORE_WEEKLY_DETAIL_PAGE_API = {
-    GET_FORE_WEEKLY_DETAIL_PAGE: 'CustMat/RollingForecast/ForecastVersion/GetForecastVersionPage'
+    GET_FORE_WEEKLY_DETAIL_PAGE: 'CustMat/RollingForecast/FoWeeklyDetail/GetForecastVersionPage'
+}
+
+// 预测周明细数据查询API（按版本查询周期列与物料行数据）
+export const GET_FO_WEEKLY_DETAIL_API = {
+    GET_FO_WEEKLY_DETAIL: 'CustMat/RollingForecast/FoWeeklyDetail/GetFoWeeklyDetail'
+}
+
+// 导出预测周明细上摆模板API
+export const EXPORT_FO_WEEKLY_DETAIL_TEMPLATE_API = {
+    EXPORT_FO_WEEKLY_DETAIL_TEMPLATE: 'CustMat/RollingForecast/FoWeeklyDetail/ExportFoWeeklyDetailTemplate'
+}
+
+// 导出预测周明细数据API
+export const EXPORT_FO_WEEKLY_DETAIL_API = {
+    EXPORT_FO_WEEKLY_DETAIL: 'CustMat/RollingForecast/FoWeeklyDetail/ExportFoWeeklyDetail'
+}
+
+// 导入预测周明细上摆数据API
+export const IMPORT_FO_WEEKLY_DETAIL_API = {
+    IMPORT_FO_WEEKLY_DETAIL: 'CustMat/RollingForecast/FoWeeklyDetail/ImportFoWeeklyDetail'
 }

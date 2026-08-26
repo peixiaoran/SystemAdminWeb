@@ -44,11 +44,6 @@
           <el-table-column prop="year" :label="$t('custmat.forecastversion.year')" align="center" min-width="90" />
           <el-table-column prop="month" :label="$t('custmat.forecastversion.month')" align="center" min-width="90" />
           <el-table-column prop="week" :label="$t('custmat.forecastversion.week')" align="center" min-width="90" />
-          <el-table-column prop="isLatest" :label="$t('custmat.forecastversion.isLatest')" align="center" min-width="100">
-            <template #default="scope">
-              <el-tag v-if="isLatestVersion(scope.row.isLatest)" type="success" effect="dark">{{ $t('custmat.forecastversion.latestTag') }}</el-tag>
-            </template>
-          </el-table-column>
           <el-table-column prop="statusName" :label="$t('custmat.forecastversion.statusName')" align="center" min-width="100" />
           <el-table-column :label="$t('custmat.forecastversion.operation')" width="280" fixed="right" align="center">
             <template #default="scope">
@@ -201,8 +196,8 @@ const canEditOrDelete = (row) => row.status === FORECAST_VERSION_STATUS.PREPARAT
 /** 仅最新版本、且状态为编制中（Preparation）时可解锁 */
 const canUnlock = (row) => isLatestVersion(row.isLatest) && row.status === FORECAST_VERSION_STATUS.PREPARATION
 
-/** 仅最新版本、且状态为已解锁（Unlock）时可锁定 */
-const canLock = (row) => isLatestVersion(row.isLatest) && row.status === FORECAST_VERSION_STATUS.UNLOCK
+/** 状态为已解锁（Unlock）时可锁定 */
+const canLock = (row) => row.status === FORECAST_VERSION_STATUS.UNLOCK
 
 const pad2 = (n) => String(n).padStart(2, '0')
 
@@ -392,6 +387,16 @@ const handleDelete = async (row) => {
 
 const handleUnlock = async (row) => {
   try {
+    await ElMessageBox.confirm(
+      t('custmat.forecastversion.unlockConfirm'),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+
+  try {
     const res = await post(
       UNLOCK_FORECAST_VERSION_API.UNLOCK_FORECAST_VERSION,
       new URLSearchParams({ versionId: String(row.versionId) }),
@@ -412,6 +417,16 @@ const handleUnlock = async (row) => {
 }
 
 const handleLock = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('custmat.forecastversion.lockConfirm'),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+
   try {
     const res = await post(
       LOCK_FORECAST_VERSION_API.LOCK_FORECAST_VERSION,

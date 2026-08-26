@@ -3,6 +3,8 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
+import dayjs from 'dayjs'
+import dayjsUpdateLocale from 'dayjs/plugin/updateLocale'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -24,6 +26,11 @@ try {
   // ignore
   void e
 }
+
+// dayjs 内置的 en locale 未设置 weekStart，会导致日期选择器（如周选择）以周日作为一周起点；
+// 这里将其覆盖为周一起点，与 zh-cn locale 保持一致
+dayjs.extend(dayjsUpdateLocale)
+dayjs.updateLocale('en', { weekStart: 1 })
 
 // 获取存储的语言
 const language = localStorage.getItem('language') || 'zh-CN'

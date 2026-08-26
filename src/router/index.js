@@ -631,6 +631,28 @@ const pmenuRoutes = [
       tokenBypass: true
     }
   },
+  // 独立预测周明细上摆页面（不使用Layout，无标签，全屏展示，供最新版本编辑）
+  {
+    path: '/custmat/rolling-forecast/foweeklydetailarrange',
+    name: 'ForeWeeklyDetailArrange',
+    component: () => import('../views/custmat/rolling-forecast/foweeklydetailarrange.vue'),
+    meta: {
+      title: 'route.custmatForeWeeklyDetailArrange',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
+  // 独立预测周明细查看页面（不使用Layout，无标签，全屏展示，供非最新版本只读查看）
+  {
+    path: '/custmat/rolling-forecast/foweeklydetailview',
+    name: 'ForeWeeklyDetailView',
+    component: () => import('../views/custmat/rolling-forecast/foweeklydetailview.vue'),
+    meta: {
+      title: 'route.custmatForeWeeklyDetailView',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   {
       path: '/custmat',
       component: Layout,

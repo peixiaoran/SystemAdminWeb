@@ -39,12 +39,19 @@
           <el-table-column prop="year" :label="$t('custmat.foweeklydetail.year')" align="center" min-width="90" />
           <el-table-column prop="month" :label="$t('custmat.foweeklydetail.month')" align="center" min-width="90" />
           <el-table-column prop="week" :label="$t('custmat.foweeklydetail.week')" align="center" min-width="90" />
-          <el-table-column prop="isLatest" :label="$t('custmat.foweeklydetail.isLatest')" align="center" min-width="100">
+          <el-table-column prop="statusName" :label="$t('custmat.foweeklydetail.statusName')" align="center" min-width="100" />
+          <el-table-column :label="$t('custmat.foweeklydetail.operation')" width="160" fixed="right" align="center">
             <template #default="scope">
-              <el-tag v-if="isLatestVersion(scope.row.isLatest)" type="success" effect="dark">{{ $t('custmat.foweeklydetail.latestTag') }}</el-tag>
+              <template v-if="!isPreparation(scope.row)">
+                <el-button v-if="canArrange(scope.row)" size="small" type="primary" @click="handleArrange(scope.row)">
+                  {{ $t('custmat.foweeklydetail.arrange') }}
+                </el-button>
+                <el-button size="small" @click="handleView(scope.row)">
+                  {{ $t('common.view') }}
+                </el-button>
+              </template>
             </template>
           </el-table-column>
-          <el-table-column prop="statusName" :label="$t('custmat.foweeklydetail.statusName')" align="center" min-width="100" />
         </el-table>
       </div>
 
@@ -66,10 +73,18 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { post, isHandled } from '@/utils/request'
 import { GET_FORE_WEEKLY_DETAIL_PAGE_API } from '@/config/api/custmat/rolling-forecast/foweeklydetail'
 
+/** 预测版本状态码：编制中 / 已解锁 */
+const FORECAST_VERSION_STATUS = {
+  PREPARATION: 'Preparation',
+  UNLOCK: 'Unlock'
+}
+
 const { t } = useI18n()
+const router = useRouter()
 
 const foWeeklyDetailList = ref([])
 const loading = ref(false)
@@ -95,6 +110,12 @@ const showApiError = (res, fallbackKey) => {
 
 /** isLatest 为 1（或字符串 "1"）时展示最新标识 */
 const isLatestVersion = (val) => Number(val) === 1
+
+/** 仅最新版本、且状态为已解锁（Unlock）时可上摆 */
+const canArrange = (row) => isLatestVersion(row.isLatest) && row.status === FORECAST_VERSION_STATUS.UNLOCK
+
+/** 状态为编制中（Preparation）时不展示上摆/查看操作 */
+const isPreparation = (row) => row.status === FORECAST_VERSION_STATUS.PREPARATION
 
 const pad2 = (n) => String(n).padStart(2, '0')
 
@@ -166,6 +187,21 @@ const handleSizeChange = () => {
 
 const handlePageChange = () => {
   fetchForeWeeklyDetailList()
+}
+
+/** 以新标签页方式全屏打开预测周明细上摆/查看页面，不加 noopener 以便必要时通过 window.opener 通知本页面 */
+const openFoWeeklyDetailPage = (path, row) => {
+  if (!row?.versionId) return
+  const resolved = router.resolve({ path, query: { versionId: String(row.versionId) } })
+  window.open(resolved.href, '_blank')
+}
+
+const handleArrange = (row) => {
+  openFoWeeklyDetailPage('/custmat/rolling-forecast/foweeklydetailarrange', row)
+}
+
+const handleView = (row) => {
+  openFoWeeklyDetailPage('/custmat/rolling-forecast/foweeklydetailview', row)
 }
 
 onMounted(() => {

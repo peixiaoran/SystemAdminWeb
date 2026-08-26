@@ -1248,7 +1248,9 @@ export default {
     custmatSalesNumber: '业务人员料号',
     custmatrollingforecast: '滚动预测',
     custmatForecastVersion: '预测版本维护',
-    custmatForeWeeklyDetail: '每周滚动预测'
+    custmatForeWeeklyDetail: '每周滚动预测',
+    custmatForeWeeklyDetailArrange: '预测周明细上摆',
+    custmatForeWeeklyDetailView: '预测周明细查看'
   },
   
   // 系统基础管理
@@ -2397,6 +2399,8 @@ export default {
       getForecastVersionDetailFailed: '获取预测版本详情失败',
       unlock: '解锁',
       lock: '锁定',
+      unlockConfirm: '确定要解锁该预测版本吗？',
+      lockConfirm: '确定要锁定该预测版本吗？',
       unlockSuccess: '解锁成功',
       lockSuccess: '锁定成功'
     },
@@ -2414,7 +2418,32 @@ export default {
       latestTag: '最新',
       statusName: '状态',
       pleaseInputVersionCode: '请输入版本编号',
-      getFailed: '获取数据失败'
+      getFailed: '获取数据失败',
+      operation: '操作',
+      arrange: '上摆'
+    },
+    foweeklydetaildata: {
+      arrangeTitle: '预测周明细上摆',
+      viewTitle: '预测周明细查看',
+      versionCode: '版本编号',
+      startDate: '开始日期',
+      partNumber: '料号',
+      partName: '品名',
+      dayTotal: '天合计',
+      weekTotal: '周合计',
+      close: '关闭',
+      getFailed: '获取数据失败',
+      missingVersionId: '缺少版本参数',
+      exportTemplate: '导出模板',
+      exportTemplateFileName: '预测周明细模板',
+      exportTemplateFailed: '导出模板失败',
+      exportData: '导出数据',
+      exportDataFileName: '预测周明细数据',
+      exportDataFailed: '导出数据失败',
+      import: '导入',
+      dragFileHint: '将文件拖到此处，或点击上传',
+      startImport: '开始导入',
+      importFailed: '导入失败'
     }
   }
 }

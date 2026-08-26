@@ -1330,7 +1330,9 @@ export default {
     custmatSalesNumber: 'Sales Number',
     custmatrollingforecast: 'Rolling Forecast',
     custmatForecastVersion: 'Forecast Version',
-    custmatForeWeeklyDetail: 'FoWeeklyDetail'
+    custmatForeWeeklyDetail: 'FoWeeklyDetail',
+    custmatForeWeeklyDetailArrange: 'FoWeeklyDetail Arrange',
+    custmatForeWeeklyDetailView: 'FoWeeklyDetail View'
   },
   
   // System Basic Management
@@ -2431,6 +2433,8 @@ export default {
       getForecastVersionDetailFailed: 'Failed to get forecast version details',
       unlock: 'Unlock',
       lock: 'Lock',
+      unlockConfirm: 'Are you sure you want to unlock this forecast version?',
+      lockConfirm: 'Are you sure you want to lock this forecast version?',
       unlockSuccess: 'Unlocked successfully',
       lockSuccess: 'Locked successfully'
     },
@@ -2448,7 +2452,32 @@ export default {
       latestTag: 'Latest',
       statusName: 'Status',
       pleaseInputVersionCode: 'Please enter version code',
-      getFailed: 'Failed to get data'
+      getFailed: 'Failed to get data',
+      operation: 'Operation',
+      arrange: 'Arrange'
+    },
+    foweeklydetaildata: {
+      arrangeTitle: 'FoWeeklyDetail Arrange',
+      viewTitle: 'FoWeeklyDetail View',
+      versionCode: 'Version Code',
+      startDate: 'Start Date',
+      partNumber: 'Part Number',
+      partName: 'Part Name',
+      dayTotal: 'Day Total',
+      weekTotal: 'Week Total',
+      close: 'Close',
+      getFailed: 'Failed to get data',
+      missingVersionId: 'Missing version parameter',
+      exportTemplate: 'Export Template',
+      exportTemplateFileName: 'FoWeeklyDetailTemplate',
+      exportTemplateFailed: 'Failed to export template',
+      exportData: 'Export Data',
+      exportDataFileName: 'FoWeeklyDetailData',
+      exportDataFailed: 'Failed to export data',
+      import: 'Import',
+      dragFileHint: 'Drag file here, or click to upload',
+      startImport: 'Start Import',
+      importFailed: 'Import failed'
     }
   }
 }
