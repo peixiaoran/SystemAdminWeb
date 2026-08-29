@@ -653,6 +653,17 @@ const pmenuRoutes = [
       noTag: true
     }
   },
+  // 独立料号版本趋势图页面（不使用Layout，无标签，全屏展示）
+  {
+    path: '/custmat/rolling-forecast/numbertrendchart',
+    name: 'NumberTrendChart',
+    component: () => import('../views/custmat/rolling-forecast/numbertrendchart.vue'),
+    meta: {
+      title: 'route.custmatNumberTrendChart',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   {
       path: '/custmat',
       component: Layout,
@@ -793,6 +804,17 @@ const pmenuRoutes = [
               meta: {
                 title: 'route.custmatForeWeeklyDetail',
                 icon: 'Reading',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'numbertrend',
+              name: 'NumberTrend',
+              component: () => import('../views/custmat/rolling-forecast/numbertrend.vue'),
+              meta: {
+                title: 'route.custmatNumberTrend',
+                icon: 'Histogram',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }

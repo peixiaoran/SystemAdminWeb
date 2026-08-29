@@ -41,8 +41,9 @@
           <el-table-column prop="endDate" :label="$t('custmat.forecastversion.endDate')" align="center" min-width="120">
             <template #default="scope">{{ formatYmd(parseApiDate(scope.row.endDate)) }}</template>
           </el-table-column>
-          <el-table-column prop="year" :label="$t('custmat.forecastversion.year')" align="center" min-width="90" />
-          <el-table-column prop="month" :label="$t('custmat.forecastversion.month')" align="center" min-width="90" />
+          <el-table-column :label="$t('custmat.forecastversion.yearMonth')" align="center" min-width="100">
+            <template #default="scope">{{ formatYearMonth(scope.row.year, scope.row.month) }}</template>
+          </el-table-column>
           <el-table-column prop="week" :label="$t('custmat.forecastversion.week')" align="center" min-width="90" />
           <el-table-column prop="statusName" :label="$t('custmat.forecastversion.statusName')" align="center" min-width="100" />
           <el-table-column :label="$t('custmat.forecastversion.operation')" width="280" fixed="right" align="center">
@@ -204,6 +205,12 @@ const pad2 = (n) => String(n).padStart(2, '0')
 const formatYmd = (d) => {
   if (!d || isNaN(d.getTime())) return ''
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+}
+
+/** 合并年、月为“年-月”展示 */
+const formatYearMonth = (year, month) => {
+  if (year === null || year === undefined || year === '') return ''
+  return `${year}-${pad2(month)}`
 }
 
 /** 后端日期为 DateTime：ISO、/Date(ms)/、时间戳等 → JS Date */

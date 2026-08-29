@@ -6,12 +6,12 @@
  * 如需新增图表类型/组件，请在下面的 use([...]) 中补充对应模块，否则对应图表不会渲染。
  *
  * 当前用到：
- *  - 图表：折线图(line)、饼图(pie)、K线图(candlestick)
+ *  - 图表：折线图(line)、饼图(pie)、K线图(candlestick)、柱状图(bar)
  *  - 组件：tooltip、legend、grid、dataZoom、markPoint、axisPointer(cross)
  *  - 其它：graphic.LinearGradient（折线渐变，随 echarts/core 一并提供）
  */
 import * as echarts from 'echarts/core'
-import { LineChart, PieChart, CandlestickChart } from 'echarts/charts'
+import { LineChart, PieChart, CandlestickChart, BarChart } from 'echarts/charts'
 import {
   TooltipComponent,
   LegendComponent,
@@ -28,6 +28,7 @@ echarts.use([
   LineChart,
   PieChart,
   CandlestickChart,
+  BarChart,
   TooltipComponent,
   LegendComponent,
   GridComponent,

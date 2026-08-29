@@ -1332,7 +1332,9 @@ export default {
     custmatForecastVersion: 'Forecast Version',
     custmatForeWeeklyDetail: 'FoWeeklyDetail',
     custmatForeWeeklyDetailArrange: 'FoWeeklyDetail Arrange',
-    custmatForeWeeklyDetailView: 'FoWeeklyDetail View'
+    custmatForeWeeklyDetailView: 'FoWeeklyDetail View',
+    custmatNumberTrend: 'Number Trend',
+    custmatNumberTrendChart: 'Number Trend Chart'
   },
   
   // System Basic Management
@@ -2411,6 +2413,7 @@ export default {
       endDate: 'End Date',
       year: 'Year',
       month: 'Month',
+      yearMonth: 'Year-Month',
       week: 'Week No.',
       isLatest: 'Is Latest',
       latestTag: 'Latest',
@@ -2447,6 +2450,7 @@ export default {
       endDate: 'End Date',
       year: 'Year',
       month: 'Month',
+      yearMonth: 'Year-Month',
       week: 'Week',
       isLatest: 'Is Latest',
       latestTag: 'Latest',
@@ -2455,6 +2459,30 @@ export default {
       getFailed: 'Failed to get data',
       operation: 'Operation',
       arrange: 'Arrange'
+    },
+    numbertrend: {
+      pageTitle: 'NumberTrend',
+      ariaFilterLabel: 'NumberTrend Filter Form',
+      index: 'Index',
+      partNumber: 'Part Number',
+      partName: 'Part Name',
+      userNo: 'User No',
+      userName: 'Sales User',
+      pleaseInputPartNumber: 'Please enter part number',
+      getFailed: 'Failed to get data',
+      operation: 'Operation',
+      viewTrend: 'View Trend'
+    },
+    numbertrendchart: {
+      pageTitle: 'NumberTrend Chart',
+      pleaseSelectVersion: 'Please select version',
+      dayQty: 'Day Qty',
+      weekQty: 'Week Qty',
+      totalQty: 'Total Qty',
+      close: 'Close',
+      missingPartNumber: 'Missing part number parameter',
+      getFailed: 'Failed to get data',
+      getVersionFailed: 'Failed to get version list'
     },
     foweeklydetaildata: {
       arrangeTitle: 'FoWeeklyDetail Arrange',

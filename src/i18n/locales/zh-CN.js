@@ -1250,7 +1250,9 @@ export default {
     custmatForecastVersion: '预测版本维护',
     custmatForeWeeklyDetail: '每周滚动预测',
     custmatForeWeeklyDetailArrange: '预测周明细上摆',
-    custmatForeWeeklyDetailView: '预测周明细查看'
+    custmatForeWeeklyDetailView: '预测周明细查看',
+    custmatNumberTrend: '料号版本趋势',
+    custmatNumberTrendChart: '料号版本趋势图'
   },
   
   // 系统基础管理
@@ -2377,6 +2379,7 @@ export default {
       endDate: '结束日期',
       year: '年度',
       month: '月份',
+      yearMonth: '年月',
       week: '周次',
       isLatest: '是否最新',
       latestTag: '最新',
@@ -2413,6 +2416,7 @@ export default {
       endDate: '结束日期',
       year: '年度',
       month: '月份',
+      yearMonth: '年月',
       week: '周次',
       isLatest: '是否最新',
       latestTag: '最新',
@@ -2421,6 +2425,30 @@ export default {
       getFailed: '获取数据失败',
       operation: '操作',
       arrange: '上摆'
+    },
+    numbertrend: {
+      pageTitle: '料号版本趋势',
+      ariaFilterLabel: '料号版本趋势筛选表单',
+      index: '序号',
+      partNumber: '料号',
+      partName: '品名',
+      userNo: '工号',
+      userName: '销售员',
+      pleaseInputPartNumber: '请输入料号',
+      getFailed: '获取数据失败',
+      operation: '操作',
+      viewTrend: '查看趋势'
+    },
+    numbertrendchart: {
+      pageTitle: '料号版本趋势图',
+      pleaseSelectVersion: '请选择版本',
+      dayQty: '天用量',
+      weekQty: '周用量',
+      totalQty: '合计用量',
+      close: '关闭',
+      missingPartNumber: '缺少料号参数',
+      getFailed: '获取数据失败',
+      getVersionFailed: '获取版本列表失败'
     },
     foweeklydetaildata: {
       arrangeTitle: '预测周明细上摆',

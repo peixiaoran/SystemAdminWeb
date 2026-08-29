@@ -1,5 +1,5 @@
 <template>
-  <div class="fo-detail-page">
+  <div class="fo-detail-page" v-loading="loading">
     <div class="fo-detail-header">
       <div class="fo-detail-header-info">
         <h2 class="fo-detail-title">{{ $t('custmat.foweeklydetaildata.arrangeTitle') }}</h2>
@@ -29,7 +29,6 @@
                 border
                 stripe
                 :header-cell-style="{ background: '#f5f7fa' }"
-                v-loading="loading"
                 class="fo-detail-table"
                 height="100%"
                 :empty-text="$t('common.noData')">
