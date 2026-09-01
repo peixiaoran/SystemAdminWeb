@@ -24,8 +24,46 @@
       </div>
     </div>
 
-    <div class="trend-chart-body" v-loading="loading">
-      <div ref="chartRef" class="trend-chart-canvas"></div>
+    <div class="trend-chart-content" v-loading="loading">
+      <!-- 料号基础资料 -->
+      <el-card class="trend-chart-part-info" shadow="never">
+        <template #header>
+          <span class="trend-chart-section-title">{{ $t('custmat.numbertrendchart.partInfoTitle') }}</span>
+        </template>
+        <el-descriptions v-if="partInfo" :column="4" border size="small">
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailPartNumber')">{{ partInfo.partNumber }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailPartName')">{{ partInfo.partName }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailSpecification')">{{ partInfo.specification }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailPartType')">{{ partInfo.partTypeName }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailCategory')">{{ partInfo.categoryName }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailModel')">{{ partInfo.model }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailDrawingNumber')">{{ partInfo.drawingNumber }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailVersion')">{{ partInfo.version }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailUnit')">{{ partInfo.unit }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailSourceType')">{{ partInfo.sourceTypeName }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailManufacturer')">{{ partInfo.manufacturer }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailManufacturerPartNumber')">{{ partInfo.manufacturerPartNumber }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailLotControl')">
+            {{ partInfo.lotControl ? $t('custmat.numbertrendchart.lotControlYes') : $t('custmat.numbertrendchart.lotControlNo') }}
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailStatus')">
+            {{ partInfo.status ? $t('custmat.numbertrendchart.statusEnabled') : $t('custmat.numbertrendchart.statusDisabled') }}
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('custmat.numbertrendchart.detailRemark')" :span="3">{{ partInfo.remark }}</el-descriptions-item>
+        </el-descriptions>
+      </el-card>
+
+      <!-- 柱状图：天/周/合计用量 -->
+      <div class="trend-chart-section">
+        <div class="trend-chart-section-title">{{ $t('custmat.numbertrendchart.barChartTitle') }}</div>
+        <div ref="barChartRef" class="trend-chart-canvas"></div>
+      </div>
+
+      <!-- 折线（面积）图：合计用量走势 -->
+      <div class="trend-chart-section">
+        <div class="trend-chart-section-title">{{ $t('custmat.numbertrendchart.areaChartTitle') }}</div>
+        <div ref="areaChartRef" class="trend-chart-canvas"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -51,8 +89,12 @@ const partNumber = route.query.partNumber ? String(route.query.partNumber) : ''
 const loading = ref(false)
 const versionOptions = ref([])
 const selectedVersionIds = ref([])
-const chartRef = ref(null)
-let chartInstance = null
+const partInfo = ref(null)
+
+const barChartRef = ref(null)
+const areaChartRef = ref(null)
+let barChartInstance = null
+let areaChartInstance = null
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
@@ -62,38 +104,56 @@ const showApiError = (res, fallbackKey) => {
   showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
 }
 
-const renderChart = (rows) => {
-  if (!chartInstance) return
+const renderBarChart = (rows) => {
+  if (!barChartInstance) return
 
-  chartInstance.setOption({
+  barChartInstance.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: {
+      bottom: 0,
       data: [
         t('custmat.numbertrendchart.dayQty'),
         t('custmat.numbertrendchart.weekQty'),
         t('custmat.numbertrendchart.totalQty')
       ]
     },
-    grid: { left: 40, right: 20, top: 50, bottom: 30, containLabel: true },
+    grid: { left: 40, right: 20, top: 30, bottom: 40, containLabel: true },
     xAxis: { type: 'category', data: rows.map((row) => row.versionCode) },
     yAxis: { type: 'value' },
     series: [
       {
         name: t('custmat.numbertrendchart.dayQty'),
         type: 'bar',
-        stack: 'total',
         data: rows.map((row) => Number(row.dayQty) || 0)
       },
       {
         name: t('custmat.numbertrendchart.weekQty'),
         type: 'bar',
-        stack: 'total',
         data: rows.map((row) => Number(row.weekQty) || 0)
       },
       {
         name: t('custmat.numbertrendchart.totalQty'),
         type: 'bar',
-        stack: 'total',
+        data: rows.map((row) => Number(row.totalQty) || 0)
+      }
+    ]
+  }, true)
+}
+
+const renderAreaChart = (rows) => {
+  if (!areaChartInstance) return
+
+  areaChartInstance.setOption({
+    tooltip: { trigger: 'axis' },
+    grid: { left: 40, right: 20, top: 30, bottom: 30, containLabel: true },
+    xAxis: { type: 'category', data: rows.map((row) => row.versionCode), boundaryGap: false },
+    yAxis: { type: 'value' },
+    series: [
+      {
+        name: t('custmat.numbertrendchart.totalQty'),
+        type: 'line',
+        areaStyle: {},
+        smooth: true,
         data: rows.map((row) => Number(row.totalQty) || 0)
       }
     ]
@@ -106,7 +166,8 @@ const fetchChartData = async () => {
     return
   }
   if (!selectedVersionIds.value.length) {
-    renderChart([])
+    renderBarChart([])
+    renderAreaChart([])
     return
   }
 
@@ -120,7 +181,10 @@ const fetchChartData = async () => {
     if (isHandled(res)) return
 
     if (res?.code === 200) {
-      renderChart(Array.isArray(res.data) ? res.data : [])
+      partInfo.value = res.data?.partInfo || null
+      const rows = Array.isArray(res.data?.versions) ? res.data.versions : []
+      renderBarChart(rows)
+      renderAreaChart(rows)
     } else {
       showApiError(res, 'custmat.numbertrendchart.getFailed')
     }
@@ -139,7 +203,7 @@ const fetchVersionOptions = async () => {
 
     if (res?.code === 200) {
       versionOptions.value = Array.isArray(res.data) ? res.data : []
-      selectedVersionIds.value = versionOptions.value.slice(0, 3).map((item) => item.versionId)
+      selectedVersionIds.value = versionOptions.value.slice(0, 5).map((item) => item.versionId)
       await fetchChartData()
     } else {
       showApiError(res, 'custmat.numbertrendchart.getVersionFailed')
@@ -150,7 +214,8 @@ const fetchVersionOptions = async () => {
 }
 
 const handleResize = () => {
-  chartInstance?.resize()
+  barChartInstance?.resize()
+  areaChartInstance?.resize()
 }
 
 const isPopupWindow = () => {
@@ -171,15 +236,18 @@ const closeCurrentPage = () => {
 
 onMounted(async () => {
   await nextTick()
-  chartInstance = echarts.init(chartRef.value)
+  barChartInstance = echarts.init(barChartRef.value)
+  areaChartInstance = echarts.init(areaChartRef.value)
   window.addEventListener('resize', handleResize)
   fetchVersionOptions()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
-  chartInstance?.dispose()
-  chartInstance = null
+  barChartInstance?.dispose()
+  areaChartInstance?.dispose()
+  barChartInstance = null
+  areaChartInstance = null
 })
 </script>
 
@@ -226,16 +294,45 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
-.trend-chart-body {
+.trend-chart-content {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trend-chart-part-info :deep(.el-card__header) {
+  padding: 10px 16px;
+}
+
+.trend-chart-part-info :deep(.el-card__body) {
+  padding: 12px 16px;
+}
+
+.trend-chart-section {
+  flex: 1;
+  min-height: 260px;
   border: 1px solid #ebeef5;
   border-radius: 4px;
-  overflow: hidden;
+  padding: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.trend-chart-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  flex-shrink: 0;
+  margin-bottom: 8px;
 }
 
 .trend-chart-canvas {
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  height: 100%;
 }
 </style>

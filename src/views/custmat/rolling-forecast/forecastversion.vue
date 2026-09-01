@@ -84,6 +84,7 @@
                :close-on-click-modal="false"
                :append-to-body="true"
                :lock-scroll="true"
+               draggable
                @close="handleDialogClose">
       <div v-loading="dialogLoading">
         <el-form ref="editFormRef"

@@ -1,27 +1,27 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.salesnumber.ariaFilterLabel')">
-        <el-form-item :label="$t('custmat.salesnumber.partNumber')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.numberassign.ariaFilterLabel')">
+        <el-form-item :label="$t('custmat.numberassign.partNumber')">
           <el-input v-model="filters.partNumber"
                     style="width: 170px"
                     clearable
-                    :placeholder="$t('custmat.salesnumber.pleaseInputPartNumber')" />
+                    :placeholder="$t('custmat.numberassign.pleaseInputPartNumber')" />
         </el-form-item>
-        <el-form-item :label="$t('custmat.salesnumber.salesUser')">
+        <el-form-item :label="$t('custmat.numberassign.salesUser')">
           <el-select v-model="filters.salesUserId"
                      style="width: 170px"
                      clearable
                      filterable
-                     :placeholder="$t('custmat.salesnumber.pleaseSelectSalesUser')">
+                     :placeholder="$t('custmat.numberassign.pleaseSelectSalesUser')">
             <el-option v-for="item in salesUserOptions" :key="item.salesUserId" :label="item.userName" :value="item.salesUserId" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('custmat.salesnumber.userName')">
+        <el-form-item :label="$t('custmat.numberassign.userName')">
           <el-input v-model="filters.userName"
                     style="width: 170px"
                     clearable
-                    :placeholder="$t('custmat.salesnumber.pleaseInputUserName')" />
+                    :placeholder="$t('custmat.numberassign.pleaseInputUserName')" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -33,20 +33,20 @@
         </el-form-item>
         <el-form-item class="form-right-button">
           <el-button type="warning" @click="handleBatchUpsert">
-            {{ $t('custmat.salesnumber.batchUpsert') }}
+            {{ $t('custmat.numberassign.batchUpsert') }}
           </el-button>
           <el-button type="success" :loading="exportLoading" @click="handleExport">
-            {{ $t('custmat.salesnumber.export') }}
+            {{ $t('custmat.numberassign.export') }}
           </el-button>
           <el-button type="primary" @click="handleAdd">
-            {{ $t('custmat.salesnumber.addSalesNumber') }}
+            {{ $t('custmat.numberassign.addNumberAssign') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <!-- 表格区域 -->
       <div class="table-container">
-        <el-table :data="salesNumberList"
+        <el-table :data="numberAssignList"
                   border
                   stripe
                   :header-cell-style="{ background: '#f5f7fa' }"
@@ -54,8 +54,8 @@
                   class="conventional-table"
                   :empty-text="$t('common.noData')"
                   >
-          <el-table-column type="index" :label="$t('custmat.salesnumber.index')" width="70" align="center" fixed />
-          <el-table-column prop="partNumber" :label="$t('custmat.salesnumber.partNumber')" align="center" min-width="160">
+          <el-table-column type="index" :label="$t('custmat.numberassign.index')" width="70" align="center" fixed />
+          <el-table-column prop="partNumber" :label="$t('custmat.numberassign.partNumber')" align="center" min-width="120">
             <template #default="scope">
               <el-popover trigger="click"
                           width="360"
@@ -67,30 +67,30 @@
                 </template>
                 <div v-loading="partNumberDetailLoading" class="part-number-detail">
                   <template v-if="partNumberDetail && partNumberDetailFor === scope.row.partNumber">
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailPartNumber') }}：{{ partNumberDetail.partNumber }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailPartName') }}：{{ partNumberDetail.partName }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailSpecification') }}：{{ partNumberDetail.specification }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailPartType') }}：{{ partNumberDetail.partTypeName }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailCategory') }}：{{ partNumberDetail.categoryName }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailModel') }}：{{ partNumberDetail.model }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailDrawingNumber') }}：{{ partNumberDetail.drawingNumber }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailVersion') }}：{{ partNumberDetail.version }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailUnit') }}：{{ partNumberDetail.unit }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailSourceType') }}：{{ partNumberDetail.sourceTypeName }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailManufacturer') }}：{{ partNumberDetail.manufacturer }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailManufacturerPartNumber') }}：{{ partNumberDetail.manufacturerPartNumber }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailLotControl') }}：{{ partNumberDetail.lotControl ? $t('custmat.salesnumber.lotControlYes') : $t('custmat.salesnumber.lotControlNo') }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailStatus') }}：{{ partNumberDetail.status ? $t('custmat.salesnumber.statusEnabled') : $t('custmat.salesnumber.statusDisabled') }}</div>
-                    <div class="part-number-detail-row">{{ $t('custmat.salesnumber.detailRemark') }}：{{ partNumberDetail.remark }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailPartNumber') }}：{{ partNumberDetail.partNumber }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailPartName') }}：{{ partNumberDetail.partName }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailSpecification') }}：{{ partNumberDetail.specification }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailPartType') }}：{{ partNumberDetail.partTypeName }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailCategory') }}：{{ partNumberDetail.categoryName }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailModel') }}：{{ partNumberDetail.model }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailDrawingNumber') }}：{{ partNumberDetail.drawingNumber }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailVersion') }}：{{ partNumberDetail.version }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailUnit') }}：{{ partNumberDetail.unit }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailSourceType') }}：{{ partNumberDetail.sourceTypeName }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailManufacturer') }}：{{ partNumberDetail.manufacturer }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailManufacturerPartNumber') }}：{{ partNumberDetail.manufacturerPartNumber }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailLotControl') }}：{{ partNumberDetail.lotControl ? $t('custmat.numberassign.lotControlYes') : $t('custmat.numberassign.lotControlNo') }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailStatus') }}：{{ partNumberDetail.status ? $t('custmat.numberassign.statusEnabled') : $t('custmat.numberassign.statusDisabled') }}</div>
+                    <div class="part-number-detail-row">{{ $t('custmat.numberassign.detailRemark') }}：{{ partNumberDetail.remark }}</div>
                   </template>
                 </div>
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="partName" :label="$t('custmat.salesnumber.partName')" align="left" min-width="180" />
-          <el-table-column prop="userNo" :label="$t('custmat.salesnumber.userNo')" align="left" min-width="120" />
-          <el-table-column prop="userName" :label="$t('custmat.salesnumber.userName')" align="left" min-width="140" />
-          <el-table-column :label="$t('custmat.salesnumber.operation')" width="180" fixed="right" align="center">
+          <el-table-column prop="partName" :label="$t('custmat.numberassign.partName')" align="left" min-width="180" />
+          <el-table-column prop="userNo" :label="$t('custmat.numberassign.userNo')" align="left" min-width="120" />
+          <el-table-column prop="userName" :label="$t('custmat.numberassign.userName')" align="left" min-width="140" />
+          <el-table-column :label="$t('custmat.numberassign.operation')" width="180" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
@@ -117,7 +117,7 @@
 
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
-               :title="isEdit ? $t('custmat.salesnumber.editSalesNumberTitle') : $t('custmat.salesnumber.addSalesNumberTitle')"
+               :title="isEdit ? $t('custmat.numberassign.editNumberAssignTitle') : $t('custmat.numberassign.addNumberAssignTitle')"
                width="820px"
                :close-on-click-modal="false"
                :append-to-body="true"
@@ -130,9 +130,9 @@
                  label-width="auto"
                  class="dialog-form"
                  role="form"
-                 :aria-label="$t('custmat.salesnumber.ariaEditLabel')">
+                 :aria-label="$t('custmat.numberassign.ariaEditLabel')">
           <div class="dialog-form-row">
-            <el-form-item :label="$t('custmat.salesnumber.partNumber')" prop="partNumberId">
+            <el-form-item :label="$t('custmat.numberassign.partNumber')" prop="partNumberId">
               <el-select v-model="editForm.partNumberId"
                          filterable
                          remote
@@ -140,15 +140,15 @@
                          style="width:100%"
                          :remote-method="handleSearchPartNumber"
                          :loading="partNumberLoading"
-                         :placeholder="$t('custmat.salesnumber.pleaseSelectPartNumber')">
+                         :placeholder="$t('custmat.numberassign.pleaseSelectPartNumber')">
                 <el-option v-for="item in partNumberOptions" :key="item.partNumber" :label="item.partNumber" :value="item.partNumber" />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('custmat.salesnumber.salesUser')" prop="salesUserId">
+            <el-form-item :label="$t('custmat.numberassign.salesUser')" prop="salesUserId">
               <el-select v-model="editForm.salesUserId"
                          style="width:100%"
                          filterable
-                         :placeholder="$t('custmat.salesnumber.pleaseSelectSalesUser')">
+                         :placeholder="$t('custmat.numberassign.pleaseSelectSalesUser')">
                 <el-option v-for="item in salesUserOptions" :key="item.salesUserId" :label="item.userName" :value="item.salesUserId" />
               </el-select>
             </el-form-item>
@@ -163,7 +163,7 @@
 
     <!-- 按客户批量新增/覆盖对话框 -->
     <el-dialog v-model="batchDialogVisible"
-               :title="$t('custmat.salesnumber.batchUpsertTitle')"
+               :title="$t('custmat.numberassign.batchUpsertTitle')"
                width="760px"
                :close-on-click-modal="false"
                :append-to-body="true"
@@ -176,27 +176,27 @@
                  label-width="auto"
                  class="dialog-form">
           <div class="form-row">
-            <el-form-item :label="$t('custmat.salesnumber.customer')" prop="customerId">
+            <el-form-item :label="$t('custmat.numberassign.customer')" prop="customerId">
               <el-select v-model="batchForm.customerId"
                          filterable
                          style="width:100%"
-                         :placeholder="$t('custmat.salesnumber.pleaseSelectCustomer')">
+                         :placeholder="$t('custmat.numberassign.pleaseSelectCustomer')">
                 <el-option v-for="item in customerOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId" />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('custmat.salesnumber.salesUser')" prop="salesUserId">
+            <el-form-item :label="$t('custmat.numberassign.salesUser')" prop="salesUserId">
               <el-select v-model="batchForm.salesUserId"
                          filterable
                          style="width:100%"
-                         :placeholder="$t('custmat.salesnumber.pleaseSelectSalesUser')">
+                         :placeholder="$t('custmat.numberassign.pleaseSelectSalesUser')">
                 <el-option v-for="item in salesUserOptions" :key="item.salesUserId" :label="item.userName" :value="item.salesUserId" />
               </el-select>
             </el-form-item>
           </div>
-          <el-form-item :label="$t('custmat.salesnumber.updateMode')" prop="updateMode">
+          <el-form-item :label="$t('custmat.numberassign.updateMode')" prop="updateMode">
             <el-radio-group v-model="batchForm.updateMode" class="update-mode-group">
-              <el-radio :value="0">{{ $t('custmat.salesnumber.updateModeFillOnly') }}</el-radio>
-              <el-radio :value="1">{{ $t('custmat.salesnumber.updateModeOverwriteAll') }}</el-radio>
+              <el-radio :value="0">{{ $t('custmat.numberassign.updateModeFillOnly') }}</el-radio>
+              <el-radio :value="1">{{ $t('custmat.numberassign.updateModeOverwriteAll') }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -215,18 +215,18 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
 import {
-  GET_SALES_NUMBER_PAGE_API,
-  GET_SALES_NUMBER_ENTITY_API,
-  INSERT_SALES_NUMBER_API,
-  UPDATE_SALES_NUMBER_API,
-  DELETE_SALES_NUMBER_API,
+  GET_NUMBER_ASSIGN_PAGE_API,
+  GET_NUMBER_ASSIGN_ENTITY_API,
+  INSERT_NUMBER_ASSIGN_API,
+  UPDATE_NUMBER_ASSIGN_API,
+  DELETE_NUMBER_ASSIGN_API,
   GET_SALES_USER_DROP_API,
   GET_COMPANY_PART_NUMBER_DROP_API,
   GET_PART_NUMBER_DETAIL_API,
   GET_CUSTOMER_DROP_API,
-  BATCH_UPSERT_SALES_NUMBER_API,
-  EXPORT_SALES_NUMBER_EXCEL_API
-} from '@/config/api/custmat/sales-mgmt/salesnumber'
+  BATCH_UPSERT_NUMBER_ASSIGN_API,
+  EXPORT_NUMBER_ASSIGN_EXCEL_API
+} from '@/config/api/custmat/sales-mgmt/numberassign'
 
 const { t } = useI18n()
 
@@ -235,7 +235,7 @@ const REMOTE_SEARCH_DEBOUNCE_MS = 300
 /** 实体查询/删除接口按 form-urlencoded 提交 */
 const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 
-const salesNumberList = ref([])
+const numberAssignList = ref([])
 const loading = ref(false)
 const exportLoading = ref(false)
 const salesUserOptions = ref([])
@@ -267,10 +267,10 @@ const editForm = reactive({
 
 const formRules = {
   partNumberId: [
-    { required: true, message: () => t('custmat.salesnumber.partNumberRequired'), trigger: 'change' }
+    { required: true, message: () => t('custmat.numberassign.partNumberRequired'), trigger: 'change' }
   ],
   salesUserId: [
-    { required: true, message: () => t('custmat.salesnumber.salesUserRequired'), trigger: 'change' }
+    { required: true, message: () => t('custmat.numberassign.salesUserRequired'), trigger: 'change' }
   ]
 }
 
@@ -289,13 +289,13 @@ const batchForm = reactive({
 
 const batchFormRules = {
   customerId: [
-    { required: true, message: () => t('custmat.salesnumber.customerRequired'), trigger: 'change' }
+    { required: true, message: () => t('custmat.numberassign.customerRequired'), trigger: 'change' }
   ],
   salesUserId: [
-    { required: true, message: () => t('custmat.salesnumber.salesUserRequired'), trigger: 'change' }
+    { required: true, message: () => t('custmat.numberassign.salesUserRequired'), trigger: 'change' }
   ],
   updateMode: [
-    { required: true, message: () => t('custmat.salesnumber.updateModeRequired'), trigger: 'change' }
+    { required: true, message: () => t('custmat.numberassign.updateModeRequired'), trigger: 'change' }
   ]
 }
 
@@ -348,11 +348,11 @@ const fetchSalesUserOptions = async () => {
       salesUserOptions.value = res.data || []
     } else {
       salesUserOptions.value = []
-      showApiError(res, 'custmat.salesnumber.getSalesUserFailed')
+      showApiError(res, 'custmat.numberassign.getSalesUserFailed')
     }
   } catch {
     salesUserOptions.value = []
-    showMessage(t('custmat.salesnumber.getSalesUserFailed'))
+    showMessage(t('custmat.numberassign.getSalesUserFailed'))
   }
 }
 
@@ -368,11 +368,11 @@ const fetchCustomerOptions = async () => {
       customerOptions.value = res.data || []
     } else {
       customerOptions.value = []
-      showApiError(res, 'custmat.salesnumber.getCustomerFailed')
+      showApiError(res, 'custmat.numberassign.getCustomerFailed')
     }
   } catch {
     customerOptions.value = []
-    showMessage(t('custmat.salesnumber.getCustomerFailed'))
+    showMessage(t('custmat.numberassign.getCustomerFailed'))
   }
 }
 
@@ -386,26 +386,26 @@ const buildQueryParams = () => ({
   totalCount: pagination.totalCount
 })
 
-const fetchSalesNumberList = async () => {
+const fetchNumberAssignList = async () => {
   loading.value = true
   try {
-    const res = await post(GET_SALES_NUMBER_PAGE_API.GET_SALES_NUMBER_PAGE, buildQueryParams())
+    const res = await post(GET_NUMBER_ASSIGN_PAGE_API.GET_NUMBER_ASSIGN_PAGE, buildQueryParams())
 
     if (isHandled(res)) {
-      salesNumberList.value = []
+      numberAssignList.value = []
       return
     }
 
     if (res?.code === 200) {
-      salesNumberList.value = res.data || []
+      numberAssignList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showApiError(res, 'custmat.salesnumber.getFailed')
-      salesNumberList.value = []
+      showApiError(res, 'custmat.numberassign.getFailed')
+      numberAssignList.value = []
     }
   } catch {
-    showMessage(t('custmat.salesnumber.getFailed'))
-    salesNumberList.value = []
+    showMessage(t('custmat.numberassign.getFailed'))
+    numberAssignList.value = []
   } finally {
     loading.value = false
   }
@@ -463,10 +463,10 @@ const handleShowPartNumberDetail = async (partNumber) => {
       partNumberDetail.value = res.data
       partNumberDetailFor.value = partNumber
     } else {
-      showApiError(res, 'custmat.salesnumber.getPartNumberDetailFailed')
+      showApiError(res, 'custmat.numberassign.getPartNumberDetailFailed')
     }
   } catch {
-    showMessage(t('custmat.salesnumber.getPartNumberDetailFailed'))
+    showMessage(t('custmat.numberassign.getPartNumberDetailFailed'))
   } finally {
     partNumberDetailLoading.value = false
   }
@@ -474,7 +474,7 @@ const handleShowPartNumberDetail = async (partNumber) => {
 
 const handleSearch = () => {
   pagination.pageIndex = 1
-  fetchSalesNumberList()
+  fetchNumberAssignList()
 }
 
 const assertDownloadableBlob = async (blob, fallbackKey) => {
@@ -508,11 +508,11 @@ const downloadBlob = (blob, fileName) => {
 const handleExport = async () => {
   exportLoading.value = true
   try {
-    const res = await postBlob(EXPORT_SALES_NUMBER_EXCEL_API.EXPORT_SALES_NUMBER_EXCEL, buildQueryParams())
-    await assertDownloadableBlob(res?.data, 'custmat.salesnumber.exportFailed')
-    downloadBlob(res.data, `${t('custmat.salesnumber.exportFileName')}.xlsx`)
+    const res = await postBlob(EXPORT_NUMBER_ASSIGN_EXCEL_API.EXPORT_NUMBER_ASSIGN_EXCEL, buildQueryParams())
+    await assertDownloadableBlob(res?.data, 'custmat.numberassign.exportFailed')
+    downloadBlob(res.data, `${t('custmat.numberassign.exportFileName')}.xlsx`)
   } catch (error) {
-    showMessage(error?.message || t('custmat.salesnumber.exportFailed'))
+    showMessage(error?.message || t('custmat.numberassign.exportFailed'))
   } finally {
     exportLoading.value = false
   }
@@ -529,11 +529,11 @@ const handleReset = () => {
 
 const handleSizeChange = () => {
   pagination.pageIndex = 1
-  fetchSalesNumberList()
+  fetchNumberAssignList()
 }
 
 const handlePageChange = () => {
-  fetchSalesNumberList()
+  fetchNumberAssignList()
 }
 
 const handleAdd = async () => {
@@ -570,7 +570,7 @@ const handleBatchSave = async () => {
 
   batchSubmitLoading.value = true
   try {
-    const res = await post(BATCH_UPSERT_SALES_NUMBER_API.BATCH_UPSERT_SALES_NUMBER, {
+    const res = await post(BATCH_UPSERT_NUMBER_ASSIGN_API.BATCH_UPSERT_NUMBER_ASSIGN, {
       customerId: batchForm.customerId,
       salesUserId: batchForm.salesUserId,
       updateMode: batchForm.updateMode
@@ -579,14 +579,14 @@ const handleBatchSave = async () => {
     if (isHandled(res)) return
 
     if (res?.code === 200) {
-      showMessage(res.message || t('custmat.salesnumber.batchUpsertSuccess'), 'success')
+      showMessage(res.message || t('custmat.numberassign.batchUpsertSuccess'), 'success')
       batchDialogVisible.value = false
       handleSearch()
     } else {
-      showApiError(res, 'custmat.salesnumber.operationFailed')
+      showApiError(res, 'custmat.numberassign.operationFailed')
     }
   } catch {
-    showMessage(t('custmat.salesnumber.operationFailed'))
+    showMessage(t('custmat.numberassign.operationFailed'))
   } finally {
     batchSubmitLoading.value = false
   }
@@ -607,7 +607,7 @@ const handleEdit = async (row) => {
     if (salesUserOptions.value.length === 0) await fetchSalesUserOptions()
 
     const res = await post(
-      GET_SALES_NUMBER_ENTITY_API.GET_SALES_NUMBER_ENTITY,
+      GET_NUMBER_ASSIGN_ENTITY_API.GET_NUMBER_ASSIGN_ENTITY,
       new URLSearchParams({ partNumber: String(row.partNumber) }),
       FORM_URLENCODED
     )
@@ -628,11 +628,11 @@ const handleEdit = async (row) => {
       // 预置当前值，使远程搜索下拉能正常回显已选料号
       partNumberOptions.value = data.partNumber ? [{ partNumber: data.partNumber }] : []
     } else {
-      showApiError(res, 'custmat.salesnumber.getSalesNumberDetailFailed')
+      showApiError(res, 'custmat.numberassign.getNumberAssignDetailFailed')
       dialogVisible.value = false
     }
   } catch {
-    showMessage(t('custmat.salesnumber.getSalesNumberDetailFailed'))
+    showMessage(t('custmat.numberassign.getNumberAssignDetailFailed'))
     dialogVisible.value = false
   } finally {
     dialogLoading.value = false
@@ -643,7 +643,7 @@ const handleEdit = async (row) => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      t('custmat.salesnumber.deleteConfirm'),
+      t('custmat.numberassign.deleteConfirm'),
       t('common.tip'),
       { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
     )
@@ -653,7 +653,7 @@ const handleDelete = async (row) => {
 
   try {
     const res = await post(
-      DELETE_SALES_NUMBER_API.DELETE_SALES_NUMBER,
+      DELETE_NUMBER_ASSIGN_API.DELETE_NUMBER_ASSIGN,
       new URLSearchParams({ partNumberId: String(row.partNumber) }),
       FORM_URLENCODED
     )
@@ -661,13 +661,13 @@ const handleDelete = async (row) => {
     if (isHandled(res)) return
 
     if (res?.code === 200) {
-      showMessage(res.message || t('custmat.salesnumber.deleteSalesNumberSuccess'), 'success')
-      fetchSalesNumberList()
+      showMessage(res.message || t('custmat.numberassign.deleteNumberAssignSuccess'), 'success')
+      fetchNumberAssignList()
     } else {
-      showApiError(res, 'custmat.salesnumber.operationFailed')
+      showApiError(res, 'custmat.numberassign.operationFailed')
     }
   } catch {
-    showMessage(t('custmat.salesnumber.operationFailed'))
+    showMessage(t('custmat.numberassign.operationFailed'))
   }
 }
 
@@ -678,8 +678,8 @@ const handleSave = async () => {
   submitLoading.value = true
   try {
     const api = isEdit.value
-      ? UPDATE_SALES_NUMBER_API.UPDATE_SALES_NUMBER
-      : INSERT_SALES_NUMBER_API.INSERT_SALES_NUMBER
+      ? UPDATE_NUMBER_ASSIGN_API.UPDATE_NUMBER_ASSIGN
+      : INSERT_NUMBER_ASSIGN_API.INSERT_NUMBER_ASSIGN
     const res = await post(api, {
       partNumber: editForm.partNumberId,
       // 新增时无“原料号”概念，直接沿用当前选择的料号；编辑时使用进入弹窗时记录的原始料号
@@ -690,14 +690,14 @@ const handleSave = async () => {
     if (isHandled(res)) return
 
     if (res?.code === 200) {
-      showMessage(res.message || (isEdit.value ? t('custmat.salesnumber.editSalesNumberSuccess') : t('custmat.salesnumber.addSalesNumberSuccess')), 'success')
+      showMessage(res.message || (isEdit.value ? t('custmat.numberassign.editNumberAssignSuccess') : t('custmat.numberassign.addNumberAssignSuccess')), 'success')
       dialogVisible.value = false
       handleSearch()
     } else {
-      showApiError(res, 'custmat.salesnumber.operationFailed')
+      showApiError(res, 'custmat.numberassign.operationFailed')
     }
   } catch {
-    showMessage(t('custmat.salesnumber.operationFailed'))
+    showMessage(t('custmat.numberassign.operationFailed'))
   } finally {
     submitLoading.value = false
   }
@@ -711,7 +711,7 @@ const handleDialogClose = () => {
 
 onMounted(async () => {
   await fetchSalesUserOptions()
-  fetchSalesNumberList()
+  fetchNumberAssignList()
 })
 </script>
 

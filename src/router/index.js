@@ -762,12 +762,23 @@ const pmenuRoutes = [
               }
             },
             {
+              path: 'numberassign',
+              name: 'NumberAssign',
+              component: () => import('../views/custmat/sales-mgmt/numberassign.vue'),
+              meta: {
+                title: 'route.custmatNumberAssign',
+                icon: 'SetUp',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
               path: 'salesnumber',
               name: 'SalesNumber',
               component: () => import('../views/custmat/sales-mgmt/salesnumber.vue'),
               meta: {
                 title: 'route.custmatSalesNumber',
-                icon: 'SetUp',
+                icon: 'Files',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
