@@ -41,6 +41,16 @@
         <el-table-column :label="$t('custmat.foweeklydetaildata.weekTotal')" min-width="110" align="center" fixed>
           <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'W')) }}</template>
         </el-table-column>
+        <el-table-column :label="$t('custmat.foweeklydetaildata.dayQtyChangeRate')" min-width="130" align="center" fixed>
+          <template #default="scope">
+            <span :class="changeRateClass(scope.row.dayQtyChangeRate)">{{ formatChangeRate(scope.row.dayQtyChangeRate) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('custmat.foweeklydetaildata.weekQtyChangeRate')" min-width="130" align="center" fixed>
+          <template #default="scope">
+            <span :class="changeRateClass(scope.row.weekQtyChangeRate)">{{ formatChangeRate(scope.row.weekQtyChangeRate) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column v-for="col in periodColumns"
                           :key="col.periodKey"
                           :prop="col.periodKey"
@@ -169,6 +179,19 @@ const parseApiDate = (val) => {
 const formatQuantity = (val) => {
   const n = Number(val)
   return Number.isFinite(n) ? n.toLocaleString('en-US') : '0'
+}
+
+/** 环比百分比：增长为正显示红色，减少为负显示绿色 */
+const formatChangeRate = (val) => {
+  const n = Number(val)
+  if (!Number.isFinite(n)) return '-'
+  return `${n > 0 ? '+' : ''}${n.toFixed(2)}%`
+}
+
+const changeRateClass = (val) => {
+  const n = Number(val)
+  if (!Number.isFinite(n) || n === 0) return ''
+  return n > 0 ? 'change-rate-up' : 'change-rate-down'
 }
 
 /** 按前缀（D 天 / W 周）汇总某一行的总量 */
@@ -456,6 +479,14 @@ onMounted(() => {
 
 .period-col-key.is-week {
   color: #e6a23c;
+}
+
+.change-rate-up {
+  color: #f56c6c;
+}
+
+.change-rate-down {
+  color: #67c23a;
 }
 
 .import-dialog-body {

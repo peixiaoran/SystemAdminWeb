@@ -2547,6 +2547,8 @@ export default {
       partName: 'Part Name',
       dayTotal: 'Day Total',
       weekTotal: 'Week Total',
+      dayQtyChangeRate: 'Day WoW %',
+      weekQtyChangeRate: 'Week WoW %',
       close: 'Close',
       getFailed: 'Failed to get data',
       missingVersionId: 'Missing version parameter',

@@ -2513,6 +2513,8 @@ export default {
       partName: '品名',
       dayTotal: '天合计',
       weekTotal: '周合计',
+      dayQtyChangeRate: '天环比',
+      weekQtyChangeRate: '周环比',
       close: '关闭',
       getFailed: '获取数据失败',
       missingVersionId: '缺少版本参数',
