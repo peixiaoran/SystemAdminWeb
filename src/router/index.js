@@ -664,6 +664,17 @@ const pmenuRoutes = [
       noTag: true
     }
   },
+  // 独立负责客户分布图页面（不使用Layout，无标签，全屏展示）
+  {
+    path: '/custmat/sales-mgmt/salescustomerdistribution',
+    name: 'SalesCustomerDistribution',
+    component: () => import('../views/custmat/sales-mgmt/salescustomerdistribution.vue'),
+    meta: {
+      title: 'route.custmatSalesCustomerDistribution',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   {
       path: '/custmat',
       component: Layout,

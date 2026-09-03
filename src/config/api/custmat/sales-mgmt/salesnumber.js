@@ -12,3 +12,8 @@ export const GET_SALES_NUMBER_PAGE_API = {
 export const GET_PART_NUMBER_DETAIL_API = {
     GET_PART_NUMBER_DETAIL: 'CustMat/SalesMgmt/SalesNumber/GetPartNumberDetail'
 }
+
+// 负责客户分布查询API
+export const GET_SALES_CUSTOMER_DISTRIBUTION_API = {
+    GET_SALES_CUSTOMER_DISTRIBUTION: 'CustMat/SalesMgmt/SalesNumber/GetSalesCustomerDistribution'
+}

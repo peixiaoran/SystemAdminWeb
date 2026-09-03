@@ -1335,7 +1335,8 @@ export default {
     custmatForeWeeklyDetailArrange: 'FoWeeklyDetail Arrange',
     custmatForeWeeklyDetailView: 'FoWeeklyDetail View',
     custmatNumberTrend: 'Number Trend',
-    custmatNumberTrendChart: 'Number Trend Chart'
+    custmatNumberTrendChart: 'Number Trend Chart',
+    custmatSalesCustomerDistribution: 'Customer Distribution'
   },
   
   // System Basic Management
@@ -2432,7 +2433,15 @@ export default {
       lotControlNo: 'No',
       detailStatus: 'Status',
       detailRemark: 'Remark',
-      getPartNumberDetailFailed: 'Failed to get part number detail'
+      getPartNumberDetailFailed: 'Failed to get part number detail',
+      customerDistribution: 'Customer Distribution'
+    },
+    salescustomerdistribution: {
+      pageTitle: 'Customer Distribution',
+      close: 'Close',
+      partNumberCount: 'Part Number Count',
+      percentage: 'Percentage',
+      getFailed: 'Failed to get data'
     },
     forecastversion: {
       pageTitle: 'Forecast Version',

@@ -1253,7 +1253,8 @@ export default {
     custmatForeWeeklyDetailArrange: '预测周明细上摆',
     custmatForeWeeklyDetailView: '预测周明细查看',
     custmatNumberTrend: '料号版本趋势',
-    custmatNumberTrendChart: '料号版本趋势图'
+    custmatNumberTrendChart: '料号版本趋势图',
+    custmatSalesCustomerDistribution: '负责客户分布图'
   },
   
   // 系统基础管理
@@ -2398,7 +2399,15 @@ export default {
       lotControlNo: '否',
       detailStatus: '状态',
       detailRemark: '备注',
-      getPartNumberDetailFailed: '获取料号详情失败'
+      getPartNumberDetailFailed: '获取料号详情失败',
+      customerDistribution: '负责客户分布'
+    },
+    salescustomerdistribution: {
+      pageTitle: '负责客户分布图',
+      close: '关闭',
+      partNumberCount: '料号数量',
+      percentage: '占比',
+      getFailed: '获取数据失败'
     },
     forecastversion: {
       pageTitle: '预测版本维护',

@@ -157,7 +157,7 @@
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { post, resetAuthErrorState } from '@/utils/request'
+import { post, resetAuthErrorState, isHandled } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
@@ -263,6 +263,12 @@ const handleLogin = () => {
         },
         { allowLoginBusinessCodes: true }
       ).then(res => {
+          // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
+          if (isHandled(res)) {
+            loading.value = false
+            return
+          }
+
           const businessMsg = res?.message ?? ''
           if (res.code === 200) {
             const submittedLoginNo = loginForm.loginNo

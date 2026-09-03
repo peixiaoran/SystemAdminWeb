@@ -16,6 +16,11 @@
             {{ $t('common.reset') }}
           </el-button>
         </el-form-item>
+        <el-form-item class="form-right-button">
+          <el-button type="success" @click="handleViewCustomerDistribution">
+            {{ $t('custmat.salesnumber.customerDistribution') }}
+          </el-button>
+        </el-form-item>
       </el-form>
 
       <!-- 表格区域 -->
@@ -92,10 +97,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { post, isHandled } from '@/utils/request'
 import { GET_SALES_NUMBER_PAGE_API, GET_PART_NUMBER_DETAIL_API } from '@/config/api/custmat/sales-mgmt/salesnumber'
 
 const { t } = useI18n()
+const router = useRouter()
 
 /** 料号详情接口按 form-urlencoded 提交 */
 const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -205,6 +212,20 @@ const handleReset = () => {
     partNumber: ''
   })
   handleSearch()
+}
+
+/** 以居中弹出窗口（非全屏新标签）方式打开负责客户分布图页面 */
+const handleViewCustomerDistribution = () => {
+  const resolved = router.resolve({ path: '/custmat/sales-mgmt/salescustomerdistribution' })
+  const width = 900
+  const height = 650
+  const left = window.screenX + Math.max((window.outerWidth - width) / 2, 0)
+  const top = window.screenY + Math.max((window.outerHeight - height) / 2, 0)
+  window.open(
+    resolved.href,
+    'SalesCustomerDistribution',
+    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+  )
 }
 
 const handleSizeChange = () => {

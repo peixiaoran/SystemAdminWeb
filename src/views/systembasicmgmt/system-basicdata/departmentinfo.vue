@@ -41,12 +41,11 @@
                   >
           <el-table-column type="index" :label="$t('systembasicmgmt.departmentInfo.index')" width="70" align="center" fixed />
           <el-table-column prop="departmentCode" :label="$t('systembasicmgmt.departmentInfo.departmentCode')" align="left" min-width="170" />
-          <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="200" />
-          <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="280" />
+          <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="260" />
+          <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="420" />
           <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
           <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
           <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="260" />
-          <el-table-column prop="description" :label="$t('systembasicmgmt.departmentInfo.description')" align="left" min-width="230" />
           <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="270" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
