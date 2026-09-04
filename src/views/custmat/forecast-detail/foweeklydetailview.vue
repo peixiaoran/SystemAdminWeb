@@ -1,26 +1,29 @@
 <template>
-  <div class="fo-detail-page" v-loading="loading">
+  <div class="fo-detail-page">
     <div class="fo-detail-header">
       <div class="fo-detail-header-info">
-        <h2 class="fo-detail-title">{{ $t('custmat.foweeklydetaildata.arrangeTitle') }}</h2>
+        <h2 class="fo-detail-title">{{ $t('custmat.forecastdetailweeklydata.viewTitle') }}</h2>
         <span v-if="header.versionCode" class="fo-detail-meta">
-          {{ $t('custmat.foweeklydetaildata.versionCode') }}：{{ header.versionCode }}
+          {{ $t('custmat.forecastdetailweeklydata.versionCode') }}：{{ header.versionCode }}
         </span>
         <span v-if="header.startDate" class="fo-detail-meta">
-          {{ $t('custmat.foweeklydetaildata.startDate') }}：{{ formatYmd(parseApiDate(header.startDate)) }}
+          {{ $t('custmat.forecastdetailweeklydata.startDate') }}：{{ formatYmd(parseApiDate(header.startDate)) }}
         </span>
       </div>
       <div class="fo-detail-header-actions">
-        <el-button type="warning" @click="handleOpenImport">
-          {{ $t('custmat.foweeklydetaildata.import') }}
-        </el-button>
-        <el-button :icon="Download" :loading="exportLoading" @click="handleExportTemplate">
-          {{ $t('custmat.foweeklydetaildata.exportTemplate') }}
-        </el-button>
+        <el-select v-model="salesUserId"
+                   :placeholder="$t('custmat.forecastdetailweeklydata.pleaseSelectSalesUser')"
+                   style="width: 200px"
+                   @change="fetchFoWeeklyDetail">
+          <el-option v-for="item in salesUserOptions"
+                     :key="item.salesUserId"
+                     :label="item.userName"
+                     :value="item.salesUserId" />
+        </el-select>
         <el-button type="success" :loading="exportDataLoading" @click="handleExportData">
-          {{ $t('custmat.foweeklydetaildata.exportData') }}
+          {{ $t('custmat.forecastdetailweeklydata.exportData') }}
         </el-button>
-        <el-button @click="closeCurrentPage">{{ $t('custmat.foweeklydetaildata.close') }}</el-button>
+        <el-button @click="closeCurrentPage">{{ $t('custmat.forecastdetailweeklydata.close') }}</el-button>
       </div>
     </div>
 
@@ -29,26 +32,27 @@
                 border
                 stripe
                 :header-cell-style="{ background: '#f5f7fa' }"
+                v-loading="loading"
                 class="fo-detail-table"
                 height="100%"
                 :empty-text="$t('common.noData')">
-        <el-table-column type="index" :label="$t('custmat.foweeklydetail.index')" width="70" align="center" fixed />
-        <el-table-column prop="partNumber" :label="$t('custmat.foweeklydetaildata.partNumber')" min-width="150" align="center" fixed />
-        <el-table-column prop="partName" :label="$t('custmat.foweeklydetaildata.partName')" min-width="280" align="left" fixed show-overflow-tooltip />
-        <el-table-column :label="$t('custmat.foweeklydetaildata.dayTotal')" min-width="110" align="center" fixed>
+        <el-table-column type="index" :label="$t('custmat.forecastdetailweekly.index')" width="70" align="center" fixed />
+        <el-table-column prop="partNumber" :label="$t('custmat.forecastdetailweeklydata.partNumber')" min-width="130" align="center" fixed />
+        <el-table-column prop="partName" :label="$t('custmat.forecastdetailweeklydata.partName')" min-width="280" align="left" fixed show-overflow-tooltip />
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.dayTotal')" min-width="110" align="center" fixed>
           <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'D')) }}</template>
         </el-table-column>
-        <el-table-column :label="$t('custmat.foweeklydetaildata.weekTotal')" min-width="110" align="center" fixed>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.weekTotal')" min-width="110" align="center" fixed>
           <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'W')) }}</template>
         </el-table-column>
-        <el-table-column :label="$t('custmat.foweeklydetaildata.dayQtyChangeRate')" min-width="130" align="center" fixed>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.dayQtyChangeRate')" min-width="130" align="center" fixed>
           <template #default="scope">
             <el-tag :type="changeRateTagType(scope.row.dayQtyChangeRate)" effect="dark" size="small" round>
               {{ formatChangeRate(scope.row.dayQtyChangeRate) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('custmat.foweeklydetaildata.weekQtyChangeRate')" min-width="130" align="center" fixed>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.weekQtyChangeRate')" min-width="130" align="center" fixed>
           <template #default="scope">
             <el-tag :type="changeRateTagType(scope.row.weekQtyChangeRate)" effect="dark" size="small" round>
               {{ formatChangeRate(scope.row.weekQtyChangeRate) }}
@@ -58,7 +62,7 @@
         <el-table-column v-for="col in periodColumns"
                           :key="col.periodKey"
                           :prop="col.periodKey"
-                          width="150"
+                          width="160"
                           align="center">
           <template #header>
             <span class="period-col-header">
@@ -72,46 +76,6 @@
         </el-table-column>
       </el-table>
     </div>
-
-    <!-- 导入对话框 -->
-    <el-dialog v-model="importDialogVisible"
-               :title="$t('custmat.foweeklydetaildata.import')"
-               width="520px"
-               draggable
-               :close-on-click-modal="false"
-               :append-to-body="true"
-               @close="handleImportDialogClose">
-      <div class="import-dialog-body">
-        <el-upload drag
-                   action="#"
-                   accept=".xls,.xlsx"
-                   :auto-upload="false"
-                   :show-file-list="true"
-                   :limit="1"
-                   :on-change="handleImportFileChange"
-                   :on-exceed="handleImportFileExceed"
-                   :on-remove="handleImportFileRemove"
-                   :file-list="importFileList">
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-          <div class="el-upload__text">
-            {{ $t('custmat.foweeklydetaildata.dragFileHint') }}
-          </div>
-        </el-upload>
-
-        <el-input v-if="importErrorMessage"
-                  class="import-error-textarea"
-                  type="textarea"
-                  :model-value="importErrorMessage"
-                  :rows="4"
-                  readonly />
-      </div>
-      <template #footer>
-        <el-button @click="importDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="importLoading" :disabled="!importFile" @click="handleImportSubmit">
-          {{ $t('custmat.foweeklydetaildata.startImport') }}
-        </el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -120,14 +84,13 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { UploadFilled, Download } from '@element-plus/icons-vue'
 import { post, postBlob, isHandled } from '@/utils/request'
 import {
   GET_FO_WEEKLY_DETAIL_API,
-  EXPORT_FO_WEEKLY_DETAIL_TEMPLATE_API,
+  GET_FO_WEEKLY_ARCHIVE_DETAIL_API,
   EXPORT_FO_WEEKLY_DETAIL_API,
-  IMPORT_FO_WEEKLY_DETAIL_API
-} from '@/config/api/custmat/rolling-forecast/foweeklydetail'
+  GET_SALES_USER_DROP_API
+} from '@/config/api/custmat/forecast-detail/foweeklydetail'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -136,16 +99,12 @@ const router = useRouter()
 const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 
 const loading = ref(false)
-const exportLoading = ref(false)
 const exportDataLoading = ref(false)
 const rows = ref([])
 const periodColumns = ref([])
 
-const importDialogVisible = ref(false)
-const importLoading = ref(false)
-const importFile = ref(null)
-const importFileList = ref([])
-const importErrorMessage = ref('')
+const salesUserOptions = ref([])
+const salesUserId = ref('')
 
 const header = reactive({
   versionId: '',
@@ -217,18 +176,43 @@ const buildPeriodColumns = (periods) => {
 }
 
 const versionId = computed(() => String(route.query.versionId || ''))
+/** 非最新版本（isLatest=0）查看时改用归档明细接口 */
+const isLatest = computed(() => route.query.isLatest !== '0')
+
+/** 业务人员下拉，默认选中第一个 */
+const fetchSalesUserOptions = async () => {
+  try {
+    const res = await post(GET_SALES_USER_DROP_API.GET_SALES_USER_DROP, {})
+
+    if (isHandled(res)) return
+
+    if (res?.code === 200) {
+      salesUserOptions.value = Array.isArray(res.data) ? res.data : []
+      if (salesUserOptions.value.length) {
+        salesUserId.value = salesUserOptions.value[0].salesUserId
+      }
+    } else {
+      showApiError(res, 'custmat.forecastdetailweeklydata.getSalesUserFailed')
+    }
+  } catch {
+    showMessage(t('custmat.forecastdetailweeklydata.getSalesUserFailed'))
+  }
+}
 
 const fetchFoWeeklyDetail = async () => {
   if (!versionId.value) {
-    showMessage(t('custmat.foweeklydetaildata.missingVersionId'), 'warning')
+    showMessage(t('custmat.forecastdetailweeklydata.missingVersionId'), 'warning')
     return
   }
 
   loading.value = true
   try {
+    const api = isLatest.value
+      ? GET_FO_WEEKLY_DETAIL_API.GET_FO_WEEKLY_DETAIL
+      : GET_FO_WEEKLY_ARCHIVE_DETAIL_API.GET_FO_WEEKLY_ARCHIVE_DETAIL
     const res = await post(
-      GET_FO_WEEKLY_DETAIL_API.GET_FO_WEEKLY_DETAIL,
-      new URLSearchParams({ versionId: versionId.value }),
+      api,
+      new URLSearchParams({ versionId: versionId.value, salesUserId: salesUserId.value || '' }),
       FORM_URLENCODED
     )
 
@@ -242,10 +226,10 @@ const fetchFoWeeklyDetail = async () => {
       periodColumns.value = buildPeriodColumns(data.periods)
       rows.value = Array.isArray(data.rows) ? data.rows : []
     } else {
-      showApiError(res, 'custmat.foweeklydetaildata.getFailed')
+      showApiError(res, 'custmat.forecastdetailweeklydata.getFailed')
     }
   } catch {
-    showMessage(t('custmat.foweeklydetaildata.getFailed'))
+    showMessage(t('custmat.forecastdetailweeklydata.getFailed'))
   } finally {
     loading.value = false
   }
@@ -279,31 +263,9 @@ const downloadBlob = (blob, fileName) => {
   window.URL.revokeObjectURL(url)
 }
 
-const handleExportTemplate = async () => {
-  if (!versionId.value) {
-    showMessage(t('custmat.foweeklydetaildata.missingVersionId'), 'warning')
-    return
-  }
-
-  exportLoading.value = true
-  try {
-    const res = await postBlob(
-      EXPORT_FO_WEEKLY_DETAIL_TEMPLATE_API.EXPORT_FO_WEEKLY_DETAIL_TEMPLATE,
-      new URLSearchParams({ versionId: versionId.value }),
-      FORM_URLENCODED
-    )
-    await assertDownloadableBlob(res?.data, 'custmat.foweeklydetaildata.exportTemplateFailed')
-    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportTemplateFileName')}.xlsx`)
-  } catch (error) {
-    showMessage(error?.message || t('custmat.foweeklydetaildata.exportTemplateFailed'))
-  } finally {
-    exportLoading.value = false
-  }
-}
-
 const handleExportData = async () => {
   if (!versionId.value) {
-    showMessage(t('custmat.foweeklydetaildata.missingVersionId'), 'warning')
+    showMessage(t('custmat.forecastdetailweeklydata.missingVersionId'), 'warning')
     return
   }
 
@@ -311,77 +273,15 @@ const handleExportData = async () => {
   try {
     const res = await postBlob(
       EXPORT_FO_WEEKLY_DETAIL_API.EXPORT_FO_WEEKLY_DETAIL,
-      new URLSearchParams({ versionId: versionId.value }),
+      new URLSearchParams({ versionId: versionId.value, salesUserId: salesUserId.value || '' }),
       FORM_URLENCODED
     )
-    await assertDownloadableBlob(res?.data, 'custmat.foweeklydetaildata.exportDataFailed')
-    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportDataFileName')}.xlsx`)
+    await assertDownloadableBlob(res?.data, 'custmat.forecastdetailweeklydata.exportDataFailed')
+    downloadBlob(res.data, `${t('custmat.forecastdetailweeklydata.exportDataFileName')}.xlsx`)
   } catch (error) {
-    showMessage(error?.message || t('custmat.foweeklydetaildata.exportDataFailed'))
+    showMessage(error?.message || t('custmat.forecastdetailweeklydata.exportDataFailed'))
   } finally {
     exportDataLoading.value = false
-  }
-}
-
-const handleOpenImport = () => {
-  importFile.value = null
-  importFileList.value = []
-  importErrorMessage.value = ''
-  importDialogVisible.value = true
-}
-
-const handleImportDialogClose = () => {
-  importFile.value = null
-  importFileList.value = []
-  importErrorMessage.value = ''
-}
-
-const handleImportFileChange = (uploadFile) => {
-  importFile.value = uploadFile.raw
-  importFileList.value = [uploadFile]
-  importErrorMessage.value = ''
-}
-
-/** 超出单文件限制时替换为最新选择的文件 */
-const handleImportFileExceed = (files) => {
-  const file = files[0]
-  importFile.value = file
-  importFileList.value = [{ name: file.name, raw: file }]
-  importErrorMessage.value = ''
-}
-
-const handleImportFileRemove = () => {
-  importFile.value = null
-  importFileList.value = []
-}
-
-const handleImportSubmit = async () => {
-  if (!importFile.value || !versionId.value) return
-
-  importErrorMessage.value = ''
-  importLoading.value = true
-  try {
-    const formData = new FormData()
-    formData.append('versionId', versionId.value)
-    formData.append('file', importFile.value)
-
-    const res = await post(IMPORT_FO_WEEKLY_DETAIL_API.IMPORT_FO_WEEKLY_DETAIL, formData)
-
-    if (isHandled(res)) return
-
-    if (res?.code === 200) {
-      showMessage(res.message || t('common.success'), 'success')
-      importDialogVisible.value = false
-      fetchFoWeeklyDetail()
-    } else if (Number(res?.code) === 400) {
-      importErrorMessage.value = res?.message || t('custmat.foweeklydetaildata.importFailed')
-    } else {
-      showApiError(res, 'custmat.foweeklydetaildata.importFailed')
-    }
-  } catch {
-    showMessage(t('custmat.foweeklydetaildata.importFailed'))
-  } finally {
-    importLoading.value = false
   }
 }
 
@@ -398,10 +298,11 @@ const closeCurrentPage = () => {
     window.close()
     return
   }
-  router.push('/custmat/rolling-forecast/foweeklydetail')
+  router.push('/custmat/forecast-detail/foweeklydetail')
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchSalesUserOptions()
   fetchFoWeeklyDetail()
 })
 </script>
@@ -486,15 +387,4 @@ onMounted(() => {
   color: #e6a23c;
 }
 
-
-.import-dialog-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.import-error-textarea :deep(.el-textarea__inner) {
-  color: #f56c6c;
-  white-space: pre-wrap;
-}
 </style>

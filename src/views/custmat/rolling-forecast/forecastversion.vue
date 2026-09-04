@@ -51,12 +51,22 @@
               <el-button v-if="canEditOrDelete(scope.row)" size="small" @click="handleEdit(scope.row)">
                 {{ $t('common.edit') }}
               </el-button>
-              <el-button v-if="canUnlock(scope.row)" size="small" type="success" @click="handleUnlock(scope.row)">
-                {{ $t('custmat.forecastversion.unlock') }}
-              </el-button>
-              <el-button v-if="canLock(scope.row)" size="small" type="warning" @click="handleLock(scope.row)">
-                {{ $t('custmat.forecastversion.lock') }}
-              </el-button>
+              <el-tooltip v-if="canUnlock(scope.row)" :content="$t('custmat.forecastversion.unlockTooltip')" placement="top">
+                <el-button size="small"
+                           type="success"
+                           :loading="unlockLoadingId === scope.row.versionId"
+                           @click="handleUnlock(scope.row)">
+                  {{ $t('custmat.forecastversion.unlock') }}
+                </el-button>
+              </el-tooltip>
+              <el-tooltip v-if="canLock(scope.row)" :content="$t('custmat.forecastversion.lockTooltip')" placement="top">
+                <el-button size="small"
+                           type="warning"
+                           :loading="lockLoadingId === scope.row.versionId"
+                           @click="handleLock(scope.row)">
+                  {{ $t('custmat.forecastversion.lock') }}
+                </el-button>
+              </el-tooltip>
               <el-button v-if="canEditOrDelete(scope.row)" size="small" type="danger" @click="handleDelete(scope.row)">
                 {{ $t('common.delete') }}
               </el-button>
@@ -162,6 +172,8 @@ const dialogLoading = ref(false)
 const isEdit = ref(false)
 const submitLoading = ref(false)
 const editFormRef = ref(null)
+const unlockLoadingId = ref('')
+const lockLoadingId = ref('')
 
 const editForm = reactive({
   versionId: '',
@@ -404,6 +416,7 @@ const handleUnlock = async (row) => {
     return
   }
 
+  unlockLoadingId.value = row.versionId
   try {
     const res = await post(
       UNLOCK_FORECAST_VERSION_API.UNLOCK_FORECAST_VERSION,
@@ -421,6 +434,8 @@ const handleUnlock = async (row) => {
     }
   } catch {
     showMessage(t('custmat.forecastversion.operationFailed'))
+  } finally {
+    unlockLoadingId.value = ''
   }
 }
 
@@ -435,6 +450,7 @@ const handleLock = async (row) => {
     return
   }
 
+  lockLoadingId.value = row.versionId
   try {
     const res = await post(
       LOCK_FORECAST_VERSION_API.LOCK_FORECAST_VERSION,
@@ -452,6 +468,8 @@ const handleLock = async (row) => {
     }
   } catch {
     showMessage(t('custmat.forecastversion.operationFailed'))
+  } finally {
+    lockLoadingId.value = ''
   }
 }
 

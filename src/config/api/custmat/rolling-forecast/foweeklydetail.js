@@ -13,6 +13,11 @@ export const GET_FO_WEEKLY_DETAIL_API = {
     GET_FO_WEEKLY_DETAIL: 'CustMat/RollingForecast/FoWeeklyDetail/GetFoWeeklyDetail'
 }
 
+// 预测周明细归档数据查询API（非最新版本查看时使用，返回结构与GetFoWeeklyDetail一致）
+export const GET_FO_WEEKLY_ARCHIVE_DETAIL_API = {
+    GET_FO_WEEKLY_ARCHIVE_DETAIL: 'CustMat/RollingForecast/FoWeeklyDetail/GetFoWeeklyArchiveDetail'
+}
+
 // 导出预测周明细上摆模板API
 export const EXPORT_FO_WEEKLY_DETAIL_TEMPLATE_API = {
     EXPORT_FO_WEEKLY_DETAIL_TEMPLATE: 'CustMat/RollingForecast/FoWeeklyDetail/ExportFoWeeklyDetailTemplate'

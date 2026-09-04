@@ -1,12 +1,12 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.foweeklydetail.ariaFilterLabel')">
-        <el-form-item :label="$t('custmat.foweeklydetail.versionCode')">
+      <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.forecastdetailweekly.ariaFilterLabel')">
+        <el-form-item :label="$t('custmat.forecastdetailweekly.versionCode')">
           <el-input v-model="filters.versionCode"
                     style="width: 170px"
                     clearable
-                    :placeholder="$t('custmat.foweeklydetail.pleaseInputVersionCode')" />
+                    :placeholder="$t('custmat.forecastdetailweekly.pleaseInputVersionCode')" />
         </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
@@ -28,29 +28,24 @@
                   class="conventional-table"
                   :empty-text="$t('common.noData')"
                   >
-          <el-table-column type="index" :label="$t('custmat.foweeklydetail.index')" width="70" align="center" fixed />
-          <el-table-column prop="versionCode" :label="$t('custmat.foweeklydetail.versionCode')" align="center" min-width="140" />
-          <el-table-column prop="startDate" :label="$t('custmat.foweeklydetail.startDate')" align="center" min-width="120">
+          <el-table-column type="index" :label="$t('custmat.forecastdetailweekly.index')" width="70" align="center" fixed />
+          <el-table-column prop="versionCode" :label="$t('custmat.forecastdetailweekly.versionCode')" align="center" min-width="140" />
+          <el-table-column prop="startDate" :label="$t('custmat.forecastdetailweekly.startDate')" align="center" min-width="120">
             <template #default="scope">{{ formatYmd(parseApiDate(scope.row.startDate)) }}</template>
           </el-table-column>
-          <el-table-column prop="endDate" :label="$t('custmat.foweeklydetail.endDate')" align="center" min-width="120">
+          <el-table-column prop="endDate" :label="$t('custmat.forecastdetailweekly.endDate')" align="center" min-width="120">
             <template #default="scope">{{ formatYmd(parseApiDate(scope.row.endDate)) }}</template>
           </el-table-column>
-          <el-table-column :label="$t('custmat.foweeklydetail.yearMonth')" align="center" min-width="100">
+          <el-table-column :label="$t('custmat.forecastdetailweekly.yearMonth')" align="center" min-width="100">
             <template #default="scope">{{ formatYearMonth(scope.row.year, scope.row.month) }}</template>
           </el-table-column>
-          <el-table-column prop="week" :label="$t('custmat.foweeklydetail.week')" align="center" min-width="90" />
-          <el-table-column prop="statusName" :label="$t('custmat.foweeklydetail.statusName')" align="center" min-width="100" />
-          <el-table-column :label="$t('custmat.foweeklydetail.operation')" width="160" fixed="right" align="center">
+          <el-table-column prop="week" :label="$t('custmat.forecastdetailweekly.week')" align="center" min-width="90" />
+          <el-table-column prop="statusName" :label="$t('custmat.forecastdetailweekly.statusName')" align="center" min-width="100" />
+          <el-table-column :label="$t('custmat.forecastdetailweekly.operation')" width="100" fixed="right" align="center">
             <template #default="scope">
-              <template v-if="!isPreparation(scope.row)">
-                <el-button v-if="canArrange(scope.row)" size="small" type="primary" @click="handleArrange(scope.row)">
-                  {{ $t('custmat.foweeklydetail.arrange') }}
-                </el-button>
-                <el-button size="small" @click="handleView(scope.row)">
-                  {{ $t('common.view') }}
-                </el-button>
-              </template>
+              <el-button v-if="!isPreparation(scope.row)" size="small" @click="handleView(scope.row)">
+                {{ $t('common.view') }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -76,12 +71,11 @@ import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { post, isHandled } from '@/utils/request'
-import { GET_FORE_WEEKLY_DETAIL_PAGE_API } from '@/config/api/custmat/rolling-forecast/foweeklydetail'
+import { GET_FORE_WEEKLY_DETAIL_PAGE_API } from '@/config/api/custmat/forecast-detail/foweeklydetail'
 
-/** 预测版本状态码：编制中 / 已解锁 */
+/** 预测版本状态码：编制中 */
 const FORECAST_VERSION_STATUS = {
-  PREPARATION: 'Preparation',
-  UNLOCK: 'Unlock'
+  PREPARATION: 'Preparation'
 }
 
 const { t } = useI18n()
@@ -109,14 +103,11 @@ const showApiError = (res, fallbackKey) => {
   showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
 }
 
+/** 状态为编制中（Preparation）时不展示查看操作 */
+const isPreparation = (row) => row.status === FORECAST_VERSION_STATUS.PREPARATION
+
 /** isLatest 为 1（或字符串 "1"）时展示最新标识 */
 const isLatestVersion = (val) => Number(val) === 1
-
-/** 仅最新版本、且状态为已解锁（Unlock）时可上摆 */
-const canArrange = (row) => isLatestVersion(row.isLatest) && row.status === FORECAST_VERSION_STATUS.UNLOCK
-
-/** 状态为编制中（Preparation）时不展示上摆/查看操作 */
-const isPreparation = (row) => row.status === FORECAST_VERSION_STATUS.PREPARATION
 
 const pad2 = (n) => String(n).padStart(2, '0')
 
@@ -164,11 +155,11 @@ const fetchForeWeeklyDetailList = async () => {
       foWeeklyDetailList.value = res.data || []
       pagination.totalCount = res.totalCount || 0
     } else {
-      showApiError(res, 'custmat.foweeklydetail.getFailed')
+      showApiError(res, 'custmat.forecastdetailweekly.getFailed')
       foWeeklyDetailList.value = []
     }
   } catch {
-    showMessage(t('custmat.foweeklydetail.getFailed'))
+    showMessage(t('custmat.forecastdetailweekly.getFailed'))
     foWeeklyDetailList.value = []
   } finally {
     loading.value = false
@@ -196,22 +187,14 @@ const handlePageChange = () => {
   fetchForeWeeklyDetailList()
 }
 
-/** 以新标签页方式全屏打开预测周明细上摆/查看页面，不加 noopener 以便必要时通过 window.opener 通知本页面 */
-const openFoWeeklyDetailPage = (path, row, extraQuery = {}) => {
-  if (!row?.versionId) return
-  const resolved = router.resolve({ path, query: { versionId: String(row.versionId), ...extraQuery } })
-  window.open(resolved.href, '_blank')
-}
-
-const handleArrange = (row) => {
-  openFoWeeklyDetailPage('/custmat/rolling-forecast/foweeklydetailarrange', row)
-}
-
-/** 非最新版本查看时携带 isLatest 标记，供查看页选择归档明细接口 */
+/** 以新标签页方式全屏打开预测周明细查看页面，不加 noopener 以便必要时通过 window.opener 通知本页面；非最新版本携带 isLatest 标记，供查看页选择归档明细接口 */
 const handleView = (row) => {
-  openFoWeeklyDetailPage('/custmat/rolling-forecast/foweeklydetailview', row, {
-    isLatest: isLatestVersion(row.isLatest) ? '1' : '0'
+  if (!row?.versionId) return
+  const resolved = router.resolve({
+    path: '/custmat/forecast-detail/foweeklydetailview',
+    query: { versionId: String(row.versionId), isLatest: isLatestVersion(row.isLatest) ? '1' : '0' }
   })
+  window.open(resolved.href, '_blank')
 }
 
 onMounted(() => {

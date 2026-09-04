@@ -1336,6 +1336,9 @@ export default {
     custmatForeWeeklyDetailView: 'FoWeeklyDetail View',
     custmatNumberTrend: 'Number Trend',
     custmatNumberTrendChart: 'Number Trend Chart',
+    custmatforecastdetail: 'Forecast Detail',
+    custmatForecastDetailFoWeeklyDetail: 'FoWeeklyDetail',
+    custmatForecastDetailFoWeeklyDetailView: 'FoWeeklyDetail View',
     custmatSalesCustomerDistribution: 'Customer Distribution'
   },
   
@@ -2477,6 +2480,8 @@ export default {
       getForecastVersionDetailFailed: 'Failed to get forecast version details',
       unlock: 'Unlock',
       lock: 'Lock',
+      unlockTooltip: 'Click to unlock the version and start arranging FO usage, an email notification will be sent to the sales user',
+      lockTooltip: 'Click to lock the version and start arranging FO usage, an email notification will be sent to the sales user',
       unlockConfirm: 'Are you sure you want to unlock this forecast version?',
       lockConfirm: 'Are you sure you want to lock this forecast version?',
       unlockSuccess: 'Unlocked successfully',
@@ -2571,6 +2576,39 @@ export default {
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       importFailed: 'Import failed'
+    },
+    forecastdetailweekly: {
+      pageTitle: 'FoWeeklyDetail',
+      ariaFilterLabel: 'FoWeeklyDetail Filter Form',
+      index: 'Index',
+      versionCode: 'Version Code',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      yearMonth: 'Year-Month',
+      week: 'Week',
+      statusName: 'Status',
+      pleaseInputVersionCode: 'Please enter version code',
+      getFailed: 'Failed to get data',
+      operation: 'Operation'
+    },
+    forecastdetailweeklydata: {
+      viewTitle: 'FoWeeklyDetail View',
+      versionCode: 'Version Code',
+      startDate: 'Start Date',
+      partNumber: 'Part Number',
+      partName: 'Part Name',
+      dayTotal: 'Day Total',
+      weekTotal: 'Week Total',
+      dayQtyChangeRate: 'Day WoW %',
+      weekQtyChangeRate: 'Week WoW %',
+      close: 'Close',
+      getFailed: 'Failed to get data',
+      missingVersionId: 'Missing version parameter',
+      exportData: 'Export Data',
+      exportDataFileName: 'FoWeeklyDetailData',
+      exportDataFailed: 'Failed to export data',
+      pleaseSelectSalesUser: 'Please select sales user',
+      getSalesUserFailed: 'Failed to get sales user list'
     }
   }
 }

@@ -27,7 +27,7 @@
                 class="fo-detail-table"
                 height="100%"
                 :empty-text="$t('common.noData')">
-        <el-table-column type="index" :label="$t('custmat.foweeklydetail.index')" width="60" align="center" fixed />
+        <el-table-column type="index" :label="$t('custmat.foweeklydetail.index')" width="70" align="center" fixed />
         <el-table-column prop="partNumber" :label="$t('custmat.foweeklydetaildata.partNumber')" min-width="130" align="center" fixed />
         <el-table-column prop="partName" :label="$t('custmat.foweeklydetaildata.partName')" min-width="280" align="left" fixed show-overflow-tooltip />
         <el-table-column :label="$t('custmat.foweeklydetaildata.dayTotal')" min-width="110" align="center" fixed>
@@ -38,12 +38,16 @@
         </el-table-column>
         <el-table-column :label="$t('custmat.foweeklydetaildata.dayQtyChangeRate')" min-width="130" align="center" fixed>
           <template #default="scope">
-            <span :class="changeRateClass(scope.row.dayQtyChangeRate)">{{ formatChangeRate(scope.row.dayQtyChangeRate) }}</span>
+            <el-tag :type="changeRateTagType(scope.row.dayQtyChangeRate)" effect="dark" size="small" round>
+              {{ formatChangeRate(scope.row.dayQtyChangeRate) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="$t('custmat.foweeklydetaildata.weekQtyChangeRate')" min-width="130" align="center" fixed>
           <template #default="scope">
-            <span :class="changeRateClass(scope.row.weekQtyChangeRate)">{{ formatChangeRate(scope.row.weekQtyChangeRate) }}</span>
+            <el-tag :type="changeRateTagType(scope.row.weekQtyChangeRate)" effect="dark" size="small" round>
+              {{ formatChangeRate(scope.row.weekQtyChangeRate) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column v-for="col in periodColumns"
@@ -72,7 +76,11 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, postBlob, isHandled } from '@/utils/request'
-import { GET_FO_WEEKLY_DETAIL_API, EXPORT_FO_WEEKLY_DETAIL_API } from '@/config/api/custmat/rolling-forecast/foweeklydetail'
+import {
+  GET_FO_WEEKLY_DETAIL_API,
+  GET_FO_WEEKLY_ARCHIVE_DETAIL_API,
+  EXPORT_FO_WEEKLY_DETAIL_API
+} from '@/config/api/custmat/rolling-forecast/foweeklydetail'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -130,10 +138,11 @@ const formatChangeRate = (val) => {
   return `${n > 0 ? '+' : ''}${n.toFixed(2)}%`
 }
 
-const changeRateClass = (val) => {
+/** 环比标签颜色：增长为红色，减少为绿色，持平为灰色 */
+const changeRateTagType = (val) => {
   const n = Number(val)
-  if (!Number.isFinite(n) || n === 0) return ''
-  return n > 0 ? 'change-rate-up' : 'change-rate-down'
+  if (!Number.isFinite(n) || n === 0) return 'info'
+  return n > 0 ? 'danger' : 'success'
 }
 
 /** 按前缀（D 天 / W 周）汇总某一行的总量 */
@@ -154,6 +163,8 @@ const buildPeriodColumns = (periods) => {
 }
 
 const versionId = computed(() => String(route.query.versionId || ''))
+/** 非最新版本（isLatest=0）查看时改用归档明细接口 */
+const isLatest = computed(() => route.query.isLatest !== '0')
 
 const fetchFoWeeklyDetail = async () => {
   if (!versionId.value) {
@@ -163,8 +174,11 @@ const fetchFoWeeklyDetail = async () => {
 
   loading.value = true
   try {
+    const api = isLatest.value
+      ? GET_FO_WEEKLY_DETAIL_API.GET_FO_WEEKLY_DETAIL
+      : GET_FO_WEEKLY_ARCHIVE_DETAIL_API.GET_FO_WEEKLY_ARCHIVE_DETAIL
     const res = await post(
-      GET_FO_WEEKLY_DETAIL_API.GET_FO_WEEKLY_DETAIL,
+      api,
       new URLSearchParams({ versionId: versionId.value }),
       FORM_URLENCODED
     )
@@ -339,11 +353,4 @@ onMounted(() => {
   color: #e6a23c;
 }
 
-.change-rate-up {
-  color: #f56c6c;
-}
-
-.change-rate-down {
-  color: #67c23a;
-}
 </style>

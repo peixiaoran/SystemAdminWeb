@@ -1254,6 +1254,9 @@ export default {
     custmatForeWeeklyDetailView: '预测周明细查看',
     custmatNumberTrend: '料号版本趋势',
     custmatNumberTrendChart: '料号版本趋势图',
+    custmatforecastdetail: '预测明细',
+    custmatForecastDetailFoWeeklyDetail: '每周滚动预测',
+    custmatForecastDetailFoWeeklyDetailView: '预测周明细查看',
     custmatSalesCustomerDistribution: '负责客户分布图'
   },
   
@@ -2443,6 +2446,8 @@ export default {
       getForecastVersionDetailFailed: '获取预测版本详情失败',
       unlock: '解锁',
       lock: '锁定',
+      unlockTooltip: '点击解锁版本开始上摆FO用量，并发送邮件通知业务人员',
+      lockTooltip: '点击锁定版本开始上摆FO用量，并发送邮件通知业务人员',
       unlockConfirm: '确定要解锁该预测版本吗？',
       lockConfirm: '确定要锁定该预测版本吗？',
       unlockSuccess: '解锁成功',
@@ -2537,6 +2542,39 @@ export default {
       dragFileHint: '将文件拖到此处，或点击上传',
       startImport: '开始导入',
       importFailed: '导入失败'
+    },
+    forecastdetailweekly: {
+      pageTitle: '每周滚动预测',
+      ariaFilterLabel: '每周滚动预测筛选表单',
+      index: '序号',
+      versionCode: '版本编号',
+      startDate: '开始日期',
+      endDate: '结束日期',
+      yearMonth: '年月',
+      week: '周次',
+      statusName: '状态',
+      pleaseInputVersionCode: '请输入版本编号',
+      getFailed: '获取数据失败',
+      operation: '操作'
+    },
+    forecastdetailweeklydata: {
+      viewTitle: '预测周明细查看',
+      versionCode: '版本编号',
+      startDate: '开始日期',
+      partNumber: '料号',
+      partName: '品名',
+      dayTotal: '天合计',
+      weekTotal: '周合计',
+      dayQtyChangeRate: '天环比',
+      weekQtyChangeRate: '周环比',
+      close: '关闭',
+      getFailed: '获取数据失败',
+      missingVersionId: '缺少版本参数',
+      exportData: '导出数据',
+      exportDataFileName: '预测周明细数据',
+      exportDataFailed: '导出数据失败',
+      pleaseSelectSalesUser: '请选择业务人员',
+      getSalesUserFailed: '获取业务人员列表失败'
     }
   }
 }

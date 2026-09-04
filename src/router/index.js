@@ -653,6 +653,17 @@ const pmenuRoutes = [
       noTag: true
     }
   },
+  // 独立预测明细-预测周明细查看页面（不使用Layout，无标签，全屏展示，供业务人员查看）
+  {
+    path: '/custmat/forecast-detail/foweeklydetailview',
+    name: 'ForecastDetailFoWeeklyDetailView',
+    component: () => import('../views/custmat/forecast-detail/foweeklydetailview.vue'),
+    meta: {
+      title: 'route.custmatForecastDetailFoWeeklyDetailView',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   // 独立料号版本趋势图页面（不使用Layout，无标签，全屏展示）
   {
     path: '/custmat/rolling-forecast/numbertrendchart',
@@ -837,6 +848,31 @@ const pmenuRoutes = [
               meta: {
                 title: 'route.custmatNumberTrend',
                 icon: 'Histogram',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            }
+          ]
+        },
+        // 预测明细子模块 - 使用嵌套结构
+        {
+          path: 'forecast-detail',
+          name: 'CustMatForecastDetail',
+          redirect: '/custmat/forecast-detail/foweeklydetail',
+          meta: {
+            title: 'route.custmatforecastdetail',
+            icon: 'Checked',
+            [ROUTE_CONFIG.META.AUTH]: true,
+            noTag: true
+          },
+          children: [
+            {
+              path: 'foweeklydetail',
+              name: 'ForecastDetailFoWeeklyDetail',
+              component: () => import('../views/custmat/forecast-detail/foweeklydetail.vue'),
+              meta: {
+                title: 'route.custmatForecastDetailFoWeeklyDetail',
+                icon: 'Reading',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
