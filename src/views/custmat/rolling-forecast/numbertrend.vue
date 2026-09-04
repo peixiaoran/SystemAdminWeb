@@ -31,8 +31,6 @@
           <el-table-column type="index" :label="$t('custmat.numbertrend.index')" width="70" align="center" fixed />
           <el-table-column prop="partNumber" :label="$t('custmat.numbertrend.partNumber')" align="center" min-width="140" />
           <el-table-column prop="partName" :label="$t('custmat.numbertrend.partName')" align="center" min-width="160" />
-          <el-table-column prop="userNo" :label="$t('custmat.numbertrend.userNo')" align="center" min-width="120" />
-          <el-table-column prop="userName" :label="$t('custmat.numbertrend.userName')" align="center" min-width="120" />
           <el-table-column :label="$t('custmat.numbertrend.operation')" width="120" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" type="primary" @click="handleViewTrend(scope.row)">

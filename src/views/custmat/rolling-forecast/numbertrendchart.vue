@@ -185,6 +185,8 @@ const fetchChartData = async () => {
       const rows = Array.isArray(res.data?.versions) ? res.data.versions : []
       renderBarChart(rows)
       renderAreaChart(rows)
+      await nextTick()
+      handleResize()
     } else {
       showApiError(res, 'custmat.numbertrendchart.getFailed')
     }
@@ -297,10 +299,14 @@ onBeforeUnmount(() => {
 .trend-chart-content {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.trend-chart-part-info {
+  flex-shrink: 0;
 }
 
 .trend-chart-part-info :deep(.el-card__header) {
@@ -313,7 +319,7 @@ onBeforeUnmount(() => {
 
 .trend-chart-section {
   flex: 1;
-  min-height: 260px;
+  min-height: 0;
   border: 1px solid #ebeef5;
   border-radius: 4px;
   padding: 12px;
