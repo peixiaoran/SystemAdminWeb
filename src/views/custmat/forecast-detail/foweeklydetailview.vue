@@ -277,7 +277,7 @@ const handleExportData = async () => {
       FORM_URLENCODED
     )
     await assertDownloadableBlob(res?.data, 'custmat.forecastdetailweeklydata.exportDataFailed')
-    downloadBlob(res.data, `${t('custmat.forecastdetailweeklydata.exportDataFileName')}.xlsx`)
+    downloadBlob(res.data, `${t('custmat.forecastdetailweeklydata.exportDataFileName')}_${header.versionCode}.xlsx`)
   } catch (error) {
     showMessage(error?.message || t('custmat.forecastdetailweeklydata.exportDataFailed'))
   } finally {

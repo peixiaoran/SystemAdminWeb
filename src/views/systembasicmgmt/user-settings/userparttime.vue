@@ -172,7 +172,6 @@
           <el-form :inline="true"
                    :model="userSelectFilters"
                    class="conventional-filter-form"
-                   style="margin-top: 10px"
                    role="search"
                    :aria-label="$t('systembasicmgmt.userPartTime.ariaUserSelectLabel')">
             <el-form-item :label="$t('systembasicmgmt.userPartTime.filter.department')">
@@ -207,38 +206,40 @@
           </el-form>
 
           <!-- 用户表格 -->
-          <el-table :data="userSelectList"
-                    border
-                    stripe
-                    :header-cell-style="{ background: '#f5f7fa' }"
-                    v-loading="userSelectLoading || submitLoading"
-                    class="conventional-table"
-                    height="310"
-                    @row-click="handleUserSelectRowClick"
-                    :empty-text="$t('common.noData')"
-                    >
-            <el-table-column width="55" align="center">
-              <template #default="scope">
-                <el-radio :model-value="editForm.userId"
-                          :value="String(scope.row.userId)"
-                          @click.stop="handleUserSelectRowClick(scope.row)">
-                  <span></span>
-                </el-radio>
-              </template>
-            </el-table-column>
-            <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
-            <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
-            <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
-            <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
-            <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
-            <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="100">
-              <template #default="scope">
-                <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
-                  {{ getIsReviewText(scope.row.isReview) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="user-select-table-wrap">
+            <el-table :data="userSelectList"
+                      border
+                      stripe
+                      :header-cell-style="{ background: '#f5f7fa' }"
+                      v-loading="userSelectLoading || submitLoading"
+                      class="conventional-table"
+                      height="100%"
+                      @row-click="handleUserSelectRowClick"
+                      :empty-text="$t('common.noData')"
+                      >
+              <el-table-column width="55" align="center">
+                <template #default="scope">
+                  <el-radio :model-value="editForm.userId"
+                            :value="String(scope.row.userId)"
+                            @click.stop="handleUserSelectRowClick(scope.row)">
+                    <span></span>
+                  </el-radio>
+                </template>
+              </el-table-column>
+              <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="100" />
+              <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="160" />
+              <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userPartTime.department')" align="left" min-width="240" />
+              <el-table-column prop="positionName" :label="$t('systembasicmgmt.userPartTime.position')" align="left" min-width="100" />
+              <el-table-column prop="laborName" :label="$t('systembasicmgmt.userPartTime.labor')" align="left" min-width="240" />
+              <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="100">
+                <template #default="scope">
+                  <el-tag :type="scope.row.isReview === '1' ? 'primary' : 'info'">
+                    {{ getIsReviewText(scope.row.isReview) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
 
           <!-- 分页 -->
           <div class="pagination-wrapper">
@@ -827,6 +828,18 @@ onUnmounted(() => {
 
 .parttime-dialog-body {
   height: 560px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-select-table-wrap {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 12px;
+}
+
+.user-select-table-wrap .el-table {
+  height: 100%;
 }
 
 .parttime-form {
@@ -838,7 +851,7 @@ onUnmounted(() => {
   align-items: center;
   flex-wrap: wrap;
   gap: 24px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 .parttime-form-row .el-form-item {

@@ -293,7 +293,7 @@ const handleExportTemplate = async () => {
       FORM_URLENCODED
     )
     await assertDownloadableBlob(res?.data, 'custmat.foweeklydetaildata.exportTemplateFailed')
-    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportTemplateFileName')}.xlsx`)
+    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportTemplateFileName')}_${header.versionCode}.xlsx`)
   } catch (error) {
     showMessage(error?.message || t('custmat.foweeklydetaildata.exportTemplateFailed'))
   } finally {
@@ -315,7 +315,7 @@ const handleExportData = async () => {
       FORM_URLENCODED
     )
     await assertDownloadableBlob(res?.data, 'custmat.foweeklydetaildata.exportDataFailed')
-    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportDataFileName')}.xlsx`)
+    downloadBlob(res.data, `${t('custmat.foweeklydetaildata.exportDataFileName')}_${header.versionCode}.xlsx`)
   } catch (error) {
     showMessage(error?.message || t('custmat.foweeklydetaildata.exportDataFailed'))
   } finally {

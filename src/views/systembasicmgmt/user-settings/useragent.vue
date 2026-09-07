@@ -147,49 +147,17 @@
                :close-on-click-modal="false"
                :append-to-body="true"
                :lock-scroll="true"
+               class="user-select-dialog"
                @closed="handleUserSelectDialogClosed">
       <div class="user-select-body">
-        <!-- 搜索与时间选择区域（合并为一行，时间字段放在最后） -->
-        <div class="agent-select-filter-row">
-          <el-form :inline="true"
-                   :model="userSelectFilters"
-                   class="conventional-filter-form inline-contents"
-                   role="search"
-                   :aria-label="$t('systembasicmgmt.userAgent.ariaUserSelectLabel')">
-            <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
-              <el-tree-select v-model="userSelectFilters.departmentId"
-                              :data="departmentOptions"
-                              :props="DEPARTMENT_TREE_PROPS"
-                              check-strictly
-                              filterable
-                              :filter-node-method="filterNodeMethod"
-                              @change="handleUserSelectSearch"
-                              style="width: 220px"
-                              popper-class="main-dept-filter-popper"
-                              :clearable="false"
-                              :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
-            </el-form-item>
-            <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
-              <el-input v-model="userSelectFilters.userNo"
-                        style="width: 220px"
-                        :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
-                        clearable />
-            </el-form-item>
-            <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
-              <el-input v-model="userSelectFilters.userName"
-                        style="width: 220px"
-                        :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
-                        clearable />
-            </el-form-item>
-          </el-form>
-
-          <el-form ref="agentTimeFormRef"
-                   :model="agentTimeRange"
-                   :rules="agentTimeFormRules"
-                   :inline="true"
-                   class="conventional-filter-form inline-contents"
-                   role="form"
-                   :aria-label="$t('systembasicmgmt.userAgent.ariaAgentTimeLabel')">
+        <!-- 代理时间区域 -->
+        <el-form ref="agentTimeFormRef"
+                 :model="agentTimeRange"
+                 :rules="agentTimeFormRules"
+                 class="agent-time-form"
+                 role="form"
+                 :aria-label="$t('systembasicmgmt.userAgent.ariaAgentTimeLabel')">
+          <div class="agent-time-form-row">
             <el-form-item :label="$t('systembasicmgmt.userAgent.startTime')" prop="startTime">
               <el-date-picker v-model="agentTimeRange.startTime"
                               type="datetime"
@@ -210,33 +178,69 @@
                               format="YYYY-MM-DD HH:mm:ss"
                               value-format="YYYY-MM-DD HH:mm:ss" />
             </el-form-item>
-          </el-form>
+          </div>
+        </el-form>
 
-          <div class="form-button-group">
+        <el-divider style="margin: 25px 0 8px" />
+
+        <!-- 搜索区域 -->
+        <el-form :inline="true"
+                 :model="userSelectFilters"
+                 class="conventional-filter-form"
+                 role="search"
+                 :aria-label="$t('systembasicmgmt.userAgent.ariaUserSelectLabel')">
+          <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
+            <el-tree-select v-model="userSelectFilters.departmentId"
+                            :data="departmentOptions"
+                            :props="DEPARTMENT_TREE_PROPS"
+                            check-strictly
+                            filterable
+                            :filter-node-method="filterNodeMethod"
+                            @change="handleUserSelectSearch"
+                            style="width: 220px"
+                            popper-class="main-dept-filter-popper"
+                            :clearable="false"
+                            :placeholder="$t('systembasicmgmt.userAgent.pleaseSelectDepartment')" />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.userAgent.userNo')">
+            <el-input v-model="userSelectFilters.userNo"
+                      style="width: 220px"
+                      :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserNo')"
+                      clearable />
+          </el-form-item>
+          <el-form-item :label="$t('systembasicmgmt.userAgent.userNameCn')">
+            <el-input v-model="userSelectFilters.userName"
+                      style="width: 220px"
+                      :placeholder="$t('systembasicmgmt.userAgent.pleaseInputUserName')"
+                      clearable />
+          </el-form-item>
+          <el-form-item class="form-button-group">
             <el-button type="primary" @click="handleUserSelectSearch">{{ $t('common.search') }}</el-button>
             <el-button @click="handleUserSelectReset">{{ $t('common.reset') }}</el-button>
-          </div>
-        </div>
+          </el-form-item>
+        </el-form>
 
         <!-- 用户表格 -->
-        <el-table :data="userSelectList"
-                  border
-                  stripe
-                  :header-cell-style="{ background: '#f5f7fa' }"
-                  v-loading="userSelectLoading"
-                  class="conventional-table"
-                  ref="userSelectTableRef"
-                  height="300"
-                  @selection-change="handleSelectionChange"
-                  @row-click="handleUserSelectRowClick"
-                  :empty-text="$t('common.noData')"
-                  >
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="80" />
-          <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userNameCn')" align="left" min-width="120" />
-          <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="120" />
-          <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="100" />
-        </el-table>
+        <div class="user-select-table-wrap">
+          <el-table :data="userSelectList"
+                    border
+                    stripe
+                    :header-cell-style="{ background: '#f5f7fa' }"
+                    v-loading="userSelectLoading"
+                    class="conventional-table"
+                    ref="userSelectTableRef"
+                    height="100%"
+                    @selection-change="handleSelectionChange"
+                    @row-click="handleUserSelectRowClick"
+                    :empty-text="$t('common.noData')"
+                    >
+            <el-table-column type="selection" width="50" align="center" />
+            <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="80" />
+            <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userNameCn')" align="left" min-width="120" />
+            <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="120" />
+            <el-table-column prop="positionName" :label="$t('systembasicmgmt.userAgent.position')" align="left" min-width="100" />
+          </el-table>
+        </div>
 
         <!-- 分页 -->
         <div class="pagination-wrapper">
@@ -781,20 +785,51 @@ onUnmounted(() => {
   padding-top: 20px;
 }
 
-.user-select-body {
-  min-height: 500px;
+:deep(.user-select-dialog .el-dialog) {
+  height: 550px;
+  overflow: hidden;
 }
 
-.agent-select-filter-row {
+:deep(.user-select-dialog .el-dialog__body) {
+  height: calc(550px - 120px);
+  overflow: auto;
+  padding: 0 20px 20px 20px;
+}
+
+:deep(.user-select-dialog .el-dialog__header) {
+  padding-bottom: 15px;
+}
+
+.user-select-body {
+  height: 560px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-select-table-wrap {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 12px;
+}
+
+.user-select-table-wrap .el-table {
+  height: 100%;
+}
+
+.agent-time-form {
+  padding: 12px 16px 0 0;
+}
+
+.agent-time-form-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: 16px;
-  border-radius: 4px;
+  gap: 24px;
+  margin-bottom: 0;
 }
 
-.agent-select-filter-row .inline-contents {
-  display: contents;
+.agent-time-form-row .el-form-item {
+  margin-bottom: 0;
 }
 
 .conventional-table :deep(.el-checkbox) {
