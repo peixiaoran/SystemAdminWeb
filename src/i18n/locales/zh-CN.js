@@ -940,6 +940,7 @@ export default {
         addReviewSelect: '选择',
         addReviewChange: '更换',
         addReviewClear: '清空',
+        addReviewDragTip: '按住拖拽调整顺序',
         addReviewDialogTitle: '选择加审人员',
         addReviewPleaseSelectDepartment: '请选择部门',
         attachments: '附件',

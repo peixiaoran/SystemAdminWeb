@@ -332,7 +332,18 @@
         <el-row v-if="isAddReviewVisible()" :gutter="16" class="add-review-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.addReview')">
-              <el-table :data="addReviewRows" border size="small" class="add-review-table">
+              <el-table ref="addReviewTableRef" :data="addReviewRows" border size="small" class="add-review-table" row-key="_uid">
+                <el-table-column width="40" align="center">
+                  <template #default>
+                    <el-icon
+                      class="add-review-drag-handle"
+                      :class="{ 'is-disabled': !isAddReviewEditable() }"
+                      :title="t('formbusiness.documentcirculate.addReviewDragTip')"
+                    >
+                      <Rank />
+                    </el-icon>
+                  </template>
+                </el-table-column>
                 <el-table-column
                   prop="sortOrder"
                   :label="t('formbusiness.documentcirculate.addReviewSortOrder')"
@@ -604,7 +615,8 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Lock, Link, Grid, Plus, Minus, Close, MagicStick } from '@element-plus/icons-vue'
+import { Upload, Lock, Link, Grid, Plus, Minus, Close, MagicStick, Rank } from '@element-plus/icons-vue'
+import Sortable from 'sortablejs'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
@@ -809,6 +821,7 @@ watch(() => isStepFieldEditable('ContentSummary'), (val) => {
 onBeforeUnmount(() => {
   editor.value?.destroy()
   clearAddReviewSearchTimer()
+  destroyAddReviewSortable()
 })
 
 const rejectDialogVisible = ref(false)
@@ -838,6 +851,7 @@ const ADD_REVIEW_FIELD_KEYS = ['AddReview', 'AddReivew']
 
 const createAddReviewRows = () =>
   Array.from({ length: ADD_REVIEW_MAX_ROWS }, (_, idx) => ({
+    _uid: `add-review-row-${idx}`, // 仅供 Vue/Sortable 识别“这是同一个人”，拖拽时随对象整体搬运、从不重新计算
     sortOrder: idx + 1,
     userId: '',
     userNo: '',
@@ -1102,23 +1116,29 @@ async function confirmAddReviewUser () {
   await saveAddReviewRow(row, isUpdate)
 }
 
+/** 删除某一顺序在后端的加审记录，静默失败；显式传参而非读 row，供交换内容后仍需删除旧记录的场景复用 */
+async function deleteAddReviewRecord (sortOrder, userId) {
+  const formId = String(form.formId || '')
+  if (!formId || !userId) return
+  try {
+    const formData = new window.FormData()
+    formData.append('formId', formId)
+    formData.append('userId', String(userId))
+    formData.append('sortOrder', String(sortOrder))
+    await post(DELETE_FORM_ADD_REVIEW_API, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      skipDedupe: true,
+      silentForbiddenError: false
+    })
+  } catch {
+    // 静默：删除失败不打断页面操作
+  }
+}
+
 /** 清空该行：已落库则先删除，全程静默不提示 */
 async function clearAddReviewRow (row) {
-  const formId = String(form.formId || '')
-  if (formId && row.persisted && row.userId) {
-    try {
-      const formData = new window.FormData()
-      formData.append('formId', formId)
-      formData.append('userId', String(row.userId))
-      formData.append('sortOrder', String(row.sortOrder))
-      await post(DELETE_FORM_ADD_REVIEW_API, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        skipDedupe: true,
-        silentForbiddenError: false
-      })
-    } catch {
-      // 静默：删除失败不打断页面操作
-    }
+  if (row.persisted && row.userId) {
+    await deleteAddReviewRecord(row.sortOrder, row.userId)
   }
   row.userId = ''
   row.userNo = ''
@@ -1126,6 +1146,96 @@ async function clearAddReviewRow (row) {
   row.deptName = ''
   row.persisted = false
   row.dirty = false
+}
+
+/**
+ * 拖拽排序：必须真的把整条数据（含 _uid）搬到新的数组位置，配合 row-key="_uid"，
+ * Vue 才会按“这个人挪动了”去实际搬运 DOM，视觉才会跟手——如果只交换字段、
+ * 保持 sortOrder/对象位置不动，Vue 会按 key 把内容“纠正”回原来的节点上，
+ * 表现为人没动、顺序号却乱跳（之前就是这个问题）。
+ *
+ * sortOrder 是后端记录的位置键，人搬走后要按新位置重新编号；
+ * persisted（该位置是否已落库）则要按“新位置原来是否已有记录”判定，不能跟着人走，
+ * 所以先把重排前“每个位置”的落库状态记下来，重排后再照搬到新位置对应的行上。
+ */
+async function handleAddReviewDragEnd (oldIndex, newIndex) {
+  if (!isAddReviewEditable() || oldIndex === newIndex || oldIndex == null || newIndex == null) return
+
+  const rows = addReviewRows.value
+  const previousPersistedByPosition = rows.map((r) => r.persisted)
+  const previousUserIdByPosition = rows.map((r) => r.userId)
+
+  const [movedRow] = rows.splice(oldIndex, 1)
+  rows.splice(newIndex, 0, movedRow)
+
+  const start = Math.min(oldIndex, newIndex)
+  const end = Math.max(oldIndex, newIndex)
+  const tasks = []
+  rows.forEach((row, idx) => {
+    row.sortOrder = idx + 1
+    if (idx < start || idx > end) return // 位置未受影响，落库状态不用动
+    row.persisted = previousPersistedByPosition[idx]
+    tasks.push(syncAddReviewRowAfterReorder(row, previousUserIdByPosition[idx]))
+  })
+  await Promise.all(tasks)
+}
+
+const addReviewTableRef = ref(null)
+let addReviewSortableInstance = null
+
+function destroyAddReviewSortable () {
+  addReviewSortableInstance?.destroy()
+  addReviewSortableInstance = null
+}
+
+/** 挂载/重新挂载拖拽：句柄限定在 .add-review-drag-handle，避免拖拽和点击更换/清空按钮冲突 */
+async function setupAddReviewSortable () {
+  await nextTick()
+  const tbody = addReviewTableRef.value?.$el?.querySelector('.el-table__body-wrapper tbody')
+  if (!tbody) return
+  destroyAddReviewSortable()
+  addReviewSortableInstance = Sortable.create(tbody, {
+    handle: '.add-review-drag-handle',
+    animation: 150,
+    disabled: !isAddReviewEditable(),
+    onEnd (evt) {
+      handleAddReviewDragEnd(evt.oldIndex, evt.newIndex)
+    }
+  })
+}
+
+/**
+ * 加审表格只在“真实表单”分支（v-else，见模板顶部 loading 骨架屏 / resultState 结果页）
+ * 里才会真正渲染进 DOM；组件 mounted 时通常还在骨架屏阶段（loading 初始为 true），
+ * 这里必须等它和权限可见性同时满足才去挂载 Sortable，否则表格出现时也没人重新初始化。
+ */
+const isAddReviewSectionMounted = computed(() => !loading.value && !resultState.visible && isAddReviewVisible())
+
+watch(isAddReviewSectionMounted, (mounted) => {
+  if (mounted) setupAddReviewSortable()
+  else destroyAddReviewSortable()
+})
+
+watch(() => isAddReviewEditable(), (editable) => {
+  addReviewSortableInstance?.option('disabled', !editable)
+})
+
+onMounted(() => {
+  if (isAddReviewSectionMounted.value) setupAddReviewSortable()
+})
+
+/** 重排内容后同步该行：仍有数据则按该顺序原有落库状态新增/更新；变空且原有记录则删除旧记录 */
+async function syncAddReviewRowAfterReorder (row, previousUserId) {
+  if (row.userId) {
+    row.dirty = true
+    await saveAddReviewRow(row, row.persisted)
+    return
+  }
+  if (row.persisted) {
+    await deleteAddReviewRecord(row.sortOrder, previousUserId)
+    row.persisted = false
+    row.dirty = false
+  }
 }
 
 /** 保存表单前补发未成功落库的加审行（弹窗确定时已保存过的不会重复提交） */
@@ -2324,6 +2434,20 @@ onMounted(async () => {
 /* 加审标签相对整张表格上下居中（沿用 .leave-form 的 align-items: center） */
 .add-review-table {
   width: 100%;
+}
+
+.add-review-drag-handle {
+  cursor: grab;
+  color: var(--el-text-color-secondary);
+}
+
+.add-review-drag-handle:active {
+  cursor: grabbing;
+}
+
+.add-review-drag-handle.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 /* 选人弹窗：与请假单选择代理人弹窗保持一致 */

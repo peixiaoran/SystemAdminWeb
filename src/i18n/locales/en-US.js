@@ -1008,6 +1008,7 @@ export default {
       addReviewSelect: 'Select',
       addReviewChange: 'Change',
       addReviewClear: 'Clear',
+      addReviewDragTip: 'Drag to reorder',
       addReviewDialogTitle: 'Select Add-Review User',
       addReviewPleaseSelectDepartment: 'Please select department',
       attachments: 'Attachments',

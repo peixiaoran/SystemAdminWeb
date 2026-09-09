@@ -263,7 +263,7 @@ function workflowUserShowAppointmentTypeName (u) {
 }
 
 .workflow-step-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
@@ -332,7 +332,7 @@ function workflowUserShowAppointmentTypeName (u) {
 }
 
 .workflow-user-name {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--el-text-color-primary);
 }
 
