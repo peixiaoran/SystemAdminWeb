@@ -45,6 +45,12 @@ export const LOGOUT_API = {
   USER_LOGOUT: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserLogOut'
 }
 
+// AccessToken 静默续期：不需要传参，RefreshToken 从 Cookie 自动带上；
+// 成功后后端会重新签发 AccessToken 和 RefreshToken（旧 RefreshToken 立即作废，一次性使用）
+export const REFRESH_TOKEN_API = {
+  REFRESH_TOKEN: 'SystemBasicMgmt/SystemAuth/SysUserOperate/RefreshToken'
+}
+
 // 查询模块列表
 export const MODULE_API = {
   GET_MODULES: 'SystemBasicMgmt/SystemAuth/SysModuleMenu/GetModuleList'

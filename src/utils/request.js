@@ -1,7 +1,7 @@
 import axios from 'axios'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
-import { BASE_API_URL, API_TIMEOUT } from '@/config/api/login/api'
+import { BASE_API_URL, API_TIMEOUT, REFRESH_TOKEN_API } from '@/config/api/login/api'
 import { clearClientSession } from '@/utils/sessionCleanup'
 
 /**
@@ -24,6 +24,12 @@ import { clearClientSession } from '@/utils/sessionCleanup'
  * 请求超时（客户端中断）     | error toast     | 否              | handled 失败响应
  * 断网 / 无响应             | error toast     | 否              | handled 失败响应
  * 请求被去重取消            | 无              | 否              | reject（调用方需忽略）
+ *
+ * 「AccessToken 静默续期」：
+ *   真实 401（非 RefreshToken 接口自身）会先尝试用 RefreshToken 静默换取新 AccessToken 并重放原请求，
+ *   成功则调用方完全无感知，直接拿到重放后的正常响应，不会进入下表任何分支；
+ *   RefreshToken 也失效（或被判定异常复用）才会把原始 401 错误抛回，走下表的 401 处理分支。
+ *   详见 handleTokenRefresh。
  *
  * 「静默开关」：
  *   - 默认（silentAuthError / silentForbiddenError 为 true）返回成功占位响应，
@@ -355,6 +361,97 @@ const handleHttpErrorStatus = (error, options) => {
 }
 
 // ---------------------------------------------------------------------------
+// AccessToken 静默续期（Refresh Token）
+// ---------------------------------------------------------------------------
+// AccessToken 有效期 2 小时，过期后普通接口会返回真实 HTTP 401；RefreshToken 有效期 30 天，
+// 走 HttpOnly Cookie（Path 被限定，只有 RefreshToken 接口自己能带上，withCredentials 已在
+// axios.create() 处全局开启）。此处在真实 401 时静默换取新 Token 并重放原请求；
+// RefreshToken 也失效时原样把 401 抛回，交由既有 401 处理链路（见上方 handleUnauthorized）清 session + 跳登录。
+
+/**
+ * 与 stores/user.js 的 getResultCode 同一防御性写法：
+ * 容忍后端偶发的 code/Code 大小写不一致、以及 number/字符串数字混用。
+ */
+const getResultCode = (response) => Number(response?.code ?? response?.Code)
+
+/** 当前是否有刷新请求在途，避免同一时刻的多个 401 重复发起刷新 */
+let isRefreshingToken = false
+/** 刷新在途时，其余 401 请求在此排队；刷新结束后统一 resolve（重放）或 reject（原样抛回失败） */
+let refreshWaiters = []
+
+const waitForTokenRefresh = () => new Promise((resolve, reject) => {
+  refreshWaiters.push({ resolve, reject })
+})
+
+const settleTokenRefreshWaiters = (success) => {
+  const waiters = refreshWaiters
+  refreshWaiters = []
+  waiters.forEach(({ resolve, reject }) => (success ? resolve() : reject()))
+}
+
+/**
+ * RefreshToken 接口本身失败时 HTTP 状态码仍是 200（失败信息在响应体 code 字段），
+ * 不能用 HTTP 状态码判断成败。__isRefreshTokenRequest 标记避免其自身被拦截器再次拦截重试。
+ */
+const requestTokenRefresh = () => service({
+  url: REFRESH_TOKEN_API.REFRESH_TOKEN,
+  method: 'post',
+  skipDedupe: true,
+  __isRefreshTokenRequest: true
+})
+
+/** 用同一份 config 重放原请求；打标记防止重放后再次 401 时死循环续期 */
+const retryAfterRefresh = (config) => {
+  config.__isRetryAfterRefresh = true
+  return service(config)
+}
+
+/**
+ * 响应拦截器的 401 分支：命中真实 401 时尝试静默续期后重放原请求；
+ * 续期失败、或该请求已经是续期后的重放（避免死循环），则原样把错误抛回，
+ * 交由 post()/postBlob() 走既有失败处理。
+ */
+const handleTokenRefresh = async (error) => {
+  const originalConfig = error.config
+  const shouldAttemptRefresh =
+    error.response?.status === 401 &&
+    originalConfig &&
+    !originalConfig.__isRefreshTokenRequest &&
+    !originalConfig.__isRetryAfterRefresh
+
+  if (!shouldAttemptRefresh) return Promise.reject(error)
+
+  // 已有刷新在途：排队等待其结果，不重复发起刷新
+  if (isRefreshingToken) {
+    try {
+      await waitForTokenRefresh()
+      return retryAfterRefresh(originalConfig)
+    } catch {
+      return Promise.reject(error)
+    }
+  }
+
+  isRefreshingToken = true
+  try {
+    const refreshResult = await requestTokenRefresh()
+    isRefreshingToken = false
+
+    if (getResultCode(refreshResult) === 200) {
+      settleTokenRefreshWaiters(true)
+      return retryAfterRefresh(originalConfig)
+    }
+
+    // RefreshToken 也失效：排队请求全部 reject，当前请求原样抛回 401 走登出流程
+    settleTokenRefreshWaiters(false)
+    return Promise.reject(error)
+  } catch {
+    isRefreshingToken = false
+    settleTokenRefreshWaiters(false)
+    return Promise.reject(error)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 拦截器
 // ---------------------------------------------------------------------------
 
@@ -397,7 +494,7 @@ service.interceptors.response.use(
     if (axios.isCancel(error)) return Promise.reject(error)
     const requestKey = error.config?.requestKey
     if (requestKey) pendingRequests.delete(requestKey)
-    return Promise.reject(error)
+    return handleTokenRefresh(error)
   }
 )
 
