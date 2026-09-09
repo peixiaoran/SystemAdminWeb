@@ -648,7 +648,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import i18n from '@/i18n'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Search, Lock } from '@element-plus/icons-vue'
@@ -1365,6 +1365,12 @@ function isLeaveBalanceValidationFailedCode (code) {
   return String(code) === '402'
 }
 
+/** 取表单校验失败结果中第一条错误信息，用于送审时的右上角提示 */
+function getFirstValidateErrorMessage (invalidFields) {
+  const firstField = Object.values(invalidFields || {})[0]
+  return firstField?.[0]?.message || t('formbusiness.leaverequest.validateFailed')
+}
+
 /** 暂存/送审右上角提示 */
 function showFormActionNotice (message, type = 'success') {
   const text = typeof message === 'string' ? message.trim() : ''
@@ -1993,10 +1999,13 @@ async function confirmReject () {
 
 /** 送审：暂存 → 余额验证 → 送审 */
 async function onSubmitForApproval () {
-  const valid = await new Promise((resolve) => {
-    formRef.value?.validate((v) => resolve(!!v))
+  const invalidFields = await new Promise((resolve) => {
+    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
   })
-  if (!valid) return
+  if (invalidFields) {
+    showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
+    return
+  }
   if (shouldRequireAttachment() && uploadedAttachments.value.length === 0) {
     showFormActionNotice(getAttachmentRequirementTip(), 'warning')
     return
@@ -2004,6 +2013,15 @@ async function onSubmitForApproval () {
   const formId = String(form.formId || '')
   if (!formId) {
     showFormActionNotice(t('formbusiness.leaverequest.workflowNeedFormId'), 'warning')
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.leaverequest.submitConfirmMessage'),
+      t('formbusiness.leaverequest.submitConfirmTitle'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
     return
   }
   approving.value = true

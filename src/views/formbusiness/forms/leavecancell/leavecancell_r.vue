@@ -506,7 +506,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted, nextTick } from 'vue'
 import i18n from '@/i18n'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Lock, Search } from '@element-plus/icons-vue'
@@ -1426,6 +1426,15 @@ async function onSubmitForApproval () {
   })
   if (invalidFields) {
     showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.leavecancell.submitConfirmMessage'),
+      t('formbusiness.leavecancell.submitConfirmTitle'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
     return
   }
   approving.value = true

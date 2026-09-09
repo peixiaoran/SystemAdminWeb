@@ -109,9 +109,8 @@
                  :lock-scroll="true"
                  class="parttime-dialog"
                  @close="handleDialogClose">
-        <div class="parttime-dialog-body">
+        <div class="parttime-dialog-body" v-loading="dialogLoading">
           <!-- 兼任信息区域 -->
-          <div v-loading="dialogLoading">
           <el-form ref="editFormRef"
                    :model="editForm"
                    :rules="formRules"
@@ -164,7 +163,6 @@
               </el-form-item>
             </div>
           </el-form>
-          </div>
 
           <el-divider style="margin: 25px 0 8px" />
 
@@ -650,6 +648,10 @@ const handleAdd = async () => {
   isEdit.value = false
   dialogVisible.value = true
   dialogLoading.value = true
+  // resetEditForm 把上一次残留的真实值改回空字符串，会让 el-select/el-tree-select
+  // 判定为“值变化”而触发 change 校验，必须立即清掉，不能等下面的异步请求都完成后再清，
+  // 否则请求耗时较久或遮罩过渡有延迟时，用户会看到一瞬间的必填红字
+  clearFormValidate()
 
   await fetchDepartmentDropdown()
   await fetchPositionDropdown()
@@ -662,7 +664,7 @@ const handleAdd = async () => {
   editForm.partTimePositionId = getFirstEnabledPositionId()
 
   await nextTick()
-  // 下拉数据与默认值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
+  // 下拉数据与默认值都就绪后再清一次校验、收起遮罩，兜底异步赋值过程中可能触发的校验
   clearFormValidate()
   dialogLoading.value = false
   await fetchUserSelectList()
@@ -672,6 +674,8 @@ const handleEdit = async (row) => {
   isEdit.value = true
   dialogVisible.value = true
   dialogLoading.value = true
+  // 同 handleAdd：立即清一次校验，避免表单里残留上一次会话的校验错误状态
+  clearFormValidate()
   try {
     await fetchDepartmentDropdown()
     await fetchPositionDropdown()

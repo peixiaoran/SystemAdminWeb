@@ -1365,6 +1365,12 @@ function showResult (status, titleKey, subTitleKey) {
 }
 
 /** 暂存/送审右上角提示 */
+/** 取表单校验失败结果中第一条错误信息，用于送审时的右上角提示 */
+function getFirstValidateErrorMessage (invalidFields) {
+  const firstField = Object.values(invalidFields || {})[0]
+  return firstField?.[0]?.message || t('formbusiness.documentcirculate.validateFailed')
+}
+
 function showFormActionNotice (message, type = 'success') {
   const text = typeof message === 'string' ? message.trim() : ''
   ElNotification({
@@ -1596,13 +1602,24 @@ async function saveDocumentCirculateBeforeSubmit () {
   return true
 }
 
-/** 送审：暂存 → 送审 */
+/** 送审：校验 → 暂存 → 送审 */
 async function onSubmitForApproval () {
-  // 校验不通过时只保留表单内的红色提示，不再额外弹窗
-  const valid = await new Promise((resolve) => {
-    formRef.value?.validate((ok) => resolve(!!ok))
+  const invalidFields = await new Promise((resolve) => {
+    formRef.value?.validate((valid, fields) => resolve(valid ? null : fields))
   })
-  if (!valid) return
+  if (invalidFields) {
+    showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      t('formbusiness.documentcirculate.submitConfirmMessage'),
+      t('formbusiness.documentcirculate.submitConfirmTitle'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
   approving.value = true
   try {
     const saved = await saveDocumentCirculateBeforeSubmit()

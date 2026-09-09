@@ -228,13 +228,19 @@
                     :header-cell-style="{ background: '#f5f7fa' }"
                     v-loading="userSelectLoading"
                     class="conventional-table"
-                    ref="userSelectTableRef"
                     height="100%"
-                    @selection-change="handleSelectionChange"
                     @row-click="handleUserSelectRowClick"
                     :empty-text="$t('common.noData')"
                     >
-            <el-table-column type="selection" width="50" align="center" />
+            <el-table-column width="50" align="center">
+              <template #default="scope">
+                <el-radio :model-value="selectedUserId"
+                          :value="String(scope.row.userId)"
+                          @click.stop="handleUserSelectRowClick(scope.row)">
+                  <span></span>
+                </el-radio>
+              </template>
+            </el-table-column>
             <el-table-column prop="userNo" :label="$t('systembasicmgmt.userAgent.userNo')" align="center" min-width="80" />
             <el-table-column prop="userName" :label="$t('systembasicmgmt.userAgent.userNameCn')" align="left" min-width="120" />
             <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userAgent.department')" align="left" min-width="120" />
@@ -258,7 +264,7 @@
         <el-button @click="userSelectDialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary"
                    @click="handleConfirmUserSelect"
-                   :disabled="selectedUsers.length === 0"
+                   :disabled="!selectedUserId"
                    :loading="confirmLoading">
           {{ $t('common.confirm') }}
         </el-button>
@@ -361,8 +367,7 @@ const currentUserInfo = ref({})
 const userSelectDialogVisible = ref(false)
 const userSelectLoading = ref(false)
 const userSelectList = ref([])
-const selectedUsers = ref([])
-const userSelectTableRef = ref(null)
+const selectedUserId = ref('') // 新增代理只能选一个人，单选
 const agentTimeFormRef = ref(null)
 const confirmLoading = ref(false)
 
@@ -621,7 +626,7 @@ const handleViewProactiveAgent = async (row) => {
 const handleAddAgentForUser = async (row) => {
   currentUserId.value = row.userId
   currentUserInfo.value = row
-  selectedUsers.value = []
+  selectedUserId.value = ''
   Object.assign(agentTimeRange, { startTime: '', endTime: '' })
   Object.assign(userSelectFilters, { departmentId: '', userNo: '', userName: '' })
   userSelectPagination.pageIndex = 1
@@ -655,11 +660,10 @@ const handleProactiveAgentDialogClosed = () => {
 const handleUserSelectDialogClosed = () => {
   currentUserInfo.value = {}
   currentUserId.value = ''
-  selectedUsers.value = []
+  selectedUserId.value = ''
   Object.assign(agentTimeRange, { startTime: '', endTime: '' })
   Object.assign(userSelectFilters, { departmentId: '', userNo: '', userName: '' })
   clearAgentTimeValidate()
-  userSelectTableRef.value?.clearSelection()
 }
 
 const handleDeleteAgent = async (index) => {
@@ -703,12 +707,9 @@ const handleUserSelectPageChange = () => {
   fetchUserSelectList()
 }
 
-const handleSelectionChange = (selection) => {
-  selectedUsers.value = selection
-}
-
+/** 新增代理只能指定一个用户，点击某行即选中该用户 */
 const handleUserSelectRowClick = (row) => {
-  userSelectTableRef.value?.toggleRowSelection(row)
+  selectedUserId.value = row?.userId ? String(row.userId) : ''
 }
 
 const handleStartTimeChange = (value) => {
@@ -726,8 +727,8 @@ const handleEndTimeChange = (value) => {
 }
 
 const handleConfirmUserSelect = async () => {
-  if (selectedUsers.value.length === 0) {
-    showMessage(t('systembasicmgmt.userAgent.pleaseSelectUsers'), 'warning')
+  if (!selectedUserId.value) {
+    showMessage(t('systembasicmgmt.userAgent.pleaseSelectUser'), 'warning')
     return
   }
 
@@ -738,26 +739,23 @@ const handleConfirmUserSelect = async () => {
   const startTime = toDateTimePayload(agentTimeRange.startTime)
   const endTime = toDateTimePayload(agentTimeRange.endTime)
 
-  for (const user of selectedUsers.value) {
-    const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, {
-      agentUserId: user.userId,
-      substituteUserId: currentUserId.value,
-      startTime,
-      endTime
-    })
-    if (res?.code !== 200) {
-      showMessage(res?.message)
-      confirmLoading.value = false
-      return
-    }
+  const res = await post(GET_USER_AGENT_INSERT_API.GET_USER_AGENT_INSERT, {
+    agentUserId: selectedUserId.value,
+    substituteUserId: currentUserId.value,
+    startTime,
+    endTime
+  })
+  if (res?.code !== 200) {
+    showMessage(res?.message)
+    confirmLoading.value = false
+    return
   }
 
   showMessage(t('common.saveSuccess'), 'success')
   userSelectDialogVisible.value = false
 
-  selectedUsers.value = []
+  selectedUserId.value = ''
   Object.assign(agentTimeRange, { startTime: '', endTime: '' })
-  userSelectTableRef.value?.clearSelection()
 
   await fetchUserAgentList(currentUserId.value)
   currentUserInfo.value = {}
