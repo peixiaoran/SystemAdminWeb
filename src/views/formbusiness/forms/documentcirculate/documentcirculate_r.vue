@@ -451,45 +451,12 @@
     </template>
 
     <!-- 驳回弹窗 -->
-    <el-dialog
-      v-model="rejectDialogVisible"
-      :title="t('formbusiness.documentcirculate.rejectDialogTitle')"
-      width="580px"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      class="modal-penetrable"
-      @close="onRejectDialogClose"
-    >
-      <el-form ref="rejectFormRef" :model="rejectForm" :rules="rejectRules" label-width="100px">
-        <el-form-item :label="t('formbusiness.documentcirculate.rejectStepLabel')" prop="rejectStepId">
-          <el-select
-            v-model="rejectForm.rejectStepId"
-            :placeholder="t('formbusiness.documentcirculate.rejectStepPlaceholder')"
-            class="reject-step-select"
-          >
-            <el-option
-              v-for="step in rejectStepDropOptions"
-              :key="step.stepId"
-              :label="step.stepName"
-              :value="step.stepId"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="t('formbusiness.documentcirculate.rejectReasonLabel')" prop="rejectReason">
-          <el-input
-            v-model="rejectForm.rejectReason"
-            type="textarea"
-            :rows="6"
-            :placeholder="t('formbusiness.documentcirculate.rejectReasonPlaceholder')"
-            class="reject-reason-input"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="rejectDialogVisible = false">{{ t('common.cancel') }}</el-button>
-        <el-button type="danger" @click="confirmReject">{{ t('common.confirm') }}</el-button>
-      </template>
-    </el-dialog>
+    <RejectDialog
+      v-model:visible="rejectDialogVisible"
+      :options="rejectStepDropOptions"
+      i18n-prefix="formbusiness.documentcirculate"
+      @confirm="handleRejectConfirm"
+    />
 
     <!-- 加审人员选择 -->
     <el-dialog
@@ -619,6 +586,7 @@ import { Upload, Lock, Link, Grid, Plus, Minus, Close, MagicStick, Rank } from '
 import Sortable from 'sortablejs'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
+import RejectDialog from '../components/rejectdialog.vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -825,19 +793,6 @@ onBeforeUnmount(() => {
 })
 
 const rejectDialogVisible = ref(false)
-const rejectFormRef = ref(null)
-const rejectForm = reactive({
-  rejectStepId: '',
-  rejectReason: ''
-})
-const rejectRules = {
-  rejectStepId: [
-    { required: true, message: t('formbusiness.documentcirculate.rejectStepRequired'), trigger: 'change' }
-  ],
-  rejectReason: [
-    { required: true, message: t('formbusiness.documentcirculate.rejectReasonRequired'), trigger: 'blur' }
-  ]
-}
 
 const uploading = ref(false)
 const uploadedAttachments = ref([])
@@ -1705,30 +1660,16 @@ function onReject () {
     ElMessage.warning(t('formbusiness.documentcirculate.workflowNeedFormId'))
     return
   }
-  rejectForm.rejectStepId = ''
-  rejectForm.rejectReason = ''
   rejectDialogVisible.value = true
 }
 
-function onRejectDialogClose () {
-  rejectFormRef.value?.clearValidate()
-}
-
-async function confirmReject () {
-  const valid = await new Promise((resolve) => {
-    rejectFormRef.value?.validate((v) => resolve(!!v))
-  })
-  if (!valid) return
-
+async function handleRejectConfirm ({ rejectStepId, rejectReason }) {
   const formId = String(form.formId || '')
   if (!formId) {
     ElMessage.warning(t('formbusiness.documentcirculate.workflowNeedFormId'))
     return
   }
 
-  const rejectStepId = rejectForm.rejectStepId
-  const rejectReason = rejectForm.rejectReason
-  rejectDialogVisible.value = false
   await nextTick()
 
   rejecting.value = true
@@ -2605,18 +2546,6 @@ onMounted(async () => {
 }
 
 
-.modal-penetrable :deep(.el-overlay) {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
-.reject-step-select {
-  width: 260px;
-  max-width: 100%;
-}
-
-.reject-reason-input {
-  width: 100%;
-}
 </style>
 
 <!-- 加审选人的部门树下拉挂载到 body，需非 scoped 样式，参考 workflowstep.vue -->

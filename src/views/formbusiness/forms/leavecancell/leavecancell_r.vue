@@ -450,45 +450,12 @@
     </el-dialog>
 
     <!-- 驳回弹窗 -->
-    <el-dialog
-      v-model="rejectDialogVisible"
-      :title="t('formbusiness.leavecancell.rejectDialogTitle')"
-      width="580px"
-      :close-on-click-modal="false"
-      :append-to-body="true"
-      class="modal-penetrable"
-      @close="onRejectDialogClose"
-    >
-      <el-form ref="rejectFormRef" :model="rejectForm" :rules="rejectRules" label-width="100px">
-        <el-form-item :label="t('formbusiness.leavecancell.rejectStepLabel')" prop="rejectStepId">
-          <el-select
-            v-model="rejectForm.rejectStepId"
-            :placeholder="t('formbusiness.leavecancell.rejectStepPlaceholder')"
-            class="reject-step-select"
-          >
-            <el-option
-              v-for="step in rejectStepDropOptions"
-              :key="step.stepId"
-              :label="step.stepName"
-              :value="step.stepId"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="t('formbusiness.leavecancell.rejectReasonLabel')" prop="rejectReason">
-          <el-input
-            v-model="rejectForm.rejectReason"
-            type="textarea"
-            :rows="6"
-            :placeholder="t('formbusiness.leavecancell.rejectReasonPlaceholder')"
-            class="reject-reason-input"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="rejectDialogVisible = false">{{ t('common.cancel') }}</el-button>
-        <el-button type="danger" @click="confirmReject">{{ t('common.confirm') }}</el-button>
-      </template>
-    </el-dialog>
+    <RejectDialog
+      v-model:visible="rejectDialogVisible"
+      :options="rejectStepDropOptions"
+      i18n-prefix="formbusiness.leavecancell"
+      @confirm="handleRejectConfirm"
+    />
 
     <!-- 完整审批流程 -->
     <WorkflowDrawer
@@ -512,6 +479,7 @@ import en from 'element-plus/dist/locale/en.mjs'
 import { Lock, Search } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
+import RejectDialog from '../components/rejectdialog.vue'
 import { post, isHandled } from '@/utils/request'
 import {
   INIT_LEAVECANCELL_API,
@@ -613,19 +581,6 @@ const leaveRequestPagination = reactive({
 let leaveRequestListRequestId = 0
 
 const rejectDialogVisible = ref(false)
-const rejectFormRef = ref(null)
-const rejectForm = reactive({
-  rejectStepId: '',
-  rejectReason: ''
-})
-const rejectRules = {
-  rejectStepId: [
-    { required: true, message: t('formbusiness.leavecancell.rejectStepRequired'), trigger: 'change' }
-  ],
-  rejectReason: [
-    { required: true, message: t('formbusiness.leavecancell.rejectReasonRequired'), trigger: 'blur' }
-  ]
-}
 
 async function fetchFullReviewFlow () {
   const formId = String(form.formId || '')
@@ -1526,30 +1481,16 @@ function onReject () {
     ElMessage.warning(t('formbusiness.leavecancell.workflowNeedFormId'))
     return
   }
-  rejectForm.rejectStepId = ''
-  rejectForm.rejectReason = ''
   rejectDialogVisible.value = true
 }
 
-function onRejectDialogClose () {
-  rejectFormRef.value?.clearValidate()
-}
-
-async function confirmReject () {
-  const valid = await new Promise((resolve) => {
-    rejectFormRef.value?.validate((v) => resolve(!!v))
-  })
-  if (!valid) return
-
+async function handleRejectConfirm ({ rejectStepId, rejectReason }) {
   const formId = String(form.formId || '')
   if (!formId) {
     ElMessage.warning(t('formbusiness.leavecancell.workflowNeedFormId'))
     return
   }
 
-  const rejectStepId = rejectForm.rejectStepId
-  const rejectReason = rejectForm.rejectReason
-  rejectDialogVisible.value = false
   await nextTick()
 
   rejecting.value = true
@@ -2130,16 +2071,4 @@ onMounted(async () => {
 }
 
 
-.modal-penetrable :deep(.el-overlay) {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
-.reject-step-select {
-  width: 260px;
-  max-width: 100%;
-}
-
-.reject-reason-input {
-  width: 100%;
-}
 </style>
