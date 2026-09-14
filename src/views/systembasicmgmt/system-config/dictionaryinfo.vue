@@ -206,7 +206,7 @@ const editForm = reactive({
   dicCode: '',
   dicNameCn: '',
   dicNameEn: '',
-  sortOrder: 0
+  sortOrder: 1
 })
 
 const formRules = {
@@ -375,7 +375,7 @@ const resetEditForm = () => {
     dicCode: '',
     dicNameCn: '',
     dicNameEn: '',
-    sortOrder: 0
+    sortOrder: 1
   })
 }
 

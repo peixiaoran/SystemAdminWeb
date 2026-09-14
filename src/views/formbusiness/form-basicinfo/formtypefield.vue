@@ -228,7 +228,7 @@ const form = reactive({
   fieldKey: '',
   fieldNameCn: '',
   fieldNameEn: '',
-  sortOrder: 0
+  sortOrder: 1
 })
 
 const rules = {
@@ -361,7 +361,7 @@ const resetForm = () => {
   form.fieldKey = ''
   form.fieldNameCn = ''
   form.fieldNameEn = ''
-  form.sortOrder = 0
+  form.sortOrder = 1
 }
 
 const handleAdd = () => {
@@ -388,7 +388,7 @@ const handleEdit = async (row) => {
       form.fieldKey = d.fieldKey || ''
       form.fieldNameCn = d.fieldNameCn || ''
       form.fieldNameEn = d.fieldNameEn || ''
-      form.sortOrder = Number(d.sortOrder ?? 0)
+      form.sortOrder = Number(d.sortOrder ?? 1)
       nextTick(() => formRef.value?.clearValidate())
     } else {
       showMessage(res.message || t('formbusiness.formtypefield.getFailed'), Number(res?.code) === 400 ? 'warning' : 'error')
@@ -434,7 +434,7 @@ const buildSubmitPayload = () => ({
   fieldKey: (form.fieldKey || '').trim(),
   fieldNameCn: (form.fieldNameCn || '').trim(),
   fieldNameEn: (form.fieldNameEn || '').trim(),
-  sortOrder: form.sortOrder ?? 0
+  sortOrder: form.sortOrder ?? 1
 })
 
 const handleSubmit = async () => {

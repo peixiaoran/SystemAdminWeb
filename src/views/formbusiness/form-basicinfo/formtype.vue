@@ -209,7 +209,7 @@ const form = reactive({
   formTypeNameCn: '',
   formTypeNameEn: '',
   prefix:         '',
-  sortOrder:      0,
+  sortOrder:      1,
   descriptionCn:  '',
   descriptionEn:  '',
   reviewPath:     '',
@@ -290,7 +290,7 @@ const resetForm = () => {
   form.formTypeNameCn = ''
   form.formTypeNameEn = ''
   form.prefix         = ''
-  form.sortOrder      = 0
+  form.sortOrder      = 1
   form.descriptionCn  = ''
   form.descriptionEn  = ''
   form.reviewPath     = ''
@@ -317,7 +317,7 @@ const handleEdit = async (row) => {
       form.formTypeNameCn = d.formTypeNameCn
       form.formTypeNameEn = d.formTypeNameEn
       form.prefix         = d.prefix
-      form.sortOrder      = Number(d.sortOrder ?? 0)
+      form.sortOrder      = Number(d.sortOrder ?? 1)
       form.descriptionCn  = d.descriptionCn
       form.descriptionEn  = d.descriptionEn
       form.reviewPath     = d.reviewPath || ''

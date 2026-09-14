@@ -370,7 +370,7 @@ const dialogForm = reactive({
   ruleNameEn: '',
   positionId: '',
   guidance: '',
-  sortOrder: 0,
+  sortOrder: 1,
   version: '',
   effectiveStartDate: '',
   effectiveEndDate: ''
@@ -460,7 +460,7 @@ const handleEdit = async (row) => {
       dialogForm.ruleNameEn  = d.ruleNameEn  || ''
       dialogForm.positionId  = d.positionId  || ''
       dialogForm.guidance    = d.guidance    || ''
-      dialogForm.sortOrder   = Number(d.sortOrder ?? 0)
+      dialogForm.sortOrder   = Number(d.sortOrder ?? 1)
       dialogForm.version     = d.version || ''
       dialogForm.effectiveStartDate = d.effectiveStartDate || ''
       dialogForm.effectiveEndDate   = d.effectiveEndDate || ''

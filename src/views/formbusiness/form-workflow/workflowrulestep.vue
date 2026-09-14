@@ -388,7 +388,7 @@ const dialogForm = reactive({
   currentStepId: '',
   nextStepId: '',
   guidance: '',
-  sortOrder: 0
+  sortOrder: 1
 })
 
 const dialogFormRules = {
@@ -416,7 +416,7 @@ const resetDialogForm = () => {
   dialogForm.currentStepId = ''
   dialogForm.nextStepId  = ''
   dialogForm.guidance    = ''
-  dialogForm.sortOrder   = 0
+  dialogForm.sortOrder   = 1
 }
 
 const loadDialogFormTypeOptions = async (formGroupId) => {
@@ -547,7 +547,7 @@ const handleEdit = async (row) => {
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
       dialogForm.guidance      = d.guidance ?? d.Guidance ?? row.guidance ?? ''
-      dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 0
+      dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 1
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
       dialogVisible.value = false

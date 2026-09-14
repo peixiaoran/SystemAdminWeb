@@ -557,7 +557,7 @@ const createEmptyOrgUpsert = () => ({ deptLeaveId: '', positionId: '' })
 const createEmptyDeptUserUpsert = () => ({ departmentId: '', positionId: '' })
 const createEmptyUserUpsert = () => ({ userId: '', departmentId: '' })
 const createEmptyCustomUpsert = () => ({ guidance: '', logicalExplanation: '' })
-const createEmptyAddReviewUpsert = () => ({ sortOrder: 0 })
+const createEmptyAddReviewUpsert = () => ({ sortOrder: 1 })
 
 const loading = ref(false)
 const workflowStepList = ref([])
@@ -603,7 +603,7 @@ const addStepForm = reactive({
   reviewModeCode: '',
   isReminderEnabled: 0,
   reminderIntervalMinutes: 0,
-  sortOrder: 0,
+  sortOrder: 1,
   description: '',
   isStartStep: 0,
   stepOrgUpsert: createEmptyOrgUpsert(),
@@ -678,7 +678,7 @@ const resetAddStepDialogState = () => {
   addStepForm.isStartStep = 0
   addStepForm.isReminderEnabled = 0
   addStepForm.reminderIntervalMinutes = 0
-  addStepForm.sortOrder = 0
+  addStepForm.sortOrder = 1
   addStepForm.description = ''
   resetStepAssignmentUpserts()
   resetUserPickerState()
@@ -935,7 +935,7 @@ const handleEditStep = async (step) => {
       addStepForm.reviewModeCode = data.reviewMode ?? data.approveMode ?? ''
       addStepForm.isReminderEnabled = Number(data.isReminderEnabled ?? 0)
       addStepForm.reminderIntervalMinutes = data.reminderIntervalMinutes ?? 0
-      addStepForm.sortOrder = data.sortOrder ?? 0
+      addStepForm.sortOrder = data.sortOrder ?? 1
 
       resetStepAssignmentUpserts()
 
@@ -966,7 +966,7 @@ const handleEditStep = async (step) => {
       } else if (assignmentCode === 'AddReview') {
         const dto = data.workflowStepAddReview || data.workflowStepAddReviewDto
         if (dto) {
-          addStepForm.stepAddReviewUpsert.sortOrder = dto.sortOrder ?? 0
+          addStepForm.stepAddReviewUpsert.sortOrder = dto.sortOrder ?? 1
         }
       }
 
@@ -1221,7 +1221,6 @@ const openAddStepDialog = async () => {
       }
       await loadAssignmentRelatedOptions(addStepForm.assignmentCode)
     }
-    addStepForm.sortOrder = 1
   } finally {
     // 下拉数据与默认值都就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
     nextTick(() => addStepFormRef.value?.clearValidate())
