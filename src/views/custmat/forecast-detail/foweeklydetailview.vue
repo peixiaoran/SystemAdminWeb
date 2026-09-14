@@ -179,7 +179,7 @@ const versionId = computed(() => String(route.query.versionId || ''))
 /** 非最新版本（isLatest=0）查看时改用归档明细接口 */
 const isLatest = computed(() => route.query.isLatest !== '0')
 
-/** 业务人员下拉，默认选中第一个 */
+/** 业务人员下拉，优先选中列表页传入的业务人员，否则默认选中第一个 */
 const fetchSalesUserOptions = async () => {
   try {
     const res = await post(GET_SALES_USER_DROP_API.GET_SALES_USER_DROP, {})
@@ -188,7 +188,13 @@ const fetchSalesUserOptions = async () => {
 
     if (res?.code === 200) {
       salesUserOptions.value = Array.isArray(res.data) ? res.data : []
-      if (salesUserOptions.value.length) {
+      const queryStr = route.query.salesUserId !== undefined && route.query.salesUserId !== null
+        ? String(route.query.salesUserId)
+        : ''
+      const matched = queryStr && salesUserOptions.value.some((item) => String(item.salesUserId) === queryStr)
+      if (matched) {
+        salesUserId.value = queryStr
+      } else if (salesUserOptions.value.length) {
         salesUserId.value = salesUserOptions.value[0].salesUserId
       }
     } else {

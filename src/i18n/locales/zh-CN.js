@@ -1260,6 +1260,8 @@ export default {
     custmatforecastdetail: '预测明细',
     custmatForecastDetailFoWeeklyDetail: '每周滚动预测',
     custmatForecastDetailFoWeeklyDetailView: '预测周明细查看',
+    custmatForecastDetailNumberTrend: '料号版本趋势',
+    custmatForecastDetailNumberTrendChart: '料号版本趋势图',
     custmatSalesCustomerDistribution: '负责客户分布图'
   },
   
@@ -2556,8 +2558,11 @@ export default {
       yearMonth: '年月',
       week: '周次',
       statusName: '状态',
+      salesUser: '业务人员',
       pleaseInputVersionCode: '请输入版本编号',
+      pleaseSelectSalesUser: '请选择业务人员',
       getFailed: '获取数据失败',
+      getSalesUserFailed: '获取业务人员列表失败',
       operation: '操作'
     },
     forecastdetailweeklydata: {
@@ -2578,6 +2583,53 @@ export default {
       exportDataFailed: '导出数据失败',
       pleaseSelectSalesUser: '请选择业务人员',
       getSalesUserFailed: '获取业务人员列表失败'
+    },
+    forecastdetailnumbertrend: {
+      pageTitle: '料号版本趋势',
+      ariaFilterLabel: '料号版本趋势筛选表单',
+      index: '序号',
+      partNumber: '料号',
+      partName: '品名',
+      salesUser: '业务人员',
+      pleaseInputPartNumber: '请输入料号',
+      pleaseSelectSalesUser: '请选择业务人员',
+      getFailed: '获取数据失败',
+      getSalesUserFailed: '获取业务人员列表失败',
+      operation: '操作',
+      viewTrend: '查看趋势'
+    },
+    forecastdetailnumbertrendchart: {
+      pageTitle: '料号版本趋势图',
+      pleaseSelectVersion: '请选择版本',
+      dayQty: '天用量',
+      weekQty: '周用量',
+      totalQty: '合计用量',
+      close: '关闭',
+      missingPartNumber: '缺少料号参数',
+      getFailed: '获取数据失败',
+      getVersionFailed: '获取版本列表失败',
+      partInfoTitle: '料号基础资料',
+      barChartTitle: '用量柱状图',
+      areaChartTitle: '合计用量趋势图',
+      detailPartNumber: '料号',
+      detailPartName: '名称',
+      detailSpecification: '规格',
+      detailPartType: '料号类型',
+      detailCategory: '物料分类',
+      detailModel: '型号',
+      detailDrawingNumber: '图号',
+      detailVersion: '版本',
+      detailUnit: '单位',
+      detailSourceType: '来源类型',
+      detailManufacturer: '厂商',
+      detailManufacturerPartNumber: '厂商料号',
+      detailLotControl: '批次管控',
+      lotControlYes: '是',
+      lotControlNo: '否',
+      detailStatus: '状态',
+      statusEnabled: '启用',
+      statusDisabled: '停用',
+      detailRemark: '备注'
     }
   }
 }

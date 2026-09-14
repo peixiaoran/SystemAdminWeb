@@ -1342,6 +1342,8 @@ export default {
     custmatforecastdetail: 'Forecast Detail',
     custmatForecastDetailFoWeeklyDetail: 'FoWeeklyDetail',
     custmatForecastDetailFoWeeklyDetailView: 'FoWeeklyDetail View',
+    custmatForecastDetailNumberTrend: 'Number Trend',
+    custmatForecastDetailNumberTrendChart: 'Number Trend Chart',
     custmatSalesCustomerDistribution: 'Customer Distribution'
   },
   
@@ -2590,8 +2592,11 @@ export default {
       yearMonth: 'Year-Month',
       week: 'Week',
       statusName: 'Status',
+      salesUser: 'Sales User',
       pleaseInputVersionCode: 'Please enter version code',
+      pleaseSelectSalesUser: 'Please select sales user',
       getFailed: 'Failed to get data',
+      getSalesUserFailed: 'Failed to get sales user list',
       operation: 'Operation'
     },
     forecastdetailweeklydata: {
@@ -2612,6 +2617,53 @@ export default {
       exportDataFailed: 'Failed to export data',
       pleaseSelectSalesUser: 'Please select sales user',
       getSalesUserFailed: 'Failed to get sales user list'
+    },
+    forecastdetailnumbertrend: {
+      pageTitle: 'NumberTrend',
+      ariaFilterLabel: 'NumberTrend Filter Form',
+      index: 'Index',
+      partNumber: 'Part Number',
+      partName: 'Part Name',
+      salesUser: 'Sales User',
+      pleaseInputPartNumber: 'Please enter part number',
+      pleaseSelectSalesUser: 'Please select sales user',
+      getFailed: 'Failed to get data',
+      getSalesUserFailed: 'Failed to get sales user list',
+      operation: 'Operation',
+      viewTrend: 'View Trend'
+    },
+    forecastdetailnumbertrendchart: {
+      pageTitle: 'NumberTrend Chart',
+      pleaseSelectVersion: 'Please select version',
+      dayQty: 'Day Qty',
+      weekQty: 'Week Qty',
+      totalQty: 'Total Qty',
+      close: 'Close',
+      missingPartNumber: 'Missing part number parameter',
+      getFailed: 'Failed to get data',
+      getVersionFailed: 'Failed to get version list',
+      partInfoTitle: 'Part Basic Information',
+      barChartTitle: 'Usage Bar Chart',
+      areaChartTitle: 'Total Usage Trend',
+      detailPartNumber: 'Part No.',
+      detailPartName: 'Part Name',
+      detailSpecification: 'Specification',
+      detailPartType: 'Part Type',
+      detailCategory: 'Category',
+      detailModel: 'Model',
+      detailDrawingNumber: 'Drawing No.',
+      detailVersion: 'Version',
+      detailUnit: 'Unit',
+      detailSourceType: 'Source Type',
+      detailManufacturer: 'Manufacturer',
+      detailManufacturerPartNumber: 'Manufacturer Part No.',
+      detailLotControl: 'Lot Control',
+      lotControlYes: 'Yes',
+      lotControlNo: 'No',
+      detailStatus: 'Status',
+      statusEnabled: 'Enabled',
+      statusDisabled: 'Disabled',
+      detailRemark: 'Remark'
     }
   }
 }

@@ -8,6 +8,17 @@
                     clearable
                     :placeholder="$t('custmat.forecastdetailweekly.pleaseInputVersionCode')" />
         </el-form-item>
+        <el-form-item :label="$t('custmat.forecastdetailweekly.salesUser')">
+          <el-select v-model="filters.salesUserId"
+                     style="width: 170px"
+                     clearable
+                     :placeholder="$t('custmat.forecastdetailweekly.pleaseSelectSalesUser')">
+            <el-option v-for="item in salesUserOptions"
+                       :key="item.salesUserId"
+                       :label="item.userName"
+                       :value="item.salesUserId" />
+          </el-select>
+        </el-form-item>
         <el-form-item class="form-button-group">
           <el-button type="primary" @click="handleSearch" plain>
             {{ $t('common.search') }}
@@ -71,7 +82,10 @@ import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { post, isHandled } from '@/utils/request'
-import { GET_FORE_WEEKLY_DETAIL_PAGE_API } from '@/config/api/custmat/forecast-detail/foweeklydetail'
+import {
+  GET_FORE_WEEKLY_DETAIL_PAGE_API,
+  GET_SALES_USER_DROP_API
+} from '@/config/api/custmat/forecast-detail/foweeklydetail'
 
 /** 预测版本状态码：编制中 */
 const FORECAST_VERSION_STATUS = {
@@ -91,8 +105,11 @@ const pagination = reactive({
 })
 
 const filters = reactive({
-  versionCode: ''
+  versionCode: '',
+  salesUserId: ''
 })
+
+const salesUserOptions = ref([])
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
@@ -141,6 +158,23 @@ const buildQueryParams = () => ({
   totalCount: pagination.totalCount
 })
 
+/** 业务人员下拉 */
+const fetchSalesUserOptions = async () => {
+  try {
+    const res = await post(GET_SALES_USER_DROP_API.GET_SALES_USER_DROP, {})
+
+    if (isHandled(res)) return
+
+    if (res?.code === 200) {
+      salesUserOptions.value = Array.isArray(res.data) ? res.data : []
+    } else {
+      showApiError(res, 'custmat.forecastdetailweekly.getSalesUserFailed')
+    }
+  } catch {
+    showMessage(t('custmat.forecastdetailweekly.getSalesUserFailed'))
+  }
+}
+
 const fetchForeWeeklyDetailList = async () => {
   loading.value = true
   try {
@@ -173,7 +207,8 @@ const handleSearch = () => {
 
 const handleReset = () => {
   Object.assign(filters, {
-    versionCode: ''
+    versionCode: '',
+    salesUserId: ''
   })
   handleSearch()
 }
@@ -192,12 +227,17 @@ const handleView = (row) => {
   if (!row?.versionId) return
   const resolved = router.resolve({
     path: '/custmat/forecast-detail/foweeklydetailview',
-    query: { versionId: String(row.versionId), isLatest: isLatestVersion(row.isLatest) ? '1' : '0' }
+    query: {
+      versionId: String(row.versionId),
+      isLatest: isLatestVersion(row.isLatest) ? '1' : '0',
+      salesUserId: filters.salesUserId || ''
+    }
   })
   window.open(resolved.href, '_blank')
 }
 
 onMounted(() => {
+  fetchSalesUserOptions()
   fetchForeWeeklyDetailList()
 })
 </script>

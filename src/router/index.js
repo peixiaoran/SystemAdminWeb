@@ -675,6 +675,17 @@ const pmenuRoutes = [
       noTag: true
     }
   },
+  // 独立预测明细-料号版本趋势图页面（不使用Layout，无标签，全屏展示）
+  {
+    path: '/custmat/forecast-detail/numbertrendchart',
+    name: 'ForecastDetailNumberTrendChart',
+    component: () => import('../views/custmat/forecast-detail/numbertrendchart.vue'),
+    meta: {
+      title: 'route.custmatForecastDetailNumberTrendChart',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true
+    }
+  },
   // 独立负责客户分布图页面（不使用Layout，无标签，全屏展示）
   {
     path: '/custmat/sales-mgmt/salescustomerdistribution',
@@ -873,6 +884,17 @@ const pmenuRoutes = [
               meta: {
                 title: 'route.custmatForecastDetailFoWeeklyDetail',
                 icon: 'Reading',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
+            },
+            {
+              path: 'numbertrend',
+              name: 'ForecastDetailNumberTrend',
+              component: () => import('../views/custmat/forecast-detail/numbertrend.vue'),
+              meta: {
+                title: 'route.custmatForecastDetailNumberTrend',
+                icon: 'Histogram',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
