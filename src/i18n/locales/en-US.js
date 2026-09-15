@@ -1181,6 +1181,7 @@ export default {
     factory: 'Factory',
     language: 'Language',
     loginButton: 'Login',
+    turnstileRequired: 'Please complete the human verification first',
     unlockAccount: 'Unlock Account',
     backToLogin: 'Back to Login',
     usernamePlaceholder: 'Please enter account',

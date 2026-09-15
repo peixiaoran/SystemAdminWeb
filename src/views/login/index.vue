@@ -126,7 +126,11 @@
               <el-option v-for="(label, value) in languages" :key="value" :label="label" :value="value" />
             </el-select>
           </el-form-item>
-          
+
+          <el-form-item>
+            <div ref="turnstileContainer" class="turnstile-container"></div>
+          </el-form-item>
+
           <el-form-item>
             <el-button
               type="primary"
@@ -154,7 +158,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, computed, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, resetAuthErrorState, isHandled } from '@/utils/request'
@@ -171,6 +175,54 @@ const loading = ref(false)
 const credentialInputsReadonly = ref(true)
 const loginNoFieldName = `login_no_${Date.now()}`
 const passwordFieldName = `login_pwd_${Date.now()}`
+
+// Cloudflare Turnstile 人机验证
+const TURNSTILE_SITE_KEY = '0x4AAAAAAE1CRhzAxQ-GtCP2'
+const turnstileContainer = ref(null)
+const turnstileToken = ref('')
+let turnstileWidgetId = null
+
+const renderTurnstile = () => {
+  if (!window.turnstile || !turnstileContainer.value) return
+
+  turnstileWidgetId = window.turnstile.render(turnstileContainer.value, {
+    sitekey: TURNSTILE_SITE_KEY,
+    theme: 'light',
+    size: 'flexible',
+    callback: (token) => {
+      turnstileToken.value = token
+    },
+    'expired-callback': () => {
+      turnstileToken.value = ''
+    },
+    'error-callback': () => {
+      turnstileToken.value = ''
+    }
+  })
+}
+
+// api.js 通过 async defer 加载，挂载时可能尚未就绪，轮询等待
+let turnstileWaitTimer = null
+const waitForTurnstile = () => {
+  if (window.turnstile) {
+    renderTurnstile()
+    return
+  }
+  turnstileWaitTimer = setInterval(() => {
+    if (window.turnstile) {
+      clearInterval(turnstileWaitTimer)
+      turnstileWaitTimer = null
+      renderTurnstile()
+    }
+  }, 100)
+}
+
+const resetTurnstile = () => {
+  turnstileToken.value = ''
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.reset(turnstileWidgetId)
+  }
+}
 
 // 与 request.js 保持一致：401 整页刷新后在登录页补弹“登录已过期”提示
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
@@ -206,6 +258,21 @@ onMounted(() => {
   nextTick(() => {
     loginFormRef.value?.resetFields()
   })
+
+  // 渲染 Cloudflare Turnstile 验证组件
+  nextTick(() => {
+    waitForTurnstile()
+  })
+})
+
+onBeforeUnmount(() => {
+  if (turnstileWaitTimer) {
+    clearInterval(turnstileWaitTimer)
+    turnstileWaitTimer = null
+  }
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.remove(turnstileWidgetId)
+  }
 })
 
 // 使用计算属性获取翻译后的选项
@@ -249,6 +316,16 @@ const enableCredentialInputs = () => {
 const handleLogin = () => {
   loginFormRef.value.validate(valid => {
     if (valid) {
+      if (!turnstileToken.value) {
+        ElMessage({
+          message: t('login.turnstileRequired'),
+          type: 'warning',
+          plain: true,
+          showClose: true
+        })
+        return
+      }
+
       loading.value = true
 
       // 保存语言选择到localStorage
@@ -259,10 +336,14 @@ const handleLogin = () => {
         LOGIN_API.USER_LOGIN,
         {
           loginNo: loginForm.loginNo,
-          password: loginForm.password
+          password: loginForm.password,
+          turnstileToken: turnstileToken.value
         },
         { allowLoginBusinessCodes: true }
       ).then(res => {
+          // Turnstile token 为一次性凭证，请求后立即重置，避免重复提交复用
+          resetTurnstile()
+
           // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
           if (isHandled(res)) {
             loading.value = false
@@ -351,6 +432,7 @@ const handleLogin = () => {
           }
         })
         .catch(() => {
+          resetTurnstile()
           // 业务码与 401/403/网络错误均由 post 内部统一处理；此处仅兜底提示并复位 loading
           ElMessage({
             message: t('login.loginFailedTip'),
@@ -613,6 +695,18 @@ const handleLogin = () => {
 
 .language-select {
   width: 100%;
+}
+
+.turnstile-container {
+  width: 100%;
+}
+
+.login-form :deep(.el-form-item:has(.turnstile-container)) {
+  margin-bottom: 20px;
+}
+
+.login-form :deep(.el-form-item:has(.turnstile-container) .el-form-item__content) {
+  justify-content: stretch;
 }
 
 .unlock-link-container {

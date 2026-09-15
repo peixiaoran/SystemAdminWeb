@@ -1113,6 +1113,7 @@ export default {
     factory: '厂区',
     language: '语言',
     loginButton: '登录',
+      turnstileRequired: '请先完成人机验证',
       unlockAccount: '账号解锁',
       // passwordExpiration: '密码过期',
       backToLogin: '返回登录',
