@@ -150,6 +150,11 @@
             </el-input>
           </el-form-item>
           
+          <!-- 人机验证：仅用于保护“发送验证码”，防止被脚本批量刷验证码 -->
+          <el-form-item>
+            <div ref="turnstileContainer" class="turnstile-container"></div>
+          </el-form-item>
+
           <!-- 验证码输入框 -->
           <el-form-item prop="verificationCode">
             <div class="verification-input-group">
@@ -229,12 +234,63 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { PWD_EXPIRATION_SEND_API, PWD_EXPIRATION_UPDATE_API } from '@/config/api/login/api'
+import { TURNSTILE_SITE_KEY } from '@/config/api/base'
 
 const router = useRouter()
 const { t, locale } = useI18n()
 const formRef = ref()
+
+// Cloudflare Turnstile 人机验证：仅保护“发送验证码”按钮，防止被脚本批量刷验证码
+const turnstileContainer = ref(null)
+const turnstileToken = ref('')
+let turnstileWidgetId = null
+
+const mapToTurnstileLanguage = (langValue) => {
+  const map = {
+    'zh-CN': 'zh-cn',
+    'en-US': 'en'
+  }
+  return map[langValue] || 'auto'
+}
+
+const renderTurnstile = () => {
+  if (!window.turnstile || !turnstileContainer.value) return
+
+  turnstileWidgetId = window.turnstile.render(turnstileContainer.value, {
+    sitekey: TURNSTILE_SITE_KEY,
+    theme: 'light',
+    size: 'flexible',
+    language: mapToTurnstileLanguage(form.language),
+    callback: (token) => {
+      turnstileToken.value = token
+    },
+    'expired-callback': () => {
+      turnstileToken.value = ''
+    },
+    'error-callback': () => {
+      turnstileToken.value = ''
+    }
+  })
+}
+
+// api.js 通过 async defer 加载，若脚本已加载（如从登录页跳转过来）直接渲染，
+// 否则监听 index.html 内联脚本广播的 turnstile-ready 事件
+const waitForTurnstile = () => {
+  if (window.turnstile || window.__turnstileReady) {
+    renderTurnstile()
+    return
+  }
+  document.addEventListener('turnstile-ready', renderTurnstile, { once: true })
+}
+
+const resetTurnstile = () => {
+  turnstileToken.value = ''
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.reset(turnstileWidgetId)
+  }
+}
 
 // 表单数据
 const form = reactive({
@@ -261,6 +317,11 @@ onMounted(() => {
   nextTick(() => {
     formRef.value?.resetFields()
   })
+
+  // 渲染 Cloudflare Turnstile 验证组件
+  nextTick(() => {
+    waitForTurnstile()
+  })
 })
 
 // 组件卸载时清理定时器
@@ -270,6 +331,10 @@ onUnmounted(() => {
   }
   if (redirectTimer) {
     clearInterval(redirectTimer)
+  }
+  document.removeEventListener('turnstile-ready', renderTurnstile)
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.remove(turnstileWidgetId)
   }
 })
 
@@ -355,6 +420,8 @@ const startCountdown = () => {
     if (countdown.value <= 0) {
       clearInterval(countdownTimer)
       countdownTimer = null
+      // 倒计时结束、“发送验证码”按钮重新可点时才需要新 token，这里再刷新人机验证
+      resetTurnstile()
     }
   }, 1000)
 }
@@ -377,18 +444,36 @@ const handleSendCode = async () => {
   if (!form.userNo || !form.password || !form.confirmPassword) {
     return
   }
-  
+
+  if (!turnstileToken.value) {
+    ElMessage({
+      message: t('passwordExpiration.turnstileRequired'),
+      type: 'warning',
+      plain: true,
+      showClose: true
+    })
+    return
+  }
+
   try {
     sendingCode.value = true
     // 后端：[FromForm] string userNo — 使用 x-www-form-urlencoded 表单正文
     const res = await post(
       PWD_EXPIRATION_SEND_API.PWD_EXPIRATION_SEND,
-      new URLSearchParams({ userNo: String(form.userNo ?? '').trim() }),
+      new URLSearchParams({ userNo: String(form.userNo ?? '').trim(), turnstileToken: turnstileToken.value }),
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
     )
-    
+
+    // 网络故障/HTTP 状态码错误（404/超时等）已在 request.js 内部提示过，这里直接返回，
+    // 避免走进下面的 res.code === 200 分支——handled 失败响应里 code 固定为 200 占位，
+    // 会被误判为业务成功，弹出一条空文案的“成功”提示
+    if (isHandled(res)) {
+      resetTurnstile()
+      return
+    }
+
     if (res && res.code === 200) {
       ElMessage({
         message: res.message,
@@ -396,21 +481,28 @@ const handleSendCode = async () => {
         plain: true,
         showClose: true
       })
-      
+
       // 禁用账号输入框
       userNoDisabled.value = true
-      
-      // 开始倒计时
+
+      // 发送成功这里先不重置：token 已被后端消费，重新验证也不会立刻用到
+      // （60 秒倒计时内按钮本就禁用），此刻刷新只会让用户刚看到成功提示又看见验证码闪一下。
+      // 真正需要新 token 的时刻是倒计时结束、按钮重新可点时，见 startCountdown()
       startCountdown()
     } else {
+      // 告警类业务码（如参数校验不通过）留给用户改完直接重试即可，不必强制刷新人机验证；
+      // 真正的错误（接口异常等）才立即重置，保证下一次点击就是新 token
+      const isWarning = Number(res?.code) === 400
+      if (!isWarning) resetTurnstile()
       ElMessage({
         message: res.message,
-        type: Number(res?.code) === 400 ? 'warning' : 'error',
+        type: isWarning ? 'warning' : 'error',
         plain: true,
         showClose: true
       })
     }
   } catch {
+    resetTurnstile()
     ElMessage({
       message: t('passwordExpiration.sendCodeFailed'),
       type: 'error',
@@ -440,7 +532,13 @@ const handleSubmit = async () => {
         passWord: form.password,
         verificationCode: form.verificationCode
       })
-      
+
+      // 网络故障/HTTP 状态码错误已在 request.js 内部提示过，这里直接复位，不再重复提示
+      if (isHandled(res)) {
+        formDisabled.value = false
+        return
+      }
+
       if (res && res.code === 200) {
         ElMessage({
           message: res.message,
@@ -480,6 +578,16 @@ const handleLanguageChange = (value) => {
   localStorage.setItem('language', value)
   // 更新document标题
   document.title = t('common.systemTitle')
+
+  // Turnstile 不支持动态切换语言，需移除后按新语言重新渲染
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.remove(turnstileWidgetId)
+    turnstileWidgetId = null
+    turnstileToken.value = ''
+    nextTick(() => {
+      renderTurnstile()
+    })
+  }
 }
 
 // 返回登录页面
@@ -783,6 +891,18 @@ const handleBackToLogin = () => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
+}
+
+.turnstile-container {
+  width: 100%;
+}
+
+.expiration-form :deep(.el-form-item:has(.turnstile-container)) {
+  margin-bottom: 20px;
+}
+
+.expiration-form :deep(.el-form-item:has(.turnstile-container) .el-form-item__content) {
+  justify-content: stretch;
 }
 
 .language-select :deep(.el-input__wrapper:hover:not(.is-focus)),

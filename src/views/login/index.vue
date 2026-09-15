@@ -198,8 +198,6 @@ const renderTurnstile = () => {
     sitekey: TURNSTILE_SITE_KEY,
     theme: 'light',
     size: 'flexible',
-    // 低风险时静默通过、不占用 UI 空间；仅在 Turnstile 判定需要人工交互时才显示挑战框
-    appearance: 'interaction-only',
     language: mapToTurnstileLanguage(loginForm.language),
     callback: (token) => {
       turnstileToken.value = token
@@ -213,19 +211,16 @@ const renderTurnstile = () => {
   })
 }
 
-// api.js 通过 async defer 加载，挂载时可能尚未就绪
-// 脚本地址上带 onload=onTurnstileScriptLoad，加载完成后由 Turnstile 主动回调，
-// 比轮询 window.turnstile 更快也更省资源（无需每 100ms 检查一次）
-const handleTurnstileScriptLoad = () => {
-  renderTurnstile()
-}
-
+// api.js 通过 async defer 加载，挂载时可能尚未就绪。
+// index.html 里的内联脚本已经在 api.js 之前同步注册好了 window.onTurnstileScriptLoad
+// （必须那么早注册——Turnstile 加载完成的瞬间就会去找它，晚了会报错且不重试），
+// 这里只需要监听它广播的 turnstile-ready 事件，比轮询 window.turnstile 更快也更省资源
 const waitForTurnstile = () => {
-  if (window.turnstile) {
+  if (window.turnstile || window.__turnstileReady) {
     renderTurnstile()
     return
   }
-  window.onTurnstileScriptLoad = handleTurnstileScriptLoad
+  document.addEventListener('turnstile-ready', renderTurnstile, { once: true })
 }
 
 const resetTurnstile = () => {
@@ -277,9 +272,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (window.onTurnstileScriptLoad === handleTurnstileScriptLoad) {
-    window.onTurnstileScriptLoad = undefined
-  }
+  document.removeEventListener('turnstile-ready', renderTurnstile)
   if (window.turnstile && turnstileWidgetId !== null) {
     window.turnstile.remove(turnstileWidgetId)
   }
@@ -361,11 +354,10 @@ const handleLogin = () => {
         },
         { allowLoginBusinessCodes: true }
       ).then(res => {
-          // Turnstile token 为一次性凭证，请求后立即重置，避免重复提交复用
-          resetTurnstile()
-
           // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
           if (isHandled(res)) {
+            // 会重新回到登录表单等待用户重试，token 已被消费，必须换新的
+            resetTurnstile()
             loading.value = false
             return
           }
@@ -400,7 +392,8 @@ const handleLogin = () => {
             }
             loading.value = false
           } else if (res.code === 406) {
-            // 账号不存在（UserNotFound）
+            // 账号不存在（UserNotFound）：留在登录页重试，token 已被消费，换新的
+            resetTurnstile()
             ElMessage({
               message: businessMsg,
               type: 'error',
@@ -409,7 +402,7 @@ const handleLogin = () => {
             })
             loading.value = false
           } else if (res.code === 401 || res.code === 402) {
-            // 冻结：跳转解锁页（保持 loading 至跳转，避免重复提交）
+            // 冻结：即将跳转解锁页，不会留在登录页重试，无需刷新人机验证
             ElMessage({
               message: businessMsg,
               type: 'warning',
@@ -421,7 +414,8 @@ const handleLogin = () => {
               router.push('/unlock')
             }, 1500)
           } else if (res.code === 403) {
-            // 密码错误
+            // 密码错误：留在登录页重试，token 已被消费，换新的
+            resetTurnstile()
             ElMessage({
               message: businessMsg,
               type: 'error',
@@ -430,7 +424,7 @@ const handleLogin = () => {
             })
             loading.value = false
           } else if (res.code === 405) {
-            // 密码过期：跳转密码过期页
+            // 密码过期：即将跳转密码过期页，不会留在登录页重试，无需刷新人机验证
             ElMessage({
               message: businessMsg,
               type: 'warning',
@@ -442,6 +436,8 @@ const handleLogin = () => {
               router.push('/password-expiration')
             }, 1500)
           } else {
+            // 其它未知业务错误：留在登录页重试，token 已被消费，换新的
+            resetTurnstile()
             ElMessage({
               message: businessMsg,
               type: 'error',

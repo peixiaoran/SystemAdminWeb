@@ -22,12 +22,12 @@ export const LOGIN_API = {
 
 // 解锁发送验证码
 export const UNLOCK_SEND_API = {
-  UNLOCK_SEND: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UnLockSendVcCode'
+  UNLOCK_SEND: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UnLockSendCode'
 }
 
 // 重置密码发送验证码
 export const PWD_EXPIRATION_SEND_API = {
-  PWD_EXPIRATION_SEND: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UnExpirationSendVcCode'
+  PWD_EXPIRATION_SEND: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UnExpirationSendCode'
 }
 
 // 解锁

@@ -79,7 +79,7 @@
                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputCode')" />
             </el-form-item>
             <el-form-item :label="$t('systembasicmgmt.departmentInfo.sortOrder')" prop="sortOrder">
-              <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 60%" />
+              <el-input-number v-model="editForm.sortOrder" :min="1" style="width: 100%" />
             </el-form-item>
           </div>
           <div class="form-row">
