@@ -5,7 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工作流管理系统</title>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- 提前建立与 Turnstile 域名的连接，缩短脚本请求的 DNS/TLS 握手耗时 -->
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileScriptLoad&render=explicit" async defer></script>
   </head>
   <body>
     <div id="app"></div>

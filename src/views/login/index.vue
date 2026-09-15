@@ -198,6 +198,8 @@ const renderTurnstile = () => {
     sitekey: TURNSTILE_SITE_KEY,
     theme: 'light',
     size: 'flexible',
+    // 低风险时静默通过、不占用 UI 空间；仅在 Turnstile 判定需要人工交互时才显示挑战框
+    appearance: 'interaction-only',
     language: mapToTurnstileLanguage(loginForm.language),
     callback: (token) => {
       turnstileToken.value = token
@@ -211,20 +213,19 @@ const renderTurnstile = () => {
   })
 }
 
-// api.js 通过 async defer 加载，挂载时可能尚未就绪，轮询等待
-let turnstileWaitTimer = null
+// api.js 通过 async defer 加载，挂载时可能尚未就绪
+// 脚本地址上带 onload=onTurnstileScriptLoad，加载完成后由 Turnstile 主动回调，
+// 比轮询 window.turnstile 更快也更省资源（无需每 100ms 检查一次）
+const handleTurnstileScriptLoad = () => {
+  renderTurnstile()
+}
+
 const waitForTurnstile = () => {
   if (window.turnstile) {
     renderTurnstile()
     return
   }
-  turnstileWaitTimer = setInterval(() => {
-    if (window.turnstile) {
-      clearInterval(turnstileWaitTimer)
-      turnstileWaitTimer = null
-      renderTurnstile()
-    }
-  }, 100)
+  window.onTurnstileScriptLoad = handleTurnstileScriptLoad
 }
 
 const resetTurnstile = () => {
@@ -276,9 +277,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (turnstileWaitTimer) {
-    clearInterval(turnstileWaitTimer)
-    turnstileWaitTimer = null
+  if (window.onTurnstileScriptLoad === handleTurnstileScriptLoad) {
+    window.onTurnstileScriptLoad = undefined
   }
   if (window.turnstile && turnstileWidgetId !== null) {
     window.turnstile.remove(turnstileWidgetId)
