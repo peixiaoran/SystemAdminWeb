@@ -28,7 +28,7 @@
                 height="100%"
                 :empty-text="$t('common.noData')">
         <el-table-column type="index" :label="$t('custmat.foweeklydetail.index')" width="70" align="center" fixed />
-        <el-table-column prop="partNumber" :label="$t('custmat.foweeklydetaildata.partNumber')" min-width="130" align="center" fixed />
+        <el-table-column prop="partNumber" :label="$t('custmat.foweeklydetaildata.partNumber')" min-width="150" align="center" fixed />
         <el-table-column prop="partName" :label="$t('custmat.foweeklydetaildata.partName')" min-width="280" align="left" fixed show-overflow-tooltip />
         <el-table-column :label="$t('custmat.foweeklydetaildata.dayTotal')" min-width="110" align="center" fixed>
           <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'D')) }}</template>
@@ -53,7 +53,7 @@
         <el-table-column v-for="col in periodColumns"
                           :key="col.periodKey"
                           :prop="col.periodKey"
-                          width="160"
+                          width="150"
                           align="center">
           <template #header>
             <span class="period-col-header">
