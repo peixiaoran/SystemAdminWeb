@@ -163,6 +163,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, resetAuthErrorState, isHandled } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
+import { TURNSTILE_SITE_KEY } from '@/config/api/base'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
 import { User, Lock } from '@element-plus/icons-vue' // 新增图标引入
@@ -176,11 +177,19 @@ const credentialInputsReadonly = ref(true)
 const loginNoFieldName = `login_no_${Date.now()}`
 const passwordFieldName = `login_pwd_${Date.now()}`
 
-// Cloudflare Turnstile 人机验证
-const TURNSTILE_SITE_KEY = '0x4AAAAAAE1CRhzAxQ-GtCP2'
+// Cloudflare Turnstile 人机验证（站点密钥来自环境变量，见 src/config/api/base.js）
 const turnstileContainer = ref(null)
 const turnstileToken = ref('')
 let turnstileWidgetId = null
+
+// 将项目语言代码映射为 Turnstile 支持的语言代码
+const mapToTurnstileLanguage = (langValue) => {
+  const map = {
+    'zh-CN': 'zh-cn',
+    'en-US': 'en'
+  }
+  return map[langValue] || 'auto'
+}
 
 const renderTurnstile = () => {
   if (!window.turnstile || !turnstileContainer.value) return
@@ -189,6 +198,7 @@ const renderTurnstile = () => {
     sitekey: TURNSTILE_SITE_KEY,
     theme: 'light',
     size: 'flexible',
+    language: mapToTurnstileLanguage(loginForm.language),
     callback: (token) => {
       turnstileToken.value = token
     },
@@ -301,6 +311,16 @@ const handleLanguageChange = (value) => {
   localStorage.setItem('language', value)
   // 更新document标题
   document.title = t('common.systemTitle')
+
+  // Turnstile 不支持动态切换语言，需移除后按新语言重新渲染
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.remove(turnstileWidgetId)
+    turnstileWidgetId = null
+    turnstileToken.value = ''
+    nextTick(() => {
+      renderTurnstile()
+    })
+  }
 }
 
 // 跳转到解锁页面

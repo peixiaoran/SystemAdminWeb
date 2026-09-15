@@ -19,4 +19,7 @@ export const ENABLE_LOGS = env.VITE_ENABLE_LOGS === 'true'
 export const FILE_BROWSER_BASE_URL =
   env.VITE_FILE_BROWSER_BASE_URL
 
+// Cloudflare Turnstile 人机验证站点密钥（登录页使用）
+export const TURNSTILE_SITE_KEY = env.VITE_TURNSTILE_SITE_KEY
+
 
