@@ -38,7 +38,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="salesUserList"
                   border
@@ -66,7 +65,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -78,7 +76,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="`${$t('custmat.salesuser.mergedDialogTitle')} - ${isEdit ? $t('custmat.salesuser.editSalesUserTitle') : $t('custmat.salesuser.addSalesUserTitle')}`"
                width="900px"
@@ -107,7 +104,6 @@
 
         <el-divider style="margin: 20px 0" />
 
-        <!-- 人员选择区域（新增/编辑通用） -->
         <el-form :inline="true"
                  :model="userSelectFilters"
                  class="conventional-filter-form user-select-filter-form"
@@ -217,7 +213,6 @@ const filters = reactive({
   userName: ''
 })
 
-// 新增/编辑对话框
 const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const isEdit = ref(false)
@@ -239,7 +234,6 @@ const formRules = {
   ]
 }
 
-// 对话框内的人员选择列表（仅新增时使用）
 const userSelectList = ref([])
 const userSelectLoading = ref(false)
 
@@ -433,7 +427,6 @@ const handleAdd = async () => {
   dialogLoading.value = true
 
   if (salesTypeOptions.value.length === 0) await fetchSalesTypeOptions()
-  // 新增时下拉框默认选中第一项
   if (!editForm.salesType && salesTypeOptions.value.length) editForm.salesType = salesTypeOptions.value[0].salesType
 
   await nextTick()

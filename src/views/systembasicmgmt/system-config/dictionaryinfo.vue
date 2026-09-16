@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- 过滤条件 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.dictionaryInfo.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.dictionaryInfo.filter.module')">
           <el-select v-model="filters.moduleId"
@@ -49,7 +48,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="dictionaryList"
                   border
@@ -74,7 +72,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -86,7 +83,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"

@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- 过滤条件 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userAgent.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.userAgent.filter.department')">
           <el-tree-select v-model="filters.departmentId"
@@ -37,7 +36,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="userList"
                   border
@@ -82,7 +80,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -94,7 +91,6 @@
       </div>
     </el-card>
 
-    <!-- 代理人列表对话框 -->
     <el-dialog v-model="agentDialogVisible"
                :title="agentDialogTitle"
                width="65%"
@@ -140,7 +136,6 @@
       </template>
     </el-dialog>
 
-    <!-- 用户选择对话框 -->
     <el-dialog v-model="userSelectDialogVisible"
                :title="`${$t('systembasicmgmt.userAgent.addAgent')} - ${currentUserInfo.userName || ''}`"
                width="70%"
@@ -150,7 +145,6 @@
                class="user-select-dialog"
                @closed="handleUserSelectDialogClosed">
       <div class="user-select-body">
-        <!-- 代理时间区域 -->
         <el-form ref="agentTimeFormRef"
                  :model="agentTimeRange"
                  :rules="agentTimeFormRules"
@@ -183,7 +177,6 @@
 
         <el-divider style="margin: 25px 0 8px" />
 
-        <!-- 搜索区域 -->
         <el-form :inline="true"
                  :model="userSelectFilters"
                  class="conventional-filter-form"
@@ -220,7 +213,6 @@
           </el-form-item>
         </el-form>
 
-        <!-- 用户表格 -->
         <div class="user-select-table-wrap">
           <el-table :data="userSelectList"
                     border
@@ -248,7 +240,6 @@
           </el-table>
         </div>
 
-        <!-- 分页 -->
         <div class="pagination-wrapper">
           <el-pagination v-model:current-page="userSelectPagination.pageIndex"
                          v-model:page-size="userSelectPagination.pageSize"
@@ -271,7 +262,6 @@
       </template>
     </el-dialog>
 
-    <!-- 查看用户代理了哪些人对话框 -->
     <el-dialog v-model="proactiveAgentDialogVisible"
                :title="proactiveAgentDialogTitle"
                width="65%"
@@ -355,7 +345,6 @@ const filters = reactive({
   userName: ''
 })
 
-// 代理人列表对话框
 const agentDialogVisible = ref(false)
 const agentDialogTitle = ref('')
 const agentList = ref([])
@@ -363,11 +352,10 @@ const agentLoading = ref(false)
 const currentUserId = ref('')
 const currentUserInfo = ref({})
 
-// 用户选择（新增代理人）对话框
 const userSelectDialogVisible = ref(false)
 const userSelectLoading = ref(false)
 const userSelectList = ref([])
-const selectedUserId = ref('') // 新增代理只能选一个人，单选
+const selectedUserId = ref('')
 const agentTimeFormRef = ref(null)
 const confirmLoading = ref(false)
 
@@ -397,7 +385,6 @@ const userSelectPagination = reactive({
   totalCount: 0
 })
 
-// 查看“该用户代理了哪些人”对话框
 const proactiveAgentDialogVisible = ref(false)
 const proactiveAgentDialogTitle = ref('')
 const proactiveAgentList = ref([])

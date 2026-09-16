@@ -18,7 +18,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="numberTrendList"
                   border
@@ -41,7 +40,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"

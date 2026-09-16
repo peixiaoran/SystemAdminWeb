@@ -111,7 +111,6 @@ function normalizeReviewResult (result) {
   return 'unsigned'
 }
 
-/** 步骤头状态：skip / done / current / pending */
 function workflowStepHeadState (step) {
   if (isWorkflowStepSkipped(step)) return 'skipped'
   const users = Array.isArray(step?.stepReviewUser) ? step.stepReviewUser : []

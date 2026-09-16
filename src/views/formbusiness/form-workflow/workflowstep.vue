@@ -87,7 +87,6 @@
       </div>
     </el-card>
 
-    <!-- 新增步骤弹窗 -->
     <el-dialog
       v-model="addStepDialogVisible"
       :title="isEditMode ? $t('common.edit') : $t('formbusiness.workflowstep.addStep')"
@@ -409,7 +408,6 @@
       </template>
     </el-dialog>
 
-    <!-- 编辑栏位权限弹窗 -->
     <el-dialog
       v-model="fieldPermissionDialogVisible"
       :title="$t('formbusiness.workflowstep.fieldPermissionTitle')"
@@ -1029,7 +1027,6 @@ const getAssignmentTagType = (assignment) => {
   return map[assignment] ?? 'info'
 }
 
-// Assignment 变更时只保留当前区块，其余清空
 const onAssignmentChange = (assignmentCode) => {
   resetStepAssignmentUpserts()
   if (assignmentCode === 'Org') {
@@ -1049,7 +1046,6 @@ const filterDeptTreeNode = (value, data) => {
   return data.departmentName.includes(value)
 }
 
-// Assignment=Org 时默认选中第一项
 const loadDepartmentLevelOptions = async () => {
   try {
     const response = await post(GET_DEPARTMENT_LEVEL_DROPDOWN_API, {})
@@ -1066,7 +1062,6 @@ const loadDepartmentLevelOptions = async () => {
   }
 }
 
-// 职级下拉 Org/DeptUser 共用，按当前 Assignment 默认选中第一项
 const loadUserPositionOptions = async () => {
   try {
     const response = await post(GET_USER_POSITION_DROPDOWN_API, {})
@@ -1091,7 +1086,6 @@ const loadUserPositionOptions = async () => {
   }
 }
 
-// 部门树下拉，DeptUser/User 时默认选中第一个可用节点
 const loadDepartmentTreeOptions = async () => {
   try {
     const res = await post(GET_DEPARTMENT_DROPDOWN_API, {})
@@ -1157,7 +1151,6 @@ const handleSearchUser = () => {
   loadUserInfoPage()
 }
 
-// 部门变化时自动查询用户
 watch(
   () => addStepForm.stepUserUpsert.departmentId,
   (val) => {
@@ -1168,7 +1161,6 @@ watch(
   }
 )
 
-// 表格单选：点击某行即选中/取消选中该用户
 function handleUserRowClick(row) {
   if (!row?.userId) return
   const isSelected = String(addStepForm.stepUserUpsert.userId) === String(row.userId)
@@ -1351,12 +1343,10 @@ onMounted(async () => {
   margin: 18px 0;
 }
 
-/* 加审（AddReivew）排序栏位：单独占半行宽度，右侧留空 */
 .dialog-form .form-row .el-form-item.half-width-item {
   flex: 0 0 calc(50% - 10px);
 }
 
-/* 栏位权限弹窗：全选/全不选工具栏 */
 .field-permission-toolbar {
   display: flex;
   flex-direction: column;
@@ -1380,14 +1370,12 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* 栏位权限弹窗底部：覆盖全部步骤（危险操作）与取消/确认分居两侧 */
 .field-permission-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* User 筛选：靠左、文本与控件间距正常、宽度稍宽，与左右留距 */
 .user-filter-left {
   display: flex;
   flex-wrap: wrap;

@@ -21,7 +21,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 筛选查询对话框 -->
       <el-dialog v-model="filterDialogVisible"
                  :title="$t('custmat.customernumber.filterQuery')"
                  width="900px"
@@ -60,7 +59,6 @@
         </template>
       </el-dialog>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="customerNumberList"
                   border
@@ -97,7 +95,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -109,7 +106,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.customernumber.editCustomerNumber') : $t('custmat.customernumber.addCustomerNumber')"
                width="50%"
@@ -180,7 +176,6 @@
       </template>
     </el-dialog>
 
-    <!-- 导入对话框 -->
     <el-dialog v-model="importDialogVisible"
                :title="$t('custmat.customernumber.import')"
                width="520px"
@@ -251,17 +246,14 @@ const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editFormRef = ref(null)
 
-// 客户下拉选项
 const customerOptions = ref([])
 
-// 导入相关
 const importDialogVisible = ref(false)
 const templateLoading = ref(false)
 const importLoading = ref(false)
 const importFile = ref(null)
 const importFileList = ref([])
 
-// 导出相关
 const exportLoading = ref(false)
 
 const pagination = reactive({
@@ -440,7 +432,6 @@ const handleAdd = async () => {
   dialogVisible.value = true
   dialogLoading.value = true
   await fetchCustomerDropdown()
-  // 新增时下拉框默认选中第一项
   if (customerOptions.value.length) editForm.customerCode = customerOptions.value[0].customerCode
   dialogLoading.value = false
   nextTick(() => editFormRef.value?.clearValidate())
@@ -573,13 +564,11 @@ const handleImportDialogClose = () => {
   importFileList.value = []
 }
 
-// 选择/替换导入文件
 const handleImportFileChange = (uploadFile) => {
   importFile.value = uploadFile.raw
   importFileList.value = [uploadFile]
 }
 
-// 超出单文件限制时替换为最新选择的文件
 const handleImportFileExceed = (files) => {
   const file = files[0]
   importFile.value = file
@@ -591,7 +580,6 @@ const handleImportFileRemove = () => {
   importFileList.value = []
 }
 
-// 下载导入模板（文件名根据当前语言取自 i18n）
 const handleDownloadTemplate = async () => {
   templateLoading.value = true
   try {
@@ -605,7 +593,6 @@ const handleDownloadTemplate = async () => {
   }
 }
 
-// 导出客户料号 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
 const handleExport = async () => {
   exportLoading.value = true
   try {

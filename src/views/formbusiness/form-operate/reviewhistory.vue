@@ -263,9 +263,7 @@ const resolveBlobErrorMessage = async (error, fallbackKey) => {
     try {
       const json = JSON.parse(await data.text())
       if (json?.message) return json.message
-    } catch {
-      // 非 JSON 内容，沿用兜底文案
-    }
+    } catch {}
   }
   return error?.message || t(fallbackKey)
 }
@@ -517,9 +515,7 @@ const handlePrintForm = async (row) => {
       try {
         const json = JSON.parse(text)
         message = json?.message || message
-      } catch {
-        // ignore
-      }
+      } catch {}
       throw new Error(message)
     }
 
@@ -570,9 +566,7 @@ const handleExportExcel = async () => {
       try {
         const json = JSON.parse(text)
         message = json?.message || message
-      } catch {
-        // ignore
-      }
+      } catch {}
       throw new Error(message)
     }
 
@@ -617,9 +611,7 @@ const handleBatchPrintForm = async () => {
       try {
         const json = JSON.parse(text)
         message = json?.message || message
-      } catch {
-        // ignore
-      }
+      } catch {}
       throw new Error(message)
     }
 

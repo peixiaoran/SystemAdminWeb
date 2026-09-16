@@ -292,7 +292,6 @@ const fetchModuleDropdown = async () => {
   return moduleOptions.value.find(item => !item.disabled)
 }
 
-/** 按模块拉取一级菜单下拉数据 */
 const fetchPMenuDropdownByModule = async (moduleId) => {
   if (!moduleId) return []
   const formData = new FormData()

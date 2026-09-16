@@ -355,11 +355,9 @@ const submitLoading = ref(false)
 const exportLoading = ref(false)
 const editFormRef = ref(null)
 
-// 下拉选项
 const departmentOptions = ref([])
 const positionOptions = ref([])
 const roleOptions = ref([])
-// 性别下拉：固定选项，不再调用接口（后端按 HTTP 状态码处理；前端不依赖业务码）
 const genderOptions = ref([])
 const nationalityOptions = ref([])
 const laborTypeOptions = ref([])
@@ -411,7 +409,6 @@ const editForm = reactive({
   noticeLanguage: 'zh-CN'
 })
 
-// 头像地址（预览用）
 const avatarUrl = ref('')
 
 // 存储 isReview 关闭前的通知状态
@@ -476,27 +473,22 @@ const formRules = reactive({
           callback()
           return
         }
-        // 密码长度 8-16 个字符
         if (value.length < 8 || value.length > 16) {
           callback(new Error(t('systembasicmgmt.userInfo.passwordLengthError')))
           return
         }
-        // 必须包含小写字母
         if (!/[a-z]/.test(value)) {
           callback(new Error(t('systembasicmgmt.userInfo.passwordLowercaseError')))
           return
         }
-        // 必须包含大写字母
         if (!/[A-Z]/.test(value)) {
           callback(new Error(t('systembasicmgmt.userInfo.passwordUppercaseError')))
           return
         }
-        // 必须包含数字
         if (!/[0-9]/.test(value)) {
           callback(new Error(t('systembasicmgmt.userInfo.passwordNumberError')))
           return
         }
-        // 必须包含特殊字符
         if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
           callback(new Error(t('systembasicmgmt.userInfo.passwordSpecialCharError')))
           return
@@ -597,7 +589,6 @@ const getGenderText = (gender) => {
   return ''
 }
 
-// 树形选择器过滤方法
 const filterNodeMethod = (value, data) => data.departmentName.includes(value)
 
 /**
@@ -612,18 +603,13 @@ const initGenderOptions = () => {
   ]
 }
 
-/**
- * 获取部门下拉数据（无 try/catch，按返回码处理）
- * @param {boolean} setDefaultFilter 是否设置筛选默认值
- * @param {boolean} setDefaultForm 是否设置编辑表单默认值
- */
+/** 获取部门下拉数据；无 try/catch，按返回码处理 */
 const fetchDepartmentDropdown = async (setDefaultFilter = false, setDefaultForm = false) => {
   const res = await post(GET_DEPARTMENT_DROPDOWN_API.GET_DEPARTMENT_DROPDOWN, {})
   if (res?.code !== 200) {
     departmentOptions.value = []
     return
   }
-  // 验证数据结构并过滤无效数据（递归验证部门树结构）
   const validateDepartment = (dept) => {
     if (!dept || dept.departmentId === undefined || dept.departmentId === null ||
         dept.departmentName === undefined || dept.departmentName === null) {
@@ -645,17 +631,13 @@ const fetchDepartmentDropdown = async (setDefaultFilter = false, setDefaultForm 
   }
 }
 
-/**
- * 获取职位下拉数据（无 try/catch，按返回码处理）
- * @param {boolean} setDefaultForm 是否设置编辑表单默认值
- */
+/** 获取职位下拉数据；无 try/catch，按返回码处理 */
 const fetchPositionDropdown = async (setDefaultForm = false) => {
   const res = await post(GET_USER_POSITION_DROPDOWN_API.GET_USER_POSITION_DROPDOWN, {})
   if (res?.code !== 200) {
     positionOptions.value = []
     return
   }
-  // 验证数据结构并过滤无效数据
   positionOptions.value = (res.data || []).filter(item =>
     item && item.positionId !== undefined && item.positionId !== null &&
     item.positionName !== undefined && item.positionName !== null
@@ -666,17 +648,13 @@ const fetchPositionDropdown = async (setDefaultForm = false) => {
   }
 }
 
-/**
- * 获取角色下拉数据（无 try/catch，按返回码处理）
- * @param {boolean} setDefaultForm 是否设置编辑表单默认值
- */
+/** 获取角色下拉数据；无 try/catch，按返回码处理 */
 const fetchRoleDropdown = async (setDefaultForm = false) => {
   const res = await post(GET_ROLE_DROPDOWN_API.GET_ROLE_DROPDOWN, {})
   if (res?.code !== 200) {
     roleOptions.value = []
     return
   }
-  // 验证数据结构并过滤无效数据
   roleOptions.value = (res.data || []).filter(item =>
     item && item.roleId !== undefined && item.roleId !== null &&
     item.roleName !== undefined && item.roleName !== null
@@ -694,24 +672,19 @@ const fetchNationalityDropdown = async () => {
     nationalityOptions.value = []
     return
   }
-  // 验证数据结构并过滤无效数据
   nationalityOptions.value = (res.data || []).filter(item =>
     item && item.nationId !== undefined && item.nationId !== null &&
     item.nationName !== undefined && item.nationName !== null
   )
 }
 
-/**
- * 获取就业类型下拉数据（无 try/catch，按返回码处理）
- * @param {boolean} setDefaultForm 是否设置编辑表单默认值
- */
+/** 获取就业类型下拉数据；无 try/catch，按返回码处理 */
 const fetchLaborTypeDropdown = async (setDefaultForm = false) => {
   const res = await post(GET_LABOR_TYPE_DROPDOWN_API.GET_LABOR_TYPE_DROPDOWN, {})
   if (res?.code !== 200) {
     laborTypeOptions.value = []
     return
   }
-  // 验证数据结构并过滤无效数据
   laborTypeOptions.value = (res.data || []).filter(item =>
     item && item.laborId !== undefined && item.laborId !== null &&
     item.laborName !== undefined && item.laborName !== null
@@ -794,7 +767,6 @@ const scheduleSearch = () => {
   }, DEBOUNCE_MS)
 }
 
-// 清除表单验证状态
 const clearFormValidate = () => {
   nextTick(() => {
     try {
@@ -832,7 +804,6 @@ const resetEditForm = () => {
   // 兜底：确保开关字段类型一致（避免被其它逻辑写入字符串）
   normalizeEditFormSwitches()
 
-  // 重置下拉框为默认值
   nextTick(() => {
     const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
     if (firstEnabledDept) editForm.departmentId = firstEnabledDept.departmentId
@@ -862,10 +833,8 @@ const resetEditForm = () => {
     clearFormValidate()
   })
 
-  // 重置通知状态记录
   previousNotificationState.isRealtimeNotification = 0
   previousNotificationState.isScheduledNotification = 0
-  // 重置头像
   avatarUrl.value = ''
 }
 
@@ -921,13 +890,11 @@ const deleteUser = async (userId) => {
 
 const handleSearch = () => scheduleSearch()
 
-// 部门下拉框变化时自动触发查询
 const handleDepartmentChange = () => scheduleSearch()
 
 const handleReset = () => {
   filters.userNo = ''
   filters.userName = ''
-  // 重置部门下拉框为第一个未禁用的选项
   const firstEnabledDept = departmentOptions.value.find(item => !item.disabled)
   filters.departmentId = firstEnabledDept ? firstEnabledDept.departmentId : ''
   scheduleSearch()
@@ -995,7 +962,6 @@ const handleAdd = async () => {
   dialogTitle.value = t('systembasicmgmt.userInfo.addUser')
   dialogVisible.value = true
   dialogLoading.value = true
-  // 重新获取下拉数据并设置编辑表单默认值
   await fetchDepartmentDropdown(false, true)
   await fetchPositionDropdown(true)
   await fetchRoleDropdown(true)
@@ -1048,7 +1014,6 @@ const handleSave = async () => {
   }
 }
 
-// 头像上传前验证
 const beforeAvatarUpload = (file) => {
   const isValidType = file.type === 'image/jpeg' || file.type === 'image/png'
   const isLt5M = file.size / 1024 / 1024 < 5
@@ -1065,7 +1030,6 @@ const beforeAvatarUpload = (file) => {
   return true
 }
 
-// 修改用户信息用 UPLOAD_AVATAR_UPDATE_API，新增用户用 UPLOAD_AVATAR_INSERT_API
 const customUpload = async (options) => {
   const formData = new FormData()
   const isAdd = !editForm.userId
@@ -1123,7 +1087,6 @@ watch(() => editForm.isReview, (newValue, oldValue) => {
 })
 
 onMounted(async () => {
-  // 获取下拉数据并设置筛选条件默认值
   await fetchDepartmentDropdown(true, false)
   await fetchPositionDropdown()
   initGenderOptions()
@@ -1184,7 +1147,6 @@ onUnmounted(() => {
   padding-left: 20px;
 }
 
-/* 四列布局样式 */
 .dialog-form .form-row.four-columns .el-form-item {
   flex: 0 0 calc(25% - 15px);
   margin-right: 20px;

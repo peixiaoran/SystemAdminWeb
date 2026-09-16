@@ -23,7 +23,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="salesNumberList"
                   border
@@ -79,7 +78,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -110,7 +108,6 @@ const FORM_URLENCODED = { headers: { 'Content-Type': 'application/x-www-form-url
 const salesNumberList = ref([])
 const loading = ref(false)
 
-// 料号详情提示框
 const partNumberDetail = ref(null)
 const partNumberDetailLoading = ref(false)
 /** 当前已加载详情所属的料号，用于确保弹窗只展示本行的最新数据 */
@@ -175,7 +172,6 @@ const handleHidePartNumberDetail = () => {
   partNumberDetailFor.value = ''
 }
 
-// 料号详情提示框
 const handleShowPartNumberDetail = async (partNumber) => {
   partNumberDetail.value = null
   partNumberDetailFor.value = ''
@@ -252,7 +248,6 @@ onMounted(() => {
 }
 
 .part-number-detail-row {
-  /* 左右留出间距，使分割线不顶到弹窗边缘 */
   margin: 0 8px;
   padding: 6px 0;
   font-size: 13px;

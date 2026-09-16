@@ -7,18 +7,15 @@
     <el-config-provider :locale="elementPlusLocale">
     <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
     <template v-if="loading && !resultState.visible">
-      <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <!-- 表单标题 -->
             <div class="sk-title-row">
               <el-skeleton-item variant="text" class="sk-title" />
             </div>
             <div class="sk-divider"></div>
 
             <div class="sk-body">
-              <!-- 表单号 / 申请日期 -->
               <div class="sk-grid">
                 <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -26,7 +23,6 @@
                 </div>
               </div>
 
-              <!-- 申请人工号 / 姓名 / 部门 -->
               <div class="sk-grid">
                 <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -36,13 +32,11 @@
 
               <div class="sk-divider"></div>
 
-              <!-- 原请假单引用：选择按钮 + 引用表格 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-block" />
               </div>
 
-              <!-- 销假时间 / 销假时数 -->
               <div class="sk-field">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-control" />
@@ -50,13 +44,11 @@
 
               <div class="sk-divider"></div>
 
-              <!-- 送审意见 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-textarea" />
               </div>
 
-              <!-- 操作按钮行 + 流程查看入口 -->
               <div class="sk-actions">
                 <div class="sk-actions-buttons">
                   <el-skeleton-item variant="button" class="sk-action-btn" />
@@ -69,7 +61,6 @@
         </el-skeleton>
       </el-card>
 
-      <!-- 审批记录卡片骨架 -->
       <el-card class="leave-form-card review-log-card" shadow="never">
         <el-skeleton animated>
           <template #template>
@@ -82,7 +73,6 @@
       </el-card>
     </template>
 
-    <!-- 结果页 -->
     <el-card
       v-else-if="resultState.visible"
       class="leave-form-card result-card"
@@ -130,7 +120,6 @@
 
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
-        <!-- 基本信息 -->
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.formNo')" prop="formNo">
@@ -152,7 +141,6 @@
           </el-col>
         </el-row>
 
-        <!-- 申请人信息 -->
         <el-row
           v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
           :gutter="16"
@@ -178,7 +166,6 @@
 
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
-        <!-- 原请假单引用 -->
         <template v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable', 'TimePeriod', 'Hour'])">
           <el-row v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable'])" :gutter="16" class="leave-request-ref-row">
             <el-col v-if="isAnyStepFieldVisible(['SelectLeaveRequest', 'LeaveRequestTable'])" :span="24">
@@ -352,12 +339,10 @@
       </el-form>
     </el-card>
 
-    <!-- 审批记录 -->
     <ReviewLogCard :records="reviewRecordList" i18n-prefix="formbusiness.leavecancell" :show-user-sub-row="false" />
 
     </template>
 
-    <!-- 选择请假单弹窗 -->
     <el-dialog
       v-model="leaveRequestDialogVisible"
       :title="t('formbusiness.leavecancell.selectLeaveRequestTitle')"
@@ -449,7 +434,6 @@
       </template>
     </el-dialog>
 
-    <!-- 驳回弹窗 -->
     <RejectDialog
       v-model:visible="rejectDialogVisible"
       :options="rejectStepDropOptions"
@@ -457,7 +441,6 @@
       @confirm="handleRejectConfirm"
     />
 
-    <!-- 完整审批流程 -->
     <WorkflowDrawer
       :visible="workflowDrawerVisible"
       @update:visible="workflowDrawerVisible = $event"
@@ -561,7 +544,6 @@ const rules = {
 
 const leaveRequestRemoveLoading = ref(false)
 
-// 请假单选择弹窗
 const leaveRequestDialogVisible = ref(false)
 const leaveRequestListLoading = ref(false)
 const leaveRequestList = ref([])
@@ -659,7 +641,6 @@ function formatDateTimeCell (val) {
   return normalizeDateTime(val) || '-'
 }
 
-/** 时数保留两位小数展示 */
 function formatHoursCell (val) {
   if (val === undefined || val === null || val === '') return '-'
   const n = Number(val)
@@ -1208,7 +1189,6 @@ function getFirstValidateErrorMessage (invalidFields) {
   return firstField?.[0]?.message || t('formbusiness.leavecancell.validateFailed')
 }
 
-/** 暂存/送审右上角提示 */
 function showFormActionNotice (message, type = 'success') {
   const text = typeof message === 'string' ? message.trim() : ''
   ElNotification({
@@ -1608,7 +1588,6 @@ onMounted(async () => {
   height: 76px;
 }
 
-/* 原请假单引用：选择按钮 + 单行引用表格 */
 .sk-block {
   flex: 1;
   min-width: 0;
@@ -1889,7 +1868,6 @@ onMounted(async () => {
   position: relative;
 }
 
-/* 原请假单引用行与销假时间行的间距收紧 */
 .leave-request-ref-row .el-form-item {
   margin-bottom: 4px;
 }
@@ -1899,19 +1877,16 @@ onMounted(async () => {
   font-size: 13px;
 }
 
-/* 表体文字：深灰色，字号与表单一致 */
 .leave-request-ref-table :deep(.el-table__body .cell) {
   color: #4c4c4c;
   font-size: 13px;
 }
 
-/* 请假时数列：仅数值加黑色，列头颜色不变 */
 .leave-request-ref-table :deep(.el-table__body .ref-leave-hours-col .cell) {
   color: #000000;
   font-weight: 700;
 }
 
-/* 移除按钮：红色字体 */
 .leave-request-ref-table :deep(.leave-request-remove-btn) {
   color: #c00c1f;
 }

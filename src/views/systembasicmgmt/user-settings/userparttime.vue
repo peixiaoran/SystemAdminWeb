@@ -2,7 +2,6 @@
   <div class="conventional-table-container">
     <el-config-provider :locale="elementPlusLocale">
     <el-card class="conventional-card">
-        <!-- 过滤条件 -->
         <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.userPartTime.ariaFilterLabel')">
           <el-form-item :label="$t('systembasicmgmt.userPartTime.filter.department')">
             <el-tree-select v-model="filters.departmentId"
@@ -41,7 +40,6 @@
           </el-form-item>
         </el-form>
 
-        <!-- 表格区域 -->
         <div class="table-container">
           <el-table :data="userPartTimeList"
                     border
@@ -88,7 +86,6 @@
           </el-table>
         </div>
 
-        <!-- 分页 -->
         <div class="pagination-wrapper">
           <el-pagination v-model:current-page="pagination.pageIndex"
                          v-model:page-size="pagination.pageSize"
@@ -100,7 +97,6 @@
         </div>
       </el-card>
 
-      <!-- 合并后的新增/编辑兼任对话框 -->
       <el-dialog v-model="dialogVisible"
                  :title="`${$t('systembasicmgmt.userPartTime.mergedDialogTitle')} - ${isEdit ? $t('systembasicmgmt.userPartTime.editPartTimeTitle') : $t('systembasicmgmt.userPartTime.addPartTimeTitle')}`"
                  width="70%"
@@ -110,7 +106,6 @@
                  class="parttime-dialog"
                  @close="handleDialogClose">
         <div class="parttime-dialog-body" v-loading="dialogLoading">
-          <!-- 兼任信息区域 -->
           <el-form ref="editFormRef"
                    :model="editForm"
                    :rules="formRules"
@@ -166,7 +161,6 @@
 
           <el-divider style="margin: 25px 0 8px" />
 
-          <!-- 搜索区域 -->
           <el-form :inline="true"
                    :model="userSelectFilters"
                    class="conventional-filter-form"
@@ -203,7 +197,6 @@
             </el-form-item>
           </el-form>
 
-          <!-- 用户表格 -->
           <div class="user-select-table-wrap">
             <el-table :data="userSelectList"
                       border
@@ -239,7 +232,6 @@
             </el-table>
           </div>
 
-          <!-- 分页 -->
           <div class="pagination-wrapper">
             <el-pagination v-model:current-page="userSelectPagination.pageIndex"
                            v-model:page-size="userSelectPagination.pageSize"
@@ -316,7 +308,6 @@ const filters = reactive({
   userName: ''
 })
 
-// 新增/编辑对话框
 const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const isEdit = ref(false)
@@ -354,7 +345,6 @@ const formRules = {
   ]
 }
 
-// 对话框内的用户选择列表
 const userSelectList = ref([])
 const userSelectLoading = ref(false)
 
@@ -814,7 +804,6 @@ onUnmounted(() => {
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 
-/* 兼任对话框样式 */
 :deep(.parttime-dialog .el-dialog) {
   height: 550px;
   overflow: hidden;

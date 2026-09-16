@@ -9,7 +9,6 @@
                v-loading="loading"
                role="form"
                :aria-label="$t('systembasicmgmt.personalInfo.ariaEditLabel')">
-        <!-- 第一行：基本信息 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.userNo')" prop="userNo">
             <el-input v-model="editForm.userNo" :disabled="true" />
@@ -29,7 +28,6 @@
           </el-form-item>
         </div>
 
-        <!-- 第二行：联系信息 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.email')" prop="email">
             <el-input v-model="editForm.email"
@@ -58,7 +56,6 @@
           </el-form-item>
         </div>
 
-        <!-- 第三行：日期和部门信息 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.hireDate')" prop="hireDate">
             <el-date-picker v-model="editForm.hireDate"
@@ -98,7 +95,6 @@
           </el-form-item>
         </div>
 
-        <!-- 第四行：雇佣类型和状态信息 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.laborName')" prop="laborId">
             <el-select v-model="editForm.laborId" :disabled="true" style="width: 100%">
@@ -128,7 +124,6 @@
           </el-form-item>
         </div>
 
-        <!-- 第五行：其他状态 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.isPartTime')" prop="isPartTime">
             <el-switch v-model="editForm.isPartTime"
@@ -156,7 +151,6 @@
           </el-form-item>
         </div>
 
-        <!-- 通知语言 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.noticeLanguage')" prop="noticeLanguage">
             <el-select v-model="editForm.noticeLanguage"
@@ -169,7 +163,6 @@
           </el-form-item>
         </div>
 
-        <!-- 第六行：头像上传 -->
         <div class="form-row">
           <el-form-item :label="$t('systembasicmgmt.personalInfo.avatar')" prop="avatarAddress">
             <div class="avatar-container">
@@ -189,7 +182,6 @@
           </el-form-item>
         </div>
 
-        <!-- 操作按钮 -->
         <div class="form-buttons">
           <el-button @click="handleReset" :disabled="loading">
             {{ $t('common.reset') }}
@@ -579,7 +571,6 @@ onMounted(async () => {
   padding-top: 20px;
 }
 
-/* 响应式设计 */
 @media (max-width: 1200px) {
   .form-row {
     grid-template-columns: repeat(3, 1fr);

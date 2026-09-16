@@ -73,7 +73,6 @@
       </el-table>
     </div>
 
-    <!-- 导入对话框 -->
     <el-dialog v-model="importDialogVisible"
                :title="$t('custmat.foweeklydetaildata.import')"
                width="520px"

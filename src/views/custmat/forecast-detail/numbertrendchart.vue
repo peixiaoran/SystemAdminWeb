@@ -25,7 +25,6 @@
     </div>
 
     <div class="trend-chart-content" v-loading="loading">
-      <!-- 料号基础资料 -->
       <el-card class="trend-chart-part-info" shadow="never">
         <template #header>
           <span class="trend-chart-section-title">{{ $t('custmat.forecastdetailnumbertrendchart.partInfoTitle') }}</span>
@@ -53,13 +52,11 @@
         </el-descriptions>
       </el-card>
 
-      <!-- 柱状图：天/周/合计用量 -->
       <div class="trend-chart-section">
         <div class="trend-chart-section-title">{{ $t('custmat.forecastdetailnumbertrendchart.barChartTitle') }}</div>
         <div ref="barChartRef" class="trend-chart-canvas"></div>
       </div>
 
-      <!-- 折线（面积）图：合计用量走势 -->
       <div class="trend-chart-section">
         <div class="trend-chart-section-title">{{ $t('custmat.forecastdetailnumbertrendchart.areaChartTitle') }}</div>
         <div ref="areaChartRef" class="trend-chart-canvas"></div>

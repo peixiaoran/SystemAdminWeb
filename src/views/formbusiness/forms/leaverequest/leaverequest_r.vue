@@ -7,18 +7,15 @@
     <el-config-provider :locale="elementPlusLocale">
     <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
     <template v-if="loading && !resultState.visible">
-      <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <!-- 表单标题 -->
             <div class="sk-title-row">
               <el-skeleton-item variant="text" class="sk-title" />
             </div>
             <div class="sk-divider"></div>
 
             <div class="sk-body">
-              <!-- 表单号 / 申请日期 -->
               <div class="sk-grid">
                 <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -26,7 +23,6 @@
                 </div>
               </div>
 
-              <!-- 申请人工号 / 姓名 / 部门 -->
               <div class="sk-grid">
                 <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -36,7 +32,6 @@
 
               <div class="sk-divider"></div>
 
-              <!-- 请假类别 / 代理人 -->
               <div class="sk-grid">
                 <div v-for="n in 2" :key="`sk-leave-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -44,31 +39,26 @@
                 </div>
               </div>
 
-              <!-- 请假时间 / 时数 -->
               <div class="sk-field">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-control" />
               </div>
 
-              <!-- 请假事由 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-textarea" />
               </div>
 
-              <!-- 附件：上传按钮 + 附件表格 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-block" />
               </div>
 
-              <!-- 审批意见 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-textarea" />
               </div>
 
-              <!-- 操作按钮行 + 流程查看入口 -->
               <div class="sk-actions">
                 <div class="sk-actions-buttons">
                   <el-skeleton-item variant="button" class="sk-action-btn" />
@@ -81,7 +71,6 @@
         </el-skeleton>
       </el-card>
 
-      <!-- 审批记录卡片骨架 -->
       <el-card class="leave-form-card review-log-card" shadow="never">
         <el-skeleton animated>
           <template #template>
@@ -94,7 +83,6 @@
       </el-card>
     </template>
     
-    <!-- 实际表单内容 -->
     <el-card
       v-else-if="resultState.visible"
       class="leave-form-card result-card"
@@ -135,16 +123,13 @@
 
     <template v-else>
     <el-card class="leave-form-card" shadow="never">
-      <!-- 表单标题 -->
       <div class="form-title-row">
         <h2 class="form-title">{{ t('formbusiness.leaverequest.formTitle') }}</h2>
       </div>
       <el-divider style="margin: 22px 0;"></el-divider>
 
-        <!-- 表单主体（表格化排版） -->
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
-        <!-- 基本信息 -->
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.leaverequest.formNo')" prop="formNo">
@@ -166,7 +151,6 @@
           </el-col>
         </el-row>
 
-        <!-- 申请人信息 -->
         <el-row
           v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
           :gutter="16"
@@ -192,7 +176,6 @@
 
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
-        <!-- 请假信息：类别 / 代理人 / 时数 -->
         <el-row
           v-if="isAnyStepFieldVisible(['LeaveType', 'Agent', 'SelectAgent'])"
           :gutter="16"
@@ -305,7 +288,6 @@
           </el-col>
         </el-row>
 
-        <!-- 事由 -->
         <el-row v-if="isStepFieldVisible('LeaveReason')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaverequest.leaveReason')" prop="reason">
@@ -314,7 +296,6 @@
           </el-col>
         </el-row>
 
-        <!-- 附件上传 -->
         <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16" class="attachment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leaverequest.attachments')">
@@ -412,12 +393,10 @@
       </el-form>
     </el-card>
 
-    <!-- 审批记录独立卡片 -->
     <ReviewLogCard :records="reviewRecordList" i18n-prefix="formbusiness.leaverequest" />
 
     </template>
 
-    <!-- 假期余额：右侧悬浮（LeaveBalance 权限控制，加载中显示骨架） -->
     <aside
       v-if="!resultState.visible && (loading || isStepFieldVisible('LeaveBalance'))"
       class="leave-balance-float"
@@ -490,7 +469,6 @@
       </div>
     </aside>
 
-    <!-- 选择代理人弹窗 -->
     <el-dialog
       v-model="agentDialogVisible"
       :title="t('formbusiness.leaverequest.selectAgentTitle')"
@@ -593,7 +571,6 @@
       </template>
     </el-dialog>
 
-    <!-- 驳回弹窗 -->
     <RejectDialog
       v-model:visible="rejectDialogVisible"
       :options="rejectStepDropOptions"
@@ -1063,9 +1040,7 @@ function onSelectChange (field) {
   if (!formRef.value) return
   try {
     formRef.value.validateField(field)
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 function normalizeDateTime (val) {
@@ -1429,9 +1404,7 @@ async function initLeaveRequest () {
     const formatDateTime = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
     form.leaveTimeRange = [formatDateTime(start), formatDateTime(end)]
     await getLeaveRequestDetail(newFormId)
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 async function getLeaveRequestDetail (id) {
@@ -1461,9 +1434,7 @@ async function getLeaveRequestDetail (id) {
     if (isStepFieldVisible('Reject')) {
       await fetchRejectStepDrop()
     }
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 async function getLeaveTypeOptions () {
@@ -1491,9 +1462,7 @@ async function getLeaveTypeOptions () {
           ''
       )
     }))
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 function buildSaveLeaveRequestPayload () {
@@ -1596,9 +1565,7 @@ async function onSubmit () {
       } else {
         showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
       }
-    } catch {
-      // ignore
-    } finally {
+    } catch {} finally {
       saving.value = false
     }
   })
@@ -2001,9 +1968,7 @@ async function onSubmitForApproval () {
       return
     }
     showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'warning')
-  } catch {
-    // ignore
-  } finally {
+  } catch {} finally {
     approving.value = false
   }
 }
@@ -2092,9 +2057,7 @@ async function batchUpload(filesToUpload) {
     } else if (res && isBadRequestResponse(res)) {
       showBadRequestResult(res?.message)
     }
-  } catch {
-    // ignore
-  } finally {
+  } catch {} finally {
     uploading.value = false
     if (fileInputRef.value) {
       fileInputRef.value.value = ''

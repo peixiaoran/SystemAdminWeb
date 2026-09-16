@@ -3,18 +3,15 @@
       <el-config-provider :locale="elementPlusLocale">
       <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
       <template v-if="loading && !resultState.visible">
-        <!-- 表单卡片骨架 -->
         <el-card class="leave-form-card" shadow="never">
           <el-skeleton animated>
             <template #template>
-              <!-- 表单标题 -->
               <div class="sk-title-row">
                 <el-skeleton-item variant="text" class="sk-title" />
               </div>
               <div class="sk-divider"></div>
 
               <div class="sk-body">
-                <!-- 表单号 / 申请日期 -->
                 <div class="sk-grid">
                   <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
                     <el-skeleton-item variant="text" class="sk-label" />
@@ -22,7 +19,6 @@
                   </div>
                 </div>
 
-                <!-- 申请人工号 / 姓名 / 部门 -->
                 <div class="sk-grid">
                   <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
                     <el-skeleton-item variant="text" class="sk-label" />
@@ -32,7 +28,6 @@
 
                 <div class="sk-divider"></div>
 
-                <!-- 请假类别 / 代理人 -->
                 <div class="sk-grid">
                   <div v-for="n in 2" :key="`sk-leave-${n}`" class="sk-field">
                     <el-skeleton-item variant="text" class="sk-label" />
@@ -40,25 +35,21 @@
                   </div>
                 </div>
 
-                <!-- 请假时间 / 时数 -->
                 <div class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-control" />
                 </div>
 
-                <!-- 请假事由 -->
                 <div class="sk-field sk-field--top">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-textarea" />
                 </div>
 
-                <!-- 附件：上传按钮 + 附件表格 -->
                 <div class="sk-field sk-field--top">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-block" />
                 </div>
 
-                <!-- 审批意见 -->
                 <div class="sk-field sk-field--top">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-textarea" />
@@ -73,7 +64,6 @@
           </el-skeleton>
         </el-card>
 
-        <!-- 审批记录卡片骨架 -->
         <el-card class="leave-form-card review-log-card" shadow="never">
           <el-skeleton animated>
             <template #template>
@@ -86,7 +76,6 @@
         </el-card>
       </template>
       
-      <!-- 实际表单内容 -->
       <el-card
         v-else-if="resultState.visible"
         class="leave-form-card result-card"
@@ -131,16 +120,13 @@
   
       <template v-else>
       <el-card class="leave-form-card" shadow="never">
-        <!-- 表单标题 -->
         <div class="form-title-row">
           <h2 class="form-title">{{ t('formbusiness.leaverequest.formTitle') }}</h2>
         </div>
         <el-divider style="margin: 22px 0;"></el-divider>
   
-          <!-- 表单主体（表格化排版） -->
         <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="leave-form" :validate-on-rule-change="false">
   
-          <!-- 基本信息 -->
           <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
             <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.formNo')" prop="formNo">
@@ -162,7 +148,6 @@
             </el-col>
           </el-row>
   
-          <!-- 申请人信息 -->
           <el-row
             v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
             :gutter="16"
@@ -188,7 +173,6 @@
   
           <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
   
-          <!-- 请假信息：类别 / 代理人 / 时数 -->
           <el-row
             v-if="isAnyStepFieldVisible(['LeaveType', 'Agent', 'SelectAgent'])"
             :gutter="16"
@@ -299,7 +283,6 @@
             </el-col>
           </el-row>
   
-          <!-- 事由 -->
           <el-row v-if="isStepFieldVisible('LeaveReason')" :gutter="16">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.leaveReason')" prop="reason">
@@ -308,7 +291,6 @@
             </el-col>
           </el-row>
   
-          <!-- 附件 -->
           <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16" class="attachment-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.attachments')">
@@ -383,7 +365,6 @@
         </el-form>
       </el-card>
   
-      <!-- 审批记录独立卡片 -->
       <ReviewLogCard :records="reviewRecordList" i18n-prefix="formbusiness.leaverequest" />
 
       </template>
@@ -410,7 +391,6 @@
             </template>
           </div>
           <div class="leave-balance-hint">
-            <!-- 页面初始化或余额查询中：按年度分组的简化骨架 -->
             <el-skeleton v-if="loading || leaveBalanceLoading" class="sk-balance" animated>
               <template #template>
                 <div v-for="n in 2" :key="`sk-balance-${n}`" class="sk-balance-item">

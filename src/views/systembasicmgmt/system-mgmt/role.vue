@@ -62,7 +62,6 @@
       </div>
     </el-card>
 
-    <!-- 角色编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"
@@ -113,7 +112,6 @@
       </template>
     </el-dialog>
 
-    <!-- 模块权限配置对话框 -->
     <el-dialog v-model="moduleDialogVisible"
                :title="$t('systembasicmgmt.role.configModule')"
                width="30%"
@@ -138,7 +136,6 @@
       </template>
     </el-dialog>
 
-    <!-- 菜单权限配置对话框 -->
     <el-dialog v-model="menuDialogVisible"
                :title="$t('systembasicmgmt.role.configMenu')"
                width="40%"
@@ -253,17 +250,14 @@ const formRules = {
   ]
 }
 
-// 当前正在配置权限的角色
 const currentRoleId = ref('')
 const currentRoleName = ref('')
 
-// 模块权限配置
 const moduleDialogVisible = ref(false)
 const moduleTreeRef = ref(null)
 const moduleTreeData = ref([])
 const defaultCheckedModules = ref([])
 
-// 菜单权限配置
 const menuDialogVisible = ref(false)
 const menuTreeRef = ref(null)
 const menuTreeData = ref([])
@@ -450,8 +444,6 @@ const handleDialogClose = () => {
   editFormRef.value?.clearValidate()
 }
 
-/* ---------------- 模块权限配置 ---------------- */
-
 const fetchRoleModuleList = async (roleId) => {
   const res = await post(GET_ROLE_MODULE_LIST_API.GET_ROLE_MODULE_LIST, { roleId })
   if (res?.code === 200) {
@@ -498,8 +490,6 @@ const handleModuleDialogClose = () => {
   currentRoleName.value = ''
   nextTick(() => moduleTreeRef.value?.setCheckedKeys([]))
 }
-
-/* ---------------- 菜单权限配置 ---------------- */
 
 /** 只返回叶子节点的 ID，确保 el-tree 正确显示半选中状态 */
 const collectCheckedLeafMenuIds = (menuList) => {

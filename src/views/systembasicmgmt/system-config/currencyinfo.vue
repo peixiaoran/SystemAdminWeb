@@ -1,7 +1,6 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <!-- 过滤条件 -->
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('systembasicmgmt.currencyInfo.ariaFilterLabel')">
         <el-form-item :label="$t('systembasicmgmt.currencyInfo.filter.currencyCode')">
           <el-input v-model="filters.currencyCode"
@@ -23,7 +22,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="currencyList"
                   border
@@ -47,7 +45,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -59,7 +56,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible"
                :title="dialogTitle"
                width="50%"

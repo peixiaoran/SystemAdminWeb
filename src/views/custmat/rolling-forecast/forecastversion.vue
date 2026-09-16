@@ -23,7 +23,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="forecastVersionList"
                   border
@@ -75,7 +74,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -87,7 +85,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.forecastversion.editForecastVersionTitle') : $t('custmat.forecastversion.addForecastVersionTitle')"
                width="520px"
@@ -166,7 +163,6 @@ const filters = reactive({
   versionCode: ''
 })
 
-// 新增/编辑对话框
 const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const isEdit = ref(false)

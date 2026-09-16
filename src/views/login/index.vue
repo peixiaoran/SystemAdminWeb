@@ -61,7 +61,6 @@
         <el-form
           ref="loginFormRef"
           :model="loginForm"
-          :rules="loginRules"
           class="login-form"
           size="large"
           autocomplete="new-password"
@@ -135,7 +134,7 @@
             <el-button
               type="primary"
               :loading="loading"
-              :disabled="loading"
+              :disabled="loading || !loginForm.loginNo || !loginForm.password"
               class="login-button"
               @click="handleLogin"
             >
@@ -286,18 +285,6 @@ const languages = computed(() => {
   }
 })
 
-// 登录表单验证规则
-const loginRules = computed(() => {
-  return {
-    loginNo: [
-      { required: true, message: t('login.usernameRequired'), trigger: 'blur' }
-    ],
-    password: [
-      { required: true, message: t('login.passwordRequired'), trigger: 'blur' }
-    ]
-  }
-})
-
 // 语言切换处理
 const handleLanguageChange = (value) => {
   locale.value = value
@@ -327,139 +314,137 @@ const enableCredentialInputs = () => {
 }
 
 const handleLogin = () => {
-  loginFormRef.value.validate(valid => {
-    if (valid) {
-      if (!turnstileToken.value) {
-        ElMessage({
-          message: t('login.turnstileRequired'),
-          type: 'warning',
-          plain: true,
-          showClose: true
-        })
+  if (!loginForm.loginNo || !loginForm.password) return
+
+  if (!turnstileToken.value) {
+    ElMessage({
+      message: t('login.turnstileRequired'),
+      type: 'warning',
+      plain: true,
+      showClose: true
+    })
+    return
+  }
+
+  loading.value = true
+
+  // 保存语言选择到localStorage
+  localStorage.setItem('language', loginForm.language)
+
+  // 使用封装的post方法，它会使用环境变量中的API基础URL
+  post(
+    LOGIN_API.USER_LOGIN,
+    {
+      loginNo: loginForm.loginNo,
+      password: loginForm.password,
+      turnstileToken: turnstileToken.value
+    },
+    { allowLoginBusinessCodes: true }
+  ).then(res => {
+      // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
+      if (isHandled(res)) {
+        // 会重新回到登录表单等待用户重试，token 已被消费，必须换新的
+        resetTurnstile()
+        loading.value = false
         return
       }
 
-      loading.value = true
+      const businessMsg = res?.message ?? ''
+      if (res.code === 200) {
+        const submittedLoginNo = loginForm.loginNo
+        resetAuthErrorState()
+        loginForm.loginNo = ''
+        loginForm.password = ''
+        // 设置标题
+        document.title = t('common.systemTitle')
+        // 获取用户store
+        const userStore = useUserStore()
 
-      // 保存语言选择到localStorage
-      localStorage.setItem('language', loginForm.language)
-
-      // 使用封装的post方法，它会使用环境变量中的API基础URL
-      post(
-        LOGIN_API.USER_LOGIN,
-        {
-          loginNo: loginForm.loginNo,
-          password: loginForm.password,
-          turnstileToken: turnstileToken.value
-        },
-        { allowLoginBusinessCodes: true }
-      ).then(res => {
-          // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
-          if (isHandled(res)) {
-            // 会重新回到登录表单等待用户重试，token 已被消费，必须换新的
-            resetTurnstile()
-            loading.value = false
-            return
-          }
-
-          const businessMsg = res?.message ?? ''
-          if (res.code === 200) {
-            const submittedLoginNo = loginForm.loginNo
-            resetAuthErrorState()
-            loginForm.loginNo = ''
-            loginForm.password = ''
-            // 设置标题
-            document.title = t('common.systemTitle')
-            // 获取用户store
-            const userStore = useUserStore()
-
-            // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token
-            // 仍保存必要的用户信息用于前端展示与路由守卫（loginNo/userId）
-            userStore.setUserInfo({
-              userId: res?.data?.userId || '',
-              userNameCn: res?.data?.userNameCn || '',
-              userNameEn: res?.data?.userNameEn || '',
-              loginNo: res?.data?.loginNo || submittedLoginNo,
-              avatar: res?.data?.avatarAddress || ''
-            })
-            
-            // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页
-            const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
-            if (redirect && redirect.startsWith('/')) {
-              router.replace(redirect)
-            } else {
-              router.replace('/module-select')
-            }
-            loading.value = false
-          } else if (res.code === 406) {
-            // 账号不存在（UserNotFound）：留在登录页重试，token 已被消费，换新的
-            resetTurnstile()
-            ElMessage({
-              message: businessMsg,
-              type: 'error',
-              plain: true,
-              showClose: true
-            })
-            loading.value = false
-          } else if (res.code === 401 || res.code === 402) {
-            // 冻结：即将跳转解锁页，不会留在登录页重试，无需刷新人机验证
-            ElMessage({
-              message: businessMsg,
-              type: 'warning',
-              plain: true,
-              showClose: true,
-              duration: 3000
-            })
-            setTimeout(() => {
-              router.push('/unlock')
-            }, 1500)
-          } else if (res.code === 403) {
-            // 密码错误：留在登录页重试，token 已被消费，换新的
-            resetTurnstile()
-            ElMessage({
-              message: businessMsg,
-              type: 'error',
-              plain: true,
-              showClose: true
-            })
-            loading.value = false
-          } else if (res.code === 405) {
-            // 密码过期：即将跳转密码过期页，不会留在登录页重试，无需刷新人机验证
-            ElMessage({
-              message: businessMsg,
-              type: 'warning',
-              plain: true,
-              showClose: true,
-              duration: 3000
-            })
-            setTimeout(() => {
-              router.push('/password-expiration')
-            }, 1500)
-          } else {
-            // 其它未知业务错误：留在登录页重试，token 已被消费，换新的
-            resetTurnstile()
-            ElMessage({
-              message: businessMsg,
-              type: 'error',
-              plain: true,
-              showClose: true
-            })
-            loading.value = false
-          }
+        // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token
+        // 仍保存必要的用户信息用于前端展示与路由守卫（loginNo/userId）
+        userStore.setUserInfo({
+          userId: res?.data?.userId || '',
+          userNameCn: res?.data?.userNameCn || '',
+          userNameEn: res?.data?.userNameEn || '',
+          loginNo: res?.data?.loginNo || submittedLoginNo,
+          avatar: res?.data?.avatarAddress || ''
         })
-        .catch(() => {
-          resetTurnstile()
-          // 业务码与 401/403/网络错误均由 post 内部统一处理；此处仅兜底提示并复位 loading
-          ElMessage({
-            message: t('login.loginFailedTip'),
-            type: 'error',
-            plain: true,
-            showClose: true,
-          })
-          loading.value = false
+
+        // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页
+        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+        if (redirect && redirect.startsWith('/')) {
+          router.replace(redirect)
+        } else {
+          router.replace('/module-select')
+        }
+        loading.value = false
+      } else if (res.code === 406) {
+        // 账号不存在（UserNotFound）：留在登录页重试，token 已被消费，换新的
+        resetTurnstile()
+        ElMessage({
+          message: businessMsg,
+          type: 'error',
+          plain: true,
+          showClose: true
         })
-    }
-  })
+        loading.value = false
+      } else if (res.code === 401 || res.code === 402) {
+        // 冻结：即将跳转解锁页，不会留在登录页重试，无需刷新人机验证
+        ElMessage({
+          message: businessMsg,
+          type: 'warning',
+          plain: true,
+          showClose: true,
+          duration: 3000
+        })
+        setTimeout(() => {
+          router.push('/unlock')
+        }, 1500)
+      } else if (res.code === 403) {
+        // 密码错误：留在登录页重试，token 已被消费，换新的
+        resetTurnstile()
+        ElMessage({
+          message: businessMsg,
+          type: 'error',
+          plain: true,
+          showClose: true
+        })
+        loading.value = false
+      } else if (res.code === 405) {
+        // 密码过期：即将跳转密码过期页，不会留在登录页重试，无需刷新人机验证
+        ElMessage({
+          message: businessMsg,
+          type: 'warning',
+          plain: true,
+          showClose: true,
+          duration: 3000
+        })
+        setTimeout(() => {
+          router.push('/password-expiration')
+        }, 1500)
+      } else {
+        // 其它未知业务错误：留在登录页重试，token 已被消费，换新的
+        resetTurnstile()
+        ElMessage({
+          message: businessMsg,
+          type: 'error',
+          plain: true,
+          showClose: true
+        })
+        loading.value = false
+      }
+    })
+    .catch(() => {
+      resetTurnstile()
+      // 业务码与 401/403/网络错误均由 post 内部统一处理；此处仅兜底提示并复位 loading
+      ElMessage({
+        message: t('login.loginFailedTip'),
+        type: 'error',
+        plain: true,
+        showClose: true,
+      })
+      loading.value = false
+    })
 }
 </script>
 

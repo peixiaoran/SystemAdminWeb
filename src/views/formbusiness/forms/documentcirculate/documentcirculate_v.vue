@@ -1,20 +1,16 @@
 ﻿<template>
   <div class="leave-form-page">
     <el-config-provider :locale="elementPlusLocale">
-    <!-- Skeleton 骨架屏：分区、内边距、标签列宽与下方真实表单对应 -->
     <template v-if="loading && !resultState.visible">
-      <!-- 表单卡片骨架 -->
       <el-card class="leave-form-card" shadow="never">
         <el-skeleton animated>
           <template #template>
-            <!-- 表单标题 -->
             <div class="sk-title-row">
               <el-skeleton-item variant="text" class="sk-title" />
             </div>
             <div class="sk-divider"></div>
 
             <div class="sk-body">
-              <!-- 表单号 / 申请日期 -->
               <div class="sk-grid">
                 <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -22,7 +18,6 @@
                 </div>
               </div>
 
-              <!-- 申请人工号 / 姓名 / 部门 -->
               <div class="sk-grid">
                 <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
@@ -32,43 +27,36 @@
 
               <div class="sk-divider"></div>
 
-              <!-- 发文部门 -->
               <div class="sk-field">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-control" />
               </div>
 
-              <!-- 传签目的 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-textarea" />
               </div>
 
-              <!-- 内容摘要 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-block" />
               </div>
 
-              <!-- 附件表格 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-block" />
               </div>
 
-              <!-- 加审人员表格 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-block" />
               </div>
 
-              <!-- 审批意见 -->
               <div class="sk-field sk-field--top">
                 <el-skeleton-item variant="text" class="sk-label" />
                 <el-skeleton-item variant="text" class="sk-textarea" />
               </div>
 
-              <!-- 流程查看入口（查看页无操作按钮） -->
               <div class="sk-actions sk-actions--end">
                 <el-skeleton-item variant="text" class="sk-hint" />
               </div>
@@ -77,7 +65,6 @@
         </el-skeleton>
       </el-card>
 
-      <!-- 审批记录卡片骨架 -->
       <el-card class="leave-form-card review-log-card" shadow="never">
         <el-skeleton animated>
           <template #template>
@@ -90,7 +77,6 @@
       </el-card>
     </template>
 
-    <!-- 结果页 -->
     <el-card
       v-else-if="resultState.visible"
       class="leave-form-card result-card"
@@ -135,16 +121,13 @@
 
     <template v-else>
     <el-card class="leave-form-card" shadow="never">
-      <!-- 表单标题 -->
       <div class="form-title-row">
         <h2 class="form-title">{{ t('formbusiness.documentcirculate.formTitle') }}</h2>
       </div>
       <el-divider style="margin: 22px 0;"></el-divider>
 
-      <!-- 表单主体（表格化排版，全部禁用） -->
       <el-form ref="formRef" :model="form" label-width="100px" class="leave-form" :validate-on-rule-change="false">
 
-        <!-- 基本信息 -->
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.formNo')" prop="formNo">
@@ -166,7 +149,6 @@
           </el-col>
         </el-row>
 
-        <!-- 申请人信息 -->
         <el-row
           v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
           :gutter="16"
@@ -192,7 +174,6 @@
 
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
-        <!-- 发文部门 -->
         <el-row v-if="isStepFieldVisible('IssueDept')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.issueDept')" prop="issueDept">
@@ -201,7 +182,6 @@
           </el-col>
         </el-row>
 
-        <!-- 传签目的 -->
         <el-row v-if="isStepFieldVisible('CirculationPurpose')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.circulationPurpose')" prop="circulationPurpose">
@@ -215,7 +195,6 @@
           </el-col>
         </el-row>
 
-        <!-- 内容摘要（富文本，只读） -->
         <el-row v-if="isStepFieldVisible('ContentSummary')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.contentSummary')" prop="contentSummary" class="content-summary-item">
@@ -226,7 +205,6 @@
           </el-col>
         </el-row>
 
-        <!-- 附件 -->
         <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16" class="attachment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.attachments')">
@@ -335,12 +313,10 @@
       </el-form>
     </el-card>
 
-    <!-- 审批记录 -->
     <ReviewLogCard :records="reviewRecordList" i18n-prefix="formbusiness.documentcirculate" />
 
     </template>
 
-    <!-- 完整审批流程 -->
     <WorkflowDrawer
       :visible="workflowDrawerVisible"
       @update:visible="workflowDrawerVisible = $event"

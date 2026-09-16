@@ -44,7 +44,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="numberMappingList"
                   border
@@ -79,7 +78,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -91,7 +89,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.numbermapping.editNumberMapping') : $t('custmat.numbermapping.addNumberMapping')"
                width="820px"
@@ -165,7 +162,6 @@
       </template>
     </el-dialog>
 
-    <!-- 导入对话框 -->
     <el-dialog v-model="importDialogVisible"
                :title="$t('custmat.numbermapping.import')"
                width="520px"
@@ -239,7 +235,6 @@ const dialogLoading = ref(false)
 const submitLoading = ref(false)
 const editFormRef = ref(null)
 
-// 客户料号/公司料号远程搜索下拉
 const customerPartNumberOptions = ref([])
 const customerPartNumberLoading = ref(false)
 let customerPartNumberTimer = null
@@ -263,14 +258,12 @@ const filters = reactive({
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 
-// 导入相关
 const importDialogVisible = ref(false)
 const templateLoading = ref(false)
 const importLoading = ref(false)
 const importFile = ref(null)
 const importFileList = ref([])
 
-// 导出相关
 const exportLoading = ref(false)
 
 const editForm = reactive({
@@ -373,7 +366,6 @@ const fetchNumberMappingList = async () => {
   }
 }
 
-// 客户料号远程搜索（防抖）
 const handleSearchCustomerPartNumber = (keyword) => {
   if (customerPartNumberTimer) clearTimeout(customerPartNumberTimer)
   if (!keyword) {
@@ -397,7 +389,6 @@ const handleSearchCustomerPartNumber = (keyword) => {
   }, REMOTE_SEARCH_DEBOUNCE_MS)
 }
 
-// 公司料号远程搜索（防抖）
 const handleSearchCompanyPartNumber = (keyword) => {
   if (companyPartNumberTimer) clearTimeout(companyPartNumberTimer)
   if (!keyword) {
@@ -588,13 +579,11 @@ const handleImportDialogClose = () => {
   importFileList.value = []
 }
 
-// 选择/替换导入文件
 const handleImportFileChange = (uploadFile) => {
   importFile.value = uploadFile.raw
   importFileList.value = [uploadFile]
 }
 
-// 超出单文件限制时替换为最新选择的文件
 const handleImportFileExceed = (files) => {
   const file = files[0]
   importFile.value = file
@@ -606,7 +595,6 @@ const handleImportFileRemove = () => {
   importFileList.value = []
 }
 
-// 下载导入模板（文件名根据当前语言取自 i18n）
 const handleDownloadTemplate = async () => {
   templateLoading.value = true
   try {
@@ -620,7 +608,6 @@ const handleDownloadTemplate = async () => {
   }
 }
 
-// 导出料号对照 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
 const handleExport = async () => {
   exportLoading.value = true
   try {

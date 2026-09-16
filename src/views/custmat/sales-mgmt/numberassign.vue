@@ -44,7 +44,6 @@
         </el-form-item>
       </el-form>
 
-      <!-- 表格区域 -->
       <div class="table-container">
         <el-table :data="numberAssignList"
                   border
@@ -103,7 +102,6 @@
         </el-table>
       </div>
 
-      <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination v-model:current-page="pagination.pageIndex"
                        v-model:page-size="pagination.pageSize"
@@ -115,7 +113,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible"
                :title="isEdit ? $t('custmat.numberassign.editNumberAssignTitle') : $t('custmat.numberassign.addNumberAssignTitle')"
                width="820px"
@@ -161,7 +158,6 @@
       </template>
     </el-dialog>
 
-    <!-- 按客户批量新增/覆盖对话框 -->
     <el-dialog v-model="batchDialogVisible"
                :title="$t('custmat.numberassign.batchUpsertTitle')"
                width="760px"
@@ -252,7 +248,6 @@ const filters = reactive({
   userName: ''
 })
 
-// 新增/编辑对话框
 const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const isEdit = ref(false)
@@ -274,7 +269,6 @@ const formRules = {
   ]
 }
 
-// 按客户批量新增/覆盖对话框
 const customerOptions = ref([])
 const batchDialogVisible = ref(false)
 const batchDialogLoading = ref(false)
@@ -299,12 +293,10 @@ const batchFormRules = {
   ]
 }
 
-// 料号远程搜索下拉
 const partNumberOptions = ref([])
 const partNumberLoading = ref(false)
 let partNumberTimer = null
 
-// 料号详情提示框
 const partNumberDetail = ref(null)
 const partNumberDetailLoading = ref(false)
 /** 当前已加载详情所属的料号，用于确保弹窗只展示本行的最新数据 */
@@ -336,7 +328,6 @@ const resetBatchForm = () => {
   })
 }
 
-/** 业务人员下拉 */
 const fetchSalesUserOptions = async () => {
   try {
     const res = await post(GET_SALES_USER_DROP_API.GET_SALES_USER_DROP, {})
@@ -356,7 +347,6 @@ const fetchSalesUserOptions = async () => {
   }
 }
 
-/** 客户下拉 */
 const fetchCustomerOptions = async () => {
   try {
     const res = await post(GET_CUSTOMER_DROP_API.GET_CUSTOMER_DROP, {})
@@ -411,7 +401,6 @@ const fetchNumberAssignList = async () => {
   }
 }
 
-// 公司料号远程搜索（防抖）
 const handleSearchPartNumber = (keyword) => {
   if (partNumberTimer) clearTimeout(partNumberTimer)
   if (!keyword) {
@@ -445,7 +434,6 @@ const handleHidePartNumberDetail = () => {
   partNumberDetailFor.value = ''
 }
 
-// 料号详情提示框
 const handleShowPartNumberDetail = async (partNumber) => {
   partNumberDetail.value = null
   partNumberDetailFor.value = ''
@@ -504,7 +492,6 @@ const downloadBlob = (blob, fileName) => {
   window.URL.revokeObjectURL(url)
 }
 
-// 导出业务人员料号 Excel（查询条件与分页列表一致，文件名根据当前语言取自 i18n）
 const handleExport = async () => {
   exportLoading.value = true
   try {
@@ -543,7 +530,6 @@ const handleAdd = async () => {
   dialogLoading.value = true
 
   if (salesUserOptions.value.length === 0) await fetchSalesUserOptions()
-  // 新增时下拉框默认选中第一项
   if (!editForm.salesUserId && salesUserOptions.value.length) editForm.salesUserId = salesUserOptions.value[0].salesUserId
 
   await nextTick()
@@ -754,7 +740,6 @@ onMounted(async () => {
 }
 
 .part-number-detail-row {
-  /* 左右留出间距，使分割线不顶到弹窗边缘 */
   margin: 0 8px;
   padding: 6px 0;
   font-size: 13px;
