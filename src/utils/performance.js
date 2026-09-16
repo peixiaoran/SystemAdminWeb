@@ -1,12 +1,6 @@
 const DEFAULT_DEBOUNCE_DELAY = 300
 
-/**
- * 防抖函数：附带 cancel / flush / pending 控制方法
- * @param {Function} func - 需要防抖的函数
- * @param {number} wait - 等待时间（毫秒）
- * @param {boolean} immediate - 是否立即执行
- * @returns {Function} 防抖后的函数
- */
+/** 防抖函数：附带 cancel / flush / pending 控制方法 */
 export function debounce(func, wait = DEFAULT_DEBOUNCE_DELAY, immediate = false) {
   let timer = null
   let lastArgs = null

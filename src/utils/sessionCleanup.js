@@ -25,17 +25,13 @@ const safeStorageGet = (key) => {
 const safeStorageSet = (key, value) => {
   try {
     localStorage.setItem(key, value)
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 const safeStorageRemove = (key) => {
   try {
     localStorage.removeItem(key)
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 export const clearAuthStorage = () => {

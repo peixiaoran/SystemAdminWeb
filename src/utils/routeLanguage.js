@@ -14,7 +14,6 @@ export function resolveRouteLanguageFromUrl () {
   return normalizeRouteLang(getLocationQueryParam('lang', 'Lang'))
 }
 
-/** 写入语言到 localStorage，返回归一化后的语言代码 */
 export function persistRouteLanguage (lang) {
   const normalized = normalizeRouteLang(lang)
   if (normalized) localStorage.setItem('language', normalized)

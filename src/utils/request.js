@@ -256,9 +256,7 @@ const hardRedirectToLogin = (redirectPath = '') => {
   setTimeout(() => {
     try {
       window.location.reload()
-    } catch {
-      // ignore
-    }
+    } catch {}
   }, 0)
 }
 
