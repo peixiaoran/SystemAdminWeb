@@ -11,7 +11,7 @@ export const GET_FORMTYPE_DROPDOWN_API = 'FormBusiness/CompreQuery/GeneralQuery/
 
 export const GET_FORMSTATUS_DROPDOWN_API = 'FormBusiness/CompreQuery/GeneralQuery/GetFormStatusDrop'
 
-export const GET_GENERAL_FORM_QUERY_PAGE_API = 'FormBusiness/CompreQuery/GeneralQuery/GetFormQueryPage'
+export const GET_GENERAL_FORM_QUERY_PAGE_API = 'FormBusiness/CompreQuery/GeneralQuery/GetGeneralQueryPage'
 
 export const GET_FORM_PENDING_USERS_API = 'FormBusiness/CompreQuery/GeneralQuery/GetFormPendingUsers'
 
@@ -19,4 +19,4 @@ export const PRINT_FORM_PDF_API = 'FormBusiness/CompreQuery/GeneralQuery/PrintFo
 
 export const PRINT_FORM_PDF_BATCH_API = 'FormBusiness/CompreQuery/GeneralQuery/PrintFormPdfBatch'
 
-export const EXPORT_APPLY_HISTORY_EXCEL_API = 'FormBusiness/CompreQuery/GeneralQuery/ExportFormQueryExcel'
+export const EXPORT_APPLY_HISTORY_EXCEL_API = 'FormBusiness/CompreQuery/GeneralQuery/ExportGeneralQueryExcel'

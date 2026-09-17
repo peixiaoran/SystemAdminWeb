@@ -131,18 +131,16 @@
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.formNo')" prop="formNo">
-              <el-input v-model="form.formNo" disabled />
+              <KeywordHighlightField :value="form.formNo" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.applyDate')" prop="applyDate">
-              <el-date-picker
-                v-model="form.applyDate"
-                type="date"
-                value-format="YYYY-MM-DD"
+              <KeywordHighlightField
+                :value="form.applyDate"
+                :keyword="searchKeyword"
                 :placeholder="t('formbusiness.documentcirculate.pleaseSelectApplyDate')"
-                clearable
-                disabled
+                :prefix-icon="Calendar"
                 style="width: 100%;"
               />
             </el-form-item>
@@ -157,17 +155,17 @@
         >
           <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.applicantUserNo')" prop="applicantUserNo">
-              <el-input v-model="form.applicantUserNo" disabled />
+              <KeywordHighlightField :value="form.applicantUserNo" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('UserName')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.applicantUserName')" prop="applicantUserName">
-              <el-input v-model="form.applicantUserName" disabled />
+              <KeywordHighlightField :value="form.applicantUserName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.documentcirculate.applicantDeptName')" prop="applicantDeptName">
-              <el-input v-model="form.applicantDeptName" disabled />
+              <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -177,7 +175,7 @@
         <el-row v-if="isStepFieldVisible('IssueDept')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.issueDept')" prop="issueDept">
-              <el-input v-model="form.issueDept" disabled />
+              <KeywordHighlightField :value="form.issueDept" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -185,12 +183,7 @@
         <el-row v-if="isStepFieldVisible('CirculationPurpose')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.circulationPurpose')" prop="circulationPurpose">
-              <el-input
-                v-model="form.circulationPurpose"
-                type="textarea"
-                :rows="4"
-                disabled
-              />
+              <KeywordHighlightField :value="form.circulationPurpose" :keyword="searchKeyword" multiline :rows="4" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,7 +192,7 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.contentSummary')" prop="contentSummary" class="content-summary-item">
               <div class="content-summary-editor is-disabled">
-                <editor-content :editor="editor" class="content-summary-body" />
+                <div class="content-summary-body" v-html="highlightedContentSummary"></div>
               </div>
             </el-form-item>
           </el-col>
@@ -213,7 +206,11 @@
                   <el-table-column type="index" width="55" align="center" label="#" />
                   <el-table-column :label="t('formbusiness.documentcirculate.fileName')" min-width="200">
                     <template #default="{ row }">
-                      <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
+                      <span
+                        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                        :title="getAttachmentName(row)"
+                        v-html="highlightKeywordHtml(getAttachmentName(row), searchKeyword)"
+                      ></span>
                     </template>
                   </el-table-column>
                   <el-table-column :label="t('formbusiness.documentcirculate.fileSize')" width="100" align="center">
@@ -248,22 +245,31 @@
                   align="center"
                 />
                 <el-table-column
-                  prop="deptName"
                   :label="t('formbusiness.documentcirculate.addReviewDepartment')"
                   min-width="200"
                   show-overflow-tooltip
-                />
+                >
+                  <template #default="{ row }">
+                    <span v-html="highlightKeywordHtml(row.deptName, searchKeyword)"></span>
+                  </template>
+                </el-table-column>
                 <el-table-column
-                  prop="userNo"
                   :label="t('formbusiness.documentcirculate.addReviewUserNo')"
                   width="120"
-                />
+                >
+                  <template #default="{ row }">
+                    <span v-html="highlightKeywordHtml(row.userNo, searchKeyword)"></span>
+                  </template>
+                </el-table-column>
                 <el-table-column
-                  prop="userName"
                   :label="t('formbusiness.documentcirculate.addReviewUserName')"
                   min-width="130"
                   show-overflow-tooltip
-                />
+                >
+                  <template #default="{ row }">
+                    <span v-html="highlightKeywordHtml(row.userName, searchKeyword)"></span>
+                  </template>
+                </el-table-column>
               </el-table>
             </el-form-item>
           </el-col>
@@ -274,12 +280,7 @@
         <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.approvalComment')">
-              <el-input
-                v-model="approvalComment"
-                type="textarea"
-                :rows="3"
-                disabled
-              />
+              <KeywordHighlightField :value="approvalComment" :keyword="searchKeyword" multiline :rows="3" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -329,21 +330,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Lock } from '@element-plus/icons-vue'
+import { Lock, Calendar } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import { TextStyle } from '@tiptap/extension-text-style'
-import Color from '@tiptap/extension-color'
-import Highlight from '@tiptap/extension-highlight'
-import TextAlign from '@tiptap/extension-text-align'
-import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
+import KeywordHighlightField from '../components/keywordhighlightfield.vue'
 import { post } from '@/utils/request'
 import {
   GET_DOCUMENTCIRCULATE_API,
@@ -357,6 +352,8 @@ import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
+import { resolveRouteKeyword, highlightKeywordHtml, highlightHtmlContent } from '@/utils/keywordHighlight'
+import '@/assets/styles/keywordHighlight.css'
 
 const { t, locale } = i18n.global
 
@@ -367,6 +364,8 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const pmenuStore = usePMenuStore()
+
+const searchKeyword = ref('')
 
 const loading = ref(true)
 
@@ -451,34 +450,9 @@ const form = reactive({
   contentSummary: ''
 })
 
-// 内容摘要富文本编辑器（查看页始终只读；扩展需与 documentcirculate_r.vue 编辑态保持一致，否则送审内容里的
-// 下划线/颜色/高亮/对齐/表格会因扩展缺失而渲染不出来）
-const editor = useEditor({
-  content: '',
-  editable: false,
-  extensions: [
-    StarterKit,
-    TextStyle,
-    Color,
-    Highlight.configure({ multicolor: true }),
-    TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    Table.configure({ resizable: false }),
-    TableRow,
-    TableHeader,
-    TableCell
-  ]
-})
-
-function setContentSummaryEditorContent (html) {
-  const value = html || ''
-  if (editor.value && editor.value.getHTML() !== value) {
-    editor.value.commands.setContent(value, false)
-  }
-}
-
-onBeforeUnmount(() => {
-  editor.value?.destroy()
-})
+// 内容摘要为只读展示，直接渲染详情返回的富文本 HTML（含表格/颜色/对齐等内联样式），
+// 关键字命中时逐个文本节点标黄，不影响原有格式
+const highlightedContentSummary = computed(() => highlightHtmlContent(form.contentSummary, searchKeyword.value))
 
 async function fetchFullReviewFlow () {
   const formId = String(form.formId || '')
@@ -671,7 +645,6 @@ function bindFormData (data) {
     circulationPurpose: data.circulationPurpose || '',
     contentSummary: data.contentSummary || ''
   })
-  setContentSummaryEditorContent(form.contentSummary)
 
   const attachmentList = data.attachment
   if (Array.isArray(attachmentList)) {
@@ -802,6 +775,7 @@ onMounted(async () => {
   try {
     await syncRouteLanguage()
     loading.value = true
+    searchKeyword.value = resolveRouteKeyword(route)
 
     const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
     if (routeToken) {
@@ -1137,55 +1111,51 @@ onMounted(async () => {
   min-height: 180px;
   max-height: 420px;
   overflow-y: auto;
-}
-
-.content-summary-body :deep(.ProseMirror) {
-  min-height: 160px;
   outline: none;
   font-size: 14px;
   line-height: 1.6;
   color: #303133;
 }
 
-.content-summary-body :deep(.ProseMirror p) {
+.content-summary-body :deep(p) {
   margin: 0 0 8px;
 }
 
-.content-summary-body :deep(.ProseMirror ul),
-.content-summary-body :deep(.ProseMirror ol) {
+.content-summary-body :deep(ul),
+.content-summary-body :deep(ol) {
   padding-left: 20px;
   margin: 0 0 8px;
 }
 
-.content-summary-body :deep(.ProseMirror blockquote) {
+.content-summary-body :deep(blockquote) {
   margin: 0 0 8px;
   padding-left: 12px;
   border-left: 3px solid #dcdfe6;
   color: #909399;
 }
 
-.content-summary-body :deep(.ProseMirror table) {
+.content-summary-body :deep(table) {
   border-collapse: collapse;
   table-layout: fixed;
   width: 100%;
   margin: 0 0 8px;
 }
 
-.content-summary-body :deep(.ProseMirror th),
-.content-summary-body :deep(.ProseMirror td) {
+.content-summary-body :deep(th),
+.content-summary-body :deep(td) {
   min-width: 60px;
   border: 1px solid #dcdfe6;
   padding: 6px 8px;
   vertical-align: top;
 }
 
-.content-summary-body :deep(.ProseMirror th) {
+.content-summary-body :deep(th) {
   background: #f5f7fa;
   font-weight: 600;
   text-align: left;
 }
 
-.content-summary-body :deep(.ProseMirror pre) {
+.content-summary-body :deep(pre) {
   background: #282c34;
   color: #f5f5f5;
   padding: 10px 12px;
@@ -1194,7 +1164,7 @@ onMounted(async () => {
   margin: 0 0 8px;
 }
 
-.content-summary-body :deep(.ProseMirror hr) {
+.content-summary-body :deep(hr) {
   border: none;
   border-top: 1px solid #dcdfe6;
   margin: 12px 0;

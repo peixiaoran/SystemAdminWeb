@@ -1,0 +1,23 @@
+/**
+ * 关键字高亮：不改变原有表单布局/样式，仅将命中字段的文本背景标黄
+ * 本文件以普通样式表 import 引入（非 Vue SFC <style scoped>），选择器不支持 :deep()
+ */
+.kw-hit .el-input__wrapper,
+.kw-hit .el-textarea__inner {
+  background-color: #fadb14 !important;
+}
+
+.kw-hit.is-disabled .el-input__inner,
+.kw-hit .el-input.is-disabled .el-input__wrapper {
+  background-color: #fadb14 !important;
+}
+
+.kw-hit-text {
+  background-color: #fadb14;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.kw-hit-block {
+  background-color: #fadb14 !important;
+}

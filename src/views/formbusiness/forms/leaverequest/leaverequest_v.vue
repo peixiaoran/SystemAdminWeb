@@ -130,24 +130,21 @@
           <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
             <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.formNo')" prop="formNo">
-                <el-input v-model="form.formNo" disabled />
+                <KeywordHighlightField :value="form.formNo" :keyword="searchKeyword" />
               </el-form-item>
             </el-col>
             <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applyDate')" prop="applyDate">
-                <el-date-picker
-                  v-model="form.applyDate"
-                  type="date"
-                  value-format="YYYY-MM-DD"
+                <KeywordHighlightField
+                  :value="form.applyDate"
+                  :keyword="searchKeyword"
                   :placeholder="t('formbusiness.leaverequest.pleaseSelectApplyDate')"
-                  clearable
-                  disabled
-                  style="width: 100%;"
+                  :prefix-icon="Calendar"
                 />
               </el-form-item>
             </el-col>
           </el-row>
-  
+
           <el-row
             v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
             :gutter="16"
@@ -156,23 +153,23 @@
           >
             <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applicantUserNo')" prop="applicantUserNo">
-                <el-input v-model="form.applicantUserNo" disabled />
+                <KeywordHighlightField :value="form.applicantUserNo" :keyword="searchKeyword" />
               </el-form-item>
             </el-col>
             <el-col v-if="isStepFieldVisible('UserName')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applicantUserName')" prop="applicantUserName">
-                <el-input v-model="form.applicantUserName" disabled />
+                <KeywordHighlightField :value="form.applicantUserName" :keyword="searchKeyword" />
               </el-form-item>
             </el-col>
             <el-col v-if="isStepFieldVisible('Department')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.applicantDeptName')" prop="applicantDeptName">
-                <el-input v-model="form.applicantDeptName" disabled />
+                <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" />
               </el-form-item>
             </el-col>
           </el-row>
-  
+
           <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
-  
+
           <el-row
             v-if="isAnyStepFieldVisible(['LeaveType', 'Agent', 'SelectAgent'])"
             :gutter="16"
@@ -180,18 +177,21 @@
           >
             <el-col v-if="isStepFieldVisible('LeaveType')" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.leaveType')" prop="leaveType">
-                <el-select v-model="form.leaveType" :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')" disabled @change="onSelectChange('leaveType')">
-                  <el-option v-for="type in leaveTypeOptions" :key="type.value" :label="type.label" :value="type.value" />
-                </el-select>
+                <KeywordHighlightField
+                  :value="getCurrentLeaveTypeOption()?.label"
+                  :keyword="searchKeyword"
+                  :placeholder="t('formbusiness.leaverequest.pleaseSelectLeaveType')"
+                  suffix-arrow
+                />
               </el-form-item>
             </el-col>
             <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="8">
               <el-form-item :label="t('formbusiness.leaverequest.agentUserNo')" prop="agentUserId">
                 <div class="agent-field-control">
-                  <el-input
-                    :model-value="agentDisplayText"
+                  <KeywordHighlightField
+                    :value="agentDisplayText"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectAgent')"
-                    disabled
                   />
                   <el-button
                     v-if="isStepFieldVisible('SelectAgent')"
@@ -217,46 +217,36 @@
                 class="leave-time-range-item"
               >
                 <div class="leave-time-range-fields">
-                  <el-date-picker
-                    v-model="leaveStartDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
+                  <KeywordHighlightField
+                    :value="leaveStartDate"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectStartDate')"
-                    :clearable="false"
-                    disabled
+                    :prefix-icon="Calendar"
                     class="leave-date-picker"
                     style="width: 165px; flex: 0 0 165px;"
                   />
-                  <el-time-select
-                    v-model="leaveStartTimeOfDay"
-                    start="08:00"
-                    end="17:00"
-                    step="00:10"
+                  <KeywordHighlightField
+                    :value="leaveStartTimeOfDay"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectStartTime')"
-                    :clearable="false"
-                    disabled
+                    suffix-arrow
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
                   />
                   <span class="leave-time-range-separator"> ~ </span>
-                  <el-date-picker
-                    v-model="leaveEndDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
+                  <KeywordHighlightField
+                    :value="leaveEndDate"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectEndDate')"
-                    :clearable="false"
-                    disabled
+                    :prefix-icon="Calendar"
                     class="leave-date-picker"
                     style="width: 165px; flex: 0 0 165px;"
                   />
-                  <el-time-select
-                    v-model="leaveEndTimeOfDay"
-                    start="08:00"
-                    end="17:00"
-                    step="00:10"
+                  <KeywordHighlightField
+                    :value="leaveEndTimeOfDay"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leaverequest.pleaseSelectEndTime')"
-                    :clearable="false"
-                    disabled
+                    suffix-arrow
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
                   />
@@ -269,15 +259,11 @@
                 label-width="auto"
                 class="leave-hours-item"
               >
-                <el-input-number
-                  v-model="form.days"
+                <KeywordHighlightField
+                  :value="formatLeaveDaysDisplay(form.days)"
+                  :keyword="searchKeyword"
                   class="leave-hours-input"
-                  :min="0"
-                  :step="0.01"
-                  :precision="2"
-                  :controls="false"
                   style="width: 110px;"
-                  disabled
                 />
               </el-form-item>
             </el-col>
@@ -286,7 +272,7 @@
           <el-row v-if="isStepFieldVisible('LeaveReason')" :gutter="16">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.leaveReason')" prop="reason">
-                <el-input v-model="form.reason" type="textarea" :rows="3" :placeholder="t('formbusiness.leaverequest.pleaseInputLeaveReason')" disabled />
+                <KeywordHighlightField :value="form.reason" :keyword="searchKeyword" :placeholder="t('formbusiness.leaverequest.pleaseInputLeaveReason')" multiline :rows="3" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -299,7 +285,11 @@
                     <el-table-column type="index" width="55" align="center" label="#" />
                     <el-table-column :label="t('formbusiness.leaverequest.fileName')" min-width="200">
                       <template #default="{ row }">
-                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
+                        <span
+                          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                          :title="getAttachmentName(row)"
+                          v-html="highlightKeywordHtml(getAttachmentName(row), searchKeyword)"
+                        ></span>
                       </template>
                     </el-table-column>
                     <el-table-column :label="t('formbusiness.leaverequest.fileSize')" width="100" align="center">
@@ -325,12 +315,12 @@
           <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leaverequest.approvalComment')">
-                <el-input
-                  v-model="approvalComment"
-                  type="textarea"
-                  :rows="3"
+                <KeywordHighlightField
+                  :value="approvalComment"
+                  :keyword="searchKeyword"
                   :placeholder="t('formbusiness.leaverequest.approvalCommentPlaceholder')"
-                  disabled
+                  multiline
+                  :rows="3"
                 />
               </el-form-item>
             </el-col>
@@ -458,9 +448,10 @@
   import { ElMessage } from 'element-plus'
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import en from 'element-plus/dist/locale/en.mjs'
-  import { Lock, Search } from '@element-plus/icons-vue'
+  import { Lock, Search, Calendar } from '@element-plus/icons-vue'
   import ReviewLogCard from '../components/reviewlogcard.vue'
   import WorkflowDrawer from '../components/workflowdrawer.vue'
+  import KeywordHighlightField from '../components/keywordhighlightfield.vue'
   import { post } from '@/utils/request'
   import { INIT_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, GET_FULL_REVIEW_FLOW_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
   import { MODULE_API } from '@/config/api/modulemenu/menu'
@@ -471,7 +462,9 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
   import { usePMenuStore } from '@/stores/pmenu'
   import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
   import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
-  
+  import { resolveRouteKeyword, highlightKeywordHtml } from '@/utils/keywordHighlight'
+  import '@/assets/styles/keywordHighlight.css'
+
   const { t, locale } = i18n.global
   
   const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
@@ -481,7 +474,15 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
   const router = useRouter()
   const userStore = useUserStore()
   const pmenuStore = usePMenuStore()
-  
+
+  const searchKeyword = ref('')
+
+  function formatLeaveDaysDisplay (val) {
+    if (val === undefined || val === null || val === '') return ''
+    const n = Number(val)
+    return Number.isFinite(n) ? n.toFixed(2) : ''
+  }
+
   const loading = ref(true)
   const workflowDrawerVisible = ref(false)
   const workflowDrawerLoading = ref(false)
@@ -658,14 +659,6 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
     callback()
   }
   
-  function onSelectChange (field) {
-    if (!formRef.value) return
-    try {
-      formRef.value.validateField(field)
-    } catch {
-      // ignore
-    }
-  }
 
   function normalizeDateTime (val) {
     if (!val) return ''
@@ -1423,7 +1416,8 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
     try {
       await syncRouteLanguage()
       loading.value = true
-  
+      searchKeyword.value = resolveRouteKeyword(route)
+
       currentFormTypeId.value = String(route.query.formTypeId || '')
   
       const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')

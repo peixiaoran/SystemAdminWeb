@@ -556,6 +556,17 @@ const pmenuRoutes = [
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
+            },
+            {
+              path: 'generalquery',
+              name: 'GeneralQuery',
+              component: () => import('../views/formbusiness/compre-query/generalquery.vue'),
+              meta: {
+                title: 'route.generalQuery',
+                icon: 'Document',
+                [ROUTE_CONFIG.META.AUTH]: true,
+                noTag: false
+              }
             }
           ]
         }

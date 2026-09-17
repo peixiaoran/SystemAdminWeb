@@ -118,19 +118,12 @@
         <el-row v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate'])" :gutter="16" class="basic-info-row" style="justify-content: flex-start;">
           <el-col v-if="isStepFieldVisible('FormNo')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.formNo')" prop="formNo">
-              <el-input v-model="form.formNo" disabled />
+              <KeywordHighlightField :value="form.formNo" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('ApplyDate')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applyDate')" prop="applyDate">
-              <el-date-picker
-                v-model="form.applyDate"
-                type="date"
-                value-format="YYYY-MM-DD"
-                clearable
-                disabled
-                style="width: 100%;"
-              />
+              <KeywordHighlightField :value="form.applyDate" :keyword="searchKeyword" :prefix-icon="Calendar" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -143,17 +136,17 @@
         >
           <el-col v-if="isStepFieldVisible('UserNo')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantUserNo')" prop="applicantUserNo">
-              <el-input v-model="form.applicantUserNo" disabled />
+              <KeywordHighlightField :value="form.applicantUserNo" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('UserName')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantUserName')" prop="applicantUserName">
-              <el-input v-model="form.applicantUserName" disabled />
+              <KeywordHighlightField :value="form.applicantUserName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
           <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.leavecancell.applicantDeptName')" prop="applicantDeptName">
-              <el-input v-model="form.applicantDeptName" disabled />
+              <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -165,7 +158,11 @@
             <el-col :span="24">
               <el-form-item :label="t('formbusiness.leavecancell.leaveRequestFormNo')" prop="leaveRequestId">
                 <el-table v-if="isStepFieldVisible('LeaveRequestTable')" :data="selectedLeaveRequest ? [selectedLeaveRequest] : []" border size="small" class="leave-request-ref-table" :empty-text="t('common.noData')">
-                  <el-table-column prop="leaveRequestNo" :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center" />
+                  <el-table-column :label="t('formbusiness.leavecancell.leaveRequestNoColumn')" min-width="120" align="center">
+                    <template #default="{ row }">
+                      <span v-html="highlightKeywordHtml(row.leaveRequestNo, searchKeyword)"></span>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="leaveType" :label="t('formbusiness.leavecancell.leaveTypeColumn')" min-width="100" align="center" />
                   <el-table-column :label="t('formbusiness.leavecancell.leaveTimeRangeColumn')" min-width="300" align="center">
                     <template #default="{ row }">{{ formatDateTimeCell(row.startDateTime) }} ~ {{ formatDateTimeCell(row.endDateTime) }}</template>
@@ -182,59 +179,47 @@
             <el-col :span="24" class="cancel-time-hours-row">
               <el-form-item v-if="isStepFieldVisible('TimePeriod')" :label="t('formbusiness.leavecancell.cancelTimeRange')" class="cancel-time-range-item">
                 <div class="leave-time-range-fields">
-                  <el-date-picker
-                    :model-value="cancelStartDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
+                  <KeywordHighlightField
+                    :value="cancelStartDate"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartDate')"
-                    :clearable="false"
-                    disabled
+                    :prefix-icon="Calendar"
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
                   />
-                  <el-time-select
-                    :model-value="cancelStartTimeOfDay"
-                    start="08:00"
-                    end="17:00"
-                    step="00:10"
+                  <KeywordHighlightField
+                    :value="cancelStartTimeOfDay"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectStartTime')"
-                    :clearable="false"
-                    disabled
+                    suffix-arrow
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
                   />
                   <span class="leave-time-range-separator"> ~ </span>
-                  <el-date-picker
-                    :model-value="cancelEndDate"
-                    type="date"
-                    value-format="YYYY-MM-DD"
+                  <KeywordHighlightField
+                    :value="cancelEndDate"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndDate')"
-                    :clearable="false"
-                    disabled
+                    :prefix-icon="Calendar"
                     class="leave-date-picker"
                     style="width: 160px; flex: 0 0 160px;"
                   />
-                  <el-time-select
-                    :model-value="cancelEndTimeOfDay"
-                    start="08:00"
-                    end="17:00"
-                    step="00:10"
+                  <KeywordHighlightField
+                    :value="cancelEndTimeOfDay"
+                    :keyword="searchKeyword"
                     :placeholder="t('formbusiness.leavecancell.pleaseSelectEndTime')"
-                    :clearable="false"
-                    disabled
+                    suffix-arrow
                     class="leave-time-of-day-select"
                     style="width: 130px; flex: 0 0 130px;"
                   />
                 </div>
               </el-form-item>
               <el-form-item v-if="isStepFieldVisible('Hour')" :label="t('formbusiness.leavecancell.cancelHours')" label-width="auto" class="cancel-hours-item">
-                <el-input-number
-                  v-model="form.cancelHours"
+                <KeywordHighlightField
+                  :value="formatCancelHoursDisplay(form.cancelHours)"
+                  :keyword="searchKeyword"
                   class="leave-hours-input"
-                  :precision="2"
-                  :controls="false"
                   style="width: 110px;"
-                  disabled
                 />
               </el-form-item>
             </el-col>
@@ -247,7 +232,7 @@
         <el-row v-if="isStepFieldVisible('Comments')" :gutter="16" class="approval-comment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.leavecancell.approvalComment')">
-              <el-input v-model="approvalComment" type="textarea" :rows="3" disabled />
+              <KeywordHighlightField :value="approvalComment" :keyword="searchKeyword" multiline :rows="3" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -303,15 +288,18 @@ import i18n from '@/i18n'
 import { ElMessage } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Lock } from '@element-plus/icons-vue'
+import { Lock, Calendar } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
+import KeywordHighlightField from '../components/keywordhighlightfield.vue'
 import { post } from '@/utils/request'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { GET_LEAVECANCELL_API, GET_LEAVEREQUEST_DETAIL_API, GET_FULL_REVIEW_FLOW_API } from '@/config/api/formbusiness/forms/leavecancell'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { usePMenuStore } from '@/stores/pmenu'
+import { resolveRouteKeyword, highlightKeywordHtml } from '@/utils/keywordHighlight'
+import '@/assets/styles/keywordHighlight.css'
 
 // GET_LEAVECANCELL_API（销假单明细，只读）已接入；
 // INIT_LEAVECANCELL_API / SAVE_LEAVECANCELL_API 及送审驳回相关接口在本只读页面无需使用
@@ -325,6 +313,14 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const pmenuStore = usePMenuStore()
+
+const searchKeyword = ref('')
+
+function formatCancelHoursDisplay (val) {
+  if (val === undefined || val === null || val === '') return ''
+  const n = Number(val)
+  return Number.isFinite(n) ? n.toFixed(2) : ''
+}
 
 const loading = ref(true)
 
@@ -720,6 +716,7 @@ async function closeCurrentPage () {
 
 onMounted(async () => {
   try {
+    searchKeyword.value = resolveRouteKeyword(route)
     const routeFormId = route.query.formId || route.params?.formId
     if (routeFormId) {
       form.formId = String(routeFormId)
