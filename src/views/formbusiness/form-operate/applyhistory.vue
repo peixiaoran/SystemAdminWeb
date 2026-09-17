@@ -49,7 +49,8 @@
 
         <el-form-item class="form-right-button">
           <el-button
-            :icon="Printer"
+            type="primary"
+            :icon="Document"
             :disabled="selectedRows.length === 0"
             :loading="batchPrinting"
             @click="handleBatchPrintForm"
@@ -153,12 +154,13 @@
                 <span v-if="!canShowWithdraw(row) && !canShowInvalidate(row) && !canShowPrint(row)">—</span>
                 <el-button
                   v-if="canShowPrint(row)"
+                  type="primary"
                   link
-                  :icon="Printer"
                   :loading="printingFormIds.has(row.formId)"
-                  :title="printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf')"
                   @click="handlePrintForm(row)"
-                />
+                >
+                  {{ printingFormIds.has(row.formId) ? $t('formbusiness.applyhistory.printing') : $t('formbusiness.applyhistory.printPdf') }}
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -236,7 +238,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Printer } from '@element-plus/icons-vue'
+import { Document } from '@element-plus/icons-vue'
 import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
