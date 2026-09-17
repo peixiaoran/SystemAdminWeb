@@ -26,7 +26,8 @@
                   </div>
                 </div>
 
-                <div class="sk-divider"></div>
+                <!-- 对应真实表单的第二条分割线：前一行表单项自带 18px 下边距，divider 自身补 6px 凑满 24px，下方 24px 与真实一致 -->
+                <div class="sk-divider" style="margin: 6px 0 24px;"></div>
 
                 <div class="sk-grid">
                   <div v-for="n in 2" :key="`sk-leave-${n}`" class="sk-field">
@@ -49,6 +50,9 @@
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-block" />
                 </div>
+
+                <!-- 对应真实表单送审意见上方的分割线：上下留白与 .approval-divider 一致 -->
+                <div class="sk-divider" style="margin: 6px 0 24px;"></div>
 
                 <div class="sk-field sk-field--top">
                   <el-skeleton-item variant="text" class="sk-label" />

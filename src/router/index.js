@@ -552,7 +552,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/compre-query/basicquery.vue'),
               meta: {
                 title: 'route.basicQuery',
-                icon: 'Document',
+                icon: 'FolderRemove',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
@@ -563,7 +563,7 @@ const pmenuRoutes = [
               component: () => import('../views/formbusiness/compre-query/generalquery.vue'),
               meta: {
                 title: 'route.generalQuery',
-                icon: 'Document',
+                icon: 'FolderOpened',
                 [ROUTE_CONFIG.META.AUTH]: true,
                 noTag: false
               }
