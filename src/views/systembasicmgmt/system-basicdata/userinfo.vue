@@ -52,11 +52,11 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('systembasicmgmt.userInfo.index')" width="70" align="center" fixed />
-          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="left" min-width="130" />
-          <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="150" />
-          <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="230" />
-          <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="220" />
-          <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="120" />
+          <el-table-column prop="userNo" :label="$t('systembasicmgmt.userInfo.userNo')" align="left" min-width="120" />
+          <el-table-column prop="userNameCn" :label="$t('systembasicmgmt.userInfo.userNameCn')" align="left" min-width="120" />
+          <el-table-column prop="userNameEn" :label="$t('systembasicmgmt.userInfo.userNameEn')" align="left" min-width="200" />
+          <el-table-column prop="departmentName" :label="$t('systembasicmgmt.userInfo.department')" align="left" min-width="280" />
+          <el-table-column prop="positionName" :label="$t('systembasicmgmt.userInfo.position')" align="left" min-width="160" />
           <el-table-column :label="$t('systembasicmgmt.userInfo.gender')" align="center" min-width="100">
             <template #default="scope">
               {{ getGenderText(scope.row.gender) }}

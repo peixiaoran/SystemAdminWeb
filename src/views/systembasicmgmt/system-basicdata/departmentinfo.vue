@@ -329,21 +329,31 @@ const handleReset = () => {
   scheduleSearch()
 }
 
-const handleAdd = () => {
-  resetEditForm()
+const handleAdd = async () => {
   dialogTitle.value = t('systembasicmgmt.departmentInfo.addDepartment')
   isEdit.value = false
   dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  dialogLoading.value = true
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown()])
+  resetEditForm()
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
-const handleAddChild = (row) => {
-  resetEditForm()
-  editForm.parentId = row.departmentId
+const handleAddChild = async (row) => {
   dialogTitle.value = t('systembasicmgmt.departmentInfo.addChild')
   isEdit.value = false
   dialogVisible.value = true
-  nextTick(() => editFormRef.value?.clearValidate())
+  dialogLoading.value = true
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown()])
+  resetEditForm()
+  editForm.parentId = row.departmentId
+  nextTick(() => {
+    editFormRef.value?.clearValidate()
+    dialogLoading.value = false
+  })
 }
 
 const handleEdit = async (row) => {
@@ -354,7 +364,12 @@ const handleEdit = async (row) => {
   dialogLoading.value = true
   const formData = new FormData()
   formData.append('deptId', row.departmentId)
-  const res = await post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData)
+  const [res] = await Promise.all([
+    post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData),
+    fetchDepartmentDropdown(),
+    fetchDepartmentLevelDropdown(),
+    fetchFactoryDropdown()
+  ])
   if (res?.code === 200) {
     const data = res.data
     Object.assign(editForm, {
