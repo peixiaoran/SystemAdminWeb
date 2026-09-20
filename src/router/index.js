@@ -642,6 +642,29 @@ const pmenuRoutes = [
       tokenBypass: true
     }
   },
+  {
+    path: '/formbusiness/forms/overseastripapp/overseastripapp_r',
+    name: 'OverseasTripAppR',
+    component: () => import('../views/formbusiness/forms/overseastripapp/overseastripapp_r.vue'),
+    meta: {
+      title: 'route.overseastripapp_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  // 独立出差申请单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/overseastripapp/overseastripapp_v',
+    name: 'OverseasTripAppV',
+    component: () => import('../views/formbusiness/forms/overseastripapp/overseastripapp_v.vue'),
+    meta: {
+      title: 'route.overseastripapp_v',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
   // 独立预测周明细上摆页面（不使用Layout，无标签，全屏展示，供最新版本编辑）
   {
     path: '/custmat/rolling-forecast/foweeklydetailarrange',

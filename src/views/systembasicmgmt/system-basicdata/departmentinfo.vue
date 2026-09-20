@@ -44,6 +44,11 @@
           <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="260" />
           <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="420" />
           <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
+          <el-table-column :label="$t('systembasicmgmt.departmentInfo.factory')" align="center" min-width="170">
+            <template #default="{ row }">
+              {{ resolveFactoryName(row.factory) }}
+            </template>
+          </el-table-column>
           <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
           <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="260" />
           <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="270" fixed="right" align="center">
@@ -136,8 +141,16 @@
                            :value="item.factory" />
               </el-select>
             </el-form-item>
-            <!-- 占位项：保持与上方两列布局对齐 -->
-            <el-form-item />
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentFunctions')" prop="departmentFunctions">
+              <el-select v-model="editForm.departmentFunctions"
+                         style="width: 100%"
+                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectDepartmentFunctions')">
+                <el-option v-for="item in departmentFunctionsOptions"
+                           :key="item.departmentFunctions"
+                           :label="item.departmentFunctionsName"
+                           :value="item.departmentFunctions" />
+              </el-select>
+            </el-form-item>
           </div>
           <div class="form-row full-width">
             <el-form-item :label="$t('systembasicmgmt.departmentInfo.description')" prop="description">
@@ -167,7 +180,8 @@ import {
   UPDATE_DEPARTMENT_API,
   GET_DEPARTMENTLEVEL_DROPDOWN_API,
   GET_DEPARTMENT_TREE_DROPDOWN_API,
-  GET_FACTORY_DROP_API
+  GET_FACTORY_DROP_API,
+  GET_DEPARTMENT_FUNCTIONS_DROP_API
 } from '@/config/api/systembasicmgmt/system-basicdata/department'
 
 const { t } = useI18n()
@@ -183,6 +197,7 @@ const editFormRef = ref(null)
 const departmentOptions = ref([])
 const departmentLevelOptions = ref([])
 const factoryOptions = ref([])
+const departmentFunctionsOptions = ref([])
 
 const departmentOptionsWithNone = computed(() => [
   { departmentId: '0', departmentName: t('systembasicmgmt.departmentInfo.topLevel'), departmentChildList: [] },
@@ -207,6 +222,7 @@ const editForm = reactive({
   parentId: '',
   departmentLevelId: '',
   factory: '',
+  departmentFunctions: '',
   description: '',
   sortOrder: 1,
   landline: '',
@@ -292,6 +308,23 @@ const fetchFactoryDropdown = async () => {
   }
 }
 
+const fetchDepartmentFunctionsDropdown = async () => {
+  const res = await post(GET_DEPARTMENT_FUNCTIONS_DROP_API.GET_DEPARTMENT_FUNCTIONS_DROP, {})
+  if (res?.code === 200) {
+    departmentFunctionsOptions.value = res.data || []
+  } else {
+    showApiError(res)
+    departmentFunctionsOptions.value = []
+  }
+}
+
+/** 列表只返回厂区编码，依赖厂区下拉数据把编码映射成名称展示 */
+const resolveFactoryName = (factory) => {
+  if (!factory) return ''
+  const matched = factoryOptions.value.find(item => String(item.factory) === String(factory))
+  return matched?.factoryName || factory
+}
+
 const scheduleSearch = () => {
   if (searchTimer) clearTimeout(searchTimer)
   loading.value = true
@@ -307,6 +340,7 @@ const resetEditForm = () => {
     parentId: '0',
     departmentLevelId: getFirstEnabledDepartmentLevelId(),
     factory: '',
+    departmentFunctions: '',
     description: '',
     sortOrder: 1,
     landline: '',
@@ -334,7 +368,7 @@ const handleAdd = async () => {
   isEdit.value = false
   dialogVisible.value = true
   dialogLoading.value = true
-  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown()])
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown(), fetchDepartmentFunctionsDropdown()])
   resetEditForm()
   nextTick(() => {
     editFormRef.value?.clearValidate()
@@ -347,7 +381,7 @@ const handleAddChild = async (row) => {
   isEdit.value = false
   dialogVisible.value = true
   dialogLoading.value = true
-  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown()])
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown(), fetchDepartmentFunctionsDropdown()])
   resetEditForm()
   editForm.parentId = row.departmentId
   nextTick(() => {
@@ -368,7 +402,8 @@ const handleEdit = async (row) => {
     post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData),
     fetchDepartmentDropdown(),
     fetchDepartmentLevelDropdown(),
-    fetchFactoryDropdown()
+    fetchFactoryDropdown(),
+    fetchDepartmentFunctionsDropdown()
   ])
   if (res?.code === 200) {
     const data = res.data
@@ -380,6 +415,7 @@ const handleEdit = async (row) => {
       parentId: data.parentId,
       departmentLevelId: data.departmentLevelId || getFirstEnabledDepartmentLevelId(),
       factory: data.factory || '',
+      departmentFunctions: data.departmentFunctions || '',
       description: data.description,
       sortOrder: data.sortOrder,
       landline: data.landline,
@@ -431,6 +467,7 @@ const handleSave = async () => {
     parentId: editForm.parentId,
     departmentLevelId: editForm.departmentLevelId,
     factory: editForm.factory,
+    departmentFunctions: editForm.departmentFunctions,
     description: editForm.description,
     sortOrder: editForm.sortOrder,
     landline: editForm.landline,
@@ -467,6 +504,7 @@ onMounted(() => {
   fetchDepartmentLevelDropdown()
   fetchDepartmentDropdown()
   fetchFactoryDropdown()
+  fetchDepartmentFunctionsDropdown()
 })
 
 onUnmounted(() => {

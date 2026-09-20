@@ -50,7 +50,7 @@
                     :empty-text="$t('common.noData')"
                     >
             <el-table-column type="index" :label="$t('systembasicmgmt.userPartTime.index')" width="70" align="center" fixed />
-            <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="110" />
+            <el-table-column prop="userNo" :label="$t('systembasicmgmt.userPartTime.userNo')" align="left" min-width="150" />
             <el-table-column prop="userName" :label="$t('systembasicmgmt.userPartTime.name')" align="left" min-width="170" />
             <el-table-column :label="$t('systembasicmgmt.userPartTime.isReview')" align="center" min-width="110">
               <template #default="scope">

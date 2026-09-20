@@ -45,3 +45,8 @@ export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
 export const GET_FACTORY_DROP_API = {
   GET_FACTORY_DROP: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetFactoryDrop'
 }
+
+// 部门职能下拉框API
+export const GET_DEPARTMENT_FUNCTIONS_DROP_API = {
+  GET_DEPARTMENT_FUNCTIONS_DROP: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetDepartmentFunctionsDrop'
+}
