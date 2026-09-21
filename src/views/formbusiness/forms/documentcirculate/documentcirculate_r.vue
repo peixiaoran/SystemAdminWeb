@@ -592,9 +592,11 @@ import {
   UPDATE_FORM_ADD_REVIEW_API,
   DELETE_FORM_ADD_REVIEW_API
 } from '@/config/api/formbusiness/forms/documentcirculate'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { usePMenuStore } from '@/stores/pmenu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
@@ -606,6 +608,7 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -725,8 +728,7 @@ function onTextColorInput (event) {
   editor.value?.chain().focus().setColor(value).run()
 }
 
-/** Link 扩展设置了 openOnClick: false（避免编辑时误触跳转），这里补一个手动打开：
- *  只读态直接点击打开；可编辑态需按住 Ctrl/Cmd 点击，避免和光标定位冲突 */
+/** openOnClick:false 避免编辑时误触跳转；只读态直接点击打开，可编辑态需 Ctrl/Cmd 点击避免和光标定位冲突 */
 function onContentSummaryClick (event) {
   const anchor = event.target?.closest?.('a')
   if (!anchor?.href) return
@@ -846,7 +848,6 @@ function filterAddReviewDeptNode (value, data) {
   return data.departmentName.includes(value)
 }
 
-/** 取树中第一个可选部门，逐层向下找 */
 function findFirstEnabledAddReviewDept (departments) {
   for (const dept of departments) {
     if (!dept?.disabled) return dept.departmentId
@@ -988,7 +989,6 @@ async function openAddReviewDialog (row) {
   addReviewPagination.totalCount = 0
   addReviewUserList.value = []
   addReviewDialogVisible.value = true
-  // 部门默认选中第一个可选项，并作为初次查询条件带入
   await loadAddReviewDeptOptions()
   addReviewFilters.departmentId = resolveDefaultAddReviewDepartmentId()
   await fetchAddReviewUserListImmediate()
@@ -1081,16 +1081,7 @@ async function clearAddReviewRow (row) {
   row.dirty = false
 }
 
-/**
- * 拖拽排序：必须真的把整条数据（含 _uid）搬到新的数组位置，配合 row-key="_uid"，
- * Vue 才会按“这个人挪动了”去实际搬运 DOM，视觉才会跟手——如果只交换字段、
- * 保持 sortOrder/对象位置不动，Vue 会按 key 把内容“纠正”回原来的节点上，
- * 表现为人没动、顺序号却乱跳（之前就是这个问题）。
- *
- * sortOrder 是后端记录的位置键，人搬走后要按新位置重新编号；
- * persisted（该位置是否已落库）则要按“新位置原来是否已有记录”判定，不能跟着人走，
- * 所以先把重排前“每个位置”的落库状态记下来，重排后再照搬到新位置对应的行上。
- */
+/** 必须真的搬动数组元素（配合 row-key="_uid"）而非只换字段，否则 Vue 会按 key 把内容纠正回原节点、顺序号乱跳；persisted 按"新位置原有记录"判定，需在重排前记下每个位置状态再套用到新位置 */
 async function handleAddReviewDragEnd (oldIndex, newIndex) {
   if (!isAddReviewEditable() || oldIndex === newIndex || oldIndex == null || newIndex == null) return
 
@@ -1137,11 +1128,7 @@ async function setupAddReviewSortable () {
   })
 }
 
-/**
- * 加审表格只在“真实表单”分支（v-else，见模板顶部 loading 骨架屏 / resultState 结果页）
- * 里才会真正渲染进 DOM；组件 mounted 时通常还在骨架屏阶段（loading 初始为 true），
- * 这里必须等它和权限可见性同时满足才去挂载 Sortable，否则表格出现时也没人重新初始化。
- */
+/** mounted 时通常仍在骨架屏阶段，加审表格还未渲染进 DOM，须等 loading 结束且权限可见后才挂载 Sortable */
 const isAddReviewSectionMounted = computed(() => !loading.value && !resultState.visible && isAddReviewVisible())
 
 watch(isAddReviewSectionMounted, (mounted) => {
@@ -1297,7 +1284,6 @@ function showResult (status, titleKey, subTitleKey) {
   resultState.subTitleKey = subTitleKey
 }
 
-/** 暂存/送审右上角提示 */
 /** 取表单校验失败结果中第一条错误信息，用于送审时的右上角提示 */
 function getFirstValidateErrorMessage (invalidFields) {
   const firstField = Object.values(invalidFields || {})[0]
@@ -1342,10 +1328,64 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
-function closeCurrentPage () {
-  notifyOpenerRefreshFormPending()
-  window.close()
+const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
+const FORMBUSINESS_MODULE_PATH = 'formbusiness'
+
+function isPopupWindow () {
+  try {
+    return !!(window.opener && !window.opener.closed)
+  } catch {
+    return !!window.opener
+  }
+}
+
+async function ensureFormbusinessModuleSelected () {
+  if (
+    pmenuStore.currentModuleId &&
+    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
+  ) {
+    return true
+  }
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    if (!res || res.code !== 200) return false
+    const list = Array.isArray(res.data) ? res.data : []
+    const matched = list.find((m) => {
+      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
+      return seg === FORMBUSINESS_MODULE_PATH
+    })
+    if (!matched) return false
+    const nameCn =
+      matched.moduleNameCn || matched.ModuleNameCn || matched.moduleNameCh || matched.ModuleNameCh ||
+      matched.moduleName || matched.ModuleName || ''
+    const nameEn =
+      matched.moduleNameEn || matched.ModuleNameEn || matched.moduleName || matched.ModuleName || ''
+    pmenuStore.setCurrentPMenu(
+      String(matched.moduleId || ''),
+      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
+      FORMBUSINESS_MODULE_PATH,
+      nameCn,
+      nameEn
+    )
+    return !!matched.moduleId
+  } catch {
+    return false
+  }
+}
+
+/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新；非弹出窗口时改为跳转回待签核列表 */
+async function closeCurrentPage () {
+  if (isPopupWindow()) {
+    notifyOpenerRefreshFormPending()
+    window.close()
+    return
+  }
+  const ok = await ensureFormbusinessModuleSelected()
+  if (ok) {
+    router.push(FORM_PENDING_ROUTE_PATH)
+  } else {
+    router.push('/module-select')
+  }
 }
 
 async function bindFormData (data) {

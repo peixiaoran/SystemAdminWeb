@@ -478,9 +478,11 @@ import {
   APPROVE_LEAVECANCELL_API,
   REJECT_LEAVECANCELL_API
 } from '@/config/api/formbusiness/forms/leavecancell'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { calculateLeaveTotalHours, isLeaveTimeRangeAllowed, LEAVE_WORK_TIME_OPTIONS } from '@/utils/leaveHours'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { usePMenuStore } from '@/stores/pmenu'
 
 const { t, locale } = i18n.global
 
@@ -490,6 +492,7 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -534,9 +537,7 @@ const form = reactive({
   cancelHours: undefined
 })
 
-// leaveRequestId 无实际输入控件承载，不接入 el-form 的 prop/rules 校验体系（避免字段下方常驻红字），
-// 是否已选请假单改为暂存/送审时手动判断，见 onSubmit / onSubmitForApproval
-// cancelTimeRange 的业务性校验（时间过早/过晚、超出可销时数等）统一交给后端 ValidateLeaveCancell 接口
+// leaveRequestId 不接入 el-form 校验体系（避免常驻红字），改为暂存/送审时手动判断；cancelTimeRange 的业务性校验统一交给后端 ValidateLeaveCancell
 const rules = {
   cancelTimeRange: [
     // type: 'array' 必须显式声明，否则 async-validator 不会把空数组 [] 判为空值
@@ -855,8 +856,7 @@ function isCancelDateDisabled (date) {
   return d < minDay || d > maxDay
 }
 
-// 展示层拆分：form.cancelTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），
-// 保存/送审时经 toISO 转 T 格式不受影响，这里拆成开始日期/时间段、结束日期/时间段四个可视化字段
+// 展示层拆分：form.cancelTimeRange 仍是 [start, end] 字符串，拆分只影响 UI 四字段，不影响保存时的 toISO 转换
 const CANCEL_DEFAULT_START_TIME = '08:00'
 const CANCEL_DEFAULT_END_TIME = '17:00'
 
@@ -1083,11 +1083,10 @@ function handleLeaveRequestRowClick (row) {
 async function confirmLeaveRequestSelect () {
   leaveRequestConfirmLoading.value = true
   try {
-    // 先本地应用所选请假单，得到 leaveRequestId 与默认销假时间范围
     applySelectedLeaveRequest(selectedLeaveRequestRow.value)
-    // 先关闭弹窗，再在后台保存，避免保存期间遮挡表单
+    // 先关闭弹窗再保存，避免保存期间遮挡表单
     leaveRequestDialogVisible.value = false
-    // 勾选确认即调用 SaveLeaveCancell 保存（无需校验表单必填项）
+    // 勾选确认即保存，无需校验表单必填项
     const res = await saveLeaveCancellRequest()
     if (isForbiddenCode(res?.code)) {
       showFormActionNotice(t('formbusiness.leavecancell.forbiddenResultSubTitle'), 'warning')
@@ -1185,7 +1184,6 @@ function isSuccessCode (code) {
   return String(code) === '200'
 }
 
-/** 取表单校验失败结果中第一条错误信息，用于暂存/送审时的右上角提示 */
 function getFirstValidateErrorMessage (invalidFields) {
   const firstField = Object.values(invalidFields || {})[0]
   return firstField?.[0]?.message || t('formbusiness.leavecancell.validateFailed')
@@ -1220,6 +1218,17 @@ function showBadRequestResult (message) {
   resultState.subTitleKey = ''
 }
 
+const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
+const FORMBUSINESS_MODULE_PATH = 'formbusiness'
+
+function isPopupWindow () {
+  try {
+    return !!(window.opener && !window.opener.closed)
+  } catch {
+    return !!window.opener
+  }
+}
+
 function notifyOpenerRefreshFormPending () {
   try {
     if (!window.opener || window.opener.closed) return
@@ -1229,10 +1238,53 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
-function closeCurrentPage () {
-  notifyOpenerRefreshFormPending()
-  window.close()
+async function ensureFormbusinessModuleSelected () {
+  if (
+    pmenuStore.currentModuleId &&
+    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
+  ) {
+    return true
+  }
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    if (!res || res.code !== 200) return false
+    const list = Array.isArray(res.data) ? res.data : []
+    const matched = list.find((m) => {
+      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
+      return seg === FORMBUSINESS_MODULE_PATH
+    })
+    if (!matched) return false
+    const nameCn =
+      matched.moduleNameCn || matched.ModuleNameCn || matched.moduleNameCh || matched.ModuleNameCh ||
+      matched.moduleName || matched.ModuleName || ''
+    const nameEn =
+      matched.moduleNameEn || matched.ModuleNameEn || matched.moduleName || matched.ModuleName || ''
+    pmenuStore.setCurrentPMenu(
+      String(matched.moduleId || ''),
+      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
+      FORMBUSINESS_MODULE_PATH,
+      nameCn,
+      nameEn
+    )
+    return !!matched.moduleId
+  } catch {
+    return false
+  }
+}
+
+/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新；非弹出窗口时改为路由跳转 */
+async function closeCurrentPage () {
+  if (isPopupWindow()) {
+    notifyOpenerRefreshFormPending()
+    window.close()
+    return
+  }
+  const ok = await ensureFormbusinessModuleSelected()
+  if (ok) {
+    router.push(FORM_PENDING_ROUTE_PATH)
+  } else {
+    router.push('/module-select')
+  }
 }
 
 function buildSaveLeaveCancellPayload () {
@@ -1306,8 +1358,7 @@ async function saveLeaveCancellBeforeSubmit () {
     }
     return false
   }
-  // formId 一旦建立即不可变：仅在为空（真正新建）时才采纳 save 返回值，
-  // 避免更新态下后端返回的状态标志（如 1）覆盖真实 formId
+  // formId 一旦建立即不可变：仅新建时才采纳 save 返回值，避免更新态下后端返回的状态标志覆盖真实 formId
   if (!form.formId && saveRes.data) form.formId = String(saveRes.data)
   return true
 }
@@ -1324,8 +1375,7 @@ async function onSubmit () {
     showFormActionNotice(getFirstValidateErrorMessage(invalidFields), 'warning')
     return
   }
-  // 暂存时除必填外的业务性校验（时间过早/过晚、超出可销时数等）不在前端判断，
-  // 统一交给 ValidateLeaveCancell 接口返回的提示信息
+  // 暂存时除必填外的业务性校验统一交给 ValidateLeaveCancell 接口返回的提示信息
   saving.value = true
   try {
     const validated = await validateLeaveCancellBeforeAction()
@@ -1376,7 +1426,6 @@ async function onSubmitForApproval () {
   }
   approving.value = true
   try {
-    // 送审前：先校验 → 再保存 → 再送审
     const validated = await validateLeaveCancellBeforeAction()
     if (!validated) return
 
@@ -1647,8 +1696,7 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   background: #ffffff;
-  /* el-card 默认 overflow: hidden、el-card__body 默认 overflow: auto，
-     都会裁掉溢出到卡片边框外的可销假时数入口 */
+  /* el-card 默认 overflow: hidden 会裁掉溢出卡片外的可销假时数入口，需显式设为 visible */
   overflow: visible;
 }
 

@@ -454,8 +454,7 @@ const form = reactive({
   contentSummary: ''
 })
 
-// 内容摘要为只读展示，直接渲染详情返回的富文本 HTML（含表格/颜色/对齐等内联样式），
-// 关键字命中时逐个文本节点标黄，不影响原有格式
+// 只读展示直接渲染富文本 HTML（含内联样式），关键字命中按文本节点标黄，不影响原格式
 const highlightedContentSummary = computed(() => highlightHtmlContent(form.contentSummary, searchKeyword.value))
 
 async function fetchFullReviewFlow () {
@@ -698,9 +697,7 @@ async function getDocumentCirculateDetail (formId) {
       return
     }
     bindFormData(res.data || {})
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 function formatFileSize (sizeKB) {

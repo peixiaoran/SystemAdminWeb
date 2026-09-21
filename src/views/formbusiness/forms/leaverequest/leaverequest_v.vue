@@ -431,7 +431,6 @@
                 </span>
               </div>
             </div>
-            <!-- 未查询到余额时保留卡片，仅提示空数据 -->
             <div v-if="!leaveBalances.length" class="leave-balance-empty">
               {{ t('formbusiness.leaverequest.leaveBalanceEmpty') }}
             </div>
@@ -580,7 +579,6 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
     { key: 'bereavement', keywords: ['丧假', 'bereavement', 'funeral'] }
   ]
 
-  /** 依据当前已选假别的名称做关键字模糊匹配，返回 i18n key */
   function matchLeavePolicyKey (leaveTypeLabel) {
     const text = String(leaveTypeLabel || '').toLowerCase()
     if (!text) return null
@@ -1505,8 +1503,7 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
     align-items: flex-start;
   }
 
-  /* 送审意见上方的分割线：上下留白严格各 24px。
-     前面是普通表单行时，表单项自带 18px 下边距，补 6px； */
+  /* 送审意见上方的分割线：上下留白各 24px，前面表单行自带 18px 下边距故补 6px */
   .approval-divider {
     margin: 6px 0 24px;
   }

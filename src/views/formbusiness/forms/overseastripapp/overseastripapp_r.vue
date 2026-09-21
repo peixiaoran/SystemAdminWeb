@@ -344,7 +344,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="16" class="attachment-row">
+        <el-row v-if="isStepFieldVisible('Upload') || uploadedAttachments.length > 0" :gutter="16" class="attachment-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.overseastripapp.attachments')">
               <div class="upload-section">
@@ -355,8 +355,8 @@
                   style="display: none;"
                   @change="onNativeFileChange"
                 />
-                <div class="upload-actions">
-                  <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading" @click="openFilePicker">
+                <div v-if="isStepFieldVisible('Upload')" class="upload-actions">
+                  <el-button class="upload-trigger" type="primary" plain :loading="uploading" :disabled="uploading || !isStepFieldEditable('Upload')" @click="openFilePicker">
                     <el-icon><Upload /></el-icon>
                     {{ t('formbusiness.overseastripapp.uploadFile') }}
                   </el-button>
@@ -378,7 +378,7 @@
                       <el-button type="primary" link size="small" @click="handleDownload(row)">
                         {{ t('formbusiness.overseastripapp.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" @click="removeAttachment(row, $index)">
+                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('Upload')" @click="removeAttachment(row, $index)">
                         {{ t('formbusiness.overseastripapp.deleteFile') }}
                       </el-button>
                     </template>
@@ -389,10 +389,10 @@
           </el-col>
         </el-row>
 
-        <el-divider class="add-review-divider"></el-divider>
+        <el-divider v-if="isAddReviewVisible()" class="add-review-divider"></el-divider>
 
         <!-- 加审人员：固定 5 行，顺序 1-5 -->
-        <el-row :gutter="16" class="add-review-row">
+        <el-row v-if="isAddReviewVisible()" :gutter="16" class="add-review-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.overseastripapp.addReview')">
               <el-table ref="addReviewTableRef" :data="addReviewRows" border size="small" class="add-review-table" row-key="_uid">
@@ -400,6 +400,7 @@
                   <template #default>
                     <el-icon
                       class="add-review-drag-handle"
+                      :class="{ 'is-disabled': !isAddReviewEditable() }"
                       :title="t('formbusiness.overseastripapp.addReviewDragTip')"
                     >
                       <Rank />
@@ -435,6 +436,7 @@
                       type="primary"
                       link
                       size="small"
+                      :disabled="!isAddReviewEditable()"
                       @click="openAddReviewDialog(row)"
                     >
                       {{ row.userId ? t('formbusiness.overseastripapp.addReviewChange') : t('formbusiness.overseastripapp.addReviewSelect') }}
@@ -444,6 +446,7 @@
                       type="danger"
                       link
                       size="small"
+                      :disabled="!isAddReviewEditable()"
                       @click="clearAddReviewRow(row)"
                     >
                       {{ t('formbusiness.overseastripapp.addReviewClear') }}
@@ -666,6 +669,8 @@ import {
 import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { usePMenuStore } from '@/stores/pmenu'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
@@ -673,10 +678,14 @@ const { t, locale } = i18n.global
 
 const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 
+const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
+const FORMBUSINESS_MODULE_PATH = 'formbusiness'
+
 const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -784,8 +793,7 @@ const rules = computed(() => {
   }
 })
 
-/** 天数由开始/结束日期自动计算（含首尾两天），字段本身只读不可手动修改；
- *  开始/结束日期互相联动重新校验，避免只改其中一个时另一个的大小关系报错没有刷新 */
+/** 开始/结束日期互相联动重新校验，避免只改一个时另一个的报错没刷新 */
 watch([() => form.startDate, () => form.endDate], ([start, end]) => {
   formRef.value?.validateField(['startDate', 'endDate'], () => {})
 
@@ -833,22 +841,9 @@ async function loadSiteOptions () {
   }
 }
 
-/** 厂区间每日出差补助（示意金额，美金），仅作前端提示用，非后端数据 */
-const SITE_ALLOWANCE_NAMES = {
-  ESK: { 'zh-CN': '大陆-昆山', 'en-US': 'Mainland - Kunshan' },
-  ESC: { 'zh-CN': '大陆-烟台', 'en-US': 'Mainland - Yantai' },
-  ETW: { 'zh-CN': '台湾', 'en-US': 'Taiwan' },
-  ESV: { 'zh-CN': '越南', 'en-US': 'Vietnam' },
-  EMJ: { 'zh-CN': '马来西亚', 'en-US': 'Malaysia' },
-  ESH: { 'zh-CN': '墨西哥-蒂华纳', 'en-US': 'Mexico - Tijuana' },
-  MTY: { 'zh-CN': '墨西哥-蒙特雷', 'en-US': 'Mexico - Monterrey' },
-  EGY: { 'zh-CN': '台湾-高原', 'en-US': 'Taiwan - Gaoyuan' }
-}
+/** 厂区间每日出差补助，仅作前端提示用，非后端数据 */
 const SITE_ALLOWANCE_ORDER = ['ESK', 'ESC', 'ETW', 'EGY', 'ESV', 'EMJ', 'ESH', 'MTY']
-/**
- * 参照中国大陆企业出差补贴惯例定价（美元/天）：大陆境内最低，两岸/东南亚适中，跨洲到墨西哥最高。
- * key 一律按字母升序拼接（与 getSiteAllowanceAmount 排序后的 key 保持一致），避免查不到导致误判为 0。
- */
+/** key 一律按字母升序拼接，与 getSiteAllowanceAmount 排序后的 key 保持一致，避免查不到误判为 0 */
 const SITE_ALLOWANCE_AMOUNTS = {
   'EGY-EMJ': 70, 'EGY-ESC': 60, 'EGY-ESH': 150, 'EGY-ESK': 60, 'EGY-ESV': 65, 'EGY-ETW': 40, 'EGY-MTY': 150,
   'EMJ-ESC': 75, 'EMJ-ESH': 145, 'EMJ-ESK': 75, 'EMJ-ESV': 55, 'EMJ-ETW': 70, 'EMJ-MTY': 145,
@@ -870,31 +865,24 @@ function formatAllowanceAmount (amount) {
 }
 
 const siteAllowanceTooltipHtml = computed(() => {
-  const lang = locale.value === 'en-US' ? 'en-US' : 'zh-CN'
   const codes = SITE_ALLOWANCE_ORDER
   const departure = form.departureSite
   const destination = form.destinationSite
 
-  const description = lang === 'en-US'
-    ? 'Daily overseas trip allowance (USD) from the selected departure site to each destination. The farther apart, the higher the daily allowance.'
-    : '出差补贴：从已选出发厂区到各厂区的每日补助金额（美金），厂区距离越远，每日补助越高。'
-  const descHtml = `<div class="site-allowance-desc">${description}</div>`
+  const descHtml = `<div class="site-allowance-desc">${t('formbusiness.overseastripapp.siteAllowanceDesc')}</div>`
 
   if (!departure) {
-    const emptyText = lang === 'en-US'
-      ? 'Please select a departure site first to see its allowance.'
-      : '请先选择出发厂区，才能查看对应的出差补贴。'
-    return `${descHtml}<div class="site-allowance-empty">${emptyText}</div>`
+    return `${descHtml}<div class="site-allowance-empty">${t('formbusiness.overseastripapp.siteAllowanceEmpty')}</div>`
   }
 
-  const destLabel = lang === 'en-US' ? 'Destination' : '目的厂区'
-  const amountLabel = lang === 'en-US' ? 'Daily Allowance (USD)' : '每日补助（美金）'
+  const destLabel = t('formbusiness.overseastripapp.siteAllowanceDestLabel')
+  const amountLabel = t('formbusiness.overseastripapp.siteAllowanceAmountLabel')
   const rows = codes
     .filter((code) => code !== departure)
     .map((code) => {
       const amount = getSiteAllowanceAmount(departure, code)
       const isCurrentRow = code === destination
-      return `<tr${isCurrentRow ? ' class="is-current-rule"' : ''}><th>${SITE_ALLOWANCE_NAMES[code][lang]}</th><td>${formatAllowanceAmount(amount)}</td></tr>`
+      return `<tr${isCurrentRow ? ' class="is-current-rule"' : ''}><th>${t(`formbusiness.overseastripapp.siteAllowanceNames.${code}`)}</th><td>${formatAllowanceAmount(amount)}</td></tr>`
     }).join('')
   return `${descHtml}<table class="site-allowance-table"><thead><tr><th>${destLabel}</th><th>${amountLabel}</th></tr></thead><tbody>${rows}</tbody></table>`
 })
@@ -913,6 +901,8 @@ const fileInputRef = ref(null)
 /* ---------------- 加审人员 ---------------- */
 
 const ADD_REVIEW_MAX_ROWS = 5
+// 权限键缺失时 isStepFieldVisible/Editable 默认返回 true，故用 every：任一拼写判否即生效
+const ADD_REVIEW_FIELD_KEYS = ['AddReview', 'AddReivew']
 
 const createAddReviewRows = () =>
   Array.from({ length: ADD_REVIEW_MAX_ROWS }, (_, idx) => ({
@@ -1203,7 +1193,7 @@ async function clearAddReviewRow (row) {
 }
 
 async function handleAddReviewDragEnd (oldIndex, newIndex) {
-  if (oldIndex === newIndex || oldIndex == null || newIndex == null) return
+  if (!isAddReviewEditable() || oldIndex === newIndex || oldIndex == null || newIndex == null) return
 
   const rows = addReviewRows.value
   const previousPersistedByPosition = rows.map((r) => r.persisted)
@@ -1240,17 +1230,22 @@ async function setupAddReviewSortable () {
   addReviewSortableInstance = Sortable.create(tbody, {
     handle: '.add-review-drag-handle',
     animation: 150,
+    disabled: !isAddReviewEditable(),
     onEnd (evt) {
       handleAddReviewDragEnd(evt.oldIndex, evt.newIndex)
     }
   })
 }
 
-const isAddReviewSectionMounted = computed(() => !loading.value && !resultState.visible)
+const isAddReviewSectionMounted = computed(() => !loading.value && !resultState.visible && isAddReviewVisible())
 
 watch(isAddReviewSectionMounted, (mounted) => {
   if (mounted) setupAddReviewSortable()
   else destroyAddReviewSortable()
+})
+
+watch(() => isAddReviewEditable(), (editable) => {
+  addReviewSortableInstance?.option('disabled', !editable)
 })
 
 onMounted(() => {
@@ -1372,6 +1367,15 @@ function isAnyStepFieldVisible (fieldKeys) {
   return fieldKeys.some(key => isStepFieldVisible(key))
 }
 
+// 权限键缺失时 isStepFieldVisible/Editable 默认返回 true，故用 every：任一拼写判否即生效
+function isAddReviewVisible () {
+  return ADD_REVIEW_FIELD_KEYS.every((key) => isStepFieldVisible(key))
+}
+
+function isAddReviewEditable () {
+  return ADD_REVIEW_FIELD_KEYS.every((key) => isStepFieldEditable(key))
+}
+
 function isForbiddenCode (code) {
   return String(code) === '403'
 }
@@ -1441,10 +1445,69 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
-function closeCurrentPage () {
-  notifyOpenerRefreshFormPending()
-  window.close()
+/** 弹出窗口才能被 window.close() 关闭，否则浏览器会拦截，此时改为跳转回待签核列表 */
+function isPopupWindow () {
+  try {
+    return !!(window.opener && !window.opener.closed)
+  } catch {
+    return !!window.opener
+  }
+}
+
+async function ensureFormbusinessModuleSelected () {
+  if (
+    pmenuStore.currentModuleId &&
+    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
+  ) {
+    return true
+  }
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    if (!res || res.code !== 200) return false
+    const list = Array.isArray(res.data) ? res.data : []
+    const matched = list.find((m) => {
+      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
+      return seg === FORMBUSINESS_MODULE_PATH
+    })
+    if (!matched) return false
+    const nameCn =
+      matched.moduleNameCn || matched.ModuleNameCn || matched.moduleNameCh || matched.ModuleNameCh ||
+      matched.moduleName || matched.ModuleName || ''
+    const nameEn =
+      matched.moduleNameEn || matched.ModuleNameEn || matched.moduleName || matched.ModuleName || ''
+    pmenuStore.setCurrentPMenu(
+      String(matched.moduleId || ''),
+      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
+      FORMBUSINESS_MODULE_PATH,
+      nameCn,
+      nameEn
+    )
+    return !!matched.moduleId
+  } catch {
+    return false
+  }
+}
+
+/** 签核完成后关闭当前页面并通知父页面刷新；非脚本打开的页面关不掉，改为跳转回待签核列表 */
+async function closeCurrentPage () {
+  if (isPopupWindow()) {
+    notifyOpenerRefreshFormPending()
+    window.close()
+    return
+  }
+  const ok = await ensureFormbusinessModuleSelected()
+  if (ok) {
+    router.push(FORM_PENDING_ROUTE_PATH)
+  } else {
+    router.push('/module-select')
+  }
+}
+
+/** 后端日期字段常带 T00:00:00 等时间部分，date-picker 的 value-format 是 YYYY-MM-DD，需先截掉时间部分 */
+function toDateOnly (val) {
+  if (!val) return ''
+  const text = String(val).trim()
+  return text.length >= 10 ? text.slice(0, 10) : text
 }
 
 async function bindFormData (data) {
@@ -1453,7 +1516,7 @@ async function bindFormData (data) {
     formNo: data.formNo || '',
     formStatus: data.formStatus || '',
     formStatusName: data.formStatusName || '',
-    applyDate: data.applicantDate || '',
+    applyDate: toDateOnly(data.applicantDate),
     applicantUserNo: data.applicantUserNo || '',
     applicantUserName: data.applicantUserName || '',
     applicantDeptName: data.applicantDeptName || '',
@@ -1461,8 +1524,8 @@ async function bindFormData (data) {
     departureSiteName: data.departureSiteName || '',
     destinationSite: data.destinationSite || '',
     tripReason: data.tripReason || '',
-    startDate: data.startDate || '',
-    endDate: data.endDate || '',
+    startDate: toDateOnly(data.startDate),
+    endDate: toDateOnly(data.endDate),
     days: data.days || '',
     outboundTravel: data.outboundTravel || '',
     returnTravel: data.returnTravel || '',
@@ -2180,6 +2243,19 @@ onMounted(async () => {
   width: 100%;
 }
 
+.result-back-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.result-back-link:hover {
+  opacity: 0.75;
+}
+
 .result-content--bad-request :deep(.el-result__title) {
   max-width: 560px;
   margin-left: auto;
@@ -2259,6 +2335,20 @@ onMounted(async () => {
 
 .add-review-table {
   width: 100%;
+}
+
+.add-review-drag-handle {
+  cursor: grab;
+  color: var(--el-text-color-secondary);
+}
+
+.add-review-drag-handle:active {
+  cursor: grabbing;
+}
+
+.add-review-drag-handle.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .attachment-row :deep(.el-form-item__label),

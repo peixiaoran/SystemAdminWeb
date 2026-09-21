@@ -64,8 +64,7 @@ const highlighted = computed(() => highlightKeywordHtml(displayText.value, props
   word-break: break-word;
 }
 
-/* 不同浏览器/上层样式对 el-input 与 el-textarea 的禁用态渲染深浅可能不一致，
-   这里统一强制成同一套禁用态配色，保证下拉框/输入框/文本域视觉一致 */
+/* 强制统一禁用态配色，避免不同浏览器/上层样式渲染深浅不一致 */
 .kw-field .el-input__wrapper,
 .kw-field .el-textarea__inner {
   background-color: var(--el-disabled-bg-color, #f5f7fa) !important;

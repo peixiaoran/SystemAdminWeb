@@ -469,7 +469,6 @@
               </span>
             </div>
           </div>
-          <!-- 未查询到余额时保留卡片，仅提示空数据 -->
           <div v-if="!leaveBalances.length" class="leave-balance-empty">
             {{ t('formbusiness.leaverequest.leaveBalanceEmpty') }}
           </div>
@@ -610,6 +609,7 @@ import WorkflowDrawer from '../components/workflowdrawer.vue'
 import RejectDialog from '../components/rejectdialog.vue'
 import { post, isHandled } from '@/utils/request'
 import { INIT_LEAVEREQUEST_API, SAVE_LEAVEREQUEST_API, GET_LEAVEREQUEST_DETAIL_API, GET_LEAVEREQUEST_DROPDOWN_API, GET_LEAVE_BALANCES_API, VALIDATE_LEAVE_BALANCE_API, GET_DEPARTMENT_DROPDOWN_API, GET_AGENT_USER_INFO_API, UPLOAD_FILE_API, DELETE_FILE_API, GET_FULL_REVIEW_FLOW_API, GET_REJECT_STEP_DROP_API, APPROVE_LEAVEREQUEST_API, REJECT_LEAVEREQUEST_API, GET_FORM_NOTIFY_TOKEN_API } from '@/config/api/formbusiness/forms/leaverequest'
+import { MODULE_API } from '@/config/api/modulemenu/menu'
 import {
   calculateLeaveTotalHours,
   calculateLeaveHoursForYear,
@@ -619,6 +619,7 @@ import {
 import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { usePMenuStore } from '@/stores/pmenu'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
@@ -630,6 +631,7 @@ const formRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const pmenuStore = usePMenuStore()
 
 const loading = ref(true)
 const saving = ref(false)
@@ -742,7 +744,6 @@ const LEAVE_POLICY_KEYWORDS = [
   { key: 'bereavement', keywords: ['丧假', 'bereavement', 'funeral'] }
 ]
 
-/** 依据当前已选假别的名称做关键字模糊匹配，返回 i18n key */
 function matchLeavePolicyKey (leaveTypeLabel) {
   const text = String(leaveTypeLabel || '').toLowerCase()
   if (!text) return null
@@ -795,8 +796,7 @@ function coerceDays (v) {
   return parseFloat(Math.max(0, n).toFixed(2))
 }
 
-// 展示层拆分：form.leaveTimeRange 仍是 [startDateTime, endDateTime]（"YYYY-MM-DD HH:mm:ss"），
-// 保存/送审时经 toISO 转 T 格式不受影响，这里拆成开始日期/时间段、结束日期/时间段四个可视化字段
+// 展示层拆分：form.leaveTimeRange 仍是 [startDateTime, endDateTime]，保存/送审时 toISO 转换不受影响
 const LEAVE_DEFAULT_START_TIME = '08:00'
 const LEAVE_DEFAULT_END_TIME = '17:00'
 
@@ -1340,13 +1340,11 @@ function isLeaveBalanceValidationFailedCode (code) {
   return String(code) === '402'
 }
 
-/** 取表单校验失败结果中第一条错误信息，用于送审时的右上角提示 */
 function getFirstValidateErrorMessage (invalidFields) {
   const firstField = Object.values(invalidFields || {})[0]
   return firstField?.[0]?.message || t('formbusiness.leaverequest.validateFailed')
 }
 
-/** 暂存/送审右上角提示 */
 function showFormActionNotice (message, type = 'success') {
   const text = typeof message === 'string' ? message.trim() : ''
   ElNotification({
@@ -1404,10 +1402,73 @@ function notifyOpenerRefreshFormPending () {
   }
 }
 
-/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新 */
-function closeCurrentPage () {
-  notifyOpenerRefreshFormPending()
-  window.close()
+const FORM_PENDING_ROUTE_PATH = '/formbusiness/form-operate/formpending'
+const FORMBUSINESS_MODULE_PATH = 'formbusiness'
+
+function isPopupWindow () {
+  try {
+    return !!(window.opener && !window.opener.closed)
+  } catch {
+    return !!window.opener
+  }
+}
+
+async function ensureFormbusinessModuleSelected () {
+  if (
+    pmenuStore.currentModuleId &&
+    pmenuStore.currentModulePath === FORMBUSINESS_MODULE_PATH
+  ) {
+    return true
+  }
+  try {
+    const res = await post(MODULE_API.GET_MODULES)
+    if (!res || res.code !== 200) return false
+    const list = Array.isArray(res.data) ? res.data : []
+    const matched = list.find((m) => {
+      const seg = String(m?.path || '').split('/').filter(Boolean)[0]
+      return seg === FORMBUSINESS_MODULE_PATH
+    })
+    if (!matched) return false
+    const nameCn =
+      matched.moduleNameCn ||
+      matched.ModuleNameCn ||
+      matched.moduleNameCh ||
+      matched.ModuleNameCh ||
+      matched.moduleName ||
+      matched.ModuleName ||
+      ''
+    const nameEn =
+      matched.moduleNameEn ||
+      matched.ModuleNameEn ||
+      matched.moduleName ||
+      matched.ModuleName ||
+      ''
+    pmenuStore.setCurrentPMenu(
+      String(matched.moduleId || ''),
+      nameCn || nameEn || FORMBUSINESS_MODULE_PATH,
+      FORMBUSINESS_MODULE_PATH,
+      nameCn,
+      nameEn
+    )
+    return !!matched.moduleId
+  } catch {
+    return false
+  }
+}
+
+/** 签核完成后关闭当前页面，并通知父页面（待审列表）刷新；非弹出窗口时改为路由跳转 */
+async function closeCurrentPage () {
+  if (isPopupWindow()) {
+    notifyOpenerRefreshFormPending()
+    window.close()
+    return
+  }
+  const ok = await ensureFormbusinessModuleSelected()
+  if (ok) {
+    router.push(FORM_PENDING_ROUTE_PATH)
+  } else {
+    router.push('/module-select')
+  }
 }
 
 /** InitLeaveRequest：返回完整实体则直接 bind，旧版仅返回 formId 时再拉详情 */
@@ -2285,8 +2346,7 @@ onMounted(async () => {
   align-items: flex-start;
 }
 
-/* 送审意见上方的分割线：上下留白严格各 24px。
-   前面是普通表单行时，表单项自带 18px 下边距，补 6px； */
+/* 送审意见上方的分割线：上下留白各 24px，前面表单行自带 18px 下边距故补 6px */
 .approval-divider {
   margin: 6px 0 24px;
 }

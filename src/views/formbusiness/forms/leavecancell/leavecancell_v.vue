@@ -303,8 +303,7 @@ import { usePMenuStore } from '@/stores/pmenu'
 import { resolveRouteKeyword, highlightKeywordHtml } from '@/utils/keywordHighlight'
 import '@/assets/styles/keywordHighlight.css'
 
-// GET_LEAVECANCELL_API（销假单明细，只读）已接入；
-// INIT_LEAVECANCELL_API / SAVE_LEAVECANCELL_API 及送审驳回相关接口在本只读页面无需使用
+// 本页只读，只需 GET_LEAVECANCELL_API；Init/Save 及送审驳回相关接口在此不使用
 
 const { t, locale } = i18n.global
 
@@ -473,7 +472,6 @@ function formatDateTimeCell (val) {
   return normalizeDateTime(val) || '-'
 }
 
-/** 时数保留两位小数展示 */
 function formatHoursCell (val) {
   if (val === undefined || val === null || val === '') return '-'
   const n = Number(val)
@@ -851,8 +849,7 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   background: #ffffff;
-  /* el-card 默认 overflow: hidden、el-card__body 默认 overflow: auto，
-     都会裁掉溢出到卡片边框外的可销假时数入口 */
+  /* el-card 默认 overflow: hidden 会裁掉溢出卡片外的可销假时数入口，需显式设为 visible */
   overflow: visible;
 }
 
@@ -1039,7 +1036,6 @@ onMounted(async () => {
   position: relative;
 }
 
-/* 原请假单引用行与销假时间行的间距收紧 */
 .leave-request-ref-row .el-form-item {
   margin-bottom: 4px;
 }
@@ -1049,13 +1045,11 @@ onMounted(async () => {
   font-size: 13px;
 }
 
-/* 表体文字：深灰色，字号与表单一致 */
 .leave-request-ref-table :deep(.el-table__body .cell) {
   color: #4c4c4c;
   font-size: 13px;
 }
 
-/* 请假时数列：仅数值加黑色，列头颜色不变 */
 .leave-request-ref-table :deep(.el-table__body .ref-leave-hours-col .cell) {
   color: #000000;
   font-weight: 700;

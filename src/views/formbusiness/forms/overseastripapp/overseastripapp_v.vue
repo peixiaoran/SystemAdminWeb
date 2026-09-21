@@ -540,10 +540,7 @@ const SITE_ALLOWANCE_NAMES = {
   EGY: { 'zh-CN': '台湾-高原', 'en-US': 'Taiwan - Gaoyuan' }
 }
 const SITE_ALLOWANCE_ORDER = ['ESK', 'ESC', 'ETW', 'EGY', 'ESV', 'EMJ', 'ESH', 'MTY']
-/**
- * 参照中国大陆企业出差补贴惯例定价（美元/天）：大陆境内最低，两岸/东南亚适中，跨洲到墨西哥最高。
- * key 一律按字母升序拼接（与 getSiteAllowanceAmount 排序后的 key 保持一致），避免查不到导致误判为 0。
- */
+/** key 一律按字母升序拼接，与 getSiteAllowanceAmount 排序后的 key 保持一致，避免查不到误判为 0 */
 const SITE_ALLOWANCE_AMOUNTS = {
   'EGY-EMJ': 70, 'EGY-ESC': 60, 'EGY-ESH': 150, 'EGY-ESK': 60, 'EGY-ESV': 65, 'EGY-ETW': 40, 'EGY-MTY': 150,
   'EMJ-ESC': 75, 'EMJ-ESH': 145, 'EMJ-ESK': 75, 'EMJ-ESV': 55, 'EMJ-ETW': 70, 'EMJ-MTY': 145,
@@ -784,13 +781,20 @@ async function closeCurrentPage () {
   }
 }
 
+/** 后端日期字段常带 T00:00:00 等时间部分，展示时只需要日期部分 */
+function toDateOnly (val) {
+  if (!val) return ''
+  const text = String(val).trim()
+  return text.length >= 10 ? text.slice(0, 10) : text
+}
+
 function bindFormData (data) {
   Object.assign(form, {
     formId: data.formId != null ? String(data.formId) : '',
     formNo: data.formNo || '',
     formStatus: data.formStatus || '',
     formStatusName: data.formStatusName || '',
-    applyDate: data.applicantDate || '',
+    applyDate: toDateOnly(data.applicantDate),
     applicantUserNo: data.applicantUserNo || '',
     applicantUserName: data.applicantUserName || '',
     applicantDeptName: data.applicantDeptName || '',
@@ -798,8 +802,8 @@ function bindFormData (data) {
     departureSiteName: data.departureSiteName || '',
     destinationSite: data.destinationSite || '',
     tripReason: data.tripReason || '',
-    startDate: data.startDate || '',
-    endDate: data.endDate || '',
+    startDate: toDateOnly(data.startDate),
+    endDate: toDateOnly(data.endDate),
     days: data.days || '',
     outboundTravel: data.outboundTravel || '',
     outboundTravelName: data.outboundTravelName || '',
@@ -1181,6 +1185,19 @@ onMounted(async () => {
 
 .result-content {
   width: 100%;
+}
+
+.result-back-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.result-back-link:hover {
+  opacity: 0.75;
 }
 
 .result-content--bad-request :deep(.el-result__title) {
