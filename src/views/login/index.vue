@@ -134,7 +134,7 @@
             <el-button
               type="primary"
               :loading="loading"
-              :disabled="loading || !loginForm.loginNo || !loginForm.password"
+              :disabled="loading || !loginForm.loginNo || !loginForm.password || !turnstileToken"
               class="login-button"
               @click="handleLogin"
             >
@@ -314,17 +314,7 @@ const enableCredentialInputs = () => {
 }
 
 const handleLogin = () => {
-  if (!loginForm.loginNo || !loginForm.password) return
-
-  if (!turnstileToken.value) {
-    ElMessage({
-      message: t('login.turnstileRequired'),
-      type: 'warning',
-      plain: true,
-      showClose: true
-    })
-    return
-  }
+  if (!loginForm.loginNo || !loginForm.password || !turnstileToken.value) return
 
   loading.value = true
 
