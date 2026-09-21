@@ -42,8 +42,8 @@ export const GET_DEPARTMENTLEVEL_DROPDOWN_API = {
 }
 
 // 厂区下拉框API
-export const GET_FACTORY_DROP_API = {
-  GET_FACTORY_DROP: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetFactoryDrop'
+export const GET_SITE_DROP_API = {
+  GET_SITE_DROP: 'SystemBasicMgmt/SystemBasicData/DepartmentInfo/GetSiteDrop'
 }
 
 // 部门职能下拉框API

@@ -439,6 +439,7 @@ export default {
       deleteStepSuccess: 'Step deleted successfully',
       deleteStepFailed: 'Failed to delete step',
       sortOrder: 'Sort Order',
+      addReviewSortOrder: 'Additional Review Sort Order',
       editStep: 'Edit Step',
       editStepSuccess: 'Step updated successfully',
       editStepFailed: 'Failed to update step',
@@ -879,6 +880,88 @@ export default {
       attachmentTipPaternity: 'Spouse delivery proof required',
       attachmentTipNursing: 'Medical or hospitalization proof of care recipient',
       attachmentTipBereavement: 'Death certificate or proof of relationship required',
+      leavePolicy: {
+        emptyHint: 'Please select a leave type first to see its rules.',
+        annual: {
+          title: 'Annual Leave',
+          rules: [
+            'Employees with 6 months but less than 1 year of service receive 3 days.',
+            'Employees with 1 year but less than 2 years of service receive 7 days.',
+            'Employees with 2 years but less than 3 years of service receive 10 days.',
+            'Employees with 3 years but less than 5 years of service receive 14 days per year.',
+            'Employees with 5 years but less than 10 years of service receive 15 days per year.',
+            'Employees with 10 or more years of service receive 1 additional day per year of service, up to a maximum of 30 days.',
+            'Annual leave dates are scheduled by agreement between employer and employee; with the employee’s consent, unused leave may be deferred to the following year.'
+          ]
+        },
+        sick: {
+          title: 'Sick Leave',
+          rules: [
+            'A medical certificate or receipt is required for leave of 1 day or more. Leave of less than 1 day does not require documentation.',
+            'Non-hospitalized sick leave must not exceed 30 days in total within 1 year.',
+            'Hospitalized sick leave must not exceed 1 year in total within 2 years.',
+            'Combined non-hospitalized and hospitalized sick leave must not exceed 1 year in total within 2 years.',
+            'Half pay for the first 30 days in a year; unpaid beyond 30 days.'
+          ]
+        },
+        personal: {
+          title: 'Personal Leave',
+          rules: ['Must not exceed 14 days in total within 1 year. (Unpaid)']
+        },
+        marriage: {
+          title: 'Marriage Leave',
+          rules: [
+            'Must be taken within 3 months starting 10 days before the marriage registration date.',
+            '8 days of leave, to be taken in one continuous period in principle.',
+            'Supporting documents required: household registry, marriage certificate, or local custom-based supporting documents.'
+          ]
+        },
+        maternity: {
+          title: 'Maternity Leave',
+          rules: [
+            '56 days of leave before and after childbirth.',
+            'Must be taken in one continuous period; leave is calculated based on consecutive calendar days (including holidays), and work may not resume early.',
+            'Leave must begin no later than the delivery date.',
+            'Employees with 6 months or more of service receive full pay during leave; those with less than 6 months of service receive half pay.',
+            'Supporting document required: birth certificate.'
+          ]
+        },
+        paternity: {
+          title: 'Paternity Leave / Prenatal Checkup Accompaniment Leave',
+          rules: [
+            'Available to male employees only.',
+            'Paternity leave: choose 7 days within a total of 15 days surrounding the spouse’s delivery date.',
+            'Prenatal checkup accompaniment leave: 7 days to accompany the spouse for prenatal checkups.',
+            'Supporting documents required: prenatal checkup records from the maternal health handbook (for checkup leave), birth certificate (for paternity leave).'
+          ]
+        },
+        familyCare: {
+          title: 'Family Care Leave',
+          rules: [
+            'May be taken when a family member requires vaccination, has a serious illness, or another major incident requires personal care.',
+            'Limited to 7 days per year, counted together with personal leave; family care leave combined with personal leave must not exceed 14 days per year. (Unpaid)',
+            'Supporting documents required: relevant certifying documents.'
+          ]
+        },
+        breastfeeding: {
+          title: 'Breastfeeding Time',
+          rules: [
+            'Employees who need to breastfeed a child under 1 year old are given an additional 60 minutes of breastfeeding time per day, in addition to regular breaks.',
+            'For workdays exceeding 8 hours, if the extra working time is 30 minutes or more, an additional 30 minutes of breastfeeding time is given.',
+            'Breastfeeding time is counted as working time.'
+          ]
+        },
+        bereavement: {
+          title: 'Bereavement Leave',
+          rules: [
+            '8 days for the death of parents, adoptive parents, step-parents, or spouse.',
+            '6 days for the death of grandparents, children, spouse’s parents, or spouse’s adoptive/step-parents.',
+            '3 days for the death of great-grandparents, siblings, or spouse’s grandparents.',
+            'Leave must be taken (may be split into multiple periods) within 100 days from the date of the event (date of death), per custom.',
+            'Supporting documents required: obituary, death certificate, or local custom-based supporting documents.'
+          ]
+        }
+      },
       viewFullWorkflow: 'View full workflow',
       viewFullWorkflowHint: 'View full workflow',
       workflowDrawerTitle: 'Review workflow',
@@ -1119,11 +1202,11 @@ export default {
       applicantUserNo: 'User No.',
       applicantUserName: 'User Name',
       applicantDeptName: 'Department',
-      departureFactory: 'Departure Site',
-      pleaseSelectDepartureFactory: 'Please select the departure site',
-      destinationFactory: 'Destination Site',
-      pleaseSelectDestinationFactory: 'Please select the destination site',
-      destinationFactorySameAsDeparture: 'Destination site cannot be the same as the departure site',
+      departureSite: 'Departure',
+      pleaseSelectDepartureSite: 'Please select the departure site',
+      destinationSite: 'Destination',
+      pleaseSelectDestinationSite: 'Please select the destination site',
+      destinationSiteSameAsDeparture: 'Destination site cannot be the same as the departure site',
       tripReason: 'Trip Reason',
       pleaseInputTripReason: 'Please enter the trip reason',
       startDate: 'Start Date',
@@ -1131,12 +1214,12 @@ export default {
       endDate: 'End Date',
       pleaseSelectEndDate: 'Please select the end date',
       dateRangeInvalid: 'End date cannot be earlier than the start date',
-      days: 'Days',
-      outboundTravel: 'Outbound Travel',
+      days: 'Trip Days',
+      outboundTravel: 'Outbound',
       pleaseSelectOutboundTravel: 'Please select the outbound travel',
-      returnTravel: 'Return Travel',
+      returnTravel: 'Return',
       pleaseSelectReturnTravel: 'Please select the return travel',
-      jobDescription: 'Job Description',
+      jobDescription: 'Job Desc',
       pleaseInputJobDescription: 'Please enter the job description',
       addReview: 'Add-Review',
       addReviewSortOrder: 'Order',
@@ -1317,7 +1400,7 @@ export default {
     title: 'Workflow System',
     username: 'User Name',
     password: 'Password',
-    factory: 'Factory',
+    site: 'Site',
     language: 'Language',
     loginButton: 'Login',
     turnstileRequired: 'Please complete the human verification first',
@@ -1325,17 +1408,17 @@ export default {
     backToLogin: 'Back to Login',
     usernamePlaceholder: 'Please enter account',
     passwordPlaceholder: 'Please enter password',
-    factoryPlaceholder: 'Please select factory',
+    sitePlaceholder: 'Please select site',
     languagePlaceholder: 'Please select language',
     usernameRequired: 'Please enter account',
     passwordRequired: 'Please enter password',
-    factoryRequired: 'Please select factory',
+    siteRequired: 'Please select site',
     loginFailed: 'Login Failed',
       loginFailedTip: 'Login request failed, please try again later',
       passwordExpired: 'Password has expired, redirecting to password change page',
       accountLocked: 'Account has been locked, redirecting to unlock page',
       sessionExpired: 'Session expired, please log in again',
-    factories: {
+    sites: {
       ESK: 'Kunshan Yisheng',
       ETW: 'Yisheng Taiwan',
       ESW: 'Wuxi Xinguan',
@@ -1753,8 +1836,8 @@ export default {
       },
       parentDepartment: 'Parent Dept',
       departmentLevel: 'Dept Level',
-      factory: 'Factory',
-      pleaseSelectFactory: 'Please select factory',
+      site: 'Site',
+      pleaseSelectSite: 'Please select site',
       departmentFunctions: 'Department Functions',
       pleaseSelectDepartmentFunctions: 'Please select department functions',
       topLevel: 'Top Level'

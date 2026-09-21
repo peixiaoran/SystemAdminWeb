@@ -5,6 +5,10 @@
     width="580px"
     :close-on-click-modal="false"
     :append-to-body="true"
+    :modal="false"
+    :modal-penetrable="true"
+    :lock-scroll="false"
+    draggable
     class="modal-penetrable"
     @update:model-value="$emit('update:visible', $event)"
     @close="handleClose"
@@ -107,10 +111,6 @@ async function handleConfirm () {
 </script>
 
 <style scoped>
-.modal-penetrable :deep(.el-overlay) {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
 .reject-step-select {
   width: 100%;
   max-width: 100%;

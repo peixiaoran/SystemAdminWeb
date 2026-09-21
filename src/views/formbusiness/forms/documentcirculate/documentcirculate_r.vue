@@ -1498,7 +1498,7 @@ async function onSubmit () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
     }
   } catch {} finally {
     saving.value = false
@@ -1521,7 +1521,7 @@ async function saveDocumentCirculateBeforeSubmit () {
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
     }
     return false
   }
@@ -1586,7 +1586,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.documentcirculate.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.documentcirculate.submitFailed'), 'warning')
+    showFormActionNotice(res?.message || t('formbusiness.documentcirculate.submitFailed'), 'error')
   } catch {} finally {
     approving.value = false
   }
@@ -1700,10 +1700,14 @@ async function batchUpload (filesToUpload) {
     if (res && isSuccessCode(res.code)) {
       const files = Array.isArray(res.data) ? res.data : []
       uploadedAttachments.value = [...uploadedAttachments.value, ...files]
-    } else if (res && isBadRequestResponse(res)) {
-      showBadRequestResult(res?.message)
+    } else if (isHandled(res)) {
+      // 请求未真正到达后端，request.js 已提示过一次
+    } else {
+      showFormActionNotice(res?.message || t('formbusiness.documentcirculate.uploadFailed'), 'error')
     }
-  } catch {} finally {
+  } catch {
+    showFormActionNotice(t('formbusiness.documentcirculate.uploadFailed'), 'error')
+  } finally {
     uploading.value = false
     if (fileInputRef.value) {
       fileInputRef.value.value = ''

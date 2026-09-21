@@ -51,8 +51,8 @@
         :empty-text="$t('common.noData')"
         >
           <el-table-column type="index" :label="$t('formbusiness.workflowstep.index')" width="80" align="center" fixed />
-          <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="150" show-overflow-tooltip />
+          <el-table-column prop="stepNameCn" :label="$t('formbusiness.workflowstep.stepNameCn')" min-width="110" show-overflow-tooltip />
+          <el-table-column prop="stepNameEn" :label="$t('formbusiness.workflowstep.stepNameEn')" min-width="140" show-overflow-tooltip />
           <el-table-column :label="$t('formbusiness.workflowstep.assignmentName')" min-width="100" align="center">
             <template #default="{ row }">
               <el-tag effect="dark" :type="getAssignmentTagType(row.assignment || row.assignmentCode)">
@@ -65,6 +65,7 @@
               {{ Number(row.isStartStep) === 1 ? $t('common.yes') : $t('common.no') }}
             </template>
           </el-table-column>
+          <el-table-column prop="sortOrder" :label="$t('formbusiness.workflowstep.sortOrder')" width="100" align="center" />
           <el-table-column prop="description" :label="$t('formbusiness.workflowstep.description')" min-width="160" show-overflow-tooltip>
             <template #default="{ row }">
               <span>{{ row.description}}</span>
@@ -178,10 +179,11 @@
                 v-model="addStepForm.reviewModeCode"
                 :placeholder="$t('formbusiness.workflowstep.pleaseSelectReviewMode')"
                 filterable
+                :disabled="isReviewOnlyAssignment(addStepForm.assignmentCode)"
                 style="width: 100%"
               >
                 <el-option
-                  v-for="item in reviewModeOptions"
+                  v-for="item in visibleReviewModeOptions"
                   :key="item.reviewModeCode"
                   :label="item.reviewModeName"
                   :value="item.reviewModeCode"
@@ -285,7 +287,7 @@
               </el-select>
             </el-form-item>
           </div>
-          <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'User'" class="user-filter-left">
+          <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'AssignedUser'" class="user-filter-left">
             <div class="user-filter-left-item">
               <label class="user-filter-left-label">{{ $t('formbusiness.workflowstep.department') }}</label>
               <el-tree-select
@@ -325,7 +327,7 @@
               <el-button type="primary" @click="handleSearchUser">{{ $t('formbusiness.workflowstep.searchUser') }}</el-button>
             </div>
           </div>
-          <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'User'" class="user-table-wrap">
+          <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'AssignedUser'" class="user-table-wrap">
             <div class="user-table-scroll">
               <el-table
                 :data="userTableData"
@@ -350,8 +352,6 @@
                   <el-table-column prop="userName" :label="$t('formbusiness.workflowstep.userName')" min-width="150" />
                   <el-table-column prop="departmentName" :label="$t('formbusiness.workflowstep.userTableDepartment')" min-width="130" />
                   <el-table-column prop="positionName" :label="$t('formbusiness.workflowstep.userTablePosition')" min-width="82" />
-                  <el-table-column prop="laborName" :label="$t('formbusiness.workflowstep.userTableLabor')" min-width="180" />
-                  <el-table-column prop="nationalityName" :label="$t('formbusiness.workflowstep.userTableNationality')" min-width="120" />
                 </el-table>
             </div>
               <el-pagination
@@ -387,7 +387,7 @@
             </el-form-item>
           </div>
           <div v-show="addStepForm.isStartStep === 0 && addStepForm.assignmentCode === 'AddReview'" class="form-row assignment-block">
-            <el-form-item :label="$t('formbusiness.workflowstep.sortOrder')" prop="stepAddReviewUpsert.sortOrder" class="half-width-item">
+            <el-form-item :label="$t('formbusiness.workflowstep.addReviewSortOrder')" prop="stepAddReviewUpsert.sortOrder" class="half-width-item">
               <el-input-number
                 v-model="addStepForm.stepAddReviewUpsert.sortOrder"
                 :min="0"
@@ -503,7 +503,7 @@
 </template>
   
   <script setup>
-import { ref, reactive, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
 import { 
@@ -576,6 +576,14 @@ const addStepFormRef = ref(null)
 const dialogFormTypeOptions = ref([])
 const assignmentOptions = ref([])
 const reviewModeOptions = ref([])
+// AddReview、User 步骤只能用 Review 审批方式
+const isReviewOnlyAssignment = (assignmentCode) => assignmentCode === 'AddReview' || assignmentCode === 'AssignedUser'
+const visibleReviewModeOptions = computed(() => {
+  if (isReviewOnlyAssignment(addStepForm.assignmentCode)) {
+    return reviewModeOptions.value.filter(item => item.reviewModeCode === 'Review')
+  }
+  return reviewModeOptions.value
+})
 const departmentLevelOptions = ref([])
 const userPositionOptions = ref([])
 const departmentTreeOptions = ref([])
@@ -651,7 +659,7 @@ const loadAssignmentRelatedOptions = async (assignmentCode) => {
     await Promise.all([loadDepartmentTreeOptions(), loadUserPositionOptions()])
     return
   }
-  if (assignmentCode === 'User') {
+  if (assignmentCode === 'AssignedUser') {
     await loadDepartmentTreeOptions()
   }
 }
@@ -949,7 +957,7 @@ const handleEditStep = async (step) => {
           addStepForm.stepDeptUserUpsert.departmentId = dto.departmentId || ''
           addStepForm.stepDeptUserUpsert.positionId = dto.positionId || ''
         }
-      } else if (assignmentCode === 'User') {
+      } else if (assignmentCode === 'AssignedUser') {
         const dto = data.workflowStepUser || data.workflowStepUserDto
         if (dto) {
           addStepForm.stepUserUpsert.departmentId = dto.departmentId || ''
@@ -970,7 +978,7 @@ const handleEditStep = async (step) => {
 
       await loadAssignmentRelatedOptions(assignmentCode)
 
-      if (assignmentCode === 'User' && addStepForm.stepUserUpsert.departmentId) {
+      if (assignmentCode === 'AssignedUser' && addStepForm.stepUserUpsert.departmentId) {
         await loadUserInfoPage()
       }
     } else {
@@ -1020,9 +1028,9 @@ const getAssignmentTagType = (assignment) => {
   const map = {
     Org: 'primary',
     DeptUser: 'warning',
-    User: 'danger',
+    AssignedUser: 'danger',
     Custom: 'success',
-    AddReview: 'success'
+    AddReview: 'info'
   }
   return map[assignment] ?? 'info'
 }
@@ -1035,9 +1043,14 @@ const onAssignmentChange = (assignmentCode) => {
   } else if (assignmentCode === 'DeptUser') {
     loadDepartmentTreeOptions()
     loadUserPositionOptions()
-  } else if (assignmentCode === 'User') {
+  } else if (assignmentCode === 'AssignedUser') {
     loadDepartmentTreeOptions()
     resetUserPickerState()
+  } else if (assignmentCode === 'AddReview') {
+    addStepForm.reminderIntervalMinutes = 1
+  }
+  if (isReviewOnlyAssignment(assignmentCode)) {
+    addStepForm.reviewModeCode = 'Review'
   }
 }
 
@@ -1107,7 +1120,7 @@ const loadDepartmentTreeOptions = async () => {
         if (firstEnabled) {
           if (addStepForm.assignmentCode === 'DeptUser' && !addStepForm.stepDeptUserUpsert.departmentId) {
             addStepForm.stepDeptUserUpsert.departmentId = firstEnabled.departmentId
-          } else if (addStepForm.assignmentCode === 'User' && !addStepForm.stepUserUpsert.departmentId) {
+          } else if (addStepForm.assignmentCode === 'AssignedUser' && !addStepForm.stepUserUpsert.departmentId) {
             addStepForm.stepUserUpsert.departmentId = firstEnabled.departmentId
           }
         }
@@ -1154,7 +1167,7 @@ const handleSearchUser = () => {
 watch(
   () => addStepForm.stepUserUpsert.departmentId,
   (val) => {
-    if (addStepForm.assignmentCode === 'User' && addStepForm.isStartStep === 0 && val) {
+    if (addStepForm.assignmentCode === 'AssignedUser' && addStepForm.isStartStep === 0 && val) {
       userPageIndex.value = 1
       loadUserInfoPage()
     }

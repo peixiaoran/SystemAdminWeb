@@ -371,6 +371,7 @@ export default {
       deleteStepSuccess: '删除步骤成功',
       deleteStepFailed: '删除步骤失败',
       sortOrder: '排序',
+      addReviewSortOrder: '加审排序',
       editStep: '编辑步骤',
       editStepSuccess: '编辑步骤成功',
       editStepFailed: '编辑步骤失败',
@@ -811,6 +812,88 @@ export default {
         attachmentTipPaternity: '陪产假需上传配偶分娩相关证明',
         attachmentTipNursing: '护理假需上传被护理人医疗或住院证明',
         attachmentTipBereavement: '丧假需上传讣告、死亡证明或关系证明',
+        leavePolicy: {
+          emptyHint: '请先选择假别，才能查看对应的假别规则。',
+          annual: {
+            title: '年休假',
+            rules: [
+              '到职满6个月未满1年者，给假3日。',
+              '满1年未满2年者，给假7日。',
+              '满2年未满3年者，给假10日。',
+              '满3年未满5年者，每年给假14日。',
+              '满5年未满10年者，每年给假15日。',
+              '满10年以上者，每满1年加给1日，加至满30日为止。',
+              '特别休假期日由劳雇双方协商排定；经劳工同意，可递延至次一年度实施。'
+            ]
+          },
+          sick: {
+            title: '病假',
+            rules: [
+              '请假1日(含)以上者，需检附诊断证明或医疗收据。未满1日者，免附请假证明。',
+              '未住院者，1年内合计不得超过30日。',
+              '住院者，2年内合计不得超过1年。',
+              '未住院 + 住院者，2年内合计不得超过1年。',
+              '全年30日内半薪，超过30日不给薪。'
+            ]
+          },
+          personal: {
+            title: '事假',
+            rules: ['一年内合计不得超过14日。(不给薪)']
+          },
+          marriage: {
+            title: '婚假',
+            rules: [
+              '自结婚登记日前10日起3个月内请休。',
+              '给假8日，以一次请毕为原则。',
+              '须附请假证明：户口名簿或结婚登记证或依当地习俗佐证文件。'
+            ]
+          },
+          maternity: {
+            title: '产假',
+            rules: [
+              '于分娩前后，给假56日。',
+              '须一次请毕，产假期间应依日历天连续计算(假日也需计算)，不得提前上班。',
+              '请假日最迟为分娩日。',
+              '到职满6个月以上者，停止工作期间薪资照给；到职未满6个月者，停止工作期间减半发给。',
+              '须附请假证明：出生证明。'
+            ]
+          },
+          paternity: {
+            title: '陪产假 / 陪产检假',
+            rules: [
+              '限男性。',
+              '陪产假期间：陪伴其配偶分娩当日及其前后合计15日内，择7日申请。',
+              '陪产检假：陪伴其配偶妊娠期间产检，给假7日。',
+              '须附请假证明：(陪产检)妈妈手册之产检纪录、(陪产假)出生证明。'
+            ]
+          },
+          familyCare: {
+            title: '护理假（家庭照顾假）',
+            rules: [
+              '家庭成员预防接种、发生严重之疾病或其他重大事故须亲自照顾时，得请家庭照顾假。',
+              '每年以7日为限，并入事假计算；家庭照顾假与事假合计全年不得超过14日。(不给薪)',
+              '须附请假证明：相关证明文件。'
+            ]
+          },
+          breastfeeding: {
+            title: '哺乳假（哺(集)乳时间）',
+            rules: [
+              '子女未满1岁须亲自哺乳者，除规定之休息时间外，每日另给哺(集)乳时间60分钟。',
+              '每日工作时间超过8小时者，超过之工作时间达30分钟以上者，另给哺(集)乳时间30分钟。',
+              '哺(集)乳时间，视为工作时间。'
+            ]
+          },
+          bereavement: {
+            title: '丧假',
+            rules: [
+              '父母、养父母、继父母、配偶丧亡者，给假8日。',
+              '祖父母、子女、配偶之父母、配偶之养父母或继父母丧亡者，给假6日。',
+              '曾祖父母、兄弟姊妹、配偶之祖父母丧亡者，给假3日。',
+              '于事实发生日(即过世日期)起，依习惯得分次于百日内请毕。',
+              '须附请假证明：讣闻或死亡证明或依当地习俗佐证文件。'
+            ]
+          }
+        },
         viewFullWorkflow: '查看完整流程',
         viewFullWorkflowHint: '查看完整流程',
         workflowDrawerTitle: '完整审批流程',
@@ -1051,11 +1134,11 @@ export default {
         applicantUserNo: '用户工号',
         applicantUserName: '用户姓名',
         applicantDeptName: '用户部门',
-        departureFactory: '出发厂区',
-        pleaseSelectDepartureFactory: '请选择出发厂区',
-        destinationFactory: '目的厂区',
-        pleaseSelectDestinationFactory: '请选择目的厂区',
-        destinationFactorySameAsDeparture: '目的厂区不能与出发厂区相同',
+        departureSite: '出发厂区',
+        pleaseSelectDepartureSite: '请选择出发厂区',
+        destinationSite: '目的厂区',
+        pleaseSelectDestinationSite: '请选择目的厂区',
+        destinationSiteSameAsDeparture: '目的厂区不能与出发厂区相同',
         tripReason: '出差事由',
         pleaseInputTripReason: '请输入出差事由',
         startDate: '开始日期',
@@ -1063,7 +1146,7 @@ export default {
         endDate: '结束日期',
         pleaseSelectEndDate: '请选择结束日期',
         dateRangeInvalid: '结束日期不能早于开始日期',
-        days: '天数',
+        days: '出差天数',
         outboundTravel: '去程交通',
         pleaseSelectOutboundTravel: '请选择去程交通',
         returnTravel: '返程交通',
@@ -1249,20 +1332,19 @@ export default {
     title: '工作流管理系统',
     username: '用户名',
     password: '密码',
-    factory: '厂区',
+    site: '厂区',
     language: '语言',
     loginButton: '登录',
       turnstileRequired: '请先完成人机验证',
       unlockAccount: '账号解锁',
-      // passwordExpiration: '密码过期',
       backToLogin: '返回登录',
       usernamePlaceholder: '请输入账号',
       passwordPlaceholder: '请输入密码',
-      factoryPlaceholder: '请选择厂区',
+      sitePlaceholder: '请选择厂区',
       languagePlaceholder: '请选择语言',
       usernameRequired: '请输入账号',
       passwordRequired: '请输入密码',
-      factoryRequired: '请选择厂区',
+      siteRequired: '请选择厂区',
       loginFailed: '登录失败',
       loginFailedTip: '登录请求失败，请稍后重试',
       passwordExpired: '密码已过期，即将跳转到密码修改页面',
@@ -1579,8 +1661,8 @@ export default {
       },
       parentDepartment: '上级部门',
       departmentLevel: '部门级别',
-      factory: '所属厂区',
-      pleaseSelectFactory: '请选择所属厂区',
+      site: '所属厂区',
+      pleaseSelectSite: '请选择所属厂区',
       departmentFunctions: '部门职能',
       pleaseSelectDepartmentFunctions: '请选择部门职能',
       topLevel: '顶级部门'

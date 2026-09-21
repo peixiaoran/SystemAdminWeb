@@ -13,7 +13,7 @@ export const INIT_OVERSEASTRIPAPP_API = 'FormBusiness/Forms/OverseasTripApp/Init
 export const GET_TRAVEL_MODE_DROP_API = 'FormBusiness/Forms/OverseasTripApp/GetTravelModeDrop'
 
 // 厂区下拉框API（出发厂区、目的厂区选择用）
-export const GET_FACTORY_DROP_API = 'FormBusiness/Forms/OverseasTripApp/GetFactoryDrop'
+export const GET_SITE_DROP_API = 'FormBusiness/Forms/OverseasTripApp/GetSiteDrop'
 
 // 获取出差申请单详情API
 export const GET_OVERSEASTRIPAPP_API = 'FormBusiness/Forms/OverseasTripApp/GetOverseasTripApp'

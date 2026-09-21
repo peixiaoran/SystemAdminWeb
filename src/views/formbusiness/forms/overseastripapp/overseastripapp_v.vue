@@ -28,7 +28,7 @@
               <div class="sk-divider" style="margin: 6px 0 24px;"></div>
 
               <div class="sk-grid">
-                <div v-for="n in 2" :key="`sk-factory-${n}`" class="sk-field">
+                <div v-for="n in 2" :key="`sk-site-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-control" />
                 </div>
@@ -192,16 +192,21 @@
 
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
-        <el-row v-if="isAnyStepFieldVisible(['DepartureFactory', 'DestinationFactory'])" :gutter="16">
-          <el-col v-if="isStepFieldVisible('DepartureFactory')" :span="12">
-            <el-form-item :label="t('formbusiness.overseastripapp.departureFactory')" prop="departureFactoryName">
-              <KeywordHighlightField :value="form.departureFactoryName" :keyword="searchKeyword" />
+        <el-row v-if="isAnyStepFieldVisible(['DepartureSite', 'DestinationSite'])" :gutter="16">
+          <el-col v-if="isStepFieldVisible('DepartureSite')" :span="8">
+            <el-form-item :label="t('formbusiness.overseastripapp.departureSite')" prop="departureSiteName">
+              <KeywordHighlightField :value="form.departureSiteName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
-          <el-col v-if="isStepFieldVisible('DestinationFactory')" :span="12">
-            <el-form-item :label="t('formbusiness.overseastripapp.destinationFactory')" prop="destinationFactory">
-              <KeywordHighlightField :value="destinationFactoryDisplay" :keyword="searchKeyword" />
+          <el-col v-if="isStepFieldVisible('DestinationSite')" :span="8">
+            <el-form-item :label="t('formbusiness.overseastripapp.destinationSite')" prop="destinationSite">
+              <KeywordHighlightField :value="destinationSiteDisplay" :keyword="searchKeyword" />
             </el-form-item>
+          </el-col>
+          <el-col v-if="isStepFieldVisible('DestinationSite')" :span="1" class="destination-site-info-col">
+            <el-tooltip effect="light" placement="right" trigger="click" raw-content popper-class="site-allowance-tooltip" :content="siteAllowanceTooltipHtml">
+              <el-icon class="destination-site-info-icon"><QuestionFilled /></el-icon>
+            </el-tooltip>
           </el-col>
         </el-row>
 
@@ -214,12 +219,12 @@
         </el-row>
 
         <el-row v-if="isAnyStepFieldVisible(['OutboundTravel', 'ReturnTravel'])" :gutter="16">
-          <el-col v-if="isStepFieldVisible('OutboundTravel')" :span="12">
+          <el-col v-if="isStepFieldVisible('OutboundTravel')" :span="8">
             <el-form-item :label="t('formbusiness.overseastripapp.outboundTravel')" prop="outboundTravel">
               <KeywordHighlightField :value="form.outboundTravelName || form.outboundTravel" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
-          <el-col v-if="isStepFieldVisible('ReturnTravel')" :span="12">
+          <el-col v-if="isStepFieldVisible('ReturnTravel')" :span="8">
             <el-form-item :label="t('formbusiness.overseastripapp.returnTravel')" prop="returnTravel">
               <KeywordHighlightField :value="form.returnTravelName || form.returnTravel" :keyword="searchKeyword" />
             </el-form-item>
@@ -389,7 +394,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Lock, Calendar } from '@element-plus/icons-vue'
+import { Lock, Calendar, QuestionFilled } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import KeywordHighlightField from '../components/keywordhighlightfield.vue'
@@ -398,7 +403,7 @@ import {
   GET_OVERSEASTRIPAPP_API,
   GET_FULL_REVIEW_FLOW_API,
   GET_FORM_NOTIFY_TOKEN_API,
-  GET_FACTORY_DROP_API
+  GET_SITE_DROP_API
 } from '@/config/api/formbusiness/forms/overseastripapp'
 import { MODULE_API } from '@/config/api/modulemenu/menu'
 import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
@@ -492,9 +497,9 @@ const form = reactive({
   applicantUserNo: '',
   applicantUserName: '',
   applicantDeptName: '',
-  departureFactory: '',
-  departureFactoryName: '',
-  destinationFactory: '',
+  departureSite: '',
+  departureSiteName: '',
+  destinationSite: '',
   tripReason: '',
   startDate: '',
   endDate: '',
@@ -506,21 +511,88 @@ const form = reactive({
   jobDescription: ''
 })
 
-const factoryOptions = ref([])
+const siteOptions = ref([])
 
-async function loadFactoryOptions () {
+async function loadSiteOptions () {
   try {
-    const res = await post(GET_FACTORY_DROP_API, {})
-    factoryOptions.value = res && res.code === 200 && Array.isArray(res.data) ? res.data : []
+    const res = await post(GET_SITE_DROP_API, {})
+    siteOptions.value = res && res.code === 200 && Array.isArray(res.data) ? res.data : []
   } catch {
-    factoryOptions.value = []
+    siteOptions.value = []
   }
 }
 
 /** 目的厂区无独立 Name 字段返回，依赖厂区下拉数据把 code 映射成名称展示 */
-const destinationFactoryDisplay = computed(() => {
-  const matched = factoryOptions.value.find((item) => String(item.factory) === String(form.destinationFactory))
-  return matched?.factoryName || form.destinationFactory
+const destinationSiteDisplay = computed(() => {
+  const matched = siteOptions.value.find((item) => String(item.site) === String(form.destinationSite))
+  return matched?.siteName || form.destinationSite
+})
+
+/** 厂区间每日出差补助（示意金额，美金），仅作前端提示用，非后端数据。与 _r.vue 保持一致 */
+const SITE_ALLOWANCE_NAMES = {
+  ESK: { 'zh-CN': '大陆-昆山', 'en-US': 'Mainland - Kunshan' },
+  ESC: { 'zh-CN': '大陆-烟台', 'en-US': 'Mainland - Yantai' },
+  ETW: { 'zh-CN': '台湾', 'en-US': 'Taiwan' },
+  ESV: { 'zh-CN': '越南', 'en-US': 'Vietnam' },
+  EMJ: { 'zh-CN': '马来西亚', 'en-US': 'Malaysia' },
+  ESH: { 'zh-CN': '墨西哥-蒂华纳', 'en-US': 'Mexico - Tijuana' },
+  MTY: { 'zh-CN': '墨西哥-蒙特雷', 'en-US': 'Mexico - Monterrey' },
+  EGY: { 'zh-CN': '台湾-高原', 'en-US': 'Taiwan - Gaoyuan' }
+}
+const SITE_ALLOWANCE_ORDER = ['ESK', 'ESC', 'ETW', 'EGY', 'ESV', 'EMJ', 'ESH', 'MTY']
+/**
+ * 参照中国大陆企业出差补贴惯例定价（美元/天）：大陆境内最低，两岸/东南亚适中，跨洲到墨西哥最高。
+ * key 一律按字母升序拼接（与 getSiteAllowanceAmount 排序后的 key 保持一致），避免查不到导致误判为 0。
+ */
+const SITE_ALLOWANCE_AMOUNTS = {
+  'EGY-EMJ': 70, 'EGY-ESC': 60, 'EGY-ESH': 150, 'EGY-ESK': 60, 'EGY-ESV': 65, 'EGY-ETW': 40, 'EGY-MTY': 150,
+  'EMJ-ESC': 75, 'EMJ-ESH': 145, 'EMJ-ESK': 75, 'EMJ-ESV': 55, 'EMJ-ETW': 70, 'EMJ-MTY': 145,
+  'ESC-ESH': 150, 'ESC-ESK': 30, 'ESC-ESV': 70, 'ESC-ETW': 60, 'ESC-MTY': 150,
+  'ESH-ESK': 150, 'ESH-ESV': 140, 'ESH-ETW': 150, 'ESH-MTY': 60,
+  'ESK-ESV': 70, 'ESK-ETW': 60, 'ESK-MTY': 150,
+  'ESV-ETW': 65, 'ESV-MTY': 140,
+  'ETW-MTY': 150
+}
+
+function getSiteAllowanceAmount (codeA, codeB) {
+  if (codeA === codeB) return 0
+  const key = [codeA, codeB].sort().join('-')
+  return SITE_ALLOWANCE_AMOUNTS[key] ?? 0
+}
+
+function formatAllowanceAmount (amount) {
+  return `$${amount.toLocaleString('en-US')}`
+}
+
+/** 只显示出发厂区那一行（到各目的厂区的补助），未选择出发厂区时给出提示 */
+const siteAllowanceTooltipHtml = computed(() => {
+  const lang = locale.value === 'en-US' ? 'en-US' : 'zh-CN'
+  const codes = SITE_ALLOWANCE_ORDER
+  const departure = form.departureSite
+  const destination = form.destinationSite
+
+  const description = lang === 'en-US'
+    ? 'Daily overseas trip allowance (USD) from the selected departure site to each destination. The farther apart, the higher the daily allowance.'
+    : '出差补贴：从已选出发厂区到各厂区的每日补助金额（美金），厂区距离越远，每日补助越高。'
+  const descHtml = `<div class="site-allowance-desc">${description}</div>`
+
+  if (!departure) {
+    const emptyText = lang === 'en-US'
+      ? 'Please select a departure site first to see its allowance.'
+      : '请先选择出发厂区，才能查看对应的出差补贴。'
+    return `${descHtml}<div class="site-allowance-empty">${emptyText}</div>`
+  }
+
+  const destLabel = lang === 'en-US' ? 'Destination' : '目的厂区'
+  const amountLabel = lang === 'en-US' ? 'Daily Allowance (USD)' : '每日补助（美金）'
+  const rows = codes
+    .filter((code) => code !== departure)
+    .map((code) => {
+      const amount = getSiteAllowanceAmount(departure, code)
+      const isCurrentRow = code === destination
+      return `<tr${isCurrentRow ? ' class="is-current-rule"' : ''}><th>${SITE_ALLOWANCE_NAMES[code][lang]}</th><td>${formatAllowanceAmount(amount)}</td></tr>`
+    }).join('')
+  return `${descHtml}<table class="site-allowance-table"><thead><tr><th>${destLabel}</th><th>${amountLabel}</th></tr></thead><tbody>${rows}</tbody></table>`
 })
 
 async function fetchFullReviewFlow () {
@@ -722,9 +794,9 @@ function bindFormData (data) {
     applicantUserNo: data.applicantUserNo || '',
     applicantUserName: data.applicantUserName || '',
     applicantDeptName: data.applicantDeptName || '',
-    departureFactory: data.departureFactory || '',
-    departureFactoryName: data.departureFactoryName || '',
-    destinationFactory: data.destinationFactory || '',
+    departureSite: data.departureSite || '',
+    departureSiteName: data.departureSiteName || '',
+    destinationSite: data.destinationSite || '',
     tripReason: data.tripReason || '',
     startDate: data.startDate || '',
     endDate: data.endDate || '',
@@ -866,7 +938,7 @@ onMounted(async () => {
     await syncRouteLanguage()
     loading.value = true
     searchKeyword.value = resolveRouteKeyword(route)
-    loadFactoryOptions()
+    loadSiteOptions()
 
     const routeToken = route.query.token || route.query.Token || getLocationQueryParam('token', 'Token')
     if (routeToken) {
@@ -1165,8 +1237,7 @@ onMounted(async () => {
 
 .leave-form :deep(.el-form-item__label) {
   text-align: left;
-  white-space: normal;
-  word-break: break-word;
+  white-space: nowrap;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -1274,4 +1345,67 @@ onMounted(async () => {
   pointer-events: none;
 }
 
+.destination-site-info-col {
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.destination-site-info-icon {
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--el-text-color-placeholder);
+  font-size: 16px;
+}
+
+</style>
+
+<style>
+/* el-tooltip 的弹层通过 Teleport 挂到 body 下，且内容是原始 HTML 字符串，不受本组件 scoped 样式约束，因此单独放在非 scoped 块中 */
+.site-allowance-tooltip.el-popper {
+  max-width: 280px;
+}
+
+.site-allowance-desc {
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+}
+
+.site-allowance-empty {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+.site-allowance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.site-allowance-table th,
+.site-allowance-table td {
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  padding: 3px 6px;
+  text-align: center;
+}
+
+.site-allowance-table thead th {
+  background-color: var(--el-fill-color-light, #f5f7fa);
+  font-weight: 600;
+}
+
+.site-allowance-table tbody th {
+  background-color: var(--el-fill-color-light, #f5f7fa);
+  font-weight: 600;
+  text-align: left;
+}
+
+.site-allowance-table tr.is-current-rule th,
+.site-allowance-table tr.is-current-rule td {
+  background-color: #fdf1e6;
+  color: var(--el-color-warning, #e6a23c);
+  font-weight: 700;
+}
 </style>

@@ -213,6 +213,11 @@
               </div>
             </el-form-item>
           </el-col>
+          <el-col v-if="isAnyStepFieldVisible(['Agent', 'SelectAgent'])" :span="3" class="leave-policy-info-col">
+            <el-tooltip effect="light" placement="right" trigger="click" raw-content popper-class="leave-policy-tooltip" :content="leavePolicyTooltipHtml">
+              <el-icon class="leave-policy-info-icon"><QuestionFilled /></el-icon>
+            </el-tooltip>
+          </el-col>
         </el-row>
 
         <el-row v-if="isAnyStepFieldVisible(['LeavePeriod', 'LeaveHours'])" :gutter="16">
@@ -599,7 +604,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Upload, Search, Lock } from '@element-plus/icons-vue'
+import { Upload, Search, Lock, QuestionFilled } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import RejectDialog from '../components/rejectdialog.vue'
@@ -617,7 +622,7 @@ import { useUserStore } from '@/stores/user'
 import { normalizeRouteLang, persistRouteLanguage } from '@/utils/routeLanguage'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 
-const { t, locale } = i18n.global
+const { t, tm, locale } = i18n.global
 
 const elementPlusLocale = computed(() => (locale.value === 'en-US' ? en : zhCn))
 
@@ -724,7 +729,44 @@ function parseAgentDisplayValue (displayValue) {
 
 const agentDisplayText = computed(() => buildAgentDisplayValue(form.agentUserNo, form.agentUserName))
 
+/** 各类假别的匹配关键字（兼容中/英文后端返回值），对应 i18n 下 formbusiness.leaverequest.leavePolicy.<key> */
+const LEAVE_POLICY_KEYWORDS = [
+  { key: 'annual', keywords: ['年休', '年假', 'annual'] },
+  { key: 'sick', keywords: ['病假', 'sick'] },
+  { key: 'personal', keywords: ['事假', 'personal'] },
+  { key: 'marriage', keywords: ['婚假', 'marriage', 'wedding'] },
+  { key: 'maternity', keywords: ['产假', 'maternity'] },
+  { key: 'paternity', keywords: ['陪产', 'paternity'] },
+  { key: 'familyCare', keywords: ['护理假', '家庭照顾', 'family care', 'nursing leave'] },
+  { key: 'breastfeeding', keywords: ['哺乳', 'breastfeed', 'nursing time'] },
+  { key: 'bereavement', keywords: ['丧假', 'bereavement', 'funeral'] }
+]
+
+/** 依据当前已选假别的名称做关键字模糊匹配，返回 i18n key */
+function matchLeavePolicyKey (leaveTypeLabel) {
+  const text = String(leaveTypeLabel || '').toLowerCase()
+  if (!text) return null
+  const matched = LEAVE_POLICY_KEYWORDS.find((section) =>
+    section.keywords.some((keyword) => text.includes(keyword.toLowerCase()))
+  )
+  return matched?.key || null
+}
+
 const leaveTypeOptions = ref([])
+
+const leavePolicyTooltipHtml = computed(() => {
+  const currentLabel = leaveTypeOptions.value.find(
+    (item) => String(item.value) === String(form.leaveType || '')
+  )?.label
+  const key = matchLeavePolicyKey(currentLabel)
+  if (!key) {
+    return `<div class="leave-policy-tooltip-content leave-policy-empty">${t('formbusiness.leaverequest.leavePolicy.emptyHint')}</div>`
+  }
+  const title = t(`formbusiness.leaverequest.leavePolicy.${key}.title`)
+  const ruleList = tm(`formbusiness.leaverequest.leavePolicy.${key}.rules`)
+  const items = (Array.isArray(ruleList) ? ruleList : []).map((rule) => `<li>${rule}</li>`).join('')
+  return `<div class="leave-policy-tooltip-content"><div class="leave-policy-section"><div class="leave-policy-section-title">${title}</div><ul class="leave-policy-section-rules">${items}</ul></div></div>`
+})
 const leaveBalances = ref([])
 const leaveBalanceLoading = ref(false)
 const leaveBalanceQueryRange = ref(['', ''])
@@ -1520,7 +1562,7 @@ async function validateLeaveBalance (formId) {
   if (isHandled(res)) {
     return false
   }
-  showFormActionNotice(res?.message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'warning')
+  showFormActionNotice(res?.message || t('formbusiness.leaverequest.leaveBalanceValidateFailed'), 'error')
   return false
 }
 
@@ -1540,7 +1582,7 @@ async function saveLeaveRequestBeforeSubmit () {
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
     }
     return false
   }
@@ -1567,7 +1609,7 @@ async function onSubmit () {
       } else if (isBadRequestResponse(res)) {
         showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       } else {
-        showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
+        showFormActionNotice(res?.message || t('messages.saveError'), 'error')
       }
     } catch {} finally {
       saving.value = false
@@ -1971,7 +2013,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.leaverequest.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'warning')
+    showFormActionNotice(res?.message || t('formbusiness.leaverequest.submitFailed'), 'error')
   } catch {} finally {
     approving.value = false
   }
@@ -2058,10 +2100,14 @@ async function batchUpload(filesToUpload) {
     if (res && isSuccessCode(res.code)) {
       const files = Array.isArray(res.data) ? res.data : []
       uploadedAttachments.value = [...uploadedAttachments.value, ...files]
-    } else if (res && isBadRequestResponse(res)) {
-      showBadRequestResult(res?.message)
+    } else if (isHandled(res)) {
+      // 请求未真正到达后端，request.js 已提示过一次
+    } else {
+      showFormActionNotice(res?.message || t('formbusiness.leaverequest.uploadFailed'), 'error')
     }
-  } catch {} finally {
+  } catch {
+    showFormActionNotice(t('formbusiness.leaverequest.uploadFailed'), 'error')
+  } finally {
     uploading.value = false
     if (fileInputRef.value) {
       fileInputRef.value.value = ''
@@ -2974,5 +3020,56 @@ onMounted(async () => {
   margin-top: 12px;
 }
 
+.leave-policy-info-col {
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
 
+.leave-policy-info-icon {
+  flex-shrink: 0;
+  margin-left: 44px;
+  cursor: pointer;
+  color: var(--el-text-color-placeholder);
+  font-size: 16px;
+}
+
+</style>
+
+<style>
+/* el-tooltip 的弹层通过 Teleport 挂到 body 下，且内容是原始 HTML 字符串，不受本组件 scoped 样式约束，因此单独放在非 scoped 块中 */
+.leave-policy-tooltip.el-popper {
+  max-width: 420px;
+}
+
+.leave-policy-tooltip-content {
+  max-height: 420px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.leave-policy-empty {
+  color: var(--el-text-color-secondary);
+}
+
+.leave-policy-section + .leave-policy-section {
+  margin-top: 10px;
+}
+
+.leave-policy-section-title {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-bottom: 2px;
+}
+
+.leave-policy-section-rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--el-text-color-regular);
+}
+
+.leave-policy-section-rules li {
+  margin: 2px 0;
+}
 </style>

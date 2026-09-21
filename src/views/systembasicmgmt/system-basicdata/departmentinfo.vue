@@ -44,9 +44,9 @@
           <el-table-column prop="departmentNameCn" :label="$t('systembasicmgmt.departmentInfo.departmentNameCn')" align="left" min-width="260" />
           <el-table-column prop="departmentNameEn" :label="$t('systembasicmgmt.departmentInfo.departmentNameEn')" align="left" min-width="420" />
           <el-table-column prop="departmentLevelName" :label="$t('systembasicmgmt.departmentInfo.departmentLevelName')" align="center" min-width="200" />
-          <el-table-column :label="$t('systembasicmgmt.departmentInfo.factory')" align="center" min-width="170">
+          <el-table-column :label="$t('systembasicmgmt.departmentInfo.site')" align="center" min-width="170">
             <template #default="{ row }">
-              {{ resolveFactoryName(row.factory) }}
+              {{ resolveSiteName(row.site) }}
             </template>
           </el-table-column>
           <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
@@ -131,14 +131,14 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('systembasicmgmt.departmentInfo.factory')" prop="factory">
-              <el-select v-model="editForm.factory"
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.site')" prop="site">
+              <el-select v-model="editForm.site"
                          style="width: 100%"
-                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectFactory')">
-                <el-option v-for="item in factoryOptions"
-                           :key="item.factory"
-                           :label="item.factoryName"
-                           :value="item.factory" />
+                         :placeholder="$t('systembasicmgmt.departmentInfo.pleaseSelectSite')">
+                <el-option v-for="item in siteOptions"
+                           :key="item.site"
+                           :label="item.siteName"
+                           :value="item.site" />
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('systembasicmgmt.departmentInfo.departmentFunctions')" prop="departmentFunctions">
@@ -180,7 +180,7 @@ import {
   UPDATE_DEPARTMENT_API,
   GET_DEPARTMENTLEVEL_DROPDOWN_API,
   GET_DEPARTMENT_TREE_DROPDOWN_API,
-  GET_FACTORY_DROP_API,
+  GET_SITE_DROP_API,
   GET_DEPARTMENT_FUNCTIONS_DROP_API
 } from '@/config/api/systembasicmgmt/system-basicdata/department'
 
@@ -196,7 +196,7 @@ const editFormRef = ref(null)
 
 const departmentOptions = ref([])
 const departmentLevelOptions = ref([])
-const factoryOptions = ref([])
+const siteOptions = ref([])
 const departmentFunctionsOptions = ref([])
 
 const departmentOptionsWithNone = computed(() => [
@@ -221,7 +221,7 @@ const editForm = reactive({
   departmentNameEn: '',
   parentId: '',
   departmentLevelId: '',
-  factory: '',
+  site: '',
   departmentFunctions: '',
   description: '',
   sortOrder: 1,
@@ -298,13 +298,13 @@ const fetchDepartmentDropdown = async () => {
   }
 }
 
-const fetchFactoryDropdown = async () => {
-  const res = await post(GET_FACTORY_DROP_API.GET_FACTORY_DROP, {})
+const fetchSiteDropdown = async () => {
+  const res = await post(GET_SITE_DROP_API.GET_SITE_DROP, {})
   if (res?.code === 200) {
-    factoryOptions.value = res.data || []
+    siteOptions.value = res.data || []
   } else {
     showApiError(res)
-    factoryOptions.value = []
+    siteOptions.value = []
   }
 }
 
@@ -319,10 +319,10 @@ const fetchDepartmentFunctionsDropdown = async () => {
 }
 
 /** 列表只返回厂区编码，依赖厂区下拉数据把编码映射成名称展示 */
-const resolveFactoryName = (factory) => {
-  if (!factory) return ''
-  const matched = factoryOptions.value.find(item => String(item.factory) === String(factory))
-  return matched?.factoryName || factory
+const resolveSiteName = (site) => {
+  if (!site) return ''
+  const matched = siteOptions.value.find(item => String(item.site) === String(site))
+  return matched?.siteName || site
 }
 
 const scheduleSearch = () => {
@@ -339,7 +339,7 @@ const resetEditForm = () => {
     departmentNameEn: '',
     parentId: '0',
     departmentLevelId: getFirstEnabledDepartmentLevelId(),
-    factory: '',
+    site: '',
     departmentFunctions: '',
     description: '',
     sortOrder: 1,
@@ -368,7 +368,7 @@ const handleAdd = async () => {
   isEdit.value = false
   dialogVisible.value = true
   dialogLoading.value = true
-  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown(), fetchDepartmentFunctionsDropdown()])
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchSiteDropdown(), fetchDepartmentFunctionsDropdown()])
   resetEditForm()
   nextTick(() => {
     editFormRef.value?.clearValidate()
@@ -381,7 +381,7 @@ const handleAddChild = async (row) => {
   isEdit.value = false
   dialogVisible.value = true
   dialogLoading.value = true
-  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchFactoryDropdown(), fetchDepartmentFunctionsDropdown()])
+  await Promise.all([fetchDepartmentDropdown(), fetchDepartmentLevelDropdown(), fetchSiteDropdown(), fetchDepartmentFunctionsDropdown()])
   resetEditForm()
   editForm.parentId = row.departmentId
   nextTick(() => {
@@ -402,7 +402,7 @@ const handleEdit = async (row) => {
     post(GET_DEPARTMENT_ENTITY_API.GET_DEPARTMENT_ENTITY, formData),
     fetchDepartmentDropdown(),
     fetchDepartmentLevelDropdown(),
-    fetchFactoryDropdown(),
+    fetchSiteDropdown(),
     fetchDepartmentFunctionsDropdown()
   ])
   if (res?.code === 200) {
@@ -414,7 +414,7 @@ const handleEdit = async (row) => {
       departmentNameEn: data.departmentNameEn,
       parentId: data.parentId,
       departmentLevelId: data.departmentLevelId || getFirstEnabledDepartmentLevelId(),
-      factory: data.factory || '',
+      site: data.site || '',
       departmentFunctions: data.departmentFunctions || '',
       description: data.description,
       sortOrder: data.sortOrder,
@@ -466,7 +466,7 @@ const handleSave = async () => {
     departmentNameEn: editForm.departmentNameEn,
     parentId: editForm.parentId,
     departmentLevelId: editForm.departmentLevelId,
-    factory: editForm.factory,
+    site: editForm.site,
     departmentFunctions: editForm.departmentFunctions,
     description: editForm.description,
     sortOrder: editForm.sortOrder,
@@ -503,7 +503,7 @@ onMounted(() => {
   fetchDepartmentTree()
   fetchDepartmentLevelDropdown()
   fetchDepartmentDropdown()
-  fetchFactoryDropdown()
+  fetchSiteDropdown()
   fetchDepartmentFunctionsDropdown()
 })
 

@@ -970,10 +970,10 @@ async function removeSelectedLeaveRequest () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
     }
   } catch {
-    showFormActionNotice(t('messages.saveError'), 'warning')
+    showFormActionNotice(t('messages.saveError'), 'error')
   } finally {
     leaveRequestRemoveLoading.value = false
   }
@@ -1098,10 +1098,10 @@ async function confirmLeaveRequestSelect () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
     }
   } catch {
-    showFormActionNotice(t('messages.saveError'), 'warning')
+    showFormActionNotice(t('messages.saveError'), 'error')
   } finally {
     leaveRequestConfirmLoading.value = false
   }
@@ -1275,7 +1275,7 @@ async function validateLeaveCancellBeforeAction () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'warning')
+      showFormActionNotice(res?.message || t('formbusiness.leavecancell.validateFailed'), 'error')
     }
     return false
   }
@@ -1302,7 +1302,7 @@ async function saveLeaveCancellBeforeSubmit () {
     } else if (isBadRequestResponse(saveRes)) {
       showFormActionNotice(saveRes?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(saveRes?.message || t('messages.saveError'), 'error')
     }
     return false
   }
@@ -1343,7 +1343,7 @@ async function onSubmit () {
     } else if (isBadRequestResponse(res)) {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
     } else {
-      showFormActionNotice(res?.message || t('messages.saveError'), 'warning')
+      showFormActionNotice(res?.message || t('messages.saveError'), 'error')
     }
   } catch {
     // ignore
@@ -1417,7 +1417,7 @@ async function onSubmitForApproval () {
       showFormActionNotice(res?.message || t('formbusiness.leavecancell.badRequestFallbackMessage'), 'warning')
       return
     }
-    showFormActionNotice(res?.message || t('formbusiness.leavecancell.submitFailed'), 'warning')
+    showFormActionNotice(res?.message || t('formbusiness.leavecancell.submitFailed'), 'error')
   } catch {
     // ignore
   } finally {

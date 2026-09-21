@@ -54,6 +54,7 @@
           <el-table-column prop="ruleNameEn" :label="$t('formbusiness.workflowrule.ruleNameEn')" align="left" min-width="240" show-overflow-tooltip />
           <el-table-column prop="positionName" :label="$t('formbusiness.workflowrule.positionName')" align="left" min-width="180" />
           <el-table-column prop="guidance" :label="$t('formbusiness.workflowrule.guidance')" align="left" min-width="160" show-overflow-tooltip />
+          <el-table-column prop="sortOrder" :label="$t('formbusiness.workflowrule.sortOrder')" width="90" align="center" />
           <el-table-column prop="version" :label="$t('formbusiness.workflowrule.version')" width="90" align="center" />
           <el-table-column :label="$t('formbusiness.workflowrule.effectiveStartDate')" width="120" align="center">
             <template #default="{ row }">{{ row.effectiveStartDate }}</template>
