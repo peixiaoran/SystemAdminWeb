@@ -295,10 +295,24 @@
                   </el-table-column>
                   <el-table-column :label="t('common.operation')" width="150" align="center">
                     <template #default="{ row, $index }">
-                      <el-button type="primary" link size="small" @click="handleDownload(row)">
+                      <el-button
+                        type="primary"
+                        link
+                        size="small"
+                        :loading="attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="attachmentActionKeys.has(getAttachmentKey(row))"
+                        @click="handleDownload(row)"
+                      >
                         {{ t('formbusiness.documentcirculate.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('Upload')" @click="removeAttachment(row, $index)">
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        :loading="attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="!isStepFieldEditable('Upload') || attachmentActionKeys.has(getAttachmentKey(row))"
+                        @click="removeAttachment(row, $index)"
+                      >
                         {{ t('formbusiness.documentcirculate.deleteFile') }}
                       </el-button>
                     </template>
@@ -366,7 +380,8 @@
                       type="danger"
                       link
                       size="small"
-                      :disabled="!isAddReviewEditable()"
+                      :loading="addReviewClearingKeys.has(row._uid)"
+                      :disabled="!isAddReviewEditable() || addReviewClearingKeys.has(row._uid)"
                       @click="clearAddReviewRow(row)"
                     >
                       {{ t('formbusiness.documentcirculate.addReviewClear') }}
@@ -1068,17 +1083,25 @@ async function deleteAddReviewRecord (sortOrder, userId) {
   }
 }
 
+const addReviewClearingKeys = reactive(new Set())
+
 /** 清空该行：已落库则先删除，全程静默不提示 */
 async function clearAddReviewRow (row) {
-  if (row.persisted && row.userId) {
-    await deleteAddReviewRecord(row.sortOrder, row.userId)
+  if (addReviewClearingKeys.has(row._uid)) return
+  addReviewClearingKeys.add(row._uid)
+  try {
+    if (row.persisted && row.userId) {
+      await deleteAddReviewRecord(row.sortOrder, row.userId)
+    }
+    row.userId = ''
+    row.userNo = ''
+    row.userName = ''
+    row.deptName = ''
+    row.persisted = false
+    row.dirty = false
+  } finally {
+    addReviewClearingKeys.delete(row._uid)
   }
-  row.userId = ''
-  row.userNo = ''
-  row.userName = ''
-  row.deptName = ''
-  row.persisted = false
-  row.dirty = false
 }
 
 /** 必须真的搬动数组元素（配合 row-key="_uid"）而非只换字段，否则 Vue 会按 key 把内容纠正回原节点、顺序号乱跳；persisted 按"新位置原有记录"判定，需在重排前记下每个位置状态再套用到新位置 */
@@ -1778,13 +1801,29 @@ function getAttachmentSizeKb (row) {
   return row?.attachmentSize ?? row?.fileSize
 }
 
-function handleDownload (file) {
+const attachmentActionKeys = reactive(new Set())
+
+function getAttachmentKey (row) {
+  return String(getAttachmentId(row) ?? '') || String(getAttachmentPath(row) ?? '')
+}
+
+async function handleDownload (file) {
   const url = resolveFileUrl(getAttachmentPath(file))
   if (!url) return
-  downloadFileFromUrl(url, getAttachmentName(file))
+  const key = getAttachmentKey(file)
+  if (attachmentActionKeys.has(key)) return
+  attachmentActionKeys.add(key)
+  try {
+    await downloadFileFromUrl(url, getAttachmentName(file))
+  } finally {
+    attachmentActionKeys.delete(key)
+  }
 }
 
 async function removeAttachment (file, idx) {
+  const key = getAttachmentKey(file)
+  if (attachmentActionKeys.has(key)) return
+  attachmentActionKeys.add(key)
   try {
     const formData = new window.FormData()
     formData.append('attachmentId', String(getAttachmentId(file)))
@@ -1802,6 +1841,8 @@ async function removeAttachment (file, idx) {
     }
   } catch {
     ElMessage({ message: t('formbusiness.documentcirculate.deleteFailed'), type: 'error', plain: true, showClose: true })
+  } finally {
+    attachmentActionKeys.delete(key)
   }
 }
 

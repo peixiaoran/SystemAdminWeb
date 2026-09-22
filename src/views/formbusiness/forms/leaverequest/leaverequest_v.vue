@@ -308,7 +308,14 @@
                     </el-table-column>
                     <el-table-column :label="t('common.operation')" width="150" align="center">
                       <template #default="{ row }">
-                        <el-button type="primary" link size="small" @click="handleDownload(row)">
+                        <el-button
+                          type="primary"
+                          link
+                          size="small"
+                          :loading="downloadingKeys.has(getAttachmentKey(row))"
+                          :disabled="downloadingKeys.has(getAttachmentKey(row))"
+                          @click="handleDownload(row)"
+                        >
                           {{ t('formbusiness.leaverequest.download') }}
                         </el-button>
                       </template>
@@ -1401,10 +1408,23 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
     return v
   }
   
-  function handleDownload(file) {
+  const downloadingKeys = reactive(new Set())
+
+  function getAttachmentKey (row) {
+    return String(row?.attachmentId ?? row?.fileId ?? '') || String(getAttachmentPath(row) ?? '')
+  }
+
+  async function handleDownload(file) {
     const url = resolveFileUrl(getAttachmentPath(file))
     if (!url) return
-    downloadFileFromUrl(url, getAttachmentName(file))
+    const key = getAttachmentKey(file)
+    if (downloadingKeys.has(key)) return
+    downloadingKeys.add(key)
+    try {
+      await downloadFileFromUrl(url, getAttachmentName(file))
+    } finally {
+      downloadingKeys.delete(key)
+    }
   }
   
   async function syncRouteLanguage () {

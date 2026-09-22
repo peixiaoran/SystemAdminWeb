@@ -339,10 +339,24 @@
                   </el-table-column>
                   <el-table-column :label="t('common.operation')" width="150" align="center">
                     <template #default="{ row, $index }">
-                      <el-button type="primary" link size="small" @click="handleDownload(row)">
+                      <el-button
+                        type="primary"
+                        link
+                        size="small"
+                        :loading="attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="attachmentActionKeys.has(getAttachmentKey(row))"
+                        @click="handleDownload(row)"
+                      >
                         {{ t('formbusiness.leaverequest.download') }}
                       </el-button>
-                      <el-button type="danger" link size="small" :disabled="!isStepFieldEditable('Upload')" @click="removeAttachment(row, $index)">
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        :loading="attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="!isStepFieldEditable('Upload') || attachmentActionKeys.has(getAttachmentKey(row))"
+                        @click="removeAttachment(row, $index)"
+                      >
                         {{ t('formbusiness.leaverequest.deleteFile') }}
                       </el-button>
                     </template>
@@ -2200,13 +2214,29 @@ function getAttachmentSizeKb (row) {
   return v
 }
 
-function handleDownload(file) {
+const attachmentActionKeys = reactive(new Set())
+
+function getAttachmentKey (row) {
+  return String(getAttachmentId(row) ?? '') || String(getAttachmentPath(row) ?? '')
+}
+
+async function handleDownload(file) {
   const url = resolveFileUrl(getAttachmentPath(file))
   if (!url) return
-  downloadFileFromUrl(url, getAttachmentName(file))
+  const key = getAttachmentKey(file)
+  if (attachmentActionKeys.has(key)) return
+  attachmentActionKeys.add(key)
+  try {
+    await downloadFileFromUrl(url, getAttachmentName(file))
+  } finally {
+    attachmentActionKeys.delete(key)
+  }
 }
 
 async function removeAttachment (file, idx) {
+  const key = getAttachmentKey(file)
+  if (attachmentActionKeys.has(key)) return
+  attachmentActionKeys.add(key)
   try {
     const formData = new window.FormData()
     formData.append('attachmentId', String(getAttachmentId(file)))
@@ -2224,6 +2254,8 @@ async function removeAttachment (file, idx) {
     }
   } catch {
     ElMessage({ message: t('formbusiness.leaverequest.deleteFailed'), type: 'error', plain: true, showClose: true })
+  } finally {
+    attachmentActionKeys.delete(key)
   }
 }
 
