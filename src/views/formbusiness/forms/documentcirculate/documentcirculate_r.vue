@@ -2211,6 +2211,15 @@ onMounted(async () => {
 
 .content-summary-editor.is-disabled {
   background: var(--el-disabled-bg-color, #f5f7fa);
+  border-color: var(--el-disabled-border-color, #e4e7ed);
+  color: var(--el-disabled-text-color, #a8abb2);
+  cursor: not-allowed;
+}
+
+.content-summary-editor.is-disabled .content-summary-toolbar,
+.content-summary-editor.is-disabled .content-summary-body {
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .content-summary-toolbar {
@@ -2329,6 +2338,10 @@ onMounted(async () => {
   font-size: 14px;
   line-height: 1.6;
   color: #303133;
+}
+
+.content-summary-editor.is-disabled .content-summary-body :deep(.ProseMirror) {
+  color: var(--el-disabled-text-color, #a8abb2);
 }
 
 .content-summary-body :deep(.ProseMirror p) {
