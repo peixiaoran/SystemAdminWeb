@@ -70,7 +70,10 @@ const buildAppUrl = (routePath) => `${window.location.origin}${APP_BASE_URL}${ro
 const service = axios.create({
   baseURL: BASE_API_URL,
   timeout: API_TIMEOUT,
-  withCredentials: true
+  withCredentials: true,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest'
+  }
 })
 
 /** 同 key 请求在该窗口内重复发起时，取消旧请求 */

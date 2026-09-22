@@ -283,7 +283,7 @@
                 </div>
                 <el-table :data="uploadedAttachments" border size="small" class="attachment-table">
                   <el-table-column type="index" width="55" align="center" label="#" />
-                  <el-table-column :label="t('formbusiness.documentcirculate.fileName')" min-width="200">
+                  <el-table-column :label="t('formbusiness.documentcirculate.fileName')" min-width="150">
                     <template #default="{ row }">
                       <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="getAttachmentName(row)">{{ getAttachmentName(row) }}</span>
                     </template>
@@ -293,7 +293,7 @@
                       {{ formatFileSize(getAttachmentSizeKb(row)) }}
                     </template>
                   </el-table-column>
-                  <el-table-column :label="t('common.operation')" width="150" align="center">
+                  <el-table-column :label="t('common.operation')" width="200" align="center">
                     <template #default="{ row, $index }">
                       <el-button
                         type="primary"
