@@ -148,9 +148,9 @@
                 underline="never"
                 @click="openFormPage(row)"
               >
-                <span v-html="highlightKeyword(row.formNo)"></span>
+                {{ row.formNo || '-' }}
               </el-link>
-              <span v-else v-html="highlightKeyword(row.formNo)"></span>
+              <span v-else>{{ row.formNo || '-' }}</span>
             </template>
           </el-table-column>
           <el-table-column :label="$t('formbusiness.generalquery.applicantDate')" align="center" min-width="150">
@@ -328,24 +328,7 @@ const resolveBlobErrorMessage = async (error, fallbackKey) => {
   return error?.message || t(fallbackKey)
 }
 
-const escapeHtml = (str) => String(str ?? '')
-  .replace(/&/g, '&amp;')
-  .replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;')
-  .replace(/'/g, '&#39;')
-
-const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
 const appliedKeyword = ref('')
-
-const highlightKeyword = (text) => {
-  const escapedText = escapeHtml(text || '-')
-  const keyword = appliedKeyword.value.trim()
-  if (!keyword) return escapedText
-  const pattern = new RegExp(escapeRegExp(escapeHtml(keyword)), 'gi')
-  return escapedText.replace(pattern, (match) => `<mark class="keyword-highlight">${match}</mark>`)
-}
 
 const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
 
@@ -754,12 +737,5 @@ onMounted(async () => {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-}
-
-.conventional-table :deep(.keyword-highlight) {
-  background-color: #fadb14;
-  color: inherit;
-  padding: 0 1px;
-  border-radius: 2px;
 }
 </style>

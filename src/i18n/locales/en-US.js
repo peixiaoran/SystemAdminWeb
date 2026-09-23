@@ -654,6 +654,7 @@ export default {
       formTypeName: 'Form Type',
       formStatus: 'Form Status',
       formNo: 'Form No',
+      keyword: 'Keyword',
       applicantDate: 'Applicant Date',
       applyUserName: 'Applicant',
       applyUserDeptName: 'Applicant Department',
@@ -676,6 +677,8 @@ export default {
       batchPrinting: 'Generating...',
       batchPrintFailed: 'Failed to batch generate PDF',
       pleaseSelectFormsToPrint: 'Please select forms to generate PDF first',
+      filterQuery: 'Filter Query',
+      clearAll: 'Clear All',
       exportExcel: 'Export Excel',
       exporting: 'Exporting...',
       exportFailed: 'Failed to export'
@@ -688,6 +691,7 @@ export default {
       formTypeName: 'Form Type',
       formStatus: 'Form Status',
       formNo: 'Form No',
+      keyword: 'Keyword',
       applicantDate: 'Applicant Date',
       applyUserName: 'Applicant',
       applyUserDeptName: 'Applicant Department',
@@ -706,6 +710,8 @@ export default {
       batchPrinting: 'Generating...',
       batchPrintFailed: 'Failed to batch generate PDF',
       pleaseSelectFormsToPrint: 'Please select forms to generate PDF first',
+      filterQuery: 'Filter Query',
+      clearAll: 'Clear All',
       exportExcel: 'Export Excel',
       exporting: 'Exporting...',
       exportFailed: 'Failed to export'
@@ -737,7 +743,7 @@ export default {
       batchPrinting: 'Generating...',
       batchPrintFailed: 'Failed to batch generate PDF',
       pleaseSelectFormsToPrint: 'Please select forms to generate PDF first',
-      filterQuery: 'Filter',
+      filterQuery: 'Filter Query',
       clearAll: 'Clear All',
       dateRange: 'Applicant Date',
       startDate: 'Start Date',
@@ -774,7 +780,7 @@ export default {
       batchPrinting: 'Generating...',
       batchPrintFailed: 'Failed to batch generate PDF',
       pleaseSelectFormsToPrint: 'Please select forms to generate PDF first',
-      filterQuery: 'Filter',
+      filterQuery: 'Filter Query',
       clearAll: 'Clear All',
       dateRange: 'Applicant Date',
       startDate: 'Start Date',
@@ -2277,7 +2283,7 @@ export default {
       pleaseSelectStartTime: 'Please select start time',
       pleaseSelectEndTime: 'Please select end time',
       getFailed: 'Failed to get data',
-      filterQuery: 'Filter',
+      filterQuery: 'Filter Query',
       clearAll: 'Clear All',
       filter: {
         userNo: 'No.',
@@ -2478,7 +2484,7 @@ export default {
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
-      filterQuery: 'Filter',
+      filterQuery: 'Filter Query',
       clearAll: 'Clear All'
     },
     customernumber: {
@@ -2518,7 +2524,7 @@ export default {
       dragFileHint: 'Drag file here, or click to upload',
       startImport: 'Start Import',
       fileChangedError: 'The selected file has been modified or is no longer readable. Please reselect the file and try again.',
-      filterQuery: 'Filter',
+      filterQuery: 'Filter Query',
       clearAll: 'Clear All'
     },
     numbermapping: {

@@ -114,9 +114,7 @@
         <p class="forbidden-result__eyebrow">{{ t('formbusiness.overseastripapp.forbiddenViewEyebrow') }}</p>
         <h2 class="forbidden-result__title">{{ t('formbusiness.overseastripapp.forbiddenViewTitle') }}</h2>
         <p class="forbidden-result__desc">{{ t('formbusiness.overseastripapp.forbiddenViewSubTitle') }}</p>
-        <el-button class="forbidden-result__action" type="primary" round @click="closeCurrentPage">
-          {{ t('formbusiness.overseastripapp.backToFormPending') }}
-        </el-button>
+        <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.overseastripapp.backToFormPending') }} ]</span>
       </div>
       <el-result
         v-else
@@ -132,9 +130,7 @@
           <span v-else>{{ t(resultState.subTitleKey) }}</span>
         </template>
         <template #extra>
-          <el-button type="primary" @click="closeCurrentPage">
-            {{ t('formbusiness.overseastripapp.backToFormPending') }}
-          </el-button>
+          <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.overseastripapp.backToFormPending') }} ]</span>
         </template>
       </el-result>
     </el-card>
@@ -252,7 +248,7 @@
         <el-row v-if="isStepFieldVisible('JobDescription')" :gutter="16">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.overseastripapp.jobDescription')" prop="jobDescription">
-              <KeywordHighlightField :value="form.jobDescription" :keyword="searchKeyword" multiline :rows="4" />
+              <KeywordHighlightField :value="form.jobDescription" :keyword="searchKeyword" multiline :rows="8" />
             </el-form-item>
           </el-col>
         </el-row>

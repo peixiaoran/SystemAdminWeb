@@ -1,50 +1,12 @@
 <template>
   <div class="conventional-table-container">
     <el-card class="conventional-card">
-      <el-form :model="searchForm" :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.applyhistory.filterAriaLabel')">
-        <el-form-item :label="$t('formbusiness.applyhistory.formGroupName')">
-          <el-select
-            v-model="searchForm.formGroupId"
-            :placeholder="$t('formbusiness.applyhistory.pleaseSelectFormGroup')"
-            filterable
-            clearable
-            style="width: 220px;"
-            @change="handleFormGroupChange"
-          >
-            <el-option
-              v-for="item in formGroupOptions"
-              :key="item.formGroupId"
-              :label="item.formGroupName"
-              :value="item.formGroupId"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="$t('formbusiness.applyhistory.formTypeName')">
-          <el-select
-            v-model="searchForm.formTypeId"
-            :placeholder="$t('formbusiness.applyhistory.pleaseSelectFormType')"
-            filterable
-            clearable
-            style="width: 220px;"
-            @change="handleFormTypeChange"
-          >
-            <el-option
-              v-for="item in formTypeOptions"
-              :key="item.formTypeId"
-              :label="item.formTypeName"
-              :value="item.formTypeId"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item class="form-button-group">
-          <el-button type="primary" @click="handleSearch" plain>
-            {{ $t('common.search') }}
+      <el-form :inline="true" class="conventional-filter-form" role="search" :aria-label="$t('formbusiness.applyhistory.filterAriaLabel')">
+        <el-form-item>
+          <el-button :icon="Filter" @click="filterDialogVisible = true">
+            {{ $t('formbusiness.applyhistory.filterQuery') }}
           </el-button>
-          <el-button @click="handleReset">
-            {{ $t('common.reset') }}
-          </el-button>
+          <el-button :icon="RefreshLeft" :title="$t('formbusiness.applyhistory.clearAll')" @click="handleClearFiltersAndSearch" />
         </el-form-item>
 
         <el-form-item class="form-right-button">
@@ -67,6 +29,72 @@
         </el-form-item>
       </el-form>
 
+      <el-dialog
+        v-model="filterDialogVisible"
+        :title="$t('formbusiness.applyhistory.filterQuery')"
+        width="900px"
+        destroy-on-close
+        append-to-body
+      >
+        <el-form :model="searchForm" :inline="true" label-width="120px" class="dialog-form filter-dialog">
+          <div class="form-row">
+            <el-form-item :label="$t('formbusiness.applyhistory.formGroupName')">
+              <el-select
+                v-model="searchForm.formGroupId"
+                :placeholder="$t('formbusiness.applyhistory.pleaseSelectFormGroup')"
+                filterable
+                clearable
+                style="width: 100%;"
+                @change="handleFormGroupChange"
+              >
+                <el-option
+                  v-for="item in formGroupOptions"
+                  :key="item.formGroupId"
+                  :label="item.formGroupName"
+                  :value="item.formGroupId"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('formbusiness.applyhistory.formTypeName')">
+              <el-select
+                v-model="searchForm.formTypeId"
+                :placeholder="$t('formbusiness.applyhistory.pleaseSelectFormType')"
+                filterable
+                clearable
+                style="width: 100%;"
+              >
+                <el-option
+                  v-for="item in formTypeOptions"
+                  :key="item.formTypeId"
+                  :label="item.formTypeName"
+                  :value="item.formTypeId"
+                />
+              </el-select>
+            </el-form-item>
+          </div>
+
+          <div class="form-row">
+            <el-form-item :label="$t('formbusiness.applyhistory.formNo')">
+              <el-input v-model="searchForm.formNo" clearable style="width: 100%;" />
+            </el-form-item>
+            <el-form-item :label="$t('formbusiness.applyhistory.keyword')">
+              <el-input v-model="searchForm.keyword" clearable style="width: 100%;" />
+            </el-form-item>
+          </div>
+        </el-form>
+
+        <template #footer>
+          <div class="filter-dialog-footer">
+            <el-button @click="handleClearFilters">
+              {{ $t('formbusiness.applyhistory.clearAll') }}
+            </el-button>
+            <el-button type="primary" @click="handleSearch">
+              {{ $t('common.confirm') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+
       <div class="table-container">
         <el-table
           ref="formTableRef"
@@ -75,7 +103,7 @@
           stripe
           :empty-text="$t('common.noData')"
           :header-cell-style="{ background: '#f5f7fa' }"
-          v-loading="loading || filterPending"
+          v-loading="loading"
           class="conventional-table"
           @selection-change="handleSelectionChange"
         >
@@ -235,10 +263,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Document } from '@element-plus/icons-vue'
+import { Filter, RefreshLeft, Document } from '@element-plus/icons-vue'
 import service, { post } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
@@ -258,7 +286,6 @@ const { t } = useI18n()
 const router = useRouter()
 
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
-const FILTER_DEBOUNCE_MS = 300
 const ALL_OPTION_VALUE = 0
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
@@ -291,6 +318,8 @@ const resolveBlobErrorMessage = async (error, fallbackKey) => {
   return error?.message || t(fallbackKey)
 }
 
+const appliedKeyword = ref('')
+
 const normalizeStatus = (row) => String(row?.formStatus ?? '').trim().toLowerCase()
 
 const getFormStatusTagType = (row) => {
@@ -303,13 +332,13 @@ const getFormStatusTagType = (row) => {
 }
 
 const loading = ref(false)
-const filterPending = ref(false)
 const formList = ref([])
 const printingFormIds = ref(new Set())
 const formTableRef = ref(null)
 const selectedRows = ref([])
 const batchPrinting = ref(false)
 const exporting = ref(false)
+const filterDialogVisible = ref(false)
 const formPendingReviewersDialogVisible = ref(false)
 const formPendingReviewersLoading = ref(false)
 const formPendingReviewersList = ref([])
@@ -317,10 +346,14 @@ const formPendingReviewersList = ref([])
 const formGroupOptions = ref([])
 const formTypeOptions = ref([])
 
-const searchForm = reactive({
+const defaultSearchForm = () => ({
   formGroupId: '',
-  formTypeId: ''
+  formTypeId: '',
+  formNo: '',
+  keyword: ''
 })
+
+const searchForm = reactive(defaultSearchForm())
 
 const pagination = reactive({
   pageIndex: 1,
@@ -366,7 +399,8 @@ const getFormList = async () => {
     const params = {
       formGroupId: normalizeFilterValue(searchForm.formGroupId),
       formTypeId: normalizeFilterValue(searchForm.formTypeId),
-      formNo: '',
+      formNo: searchForm.formNo || '',
+      keyword: searchForm.keyword || '',
       pageIndex: String(pagination.pageIndex),
       pageSize: String(pagination.pageSize),
       totalCount: String(pagination.totalCount || 0)
@@ -376,6 +410,7 @@ const getFormList = async () => {
       formList.value = res.data || []
       pagination.totalCount = Number(res.totalCount || 0)
       selectedRows.value = []
+      appliedKeyword.value = params.keyword
       return
     }
     formList.value = []
@@ -388,52 +423,25 @@ const getFormList = async () => {
   }
 }
 
-let debounceTimer = null
-
-const scheduleFilterRequest = async (callback) => {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  loading.value = true
-  filterPending.value = true
-  await nextTick()
-  debounceTimer = setTimeout(async () => {
-    try {
-      await callback()
-    } finally {
-      filterPending.value = false
-    }
-  }, FILTER_DEBOUNCE_MS)
-}
-
 const handleFormGroupChange = () => {
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormTypeOptions()
-    await getFormList()
-  })
-}
-
-const handleFormTypeChange = () => {
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormList()
-  })
+  getFormTypeOptions()
 }
 
 const handleSearch = () => {
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormList()
-  })
+  filterDialogVisible.value = false
+  pagination.pageIndex = 1
+  getFormList()
 }
 
-const handleReset = () => {
-  searchForm.formGroupId = ''
-  searchForm.formTypeId = ''
-  scheduleFilterRequest(async () => {
-    pagination.pageIndex = 1
-    await getFormTypeOptions()
-    await getFormList()
-  })
+const handleClearFilters = async () => {
+  Object.assign(searchForm, defaultSearchForm())
+  await getFormTypeOptions()
+}
+
+const handleClearFiltersAndSearch = async () => {
+  await handleClearFilters()
+  pagination.pageIndex = 1
+  await getFormList()
 }
 
 const handleSizeChange = () => {
@@ -471,10 +479,11 @@ const openFormPage = (row) => {
     showMessage(t('formbusiness.applyhistory.getFailed'))
     return
   }
-  const resolved = router.resolve({
-    path,
-    query: { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || ''), type: 'View' }
-  })
+  const query = { formTypeId: String(row.formTypeId || ''), formId: String(row.formId || ''), type: 'View' }
+  if (appliedKeyword.value) {
+    query.keyword = appliedKeyword.value
+  }
+  const resolved = router.resolve({ path, query })
   if (!isRouteValid(resolved)) {
     showMessage(t('formbusiness.applyhistory.getFailed'))
     return
@@ -765,5 +774,18 @@ onMounted(async () => {
   color: #f39c4a;
 }
 
+.filter-dialog .form-row .el-form-item {
+  flex: 0 0 calc(50% - 10px);
+}
+
+.filter-dialog .form-row .el-form-item:last-child {
+  margin-right: 0;
+}
+
+.filter-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 
 </style>

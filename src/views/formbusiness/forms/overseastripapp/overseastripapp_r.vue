@@ -336,7 +336,7 @@
               <el-input
                 v-model="form.jobDescription"
                 type="textarea"
-                :rows="4"
+                :rows="8"
                 :placeholder="t('formbusiness.overseastripapp.pleaseInputJobDescription')"
                 :disabled="!isStepFieldEditable('JobDescription')"
               />

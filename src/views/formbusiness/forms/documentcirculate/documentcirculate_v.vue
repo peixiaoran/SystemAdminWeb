@@ -98,9 +98,7 @@
         <p class="forbidden-result__eyebrow">{{ t('formbusiness.documentcirculate.forbiddenViewEyebrow') }}</p>
         <h2 class="forbidden-result__title">{{ t('formbusiness.documentcirculate.forbiddenViewTitle') }}</h2>
         <p class="forbidden-result__desc">{{ t('formbusiness.documentcirculate.forbiddenViewSubTitle') }}</p>
-        <el-button class="forbidden-result__action" type="primary" round @click="closeCurrentPage">
-          {{ t('formbusiness.documentcirculate.backToFormPending') }}
-        </el-button>
+        <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.documentcirculate.backToFormPending') }} ]</span>
       </div>
       <el-result
         v-else
@@ -116,9 +114,7 @@
           <span v-else>{{ t(resultState.subTitleKey) }}</span>
         </template>
         <template #extra>
-          <el-button type="primary" @click="closeCurrentPage">
-            {{ t('formbusiness.documentcirculate.backToFormPending') }}
-          </el-button>
+          <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.documentcirculate.backToFormPending') }} ]</span>
         </template>
       </el-result>
     </el-card>
@@ -1040,6 +1036,19 @@ onMounted(async () => {
 
 .result-content {
   width: 100%;
+}
+
+.result-back-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.result-back-link:hover {
+  opacity: 0.75;
 }
 
 .result-content--bad-request :deep(.el-result__title) {

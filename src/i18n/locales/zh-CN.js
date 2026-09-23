@@ -586,6 +586,7 @@ export default {
       formTypeName: '表单类型',
       formStatus: '表单状态',
       formNo: '表单编号',
+      keyword: '关键字',
       applicantDate: '申请日期',
       applyUserName: '申请人',
       applyUserDeptName: '申请部门',
@@ -608,6 +609,8 @@ export default {
       batchPrinting: '生成中...',
       batchPrintFailed: '批量生成PDF失败',
       pleaseSelectFormsToPrint: '请先勾选要生成PDF的表单',
+      filterQuery: '筛选查询',
+      clearAll: '清除全部条件',
       exportExcel: '导出Excel',
       exporting: '导出中...',
       exportFailed: '导出失败'
@@ -620,6 +623,7 @@ export default {
       formTypeName: '表单类型',
       formStatus: '表单状态',
       formNo: '表单编号',
+      keyword: '关键字',
       applicantDate: '申请日期',
       applyUserName: '申请人',
       applyUserDeptName: '申请部门',
@@ -638,6 +642,8 @@ export default {
       batchPrinting: '生成中...',
       batchPrintFailed: '批量生成PDF失败',
       pleaseSelectFormsToPrint: '请先勾选要生成PDF的表单',
+      filterQuery: '筛选查询',
+      clearAll: '清除全部条件',
       exportExcel: '导出Excel',
       exporting: '导出中...',
       exportFailed: '导出失败'

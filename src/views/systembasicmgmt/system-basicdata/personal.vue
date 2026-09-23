@@ -36,8 +36,7 @@
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.phoneNumber')" prop="phoneNumber">
             <el-input v-model="editForm.phoneNumber"
-                      :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPhoneNumber')"
-                      :disabled="true" />
+                      :placeholder="$t('systembasicmgmt.personalInfo.pleaseInputPhoneNumber')" />
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.personalInfo.password')" prop="password">
             <el-input v-model="editForm.password"
