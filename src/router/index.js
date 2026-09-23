@@ -665,6 +665,29 @@ const pmenuRoutes = [
       tokenBypass: true
     }
   },
+  {
+    path: '/formbusiness/forms/informationrequest/informationrequest_r',
+    name: 'InformationRequestR',
+    component: () => import('../views/formbusiness/forms/informationrequest/informationrequest_r.vue'),
+    meta: {
+      title: 'route.informationrequest_r',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
+  // 独立资讯需求单查看页面（不使用Layout，无标签）
+  {
+    path: '/formbusiness/forms/informationrequest/informationrequest_v',
+    name: 'InformationRequestV',
+    component: () => import('../views/formbusiness/forms/informationrequest/informationrequest_v.vue'),
+    meta: {
+      title: 'route.informationrequest_v',
+      [ROUTE_CONFIG.META.AUTH]: true,
+      noTag: true,
+      tokenBypass: true
+    }
+  },
   // 独立预测周明细上摆页面（不使用Layout，无标签，全屏展示，供最新版本编辑）
   {
     path: '/custmat/rolling-forecast/foweeklydetailarrange',
