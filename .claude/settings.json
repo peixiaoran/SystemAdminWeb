@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(cd /d/MyWork/SystemAdminWeb)",
-      "Bash(cat src/config/api/formbusiness/form-operate/reviewhistory.js)"
-    ]
-  }
-}

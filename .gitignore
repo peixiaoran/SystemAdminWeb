@@ -15,6 +15,7 @@ pnpm-debug.log*
 # 编辑器目录和文件
 .idea
 .vscode
+.claude
 *.suo
 *.ntvs*
 *.njsproj
