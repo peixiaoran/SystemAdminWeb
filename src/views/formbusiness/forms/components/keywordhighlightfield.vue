@@ -50,8 +50,14 @@ const highlighted = computed(() => highlightKeywordHtml(displayText.value, props
   width: 100%;
 }
 
+.kw-field .el-input__wrapper {
+  min-width: 0;
+}
+
 .kw-field-inner {
   display: inline-block;
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

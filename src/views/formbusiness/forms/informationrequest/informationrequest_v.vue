@@ -172,7 +172,7 @@
           </el-col>
           <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.informationrequest.applicantDeptName')" prop="applicantDeptName">
-              <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" />
+              <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -263,7 +263,7 @@
                 />
                 <el-table-column
                   :label="t('formbusiness.informationrequest.addReviewDepartment')"
-                  min-width="200"
+                  min-width="180"
                   show-overflow-tooltip
                 >
                   <template #default="{ row }">
@@ -272,7 +272,7 @@
                 </el-table-column>
                 <el-table-column
                   :label="t('formbusiness.informationrequest.addReviewUserNo')"
-                  width="120"
+                  width="130"
                 >
                   <template #default="{ row }">
                     <span v-html="highlightKeywordHtml(row.userNo, searchKeyword)"></span>
@@ -280,7 +280,7 @@
                 </el-table-column>
                 <el-table-column
                   :label="t('formbusiness.informationrequest.addReviewUserName')"
-                  min-width="130"
+                  width="190"
                   show-overflow-tooltip
                 >
                   <template #default="{ row }">
@@ -295,9 +295,7 @@
         <el-row v-if="isStepFieldVisible('Rating')" :gutter="16" class="rating-row">
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.informationrequest.rating')" prop="rating">
-              <el-tooltip :content="t('formbusiness.informationrequest.ratingTooltip')" placement="top">
-                <el-rate :model-value="form.rating" disabled show-text :texts="ratingTexts" />
-              </el-tooltip>
+              <el-rate :model-value="form.rating" disabled show-text :texts="ratingTexts" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -564,10 +562,11 @@ function applyStepFieldPermissions (list) {
     for (const item of list) {
       const fieldKey = item?.fieldKey ?? item?.FieldKey ?? item?.fieldName ?? item?.FieldName
       if (!fieldKey) continue
-      map[normalizeFieldKey(fieldKey)] = {
-        isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
-        isEditable: false
-      }
+      const isVisible = normalizePermissionFlag(item.isVisible ?? item.IsVisible, true)
+      const key = normalizeFieldKey(fieldKey)
+      const prev = map[key]
+      // 同一 fieldKey 在权限列表中出现多次时，取更严格（更受限）的一条，避免被后一条静默覆盖
+      map[key] = { isVisible: prev ? (prev.isVisible && isVisible) : isVisible, isEditable: false }
     }
   }
   stepFieldPermissionMap.value = map

@@ -306,11 +306,12 @@
                         {{ t('formbusiness.documentcirculate.download') }}
                       </el-button>
                       <el-button
+                        v-if="isStepFieldEditable('Upload')"
                         type="danger"
                         link
                         size="small"
                         :loading="attachmentActionKeys.has(getAttachmentKey(row))"
-                        :disabled="!isStepFieldEditable('Upload') || attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="attachmentActionKeys.has(getAttachmentKey(row))"
                         @click="removeAttachment(row, $index)"
                       >
                         {{ t('formbusiness.documentcirculate.deleteFile') }}
@@ -350,27 +351,26 @@
                 <el-table-column
                   prop="deptName"
                   :label="t('formbusiness.documentcirculate.addReviewDepartment')"
-                  min-width="200"
+                  min-width="180"
                   show-overflow-tooltip
                 />
                 <el-table-column
                   prop="userNo"
                   :label="t('formbusiness.documentcirculate.addReviewUserNo')"
-                  width="120"
+                  width="130"
                 />
                 <el-table-column
                   prop="userName"
                   :label="t('formbusiness.documentcirculate.addReviewUserName')"
-                  width="130"
+                  width="190"
                   show-overflow-tooltip
                 />
-                <el-table-column :label="t('common.operation')" width="150" align="center">
+                <el-table-column v-if="isAddReviewEditable()" :label="t('common.operation')" width="150" align="center">
                   <template #default="{ row }">
                     <el-button
                       type="primary"
                       link
                       size="small"
-                      :disabled="!isAddReviewEditable()"
                       @click="openAddReviewDialog(row)"
                     >
                       {{ row.userId ? t('formbusiness.documentcirculate.addReviewChange') : t('formbusiness.documentcirculate.addReviewSelect') }}
@@ -381,7 +381,7 @@
                       link
                       size="small"
                       :loading="addReviewClearingKeys.has(row._uid)"
-                      :disabled="!isAddReviewEditable() || addReviewClearingKeys.has(row._uid)"
+                      :disabled="addReviewClearingKeys.has(row._uid)"
                       @click="clearAddReviewRow(row)"
                     >
                       {{ t('formbusiness.documentcirculate.addReviewClear') }}
@@ -1117,14 +1117,22 @@ async function handleAddReviewDragEnd (oldIndex, newIndex) {
 
   const start = Math.min(oldIndex, newIndex)
   const end = Math.max(oldIndex, newIndex)
-  const tasks = []
+  const deleteTasks = []
   rows.forEach((row, idx) => {
     row.sortOrder = idx + 1
     if (idx < start || idx > end) return // 位置未受影响，落库状态不用动
     row.persisted = previousPersistedByPosition[idx]
-    tasks.push(syncAddReviewRowAfterReorder(row, previousUserIdByPosition[idx]))
+    if (row.userId) {
+      row.dirty = true
+    } else if (row.persisted) {
+      deleteTasks.push(deleteAddReviewRecord(row.sortOrder, previousUserIdByPosition[idx]).then(() => {
+        row.persisted = false
+        row.dirty = false
+      }))
+    }
   })
-  await Promise.all(tasks)
+  await Promise.all(deleteTasks)
+  await saveAddReviewRowsBatch(rows)
 }
 
 const addReviewTableRef = ref(null)
@@ -1167,17 +1175,35 @@ onMounted(() => {
   if (isAddReviewSectionMounted.value) setupAddReviewSortable()
 })
 
-/** 重排内容后同步该行：仍有数据则按该顺序原有落库状态新增/更新；变空且原有记录则删除旧记录 */
-async function syncAddReviewRowAfterReorder (row, previousUserId) {
-  if (row.userId) {
-    row.dirty = true
-    await saveAddReviewRow(row, row.persisted)
-    return
-  }
-  if (row.persisted) {
-    await deleteAddReviewRecord(row.sortOrder, previousUserId)
-    row.persisted = false
-    row.dirty = false
+/** 拖拽排序后，仅将有加审数据的行整体作为 List 一次性提交，避免逐行多次请求 */
+async function saveAddReviewRowsBatch (rows) {
+  const formId = String(form.formId || '')
+  if (!formId) return
+  const list = rows
+    .filter((row) => row.userId)
+    .map((row) => ({
+      formId,
+      deptName: row.deptName || '',
+      userId: String(row.userId),
+      userNo: row.userNo || '',
+      userName: row.userName || '',
+      sortOrder: String(row.sortOrder)
+    }))
+  if (!list.length) return
+  try {
+    const res = await post(UPDATE_FORM_ADD_REVIEW_API, list, { silentForbiddenError: false })
+    if (res && isSuccessCode(res.code)) {
+      rows.forEach((row) => {
+        if (row.userId) {
+          row.persisted = true
+          row.dirty = false
+        }
+      })
+    } else if (isBadRequestResponse(res)) {
+      showFormActionNotice(res?.message || t('formbusiness.documentcirculate.addReviewReorderFailed'), 'warning')
+    }
+  } catch {
+    // 静默：失败时保留 dirty，保存表单时再补一次
   }
 }
 
@@ -1256,10 +1282,13 @@ function applyStepFieldPermissions (list) {
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
         ? Number(disabledRaw) !== 1
         : normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
-      map[normalizeFieldKey(fieldKey)] = {
-        isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
-        isEditable
-      }
+      const isVisible = normalizePermissionFlag(item.isVisible ?? item.IsVisible, true)
+      const key = normalizeFieldKey(fieldKey)
+      const prev = map[key]
+      // 同一 fieldKey 在权限列表中出现多次时，取更严格（更受限）的一条，避免被后一条静默覆盖
+      map[key] = prev
+        ? { isVisible: prev.isVisible && isVisible, isEditable: prev.isEditable && isEditable }
+        : { isVisible, isEditable }
     }
   }
   stepFieldPermissionMap.value = map

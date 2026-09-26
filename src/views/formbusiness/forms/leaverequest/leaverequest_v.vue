@@ -831,10 +831,13 @@ import { resolveFileUrl, downloadFileFromUrl } from '@/utils/fileUrl'
         const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
           ? Number(disabledRaw) !== 1
           : normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
-        map[normalizeFieldKey(fieldKey)] = {
-          isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
-          isEditable
-        }
+        const isVisible = normalizePermissionFlag(item.isVisible ?? item.IsVisible, true)
+        const key = normalizeFieldKey(fieldKey)
+        const prev = map[key]
+        // 同一 fieldKey 在权限列表中出现多次时，取更严格（更受限）的一条，避免被后一条静默覆盖
+        map[key] = prev
+          ? { isVisible: prev.isVisible && isVisible, isEditable: prev.isEditable && isEditable }
+          : { isVisible, isEditable }
       }
     }
     stepFieldPermissionMap.value = map

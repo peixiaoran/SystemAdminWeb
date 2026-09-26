@@ -78,7 +78,7 @@
                  :model="editForm"
                  :rules="formRules"
                  ref="editFormRef"
-                 label-width="100px"
+                 label-width="140px"
                  class="dialog-form"
                  role="form"
                  :aria-label="$t('systembasicmgmt.userLabor.ariaEditLabel')">

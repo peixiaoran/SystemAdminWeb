@@ -350,11 +350,12 @@
                         {{ t('formbusiness.leaverequest.download') }}
                       </el-button>
                       <el-button
+                        v-if="isStepFieldEditable('Upload')"
                         type="danger"
                         link
                         size="small"
                         :loading="attachmentActionKeys.has(getAttachmentKey(row))"
-                        :disabled="!isStepFieldEditable('Upload') || attachmentActionKeys.has(getAttachmentKey(row))"
+                        :disabled="attachmentActionKeys.has(getAttachmentKey(row))"
                         @click="removeAttachment(row, $index)"
                       >
                         {{ t('formbusiness.leaverequest.deleteFile') }}
@@ -1227,10 +1228,13 @@ function applyStepFieldPermissions (list) {
       const isEditable = (disabledRaw !== undefined && disabledRaw !== null && disabledRaw !== '')
         ? Number(disabledRaw) !== 1
         : normalizePermissionFlag(item.isEditable ?? item.IsEditable, true)
-      map[normalizeFieldKey(fieldKey)] = {
-        isVisible: normalizePermissionFlag(item.isVisible ?? item.IsVisible, true),
-        isEditable
-      }
+      const isVisible = normalizePermissionFlag(item.isVisible ?? item.IsVisible, true)
+      const key = normalizeFieldKey(fieldKey)
+      const prev = map[key]
+      // 同一 fieldKey 在权限列表中出现多次时，取更严格（更受限）的一条，避免被后一条静默覆盖
+      map[key] = prev
+        ? { isVisible: prev.isVisible && isVisible, isEditable: prev.isEditable && isEditable }
+        : { isVisible, isEditable }
     }
   }
   stepFieldPermissionMap.value = map
