@@ -238,7 +238,7 @@ const pmenuRoutes = [
           {
             path: 'personal',
             name: 'Personal',
-            component: () => import('../views/systembasicmgmt/system-basicdata/personal.vue'),
+            component: () => import('../views/systembasicmgmt/system-basicdata/personalinfo.vue'),
             meta: { 
               title: 'route.personalinfo', 
               icon: 'User',

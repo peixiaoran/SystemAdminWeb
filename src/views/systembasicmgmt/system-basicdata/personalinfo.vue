@@ -241,7 +241,7 @@ const editForm = reactive({
   userNo: '',
   userNameCn: '',
   userNameEn: '',
-  gender: '',
+  gender: null,
   hireDate: '',
   email: '',
   phoneNumber: '',
@@ -311,8 +311,8 @@ const showMessage = (message, type = 'error') => {
 
 const initGenderOptions = () => {
   genderOptions.value = [
-    { genderCode: '1', genderName: t('systembasicmgmt.personalInfo.genderOptions.male') },
-    { genderCode: '0', genderName: t('systembasicmgmt.personalInfo.genderOptions.female') }
+    { genderCode: 1, genderName: t('systembasicmgmt.personalInfo.genderOptions.male') },
+    { genderCode: 2, genderName: t('systembasicmgmt.personalInfo.genderOptions.female') }
   ]
 }
 
@@ -333,7 +333,7 @@ const fetchPersonalInfo = async () => {
     }
     delete editForm.isApproval
     delete editForm.IsApproval
-    editForm.gender = editForm.gender != null ? String(editForm.gender) : ''
+    editForm.gender = editForm.gender != null && editForm.gender !== '' ? Number(editForm.gender) : null
     editForm.noticeLanguage = res.data.noticeLanguage ?? res.data.NoticeLanguage ?? editForm.noticeLanguage ?? 'zh-CN'
     editForm.password = ''
     if (res.data.avatarAddress) {
