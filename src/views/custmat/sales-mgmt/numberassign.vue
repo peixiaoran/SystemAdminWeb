@@ -4,13 +4,14 @@
       <el-form :inline="true" :model="filters" class="conventional-filter-form" role="search" :aria-label="$t('custmat.numberassign.ariaFilterLabel')">
         <el-form-item :label="$t('custmat.numberassign.partNumber')">
           <el-input v-model="filters.partNumber"
-                    style="width: 170px"
+                    style="width: 230px"
                     clearable
                     :placeholder="$t('custmat.numberassign.pleaseInputPartNumber')" />
         </el-form-item>
         <el-form-item :label="$t('custmat.numberassign.salesUser')">
           <el-select v-model="filters.salesUserId"
-                     style="width: 170px"
+                     style="width: 230px"
+                     @change="handleSearch"
                      clearable
                      filterable
                      :placeholder="$t('custmat.numberassign.pleaseSelectSalesUser')">
@@ -19,7 +20,7 @@
         </el-form-item>
         <el-form-item :label="$t('custmat.numberassign.userName')">
           <el-input v-model="filters.userName"
-                    style="width: 170px"
+                    style="width: 230px"
                     clearable
                     :placeholder="$t('custmat.numberassign.pleaseInputUserName')" />
         </el-form-item>
@@ -54,7 +55,8 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('custmat.numberassign.index')" width="70" align="center" fixed />
-          <el-table-column prop="partNumber" :label="$t('custmat.numberassign.partNumber')" align="center" min-width="120">
+          <el-table-column prop="customerCode" :label="$t('custmat.numberassign.customerCode')" align="center" min-width="110" show-overflow-tooltip />
+          <el-table-column prop="partNumber" :label="$t('custmat.numberassign.partNumber')" align="center" min-width="170">
             <template #default="scope">
               <el-popover trigger="click"
                           width="360"
@@ -86,7 +88,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="partName" :label="$t('custmat.numberassign.partName')" align="left" min-width="180" />
+          <el-table-column prop="partName" :label="$t('custmat.numberassign.partName')" align="left" min-width="280" />
           <el-table-column prop="userNo" :label="$t('custmat.numberassign.userNo')" align="left" min-width="120" />
           <el-table-column prop="userName" :label="$t('custmat.numberassign.userName')" align="left" min-width="140" />
           <el-table-column :label="$t('custmat.numberassign.operation')" width="180" fixed="right" align="center">

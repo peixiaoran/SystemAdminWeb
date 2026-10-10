@@ -39,23 +39,19 @@
         <el-table-column type="index" :label="$t('custmat.forecastdetailweekly.index')" width="70" align="center" fixed />
         <el-table-column prop="partNumber" :label="$t('custmat.forecastdetailweeklydata.partNumber')" min-width="150" align="center" fixed />
         <el-table-column prop="partName" :label="$t('custmat.forecastdetailweeklydata.partName')" min-width="280" align="left" fixed show-overflow-tooltip />
-        <el-table-column :label="$t('custmat.forecastdetailweeklydata.dayTotal')" min-width="110" align="center" fixed>
-          <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'D')) }}</template>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.previousTotal')" min-width="150" align="center" fixed>
+          <template #default="scope">{{ formatQuantity(scope.row.previousTotal) }}</template>
         </el-table-column>
-        <el-table-column :label="$t('custmat.forecastdetailweeklydata.weekTotal')" min-width="110" align="center" fixed>
-          <template #default="scope">{{ formatQuantity(sumQuantities(scope.row, 'W')) }}</template>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.currentTotal')" min-width="150" align="center" fixed>
+          <template #default="scope">{{ formatQuantity(scope.row.currentTotal) }}</template>
         </el-table-column>
-        <el-table-column :label="$t('custmat.forecastdetailweeklydata.dayQtyChangeRate')" min-width="130" align="center" fixed>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.totalDiff')" min-width="110" align="center" fixed>
+          <template #default="scope">{{ formatQuantity(scope.row.totalDiff) }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('custmat.forecastdetailweeklydata.totalDiffRate')" min-width="130" align="center" fixed>
           <template #default="scope">
-            <el-tag :type="changeRateTagType(scope.row.dayQtyChangeRate)" effect="dark" size="small" round>
-              {{ formatChangeRate(scope.row.dayQtyChangeRate) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('custmat.forecastdetailweeklydata.weekQtyChangeRate')" min-width="130" align="center" fixed>
-          <template #default="scope">
-            <el-tag :type="changeRateTagType(scope.row.weekQtyChangeRate)" effect="dark" size="small" round>
-              {{ formatChangeRate(scope.row.weekQtyChangeRate) }}
+            <el-tag :type="changeRateTagType(scope.row.totalDiffRate)" effect="dark" size="small" round>
+              {{ formatChangeRate(scope.row.totalDiffRate) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -144,27 +140,19 @@ const formatQuantity = (val) => {
   return Number.isFinite(n) ? n.toLocaleString('en-US') : '0'
 }
 
-/** 环比百分比：增长为正显示红色，减少为负显示绿色 */
+/** 差异比例：增长为正显示红色，减少为负显示绿色 */
 const formatChangeRate = (val) => {
+  if (val === null || val === undefined) return '-'
   const n = Number(val)
   if (!Number.isFinite(n)) return '-'
   return `${n > 0 ? '+' : ''}${n.toFixed(2)}%`
 }
 
-/** 环比标签颜色：增长为红色，减少为绿色，持平为灰色 */
+/** 差异比例标签颜色：增长为红色，减少为绿色，持平为灰色 */
 const changeRateTagType = (val) => {
-  const n = Number(val)
+  const n = val === null || val === undefined ? NaN : Number(val)
   if (!Number.isFinite(n) || n === 0) return 'info'
   return n > 0 ? 'danger' : 'success'
-}
-
-/** 按前缀（D 天 / W 周）汇总某一行的总量 */
-const sumQuantities = (row, prefix) => {
-  return periodColumns.value.reduce((sum, col) => {
-    if (!col.periodKey.startsWith(prefix)) return sum
-    const n = Number(row.quantities?.[col.periodKey])
-    return sum + (Number.isFinite(n) ? n : 0)
-  }, 0)
 }
 
 const buildPeriodColumns = (periods) => {
