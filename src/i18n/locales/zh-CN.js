@@ -2735,6 +2735,7 @@ export default {
       ariaFilterLabel: '业务负责料号筛选表单',
       index: '序号',
       partNumber: '料号',
+      customerCode: '客户编码',
       partNameCn: '中文名称',
       partNameEn: '英文名称',
       specification: '规格',

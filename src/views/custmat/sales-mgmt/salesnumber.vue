@@ -33,6 +33,7 @@
                   :empty-text="$t('common.noData')"
                   >
           <el-table-column type="index" :label="$t('custmat.salesnumber.index')" width="70" align="center" fixed />
+          <el-table-column prop="customerCode" :label="$t('custmat.salesnumber.customerCode')" align="center" min-width="120" fixed />
           <el-table-column prop="partNumber" :label="$t('custmat.salesnumber.partNumber')" align="center" min-width="140" fixed>
             <template #default="scope">
               <el-popover trigger="click"
@@ -65,7 +66,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="partNameCn" :label="$t('custmat.salesnumber.partNameCn')" align="left" min-width="140" />
+          <el-table-column prop="partNameCn":label="$t('custmat.salesnumber.partNameCn')" align="left" min-width="140" />
           <el-table-column prop="partNameEn" :label="$t('custmat.salesnumber.partNameEn')" align="left" min-width="160" />
           <el-table-column prop="specification" :label="$t('custmat.salesnumber.specification')" align="left" min-width="160" />
           <el-table-column :label="$t('custmat.salesnumber.status')" align="center" min-width="100">
