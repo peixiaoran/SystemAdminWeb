@@ -136,7 +136,7 @@ const dialogLoading = ref(false)
 const dialogTitle = ref('')
 
 const editForm = reactive({
-  nationId: '',
+  nationalityId: '',
   nationNameCn: '',
   nationNameEn: '',
   remark: ''
@@ -167,9 +167,9 @@ const fetchNationalityList = async () => {
   loading.value = false
 }
 
-const fetchNationalityEntity = async (nationId) => {
+const fetchNationalityEntity = async (nationalityId) => {
   const formData = new FormData()
-  formData.append('nationId', nationId)
+  formData.append('nationalityId', nationalityId)
   const res = await post(GET_NATIONALITY_ENTITY_API.GET_NATIONALITY_ENTITY, formData)
   if (res?.code === 200) {
     Object.assign(editForm, res.data)
@@ -186,7 +186,7 @@ const scheduleSearch = () => {
 }
 
 const resetEditForm = () => {
-  Object.assign(editForm, { nationId: '', nationNameCn: '', nationNameEn: '', remark: '' })
+  Object.assign(editForm, { nationalityId: '', nationNameCn: '', nationNameEn: '', remark: '' })
 }
 
 const handleSearch = () => scheduleSearch()
@@ -217,7 +217,7 @@ const handleEdit = async (row) => {
   dialogTitle.value = t('systembasicmgmt.nationalityInfo.editNationality')
   dialogVisible.value = true
   dialogLoading.value = true
-  await fetchNationalityEntity(row.nationId)
+  await fetchNationalityEntity(row.nationalityId)
   // 数据就绪后再清校验、收起遮罩，避免请求期间短暂显示必填红字
   nextTick(() => {
     editFormRef.value?.clearValidate()
@@ -236,7 +236,7 @@ const handleDelete = async (row) => {
     return
   }
   const formData = new FormData()
-  formData.append('nationId', row.nationId)
+  formData.append('nationalityId', row.nationalityId)
   const res = await post(DELETE_NATIONALITY_API.DELETE_NATIONALITY, formData)
   if (res?.code === 200) {
     showMessage(res.message, 'success')
@@ -251,7 +251,7 @@ const handleSave = async () => {
   if (!valid) return
 
   submitLoading.value = true
-  const api = editForm.nationId
+  const api = editForm.nationalityId
     ? UPDATE_NATIONALITY_API.UPDATE_NATIONALITY
     : INSERT_NATIONALITY_API.INSERT_NATIONALITY
   const res = await post(api, { ...editForm })

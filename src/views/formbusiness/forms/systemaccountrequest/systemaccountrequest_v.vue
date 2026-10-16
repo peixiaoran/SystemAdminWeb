@@ -589,7 +589,7 @@ async function loadNationalityOptions () {
 /** 国籍只存 Id，依赖国籍下拉把 Id 映射成名称展示 */
 const nationalityName = computed(() => {
   if (!form.nationalityId) return ''
-  const matched = nationalityOptions.value.find((item) => String(item.nationId) === String(form.nationalityId))
+  const matched = nationalityOptions.value.find((item) => String(item.nationalityId) === String(form.nationalityId))
   return matched?.nationName || form.nationalityId
 })
 

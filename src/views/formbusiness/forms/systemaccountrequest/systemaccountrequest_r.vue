@@ -903,7 +903,7 @@ async function loadNationalityOptions () {
   try {
     const res = await post(GET_NATIONALITY_DROP_API, {})
     const raw = isOk(res) && Array.isArray(res.data) ? res.data : []
-    nationalityOptions.value = raw.map((item) => ({ code: String(item.nationId), name: item.nationName }))
+    nationalityOptions.value = raw.map((item) => ({ code: String(item.nationalityId), name: item.nationName }))
   } catch {
     nationalityOptions.value = []
   }

@@ -157,9 +157,9 @@
                        style="width:100%"
                        :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNationality')">
               <el-option v-for="item in nationalityOptions"
-                         :key="`nationality-${item.nationId}`"
+                         :key="`nationality-${item.nationalityId}`"
                          :label="item.nationName"
-                         :value="item.nationId" />
+                         :value="item.nationalityId" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('systembasicmgmt.userInfo.laborType')" prop="laborId">
@@ -673,7 +673,7 @@ const fetchNationalityDropdown = async () => {
     return
   }
   nationalityOptions.value = (res.data || []).filter(item =>
-    item && item.nationId !== undefined && item.nationId !== null &&
+    item && item.nationalityId !== undefined && item.nationalityId !== null &&
     item.nationName !== undefined && item.nationName !== null
   )
 }
@@ -818,7 +818,7 @@ const resetEditForm = () => {
       editForm.gender = genderOptions.value[0].genderCode
     }
     if (nationalityOptions.value.length > 0) {
-      editForm.nationality = nationalityOptions.value[0].nationId
+      editForm.nationality = nationalityOptions.value[0].nationalityId
     }
 
     const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
