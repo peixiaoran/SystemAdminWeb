@@ -408,15 +408,16 @@ const loadDialogFormTypeOptions = async (formGroupId) => {
 }
 
 const handleDialogFormGroupChange = async (val) => {
-  dialogForm.formTypeId = ''
-  dialogFormTypeOptions.value = []
-  if (!val) return
+  if (!val) {
+    dialogForm.formTypeId = ''
+    dialogFormTypeOptions.value = []
+    return
+  }
   dialogLoading.value = true
   try {
     await loadDialogFormTypeOptions(val)
-    if (dialogFormTypeOptions.value.length > 0) {
-      dialogForm.formTypeId = dialogFormTypeOptions.value[0].formTypeId
-    }
+    // 不要先把 formTypeId 清成空串：el-select 在值变化时会立即触发必填校验，导致错误提示一闪而过
+    dialogForm.formTypeId = dialogFormTypeOptions.value[0]?.formTypeId ?? ''
   } finally {
     dialogLoading.value = false
   }
@@ -426,6 +427,9 @@ const handleAdd = async () => {
   isEditMode.value = false
   dialogVisible.value = true
   dialogLoading.value = true
+  // 上次关闭时 resetFields 会触发 el-select 的 change 校验，残留的必填提示需在打开时先清掉
+  await nextTick()
+  dialogFormRef.value?.clearValidate()
   try {
     const formGroupId = searchForm.formGroupId || formGroupOptions.value[0]?.formGroupId || ''
     if (formGroupId) {
@@ -449,6 +453,8 @@ const handleAdd = async () => {
 const handleEdit = async (row) => {
   dialogVisible.value = true
   dialogLoading.value = true
+  await nextTick()
+  dialogFormRef.value?.clearValidate()
   try {
     const res = await post(GET_WORKFLOWRULE_ENTITY_API, buildFormData({ ruleId: row.ruleId }), FORM_DATA_OPTIONS)
     if (res.code === 200 && res.data) {
@@ -484,6 +490,8 @@ const handleDialogClose = () => {
   resetDialogForm()
   dialogFormTypeOptions.value = []
   isEditMode.value = false
+  // resetFields 把值改回空后，el-select 会异步触发 change 校验，等其完成后再清除提示
+  nextTick(() => setTimeout(() => dialogFormRef.value?.clearValidate(), 0))
 }
 
 const handleSubmit = async () => {

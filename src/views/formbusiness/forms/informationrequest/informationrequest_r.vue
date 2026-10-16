@@ -311,7 +311,7 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.informationrequest.addReview')">
               <el-table ref="addReviewTableRef" :data="addReviewRows" border size="small" class="add-review-table" row-key="_uid">
-                <el-table-column width="40" align="center">
+                <el-table-column v-if="isAddReviewEditable()" width="40" align="center">
                   <template #default>
                     <el-icon
                       class="add-review-drag-handle"
@@ -1042,6 +1042,7 @@ async function clearAddReviewRow (row) {
 }
 
 async function handleAddReviewDragEnd (oldIndex, newIndex) {
+  if (!isAddReviewEditable()) return
   if (oldIndex === newIndex || oldIndex == null || newIndex == null) return
 
   const rows = addReviewRows.value
@@ -1087,6 +1088,7 @@ async function setupAddReviewSortable () {
   addReviewSortableInstance = Sortable.create(tbody, {
     handle: '.add-review-drag-handle',
     animation: 150,
+    disabled: !isAddReviewEditable(),
     onEnd (evt) {
       handleAddReviewDragEnd(evt.oldIndex, evt.newIndex)
     }
@@ -1095,6 +1097,11 @@ async function setupAddReviewSortable () {
 
 onMounted(() => {
   if (!loading.value && !resultState.visible) setupAddReviewSortable()
+})
+
+// 栏位权限在详情加载后才确定，权限变化时同步开关拖拽
+watch(() => isAddReviewEditable(), (editable) => {
+  addReviewSortableInstance?.option('disabled', !editable)
 })
 
 watch(() => loading.value || resultState.visible, (blocked) => {

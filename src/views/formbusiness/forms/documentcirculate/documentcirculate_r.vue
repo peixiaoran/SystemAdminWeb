@@ -331,7 +331,7 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.documentcirculate.addReview')">
               <el-table ref="addReviewTableRef" :data="addReviewRows" border size="small" class="add-review-table" row-key="_uid">
-                <el-table-column width="40" align="center">
+                <el-table-column v-if="isAddReviewEditable()" width="40" align="center">
                   <template #default>
                     <el-icon
                       class="add-review-drag-handle"
