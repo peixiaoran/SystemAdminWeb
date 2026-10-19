@@ -126,15 +126,17 @@
             </el-select>
           </el-form-item>
 
+          <!-- 人机验证暂时关闭
           <el-form-item>
             <div ref="turnstileContainer" class="turnstile-container"></div>
           </el-form-item>
+          -->
 
           <el-form-item>
             <el-button
               type="primary"
               :loading="loading"
-              :disabled="loading || !loginForm.loginNo || !loginForm.password || !turnstileToken"
+              :disabled="loading || !loginForm.loginNo || !loginForm.password"
               class="login-button"
               @click="handleLogin"
             >
@@ -264,10 +266,10 @@ onMounted(() => {
     loginFormRef.value?.resetFields()
   })
 
-  // 渲染 Cloudflare Turnstile 验证组件
-  nextTick(() => {
-    waitForTurnstile()
-  })
+  // 渲染 Cloudflare Turnstile 验证组件（暂时关闭）
+  // nextTick(() => {
+  //   waitForTurnstile()
+  // })
 })
 
 onBeforeUnmount(() => {
@@ -314,7 +316,7 @@ const enableCredentialInputs = () => {
 }
 
 const handleLogin = () => {
-  if (!loginForm.loginNo || !loginForm.password || !turnstileToken.value) return
+  if (!loginForm.loginNo || !loginForm.password) return
 
   loading.value = true
 
@@ -326,8 +328,8 @@ const handleLogin = () => {
     LOGIN_API.USER_LOGIN,
     {
       loginNo: loginForm.loginNo,
-      password: loginForm.password,
-      turnstileToken: turnstileToken.value
+      password: loginForm.password
+      // turnstileToken: turnstileToken.value
     },
     { allowLoginBusinessCodes: true }
   ).then(res => {

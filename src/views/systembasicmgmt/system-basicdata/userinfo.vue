@@ -152,8 +152,8 @@
                             format="YYYY/MM/DD"
                             value-format="YYYY-MM-DD" />
           </el-form-item>
-          <el-form-item :label="$t('systembasicmgmt.userInfo.nationality')" prop="nationality">
-            <el-select v-model="editForm.nationality"
+          <el-form-item :label="$t('systembasicmgmt.userInfo.nationality')" prop="nationalityId">
+            <el-select v-model="editForm.nationalityId"
                        style="width:100%"
                        :placeholder="$t('systembasicmgmt.userInfo.pleaseSelectNationality')">
               <el-option v-for="item in nationalityOptions"
@@ -388,7 +388,7 @@ const editForm = reactive({
   roleId: '',
   gender: '',
   hireDate: '',
-  nationality: '',
+  nationalityId: '',
   email: '',
   phoneNumber: '',
   loginNo: '',
@@ -436,7 +436,7 @@ const formRules = reactive({
   hireDate: [
     { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectHireDate'), trigger: 'change' }
   ],
-  nationality: [
+  nationalityId: [
     { required: true, message: () => t('systembasicmgmt.userInfo.pleaseSelectNationality'), trigger: 'change' }
   ],
   laborId: [
@@ -818,7 +818,7 @@ const resetEditForm = () => {
       editForm.gender = genderOptions.value[0].genderCode
     }
     if (nationalityOptions.value.length > 0) {
-      editForm.nationality = nationalityOptions.value[0].nationalityId
+      editForm.nationalityId = nationalityOptions.value[0].nationalityId
     }
 
     const firstEnabledLaborType = laborTypeOptions.value.find(item => !item.disabled)
