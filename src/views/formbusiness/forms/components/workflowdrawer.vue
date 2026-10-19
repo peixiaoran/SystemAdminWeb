@@ -3,7 +3,7 @@
     :model-value="visible"
     :title="t(`${i18nPrefix}.workflowDrawerTitle`)"
     direction="rtl"
-    size="420px"
+    size="480px"
     destroy-on-close
     class="shared-workflow-drawer"
     @update:model-value="$emit('update:visible', $event)"
@@ -336,6 +336,7 @@ function workflowUserShowAppointmentTypeName (u) {
 }
 
 .workflow-user-appointment {
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
 

@@ -20,7 +20,15 @@
               </div>
 
               <div class="sk-grid">
-                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
+                <div v-for="n in 2" :key="`sk-user-${n}`" class="sk-field">
+                  <el-skeleton-item variant="text" class="sk-label" />
+                  <el-skeleton-item variant="text" class="sk-control" />
+                </div>
+              </div>
+
+              <!-- 申请人部门：占两格 -->
+              <div class="sk-grid">
+                <div class="sk-field sk-field--wide">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-control" />
                 </div>
@@ -173,7 +181,7 @@
         </el-row>
 
         <el-row
-          v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
+          v-if="isAnyStepFieldVisible(['UserNo', 'UserName'])"
           :gutter="16"
           align="middle"
           class="basic-info-row"
@@ -188,7 +196,10 @@
               <KeywordHighlightField :value="form.applicantUserName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
-          <el-col v-if="isStepFieldVisible('Department')" :span="8">
+        </el-row>
+
+        <el-row v-if="isStepFieldVisible('Department')" :gutter="16" align="middle" class="basic-info-row">
+          <el-col :span="16">
             <el-form-item :label="t('formbusiness.systemaccountrequest.applicantDeptName')" prop="applicantDeptName">
               <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" style="width: 100%;" />
             </el-form-item>
@@ -1157,7 +1168,7 @@ onMounted(async () => {
   height: 130px;
 }
 
-.sk-field--wide {
+.sk-grid .sk-field--wide {
   width: calc((100% - 32px) / 3 * 2 + 16px);
 }
 

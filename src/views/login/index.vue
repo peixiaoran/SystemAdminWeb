@@ -159,12 +159,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onBeforeUnmount, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, resetAuthErrorState, isHandled } from '@/utils/request'
 import { LOGIN_API } from '@/config/api/login/api'
-import { TURNSTILE_SITE_KEY } from '@/config/api/base'
+// 人机验证已暂时注释
+// import { TURNSTILE_SITE_KEY } from '@/config/api/base'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
 import { User, Lock } from '@element-plus/icons-vue' // 新增图标引入
@@ -178,6 +179,7 @@ const credentialInputsReadonly = ref(true)
 const loginNoFieldName = `login_no_${Date.now()}`
 const passwordFieldName = `login_pwd_${Date.now()}`
 
+/* 人机验证已暂时注释
 // Cloudflare Turnstile 人机验证（站点密钥来自环境变量，见 src/config/api/base.js）
 const turnstileContainer = ref(null)
 const turnstileToken = ref('')
@@ -230,6 +232,7 @@ const resetTurnstile = () => {
     window.turnstile.reset(turnstileWidgetId)
   }
 }
+*/
 
 // 与 request.js 保持一致：401 整页刷新后在登录页补弹“登录已过期”提示
 const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
@@ -272,12 +275,12 @@ onMounted(() => {
   // })
 })
 
-onBeforeUnmount(() => {
-  document.removeEventListener('turnstile-ready', renderTurnstile)
-  if (window.turnstile && turnstileWidgetId !== null) {
-    window.turnstile.remove(turnstileWidgetId)
-  }
-})
+// onBeforeUnmount(() => {
+//   document.removeEventListener('turnstile-ready', renderTurnstile)
+//   if (window.turnstile && turnstileWidgetId !== null) {
+//     window.turnstile.remove(turnstileWidgetId)
+//   }
+// })
 
 // 使用计算属性获取翻译后的选项
 const languages = computed(() => {
@@ -294,15 +297,15 @@ const handleLanguageChange = (value) => {
   // 更新document标题
   document.title = t('common.systemTitle')
 
-  // Turnstile 不支持动态切换语言，需移除后按新语言重新渲染
-  if (window.turnstile && turnstileWidgetId !== null) {
-    window.turnstile.remove(turnstileWidgetId)
-    turnstileWidgetId = null
-    turnstileToken.value = ''
-    nextTick(() => {
-      renderTurnstile()
-    })
-  }
+  // Turnstile 不支持动态切换语言，需移除后按新语言重新渲染（暂时关闭）
+  // if (window.turnstile && turnstileWidgetId !== null) {
+  //   window.turnstile.remove(turnstileWidgetId)
+  //   turnstileWidgetId = null
+  //   turnstileToken.value = ''
+  //   nextTick(() => {
+  //     renderTurnstile()
+  //   })
+  // }
 }
 
 // 跳转到解锁页面
@@ -336,7 +339,7 @@ const handleLogin = () => {
       // 网络故障/超时等已在 request.js 内部提示过，这里直接复位，不做任何跳转
       if (isHandled(res)) {
         // 会重新回到登录表单等待用户重试，token 已被消费，必须换新的
-        resetTurnstile()
+        // resetTurnstile()
         loading.value = false
         return
       }
@@ -372,7 +375,7 @@ const handleLogin = () => {
         loading.value = false
       } else if (res.code === 406) {
         // 账号不存在（UserNotFound）：留在登录页重试，token 已被消费，换新的
-        resetTurnstile()
+        // resetTurnstile()
         ElMessage({
           message: businessMsg,
           type: 'error',
@@ -394,7 +397,7 @@ const handleLogin = () => {
         }, 1500)
       } else if (res.code === 403) {
         // 密码错误：留在登录页重试，token 已被消费，换新的
-        resetTurnstile()
+        // resetTurnstile()
         ElMessage({
           message: businessMsg,
           type: 'error',
@@ -416,7 +419,7 @@ const handleLogin = () => {
         }, 1500)
       } else {
         // 其它未知业务错误：留在登录页重试，token 已被消费，换新的
-        resetTurnstile()
+        // resetTurnstile()
         ElMessage({
           message: businessMsg,
           type: 'error',
@@ -427,7 +430,7 @@ const handleLogin = () => {
       }
     })
     .catch(() => {
-      resetTurnstile()
+      // resetTurnstile()
       // 业务码与 401/403/网络错误均由 post 内部统一处理；此处仅兜底提示并复位 loading
       ElMessage({
         message: t('login.loginFailedTip'),

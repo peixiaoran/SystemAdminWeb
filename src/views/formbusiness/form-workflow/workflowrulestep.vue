@@ -61,7 +61,8 @@
               {{ isNextStepEnd(row.nextStepId) ? $t('formbusiness.workflowrulestep.nextStepEnd') : (row.nextStepName || '') }}
             </template>
           </el-table-column>
-          <el-table-column prop="guidance" :label="$t('formbusiness.workflowrulestep.guidance')" align="left" min-width="160" show-overflow-tooltip />
+          <el-table-column prop="processGuidance" :label="$t('formbusiness.workflowrulestep.processGuidance')" align="left" min-width="160" show-overflow-tooltip />
+          <el-table-column prop="conclusionGuidance" :label="$t('formbusiness.workflowrulestep.conclusionGuidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="sortOrder" :label="$t('formbusiness.workflowrulestep.sortOrder')" width="90" align="center" />
           <el-table-column :label="$t('formbusiness.workflowrulestep.operation')" width="220" align="center" fixed="right">
             <template #default="{ row }">
@@ -189,15 +190,22 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('formbusiness.workflowrulestep.guidance')" prop="guidance">
+            <el-form-item :label="$t('formbusiness.workflowrulestep.processGuidance')" prop="processGuidance">
               <el-input
-                v-model="dialogForm.guidance"
-                :placeholder="$t('formbusiness.workflowrulestep.pleaseInputGuidance')"
+                v-model="dialogForm.processGuidance"
+                :placeholder="$t('formbusiness.workflowrulestep.pleaseInputProcessGuidance')"
                 clearable
                 style="width:100%"
               />
             </el-form-item>
-            <div style="flex: 1"></div>
+            <el-form-item :label="$t('formbusiness.workflowrulestep.conclusionGuidance')" prop="conclusionGuidance">
+              <el-input
+                v-model="dialogForm.conclusionGuidance"
+                :placeholder="$t('formbusiness.workflowrulestep.pleaseInputConclusionGuidance')"
+                clearable
+                style="width:100%"
+              />
+            </el-form-item>
           </div>
         </el-form>
       </div>
@@ -387,7 +395,8 @@ const dialogForm = reactive({
   ruleId: '',
   currentStepId: '',
   nextStepId: '',
-  guidance: '',
+  processGuidance: '',
+  conclusionGuidance: '',
   sortOrder: 1
 })
 
@@ -415,7 +424,8 @@ const resetDialogForm = () => {
   dialogForm.ruleId      = ''
   dialogForm.currentStepId = ''
   dialogForm.nextStepId  = ''
-  dialogForm.guidance    = ''
+  dialogForm.processGuidance    = ''
+  dialogForm.conclusionGuidance = ''
   dialogForm.sortOrder   = 1
 }
 
@@ -511,7 +521,8 @@ const handleAdd = async () => {
     }
     dialogForm.currentStepId = ''
     dialogForm.nextStepId    = ''
-    dialogForm.guidance      = ''
+    dialogForm.processGuidance    = ''
+    dialogForm.conclusionGuidance = ''
     dialogForm.sortOrder     = 1
   } finally {
     dialogLoading.value = false
@@ -546,7 +557,8 @@ const handleEdit = async (row) => {
       dialogForm.ruleId        = d.ruleId        || row.ruleId        || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
-      dialogForm.guidance      = d.guidance ?? d.Guidance ?? row.guidance ?? ''
+      dialogForm.processGuidance    = d.processGuidance    ?? d.ProcessGuidance    ?? row.processGuidance    ?? ''
+      dialogForm.conclusionGuidance = d.conclusionGuidance ?? d.ConclusionGuidance ?? row.conclusionGuidance ?? ''
       dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 1
       nextTick(() => dialogFormRef.value?.clearValidate())
     } else {
@@ -592,7 +604,8 @@ const handleSubmit = async () => {
       ruleId:        dialogForm.ruleId,
       currentStepId: dialogForm.currentStepId,
       nextStepId:    isNextStepEnd(dialogForm.nextStepId) ? null : String(dialogForm.nextStepId),
-      guidance:      dialogForm.guidance || null,
+      processGuidance:    dialogForm.processGuidance || null,
+      conclusionGuidance: dialogForm.conclusionGuidance || null,
       sortOrder:     dialogForm.sortOrder
     }
     const api        = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API

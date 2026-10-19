@@ -327,8 +327,8 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.systemaccountrequest.systems')">
               <div class="systems-section">
-                <div v-if="isSystemsEditable()" class="systems-actions">
-                  <el-button v-if="isSystemsEditable()" type="primary" plain size="small" @click="addSystemRow">
+                <div v-if="isAddDelItemAllowed()" class="systems-actions">
+                  <el-button type="primary" plain size="small" @click="addSystemRow">
                     <el-icon><Plus /></el-icon>
                     {{ t('formbusiness.systemaccountrequest.addSystem') }}
                   </el-button>
@@ -337,7 +337,7 @@
                   <div class="system-card__header">
                     <span class="system-card__title">#{{ index + 1 }}</span>
                     <div class="system-card__header-right">
-                      <el-button v-if="isSystemsEditable()" type="danger" link size="small" @click="removeSystemRow(index)">
+                      <el-button v-if="isAddDelItemAllowed()" type="danger" link size="small" @click="removeSystemRow(index)">
                         {{ t('formbusiness.systemaccountrequest.deleteRow') }}
                       </el-button>
                     </div>
@@ -1050,9 +1050,14 @@ function isBlankSystemRow (row) {
 // 明细各栏位的权限键（应用到每一行）
 const ROW_FIELD_KEYS = ['System', 'Sites', 'Permissions', 'Rating']
 
-/** 增删明细行：任一可录入栏位（系统/厂区/权限）可编辑即允许 */
+/** 增删明细行：由 AddDelItem 权限键控制（权限键缺失时与其他栏位一致，默认允许） */
+function isAddDelItemAllowed () {
+  return isStepFieldVisible('AddDelItem') && isStepFieldEditable('AddDelItem')
+}
+
+/** 明细行内容可录入：任一可录入栏位（系统/厂区/权限/评分）可编辑即为 true，用于提交前校验 */
 function isSystemsEditable () {
-  return ['System', 'Sites', 'Permissions'].some((key) => isStepFieldVisible(key) && isStepFieldEditable(key))
+  return ['System', 'Sites', 'Permissions', 'Rating'].some((key) => isStepFieldVisible(key) && isStepFieldEditable(key))
 }
 
 /** 后端不校验必填，由前端校验；明细可为空，整行留空的行视为未填写直接忽略；返回提示文案，空串表示通过 */
@@ -1070,6 +1075,8 @@ function validateSystems () {
     }
     if (isStepFieldEditable('Sites') && row.sites.length === 0) return t('formbusiness.systemaccountrequest.rowSitesRequired', { row: no })
     if (isStepFieldEditable('Permissions') && row.permissions.length === 0) return t('formbusiness.systemaccountrequest.rowPermissionsRequired', { row: no })
+    // 评分可见且可编辑时必须评分
+    if (isStepFieldVisible('Rating') && isStepFieldEditable('Rating') && !(Number(row.rating) > 0)) return t('formbusiness.systemaccountrequest.rowRatingRequired', { row: no })
   }
   return ''
 }
@@ -2336,7 +2343,7 @@ onMounted(async () => {
   height: 130px;
 }
 
-.sk-field--wide {
+.sk-grid .sk-field--wide {
   width: calc((100% - 32px) / 3 * 2 + 16px);
 }
 
