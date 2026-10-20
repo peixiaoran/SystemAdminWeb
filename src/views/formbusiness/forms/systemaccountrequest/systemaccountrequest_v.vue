@@ -20,15 +20,7 @@
               </div>
 
               <div class="sk-grid">
-                <div v-for="n in 2" :key="`sk-user-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <!-- 申请人部门：占两格 -->
-              <div class="sk-grid">
-                <div class="sk-field sk-field--wide">
+                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
                   <el-skeleton-item variant="text" class="sk-label" />
                   <el-skeleton-item variant="text" class="sk-control" />
                 </div>
@@ -181,7 +173,7 @@
         </el-row>
 
         <el-row
-          v-if="isAnyStepFieldVisible(['UserNo', 'UserName'])"
+          v-if="isAnyStepFieldVisible(['UserNo', 'UserName', 'Department'])"
           :gutter="16"
           align="middle"
           class="basic-info-row"
@@ -196,10 +188,7 @@
               <KeywordHighlightField :value="form.applicantUserName" :keyword="searchKeyword" />
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row v-if="isStepFieldVisible('Department')" :gutter="16" align="middle" class="basic-info-row">
-          <el-col :span="16">
+          <el-col v-if="isStepFieldVisible('Department')" :span="8">
             <el-form-item :label="t('formbusiness.systemaccountrequest.applicantDeptName')" prop="applicantDeptName">
               <KeywordHighlightField :value="form.applicantDeptName" :keyword="searchKeyword" style="width: 100%;" />
             </el-form-item>
@@ -208,7 +197,7 @@
 
         <el-divider v-if="isAnyStepFieldVisible(['FormNo', 'ApplyDate', 'UserNo', 'UserName', 'Department'])"></el-divider>
 
-                <el-row v-if="isStepFieldVisible('RequesterUserDept')" :gutter="16" class="basic-info-row requester-row">
+        <el-row v-if="isStepFieldVisible('RequesterUserDept')" :gutter="16" class="basic-info-row requester-row">
           <el-col :span="16">
             <el-form-item :label="t('formbusiness.systemaccountrequest.requesterUserDept')">
               <KeywordHighlightField :value="requesterDeptName" :keyword="searchKeyword" />
@@ -266,9 +255,21 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.systemaccountrequest.systems')">
               <div class="systems-section-v">
-              <div v-for="(row, index) in form.systems" :key="index" class="system-card">
+              <div v-if="isStepFieldVisible('AddDelItem')" class="systems-actions">
+                <el-button type="primary" plain size="small" disabled>
+                  <el-icon><Plus /></el-icon>
+                  {{ t('formbusiness.systemaccountrequest.addSystem') }}
+                </el-button>
+              </div>
+              <div v-for="(row, index) in form.systems" :key="index" class="system-item">
+                <div class="system-card">
                 <div class="system-card__header">
                   <span class="system-card__title">#{{ index + 1 }}</span>
+                  <div v-if="isStepFieldVisible('AddDelItem')" class="system-card__header-right">
+                    <el-button type="danger" link size="small" disabled>
+                      {{ t('formbusiness.systemaccountrequest.deleteRow') }}
+                    </el-button>
+                  </div>
                 </div>
                 <div class="system-card__body">
                   <div class="system-card__col">
@@ -286,10 +287,11 @@
                     </div>
                   </div>
                 </div>
-                <div class="system-card__footer" v-if="isStepFieldVisible('Rating')">
-                  <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
-                  <el-rate :model-value="row.rating" disabled />
-                </div>
+              </div>
+              <div class="system-card__rating" v-if="isStepFieldVisible('Rating')">
+                <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
+                <el-rate :model-value="row.rating" disabled />
+              </div>
               </div>
               <el-empty v-if="form.systems.length === 0" :image-size="50" :description="t('common.noData')" />
               </div>
@@ -443,7 +445,7 @@ import i18n from '@/i18n'
 import { ElMessage, ElNotification } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
-import { Lock, Calendar } from '@element-plus/icons-vue'
+import { Lock, Calendar, Plus } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import KeywordHighlightField from '../components/keywordhighlightfield.vue'
@@ -1420,6 +1422,11 @@ onMounted(async () => {
   align-items: flex-start;
 }
 
+.systems-actions {
+  display: flex;
+  align-items: center;
+}
+
 .systems-section-v {
   display: flex;
   flex-direction: column;
@@ -1458,11 +1465,19 @@ onMounted(async () => {
   display: block;
 }
 
-.system-card__footer {
+.system-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 评分位于明细卡片下方 */
+.system-card__rating {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 10px;
+  padding: 0 4px;
 }
 
 .system-card__col {

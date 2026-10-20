@@ -327,17 +327,18 @@
           <el-col :span="24">
             <el-form-item :label="t('formbusiness.systemaccountrequest.systems')">
               <div class="systems-section">
-                <div v-if="isAddDelItemAllowed()" class="systems-actions">
-                  <el-button type="primary" plain size="small" @click="addSystemRow">
+                <div v-if="isStepFieldVisible('AddDelItem')" class="systems-actions">
+                  <el-button type="primary" plain size="small" :disabled="!isAddDelItemAllowed()" @click="addSystemRow">
                     <el-icon><Plus /></el-icon>
                     {{ t('formbusiness.systemaccountrequest.addSystem') }}
                   </el-button>
                 </div>
-                <div v-for="(row, index) in form.systems" :key="row._uid" class="system-card">
+                <div v-for="(row, index) in form.systems" :key="row._uid" class="system-item">
+                  <div class="system-card">
                   <div class="system-card__header">
                     <span class="system-card__title">#{{ index + 1 }}</span>
                     <div class="system-card__header-right">
-                      <el-button v-if="isAddDelItemAllowed()" type="danger" link size="small" @click="removeSystemRow(index)">
+                      <el-button v-if="isStepFieldVisible('AddDelItem')" type="danger" link size="small" :disabled="!isAddDelItemAllowed()" @click="removeSystemRow(index)">
                         {{ t('formbusiness.systemaccountrequest.deleteRow') }}
                       </el-button>
                     </div>
@@ -346,11 +347,12 @@
                     <div class="system-card__col">
                       <div class="system-card__field" v-if="isStepFieldVisible('System')">
                         <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.system') }}</span>
+                        <span v-if="!isStepFieldEditable('System')" class="system-card__value">{{ getSystemText(row) }}</span>
+                        <el-form-item v-else class="system-card__item" label-width="0" :error="row._errors.system">
                         <el-select
                           v-model="row.system"
                           filterable
                           :placeholder="t('formbusiness.systemaccountrequest.pleaseSelectSystem')"
-                          :disabled="!isStepFieldEditable('System')"
                           style="width: 100%;"
                           @change="onSystemChange(row)"
                         >
@@ -362,30 +364,36 @@
                             :disabled="isSystemUsedByOtherRow(item.code, row)"
                           />
                         </el-select>
+                        </el-form-item>
                       </div>
                       <div class="system-card__field" v-if="isStepFieldVisible('Sites')">
                         <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.sites') }}</span>
+                        <span v-if="!isStepFieldEditable('Sites')" class="system-card__value">{{ getSitesText(row) }}</span>
+                        <el-form-item v-else class="system-card__item" label-width="0" :error="row._errors.sites">
                         <el-select
                           v-model="row.sites"
                           multiple
                           collapse-tags
                           collapse-tags-tooltip
                           :placeholder="t('formbusiness.systemaccountrequest.pleaseSelectSites')"
-                          :disabled="!isStepFieldEditable('Sites')"
                           style="width: 100%;"
                           @change="onSitesChange(row)"
                         >
                           <el-option v-for="item in siteOptions" :key="item.code" :label="item.name" :value="item.code" />
                         </el-select>
+                        </el-form-item>
                       </div>
                       <div class="system-card__field system-card__field--full" v-if="isStepFieldVisible('Permissions')">
                         <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.permissions') }}</span>
+                        <span v-if="!isStepFieldEditable('Permissions')" class="system-card__value">{{ getPermissionsText(row) }}</span>
+                        <el-form-item v-else class="system-card__item" label-width="0" :error="row._errors.permissions">
                         <el-select
                           v-model="row.permissions"
                           multiple
                           :loading="row._permLoading"
                           :placeholder="t('formbusiness.systemaccountrequest.pleaseSelectPermissions')"
-                          :disabled="!isStepFieldEditable('Permissions') || !row.system || row.sites.length === 0"
+                          :disabled="!row.system || row.sites.length === 0"
+                          @change="onPermissionsChange(row)"
                           style="width: 100%;"
                         >
                           <el-option v-for="item in row._permOptions" :key="item.code" :label="item.name" :value="item.code">
@@ -393,13 +401,17 @@
                             <span v-if="item.notes" class="permission-notes">{{ item.notes }}</span>
                           </el-option>
                         </el-select>
+                        </el-form-item>
                       </div>
                     </div>
                   </div>
-                  <div class="system-card__footer" v-if="isStepFieldVisible('Rating')">
-                    <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
-                    <el-rate v-model="row.rating" :disabled="!isStepFieldEditable('Rating')" />
-                  </div>
+                </div>
+                <div class="system-card__rating" v-if="isStepFieldVisible('Rating')">
+                  <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
+                  <el-form-item class="system-card__item" label-width="0" :error="row._errors.rating">
+                    <el-rate v-model="row.rating" :disabled="!isStepFieldEditable('Rating')" @change="row._errors.rating = ''" />
+                  </el-form-item>
+                </div>
                 </div>
                 <el-empty v-if="form.systems.length === 0" :image-size="50" :description="t('common.noData')" />
               </div>
@@ -1017,30 +1029,89 @@ function createSystemRow (data = {}) {
     rating: Number(data.rating) || 0,
     _permOptions: [],
     _permLoading: false,
-    _permSeq: 0
+    _permSeq: 0,
+    _errors: { system: '', sites: '', permissions: '', rating: '' }
   }
 }
 
 function addSystemRow () {
   form.systems.push(createSystemRow())
+  scheduleDraftSave()
 }
 
 function removeSystemRow (index) {
   const [removed] = form.systems.splice(index, 1)
   if (removed) removed._permSeq += 1
+  scheduleDraftSave()
+}
+
+/** 明细增删、选择系统/厂区/权限后自动暂存：跳过必填校验，静默执行，失败不提示 */
+let draftSaveTimer = null
+let draftSaving = false
+let draftSaveQueued = false
+
+function scheduleDraftSave () {
+  if (!form.formId) return
+  clearTimeout(draftSaveTimer)
+  draftSaveTimer = setTimeout(runDraftSave, 600)
+}
+
+async function runDraftSave () {
+  if (!form.formId) return
+  // 正在手动保存/送审/驳回，或上一次暂存未完成：稍后再试，避免并发覆盖
+  if (draftSaving || formActionLoading.value) {
+    draftSaveQueued = true
+    scheduleDraftSave()
+    return
+  }
+  draftSaving = true
+  draftSaveQueued = false
+  try {
+    await saveSystemAccountRequestRequest()
+  } catch {
+    // 静默：用户点击保存/送审时仍会完整校验并保存
+  } finally {
+    draftSaving = false
+  }
+}
+
+/** 字段不可编辑时以文本展示，避免禁用的下拉框看不到完整内容 */
+function getSystemText (row) {
+  if (!row.system) return '-'
+  return systemOptions.value.find((item) => item.code === row.system)?.name || row.system
+}
+
+function getSitesText (row) {
+  if (!row.sites.length) return '-'
+  return row.sites.map((code) => siteOptions.value.find((item) => item.code === code)?.name || code).join('、')
+}
+
+function getPermissionsText (row) {
+  if (!row.permissions.length) return '-'
+  const options = row._permOptions || []
+  return row.permissions.map((code) => options.find((item) => item.code === code)?.name || code).join('、')
 }
 
 function isSystemUsedByOtherRow (code, row) {
   return form.systems.some((r) => r !== row && r.system === code)
 }
 
-function onSystemChange (row) {
+async function onSystemChange (row) {
+  row._errors.system = ''
   row.permissions = []
-  refreshRowPermissions(row, true)
+  await refreshRowPermissions(row, true)
+  scheduleDraftSave()
 }
 
-function onSitesChange (row) {
-  refreshRowPermissions(row, true)
+async function onSitesChange (row) {
+  row._errors.sites = ''
+  await refreshRowPermissions(row, true)
+  scheduleDraftSave()
+}
+
+function onPermissionsChange (row) {
+  row._errors.permissions = ''
+  scheduleDraftSave()
 }
 
 function isBlankSystemRow (row) {
@@ -1060,28 +1131,32 @@ function isSystemsEditable () {
   return ['System', 'Sites', 'Permissions', 'Rating'].some((key) => isStepFieldVisible(key) && isStepFieldEditable(key))
 }
 
-/** 后端不校验必填，由前端校验；明细可为空，整行留空的行视为未填写直接忽略；返回提示文案，空串表示通过 */
+/** 后端不校验必填，由前端校验；明细可为空，整行留空的行视为未填写直接忽略；错误以红字显示在对应控件下方，返回是否通过 */
 function validateSystems () {
   const seen = new Set()
-  for (let i = 0; i < form.systems.length; i++) {
-    const row = form.systems[i]
-    if (isBlankSystemRow(row)) continue
+  let passed = true
+  form.systems.forEach((row, i) => {
+    row._errors = { system: '', sites: '', permissions: '', rating: '' }
+    if (isBlankSystemRow(row)) return
     const no = i + 1
+    const errors = row._errors
     // 只校验当前步骤可编辑的栏位，只读栏位用户改不了
     if (isStepFieldEditable('System')) {
-      if (!row.system) return t('formbusiness.systemaccountrequest.rowSystemRequired', { row: no })
-      if (seen.has(row.system)) return t('formbusiness.systemaccountrequest.rowSystemDuplicated', { row: no })
-      seen.add(row.system)
+      if (!row.system) errors.system = t('formbusiness.systemaccountrequest.rowSystemRequired', { row: no })
+      else if (seen.has(row.system)) errors.system = t('formbusiness.systemaccountrequest.rowSystemDuplicated', { row: no })
+      else seen.add(row.system)
     }
-    if (isStepFieldEditable('Sites') && row.sites.length === 0) return t('formbusiness.systemaccountrequest.rowSitesRequired', { row: no })
-    if (isStepFieldEditable('Permissions') && row.permissions.length === 0) return t('formbusiness.systemaccountrequest.rowPermissionsRequired', { row: no })
+    if (isStepFieldEditable('Sites') && row.sites.length === 0) errors.sites = t('formbusiness.systemaccountrequest.rowSitesRequired', { row: no })
+    if (isStepFieldEditable('Permissions') && row.permissions.length === 0) errors.permissions = t('formbusiness.systemaccountrequest.rowPermissionsRequired', { row: no })
     // 评分可见且可编辑时必须评分
-    if (isStepFieldVisible('Rating') && isStepFieldEditable('Rating') && !(Number(row.rating) > 0)) return t('formbusiness.systemaccountrequest.rowRatingRequired', { row: no })
-  }
-  return ''
+    if (isStepFieldVisible('Rating') && isStepFieldEditable('Rating') && !(Number(row.rating) > 0)) errors.rating = t('formbusiness.systemaccountrequest.rowRatingRequired', { row: no })
+    if (Object.values(errors).some(Boolean)) passed = false
+  })
+  return passed
 }
 
 onBeforeUnmount(() => {
+  clearTimeout(draftSaveTimer)
   clearAddReviewSearchTimer()
   destroyAddReviewSortable()
 })
@@ -1887,9 +1962,9 @@ async function validateAll () {
   })
   if (!valid) return false
   if (isSystemsEditable()) {
-    const message = validateSystems()
-    if (message) {
-      showFormActionNotice(message, 'warning')
+    if (!validateSystems()) {
+      await nextTick()
+      document.querySelector('.system-card .is-error')?.scrollIntoView({ block: 'center', behavior: 'smooth' })
       return false
     }
   }
@@ -2646,11 +2721,19 @@ onMounted(async () => {
   display: block;
 }
 
-.system-card__footer {
+.system-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 评分位于明细卡片下方 */
+.system-card__rating {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 10px;
+  padding: 0 4px;
 }
 
 .system-card__col {
@@ -2662,6 +2745,16 @@ onMounted(async () => {
 
 .system-card__field--full {
   grid-column: 1 / -1;
+}
+
+/* 明细行内校验：沿用 Element Plus 红字，错误提示在控件下方占位显示 */
+.system-card__item {
+  margin-bottom: 0;
+}
+
+.system-card__item :deep(.el-form-item__error) {
+  position: static;
+  padding-top: 4px;
 }
 
 .systems-actions {
