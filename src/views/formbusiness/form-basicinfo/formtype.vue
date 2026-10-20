@@ -166,6 +166,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMTYPE_PAGE_API,
   GET_FORMTYPE_ENTITY_API,
@@ -369,7 +370,7 @@ const handleSubmit = async () => {
   submitLoading.value = true
   try {
     const api = isEdit.value ? UPDATE_FORMTYPE_API : INSERT_FORMTYPE_ENTITY_API
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       formTypeId:     form.formTypeId,
       formGroupId:    form.formGroupId,
       formTypeNameCn: form.formTypeNameCn,
@@ -380,7 +381,7 @@ const handleSubmit = async () => {
       descriptionEn:  form.descriptionEn,
       reviewPath:     form.reviewPath,
       viewPath:       form.viewPath
-    })
+    }, rules))
     if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false

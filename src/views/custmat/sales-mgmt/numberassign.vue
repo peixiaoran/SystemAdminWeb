@@ -212,6 +212,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_NUMBER_ASSIGN_PAGE_API,
   GET_NUMBER_ASSIGN_ENTITY_API,
@@ -558,11 +559,11 @@ const handleBatchSave = async () => {
 
   batchSubmitLoading.value = true
   try {
-    const res = await post(BATCH_UPSERT_NUMBER_ASSIGN_API.BATCH_UPSERT_NUMBER_ASSIGN, {
+    const res = await post(BATCH_UPSERT_NUMBER_ASSIGN_API.BATCH_UPSERT_NUMBER_ASSIGN, emptyToNull({
       customerId: batchForm.customerId,
       salesUserId: batchForm.salesUserId,
       updateMode: batchForm.updateMode
-    })
+    }, batchFormRules))
 
     if (isHandled(res)) return
 
@@ -668,12 +669,12 @@ const handleSave = async () => {
     const api = isEdit.value
       ? UPDATE_NUMBER_ASSIGN_API.UPDATE_NUMBER_ASSIGN
       : INSERT_NUMBER_ASSIGN_API.INSERT_NUMBER_ASSIGN
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       partNumber: editForm.partNumberId,
       // 新增时无“原料号”概念，直接沿用当前选择的料号；编辑时使用进入弹窗时记录的原始料号
       originalPartNumber: isEdit.value ? editForm.originalPartNumberId : editForm.partNumberId,
       salesUserId: editForm.salesUserId
-    })
+    }, formRules))
 
     if (isHandled(res)) return
 

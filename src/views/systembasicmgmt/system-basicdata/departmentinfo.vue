@@ -172,6 +172,7 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_DEPARTMENT_TREE_API,
   GET_DEPARTMENT_ENTITY_API,
@@ -482,7 +483,7 @@ const handleSave = async () => {
   }
 
   const api = isEdit.value ? UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT : INSERT_DEPARTMENT_API.INSERT_DEPARTMENT
-  const res = await post(api, params)
+  const res = await post(api, emptyToNull(params, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false

@@ -129,6 +129,7 @@ import { ref, reactive, nextTick, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORECAST_VERSION_PAGE_API,
   GET_FORECAST_VERSION_ENTITY_API,
@@ -490,7 +491,7 @@ const handleSave = async () => {
           startDate: editForm.startDate,
           endDate: editForm.endDate
         }
-    const res = await post(api, payload)
+    const res = await post(api, emptyToNull(payload, formRules))
 
     if (isHandled(res)) return
 

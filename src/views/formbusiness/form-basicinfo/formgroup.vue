@@ -132,6 +132,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMGROUP_LIST_API,
   GET_FORMGROUP_ENTITY_API,
@@ -299,13 +300,13 @@ const handleSubmit = async () => {
   submitLoading.value = true
   try {
     const api = isEdit.value ? UPDATE_FORMGROUP_API : INSERT_FORMGROUP_ENTITY_API
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       formGroupId:     form.formGroupId,
       formGroupNameCn: form.formGroupNameCn,
       formGroupNameEn: form.formGroupNameEn,
       sortOrder:       form.sortOrder,
       description:     form.description
-    })
+    }, rules))
     if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false

@@ -845,7 +845,7 @@ const insertUser = async () => {
     ...editForm,
     hireDate: hireDateToDateTimePayload(editForm.hireDate)
   }
-  const res = await post(INSERT_USER_API.INSERT_USER, params)
+  const res = await post(INSERT_USER_API.INSERT_USER, emptyToNull(params, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
@@ -864,7 +864,7 @@ const updateUser = async () => {
     ...editForm,
     hireDate: hireDateToDateTimePayload(editForm.hireDate)
   }
-  const res = await post(UPDATE_USER_API.UPDATE_USER, params)
+  const res = await post(UPDATE_USER_API.UPDATE_USER, emptyToNull(params, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false

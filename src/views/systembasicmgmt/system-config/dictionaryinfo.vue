@@ -157,6 +157,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_DICTIONARY_PAGES_API,
   INSERT_DICTIONARY_API,
@@ -305,14 +306,14 @@ const fetchDictionaryEntity = async (dicId) => {
   }
 }
 
-const buildSubmitParams = () => ({
+const buildSubmitParams = () => emptyToNull({
   moduleId: editForm.moduleId,
   dicType: (editForm.dicType || '').trim(),
   dicCode: String(editForm.dicCode ?? '').trim(),
   dicNameCn: (editForm.dicNameCn || '').trim(),
   dicNameEn: (editForm.dicNameEn || '').trim(),
   sortOrder: Number(editForm.sortOrder)
-})
+}, formRules)
 
 const insertDictionary = async () => {
   submitLoading.value = true

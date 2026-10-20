@@ -967,10 +967,10 @@ async function saveAddReviewRow (row, isUpdate) {
       isUpdate ? UPDATE_FORM_ADD_REVIEW_API : INSERT_FORM_ADD_REVIEW_API,
       {
         formId,
-        deptName: row.deptName || '',
+        deptName: row.deptName || null,
         userId: String(row.userId),
-        userNo: row.userNo || '',
-        userName: row.userName || '',
+        userNo: row.userNo || null,
+        userName: row.userName || null,
         sortOrder: String(row.sortOrder)
       },
       { silentForbiddenError: false }
@@ -1117,10 +1117,10 @@ async function saveAddReviewRowsBatch (rows) {
     .filter((row) => row.userId)
     .map((row) => ({
       formId,
-      deptName: row.deptName || '',
+      deptName: row.deptName || null,
       userId: String(row.userId),
-      userNo: row.userNo || '',
-      userName: row.userName || '',
+      userNo: row.userNo || null,
+      userName: row.userName || null,
       sortOrder: String(row.sortOrder)
     }))
   if (!list.length) return
@@ -1594,7 +1594,7 @@ async function onSubmitForApproval () {
     const res = await post(APPROVE_INFORMATIONREQUEST_API, {
       formId,
       rejectStepId: '0',
-      comment: approvalComment.value || ''
+      comment: approvalComment.value || null
     }, {
       silentForbiddenError: false,
       silentAuthError: false,

@@ -120,6 +120,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_DEPARTMENT_LEVEL_LIST_API,
   GET_DEPARTMENT_LEVEL_ENTITY_API,
@@ -295,7 +296,7 @@ const handleSave = async () => {
     const api = editForm.departmentLevelId
       ? UPDATE_DEPARTMENT_LEVEL_API.UPDATE_DEPARTMENT_LEVEL
       : INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL
-    const res = await post(api, { ...editForm })
+    const res = await post(api, emptyToNull({ ...editForm }, formRules))
     if (res?.code === 200) {
       showMessage(res.message || t('systembasicmgmt.departmentLevel.saveSuccess'), 'success')
       dialogVisible.value = false

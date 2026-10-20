@@ -154,6 +154,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_EXCHANGE_RATE_PAGES_API,
   GET_CURRENCY_DROPDOWN_API,
@@ -261,13 +262,13 @@ const fetchExchangeRatePages = async () => {
   }
 }
 
-const buildSubmitParams = () => ({
+const buildSubmitParams = () => emptyToNull({
   currencyCode: editForm.currencyCode,
   exchangeCurrencyCode: editForm.exchangeCurrencyCode,
   exchangeRate: parseFloat(editForm.exchangeRate),
   yearMonth: editForm.yearMonth,
-  remark: editForm.remark || ''
-})
+  remark: editForm.remark
+}, formRules)
 
 const insertExchangeRate = async () => {
   submitLoading.value = true

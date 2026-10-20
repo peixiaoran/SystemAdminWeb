@@ -162,6 +162,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_PMENU_PAGES_API,
   GET_PMENU_ENTITY_API,
@@ -302,7 +303,7 @@ const fetchPMenuEntity = async (menuId) => {
 
 const insertPMenu = async () => {
   submitLoading.value = true
-  const res = await post(INSERT_PMENU_API.INSERT_PMENU, { ...editForm })
+  const res = await post(INSERT_PMENU_API.INSERT_PMENU, emptyToNull({ ...editForm }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
@@ -316,7 +317,7 @@ const insertPMenu = async () => {
 
 const updatePMenu = async () => {
   submitLoading.value = true
-  const res = await post(UPDATE_PMENU_API.UPDATE_PMENU, { ...editForm })
+  const res = await post(UPDATE_PMENU_API.UPDATE_PMENU, emptyToNull({ ...editForm }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()

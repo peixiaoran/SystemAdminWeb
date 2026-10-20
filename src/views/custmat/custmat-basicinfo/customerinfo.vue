@@ -128,6 +128,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_CUSTOMER_LIST_API,
   GET_CUSTOMER_ENTITY_API,
@@ -344,13 +345,13 @@ const handleSave = async () => {
   submitLoading.value = true
   try {
     const api = isEdit.value ? UPDATE_CUSTOMER_API.UPDATE_CUSTOMER : INSERT_CUSTOMER_API.INSERT_CUSTOMER
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       customerId: editForm.customerId,
       customerCode: editForm.customerCode,
       customerNameCn: editForm.customerNameCn,
       customerNameEn: editForm.customerNameEn,
       description: editForm.description
-    })
+    }, formRules))
 
     if (isHandled(res)) return
 

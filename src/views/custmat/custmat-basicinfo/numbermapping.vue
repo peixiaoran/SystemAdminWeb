@@ -209,6 +209,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_NUMBER_MAPPING_LIST_API,
   GET_NUMBER_MAPPING_ENTITY_API,
@@ -537,14 +538,14 @@ const handleSave = async () => {
     const api = isEdit.value
       ? UPDATE_NUMBER_MAPPING_API.UPDATE_NUMBER_MAPPING
       : INSERT_NUMBER_MAPPING_API.INSERT_NUMBER_MAPPING
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       mappingId: editForm.mappingId,
       customerPartNumber: editForm.customerPartNumber,
       companyPartNumber: editForm.companyPartNumber,
       effectiveFrom: editForm.effectiveFrom,
       effectiveTo: editForm.effectiveTo,
       status: editForm.status
-    })
+    }, formRules))
 
     if (isHandled(res)) return
 

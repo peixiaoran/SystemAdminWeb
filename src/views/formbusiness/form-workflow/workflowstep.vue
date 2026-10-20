@@ -506,6 +506,7 @@
 import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import { 
   GET_FORMGROUP_DROPDOWN_API
 } from '@/config/api/formbusiness/form-operate/applyform.js'
@@ -1297,7 +1298,7 @@ const submitAddStep = async () => {
     if (!valid) return
     addStepSubmitting.value = true
     try {
-      const payload = {
+      const payload = emptyToNull({
         stepId: isEditMode.value ? currentStepId.value : '',
         formGroupId: addStepForm.formGroupId,
         formTypeId: addStepForm.formTypeId,
@@ -1314,7 +1315,7 @@ const submitAddStep = async () => {
         stepUserUpsert: { ...addStepForm.stepUserUpsert },
         stepCustomUpsert: { ...addStepForm.stepCustomUpsert },
         stepAddReviewUpsert: { ...addStepForm.stepAddReviewUpsert }
-      }
+      }, addStepRules)
       const response = await post(
         isEditMode.value ? UPDATE_WORKFLOWSTEP_API : INSERT_WORKFLOWSTEP_API,
         payload

@@ -1444,7 +1444,7 @@ async function onSubmitForApproval () {
     const res = await post(APPROVE_LEAVECANCELL_API, {
       formId,
       rejectStepId: '0',
-      comment: approvalComment.value || ''
+      comment: approvalComment.value || null
     }, {
       silentForbiddenError: false,
       silentAuthError: false,

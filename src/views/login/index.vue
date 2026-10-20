@@ -362,7 +362,7 @@ const handleLogin = () => {
           userNameCn: res?.data?.userNameCn || '',
           userNameEn: res?.data?.userNameEn || '',
           loginNo: res?.data?.loginNo || submittedLoginNo,
-          avatar: res?.data?.avatarAddress || ''
+          avatar: res?.data?.avatarAddress || res?.data?.AvatarAddress || ''
         })
 
         // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页

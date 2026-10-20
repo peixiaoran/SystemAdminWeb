@@ -103,6 +103,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_NATIONALITY_LIST_API,
   INSERT_NATIONALITY_API,
@@ -254,7 +255,7 @@ const handleSave = async () => {
   const api = editForm.nationalityId
     ? UPDATE_NATIONALITY_API.UPDATE_NATIONALITY
     : INSERT_NATIONALITY_API.INSERT_NATIONALITY
-  const res = await post(api, { ...editForm })
+  const res = await post(api, emptyToNull({ ...editForm }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false

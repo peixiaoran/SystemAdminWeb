@@ -113,6 +113,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_CURRENCY_PAGES_API,
   INSERT_CURRENCY_API,
@@ -203,12 +204,12 @@ const fetchCurrencyEntity = async (currencyId) => {
 
 const insertCurrency = async () => {
   submitLoading.value = true
-  const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, {
+  const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, emptyToNull({
     currencyCode: editForm.currencyCode,
     currencyNameCn: editForm.currencyNameCn,
-    currencyNameEn: editForm.currencyNameEn || '',
-    remark: editForm.remark || ''
-  })
+    currencyNameEn: editForm.currencyNameEn,
+    remark: editForm.remark
+  }, formRules))
   if (res?.code === 200) {
     showMessage(t('systembasicmgmt.currencyInfo.insertCurrencySuccess'), 'success')
     dialogVisible.value = false
@@ -221,13 +222,13 @@ const insertCurrency = async () => {
 
 const updateCurrency = async () => {
   submitLoading.value = true
-  const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, {
+  const res = await post(UPDATE_CURRENCY_API.UPDATE_CURRENCY, emptyToNull({
     currencyId: editForm.currencyId,
     currencyCode: editForm.currencyCode,
     currencyNameCn: editForm.currencyNameCn,
-    currencyNameEn: editForm.currencyNameEn || '',
-    remark: editForm.remark || ''
-  })
+    currencyNameEn: editForm.currencyNameEn,
+    remark: editForm.remark
+  }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false

@@ -186,6 +186,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_ROLE_PAGES_API,
   GET_ROLE_ENTITY_API,
@@ -299,7 +300,7 @@ const fetchRoleEntity = async (roleId) => {
 
 const insertRole = async () => {
   submitLoading.value = true
-  const res = await post(INSERT_ROLE_API.INSERT_ROLE, {
+  const res = await post(INSERT_ROLE_API.INSERT_ROLE, emptyToNull({
     roleId: '',
     roleCode: editForm.roleCode,
     roleNameCn: editForm.roleNameCn,
@@ -307,7 +308,7 @@ const insertRole = async () => {
     description: editForm.description,
     isEnabled: 1, // 前端不提供“是否启用”开关：新增默认启用
     remark: editForm.remark
-  })
+  }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
@@ -321,7 +322,7 @@ const insertRole = async () => {
 
 const updateRole = async () => {
   submitLoading.value = true
-  const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, {
+  const res = await post(UPDATE_ROLE_API.UPDATE_ROLE, emptyToNull({
     roleId: editForm.roleId,
     roleCode: editForm.roleCode,
     roleNameCn: editForm.roleNameCn,
@@ -329,7 +330,7 @@ const updateRole = async () => {
     description: editForm.description,
     isEnabled: editForm.isEnabled, // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
     remark: editForm.remark
-  })
+  }, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()

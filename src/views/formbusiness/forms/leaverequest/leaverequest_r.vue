@@ -1601,8 +1601,8 @@ function buildSaveLeaveRequestPayload () {
     formId: String(form.formId || ''),
     leaveType: leaveType || null,
     leaveReason: leaveReason || null,
-    startDateTime: startTime ? toISO(startTime) : '',
-    endDateTime: endTime ? toISO(endTime) : '',
+    startDateTime: startTime ? toISO(startTime) : null,
+    endDateTime: endTime ? toISO(endTime) : null,
     agentUserId: agentUserId || null,
     agentUserName: agentUserName || null
   }
@@ -2067,7 +2067,7 @@ async function onSubmitForApproval () {
     const res = await post(APPROVE_LEAVEREQUEST_API, {
       formId,
       rejectStepId: '0',
-      comment: approvalComment.value || ''
+      comment: approvalComment.value || null
     }, {
       silentForbiddenError: false,
       silentAuthError: false,

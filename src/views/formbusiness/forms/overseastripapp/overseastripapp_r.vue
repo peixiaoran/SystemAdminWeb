@@ -1141,10 +1141,10 @@ async function saveAddReviewRow (row, isUpdate) {
       isUpdate ? UPDATE_FORM_ADD_REVIEW_API : INSERT_FORM_ADD_REVIEW_API,
       {
         formId,
-        deptName: row.deptName || '',
+        deptName: row.deptName || null,
         userId: String(row.userId),
-        userNo: row.userNo || '',
-        userName: row.userName || '',
+        userNo: row.userNo || null,
+        userName: row.userName || null,
         sortOrder: String(row.sortOrder)
       },
       { silentForbiddenError: false }
@@ -1291,10 +1291,10 @@ async function saveAddReviewRowsBatch (rows) {
     .filter((row) => row.userId)
     .map((row) => ({
       formId,
-      deptName: row.deptName || '',
+      deptName: row.deptName || null,
       userId: String(row.userId),
-      userNo: row.userNo || '',
-      userName: row.userName || '',
+      userNo: row.userNo || null,
+      userName: row.userName || null,
       sortOrder: String(row.sortOrder)
     }))
   if (!list.length) return
@@ -1687,7 +1687,7 @@ function buildSaveOverseasTripAppPayload () {
     tripReason: form.tripReason || null,
     startDate: form.startDate || null,
     endDate: form.endDate || null,
-    days: form.days || '',
+    days: form.days || null,
     outboundTravel: form.outboundTravel || null,
     returnTravel: form.returnTravel || null,
     jobDescription: form.jobDescription || null
@@ -1784,7 +1784,7 @@ async function onSubmitForApproval () {
     const res = await post(APPROVE_OVERSEASTRIPAPP_API, {
       formId,
       rejectStepId: '0',
-      comment: approvalComment.value || ''
+      comment: approvalComment.value || null
     }, {
       silentForbiddenError: false,
       silentAuthError: false,

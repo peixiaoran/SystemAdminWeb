@@ -221,6 +221,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMGROUP_DROPDOWN_API,
   GET_FORMTYPE_DROPDOWN_API,
@@ -611,7 +612,7 @@ const handleSubmit = async () => {
     const api        = isEdit ? UPDATE_WORKFLOWRULESTEP_API : INSERT_WORKFLOWRULESTEP_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
     const failKey    = isEdit ? 'editFailed'  : 'addFailed'
-    const res = await post(api, params)
+    const res = await post(api, emptyToNull(params, dialogFormRules))
     if (isSuccess(res.code)) {
       showMessage(res.message || t(`formbusiness.workflowrulestep.${successKey}`), 'success')
       dialogVisible.value = false

@@ -324,6 +324,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled, Filter, RefreshLeft } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { post, postBlob, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_COMPANY_NUMBER_LIST_API,
   GET_COMPANY_NUMBER_ENTITY_API,
@@ -690,7 +691,7 @@ const handleSave = async () => {
     const api = isEdit.value
       ? UPDATE_COMPANY_NUMBER_API.UPDATE_COMPANY_NUMBER
       : INSERT_COMPANY_NUMBER_API.INSERT_COMPANY_NUMBER
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       partNumberId: editForm.partNumberId,
       partNumber: editForm.partNumber,
       partNameCn: editForm.partNameCn,
@@ -708,7 +709,7 @@ const handleSave = async () => {
       lotControl: editForm.lotControl,
       status: editForm.status ? 1 : 0,
       remark: editForm.remark
-    })
+    }, formRules))
 
     if (isHandled(res)) return
 

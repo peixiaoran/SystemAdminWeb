@@ -121,6 +121,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_CONTROL_PAGE_API,
   INSERT_CONTROL_ENTITY_API,
@@ -247,11 +248,11 @@ const handleSubmit = async () => {
   }
   submitLoading.value = true
   try {
-    const res = await post(INSERT_CONTROL_ENTITY_API, {
+    const res = await post(INSERT_CONTROL_ENTITY_API, emptyToNull({
       controlCode: form.controlCode,
       controlName: form.controlName,
       description: form.description
-    })
+    }, rules))
     if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false

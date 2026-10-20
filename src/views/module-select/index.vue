@@ -83,6 +83,7 @@ import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import { clearClientSession } from '@/utils/sessionCleanup'
+import defaultAvatar from '@/assets/images/default-avatar.svg'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -90,7 +91,7 @@ const userStore = useUserStore()
 const username = computed(() => userStore.getDisplayName)
 const userAvatar = computed(() => {
   const avatar = userStore.avatar
-  return avatar ? resolveFileUrl(avatar) : ''
+  return avatar ? resolveFileUrl(avatar) : defaultAvatar
 })
 const pmenues = ref([])
 const loading = ref(true)

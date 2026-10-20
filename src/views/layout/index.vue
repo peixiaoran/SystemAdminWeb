@@ -199,6 +199,7 @@ import { clearClientSession } from '@/utils/sessionCleanup'
 import { Fold, Expand, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { resolveFileUrl } from '@/utils/fileUrl'
+import defaultAvatar from '@/assets/images/default-avatar.svg'
 
 // 状态
 const router = useRouter()
@@ -211,7 +212,7 @@ const menuList = ref([])
 const username = computed(() => userStore.getDisplayName)
 const userAvatar = computed(() => {
   const avatar = userStore.avatar
-  return avatar ? resolveFileUrl(avatar) : ''
+  return avatar ? resolveFileUrl(avatar) : defaultAvatar
 })
 const currentSystemName = computed(() => {
   // 优先用多语言字段

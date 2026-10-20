@@ -179,6 +179,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_SALES_USER_PAGE_API,
   GET_SALES_USER_ENTITY_API,
@@ -531,11 +532,11 @@ const handleSave = async () => {
     const api = isEdit.value
       ? UPDATE_SALES_USER_API.UPDATE_SALES_USER
       : INSERT_SALES_USER_API.INSERT_SALES_USER
-    const res = await post(api, {
+    const res = await post(api, emptyToNull({
       salesUserId: editForm.salesUserId,
       salesDeptId: editForm.salesDeptId,
       salesType: editForm.salesType
-    })
+    }, formRules))
 
     if (isHandled(res)) return
 

@@ -201,6 +201,7 @@ import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import { useUserStore } from '@/stores/user'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import {
@@ -446,7 +447,7 @@ const handleSave = async () => {
     noticeLanguage: editForm.noticeLanguage
   }
 
-  const res = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, params)
+  const res = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, emptyToNull(params, formRules))
   if (res?.code === 200) {
     showMessage(res.message, 'success')
 

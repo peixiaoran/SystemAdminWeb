@@ -176,6 +176,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMTYPEFIELD_PAGE_API,
   GET_FORMTYPEFIELD_ENTITY_API,
@@ -428,14 +429,14 @@ const handleDelete = async (row) => {
   }
 }
 
-const buildSubmitPayload = () => ({
+const buildSubmitPayload = () => emptyToNull({
   fieldId: form.fieldId || '',
   formTypeId: form.formTypeId || '',
   fieldKey: (form.fieldKey || '').trim(),
   fieldNameCn: (form.fieldNameCn || '').trim(),
   fieldNameEn: (form.fieldNameEn || '').trim(),
   sortOrder: form.sortOrder ?? 1
-})
+}, rules)
 
 const handleSubmit = async () => {
   if (!formRef.value) return
