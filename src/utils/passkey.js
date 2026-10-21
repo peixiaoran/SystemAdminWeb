@@ -6,7 +6,7 @@ import { PASSKEY_API } from '@/config/api/systembasicmgmt/system-basicdata/perso
 
 const t = (key, params) => i18n.global.t(key, params)
 
-/** 稍后再提示的标记：仅记录“用户点了稍后”，不存任何 Passkey 凭据 */
+/** 稍后再提示的标记：仅记录“用户点了稍后”，不存任何 Passkey 凭据；退出登录时由 sessionCleanup 清除 */
 const PASSKEY_PROMPT_DISMISSED_KEY = 'passkey_prompt_dismissed'
 
 /** 设备名称最大长度 */
@@ -94,8 +94,19 @@ export const registerPasskey = async () => {
   }
 }
 
+/** 当前账号是否已绑定 Passkey；查询失败时返回 null（无法确认） */
+const hasBoundPasskey = async () => {
+  try {
+    const res = await post(PASSKEY_API.GET_LIST, {})
+    if (isHandled(res) || res?.code !== 200) return null
+    return Array.isArray(res.data) && res.data.length > 0
+  } catch {
+    return null
+  }
+}
+
 /**
- * 账密登录成功后的绑定引导：点“稍后”后不再提示；浏览器不支持 WebAuthn 时不弹
+ * 账密登录成功后的绑定引导：已绑定过 Passkey 的账号不弹；点“稍后”后不再提示；浏览器不支持 WebAuthn 时不弹
  */
 export const promptBindPasskey = async () => {
   if (!isPasskeySupported()) return
@@ -104,6 +115,9 @@ export const promptBindPasskey = async () => {
   } catch {
     // localStorage 不可用时按未记录处理
   }
+
+  // 已绑定则不打扰；无法确认是否已绑定时也不弹，避免对已绑定用户误提示
+  if ((await hasBoundPasskey()) !== false) return
 
   try {
     await ElMessageBox.confirm(t('passkey.promptMessage'), t('passkey.promptTitle'), {

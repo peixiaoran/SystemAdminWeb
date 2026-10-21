@@ -11,7 +11,8 @@ export const AUTH_STORAGE_KEYS = [
   'currentModuleNameCn',
   'currentModuleNameEn',
   'currentSystemPath',
-  'username'
+  'username',
+  'passkey_prompt_dismissed' // “稍后绑定 Passkey”标记，仅在本次登录会话内有效，退出后清除
 ]
 
 const safeStorageGet = (key) => {

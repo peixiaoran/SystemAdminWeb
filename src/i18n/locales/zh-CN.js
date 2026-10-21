@@ -2557,6 +2557,7 @@ export default {
       status: '登录状态',
       loginType: {
         LoginSuccessful: '登入成功',
+        PasskeyLoginSuccessful: 'Passkey 登入成功',
         IncorrectPassword: '密码错误',
         AccountNotExist: '账号不存在',
         LoggedOut: '登出'

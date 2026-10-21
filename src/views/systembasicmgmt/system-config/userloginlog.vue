@@ -121,6 +121,7 @@ let searchTimer = null
 
 const LOGIN_TYPE_TAG_TYPES = {
   LoginSuccessful: 'success',
+  PasskeyLoginSuccessful: 'primary',
   IncorrectPassword: 'danger',
   AccountNotExist: 'warning',
   LoggedOut: 'info'

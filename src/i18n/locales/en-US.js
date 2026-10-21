@@ -2570,6 +2570,7 @@ export default {
       status: 'Login Status',
       loginType: {
         LoginSuccessful: 'Login Successful',
+        PasskeyLoginSuccessful: 'Passkey Login Successful',
         IncorrectPassword: 'Incorrect Password',
         AccountNotExist: 'Account Not Exist',
         LoggedOut: 'Logged Out'
