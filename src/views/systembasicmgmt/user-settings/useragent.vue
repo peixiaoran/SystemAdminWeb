@@ -306,7 +306,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import {
   GET_USER_PAGES_API,
   GET_USER_AGENT_API,
@@ -668,7 +668,9 @@ const handleDeleteAgent = async (index) => {
   const formData = new FormData()
   formData.append('agentUserId', agent.agentUserId)
   const res = await post(GET_USER_AGENT_DELETE_API.GET_USER_AGENT_DELETE, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     await fetchUserAgentList(currentUserId.value)
     agentDialogVisible.value = false

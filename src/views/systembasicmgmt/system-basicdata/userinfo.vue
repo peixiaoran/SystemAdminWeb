@@ -76,10 +76,13 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('systembasicmgmt.userInfo.operation')" min-width="170" fixed="right" align="center">
+          <el-table-column :label="$t('systembasicmgmt.userInfo.operation')" :min-width="300" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row)">{{ $t('common.delete') }}</el-button>
+              <el-button v-if="scope.row.isEmployed === 1" size="small" type="primary" plain :loading="passkeyMailSendingId === scope.row.userId" :disabled="!!passkeyMailSendingId" @click="handleSendPasskeyMail(scope.row)">
+                {{ $t('systembasicmgmt.userInfo.passkeyMailButton') }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -326,7 +329,8 @@ import { ref, reactive, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
-import service, { post } from '@/utils/request'
+import service, { post, isHandled } from '@/utils/request'
+import { emptyToNull } from '@/utils/payload'
 import { resolveFileUrl } from '@/utils/fileUrl'
 import {
   GET_USER_PAGES_API,
@@ -341,7 +345,8 @@ import {
   GET_LABOR_TYPE_DROPDOWN_API,
   EXPORT_USERS_EXCEL_API,
   UPLOAD_AVATAR_UPDATE_API,
-  UPLOAD_AVATAR_INSERT_API
+  UPLOAD_AVATAR_INSERT_API,
+  SEND_PASSKEY_BIND_MAIL_API
 } from '@/config/api/systembasicmgmt/system-basicdata/user'
 
 const { t } = useI18n()
@@ -393,7 +398,6 @@ const editForm = reactive({
   phoneNumber: '',
   loginNo: '',
   passWord: '',
-  pwdSalt: '',
   isReview: 0,
   isPartTime: 0,
   isRealtimeNotification: 0,
@@ -788,7 +792,6 @@ const resetEditForm = () => {
     phoneNumber: '',
     loginNo: '',
     passWord: '',
-    pwdSalt: '',
     isReview: 0,
     isPartTime: 0,
     isRealtimeNotification: 0,
@@ -845,8 +848,12 @@ const insertUser = async () => {
     ...editForm,
     hireDate: hireDateToDateTimePayload(editForm.hireDate)
   }
-  const res = await post(INSERT_USER_API.INSERT_USER, emptyToNull(params, formRules))
-  if (res?.code === 200) {
+  // 后端不需要 PwdSalt，详情接口若带出该字段也不提交
+  delete params.pwdSalt
+  const res = await post(INSERT_USER_API.INSERT_USER, emptyToNull(params, formRules, ['userId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -864,8 +871,12 @@ const updateUser = async () => {
     ...editForm,
     hireDate: hireDateToDateTimePayload(editForm.hireDate)
   }
-  const res = await post(UPDATE_USER_API.UPDATE_USER, emptyToNull(params, formRules))
-  if (res?.code === 200) {
+  // 后端不需要 PwdSalt，详情接口若带出该字段也不提交
+  delete params.pwdSalt
+  const res = await post(UPDATE_USER_API.UPDATE_USER, emptyToNull(params, formRules, ['userId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchUserPages()
@@ -880,7 +891,9 @@ const deleteUser = async (userId) => {
   const formData = new FormData()
   formData.append('userId', userId)
   const res = await post(DELETE_USER_API.DELETE_USER, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchUserPages()
   } else {
@@ -1001,6 +1014,43 @@ const handleDelete = async (row) => {
     return
   }
   deleteUser(row.userId)
+}
+
+// 发送 Passkey 绑定邮件（仅在职人员）：后端按 userId 取工号与邮箱发送
+const passkeyMailSendingId = ref('')
+
+const handleSendPasskeyMail = async (row) => {
+  if (passkeyMailSendingId.value) return
+  try {
+    await ElMessageBox.confirm(
+      t('systembasicmgmt.userInfo.passkeyMailConfirm', { name: row.userNameCn || row.userNo || '' }),
+      t('common.tip'),
+      { confirmButtonText: t('common.confirm'), cancelButtonText: t('common.cancel'), type: 'warning' }
+    )
+  } catch {
+    return
+  }
+  passkeyMailSendingId.value = row.userId
+  try {
+    const formData = new FormData()
+    formData.append('userId', row.userId)
+    const res = await post(SEND_PASSKEY_BIND_MAIL_API.SEND_PASSKEY_BIND_MAIL, formData)
+    if (isHandled(res)) return
+    if (Number(res?.code ?? res?.Code) === 200) {
+      showMessage(res.message || t('common.success'), 'success')
+      return
+    }
+    // 400 邮箱缺失/格式错误、404 未找到用户、429 发送过于频繁 为可预期的业务提示
+    const code = Number(res?.code)
+    showMessage(
+      res?.message || t('systembasicmgmt.userInfo.passkeyMailSendFailed'),
+      [400, 404, 429].includes(code) ? 'warning' : 'error'
+    )
+  } catch {
+    showMessage(t('systembasicmgmt.userInfo.passkeyMailSendFailed'), 'error')
+  } finally {
+    passkeyMailSendingId.value = ''
+  }
 }
 
 const handleSave = async () => {

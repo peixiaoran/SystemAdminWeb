@@ -87,7 +87,7 @@ const FORBIDDEN_SOURCE_PATH_KEY = '__forbidden_source_path__'
 
 /** 这些路径本身就是「无业务上下文」页，不作为 403 来源、也不作为登录后回跳目标 */
 const SKIP_TRACK_PATHS = new Set(['/', '/login', '/module-select', '/403', '/404'])
-const SKIP_REDIRECT_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration'])
+const SKIP_REDIRECT_PATHS = new Set(['/', '/module-select', '/403', '/404', '/unlock', '/password-expiration', '/passkey-bind'])
 
 /** 进行中的请求：requestKey -> { source, timestamp } */
 const pendingRequests = new Map()

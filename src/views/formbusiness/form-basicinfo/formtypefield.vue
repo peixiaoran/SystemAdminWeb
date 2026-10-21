@@ -175,7 +175,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMTYPEFIELD_PAGE_API,
@@ -415,7 +415,9 @@ const handleDelete = async (row) => {
   }
   try {
     const res = await post(DELETE_FORMTYPEFIELD_API, buildFormData({ fieldId: row.fieldId }))
-    if (res.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       if (fieldList.value.length === 1 && pagination.pageIndex > 1) {
         pagination.pageIndex--
@@ -436,7 +438,7 @@ const buildSubmitPayload = () => emptyToNull({
   fieldNameCn: (form.fieldNameCn || '').trim(),
   fieldNameEn: (form.fieldNameEn || '').trim(),
   sortOrder: form.sortOrder ?? 1
-}, rules)
+}, rules, ['fieldId'])
 
 const handleSubmit = async () => {
   if (!formRef.value) return
@@ -449,7 +451,9 @@ const handleSubmit = async () => {
   try {
     const api = isEdit.value ? UPDATE_FORMTYPEFIELD_API : INSERT_FORMTYPEFIELD_ENTITY_API
     const res = await post(api, buildSubmitPayload())
-    if (res.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false
       getFieldList()

@@ -267,7 +267,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Filter, RefreshLeft, Document } from '@element-plus/icons-vue'
-import service, { post } from '@/utils/request'
+import service, { post, isHandled } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
@@ -695,7 +695,9 @@ const handleVoidForm = async (row) => {
       buildFormData({ formId: String(row.formId) }),
       FORM_DATA_OPTIONS
     )
-    if (isSuccessCode(res?.code)) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccessCode(res?.code)) {
       showMessage(res?.message || t('formbusiness.formpending.voidSuccess'), 'success')
       await getFormList()
     } else {
@@ -726,7 +728,9 @@ const handleWithdrawForm = async (row) => {
       buildFormData({ formId: String(row.formId) }),
       FORM_DATA_OPTIONS
     )
-    if (isSuccessCode(res?.code)) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccessCode(res?.code)) {
       const successMsg = res?.message || res?.data || t('formbusiness.applyhistory.withdrawSuccess')
       showMessage(typeof successMsg === 'string' ? successMsg : t('formbusiness.applyhistory.withdrawSuccess'), 'success')
       await getFormList()

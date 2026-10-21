@@ -117,7 +117,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_USERLABOR_LIST_API,
@@ -259,7 +259,9 @@ const handleDelete = async (row) => {
   const formData = new FormData()
   formData.append('laborId', row.laborId)
   const res = await post(DELETE_USER_LABOR_API.DELETE_USER_LABOR, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchLaborList()
   } else {
@@ -273,8 +275,10 @@ const handleSave = async () => {
 
   submitLoading.value = true
   const api = isEdit.value ? UPDATE_USER_LABOR_API.UPDATE_USER_LABOR : INSERT_USER_LABOR_API.INSERT_USER_LABOR
-  const res = await post(api, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(api, emptyToNull({ ...editForm }, formRules, ['laborId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchLaborList()

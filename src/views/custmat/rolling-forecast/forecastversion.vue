@@ -491,7 +491,7 @@ const handleSave = async () => {
           startDate: editForm.startDate,
           endDate: editForm.endDate
         }
-    const res = await post(api, emptyToNull(payload, formRules))
+    const res = await post(api, emptyToNull(payload, formRules, ['versionId']))
 
     if (isHandled(res)) return
 

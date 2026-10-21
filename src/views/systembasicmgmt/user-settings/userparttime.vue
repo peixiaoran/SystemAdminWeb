@@ -263,7 +263,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import {
   GET_USER_PARTTIME_PAGES_API,
   GET_USER_PARTTIMEENTITY_API,
@@ -738,7 +738,9 @@ const handleDelete = async (row) => {
     old_PartTimeDeptId: row.partTimeDeptId,
     old_PartTimePositionId: row.partTimePositionId
   })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(t('systembasicmgmt.userPartTime.deletePartTimeSuccess'), 'success')
     await fetchUserPartTimePages()
   } else {

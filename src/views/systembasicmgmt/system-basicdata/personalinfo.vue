@@ -1,6 +1,6 @@
 <template>
-  <div class="conventional-table-container">
-    <el-card class="conventional-card">
+  <div class="conventional-table-container personal-page">
+    <el-card class="personal-card">
       <el-form ref="editFormRef"
                :model="editForm"
                :rules="formRules"
@@ -191,16 +191,48 @@
         </div>
       </el-form>
     </el-card>
+
+    <!-- Passkey 管理：浏览器不支持 WebAuthn 时整块隐藏 -->
+    <el-card v-if="passkeySupported" class="passkey-card">
+      <div class="passkey-header">
+        <div>
+          <div class="passkey-title">{{ $t('passkey.sectionTitle') }}</div>
+          <div class="passkey-tip">{{ $t('passkey.sectionTip') }}</div>
+        </div>
+        <el-button type="primary" :icon="Plus" :loading="passkeyAdding" @click="handleAddPasskey">
+          {{ $t('passkey.add') }}
+        </el-button>
+      </div>
+      <div class="passkey-table-wrap">
+      <el-table :data="passkeyList" v-loading="passkeyLoading" border stripe style="width: 100%">
+        <el-table-column prop="deviceName" :label="$t('passkey.deviceName')" min-width="180" show-overflow-tooltip />
+        <el-table-column :label="$t('passkey.createdDate')" min-width="170">
+          <template #default="{ row }">{{ formatPasskeyTime(row.createdDate) }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('passkey.lastUsedDate')" min-width="170">
+          <template #default="{ row }">{{ row.lastUsedDate ? formatPasskeyTime(row.lastUsedDate) : $t('passkey.neverUsed') }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('passkey.operation')" width="160" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link @click="handleRenamePasskey(row)">{{ $t('passkey.rename') }}</el-button>
+            <el-button type="danger" link @click="handleDeletePasskey(row)">{{ $t('passkey.delete') }}</el-button>
+          </template>
+        </el-table-column>
+        <template #empty>{{ $t('common.noData') }}</template>
+      </el-table>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
+import { isPasskeySupported, registerPasskey, promptPasskeyDeviceName } from '@/utils/passkey'
 import { emptyToNull } from '@/utils/payload'
 import { useUserStore } from '@/stores/user'
 import { resolveFileUrl } from '@/utils/fileUrl'
@@ -211,7 +243,8 @@ import {
   GET_USER_POSITION_DROPDOWN_API,
   GET_ROLE_DROPDOWN_API,
   GET_LABOR_TYPE_DROPDOWN_API,
-  UPLOAD_AVATAR_API
+  UPLOAD_AVATAR_API,
+  PASSKEY_API
 } from '@/config/api/systembasicmgmt/system-basicdata/personal'
 
 const { t } = useI18n()
@@ -448,7 +481,9 @@ const handleSave = async () => {
   }
 
   const res = await post(UPDATE_PERSONAL_INFO_API.UPDATE_PERSONAL_INFO, emptyToNull(params, formRules))
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
 
     // 修改过密码需要重新登录
@@ -469,8 +504,88 @@ const handleSave = async () => {
   submitLoading.value = false
 }
 
+/* ---------------- Passkey 管理 ---------------- */
+
+const passkeySupported = isPasskeySupported()
+const passkeyList = ref([])
+const passkeyLoading = ref(false)
+const passkeyAdding = ref(false)
+
+/** 接口返回的是 ISO 时间串，统一显示为 yyyy-MM-dd HH:mm:ss */
+const formatPasskeyTime = (value) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return String(value)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
+
+const fetchPasskeyList = async () => {
+  passkeyLoading.value = true
+  try {
+    const res = await post(PASSKEY_API.GET_LIST, {})
+    if (isHandled(res)) return
+    if (res?.code === 200) {
+      // passkeyId 保持字符串，避免 number 丢精度
+      passkeyList.value = (res.data || []).map((item) => ({ ...item, passkeyId: String(item.passkeyId) }))
+    } else {
+      showMessage(res?.message || t('passkey.loadFailed'))
+    }
+  } finally {
+    passkeyLoading.value = false
+  }
+}
+
+const handleAddPasskey = async () => {
+  if (passkeyAdding.value) return
+  passkeyAdding.value = true
+  try {
+    const result = await registerPasskey()
+    if (result === 'success') await fetchPasskeyList()
+  } finally {
+    passkeyAdding.value = false
+  }
+}
+
+const handleRenamePasskey = async (row) => {
+  const deviceName = await promptPasskeyDeviceName({
+    title: t('passkey.renameTitle'),
+    defaultValue: row.deviceName
+  })
+  if (deviceName === null || deviceName === row.deviceName) return
+  const res = await post(PASSKEY_API.RENAME, { passkeyId: row.passkeyId, deviceName })
+  if (isHandled(res)) return
+  if (res?.code === 200) {
+    showMessage(res.message || t('passkey.renameSuccess'), 'success')
+    await fetchPasskeyList()
+  } else {
+    showMessage(res?.message || t('common.operationFailed'))
+  }
+}
+
+const handleDeletePasskey = async (row) => {
+  try {
+    await ElMessageBox.confirm(t('passkey.deleteConfirm'), t('passkey.deleteTitle'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+      type: 'warning'
+    })
+  } catch {
+    return
+  }
+  const res = await post(PASSKEY_API.DELETE, { passkeyId: row.passkeyId })
+  if (isHandled(res)) return
+  if (res?.code === 200) {
+    showMessage(res.message || t('passkey.deleteSuccess'), 'success')
+    await fetchPasskeyList()
+  } else {
+    showMessage(res?.message || t('common.operationFailed'))
+  }
+}
+
 onMounted(async () => {
   initGenderOptions()
+  if (passkeySupported) fetchPasskeyList()
   await Promise.all([
     fetchPersonalInfo(),
     fetchDepartmentDropdown(),
@@ -484,8 +599,67 @@ onMounted(async () => {
 <style scoped>
 @import '@/assets/styles/conventionalTablePage.css';
 
+/* 页面不滚动、不超出：上方表单按内容撑高，下方 Passkey 卡片占满剩余空间，列表在卡片内滚动 */
+.personal-page {
+  overflow: hidden;
+}
+
+.personal-card {
+  flex: none;
+}
+
+.personal-card :deep(.el-card__body) {
+  padding: 4px 8px 0;
+  background-color: #ffffff;
+}
+
+.passkey-card {
+  flex: 1 1 0;
+  min-height: 180px;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.passkey-card :deep(.el-card__body) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.passkey-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.passkey-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.passkey-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.passkey-tip {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+
 .personal-info-form {
-  padding: 20px;
+  padding: 8px 20px 0;
   background: white;
 }
 
@@ -547,7 +721,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 25px;
+  margin-bottom: 16px;
   align-items: start;
 }
 
@@ -567,8 +741,8 @@ onMounted(async () => {
 .form-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
-  padding-top: 20px;
+  margin-top: 0;
+  padding: 0 0 20px;
 }
 
 @media (max-width: 1200px) {

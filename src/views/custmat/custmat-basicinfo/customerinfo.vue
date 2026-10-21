@@ -351,7 +351,7 @@ const handleSave = async () => {
       customerNameCn: editForm.customerNameCn,
       customerNameEn: editForm.customerNameEn,
       description: editForm.description
-    }, formRules))
+    }, formRules, ['customerId']))
 
     if (isHandled(res)) return
 

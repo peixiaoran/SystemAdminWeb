@@ -6,6 +6,9 @@
 
 export { ENV_MODE, IS_DEV, IS_PROD, BASE_API_URL, API_TIMEOUT, ENABLE_LOGS } from '@/config/api/base'
 
+// 发送 Passkey 绑定邮件API（需登录）
+export const SEND_PASSKEY_BIND_MAIL_API = 'FormBusiness/Forms/SystemAccountRequest/SendPasskeyBindMail'
+
 // 系统下拉框API
 export const GET_SYSTEM_DROP_API = 'FormBusiness/Forms/SystemAccountRequest/GetSystemDrop'
 

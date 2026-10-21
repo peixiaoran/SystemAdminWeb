@@ -217,7 +217,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { useI18n } from 'vue-i18n'
 import { formatApplicantDate, resolveApplicantDate } from '@/utils/formApplicantDate'
 import {
@@ -506,7 +506,9 @@ const handleVoidForm = async (row) => {
   loading.value = true
   try {
     const res = await post(VOIDED_FORM_API, buildFormData({ formId: String(row.formId) }), FORM_DATA_OPTIONS)
-    if (res?.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res?.code === 200) {
       showMessage(res.message || t('formbusiness.formpending.voidSuccess'), 'success')
       await getFormPendingList()
     } else {

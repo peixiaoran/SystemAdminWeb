@@ -120,7 +120,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_CONTROL_PAGE_API,
@@ -228,7 +228,9 @@ const handleDelete = async (row) => {
   }
   try {
     const res = await post(DELETE_CONTROL_API, buildFormData({ controlCode: row.controlCode }))
-    if (res.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       getControlList()
     } else {
@@ -253,7 +255,9 @@ const handleSubmit = async () => {
       controlName: form.controlName,
       description: form.description
     }, rules))
-    if (res.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false
       getControlList()

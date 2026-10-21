@@ -40,6 +40,19 @@ export const PWD_EXPIRATION_UPDATE_API = {
   PWD_EXPIRATION_UPDATE: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserPwdExpiration'
 }
 
+// Passkey 登录（匿名）：先取登录参数，再提交浏览器返回的断言
+export const PASSKEY_LOGIN_API = {
+  OPTIONS: 'SystemBasicMgmt/SystemAuth/Passkey/PasskeyLoginOptions',
+  COMPLETE: 'SystemBasicMgmt/SystemAuth/Passkey/PasskeyLoginComplete'
+}
+
+// Passkey 绑定页（邮件链接进入，匿名，身份由 token 证明）
+export const PASSKEY_BIND_API = {
+  GET_USER_INFO: 'SystemBasicMgmt/SystemAuth/PasskeyBind/GetBindUserInfo',
+  OPTIONS: 'SystemBasicMgmt/SystemAuth/PasskeyBind/PasskeyBindOptions',
+  COMPLETE: 'SystemBasicMgmt/SystemAuth/PasskeyBind/PasskeyBindComplete'
+}
+
 // 用户退出
 export const LOGOUT_API = {
   USER_LOGOUT: 'SystemBasicMgmt/SystemAuth/SysUserOperate/UserLogOut'

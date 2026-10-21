@@ -414,6 +414,13 @@
                 </div>
                 </div>
                 <el-empty v-if="form.systems.length === 0" :image-size="50" :description="t('common.noData')" />
+                <!-- 系统为 Workflow 时，在系统明细下方提供「发送 Passkey 绑定邮件」入口 -->
+                <div v-if="isPasskeyMailVisible" class="passkey-mail-bar">
+                  <el-button type="primary" plain size="small" :disabled="!isStepFieldEditable('PassKeySendEmail')" @click="openPasskeyMailDialog">
+                    {{ t('formbusiness.systemaccountrequest.passkeyMailButton') }}
+                  </el-button>
+                  <span class="passkey-mail-tip">{{ t('formbusiness.systemaccountrequest.passkeyMailTip') }}</span>
+                </div>
               </div>
             </el-form-item>
           </el-col>
@@ -715,6 +722,31 @@
       </template>
     </el-dialog>
 
+    <el-dialog
+      v-model="passkeyMailDialogVisible"
+      :title="t('formbusiness.systemaccountrequest.passkeyMailTitle')"
+      width="560px"
+      append-to-body
+      :close-on-click-modal="false"
+      @closed="resetPasskeyMailForm"
+    >
+      <el-form ref="passkeyMailFormRef" :model="passkeyMailForm" :rules="passkeyMailRules" label-width="120px" @submit.prevent>
+        <el-form-item :label="t('formbusiness.systemaccountrequest.passkeyMailUserNo')" prop="userNo">
+          <el-input v-model="passkeyMailForm.userNo" clearable :disabled="passkeyMailSending" />
+        </el-form-item>
+        <el-form-item :label="t('formbusiness.systemaccountrequest.passkeyMailEmail')" prop="email">
+          <el-input v-model="passkeyMailForm.email" clearable :disabled="passkeyMailSending" @keyup.enter="submitPasskeyMail" />
+        </el-form-item>
+        <div class="passkey-mail-tip">{{ t('formbusiness.systemaccountrequest.passkeyMailTip') }}</div>
+      </el-form>
+      <template #footer>
+        <el-button :disabled="passkeyMailSending" @click="passkeyMailDialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="passkeyMailSending" @click="submitPasskeyMail">
+          {{ t('formbusiness.systemaccountrequest.passkeyMailSend') }}
+        </el-button>
+      </template>
+    </el-dialog>
+
     <WorkflowDrawer
       :visible="workflowDrawerVisible"
       @update:visible="workflowDrawerVisible = $event"
@@ -747,6 +779,7 @@ import {
   INIT_SYSTEMACCOUNTREQUEST_API,
   GET_SYSTEMACCOUNTREQUEST_API,
   SAVE_SYSTEMACCOUNTREQUEST_API,
+  SEND_PASSKEY_BIND_MAIL_API,
   UPLOAD_FILE_API,
   DELETE_FILE_API,
   GET_FULL_REVIEW_FLOW_API,
@@ -1048,7 +1081,6 @@ function removeSystemRow (index) {
 /** 明细增删、选择系统/厂区/权限后自动暂存：跳过必填校验，静默执行，失败不提示 */
 let draftSaveTimer = null
 let draftSaving = false
-let draftSaveQueued = false
 
 function scheduleDraftSave () {
   if (!form.formId) return
@@ -1060,12 +1092,10 @@ async function runDraftSave () {
   if (!form.formId) return
   // 正在手动保存/送审/驳回，或上一次暂存未完成：稍后再试，避免并发覆盖
   if (draftSaving || formActionLoading.value) {
-    draftSaveQueued = true
     scheduleDraftSave()
     return
   }
   draftSaving = true
-  draftSaveQueued = false
   try {
     await saveSystemAccountRequestRequest()
   } catch {
@@ -1124,6 +1154,77 @@ const ROW_FIELD_KEYS = ['System', 'Sites', 'Permissions', 'Rating']
 /** 增删明细行：由 AddDelItem 权限键控制（权限键缺失时与其他栏位一致，默认允许） */
 function isAddDelItemAllowed () {
   return isStepFieldVisible('AddDelItem') && isStepFieldEditable('AddDelItem')
+}
+
+/* ---------------- 发送 Passkey 绑定邮件 ---------------- */
+
+/** 判断明细行的系统是否为 Workflow（按系统编码或名称匹配，不区分大小写） */
+function isWorkflowSystemRow (row) {
+  if (!row.system) return false
+  const code = String(row.system).trim().toLowerCase()
+  if (code === 'workflow') return true
+  const name = systemOptions.value.find((item) => item.code === row.system)?.name || ''
+  return String(name).trim().toLowerCase().startsWith('workflow')
+}
+
+// 权限键 PassKeySendEmail：缺失时默认可见可编辑，由系统菜单权限配置
+const isPasskeyMailVisible = computed(() =>
+  isStepFieldVisible('PassKeySendEmail') && form.systems.some(isWorkflowSystemRow)
+)
+
+const passkeyMailDialogVisible = ref(false)
+const passkeyMailSending = ref(false)
+const passkeyMailFormRef = ref(null)
+const passkeyMailForm = reactive({ userNo: '', email: '' })
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const passkeyMailRules = {
+  userNo: [{ required: true, message: () => t('formbusiness.systemaccountrequest.passkeyMailUserNoRequired'), trigger: 'blur' }],
+  email: [
+    { required: true, message: () => t('formbusiness.systemaccountrequest.passkeyMailEmailRequired'), trigger: 'blur' },
+    { pattern: EMAIL_PATTERN, message: () => t('formbusiness.systemaccountrequest.passkeyMailEmailFormat'), trigger: 'blur' }
+  ]
+}
+
+function resetPasskeyMailForm () {
+  passkeyMailForm.userNo = ''
+  passkeyMailForm.email = ''
+  passkeyMailFormRef.value?.clearValidate()
+}
+
+function openPasskeyMailDialog () {
+  // 默认带入需求人工号与邮箱，IT 可修改
+  passkeyMailForm.userNo = form.requesterUserNo?.trim() || ''
+  passkeyMailForm.email = form.requesterEmail?.trim() || ''
+  passkeyMailDialogVisible.value = true
+}
+
+async function submitPasskeyMail () {
+  if (passkeyMailSending.value) return
+  const valid = await passkeyMailFormRef.value?.validate().catch(() => false)
+  if (!valid) return
+  passkeyMailSending.value = true
+  try {
+    const res = await post(SEND_PASSKEY_BIND_MAIL_API, {
+      userNo: passkeyMailForm.userNo.trim(),
+      email: passkeyMailForm.email.trim()
+    })
+    if (isHandled(res)) return
+    if (isOk(res)) {
+      showFormActionNotice(res.message, 'success')
+      passkeyMailDialogVisible.value = false
+      return
+    }
+    // 404 未找到用户 / 400 邮箱格式 / 429 发送过于频繁 为可预期的业务提示，其余视为失败
+    const code = Number(res?.code)
+    showFormActionNotice(
+      res?.message || t('formbusiness.systemaccountrequest.passkeyMailSendFailed'),
+      [400, 404, 429].includes(code) ? 'warning' : 'error'
+    )
+  } catch {
+    showFormActionNotice(t('formbusiness.systemaccountrequest.passkeyMailSendFailed'), 'error')
+  } finally {
+    passkeyMailSending.value = false
+  }
 }
 
 /** 明细行内容可录入：任一可录入栏位（系统/厂区/权限/评分）可编辑即为 true，用于提交前校验 */
@@ -2755,6 +2856,19 @@ onMounted(async () => {
 .system-card__item :deep(.el-form-item__error) {
   position: static;
   padding-top: 4px;
+}
+
+.passkey-mail-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.passkey-mail-tip {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
 
 .systems-actions {

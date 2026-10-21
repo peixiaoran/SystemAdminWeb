@@ -185,7 +185,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_ROLE_PAGES_API,
@@ -308,8 +308,10 @@ const insertRole = async () => {
     description: editForm.description,
     isEnabled: 1, // 前端不提供“是否启用”开关：新增默认启用
     remark: editForm.remark
-  }, formRules))
-  if (res?.code === 200) {
+  }, formRules, ['roleId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -330,8 +332,10 @@ const updateRole = async () => {
     description: editForm.description,
     isEnabled: editForm.isEnabled, // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
     remark: editForm.remark
-  }, formRules))
-  if (res?.code === 200) {
+  }, formRules, ['roleId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -350,7 +354,9 @@ const deleteRole = async (roleId) => {
   const formData = new FormData()
   formData.append('roleId', roleId)
   const res = await post(DELETE_ROLE_API.DELETE_ROLE, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchRolePages()
   } else {
@@ -476,7 +482,9 @@ const saveModuleConfig = async () => {
     SelectedModuleIds: checkedIds,
     UnSelectedModuleIds: allModuleIds.filter(id => !checkedIds.includes(id))
   })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     moduleDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.moduleConfigSuccess'), 'success')
   } else {
@@ -558,7 +566,9 @@ const saveMenuConfig = async () => {
     moduleId: selectedModuleId.value,
     SelectedMenuIds: [...checkedIds, ...halfCheckedIds]
   })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     menuDialogVisible.value = false
     showMessage(res?.message || t('systembasicmgmt.role.menuConfigSuccess'), 'success')
   } else {

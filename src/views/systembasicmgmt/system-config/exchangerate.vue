@@ -153,7 +153,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_EXCHANGE_RATE_PAGES_API,
@@ -273,7 +273,9 @@ const buildSubmitParams = () => emptyToNull({
 const insertExchangeRate = async () => {
   submitLoading.value = true
   const res = await post(INSERT_EXCHANGE_RATE_API.INSERT_EXCHANGE_RATE, buildSubmitParams())
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchExchangeRatePages()
@@ -286,7 +288,9 @@ const insertExchangeRate = async () => {
 const updateExchangeRate = async () => {
   submitLoading.value = true
   const res = await post(UPDATE_EXCHANGE_RATE_API.UPDATE_EXCHANGE_RATE, buildSubmitParams())
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchExchangeRatePages()
@@ -298,7 +302,9 @@ const updateExchangeRate = async () => {
 
 const deleteExchangeRate = async (exchangeRateId) => {
   const res = await post(DELETE_EXCHANGE_RATE_API.DELETE_EXCHANGE_RATE, { exchangeRateId })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     // 删除的是当前页最后一条时回到上一页，避免停留在空页
     if (exchangeRateList.value.length === 1 && pagination.pageIndex > 1) {

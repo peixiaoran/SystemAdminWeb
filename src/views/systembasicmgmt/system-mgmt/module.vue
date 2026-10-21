@@ -136,7 +136,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_MODULE_PAGES_API,
@@ -252,8 +252,10 @@ const fetchModuleEntity = async (moduleId) => {
 
 const insertModule = async () => {
   submitLoading.value = true
-  const res = await post(INSERT_MODULE_API.INSERT_MODULE, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(INSERT_MODULE_API.INSERT_MODULE, emptyToNull({ ...editForm }, formRules, ['moduleId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -266,8 +268,10 @@ const insertModule = async () => {
 
 const updateModule = async () => {
   submitLoading.value = true
-  const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(UPDATE_MODULE_API.UPDATE_MODULE, emptyToNull({ ...editForm }, formRules, ['moduleId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -286,7 +290,9 @@ const deleteModule = async (moduleId) => {
   const formData = new FormData()
   formData.append('moduleId', moduleId)
   const res = await post(DELETE_MODULE_API.DELETE_MODULE, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchModulePages()
   } else {

@@ -505,7 +505,7 @@
   <script setup>
 import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import { 
   GET_FORMGROUP_DROPDOWN_API
@@ -853,7 +853,9 @@ const submitFieldPermission = async () => {
       isDisabled: row.isDisabled
     }))
     const response = await post(UPDATE_STEP_FIELD_PERMISSION_API, payload)
-    if (response.code === 200) {
+    if (isHandled(response)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (response.code === 200) {
       showMessage(t('formbusiness.workflowstep.updateFieldPermissionSuccess'), 'success')
       fieldPermissionDialogVisible.value = false
     } else {
@@ -892,7 +894,9 @@ const handleOverwriteAllStepFieldPermission = async () => {
       payload,
       { params: { formTypeId: fieldPermissionFormTypeId.value } }
     )
-    if (response.code === 200) {
+    if (isHandled(response)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (response.code === 200) {
       showMessage(response.message || t('formbusiness.workflowstep.overwriteAllFieldPermissionSuccess'), 'success')
       fieldPermissionDialogVisible.value = false
     } else {
@@ -1012,7 +1016,9 @@ const handleDeleteStep = async (step) => {
       buildFormParams({ stepId: step.stepId }),
       FORM_URLENCODED_CONFIG
     )
-    if (response.code === 200) {
+    if (isHandled(response)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (response.code === 200) {
       showMessage(t('formbusiness.workflowstep.deleteStepSuccess'), 'success')
       await getWorkflowStepList()
     } else {
@@ -1315,12 +1321,14 @@ const submitAddStep = async () => {
         stepUserUpsert: { ...addStepForm.stepUserUpsert },
         stepCustomUpsert: { ...addStepForm.stepCustomUpsert },
         stepAddReviewUpsert: { ...addStepForm.stepAddReviewUpsert }
-      }, addStepRules)
+      }, addStepRules, ['stepId'])
       const response = await post(
         isEditMode.value ? UPDATE_WORKFLOWSTEP_API : INSERT_WORKFLOWSTEP_API,
         payload
       )
-      if (response.code === 200) {
+      if (isHandled(response)) {
+        // 错误已由 request.js 提示，无需再按成功处理
+      } else if (response.code === 200) {
         showMessage(
           response.message || (isEditMode.value ? t('formbusiness.workflowstep.editStepSuccess') : t('formbusiness.workflowstep.addStepSuccess')),
           'success'

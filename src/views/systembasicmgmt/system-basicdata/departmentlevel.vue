@@ -119,7 +119,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_DEPARTMENT_LEVEL_LIST_API,
@@ -279,7 +279,9 @@ const handleDelete = async (row) => {
   const formData = new FormData()
   formData.append('deptlevelId', row.departmentLevelId)
   const res = await post(DELETE_DEPARTMENT_LEVEL_API.DELETE_DEPARTMENT_LEVEL, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message || t('systembasicmgmt.departmentLevel.deleteSuccess'), 'success')
     fetchDepartmentLevelList()
   } else {
@@ -296,8 +298,10 @@ const handleSave = async () => {
     const api = editForm.departmentLevelId
       ? UPDATE_DEPARTMENT_LEVEL_API.UPDATE_DEPARTMENT_LEVEL
       : INSERT_DEPARTMENT_LEVEL_API.INSERT_DEPARTMENT_LEVEL
-    const res = await post(api, emptyToNull({ ...editForm }, formRules))
-    if (res?.code === 200) {
+    const res = await post(api, emptyToNull({ ...editForm }, formRules, ['departmentLevelId']))
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res?.code === 200) {
       showMessage(res.message || t('systembasicmgmt.departmentLevel.saveSuccess'), 'success')
       dialogVisible.value = false
       fetchDepartmentLevelList()

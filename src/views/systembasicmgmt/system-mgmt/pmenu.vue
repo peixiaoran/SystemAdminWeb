@@ -161,7 +161,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_PMENU_PAGES_API,
@@ -303,8 +303,10 @@ const fetchPMenuEntity = async (menuId) => {
 
 const insertPMenu = async () => {
   submitLoading.value = true
-  const res = await post(INSERT_PMENU_API.INSERT_PMENU, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(INSERT_PMENU_API.INSERT_PMENU, emptyToNull({ ...editForm }, formRules, ['menuId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -317,8 +319,10 @@ const insertPMenu = async () => {
 
 const updatePMenu = async () => {
   submitLoading.value = true
-  const res = await post(UPDATE_PMENU_API.UPDATE_PMENU, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(UPDATE_PMENU_API.UPDATE_PMENU, emptyToNull({ ...editForm }, formRules, ['menuId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     resetEditForm()
     dialogVisible.value = false
@@ -337,7 +341,9 @@ const deletePMenu = async (menuId) => {
   const formData = new FormData()
   formData.append('menuId', menuId)
   const res = await post(DELETE_PMENU_API.DELETE_PMENU, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchPMenuPages()
   } else {

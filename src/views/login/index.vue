@@ -136,13 +136,27 @@
             <el-button
               type="primary"
               :loading="loading"
-              :disabled="loading || !loginForm.loginNo || !loginForm.password"
+              :disabled="loading || passkeyLoading || !loginForm.loginNo || !loginForm.password"
               class="login-button"
               @click="handleLogin"
             >
               {{ $t('login.loginButton') }}
             </el-button>
           </el-form-item>
+          <div v-if="passkeySupported" class="passkey-login-container">
+            <el-divider class="passkey-divider">{{ $t('login.or') }}</el-divider>
+            <el-button
+              plain
+              :loading="passkeyLoading"
+              :disabled="loading || passkeyLoading"
+              class="passkey-button"
+              @click="handlePasskeyLogin"
+            >
+              <el-icon v-if="!passkeyLoading"><Key /></el-icon>
+              {{ $t('passkey.loginButton') }}
+            </el-button>
+            <div class="passkey-hint">{{ $t('passkey.hint') }}</div>
+          </div>
           <div class="unlock-link-container">
             <el-link 
               type="info" 
@@ -163,18 +177,22 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { post, resetAuthErrorState, isHandled } from '@/utils/request'
-import { LOGIN_API } from '@/config/api/login/api'
+import { LOGIN_API, PASSKEY_LOGIN_API } from '@/config/api/login/api'
+import { startAuthentication } from '@simplewebauthn/browser'
+import { isPasskeySupported, isPasskeyCancelled, promptBindPasskey } from '@/utils/passkey'
 // 人机验证已暂时注释
 // import { TURNSTILE_SITE_KEY } from '@/config/api/base'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
-import { User, Lock } from '@element-plus/icons-vue' // 新增图标引入
+import { User, Lock, Key } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const loginFormRef = ref(null)
 const loading = ref(false)
+const passkeyLoading = ref(false)
+const passkeySupported = isPasskeySupported()
 const credentialInputsReadonly = ref(true)
 const loginNoFieldName = `login_no_${Date.now()}`
 const passwordFieldName = `login_pwd_${Date.now()}`
@@ -318,6 +336,86 @@ const enableCredentialInputs = () => {
   credentialInputsReadonly.value = false
 }
 
+/**
+ * 登录成功后的公共处理（账密登录与 Passkey 登录共用）：保存用户信息、更新登录状态、跳转
+ * @param {object} data 登录接口返回的 data
+ * @param {string} fallbackLoginNo 接口未返回登录账号时的兜底值
+ */
+const applyLoginSuccess = (data, fallbackLoginNo = '') => {
+  resetAuthErrorState()
+  // 设置标题
+  document.title = t('common.systemTitle')
+  // 获取用户store
+  const userStore = useUserStore()
+
+  // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token
+  // 仍保存必要的用户信息用于前端展示与路由守卫（loginNo/userId）
+  userStore.setUserInfo({
+    userId: data?.userId || '',
+    userNameCn: data?.userNameCn || '',
+    userNameEn: data?.userNameEn || '',
+    loginNo: data?.loginNo || fallbackLoginNo || data?.userNo || '',
+    avatar: data?.avatarAddress || data?.AvatarAddress || ''
+  })
+
+  // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页
+  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+  if (redirect && redirect.startsWith('/')) {
+    router.replace(redirect)
+  } else {
+    router.replace('/module-select')
+  }
+}
+
+const showLoginError = (message) => {
+  ElMessage({
+    message,
+    type: 'error',
+    plain: true,
+    showClose: true
+  })
+}
+
+// Passkey 登录：无需输入账号，由浏览器弹出面板选择 Passkey
+const handlePasskeyLogin = async () => {
+  if (passkeyLoading.value || loading.value) return
+  passkeyLoading.value = true
+
+  // 保存语言选择到localStorage
+  localStorage.setItem('language', loginForm.language)
+
+  try {
+    const optionsRes = await post(PASSKEY_LOGIN_API.OPTIONS, {}, { allowLoginBusinessCodes: true })
+    if (isHandled(optionsRes)) return
+    if (optionsRes?.code !== 200) {
+      showLoginError(optionsRes?.message || t('passkey.loginFailed'))
+      return
+    }
+
+    const { sessionId, options } = optionsRes.data || {}
+    const assertion = await startAuthentication({ optionsJSON: options })
+
+    const completeRes = await post(
+      PASSKEY_LOGIN_API.COMPLETE,
+      { sessionId, assertion },
+      { allowLoginBusinessCodes: true }
+    )
+    if (isHandled(completeRes)) return
+    if (completeRes?.code !== 200) {
+      showLoginError(completeRes?.message || t('passkey.loginFailed'))
+      return
+    }
+
+    applyLoginSuccess(completeRes.data)
+  } catch (error) {
+    // 用户在浏览器弹窗里取消：静默
+    if (isPasskeyCancelled(error)) return
+    showLoginError(t('passkey.loginFailed'))
+  } finally {
+    passkeyLoading.value = false
+  }
+}
+
 const handleLogin = () => {
   if (!loginForm.loginNo || !loginForm.password) return
 
@@ -347,32 +445,12 @@ const handleLogin = () => {
       const businessMsg = res?.message ?? ''
       if (res.code === 200) {
         const submittedLoginNo = loginForm.loginNo
-        resetAuthErrorState()
         loginForm.loginNo = ''
         loginForm.password = ''
-        // 设置标题
-        document.title = t('common.systemTitle')
-        // 获取用户store
-        const userStore = useUserStore()
-
-        // Cookie(HttpOnly) 模式：登录成功后由后端写入 Cookie，前端不再接收/保存 token
-        // 仍保存必要的用户信息用于前端展示与路由守卫（loginNo/userId）
-        userStore.setUserInfo({
-          userId: res?.data?.userId || '',
-          userNameCn: res?.data?.userNameCn || '',
-          userNameEn: res?.data?.userNameEn || '',
-          loginNo: res?.data?.loginNo || submittedLoginNo,
-          avatar: res?.data?.avatarAddress || res?.data?.AvatarAddress || ''
-        })
-
-        // 企业标准：优先按 ?redirect= 回跳，否则去模块选择页
-        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
-        if (redirect && redirect.startsWith('/')) {
-          router.replace(redirect)
-        } else {
-          router.replace('/module-select')
-        }
+        applyLoginSuccess(res?.data, submittedLoginNo)
         loading.value = false
+        // 账密登录成功后引导绑定 Passkey（Passkey 登录不弹）
+        promptBindPasskey()
       } else if (res.code === 406) {
         // 账号不存在（UserNotFound）：留在登录页重试，token 已被消费，换新的
         // resetTurnstile()
@@ -703,6 +781,29 @@ const handleLogin = () => {
 
 .login-form :deep(.el-form-item:has(.turnstile-container) .el-form-item__content) {
   justify-content: stretch;
+}
+
+.passkey-login-container {
+  width: 100%;
+}
+
+.passkey-divider {
+  margin: 4px 0 16px;
+}
+
+.passkey-button {
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.passkey-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #909399;
+  text-align: center;
 }
 
 .unlock-link-container {

@@ -71,6 +71,11 @@ export const UPLOAD_AVATAR_INSERT_API = {
   UPLOAD_AVATAR_INSERT: 'SystemBasicMgmt/SystemBasicData/UserInfo/UploadAvatarInsert'
 }
 
+// 发送 Passkey 绑定邮件API（FromForm: userId）
+export const SEND_PASSKEY_BIND_MAIL_API = {
+  SEND_PASSKEY_BIND_MAIL: 'SystemBasicMgmt/SystemBasicData/UserInfo/SendPasskeyBindMail'
+}
+
 // 导出用户ExcelAPI
 export const EXPORT_USERS_EXCEL_API = {
   EXPORT_USERS_EXCEL: 'SystemBasicMgmt/SystemBasicData/UserInfo/ExportUserExcel'

@@ -220,7 +220,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMGROUP_DROPDOWN_API,
@@ -613,7 +613,9 @@ const handleSubmit = async () => {
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
     const failKey    = isEdit ? 'editFailed'  : 'addFailed'
     const res = await post(api, emptyToNull(params, dialogFormRules))
-    if (isSuccess(res.code)) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccess(res.code)) {
       showMessage(res.message || t(`formbusiness.workflowrulestep.${successKey}`), 'success')
       dialogVisible.value = false
       if (dialogForm.ruleId === searchForm.ruleId) await getRuleStepList()
@@ -644,7 +646,9 @@ const handleDelete = async (row) => {
       buildFormData({ ruleId: row.ruleId, currentStepId: row.currentStepId }),
       FORM_DATA_OPTIONS
     )
-    if (isSuccess(res.code)) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccess(res.code)) {
       showMessage(res.message || t('formbusiness.workflowrulestep.deleteSuccess'), 'success')
       await getRuleStepList()
     } else {

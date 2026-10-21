@@ -171,7 +171,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_DEPARTMENT_TREE_API,
@@ -448,7 +448,9 @@ const handleDelete = async (row) => {
   const formData = new FormData()
   formData.append('deptId', row.departmentId)
   const res = await post(DELETE_DEPARTMENT_API.DELETE_DEPARTMENT, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchDepartmentTree()
   } else {
@@ -483,8 +485,10 @@ const handleSave = async () => {
   }
 
   const api = isEdit.value ? UPDATE_DEPARTMENT_API.UPDATE_DEPARTMENT : INSERT_DEPARTMENT_API.INSERT_DEPARTMENT
-  const res = await post(api, emptyToNull(params, formRules))
-  if (res?.code === 200) {
+  const res = await post(api, emptyToNull(params, formRules, ['departmentId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchDepartmentTree()

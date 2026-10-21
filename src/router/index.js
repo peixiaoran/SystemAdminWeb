@@ -47,6 +47,13 @@ const constantRoutes = [
     meta: { title: 'route.unlock' }
   },
   {
+    // Passkey 绑定页：邮件链接进入，无需登录（不设置 requiresAuth 即免登录白名单）
+    path: '/passkey-bind',
+    name: 'PasskeyBind',
+    component: () => import('../views/passkey-bind/index.vue'),
+    meta: { title: 'route.passkeyBind', noTag: true }
+  },
+  {
     path: '/password-expiration',
     name: 'PasswordExpiration',
     component: () => import('../views/password-expiration/index.vue'),
@@ -236,7 +243,7 @@ const pmenuRoutes = [
             }
           },
           {
-            path: 'personal',
+            path: 'personalinfo',
             name: 'Personal',
             component: () => import('../views/systembasicmgmt/system-basicdata/personalinfo.vue'),
             meta: { 

@@ -709,7 +709,7 @@ const handleSave = async () => {
       lotControl: editForm.lotControl,
       status: editForm.status ? 1 : 0,
       remark: editForm.remark
-    }, formRules))
+    }, formRules, ['partNumberId']))
 
     if (isHandled(res)) return
 

@@ -545,7 +545,7 @@ const handleSave = async () => {
       effectiveFrom: editForm.effectiveFrom,
       effectiveTo: editForm.effectiveTo,
       status: editForm.status
-    }, formRules))
+    }, formRules, ['mappingId']))
 
     if (isHandled(res)) return
 

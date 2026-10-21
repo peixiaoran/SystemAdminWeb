@@ -530,7 +530,7 @@ const handleSave = async () => {
       specification: editForm.specification,
       unit: editForm.unit,
       status: editForm.status ? 1 : 0
-    }, formRules))
+    }, formRules, ['partNumberId']))
 
     if (isHandled(res)) return
 

@@ -47,3 +47,12 @@ export const GET_EMPLOYMENT_TYPE_DROPDOWN_API = {
 export const GET_LABOR_TYPE_DROPDOWN_API = {
   GET_LABOR_TYPE_DROPDOWN: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetLaborDrop'
 }
+
+// Passkey 管理API（需登录）
+export const PASSKEY_API = {
+  REGISTER_OPTIONS: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/PasskeyRegisterOptions',
+  REGISTER_COMPLETE: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/PasskeyRegisterComplete',
+  GET_LIST: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/GetPasskeyList',
+  RENAME: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/RenamePasskey',
+  DELETE: 'SystemBasicMgmt/SystemBasicData/PersonalInfo/DeletePasskey'
+}

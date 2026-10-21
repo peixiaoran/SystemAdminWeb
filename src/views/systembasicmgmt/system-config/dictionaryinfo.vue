@@ -156,7 +156,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_DICTIONARY_PAGES_API,
@@ -318,7 +318,9 @@ const buildSubmitParams = () => emptyToNull({
 const insertDictionary = async () => {
   submitLoading.value = true
   const res = await post(INSERT_DICTIONARY_API.INSERT_DICTIONARY, buildSubmitParams())
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchDictionaryPages()
@@ -331,7 +333,9 @@ const insertDictionary = async () => {
 const updateDictionary = async () => {
   submitLoading.value = true
   const res = await post(UPDATE_DICTIONARY_API.UPDATE_DICTIONARY, { dicId: editForm.dicId, ...buildSubmitParams() })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchDictionaryPages()
@@ -343,7 +347,9 @@ const updateDictionary = async () => {
 
 const deleteDictionary = async (dicId) => {
   const res = await post(DELETE_DICTIONARY_API.DELETE_DICTIONARY, { dicId })
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     // 删除的是当前页最后一条时回到上一页，避免停留在空页
     if (dictionaryList.value.length === 1 && pagination.pageIndex > 1) {

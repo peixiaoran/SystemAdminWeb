@@ -165,7 +165,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMTYPE_PAGE_API,
@@ -349,7 +349,9 @@ const handleDelete = async (row) => {
   }
   try {
     const res = await post(DELETE_FORMTYPE_ENTITY_API, buildFormData({ fromTypeId: row.formTypeId }))
-    if (res.code === 200) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       getFormTypeList()
     } else {
@@ -381,8 +383,10 @@ const handleSubmit = async () => {
       descriptionEn:  form.descriptionEn,
       reviewPath:     form.reviewPath,
       viewPath:       form.viewPath
-    }, rules))
-    if (res.code === 200) {
+    }, rules, ['formTypeId']))
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (res.code === 200) {
       showMessage(res.message, 'success')
       dialogVisible.value = false
       getFormTypeList()

@@ -215,7 +215,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_FORMGROUP_DROPDOWN_API,
@@ -520,8 +520,10 @@ const handleSubmit = async () => {
     const api        = isEdit ? UPDATE_WORKFLOWRULE_API : INSERT_WORKFLOWRULE_API
     const successKey = isEdit ? 'editSuccess' : 'addSuccess'
     const failKey    = isEdit ? 'editFailed'  : 'addFailed'
-    const res = await post(api, emptyToNull(params, dialogFormRules))
-    if (isSuccess(res.code)) {
+    const res = await post(api, emptyToNull(params, dialogFormRules, ['ruleId']))
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccess(res.code)) {
       showMessage(res.message || t(`formbusiness.workflowrule.${successKey}`), 'success')
       dialogVisible.value = false
       if (dialogForm.formTypeId === searchForm.formTypeId) await getRuleList()
@@ -548,7 +550,9 @@ const handleDelete = async (row) => {
   loading.value = true
   try {
     const res = await post(DELETE_WORKFLOWRULE_API, buildFormData({ ruleId: row.ruleId }), FORM_DATA_OPTIONS)
-    if (isSuccess(res.code)) {
+    if (isHandled(res)) {
+      // 错误已由 request.js 提示，无需再按成功处理
+    } else if (isSuccess(res.code)) {
       showMessage(res.message || t('formbusiness.workflowrule.deleteSuccess'), 'success')
       if (ruleList.value.length === 1 && pagination.pageIndex > 1) pagination.pageIndex--
       await getRuleList()

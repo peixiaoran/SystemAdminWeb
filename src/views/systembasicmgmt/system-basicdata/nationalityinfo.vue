@@ -102,7 +102,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
-import { post } from '@/utils/request'
+import { post, isHandled } from '@/utils/request'
 import { emptyToNull } from '@/utils/payload'
 import {
   GET_NATIONALITY_LIST_API,
@@ -239,7 +239,9 @@ const handleDelete = async (row) => {
   const formData = new FormData()
   formData.append('nationalityId', row.nationalityId)
   const res = await post(DELETE_NATIONALITY_API.DELETE_NATIONALITY, formData)
-  if (res?.code === 200) {
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     fetchNationalityList()
   } else {
@@ -255,8 +257,10 @@ const handleSave = async () => {
   const api = editForm.nationalityId
     ? UPDATE_NATIONALITY_API.UPDATE_NATIONALITY
     : INSERT_NATIONALITY_API.INSERT_NATIONALITY
-  const res = await post(api, emptyToNull({ ...editForm }, formRules))
-  if (res?.code === 200) {
+  const res = await post(api, emptyToNull({ ...editForm }, formRules, ['nationalityId']))
+  if (isHandled(res)) {
+    // 错误已由 request.js 提示，无需再按成功处理
+  } else if (res?.code === 200) {
     showMessage(res.message, 'success')
     dialogVisible.value = false
     fetchNationalityList()
