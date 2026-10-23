@@ -1625,6 +1625,8 @@ export default {
       siteRequired: '请选择厂区',
       loginFailed: '登录失败',
       or: '或',
+      usePasswordLogin: '使用账号密码登录',
+      usePasskeyLogin: '返回 Passkey 登录',
       loginFailedTip: '登录请求失败，请稍后重试',
       passwordExpired: '密码已过期，即将跳转到密码修改页面',
       accountLocked: '账户已被锁定，即将跳转到解锁页面',

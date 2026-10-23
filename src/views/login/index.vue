@@ -66,7 +66,7 @@
           autocomplete="new-password"
           @submit.prevent
         >
-          <el-form-item prop="loginNo">
+          <el-form-item v-if="showPasswordLogin" prop="loginNo">
             <el-input
               v-model="loginForm.loginNo"
               :placeholder="$t('login.usernamePlaceholder')"
@@ -89,7 +89,7 @@
             </el-input>
           </el-form-item>
           
-          <el-form-item prop="password">
+          <el-form-item v-if="showPasswordLogin" prop="password">
             <el-input
               v-model="loginForm.password"
               type="password"
@@ -132,7 +132,8 @@
           </el-form-item>
           -->
 
-          <el-form-item>
+          <!-- 账密登录（选择“使用账号密码登录”后显示；浏览器不支持 Passkey 时直接显示） -->
+          <el-form-item v-if="showPasswordLogin">
             <el-button
               type="primary"
               :loading="loading"
@@ -143,19 +144,26 @@
               {{ $t('login.loginButton') }}
             </el-button>
           </el-form-item>
-          <div v-if="passkeySupported" class="passkey-login-container">
-            <el-divider class="passkey-divider">{{ $t('login.or') }}</el-divider>
+
+          <!-- Passkey 登录（默认） -->
+          <div v-else class="passkey-login-container">
             <el-button
-              plain
+              type="primary"
               :loading="passkeyLoading"
               :disabled="loading || passkeyLoading"
-              class="passkey-button"
+              class="login-button passkey-main-button"
               @click="handlePasskeyLogin"
             >
               <el-icon v-if="!passkeyLoading"><Key /></el-icon>
               {{ $t('passkey.loginButton') }}
             </el-button>
             <div class="passkey-hint">{{ $t('passkey.hint') }}</div>
+          </div>
+
+          <div v-if="passkeySupported" class="switch-mode-container">
+            <el-link type="primary" :disabled="loading || passkeyLoading" @click="switchLoginMode">
+              {{ showPasswordLogin ? $t('login.usePasskeyLogin') : $t('login.usePasswordLogin') }}
+            </el-link>
           </div>
           <div class="unlock-link-container">
             <el-link 
@@ -193,6 +201,9 @@ const loginFormRef = ref(null)
 const loading = ref(false)
 const passkeyLoading = ref(false)
 const passkeySupported = isPasskeySupported()
+// 默认 Passkey 登录；用户主动切换后才显示账密表单。浏览器不支持 Passkey 时只能账密登录
+const loginMode = ref(passkeySupported ? 'passkey' : 'password')
+const showPasswordLogin = computed(() => loginMode.value === 'password')
 const credentialInputsReadonly = ref(true)
 const loginNoFieldName = `login_no_${Date.now()}`
 const passwordFieldName = `login_pwd_${Date.now()}`
@@ -329,6 +340,15 @@ const handleLanguageChange = (value) => {
 // 跳转到解锁页面
 const handleUnlockAccount = () => {
   router.push('/unlock')
+}
+
+const switchLoginMode = () => {
+  loginMode.value = showPasswordLogin.value ? 'passkey' : 'password'
+  // 切换回 Passkey 时清掉已输入的账密，避免残留
+  if (!showPasswordLogin.value) {
+    loginForm.loginNo = ''
+    loginForm.password = ''
+  }
 }
 
 // 移除了复杂的输入框焦点处理逻辑，简化用户输入体验
@@ -787,15 +807,14 @@ const handleLogin = () => {
   width: 100%;
 }
 
-.passkey-divider {
-  margin: 4px 0 16px;
+.passkey-main-button {
+  margin-top: 0;
 }
 
-.passkey-button {
+.switch-mode-container {
   width: 100%;
-  height: 42px;
-  border-radius: 12px;
-  font-size: 15px;
+  text-align: center;
+  margin-top: 16px;
 }
 
 .passkey-hint {

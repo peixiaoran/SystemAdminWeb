@@ -1693,6 +1693,8 @@ export default {
     siteRequired: 'Please select site',
     loginFailed: 'Login Failed',
       or: 'or',
+      usePasswordLogin: 'Sign in with account and password',
+      usePasskeyLogin: 'Back to Passkey sign-in',
       loginFailedTip: 'Login request failed, please try again later',
       passwordExpired: 'Password has expired, redirecting to password change page',
       accountLocked: 'Account has been locked, redirecting to unlock page',
