@@ -36,8 +36,8 @@
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item :label="$t('custmat.companynumber.specifications')">
-              <el-input v-model="filters.specifications" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputSpecifications')" />
+            <el-form-item :label="$t('custmat.companynumber.specification')">
+              <el-input v-model="filters.specification" clearable style="width:100%" :placeholder="$t('custmat.companynumber.pleaseInputSpecification')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.partType')">
               <el-select v-model="filters.partType" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
@@ -180,10 +180,10 @@
                         style="width:100%"
                         :placeholder="$t('custmat.companynumber.pleaseInputPartNameEn')" />
             </el-form-item>
-            <el-form-item :label="$t('custmat.companynumber.specifications')" prop="specifications">
-              <el-input v-model="editForm.specifications"
+            <el-form-item :label="$t('custmat.companynumber.specification')" prop="specification">
+              <el-input v-model="editForm.specification"
                         style="width:100%"
-                        :placeholder="$t('custmat.companynumber.pleaseInputSpecifications')" />
+                        :placeholder="$t('custmat.companynumber.pleaseInputSpecification')" />
             </el-form-item>
           </div>
           <div class="form-row">
@@ -236,18 +236,6 @@
                            :label="item.sourceTypeName"
                            :value="item.sourceType" />
               </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('custmat.companynumber.manufacturer')" prop="manufacturer">
-              <el-input v-model="editForm.manufacturer"
-                        style="width:100%"
-                        :placeholder="$t('custmat.companynumber.pleaseInputManufacturer')" />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item :label="$t('custmat.companynumber.manufacturerNumber')" prop="manufacturerNumber">
-              <el-input v-model="editForm.manufacturerNumber"
-                        style="width:100%"
-                        :placeholder="$t('custmat.companynumber.pleaseInputManufacturerNumber')" />
             </el-form-item>
             <el-form-item :label="$t('custmat.companynumber.lotControl')" prop="lotControl">
               <el-switch v-model="editForm.lotControl" />
@@ -371,7 +359,7 @@ const pagination = reactive({
 const defaultFilters = () => ({
   partNumber: '',
   partName: '',
-  specifications: '',
+  specification: '',
   partType: '',
   category: '',
   sourceType: '',
@@ -391,17 +379,15 @@ const editForm = reactive({
   partNumberId: '',
   partNumber: '',
   partNameCn: '',
-  partNameEn: null,
-  specifications: null,
+  partNameEn: '',
+  specification: '',
   partType: '',
   category: '',
-  model: null,
-  drawingNumber: null,
-  version: null,
+  model: '',
+  drawingNumber: '',
+  version: '',
   unit: '',
   sourceType: '',
-  manufacturer: null,
-  manufacturerNumber: null,
   lotControl: true,
   status: true,
   remark: null
@@ -413,6 +399,21 @@ const formRules = {
   ],
   partNameCn: [
     { required: true, message: () => t('custmat.companynumber.pleaseInputPartNameCn'), trigger: 'blur' }
+  ],
+  partNameEn: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputPartNameEn'), trigger: 'blur' }
+  ],
+  specification: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputSpecification'), trigger: 'blur' }
+  ],
+  model: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputModel'), trigger: 'blur' }
+  ],
+  drawingNumber: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputDrawingNumber'), trigger: 'blur' }
+  ],
+  version: [
+    { required: true, message: () => t('custmat.companynumber.pleaseInputVersion'), trigger: 'blur' }
   ],
   partType: [
     { required: true, message: () => t('common.pleaseSelect'), trigger: 'change' }
@@ -441,7 +442,7 @@ const showApiError = (res, fallbackKey) => {
 const buildQueryParams = () => ({
   partNumber: filters.partNumber,
   partName: filters.partName,
-  specifications: filters.specifications,
+  specification: filters.specification,
   partType: filters.partType,
   category: filters.category,
   sourceType: filters.sourceType,
@@ -546,17 +547,15 @@ const resetEditForm = () => {
     partNumberId: '',
     partNumber: '',
     partNameCn: '',
-    partNameEn: null,
-    specifications: null,
+    partNameEn: '',
+    specification: '',
     partType: '',
     category: '',
-    model: null,
-    drawingNumber: null,
-    version: null,
+    model: '',
+    drawingNumber: '',
+    version: '',
     unit: '',
     sourceType: '',
-    manufacturer: null,
-    manufacturerNumber: null,
     lotControl: true,
     status: true,
     remark: null
@@ -623,7 +622,7 @@ const handleEdit = async (row) => {
         partNumber: data.partNumber,
         partNameCn: data.partNameCn,
         partNameEn: data.partNameEn,
-        specifications: data.specifications,
+        specification: data.specification,
         partType: data.partType,
         category: data.category,
         model: data.model,
@@ -631,8 +630,6 @@ const handleEdit = async (row) => {
         version: data.version,
         unit: data.unit,
         sourceType: data.sourceType,
-        manufacturer: data.manufacturer,
-        manufacturerNumber: data.manufacturerNumber,
         lotControl: Number(data.lotControl) === 1,
         status: Number(data.status) === 1,
         remark: data.remark
@@ -696,7 +693,7 @@ const handleSave = async () => {
       partNumber: editForm.partNumber,
       partNameCn: editForm.partNameCn,
       partNameEn: editForm.partNameEn,
-      specifications: editForm.specifications,
+      specification: editForm.specification,
       partType: editForm.partType,
       category: editForm.category,
       model: editForm.model,
@@ -704,8 +701,6 @@ const handleSave = async () => {
       version: editForm.version,
       unit: editForm.unit,
       sourceType: editForm.sourceType,
-      manufacturer: editForm.manufacturer,
-      manufacturerNumber: editForm.manufacturerNumber,
       lotControl: editForm.lotControl,
       status: editForm.status ? 1 : 0,
       remark: editForm.remark

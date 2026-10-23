@@ -99,8 +99,8 @@
             <el-form-item />
           </div>
           <div class="form-row full-width">
-            <el-form-item :label="$t('systembasicmgmt.remark')">
-              <el-input v-model="editForm.remark" type="textarea" :rows="3" style="width:100%" />
+            <el-form-item :label="$t('systembasicmgmt.role.description')">
+              <el-input v-model="editForm.description" type="textarea" :rows="3" style="width:100%" />
             </el-form-item>
           </div>
           <!-- 是否启用：按企业标准化需求去掉该字段的前端功能（不展示/不允许编辑） -->
@@ -235,8 +235,7 @@ const editForm = reactive({
   roleNameEn: '',
   description: '',
   // 是否启用：前端不提供编辑能力，仍保留字段用于兼容后端（新增默认启用、编辑沿用原值）
-  isEnabled: 1,
-  remark: ''
+  isEnabled: 1
 })
 
 const formRules = {
@@ -293,8 +292,7 @@ const fetchRoleEntity = async (roleId) => {
     roleNameCn: res.data.roleNameCn || '',
     roleNameEn: res.data.roleNameEn || '',
     description: res.data.description || '',
-    isEnabled: res.data.isEnabled,
-    remark: res.data.remark || ''
+    isEnabled: res.data.isEnabled
   })
 }
 
@@ -306,8 +304,7 @@ const insertRole = async () => {
     roleNameCn: editForm.roleNameCn,
     roleNameEn: editForm.roleNameEn,
     description: editForm.description,
-    isEnabled: 1, // 前端不提供“是否启用”开关：新增默认启用
-    remark: editForm.remark
+    isEnabled: 1 // 前端不提供“是否启用”开关：新增默认启用
   }, formRules, ['roleId']))
   if (isHandled(res)) {
     // 错误已由 request.js 提示，无需再按成功处理
@@ -330,8 +327,7 @@ const updateRole = async () => {
     roleNameCn: editForm.roleNameCn,
     roleNameEn: editForm.roleNameEn,
     description: editForm.description,
-    isEnabled: editForm.isEnabled, // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
-    remark: editForm.remark
+    isEnabled: editForm.isEnabled // 前端不提供“是否启用”开关：编辑时沿用后端原值，避免无意变更
   }, formRules, ['roleId']))
   if (isHandled(res)) {
     // 错误已由 request.js 提示，无需再按成功处理
@@ -380,8 +376,7 @@ const resetEditForm = () => {
     roleNameCn: '',
     roleNameEn: '',
     description: '',
-    isEnabled: 1,
-    remark: ''
+    isEnabled: 1
   })
 }
 

@@ -493,12 +493,22 @@ const handlePageChange = () => {
   fetchSMenuPages()
 }
 
+/**
+ * el-select 在 v-model 被程序性重置时会异步触发 change 校验，
+ * 必须等这一轮更新完成后再清除，否则必填红字会在加载期间残留
+ */
+const clearStaleValidate = async () => {
+  await nextTick()
+  editFormRef.value?.clearValidate()
+}
+
 const handleAdd = async () => {
   resetEditForm()
   editForm.menuId = NEW_MENU_ID
   dialogTitle.value = t('systembasicmgmt.smenu.addSMenu')
   dialogVisible.value = true
   dialogLoading.value = true
+  await clearStaleValidate()
   try {
     const firstEnabledModule = await fetchModuleDropdown()
     if (firstEnabledModule) {
@@ -520,6 +530,7 @@ const handleEdit = async (row) => {
   dialogTitle.value = t('systembasicmgmt.smenu.editSMenu')
   dialogVisible.value = true
   dialogLoading.value = true
+  await clearStaleValidate()
   try {
     await fetchModuleDropdown()
   } catch {
@@ -560,7 +571,7 @@ const handleSave = async () => {
 const handleDialogClose = () => {
   resetEditForm()
   dialogLoading.value = false
-  editFormRef.value?.clearValidate()
+  clearStaleValidate()
 }
 
 onMounted(async () => {

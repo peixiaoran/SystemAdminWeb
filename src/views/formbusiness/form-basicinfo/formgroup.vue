@@ -38,7 +38,6 @@
           <el-table-column type="index" :label="$t('formbusiness.formgroup.index')" width="70" align="center" fixed />
           <el-table-column prop="formGroupNameCn" :label="$t('formbusiness.formgroup.formGroupNameCn')" align="left" min-width="150" />
           <el-table-column prop="formGroupNameEn" :label="$t('formbusiness.formgroup.formGroupNameEn')" align="left" min-width="150" />
-          <el-table-column prop="description" :label="$t('formbusiness.formgroup.description')" align="left" min-width="300" />
           <el-table-column :label="$t('common.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">
@@ -107,17 +106,6 @@
             </el-form-item>
             <el-form-item />
           </div>
-          <div class="form-row full-width">
-            <el-form-item :label="$t('formbusiness.formgroup.description')" prop="description">
-              <el-input
-                v-model="form.description"
-                :placeholder="$t('formbusiness.formgroup.pleaseInputDescription')"
-                style="width:100%"
-                type="textarea"
-                :rows="3"
-              />
-            </el-form-item>
-          </div>
         </el-form>
       </div>
       <template #footer>
@@ -172,8 +160,7 @@ const form = reactive({
   formGroupId:     '',
   formGroupNameCn: '',
   formGroupNameEn: '',
-  sortOrder:       1,
-  description:     ''
+  sortOrder:       1
 })
 
 const rules = {
@@ -230,7 +217,6 @@ const resetForm = () => {
   form.formGroupNameCn = ''
   form.formGroupNameEn = ''
   form.sortOrder       = 1
-  form.description     = ''
 }
 
 const handleAdd = () => {
@@ -252,7 +238,6 @@ const handleEdit = async (row) => {
       form.formGroupNameCn = d.formGroupNameCn
       form.formGroupNameEn = d.formGroupNameEn
       form.sortOrder       = d.sortOrder
-      form.description     = d.description
     } else {
       showMessage(res.message, Number(res?.code) === 400 ? 'warning' : 'error')
       dialogVisible.value = false
@@ -306,8 +291,7 @@ const handleSubmit = async () => {
       formGroupId:     form.formGroupId,
       formGroupNameCn: form.formGroupNameCn,
       formGroupNameEn: form.formGroupNameEn,
-      sortOrder:       form.sortOrder,
-      description:     form.description
+      sortOrder:       form.sortOrder
     }, rules, ['formGroupId']))
     if (isHandled(res)) {
       // 错误已由 request.js 提示，无需再按成功处理

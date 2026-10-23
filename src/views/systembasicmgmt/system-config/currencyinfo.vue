@@ -35,7 +35,6 @@
           <el-table-column prop="currencyCode" :label="$t('systembasicmgmt.currencyInfo.currencyCode')" align="center" min-width="120" />
           <el-table-column prop="currencyNameCn" :label="$t('systembasicmgmt.currencyInfo.currencyNameCn')" align="left" min-width="150" />
           <el-table-column prop="currencyNameEn" :label="$t('systembasicmgmt.currencyInfo.currencyNameEn')" align="left" min-width="150" />
-          <el-table-column prop="remark" :label="$t('systembasicmgmt.currencyInfo.remark')" align="left" min-width="200" />
           <el-table-column :label="$t('systembasicmgmt.currencyInfo.operation')" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
@@ -93,11 +92,6 @@
             <!-- 占位项：保持与上方两列布局对齐 -->
             <el-form-item />
           </div>
-          <div class="form-row full-width">
-            <el-form-item :label="$t('systembasicmgmt.currencyInfo.remark')" prop="remark">
-              <el-input v-model="editForm.remark" type="textarea" :rows="4" style="width:100%" />
-            </el-form-item>
-          </div>
         </el-form>
       </div>
       <template #footer>
@@ -150,8 +144,7 @@ const editForm = reactive({
   currencyId: '',
   currencyCode: '',
   currencyNameCn: '',
-  currencyNameEn: '',
-  remark: ''
+  currencyNameEn: ''
 })
 
 const formRules = {
@@ -207,8 +200,7 @@ const insertCurrency = async () => {
   const res = await post(INSERT_CURRENCY_API.INSERT_CURRENCY, emptyToNull({
     currencyCode: editForm.currencyCode,
     currencyNameCn: editForm.currencyNameCn,
-    currencyNameEn: editForm.currencyNameEn,
-    remark: editForm.remark
+    currencyNameEn: editForm.currencyNameEn
   }, formRules))
   if (isHandled(res)) {
     // 错误已由 request.js 提示，无需再按成功处理
@@ -228,8 +220,7 @@ const updateCurrency = async () => {
     currencyId: editForm.currencyId,
     currencyCode: editForm.currencyCode,
     currencyNameCn: editForm.currencyNameCn,
-    currencyNameEn: editForm.currencyNameEn,
-    remark: editForm.remark
+    currencyNameEn: editForm.currencyNameEn
   }, formRules))
   if (isHandled(res)) {
     // 错误已由 request.js 提示，无需再按成功处理
@@ -273,8 +264,7 @@ const resetEditForm = () => {
     currencyId: '',
     currencyCode: '',
     currencyNameCn: '',
-    currencyNameEn: '',
-    remark: ''
+    currencyNameEn: ''
   })
 }
 

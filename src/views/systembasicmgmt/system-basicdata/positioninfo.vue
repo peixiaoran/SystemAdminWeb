@@ -29,10 +29,12 @@
     <el-dialog v-model="dialogVisible"
                :title="$t('systembasicmgmt.positionInfo.editPosition')"
                width="50%"
-               :close-on-click-modal="false">
-      <div v-loading="dialogLoading" :element-loading-text="$t('common.loading')">
-        <el-form v-if="editForm"
-                 :inline="true"
+               :close-on-click-modal="false"
+               :append-to-body="true"
+               :lock-scroll="true"
+               @close="resetEditForm">
+      <div v-loading="dialogLoading">
+        <el-form :inline="true"
                  :model="editForm"
                  label-width="120px"
                  class="dialog-form"
@@ -73,10 +75,6 @@
             </el-form-item>
           </div>
         </el-form>
-
-        <div v-else class="no-data-tip">
-          {{ $t('common.noData') }}
-        </div>
       </div>
 
       <template #footer>
@@ -87,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post } from '@/utils/request'
@@ -102,7 +100,21 @@ const loading = ref(false)
 const dialogLoading = ref(false)
 const positionList = ref([])
 const dialogVisible = ref(false)
-const editForm = ref(null)
+const editForm = reactive({
+  positionNo: '',
+  positionNameCn: '',
+  positionNameEn: '',
+  positionDescription: ''
+})
+
+const resetEditForm = () => {
+  Object.assign(editForm, {
+    positionNo: '',
+    positionNameCn: '',
+    positionNameEn: '',
+    positionDescription: ''
+  })
+}
 
 const showMessage = (message, type = 'error') => {
   ElMessage({ message, type, plain: true, showClose: true })
@@ -127,14 +139,14 @@ const fetchPositionList = async () => {
 }
 
 const handleEdit = async (row) => {
+  resetEditForm()
   dialogLoading.value = true
   dialogVisible.value = true
-  editForm.value = null
   const formData = new FormData()
   formData.append('positionId', row.positionId)
   const res = await post(GET_USER_POSITION_ENTITY_API.GET_USER_POSITION_ENTITY, formData)
   if (res?.code === 200) {
-    editForm.value = { ...res.data }
+    Object.assign(editForm, res.data)
   } else {
     showApiError(res)
     dialogVisible.value = false

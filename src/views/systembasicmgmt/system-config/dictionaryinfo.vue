@@ -423,6 +423,9 @@ const handleEdit = async (row) => {
   dialogTitle.value = t('systembasicmgmt.dictionaryInfo.editDictionary')
   dialogVisible.value = true
   dialogLoading.value = true
+  // el-select 被重置会异步触发 change 校验，等这一轮更新完再清，避免加载期间残留必填红字
+  await nextTick()
+  editFormRef.value?.clearValidate()
   const dictionaryData = await fetchDictionaryEntity(row.dicId)
   if (!dictionaryData) {
     dialogVisible.value = false

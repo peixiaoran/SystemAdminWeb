@@ -220,36 +220,6 @@ export default {
          getFailed: '获取数据失败'
        },
 
-    // 控件信息页面专用
-    controlinfo: {
-        ariaFilterLabel: '控件信息筛选',
-        ariaEditLabel: '控件信息编辑',
-        controlCode: '控件代码',
-        controlName: '控件名称',
-        controlNameCn: '中文名称',
-        controlNameEn: '英文名称',
-        controlType: '控件类型',
-        dataType: '数据类型',
-        defaultValue: '默认值',
-        description: '描述',
-        sortOrder: '排序',
-        isEnabled: '是否启用',
-        index: '序号',
-        pleaseInputControlCode: '请输入控件代码',
-        pleaseInputControlName: '请输入控件名称',
-        pleaseInputControlNameCn: '请输入中文名称',
-        pleaseInputControlNameEn: '请输入英文名称',
-        pleaseSelectControlType: '请选择控件类型',
-        pleaseSelectDataType: '请选择数据类型',
-        pleaseInputDefaultValue: '请输入默认值',
-        pleaseInputDescription: '请输入描述',
-        addControl: '新增控件',
-        editControl: '编辑控件',
-        deleteConfirm: '确定要删除这个控件吗？',
-        operationFailed: '操作失败',
-        getFailed: '获取数据失败'
-      },
-
     // 表单类别页面专用
     formtype: {
         ariaFilterLabel: '表单类型筛选',
@@ -1777,7 +1747,6 @@ export default {
     basicQuery: '表单基础查询',
     generalQuery: '表单综合查询',
     applyform: '申请表单作业',
-    controlInfo: '控件信息维护',
     personalInfoTitle: '个人资料',
     nationalityInfo: '国籍信息维护',
     custmat: '客户生产计划',
@@ -2705,7 +2674,7 @@ export default {
       partName: '中英文名称',
       partNameCn: '中文名称',
       partNameEn: '英文名称',
-      specifications: '规格',
+      specification: '规格',
       partType: '料号类型',
       category: '物料分类',
       model: '型号',
@@ -2727,7 +2696,7 @@ export default {
       pleaseInputPartName: '请输入中英文名称',
       pleaseInputPartNameCn: '请输入中文名称',
       pleaseInputPartNameEn: '请输入英文名称',
-      pleaseInputSpecifications: '请输入规格',
+      pleaseInputSpecification: '请输入规格',
       pleaseInputModel: '请输入型号',
       pleaseInputDrawingNumber: '请输入图号',
       pleaseInputVersion: '请输入版本',

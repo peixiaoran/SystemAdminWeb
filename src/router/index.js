@@ -380,17 +380,6 @@ const pmenuRoutes = [
           },
           children: [
             {
-              path: 'controlInfo',
-              name: 'ControlInfo',
-              component: () => import('../views/formbusiness/form-basicinfo/controlinfo.vue'),
-              meta: { 
-                title: 'route.controlInfo', 
-                icon: 'Link',
-                [ROUTE_CONFIG.META.AUTH]: true,
-                noTag: false
-              }
-            },
-            {
               path: 'formgroup',
               name: 'FormGroup',
               component: () => import('../views/formbusiness/form-basicinfo/formgroup.vue'),

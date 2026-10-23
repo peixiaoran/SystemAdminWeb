@@ -289,36 +289,6 @@ export default {
       getFailed: 'Failed to get data'
     },
     
-    // Control Information Page Specific
-    controlinfo: {
-      ariaFilterLabel: 'Control Info Filter',
-      ariaEditLabel: 'Control Info Edit',
-      controlCode: 'Control Code',
-      index: 'Index',
-      controlName: 'Control Name',
-      controlNameCn: 'Name（Cn）',
-      controlNameEn: 'Name（En）',
-      controlType: 'Control Type',
-      dataType: 'Data Type',
-      defaultValue: 'Default Value',
-      description: 'Description',
-      sortOrder: 'Sort Order',
-      isEnabled: 'Is Enabled',
-      pleaseInputControlCode: 'Please enter control code',
-      pleaseInputControlName: 'Please enter control name',
-      pleaseInputControlNameCn: 'Please enter Name（Cn）',
-      pleaseInputControlNameEn: 'Please enter Name（En）',
-      pleaseSelectControlType: 'Please select control type',
-      pleaseSelectDataType: 'Please select data type',
-      pleaseInputDefaultValue: 'Please enter default value',
-      pleaseInputDescription: 'Please enter description',
-      addControl: 'Add Control',
-      editControl: 'Edit Control',
-      deleteConfirm: 'Are you sure you want to delete this control?',
-      operationFailed: 'Operation Failed',
-      getFailed: 'Failed to get data'
-    },
-    
     // Form category page specific
     formtype: {
       ariaFilterLabel: 'Form Type Filter',
@@ -497,7 +467,7 @@ export default {
       index: 'Index',
       ruleNameCn: 'Rule (CN)',
       ruleNameEn: 'Rule (EN)',
-      guidance: 'Condition Key',
+      guidance: 'Guidance',
       sortOrder: 'Sort',
       version: 'Version',
       effectiveStartDate: 'Start Date',
@@ -527,7 +497,7 @@ export default {
       pleaseSelectPosition: 'Please select position',
       pleaseInputRuleNameCn: 'Please input rule name (CN)',
       pleaseInputRuleNameEn: 'Please input rule name (EN)',
-      pleaseInputGuidance: 'Please input condition key',
+      pleaseInputGuidance: 'Please input guidance',
       operation: 'Operation'
     },
 
@@ -1860,7 +1830,6 @@ export default {
     basicQuery: 'Basic Query',
     generalQuery: 'General Query',
     applyform: 'Apply Form',
-    controlInfo: 'Control Info',
     personalInfoTitle: 'Personal Profile',
     nationalityInfo: 'Nationality Info',
     custmat: 'Customer Production',
@@ -2268,6 +2237,7 @@ export default {
       roleName: 'Role Name',
       roleNameCn: 'Name (Ch)',
       roleNameEn: 'Name (En)',
+      description: 'Description',
       currentRole: 'Current Role',
       addRole: 'Add Role',
       editRole: 'Edit Role',
@@ -2740,7 +2710,7 @@ export default {
       partName: 'Name',
       partNameCn: 'Name（Cn）',
       partNameEn: 'Name（En）',
-      specifications: 'Specifications',
+      specification: 'Specification',
       partType: 'Part Type',
       category: 'Category',
       model: 'Model',
@@ -2762,7 +2732,7 @@ export default {
       pleaseInputPartName: 'Please enter Name（Cn/En）',
       pleaseInputPartNameCn: 'Please enter Name（Cn）',
       pleaseInputPartNameEn: 'Please enter Name（En）',
-      pleaseInputSpecifications: 'Please enter specifications',
+      pleaseInputSpecification: 'Please enter specification',
       pleaseInputModel: 'Please enter model',
       pleaseInputDrawingNumber: 'Please enter drawing number',
       pleaseInputVersion: 'Please enter version',

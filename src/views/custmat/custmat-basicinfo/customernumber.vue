@@ -300,6 +300,9 @@ const formRules = {
   partNameEn: [
     { required: true, message: () => t('custmat.customernumber.pleaseInputPartNameEn'), trigger: 'blur' }
   ],
+  specification: [
+    { required: true, message: () => t('custmat.customernumber.pleaseInputSpecification'), trigger: 'blur' }
+  ],
   unit: [
     { required: true, message: () => t('custmat.customernumber.pleaseInputUnit'), trigger: 'blur' }
   ]

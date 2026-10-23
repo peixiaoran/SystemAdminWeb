@@ -1446,6 +1446,13 @@ onMounted(async () => {
 .user-select-table {
   min-width: 900px;
 }
+/* 人员选择表格：压缩行高（单选框默认高 32px 会撑高整行） */
+.user-select-table :deep(.el-table__cell) {
+  padding: 4px 0;
+}
+.user-select-table :deep(.el-radio) {
+  height: 20px;
+}
 .user-table-scroll :deep(.el-table) {
   width: max-content !important;
   min-width: 100%;

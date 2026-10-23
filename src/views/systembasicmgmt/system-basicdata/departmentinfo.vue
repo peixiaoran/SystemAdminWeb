@@ -51,6 +51,7 @@
           </el-table-column>
           <el-table-column prop="landline" :label="$t('systembasicmgmt.departmentInfo.landline')" align="center" min-width="170" />
           <el-table-column prop="email" :label="$t('systembasicmgmt.departmentInfo.email')" align="left" min-width="260" />
+          <el-table-column prop="address" :label="$t('systembasicmgmt.departmentInfo.address')" align="left" min-width="260" show-overflow-tooltip />
           <el-table-column :label="$t('systembasicmgmt.departmentInfo.operation')" min-width="270" fixed="right" align="center">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row)">{{ $t('common.edit') }}</el-button>
@@ -150,6 +151,13 @@
                            :label="item.departmentFunctionsName"
                            :value="item.departmentFunctions" />
               </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-row full-width">
+            <el-form-item :label="$t('systembasicmgmt.departmentInfo.address')" prop="address">
+              <el-input v-model="editForm.address"
+                        style="width: 100%"
+                        :placeholder="$t('systembasicmgmt.departmentInfo.pleaseInputAddress')" />
             </el-form-item>
           </div>
           <div class="form-row full-width">

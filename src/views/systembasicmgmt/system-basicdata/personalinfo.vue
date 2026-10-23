@@ -199,12 +199,12 @@
           <div class="passkey-title">{{ $t('passkey.sectionTitle') }}</div>
           <div class="passkey-tip">{{ $t('passkey.sectionTip') }}</div>
         </div>
-        <el-button type="primary" :icon="Plus" :loading="passkeyAdding" @click="handleAddPasskey">
+        <el-button type="primary" size="small" :icon="Plus" :loading="passkeyAdding" @click="handleAddPasskey">
           {{ $t('passkey.add') }}
         </el-button>
       </div>
       <div class="passkey-table-wrap">
-      <el-table :data="passkeyList" v-loading="passkeyLoading" border stripe style="width: 100%">
+      <el-table :data="passkeyList" v-loading="passkeyLoading" border stripe size="small" style="width: 100%">
         <el-table-column prop="deviceName" :label="$t('passkey.deviceName')" min-width="180" show-overflow-tooltip />
         <el-table-column :label="$t('passkey.createdDate')" min-width="170">
           <template #default="{ row }">{{ formatPasskeyTime(row.createdDate) }}</template>
@@ -214,8 +214,8 @@
         </el-table-column>
         <el-table-column :label="$t('passkey.operation')" width="160" align="center">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleRenamePasskey(row)">{{ $t('passkey.rename') }}</el-button>
-            <el-button type="danger" link @click="handleDeletePasskey(row)">{{ $t('passkey.delete') }}</el-button>
+            <el-button type="primary" link size="small" @click="handleRenamePasskey(row)">{{ $t('passkey.rename') }}</el-button>
+            <el-button type="danger" link size="small" @click="handleDeletePasskey(row)">{{ $t('passkey.delete') }}</el-button>
           </template>
         </el-table-column>
         <template #empty>{{ $t('common.noData') }}</template>
@@ -606,6 +606,7 @@ onMounted(async () => {
 
 .personal-card {
   flex: none;
+  margin-bottom: 6px;
 }
 
 .personal-card :deep(.el-card__body) {
@@ -615,8 +616,9 @@ onMounted(async () => {
 
 .passkey-card {
   flex: 1 1 0;
-  min-height: 180px;
+  min-height: 150px;
   margin-top: 0;
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -648,18 +650,18 @@ onMounted(async () => {
 }
 
 .passkey-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .passkey-tip {
-  margin-top: 4px;
-  font-size: 13px;
+  margin-top: 2px;
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
 
 .personal-info-form {
-  padding: 8px 20px 0;
+  padding: 24px 20px 0;
   background: white;
 }
 
