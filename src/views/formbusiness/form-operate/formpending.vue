@@ -235,7 +235,6 @@ const router = useRouter()
 const FORM_DATA_OPTIONS = { headers: { 'Content-Type': 'multipart/form-data' }, skipDedupe: true }
 const FILTER_DEBOUNCE_MS = 300
 const ALL_OPTION_VALUE = 0
-const FORM_PENDING_REFRESH_MSG = 'FORM_PENDING_REFRESH'
 const ALLOWED_PATH_PREFIXES = ['/formbusiness/']
 
 const isUnsetFilter = (v) => v === '' || v === undefined || v === null
@@ -530,21 +529,22 @@ const canShowInvalidate = (row) => {
   return true
 }
 
-const onFormPendingRefreshMessage = (event) => {
-  if (event.origin !== window.location.origin) return
-  if (event.data?.type !== FORM_PENDING_REFRESH_MSG) return
+// 浏览器标签页切换回本页面时刷新列表（如在表单页处理完后切回）
+const onVisibilityChange = () => {
+  if (document.visibilityState !== 'visible') return
+  if (loading.value || filterPending.value) return
   getFormPendingList()
 }
 
 onMounted(async () => {
-  window.addEventListener('message', onFormPendingRefreshMessage)
+  document.addEventListener('visibilitychange', onVisibilityChange)
   await getFormGroupOptions()
   await getFormTypeOptions()
   await getFormPendingList()
 })
 
 onUnmounted(() => {
-  window.removeEventListener('message', onFormPendingRefreshMessage)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
 

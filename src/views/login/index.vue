@@ -818,7 +818,7 @@ const handleLogin = () => {
 }
 
 .passkey-hint {
-  margin-top: 8px;
+  margin-top: 18px;
   font-size: 12px;
   line-height: 1.5;
   color: #909399;

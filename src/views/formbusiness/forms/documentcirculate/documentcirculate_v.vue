@@ -1,85 +1,7 @@
 ﻿<template>
   <div class="leave-form-page">
     <el-config-provider :locale="elementPlusLocale">
-    <template v-if="loading && !resultState.visible">
-      <el-card class="leave-form-card" shadow="never">
-        <el-skeleton animated>
-          <template #template>
-            <div class="sk-title-row">
-              <el-skeleton-item variant="text" class="sk-title" />
-            </div>
-            <div class="sk-divider"></div>
-
-            <div class="sk-body">
-              <div class="sk-grid">
-                <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-grid">
-                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <!-- 对应真实表单的第二条分割线：前一行表单项自带 18px 下边距，divider 自身补 6px 凑满 24px，下方 24px 与真实一致 -->
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <div class="sk-field">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-control" />
-              </div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-textarea" />
-              </div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block" />
-              </div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block" />
-              </div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block" />
-              </div>
-
-              <!-- 对应真实表单送审意见上方的分割线：上下留白与 .approval-divider 一致 -->
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-textarea" />
-              </div>
-
-              <div class="sk-actions sk-actions--end">
-                <el-skeleton-item variant="text" class="sk-hint" />
-              </div>
-            </div>
-          </template>
-        </el-skeleton>
-      </el-card>
-
-      <el-card class="leave-form-card review-log-card" shadow="never">
-        <el-skeleton animated>
-          <template #template>
-            <div class="sk-log">
-              <el-skeleton-item variant="text" class="sk-section-title" />
-              <el-skeleton-item variant="text" class="sk-block sk-block--log" />
-            </div>
-          </template>
-        </el-skeleton>
-      </el-card>
-    </template>
+    <FormSkeleton v-if="loading && !resultState.visible" readonly />
 
     <el-card
       v-else-if="resultState.visible"
@@ -344,6 +266,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { Lock, Calendar } from '@element-plus/icons-vue'
 import ReviewLogCard from '../components/reviewlogcard.vue'
+import FormSkeleton from '../components/formskeleton.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import KeywordHighlightField from '../components/keywordhighlightfield.vue'
 import { post } from '@/utils/request'
@@ -828,104 +751,6 @@ onMounted(async () => {
 }
 
 /* 骨架屏：内边距、标签列宽、控件高度与真实表单一一对应 */
-.sk-title-row {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.sk-title {
-  display: inline-block;
-  width: 180px;
-  height: 26px;
-}
-
-.sk-divider {
-  height: 1px;
-  margin: 22px 0;
-  background: var(--el-border-color-lighter);
-}
-
-.sk-body {
-  padding: 0 20px;
-}
-
-.sk-grid {
-  display: flex;
-  gap: 0 16px;
-}
-
-.sk-grid .sk-field {
-  width: calc((100% - 32px) / 3);
-}
-
-.sk-field {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  margin-bottom: 18px;
-}
-
-.sk-field--top {
-  align-items: flex-start;
-}
-
-.sk-label {
-  flex: none;
-  width: 88px;
-  height: 14px;
-}
-
-.sk-control {
-  flex: 1;
-  min-width: 0;
-  height: 32px;
-}
-
-.sk-textarea {
-  flex: 1;
-  min-width: 0;
-  height: 76px;
-}
-
-.sk-block {
-  flex: 1;
-  min-width: 0;
-  height: 130px;
-}
-
-.sk-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 24px 0 18px 100px;
-}
-
-.sk-actions--end {
-  justify-content: flex-end;
-}
-
-.sk-hint {
-  flex: none;
-  width: 170px;
-  height: 22px;
-}
-
-.sk-log {
-  padding: 0 20px 20px;
-}
-
-.sk-section-title {
-  width: 90px;
-  height: 22px;
-  margin-bottom: 12px;
-}
-
-.sk-block--log {
-  width: 100%;
-  height: 220px;
-}
-
 .review-log-card.leave-form-card {
   margin-top: 10px;
 }

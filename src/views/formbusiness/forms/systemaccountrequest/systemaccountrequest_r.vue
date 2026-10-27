@@ -6,116 +6,7 @@
   >
     <el-config-provider :locale="elementPlusLocale">
     <!-- Skeleton 骨架屏 -->
-    <template v-if="loading && !resultState.visible">
-      <el-card class="leave-form-card" shadow="never">
-        <el-skeleton animated>
-          <template #template>
-            <div class="sk-title-row">
-              <el-skeleton-item variant="text" class="sk-title" />
-            </div>
-            <div class="sk-divider"></div>
-
-            <div class="sk-body">
-              <!-- 单据基础信息 -->
-              <div class="sk-grid">
-                <div v-for="n in 2" :key="`sk-base-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-grid">
-                <div v-for="n in 3" :key="`sk-user-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <!-- 需求人信息：部门占两格，其余三格一行 -->
-              <div class="sk-grid">
-                <div class="sk-field sk-field--wide">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-grid">
-                <div v-for="n in 3" :key="`sk-requester-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-grid">
-                <div v-for="n in 3" :key="`sk-contact-${n}`" class="sk-field">
-                  <el-skeleton-item variant="text" class="sk-label" />
-                  <el-skeleton-item variant="text" class="sk-control" />
-                </div>
-              </div>
-
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-textarea" />
-              </div>
-
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <!-- 系统明细 -->
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block sk-block--card" />
-              </div>
-
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <!-- 附件 -->
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block" />
-              </div>
-
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <!-- 加审人员 -->
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-block" />
-              </div>
-
-              <div class="sk-divider" style="margin: 6px 0 24px;"></div>
-
-              <!-- 送审意见 -->
-              <div class="sk-field sk-field--top">
-                <el-skeleton-item variant="text" class="sk-label" />
-                <el-skeleton-item variant="text" class="sk-textarea" />
-              </div>
-
-              <div class="sk-actions">
-                <div class="sk-actions-buttons">
-                  <el-skeleton-item variant="button" class="sk-action-btn" />
-                  <el-skeleton-item variant="button" class="sk-action-btn" />
-                  <el-skeleton-item variant="button" class="sk-action-btn" />
-                </div>
-                <el-skeleton-item variant="text" class="sk-hint" />
-              </div>
-            </div>
-          </template>
-        </el-skeleton>
-      </el-card>
-
-      <el-card class="leave-form-card review-log-card" shadow="never">
-        <el-skeleton animated>
-          <template #template>
-            <div class="sk-log">
-              <el-skeleton-item variant="text" class="sk-section-title" />
-              <el-skeleton-item variant="text" class="sk-block sk-block--log" />
-            </div>
-          </template>
-        </el-skeleton>
-      </el-card>
-    </template>
+    <FormSkeleton v-if="loading && !resultState.visible" />
 
     <el-card
       v-else-if="resultState.visible"
@@ -405,12 +296,12 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="system-card__rating" v-if="isStepFieldVisible('Rating')">
-                  <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
-                  <el-form-item class="system-card__item" label-width="0" :error="row._errors.rating">
-                    <el-rate v-model="row.rating" :disabled="!isStepFieldEditable('Rating')" @change="row._errors.rating = ''" />
-                  </el-form-item>
+                  <div class="system-card__rating" v-if="isStepFieldVisible('Rating')">
+                    <span class="system-card__label">{{ t('formbusiness.systemaccountrequest.rating') }}</span>
+                    <el-form-item class="system-card__item" label-width="0" :error="row._errors.rating">
+                      <el-rate v-model="row.rating" show-text :texts="ratingTexts" :disabled="!isStepFieldEditable('Rating')" @change="row._errors.rating = ''" />
+                    </el-form-item>
+                  </div>
                 </div>
                 </div>
                 <el-empty v-if="form.systems.length === 0" :image-size="50" :description="t('common.noData')" />
@@ -767,6 +658,7 @@ import en from 'element-plus/dist/locale/en.mjs'
 import { Upload, Lock, Rank, Plus } from '@element-plus/icons-vue'
 import Sortable from 'sortablejs'
 import ReviewLogCard from '../components/reviewlogcard.vue'
+import FormSkeleton from '../components/formskeleton.vue'
 import WorkflowDrawer from '../components/workflowdrawer.vue'
 import RejectDialog from '../components/rejectdialog.vue'
 import { post, isHandled } from '@/utils/request'
@@ -1151,6 +1043,14 @@ function isBlankSystemRow (row) {
 // 明细各栏位的权限键（应用到每一行）
 const ROW_FIELD_KEYS = ['System', 'Sites', 'Permissions', 'Rating']
 
+const ratingTexts = computed(() => [
+  t('formbusiness.systemaccountrequest.ratingTextVeryPoor'),
+  t('formbusiness.systemaccountrequest.ratingTextPoor'),
+  t('formbusiness.systemaccountrequest.ratingTextAverage'),
+  t('formbusiness.systemaccountrequest.ratingTextGood'),
+  t('formbusiness.systemaccountrequest.ratingTextExcellent')
+])
+
 /** 增删明细行：由 AddDelItem 权限键控制（权限键缺失时与其他栏位一致，默认允许） */
 function isAddDelItemAllowed () {
   return isStepFieldVisible('AddDelItem') && isStepFieldEditable('AddDelItem')
@@ -1250,7 +1150,7 @@ function validateSystems () {
     if (isStepFieldEditable('Sites') && row.sites.length === 0) errors.sites = t('formbusiness.systemaccountrequest.rowSitesRequired', { row: no })
     if (isStepFieldEditable('Permissions') && row.permissions.length === 0) errors.permissions = t('formbusiness.systemaccountrequest.rowPermissionsRequired', { row: no })
     // 评分可见且可编辑时必须评分
-    if (isStepFieldVisible('Rating') && isStepFieldEditable('Rating') && !(Number(row.rating) > 0)) errors.rating = t('formbusiness.systemaccountrequest.rowRatingRequired', { row: no })
+    if (isStepFieldVisible('Rating') && isStepFieldEditable('Rating') && !(Number(row.rating) > 0)) errors.rating = t('formbusiness.systemaccountrequest.rowRatingRequired')
     if (Object.values(errors).some(Boolean)) passed = false
   })
   return passed
@@ -2459,119 +2359,6 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
-.sk-title-row {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.sk-title {
-  display: inline-block;
-  width: 180px;
-  height: 26px;
-}
-
-.sk-divider {
-  height: 1px;
-  margin: 22px 0;
-  background: var(--el-border-color-lighter);
-}
-
-.sk-body {
-  padding: 0 20px;
-}
-
-.sk-grid {
-  display: flex;
-  gap: 0 16px;
-}
-
-.sk-grid .sk-field {
-  width: calc((100% - 32px) / 3);
-}
-
-.sk-field {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  margin-bottom: 18px;
-}
-
-.sk-field--top {
-  align-items: flex-start;
-}
-
-.sk-label {
-  flex: none;
-  width: 88px;
-  height: 14px;
-}
-
-.sk-control {
-  flex: 1;
-  min-width: 0;
-  height: 32px;
-}
-
-.sk-block {
-  flex: 1;
-  min-width: 0;
-  height: 130px;
-}
-
-.sk-grid .sk-field--wide {
-  width: calc((100% - 32px) / 3 * 2 + 16px);
-}
-
-.sk-textarea {
-  flex: 1;
-  min-width: 0;
-  height: 76px;
-}
-
-.sk-block--card {
-  height: 120px;
-}
-
-.sk-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 24px 0 18px 100px;
-}
-
-.sk-actions-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.sk-action-btn {
-  width: 80px;
-  height: 32px;
-}
-
-.sk-hint {
-  flex: none;
-  width: 170px;
-  height: 22px;
-}
-
-.sk-log {
-  padding: 0 20px 20px;
-}
-
-.sk-section-title {
-  width: 90px;
-  height: 22px;
-  margin-bottom: 12px;
-}
-
-.sk-block--log {
-  width: 100%;
-  height: 220px;
-}
-
 .review-log-card.leave-form-card {
   margin-top: 10px;
 }
@@ -2829,12 +2616,38 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* 评分位于明细卡片下方 */
+/* 评分位于明细卡片内部底部 */
 .system-card__rating {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 4px;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* 评分大小与 informationrequest_r 保持一致 */
+.system-card__rating :deep(.el-rate) {
+  height: 32px;
+}
+
+/* 评分文字与非空提示都显示在星星右侧同一区域 */
+.system-card__rating :deep(.el-form-item__content) {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.system-card__rating :deep(.el-form-item__error) {
+  padding-top: 0;
+  line-height: 1;
+  /* el-rate 星星图标视觉重心略偏上，文字上移 2px 与星星对齐 */
+  position: relative;
+  top: -2px;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.system-card__rating :deep(.el-rate__icon) {
+  font-size: 24px;
+  margin-right: 8px;
 }
 
 .system-card__col {
@@ -2860,15 +2673,17 @@ onMounted(async () => {
 
 .passkey-mail-bar {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
+/* 提示文本：与 workflow-view-hint-text 保持一致 */
 .passkey-mail-tip {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 13px;
   color: var(--el-text-color-secondary);
+  line-height: 1.5;
+  letter-spacing: 0.3px;
 }
 
 .systems-actions {
