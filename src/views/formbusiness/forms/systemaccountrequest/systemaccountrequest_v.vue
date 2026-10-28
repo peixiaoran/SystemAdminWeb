@@ -1271,6 +1271,15 @@ onMounted(async () => {
   padding: 0 4px;
 }
 
+.system-card__rating :deep(.el-rate) {
+  height: 32px;
+}
+
+.system-card__rating :deep(.el-rate__icon) {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
 .system-card__col {
   display: grid;
   grid-template-columns: 1fr 1fr;
