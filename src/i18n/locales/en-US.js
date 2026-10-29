@@ -1704,20 +1704,6 @@ export default {
       passwordExpired: 'Password has expired, redirecting to password change page',
       accountLocked: 'Account has been locked, redirecting to unlock page',
       sessionExpired: 'Session expired, please log in again',
-    sites: {
-      ESK: 'Kunshan Yisheng',
-      ETW: 'Yisheng Taiwan',
-      ESW: 'Wuxi Xinguan',
-      ESD: 'Dongguan Yihong',
-      ESC: 'Yantai Zhengyi',
-      EMY: 'Malaysia',
-      EMJ: 'Malaysia',
-      ESV: 'Vietnam Factory',
-      EST: 'Mexico MUSG',
-      ESH: 'Singapore ESONSG',
-      ESM: 'Monterrey',
-      MTY: 'Singapore ESONSG'
-    },
     languages: {
       'zh-CN': '中文简体',
       'en-US': 'English'
