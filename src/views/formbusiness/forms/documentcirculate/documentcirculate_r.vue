@@ -440,6 +440,7 @@
           max-height="360"
           class="add-review-select-table"
           :header-cell-style="{ background: '#f5f7fa' }"
+          :cell-style="{ padding: '3px 0' }"
           :row-key="(row) => row.userId"
           :empty-text="t('common.noData')"
           @row-click="handleAddReviewRowClick"
@@ -944,16 +945,22 @@ async function saveAddReviewRow (row, isUpdate) {
   const formId = String(form.formId || '')
   if (!formId || !row.userId) return
   try {
+    // 修改接口要求数组入参，且需带上全部加审行
+    if (isUpdate) {
+      await saveAddReviewRowsBatch(addReviewRows.value)
+      return
+    }
+    const payload = {
+      formId,
+      deptName: row.deptName || null,
+      userId: String(row.userId),
+      userNo: row.userNo || null,
+      userName: row.userName || null,
+      sortOrder: String(row.sortOrder)
+    }
     const res = await post(
-      isUpdate ? UPDATE_FORM_ADD_REVIEW_API : INSERT_FORM_ADD_REVIEW_API,
-      {
-        formId,
-        deptName: row.deptName || null,
-        userId: String(row.userId),
-        userNo: row.userNo || null,
-        userName: row.userName || null,
-        sortOrder: String(row.sortOrder)
-      },
+      INSERT_FORM_ADD_REVIEW_API,
+      payload,
       { silentForbiddenError: false }
     )
     if (res && isSuccessCode(res.code)) {
@@ -970,6 +977,13 @@ async function confirmAddReviewUser () {
   const row = addReviewRows.value.find((r) => r.sortOrder === addReviewTargetSortOrder.value)
   if (!user?.userId || !row) {
     addReviewDialogVisible.value = false
+    return
+  }
+  const isDuplicate = addReviewRows.value.some(
+    (r) => r !== row && r.userId && String(r.userId) === String(user.userId)
+  )
+  if (isDuplicate) {
+    showFormActionNotice(t('formbusiness.documentcirculate.addReviewDuplicateUser'), 'warning')
     return
   }
   // 该顺序原本是否已有记录，须在覆盖行数据前取，用于区分新增/修改
