@@ -125,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, nextTick, onMounted } from 'vue'
+import { ref, reactive, nextTick, onMounted, h } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { post, isHandled } from '@/utils/request'
@@ -196,6 +196,27 @@ const showMessage = (message, type = 'error') => {
 /** 业务码失败提示：400 视为告警，其余视为错误 */
 const showApiError = (res, fallbackKey) => {
   showMessage(res?.message || t(fallbackKey), Number(res?.code) === 400 ? 'warning' : 'error')
+}
+
+/** 锁定失败：文案为“提示语: 客户A、客户B…”时，用弹窗逐行列出全部客户；否则按普通告警提示 */
+const showLockError = (res) => {
+  const message = res?.message
+  const colonIndex = typeof message === 'string' ? Math.max(message.lastIndexOf(':'), message.lastIndexOf('：')) : -1
+  const items = colonIndex < 0 ? [] : message.slice(colonIndex + 1).split(/\s*、\s*/).map(s => s.trim()).filter(Boolean)
+  if (Number(res?.code) !== 400 || items.length < 1) {
+    showApiError(res, 'custmat.forecastversion.operationFailed')
+    return
+  }
+
+  const textStyle = { color: '#000' }
+  ElMessageBox.alert(
+    h('div', { style: { ...textStyle, maxHeight: '60vh', overflowY: 'auto' } }, [
+      h('p', { style: { ...textStyle, margin: '0 0 8px' } }, message.slice(0, colonIndex + 1)),
+      ...items.map(item => h('div', { style: { ...textStyle, lineHeight: '24px' } }, item))
+    ]),
+    t('common.tip'),
+    { confirmButtonText: t('common.confirm') }
+  ).catch(() => {})
 }
 
 /** isLatest 为 1（或字符串 "1"）时展示最新标识 */
@@ -461,7 +482,7 @@ const handleLock = async (row) => {
       showMessage(res.message || t('custmat.forecastversion.lockSuccess'), 'success')
       fetchForecastVersionList()
     } else {
-      showApiError(res, 'custmat.forecastversion.operationFailed')
+      showLockError(res)
     }
   } catch {
     showMessage(t('custmat.forecastversion.operationFailed'))

@@ -65,6 +65,7 @@ import { useI18n } from 'vue-i18n'
 import { Key } from '@element-plus/icons-vue'
 import { startRegistration } from '@simplewebauthn/browser'
 import { post, isHandled } from '@/utils/request'
+import { clearClientSession } from '@/utils/sessionCleanup'
 import { PASSKEY_BIND_API } from '@/config/api/login/api'
 import { getLocationQueryParam } from '@/utils/hashRouteBootstrap'
 import { isPasskeySupported, isPasskeyCancelled, PASSKEY_DEVICE_NAME_MAX_LENGTH } from '@/utils/passkey'
@@ -172,8 +173,11 @@ const handleBind = async () => {
   }
 }
 
-const goLogin = () => {
-  router.replace('/login')
+/** 清理本地登录缓存后跳转登录页并整页刷新，避免残留上一个账号的内存态（Pinia）与缓存 */
+const goLogin = async () => {
+  clearClientSession({ keepLanguage: true })
+  await router.replace('/login')
+  window.location.reload()
 }
 
 onMounted(async () => {
@@ -284,6 +288,12 @@ onMounted(async () => {
   background: #1a1a1a;
   border-color: #1a1a1a;
   color: #ffffff;
+}
+
+/* el-result 的 extra 容器默认按内容收缩，这里撑满以与登录页按钮同宽 */
+.passkey-bind-body :deep(.el-result__extra) {
+  width: 100%;
+  margin-top: 16px;
 }
 
 .passkey-bind-button:hover,

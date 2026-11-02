@@ -845,7 +845,7 @@ const handleUnlock = () => {
   justify-content: center;
 }
 
-/* 解锁按钮：配色参考密码过期页提交按钮（暖灰渐变），保留 !important 覆盖 el-button primary 默认色 */
+/* 解锁按钮：配色与登录页一致（黑色），保留 !important 覆盖 el-button primary 默认色 */
 .login-button {
   width: 100%;
   height: 42px;
@@ -853,31 +853,31 @@ const handleUnlock = () => {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
-  background: linear-gradient(180deg, #8b9099 0%, #787f8a 100%) !important;
+  background: #1a1a1a !important;
   color: #ffffff !important;
   border: none !important;
   margin-top: 10px;
-  box-shadow: 0 6px 16px rgba(82, 88, 102, 0.18);
+  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #7a808a 0%, #6a707a 100%) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(82, 88, 102, 0.22);
+  background: #303133 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2);
 }
 
 .login-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(82, 88, 102, 0.15);
+  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15);
 }
 
 .login-button:disabled {
-  opacity: 0.75;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
-  background: #9ca3af !important;
-  box-shadow: 0 2px 8px rgba(82, 88, 102, 0.1) !important;
+  background: #1a1a1a !important;
+  box-shadow: none !important;
 }
 
 .unlock-link-container {

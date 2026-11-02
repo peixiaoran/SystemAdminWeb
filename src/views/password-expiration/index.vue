@@ -814,32 +814,32 @@ const handleBackToLogin = () => {
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: 0.5px;
-  background: linear-gradient(180deg, #8b9099 0%, #787f8a 100%);
+  letter-spacing: 1px;
+  background: #1a1a1a;
   color: #ffffff;
   border: none;
   margin-top: 10px;
-  box-shadow: 0 6px 16px rgba(82, 88, 102, 0.18);
+  box-shadow: 0 8px 16px rgba(26, 26, 26, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .submit-button:not(:disabled):hover {
-  background: linear-gradient(180deg, #7a808a 0%, #6a707a 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(82, 88, 102, 0.22);
+  background: #303133;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(26, 26, 26, 0.2);
 }
 
 .submit-button:not(:disabled):active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(82, 88, 102, 0.15);
+  box-shadow: 0 4px 8px rgba(26, 26, 26, 0.15);
 }
 
 .submit-button:disabled {
-  background: #9ca3af;
-  opacity: 0.75;
+  background: #1a1a1a;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
-  box-shadow: 0 2px 8px rgba(82, 88, 102, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .submit-button-item {
