@@ -192,6 +192,7 @@ import { isPasskeySupported, isPasskeyCancelled, promptBindPasskey } from '@/uti
 // import { TURNSTILE_SITE_KEY } from '@/config/api/base'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
+import { detectBrowserLanguage } from '@/utils/browserLanguage'
 import { User, Lock, Key } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
@@ -271,7 +272,7 @@ const AUTH_EXPIRED_MESSAGE_KEY = '__auth_expired_message__'
 const loginForm = reactive({
   loginNo: '',
   password: '',
-  language: localStorage.getItem('language') || 'zh-CN' // 从localStorage获取语言设置
+  language: localStorage.getItem('language') || detectBrowserLanguage() // 优先用户已选语言，否则按浏览器语言
 })
 
 // 在组件挂载后进行初始化

@@ -93,6 +93,8 @@ defineProps({
 .sk-grid {
   display: flex;
   gap: 0 16px;
+  /* 与 .sk-row/.sk-block 的下边距一致，使其后的分隔线上下间距对称（居中） */
+  margin-bottom: 18px;
 }
 
 .sk-grid .sk-control {

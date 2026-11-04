@@ -1,12 +1,16 @@
 import { createI18n } from 'vue-i18n'
 import zhCN from './locales/zh-CN.js'
 import enUS from './locales/en-US.js'
+import { detectBrowserLanguage } from '@/utils/browserLanguage'
 import { persistRouteLanguage, resolveRouteLanguageFromUrl } from '@/utils/routeLanguage'
 
 function resolveInitialLocale () {
   const routeLang = resolveRouteLanguageFromUrl()
   if (routeLang) return persistRouteLanguage(routeLang)
-  return localStorage.getItem('language') || 'zh-CN'
+  // 用户已选择过的语言优先；首次访问则按浏览器语言判断（简体中文 → 中文，其余 → 英文）
+  const stored = localStorage.getItem('language')
+  if (stored) return stored
+  return persistRouteLanguage(detectBrowserLanguage())
 }
 
 // 创建i18n实例

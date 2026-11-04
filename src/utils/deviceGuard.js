@@ -6,6 +6,8 @@
  * - 这只是前端体验层面的限制，不是安全措施（UA 可被伪装）。
  */
 
+import { detectBrowserLanguage } from './browserLanguage'
+
 const MOBILE_UA_RE =
   /Android|iPhone|iPad|iPod|Windows Phone|IEMobile|BlackBerry|BB10|Opera Mini|Mobile|HarmonyOS|OpenHarmony|Tablet|Silk|Kindle|PlayBook/i
 
@@ -40,15 +42,8 @@ const MESSAGES = {
   }
 }
 
-/** 根据浏览器语言选择提示语：中文系（zh-*）显示中文，其余显示英文 */
-function resolveLanguage() {
-  const langs = (navigator.languages && navigator.languages.length
-    ? navigator.languages
-    : [navigator.language || '']
-  )
-  const first = String(langs[0] || '').toLowerCase()
-  return first.startsWith('zh') ? 'zh-CN' : 'en-US'
-}
+/** 根据浏览器语言选择提示语：简体中文显示中文，其余显示英文 */
+const resolveLanguage = detectBrowserLanguage
 
 /** 渲染纯 DOM 的提示页（不依赖 Vue / Element Plus / i18n，保证首屏即可显示） */
 export function renderUnsupportedNotice() {
