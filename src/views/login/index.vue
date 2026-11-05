@@ -147,16 +147,25 @@
 
           <!-- Passkey 登录（默认） -->
           <div v-else class="passkey-login-container">
-            <el-button
-              type="primary"
-              :loading="passkeyLoading"
-              :disabled="loading || passkeyLoading"
-              class="login-button passkey-main-button"
-              @click="handlePasskeyLogin"
-            >
-              <el-icon v-if="!passkeyLoading"><Key /></el-icon>
-              {{ $t('passkey.loginButton') }}
-            </el-button>
+            <div class="passkey-button-row">
+              <el-button
+                type="primary"
+                :loading="passkeyLoading"
+                :disabled="loading || passkeyLoading"
+                class="login-button passkey-main-button"
+                @click="handlePasskeyLogin"
+              >
+                <el-icon v-if="!passkeyLoading"><Key /></el-icon>
+                {{ $t('passkey.loginButton') }}
+              </el-button>
+              <el-popover trigger="click" placement="top" :width="300">
+                <template #reference>
+                  <el-icon class="passkey-help-icon" :title="$t('passkey.helpTitle')"><QuestionFilled /></el-icon>
+                </template>
+                <div class="passkey-help-title">{{ $t('passkey.helpTitle') }}</div>
+                <div class="passkey-help-content">{{ $t('passkey.helpContent') }}</div>
+              </el-popover>
+            </div>
             <div class="passkey-hint">{{ $t('passkey.hint') }}</div>
           </div>
 
@@ -193,7 +202,7 @@ import { isPasskeySupported, isPasskeyCancelled, promptBindPasskey } from '@/uti
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
 import { detectBrowserLanguage } from '@/utils/browserLanguage'
-import { User, Lock, Key } from '@element-plus/icons-vue' // 新增图标引入
+import { User, Lock, Key, QuestionFilled } from '@element-plus/icons-vue' // 新增图标引入
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -810,6 +819,39 @@ const handleLogin = () => {
 
 .passkey-main-button {
   margin-top: 0;
+}
+
+.passkey-button-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.passkey-button-row .passkey-main-button {
+  flex: 1;
+  width: auto;
+}
+
+.passkey-help-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #909399;
+  cursor: pointer;
+}
+
+.passkey-help-icon:hover {
+  color: var(--el-color-primary);
+}
+
+.passkey-help-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.passkey-help-content {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #606266;
 }
 
 .switch-mode-container {

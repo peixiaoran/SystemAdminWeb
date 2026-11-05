@@ -38,9 +38,13 @@
           <p v-if="resultState.variant === 'badRequest'" class="informationrequest-bad-request-desc">
             {{ t('formbusiness.informationrequest.badRequestHint') }}
           </p>
-          <span v-else>{{ t(resultState.subTitleKey) }}</span>
+          <template v-else>
+            <span>{{ t(resultState.subTitleKey) }}</span>
+            <p v-if="resultState.automatic" class="result-automatic-hint">{{ t('common.automaticApprovalHint') }}</p>
+          </template>
         </template>
         <template #extra>
+          <el-button v-if="resultState.automatic" type="primary" class="result-approve-again" @click="onApproveAgain">{{ t('common.approveAgain') }}</el-button>
           <span class="result-back-link" @click="closeCurrentPage">[ {{ t('formbusiness.informationrequest.backToFormPending') }} ]</span>
         </template>
       </el-result>
@@ -121,7 +125,7 @@
           </el-col>
           <el-col v-if="isStepFieldVisible('EstimatedDays')" :span="8">
             <el-form-item :label="t('formbusiness.informationrequest.estimatedDays')" prop="estimatedDays">
-              <el-input-number v-model="form.estimatedDays" :min="0" :precision="2" :step="0.01" controls-position="right" :disabled="!isStepFieldEditable('EstimatedDays')" style="width: 100%;" />
+              <el-input-number v-model="form.estimatedDays" :min="0" :precision="2" :step="1" controls-position="right" :disabled="!isStepFieldEditable('EstimatedDays')" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -470,6 +474,7 @@
 </template>
 
 <script setup>
+import { isAutomatic } from '@/utils/automatic'
 import { reactive, ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import i18n from '@/i18n'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
@@ -537,6 +542,7 @@ const workflowOverview = reactive({
 
 const resultState = reactive({
   visible: false,
+  automatic: false,
   variant: 'standard',
   detailMessage: '',
   status: 'success',
@@ -1200,6 +1206,7 @@ function showResult (status, titleKey, subTitleKey) {
   resultState.variant = 'standard'
   resultState.detailMessage = ''
   resultState.visible = true
+  resultState.automatic = false
   resultState.status = status
   resultState.titleKey = titleKey
   resultState.subTitleKey = subTitleKey
@@ -1534,6 +1541,7 @@ async function onSubmitForApproval () {
     }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.informationrequest.approvalResultTitle', 'formbusiness.informationrequest.approvalResultSubTitle')
+      { const a = res?.data?.automatic ?? res?.data?.Automatic; resultState.automatic = a != null && !isAutomatic(a) }
       return
     }
     if (isValidationWarningCode(res?.code)) {
@@ -1786,6 +1794,21 @@ async function resolveTokenFormId (tokenValue) {
     return data.formId != null ? String(data.formId) : ''
   } catch {
     return ''
+  }
+}
+
+/** 自动审批提示：用户点击后重新载入单据，再手动审批一次 */
+async function onApproveAgain () {
+  const formId = String(form.formId || '')
+  if (!formId) return
+  resultState.visible = false
+  resultState.automatic = false
+  approvalComment.value = ''
+  loading.value = true
+  try {
+    await getInformationRequestDetail(formId)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -2191,5 +2214,13 @@ onMounted(async () => {
 .rating-row :deep(.el-rate__icon) {
   font-size: 24px;
   margin-right: 8px;
+}
+.result-automatic-hint {
+  margin: 8px 0 0;
+  color: var(--el-color-warning);
+}
+
+.result-approve-again {
+  margin-right: 16px;
 }
 </style>

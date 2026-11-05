@@ -61,6 +61,13 @@
               {{ isNextStepEnd(row.nextStepId) ? $t('formbusiness.workflowrulestep.nextStepEnd') : (row.nextStepName || '') }}
             </template>
           </el-table-column>
+          <el-table-column :label="$t('formbusiness.workflowrulestep.automatic')" min-width="150" align="center">
+            <template #default="{ row }">
+              <el-tag :type="isAutomatic(row.automatic ?? row.Automatic) ? 'success' : 'info'" size="small">
+                {{ isAutomatic(row.automatic ?? row.Automatic) ? $t('common.yes') : $t('common.no') }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="processGuidance" :label="$t('formbusiness.workflowrulestep.processGuidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="conclusionGuidance" :label="$t('formbusiness.workflowrulestep.conclusionGuidance')" align="left" min-width="160" show-overflow-tooltip />
           <el-table-column prop="sortOrder" :label="$t('formbusiness.workflowrulestep.sortOrder')" width="90" align="center" />
@@ -207,6 +214,11 @@
               />
             </el-form-item>
           </div>
+          <div class="form-row">
+            <el-form-item :label="$t('formbusiness.workflowrulestep.automatic')">
+              <el-switch v-model="dialogForm.automatic" />
+            </el-form-item>
+          </div>
         </el-form>
       </div>
       <template #footer>
@@ -254,6 +266,8 @@ const normalizeNextStepIdForForm = (val) => {
   if (val === '') return ''
   return isNextStepEnd(val) ? NEXT_STEP_END_ID : val
 }
+
+const isAutomatic = (v) => v === true || v === 1 || v === '1' || String(v).toLowerCase() === 'true'
 
 const isSuccess = (code) => code === 200 || code === '200'
 
@@ -396,6 +410,7 @@ const dialogForm = reactive({
   ruleId: '',
   currentStepId: '',
   nextStepId: '',
+  automatic: false,
   processGuidance: '',
   conclusionGuidance: '',
   sortOrder: 1
@@ -425,6 +440,7 @@ const resetDialogForm = () => {
   dialogForm.ruleId      = ''
   dialogForm.currentStepId = ''
   dialogForm.nextStepId  = ''
+  dialogForm.automatic   = false
   dialogForm.processGuidance    = ''
   dialogForm.conclusionGuidance = ''
   dialogForm.sortOrder   = 1
@@ -522,6 +538,7 @@ const handleAdd = async () => {
     }
     dialogForm.currentStepId = ''
     dialogForm.nextStepId    = ''
+    dialogForm.automatic     = false
     dialogForm.processGuidance    = ''
     dialogForm.conclusionGuidance = ''
     dialogForm.sortOrder     = 1
@@ -558,7 +575,8 @@ const handleEdit = async (row) => {
       dialogForm.ruleId        = d.ruleId        || row.ruleId        || ''
       dialogForm.currentStepId = d.currentStepId || row.currentStepId || ''
       dialogForm.nextStepId    = normalizeNextStepIdForForm(d.nextStepId ?? row.nextStepId)
-      dialogForm.processGuidance    = d.processGuidance    ?? d.ProcessGuidance    ?? row.processGuidance    ?? ''
+      dialogForm.automatic     = isAutomatic(d.automatic ?? d.Automatic ?? row.automatic ?? row.Automatic)
+      dialogForm.processGuidance    = d.processGuidance   ?? d.ProcessGuidance    ?? row.processGuidance    ?? ''
       dialogForm.conclusionGuidance = d.conclusionGuidance ?? d.ConclusionGuidance ?? row.conclusionGuidance ?? ''
       dialogForm.sortOrder     = d.sortOrder     ?? row.sortOrder     ?? 1
       nextTick(() => dialogFormRef.value?.clearValidate())
@@ -605,6 +623,7 @@ const handleSubmit = async () => {
       ruleId:        dialogForm.ruleId,
       currentStepId: dialogForm.currentStepId,
       nextStepId:    isNextStepEnd(dialogForm.nextStepId) ? null : String(dialogForm.nextStepId),
+      automatic:     dialogForm.automatic ? 1 : 0,
       processGuidance:    dialogForm.processGuidance || null,
       conclusionGuidance: dialogForm.conclusionGuidance || null,
       sortOrder:     dialogForm.sortOrder
