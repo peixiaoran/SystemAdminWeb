@@ -1804,6 +1804,7 @@ async function handleRejectConfirm ({ rejectStepId, rejectReason }) {
     }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.overseastripapp.rejectResultTitle', 'formbusiness.overseastripapp.rejectResultSubTitle')
+      { const a = res?.data?.automatic ?? res?.data?.Automatic; resultState.automatic = a != null && !isAutomatic(a) }
       return
     }
     if (isBadRequestResponse(res)) {

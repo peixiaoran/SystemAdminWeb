@@ -2160,6 +2160,7 @@ async function handleRejectConfirm ({ rejectStepId, rejectReason }) {
     }
     if (isOk(res)) {
       showResult('success', 'formbusiness.systemaccountrequest.rejectResultTitle', 'formbusiness.systemaccountrequest.rejectResultSubTitle')
+      { const a = res?.data?.automatic ?? res?.data?.Automatic; resultState.automatic = a != null && !isAutomatic(a) }
       return
     }
     if (isBadRequestResponse(res)) {

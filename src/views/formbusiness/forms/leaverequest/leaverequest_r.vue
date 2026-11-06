@@ -1944,6 +1944,7 @@ async function handleRejectConfirm ({ rejectStepId, rejectReason }) {
     }
     if (res && isSuccessCode(res.code)) {
       showResult('success', 'formbusiness.leaverequest.rejectResultTitle', 'formbusiness.leaverequest.rejectResultSubTitle')
+      { const a = res?.data?.automatic ?? res?.data?.Automatic; resultState.automatic = a != null && !isAutomatic(a) }
       return
     }
     if (isBadRequestResponse(res)) {
