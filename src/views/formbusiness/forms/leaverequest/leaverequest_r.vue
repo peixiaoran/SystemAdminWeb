@@ -349,7 +349,7 @@
     <aside
       v-if="!resultState.visible && (loading || isStepFieldVisible('LeaveBalance'))"
       class="leave-balance-float"
-      :aria-label="t('formbusiness.leaverequest.leaveBalance') + t('formbusiness.leaverequest.leaveBalanceDaysUnit')"
+      :aria-label="t('formbusiness.leaverequest.leaveBalance') + t('formbusiness.leaverequest.leaveBalanceHoursUnit')"
     >
       <div class="leave-balance-float-card">
         <div class="leave-balance-float-header">
@@ -361,7 +361,7 @@
           </el-skeleton>
           <template v-else>
             <span class="leave-balance-float-title">
-              {{ t('formbusiness.leaverequest.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaverequest.leaveBalanceDaysUnit') }}</span>
+              {{ t('formbusiness.leaverequest.leaveBalance') }}<span class="leave-balance-days-unit">{{ t('formbusiness.leaverequest.leaveBalanceHoursUnit') }}</span>
             </span>
             <p class="leave-balance-float-note">{{ t('formbusiness.leaverequest.leaveBalanceNote') }}</p>
           </template>
@@ -385,7 +385,7 @@
           >
             <div class="leave-balance-year">{{ item.year }}</div>
             <div class="leave-balance-type-row">
-              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.annualRemainingDays') }}</span>
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.annualRemainingHours') }}</span>
               <span
                 :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'annual') }]"
               >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'annual')) }}</span>
@@ -397,7 +397,7 @@
               </span>
             </div>
             <div class="leave-balance-type-row">
-              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.sickRemainingDays') }}</span>
+              <span class="leave-balance-type-name">{{ t('formbusiness.leaverequest.sickRemainingHours') }}</span>
               <span
                 :class="['leave-balance-days-col', 'leave-balance-days', { 'leave-balance-days--exceeded': isLeaveBalanceExceeded(item, 'sick') }]"
               >{{ formatLeaveBalanceDays(getAdjustedLeaveBalanceDays(item, 'sick')) }}</span>
@@ -908,7 +908,7 @@ function formatLeaveBalanceDeductDays (val) {
 }
 
 function getLeaveBalanceRawDays (item, type) {
-  return type === 'annual' ? item?.annualRemainingDays : item?.sickRemainingDays
+  return type === 'annual' ? item?.annualRemainingHours : item?.sickRemainingHours
 }
 
 function getAdjustedLeaveBalanceDays (item, type) {
@@ -916,8 +916,8 @@ function getAdjustedLeaveBalanceDays (item, type) {
   if (!Number.isFinite(rawDays)) return getLeaveBalanceRawDays(item, type)
   if (!isLeaveBalanceAffected(item?.year, type)) return rawDays
   if (currentFormStatus.value === 'approved') return rawDays
-  const remainingHours = rawDays * 8 - getSelectedLeaveHoursByYear(item.year)
-  return remainingHours / 8
+  const remainingHours = rawDays - getSelectedLeaveHoursByYear(item.year)
+  return remainingHours
 }
 
 function isLeaveBalanceAffected (year, type) {
@@ -928,7 +928,7 @@ function isLeaveBalanceAffected (year, type) {
 function getLeaveBalanceDeductDays (item, type) {
   if (!isLeaveBalanceAffected(item?.year, type)) return 0
   const hours = getSelectedLeaveHoursByYear(item.year)
-  return hours > 0 ? hours / 8 : 0
+  return hours > 0 ? hours : 0
 }
 
 function isLeaveBalanceExceeded (item, type) {
@@ -939,7 +939,7 @@ function isLeaveBalanceExceeded (item, type) {
   const rawDays = Number(getLeaveBalanceRawDays(item, type))
   if (!Number.isFinite(rawDays)) return false
   const selectedHours = getSelectedLeaveHoursByYear(item.year)
-  return selectedHours > 0 && selectedHours > rawDays * 8
+  return selectedHours > 0 && selectedHours > rawDays
 }
 
 function resolveSelectedLeaveBalanceType () {
@@ -969,8 +969,8 @@ function getSelectedLeaveHoursByYear (year) {
 function normalizeLeaveBalanceItem (item) {
   return {
     year: Number(item?.year ?? item?.Year ?? 0),
-    annualRemainingDays: item?.annualRemainingDays ?? item?.AnnualRemainingDays,
-    sickRemainingDays: item?.sickRemainingDays ?? item?.SickRemainingDays
+    annualRemainingHours: item?.annualRemainingHours ?? item?.AnnualRemainingHours,
+    sickRemainingHours: item?.sickRemainingHours ?? item?.SickRemainingHours
   }
 }
 

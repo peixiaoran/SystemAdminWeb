@@ -328,7 +328,7 @@
           :data="leaveRequestList"
           border
           stripe
-          max-height="360"
+          height="460"
           class="leave-request-select-table"
           :header-cell-style="{ background: '#f5f7fa' }"
           :row-key="(row) => row.leaveRequestId"
@@ -1878,6 +1878,16 @@ onMounted(async () => {
 
 .leave-request-select-table {
   width: 100%;
+}
+
+.leave-request-select-table :deep(.el-table__header .cell),
+.leave-request-select-table :deep(.el-table__body .cell) {
+  line-height: 20px;
+}
+
+.leave-request-select-table :deep(.el-table__header th.el-table__cell),
+.leave-request-select-table :deep(.el-table__body td.el-table__cell) {
+  padding: 4px 0;
 }
 
 .leave-request-pagination {
