@@ -202,7 +202,7 @@ const fetchVersionOptions = async () => {
 
     if (res?.code === 200) {
       versionOptions.value = Array.isArray(res.data) ? res.data : []
-      selectedVersionIds.value = versionOptions.value.slice(0, 5).map((item) => item.versionId)
+      selectedVersionIds.value = versionOptions.value.slice(0, 7).map((item) => item.versionId)
       await fetchChartData()
     } else {
       showApiError(res, 'custmat.numbertrendchart.getVersionFailed')
